@@ -1,0 +1,10 @@
+.DS_Store
+*.pbxuser
+!default.pbxuser
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.xcuserstate
+*~
+
