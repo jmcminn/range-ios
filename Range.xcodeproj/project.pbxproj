@@ -9,12 +9,15 @@
 /* Begin PBXBuildFile section */
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
-		0A632EB027E49636001A019B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAF27E49636001A019B /* ViewController.swift */; };
 		0A632EB527E49638001A019B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB427E49638001A019B /* Assets.xcassets */; };
 		0A632EB827E49638001A019B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB627E49638001A019B /* LaunchScreen.storyboard */; };
 		0A632EC327E49639001A019B /* RangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EC227E49639001A019B /* RangeTests.swift */; };
 		0A632ECD27E49639001A019B /* RangeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632ECC27E49639001A019B /* RangeUITests.swift */; };
 		0A632ECF27E49639001A019B /* RangeUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632ECE27E49639001A019B /* RangeUITestsLaunchTests.swift */; };
+		0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */; };
+		0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EDE27E4DC2C001A019B /* PDFPageScrollView.swift */; };
+		0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */; };
+		0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +41,6 @@
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632EAB27E49636001A019B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A632EAD27E49636001A019B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		0A632EAF27E49636001A019B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		0A632EB427E49638001A019B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A632EB727E49638001A019B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A632EB927E49638001A019B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -47,6 +49,10 @@
 		0A632EC827E49639001A019B /* RangeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RangeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632ECC27E49639001A019B /* RangeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeUITests.swift; sourceTree = "<group>"; };
 		0A632ECE27E49639001A019B /* RangeUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageTiledView.swift; sourceTree = "<group>"; };
+		0A632EDE27E4DC2C001A019B /* PDFPageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageScrollView.swift; sourceTree = "<group>"; };
+		0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageViewController.swift; sourceTree = "<group>"; };
+		0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "5451 VANDERBILT AVE-A1.1A.pdf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,12 +103,13 @@
 		0A632EAA27E49636001A019B /* Range */ = {
 			isa = PBXGroup;
 			children = (
+				0A632EE427E4E52E001A019B /* DemoResources */,
+				0A632EDB27E4DA38001A019B /* PDF */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
-				0A632EAF27E49636001A019B /* ViewController.swift */,
 				0A632EB427E49638001A019B /* Assets.xcassets */,
-				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
 				0A632EB927E49638001A019B /* Info.plist */,
+				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
 			);
 			path = Range;
 			sourceTree = "<group>";
@@ -122,6 +129,24 @@
 				0A632ECE27E49639001A019B /* RangeUITestsLaunchTests.swift */,
 			);
 			path = RangeUITests;
+			sourceTree = "<group>";
+		};
+		0A632EDB27E4DA38001A019B /* PDF */ = {
+			isa = PBXGroup;
+			children = (
+				0A632EDE27E4DC2C001A019B /* PDFPageScrollView.swift */,
+				0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */,
+				0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */,
+			);
+			path = PDF;
+			sourceTree = "<group>";
+		};
+		0A632EE427E4E52E001A019B /* DemoResources */ = {
+			isa = PBXGroup;
+			children = (
+				0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */,
+			);
+			path = DemoResources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -229,6 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A632EB827E49638001A019B /* LaunchScreen.storyboard in Resources */,
+				0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -254,7 +280,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A632EB027E49636001A019B /* ViewController.swift in Sources */,
+				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
+				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
+				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 			);
@@ -428,6 +456,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6J9775C8Y5;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Range;
@@ -435,7 +464,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -457,6 +486,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6J9775C8Y5;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Range;
@@ -464,7 +494,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
