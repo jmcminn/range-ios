@@ -1,0 +1,6 @@
+framework module Pods_Range {
+  umbrella header "Pods-Range-umbrella.h"
+
+  export *
+  module * { export * }
+}

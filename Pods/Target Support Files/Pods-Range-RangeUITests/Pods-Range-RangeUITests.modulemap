@@ -1,0 +1,6 @@
+framework module Pods_Range_RangeUITests {
+  umbrella header "Pods-Range-RangeUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
