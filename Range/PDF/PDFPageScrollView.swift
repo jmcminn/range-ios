@@ -13,13 +13,7 @@ import UIKit
 
 /// Scroll view controlling the zooming of PDFPage
 class PDFPageScrollView: UIScrollView {
-    private var pdfPageTiledView: PDFPageTiledView
-    
-    /// Number of zoom levels possible when double tapping
-    private let zoomLevels: CGFloat = 4
-    
-    /// View which contains all of our content
-    private var contentView: UIView
+    public let pdfView: PDFPageTiledView
     
     /// Instantiates a scrollable page view
     ///
@@ -34,30 +28,24 @@ class PDFPageScrollView: UIScrollView {
         let scaledPageRectSize = CGSize(width: originalPageRect.width * scale, height: originalPageRect.height * scale)
         let scaledPageRect = CGRect(origin: originalPageRect.origin, size: scaledPageRectSize)
         
-        guard !scaledPageRect.isEmpty else { fatalError() }
-        
-        // Create our content view based on the size of the PDF page
-        contentView = UIView(frame: scaledPageRect)
-        
-        // Create the TiledPDFView and scale it to fit the content view.
-        pdfPageTiledView = PDFPageTiledView(frame: contentView.bounds, scale: scale, pdfPage: pdfPage)
+        // Create the TiledPDFView based on the size of the PDF page
+        pdfView = PDFPageTiledView(frame: scaledPageRect, scale: scale, pdfPage: pdfPage)
         
         super.init(frame: frame)
         self.backgroundColor = .white
         
+        self.contentInsetAdjustmentBehavior = .never
+        
         let targetRect = bounds.insetBy(dx: 0, dy: 0)
-        var zoomScale = zoomScaleThatFits(targetRect.size, source: bounds.size)
+        let zoomScale = zoomScaleThatFits(targetRect.size, source: bounds.size)
         
-        minimumZoomScale = zoomScale // Set the minimum and maximum zoom scales
-        maximumZoomScale = zoomScale * (zoomLevels * zoomLevels) // Max number of zoom levels
+        minimumZoomScale = zoomScale
+        maximumZoomScale = zoomScale * 16
         
-        if zoomScale > minimumZoomScale {
-            zoomScale = minimumZoomScale
-        }
-        contentView.addSubview(pdfPageTiledView)
-        addSubview(contentView)
+        self.contentSize = scaledPageRectSize
+        addSubview(pdfView)
         
-        decelerationRate = UIScrollView.DecelerationRate.fast
+        decelerationRate = .fast
         delegate = self
         autoresizesSubviews = true
         autoresizingMask = [.flexibleHeight, .flexibleWidth]
@@ -72,7 +60,7 @@ class PDFPageScrollView: UIScrollView {
         super.layoutSubviews()
         
         // Center the image as it becomes smaller than the size of the screen.
-        let contentViewSize = contentView.frame.size
+        let contentViewSize = pdfView.frame.size
         
         // Center horizontally.
         let xOffset: CGFloat
@@ -90,7 +78,7 @@ class PDFPageScrollView: UIScrollView {
             yOffset = 0
         }
         
-        contentView.frame = CGRect(origin: CGPoint(x: xOffset, y: yOffset), size: contentViewSize)
+        pdfView.frame.origin = CGPoint(x: xOffset, y: yOffset)
     }
     
     /// Calculates the zoom scale given a target size and a source size
@@ -130,9 +118,7 @@ class PDFPageScrollView: UIScrollView {
 }
 
 extension PDFPageScrollView: UIScrollViewDelegate {
-    /// A UIScrollView delegate callback, called when the user starts zooming.
-    /// Return the content view
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return contentView
+        return pdfView
     }
 }
