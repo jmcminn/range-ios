@@ -10,6 +10,10 @@
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
 		0A4DC76927EDCDBD00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
+		0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */; };
+		0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76C27EE100400712518 /* PDFPageSizeTest.swift */; };
+		0A4DC76E27EE100800712518 /* PDFPageSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */; };
+		0A4DC77227EE112D00712518 /* test.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A4DC77127EE112D00712518 /* test.pdf */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
 		0A632EB527E49638001A019B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB427E49638001A019B /* Assets.xcassets */; };
@@ -46,6 +50,9 @@
 /* Begin PBXFileReference section */
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
+		0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageSize.swift; sourceTree = "<group>"; };
+		0A4DC76C27EE100400712518 /* PDFPageSizeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageSizeTest.swift; sourceTree = "<group>"; };
+		0A4DC77127EE112D00712518 /* test.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = test.pdf; sourceTree = "<group>"; };
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632EAB27E49636001A019B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A632EAD27E49636001A019B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -104,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */,
+				0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */,
 			);
 			path = Math;
 			sourceTree = "<group>";
@@ -112,8 +120,17 @@
 			isa = PBXGroup;
 			children = (
 				0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */,
+				0A4DC76C27EE100400712518 /* PDFPageSizeTest.swift */,
 			);
 			path = Math;
+			sourceTree = "<group>";
+		};
+		0A4DC77027EE111400712518 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0A4DC77127EE112D00712518 /* test.pdf */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		0A632E9F27E49636001A019B = {
@@ -156,6 +173,7 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
+				0A4DC77027EE111400712518 /* Resources */,
 				0A4DC76627EDCCFB00712518 /* Math */,
 				0A632EC227E49639001A019B /* RangeTests.swift */,
 			);
@@ -331,6 +349,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A4DC77227EE112D00712518 /* test.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,6 +474,7 @@
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
+				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 			);
@@ -466,7 +486,9 @@
 			files = (
 				0A4DC76927EDCDBD00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
+				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
 				0A632EC327E49639001A019B /* RangeTests.swift in Sources */,
+				0A4DC76E27EE100800712518 /* PDFPageSize.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
