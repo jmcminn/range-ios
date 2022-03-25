@@ -5,6 +5,7 @@
 //  Created by raho on 18/03/2022.
 //
 
+import CoreLocation
 import PDFKit
 import UIKit
 
@@ -24,8 +25,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let documentUrl = Bundle.main.url(forResource: "5451 VANDERBILT AVE-A1.1A", withExtension: "pdf") else { return }
         guard let document = PDFDocument(url: documentUrl) else { return }
         guard let pdfPage = document.page(at: 0) else { return }
+//        window.rootViewController = PDFPageViewController(pdfPage: pdfPage)
         
-        window.rootViewController = PDFPageViewController(pdfPage: pdfPage)
+//         center on the initial position used in the web app https://gitlab.com/range.io/range.io/-/blob/1e0485d391a4c7f8c7ee283a9e01aca585bcc7d3/modules/range-editor/src/redux/slices/geometry-slice.js#L40
+        let centerCoordinate = CLLocationCoordinate2D(latitude: 32.829935, longitude: -97.064068)
+        window.rootViewController = AnnotatedPDFViewController(centerCoordinate: centerCoordinate, pdfPage: pdfPage, pdfScale: 1/48.0)
         
         self.window = window
         window.makeKeyAndVisible()

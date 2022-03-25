@@ -29,7 +29,7 @@ class PDFPageViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let pdfView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
+        let pdfView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage, autoCenter: true)
         pdfView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pdfView)
         

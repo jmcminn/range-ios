@@ -15,13 +15,18 @@ import UIKit
 class PDFPageScrollView: UIScrollView {
     public let pdfView: PDFPageTiledView
     
+    // whether the PDF should be centered if zoomed out
+    private let autoCenter: Bool
+    
     /// Instantiates a scrollable page view
     ///
     /// - parameter frame:            frame of the view
     /// - parameter pdfPage:          page to be displayed
     ///
     /// - returns: a freshly initialized page view
-    init(frame: CGRect, pdfPage: PDFPage) {
+    init(frame: CGRect, pdfPage: PDFPage, autoCenter: Bool = false) {
+        self.autoCenter = autoCenter
+        
         let originalPageRect = pdfPage.bounds(for: .mediaBox)
         let scale = min(frame.width/originalPageRect.width, frame.height/originalPageRect.height)
         
@@ -58,27 +63,28 @@ class PDFPageScrollView: UIScrollView {
     // Use layoutSubviews to center the PDF page in the view.
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        // Center the image as it becomes smaller than the size of the screen.
-        let contentViewSize = pdfView.frame.size
-        
-        // Center horizontally.
-        let xOffset: CGFloat
-        if contentViewSize.width < bounds.width {
-            xOffset = (bounds.width - contentViewSize.width) / 2
-        } else {
-            xOffset = 0
+        if (autoCenter) {
+            // Center the image as it becomes smaller than the size of the screen.
+            let contentViewSize = pdfView.frame.size
+            
+            // Center horizontally.
+            let xOffset: CGFloat
+            if contentViewSize.width < bounds.width {
+                xOffset = (bounds.width - contentViewSize.width) / 2
+            } else {
+                xOffset = 0
+            }
+            
+            // Center vertically.
+            let yOffset: CGFloat
+            if contentViewSize.height < bounds.height {
+                yOffset = (bounds.height - contentViewSize.height) / 2
+            } else {
+                yOffset = 0
+            }
+            
+            pdfView.frame.origin = CGPoint(x: xOffset, y: yOffset)
         }
-        
-        // Center vertically.
-        let yOffset: CGFloat
-        if contentViewSize.height < bounds.height {
-            yOffset = (bounds.height - contentViewSize.height) / 2
-        } else {
-            yOffset = 0
-        }
-        
-        pdfView.frame.origin = CGPoint(x: xOffset, y: yOffset)
     }
     
     /// Calculates the zoom scale given a target size and a source size
