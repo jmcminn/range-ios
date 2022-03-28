@@ -11,12 +11,24 @@
 import PDFKit
 import UIKit
 
+
+protocol PDFPageScrollViewDelegate: AnyObject {
+    func scrollViewDidScroll(_ scrollView: PDFPageScrollView)
+    func scrollViewDidZoom(_ scrollView: PDFPageScrollView)
+}
+
 /// Scroll view controlling the zooming of PDFPage
 class PDFPageScrollView: UIScrollView {
     public let pdfView: PDFPageTiledView
     
+    // this view has the width/height ratio of the scroll view and contains the centered pdf view.
+    private let contentView: UIView
+    
     // whether the PDF should be centered if zoomed out
     private let autoCenter: Bool
+    
+    /// Delegate that is informed of important interaction events
+    public weak var pdfPageScrollViewDelegate: PDFPageScrollViewDelegate?
     
     /// Instantiates a scrollable page view
     ///
@@ -29,9 +41,12 @@ class PDFPageScrollView: UIScrollView {
         
         let originalPageRect = pdfPage.bounds(for: .mediaBox)
         let scale = min(frame.width/originalPageRect.width, frame.height/originalPageRect.height)
-        
         let scaledPageRectSize = CGSize(width: originalPageRect.width * scale, height: originalPageRect.height * scale)
-        let scaledPageRect = CGRect(origin: originalPageRect.origin, size: scaledPageRectSize)
+        
+        let contentViewSize = frame.size
+        let scaledPageRect = CGRect(origin: CGPoint(x: (contentViewSize.width - scaledPageRectSize.width)/2, y: (contentViewSize.height - scaledPageRectSize.height)/2), size: scaledPageRectSize)
+        
+        contentView = UIView(frame:CGRect(origin: CGPoint(x: 0, y:0 ), size: contentViewSize))
         
         // Create the TiledPDFView based on the size of the PDF page
         pdfView = PDFPageTiledView(frame: scaledPageRect, scale: scale, pdfPage: pdfPage)
@@ -39,16 +54,15 @@ class PDFPageScrollView: UIScrollView {
         super.init(frame: frame)
         self.backgroundColor = .white
         
-        self.contentInsetAdjustmentBehavior = .never
-        
         let targetRect = bounds.insetBy(dx: 0, dy: 0)
         let zoomScale = zoomScaleThatFits(targetRect.size, source: bounds.size)
         
         minimumZoomScale = zoomScale
-        maximumZoomScale = zoomScale * 16
+        maximumZoomScale = zoomScale * 32
         
-        self.contentSize = scaledPageRectSize
-        addSubview(pdfView)
+        contentView.addSubview(pdfView)
+        addSubview(contentView)
+        contentSize = contentViewSize
         
         decelerationRate = .fast
         delegate = self
@@ -65,7 +79,7 @@ class PDFPageScrollView: UIScrollView {
         super.layoutSubviews()
         if (autoCenter) {
             // Center the image as it becomes smaller than the size of the screen.
-            let contentViewSize = pdfView.frame.size
+            let contentViewSize = contentView.frame.size
             
             // Center horizontally.
             let xOffset: CGFloat
@@ -83,7 +97,7 @@ class PDFPageScrollView: UIScrollView {
                 yOffset = 0
             }
             
-            pdfView.frame.origin = CGPoint(x: xOffset, y: yOffset)
+            contentView.frame.origin = CGPoint(x: xOffset, y: yOffset)
         }
     }
     
@@ -105,7 +119,7 @@ class PDFPageScrollView: UIScrollView {
     /// - parameter zoomPoint: the reference point to zoom on
     ///
     /// - returns: a new zoom rect
-    private func zoomRectForScale(_ scale: CGFloat, zoomPoint: CGPoint) -> CGRect {
+    func zoomRectForScale(_ scale: CGFloat, zoomPoint: CGPoint) -> CGRect {
         // Normalize current content size back to content scale of 1.0f
         let updatedContentSize = CGSize(width: contentSize.width/zoomScale, height: contentSize.height/zoomScale)
         
@@ -125,6 +139,13 @@ class PDFPageScrollView: UIScrollView {
 
 extension PDFPageScrollView: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return pdfView
+        return contentView
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        pdfPageScrollViewDelegate?.scrollViewDidScroll(self)
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        pdfPageScrollViewDelegate?.scrollViewDidZoom(self)
     }
 }

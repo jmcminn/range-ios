@@ -18,6 +18,8 @@ import UIKit
  */
 class AnnotatedPDFViewController: UIViewController {
     
+    let maxMapboxZoom = 25.5
+    
     let centerCoordinate: CLLocationCoordinate2D
     let pdfPage: PDFPage
     let pdfScale: Double
@@ -41,37 +43,49 @@ class AnnotatedPDFViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
         setupPDFScrollView()
         
-        setupInitialZoom()
-
+        setupInitialZoomAndZoomLimits()
+        
         setupMapView()
-
-        syncPDFViewWithCameraState()
+        
+        syncCameraStateWithPDFView()
         
         setupDebugViews()
     }
     
     private func setupPDFScrollView() {
         pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
-        // Allow for "inifite" scaling - the scale will be controlled and limited by the Mapbox zoom.
-        pdfScrollView.minimumZoomScale = 0.0001
-        pdfScrollView.maximumZoomScale = 1000
         view.addSubview(pdfScrollView)
+        pdfScrollView.bouncesZoom = false
+        pdfScrollView.pdfPageScrollViewDelegate = self
     }
     
     /// Calculates initial mapbox zoom so the PDFPage fits the screen
-    private func setupInitialZoom() {
+    private func setupInitialZoomAndZoomLimits() {
         let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: pdfScale)
         let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
         let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
         initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
         initialZoom = zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
+        
+        // minimum is arbitrarily chosen to allow to view the area of 10x width of pdf
+        pdfScrollView.minimumZoomScale = 0.1
+        // maximum is added so we don't go above the max mapbox zoom scale
+        let minMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: maxMapboxZoom)
+        pdfScrollView.maximumZoomScale = initialMetersPerPoint/minMetersPerPoint
+        // Just a big number to allow zooming out
+        // TODO: add limit to geographical location the center may reach.
+        // This cannot be done by the contentInset as it works in a way dependent on zoom.
+        // So the contentSize changes with zoom but this value not, so it would allow for different real world bounds depending on the zoom.
+        // So it rather needs to be done on the scroll view level where reaching to far should programmatically bounce back to allowed bounds.
+        let pdfInset = 100000.0
+        pdfScrollView.contentInset = UIEdgeInsets(top: pdfInset, left: pdfInset, bottom: pdfInset, right: pdfInset)
     }
     
     private func setupMapView() {
@@ -81,7 +95,7 @@ class AnnotatedPDFViewController: UIViewController {
         mapView = MapView(frame: view.bounds, mapInitOptions: MapInitOptions(cameraOptions: cameraOptions))
         mapView.alpha = 0.6
         do {
-            try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom:25.5))
+            try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom:maxMapboxZoom))
         } catch {
             print("Unexpected error: \(error).")
         }
@@ -89,19 +103,13 @@ class AnnotatedPDFViewController: UIViewController {
         mapView.ornaments.options.attributionButton.visibility = .hidden
         mapView.ornaments.options.scaleBar.visibility = .hidden
         
-        mapView.gestures.options.pinchRotateEnabled = false
-        mapView.gestures.options.pitchEnabled = false
-        
-        // Without this setting the .cameraChanged event reports wrong zoom data.
-        // See https://github.com/mapbox/mapbox-maps-ios/issues/864 for more details.
-        mapView.gestures.options.pinchBehavior = .doesNotResetCameraAtEachFrame
-        
-        mapView.mapboxMap.onEvery(.cameraChanged, handler: { [weak self] event in
-            guard let self = self else { return }
-            self.syncPDFViewWithCameraState()
-        })
+        mapView.isUserInteractionEnabled = false
         
         view.addSubview(mapView)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        mapView.frame = view.bounds
     }
     
     private func setupDebugViews() {
@@ -115,47 +123,43 @@ class AnnotatedPDFViewController: UIViewController {
     }
     
     @objc func resetAction() {
-        mapView.camera.ease(to: CameraOptions(center: centerCoordinate, zoom: initialZoom), duration: 0.2)
+        UIView.animate(withDuration: 0.1) {
+            self.pdfScrollView.zoomScale = 1
+            self.pdfScrollView.contentOffset = .zero
+            
+        }
+    }
+
+    /// Set mapbox camera center and zoom based on current pdf view contentOffset and zoomScale
+    private func syncCameraStateWithPDFView() {
+        
+        // The contentOffset is the distance between initial and current top/left pdf corner.
+        let contentOffset = pdfScrollView.contentOffset
+        let viewCenter = pdfScrollView.center
+        let zoomScale = pdfScrollView.zoomScale
+        let metersPerPoint = initialMetersPerPoint/zoomScale
+        
+        // Distance measured in screen coordinates fro current pdf center on screen to screen center.
+        // Grows when moving PDF on screen right
+        let xPdfCenterDistanceFromViewCenter = -contentOffset.x - viewCenter.x + viewCenter.x * zoomScale
+        // grows when moving the PDF on screen down
+        let yPdfCenterDistanceFromViewCenter = -contentOffset.y - viewCenter.y + viewCenter.y * zoomScale
+        // move camera the other direction than the PDF
+        let cameraCenter = CLLocationCoordinate2D(
+            latitude: centerCoordinate.coordinate(at: yPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 0).latitude, // up
+            longitude: centerCoordinate.coordinate(at: xPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 270).longitude // left
+        )
+        let mapboxZoom = zoomConverter.getZoom(forMetersPerPoint: metersPerPoint)
+        mapView.mapboxMap.setCamera(to: CameraOptions(center: cameraCenter, zoom: mapboxZoom))
+    }
+}
+
+extension AnnotatedPDFViewController: PDFPageScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: PDFPageScrollView) {
+        syncCameraStateWithPDFView()
     }
     
-    /// Calculate and apply PDF zoom and offset based on current Mapbox camera state.
-    private func syncPDFViewWithCameraState() {
-        let cameraState = mapView.cameraState
-        
-        // translate current mapbox zoom to pdf UIView.zoomScale
-        let currentMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: cameraState.zoom)
-        pdfScrollView.zoomScale = initialMetersPerPoint / currentMetersPerPoint
-        
-        // translate the new camera center to adjustment in PDF offset
-        let xCameraDistanceFromCenterMeters =  CLLocationCoordinate2D(latitude: centerCoordinate.latitude, longitude: cameraState.center.longitude).distance(to: centerCoordinate)
-        let yCameraDistanceFromCenterMeters = CLLocationCoordinate2D(latitude: cameraState.center.latitude, longitude: centerCoordinate.longitude).distance(to: centerCoordinate)
-        var xCameraDistanceFromCenterPoints = xCameraDistanceFromCenterMeters / currentMetersPerPoint
-        var yCameraDistanceFromCenterPoints = yCameraDistanceFromCenterMeters / currentMetersPerPoint
-        // if the map moves left (camera center moves right) then we need to move the views left
-        if (cameraState.center.longitude > centerCoordinate.longitude) {
-            xCameraDistanceFromCenterPoints *= -1
-        }
-        // if the map moves up (camera center moves down) then we need to move the views up
-        if (cameraState.center.latitude < centerCoordinate.latitude) {
-            yCameraDistanceFromCenterPoints *= -1
-        }
-        
-        let midPdfPoint = CGPoint(x: mapView.center.x + xCameraDistanceFromCenterPoints, y: mapView.center.y + yCameraDistanceFromCenterPoints)
-        
-        var pdfOrigin = CGPoint()
-        var contentOffset = CGPoint()
-        if pdfScrollView.contentSize.width <= mapView.bounds.width {
-            pdfOrigin.x = midPdfPoint.x - pdfScrollView.contentSize.width/2
-        } else {
-            contentOffset.x = -(midPdfPoint.x - pdfScrollView.contentSize.width/2)
-        }
-        if pdfScrollView.contentSize.height <= mapView.bounds.height {
-            pdfOrigin.y = midPdfPoint.y - pdfScrollView.contentSize.height/2
-        } else {
-            contentOffset.y = -(midPdfPoint.y - pdfScrollView.contentSize.height/2)
-        }
-        pdfScrollView.pdfView.frame.origin = pdfOrigin
-        pdfScrollView.contentOffset = contentOffset
+    func scrollViewDidZoom(_ scrollView: PDFPageScrollView) {
+        syncCameraStateWithPDFView()
     }
-    
 }

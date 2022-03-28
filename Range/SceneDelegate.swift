@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        window.rootViewController = PDFPageViewController(pdfPage: pdfPage)
         
 //         center on the initial position used in the web app https://gitlab.com/range.io/range.io/-/blob/1e0485d391a4c7f8c7ee283a9e01aca585bcc7d3/modules/range-editor/src/redux/slices/geometry-slice.js#L40
-        let centerCoordinate = CLLocationCoordinate2D(latitude: 32.829935, longitude: -97.064068)
+        let centerCoordinate = CLLocationCoordinate2D(latitude: 32.82478, longitude: -96.77528)
         window.rootViewController = AnnotatedPDFViewController(centerCoordinate: centerCoordinate, pdfPage: pdfPage, pdfScale: 1/48.0)
         
         self.window = window
