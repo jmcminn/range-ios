@@ -6,6 +6,7 @@
 //
 
 import PDFKit
+import Stevia
 import UIKit
 
 class PDFPageViewController: UIViewController {
@@ -29,13 +30,10 @@ class PDFPageViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // we need some initial frame to setup the PDF
         let pdfView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage, autoCenter: true)
-        pdfView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(pdfView)
-        
-        pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        view.sv(pdfView)
+        pdfView.fillContainer().centerInContainer()
     }
+    
 }
