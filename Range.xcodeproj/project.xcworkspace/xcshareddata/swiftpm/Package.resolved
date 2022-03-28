@@ -1,0 +1,59 @@
+{
+  "pins" : [
+    {
+      "identity" : "mapbox-common-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/mapbox-common-ios.git",
+      "state" : {
+        "revision" : "3f9002c8140503b0c3c9d1e2a210a188bc2f5252",
+        "version" : "21.2.0"
+      }
+    },
+    {
+      "identity" : "mapbox-core-maps-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/mapbox-core-maps-ios.git",
+      "state" : {
+        "revision" : "20763d81dd2f2dee611e81f17ce892b599aa069d",
+        "version" : "10.4.1"
+      }
+    },
+    {
+      "identity" : "mapbox-events-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/mapbox-events-ios.git",
+      "state" : {
+        "revision" : "1b6c2a34086de40c26f2f97a716ac419f46eb630",
+        "version" : "1.0.7"
+      }
+    },
+    {
+      "identity" : "mapbox-maps-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/mapbox-maps-ios.git",
+      "state" : {
+        "revision" : "635fdd15a402be76af390757f347149aaef5349a",
+        "version" : "10.4.1"
+      }
+    },
+    {
+      "identity" : "stevia",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/freshOS/Stevia",
+      "state" : {
+        "revision" : "a32dc3c015fe583080f4947edf795bced9a11108",
+        "version" : "5.1.1"
+      }
+    },
+    {
+      "identity" : "turf-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mapbox/turf-swift.git",
+      "state" : {
+        "revision" : "a7db78a2281ffe79966443ebe5687766d6c024c7",
+        "version" : "2.3.0"
+      }
+    }
+  ],
+  "version" : 2
+}
