@@ -16,6 +16,8 @@
 		0A4DC77227EE112D00712518 /* test.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A4DC77127EE112D00712518 /* test.pdf */; };
 		0A4DC77627F2437000712518 /* Stevia in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC77527F2437000712518 /* Stevia */; };
 		0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC77827F2445200712518 /* MapboxMaps */; };
+		0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A4DC77B27F45DB600712518 /* Colors.xcassets */; };
+		0A4DC79827F5B06200712518 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79727F5B06200712518 /* Colors.swift */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
 		0A632EB527E49638001A019B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB427E49638001A019B /* Assets.xcassets */; };
@@ -53,6 +55,8 @@
 		0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageSize.swift; sourceTree = "<group>"; };
 		0A4DC76C27EE100400712518 /* PDFPageSizeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageSizeTest.swift; sourceTree = "<group>"; };
 		0A4DC77127EE112D00712518 /* test.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = test.pdf; sourceTree = "<group>"; };
+		0A4DC77B27F45DB600712518 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		0A4DC79727F5B06200712518 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632EAB27E49636001A019B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A632EAD27E49636001A019B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -154,6 +158,8 @@
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
 				0A632EE727E516B7001A019B /* AnnotatedPDFViewController.swift */,
 				0A632EB427E49638001A019B /* Assets.xcassets */,
+				0A4DC77B27F45DB600712518 /* Colors.xcassets */,
+				0A4DC79727F5B06200712518 /* Colors.swift */,
 				0A632EB927E49638001A019B /* Info.plist */,
 				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
 			);
@@ -310,6 +316,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A632EB827E49638001A019B /* LaunchScreen.storyboard in Resources */,
+				0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */,
 				0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
 			);
@@ -338,6 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
+				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A632EE827E516B7001A019B /* AnnotatedPDFViewController.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
