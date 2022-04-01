@@ -14,10 +14,10 @@
 		0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76C27EE100400712518 /* PDFPageSizeTest.swift */; };
 		0A4DC76E27EE100800712518 /* PDFPageSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */; };
 		0A4DC77227EE112D00712518 /* test.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A4DC77127EE112D00712518 /* test.pdf */; };
-		0A4DC77627F2437000712518 /* Stevia in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC77527F2437000712518 /* Stevia */; };
 		0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC77827F2445200712518 /* MapboxMaps */; };
 		0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A4DC77B27F45DB600712518 /* Colors.xcassets */; };
 		0A4DC79827F5B06200712518 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79727F5B06200712518 /* Colors.swift */; };
+		0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC79A27F61C8700712518 /* SnapKit */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
 		0A632EB527E49638001A019B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB427E49638001A019B /* Assets.xcassets */; };
@@ -80,8 +80,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */,
 				0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */,
-				0A4DC77627F2437000712518 /* Stevia in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,8 +220,8 @@
 			);
 			name = Range;
 			packageProductDependencies = (
-				0A4DC77527F2437000712518 /* Stevia */,
 				0A4DC77827F2445200712518 /* MapboxMaps */,
+				0A4DC79A27F61C8700712518 /* SnapKit */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -296,8 +296,8 @@
 			);
 			mainGroup = 0A632E9F27E49636001A019B;
 			packageReferences = (
-				0A4DC77427F2437000712518 /* XCRemoteSwiftPackageReference "Stevia" */,
 				0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
+				0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -698,14 +698,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0A4DC77427F2437000712518 /* XCRemoteSwiftPackageReference "Stevia" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/freshOS/Stevia";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
 		0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
@@ -714,18 +706,26 @@
 				minimumVersion = 10.4.0;
 			};
 		};
+		0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0A4DC77527F2437000712518 /* Stevia */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0A4DC77427F2437000712518 /* XCRemoteSwiftPackageReference "Stevia" */;
-			productName = Stevia;
-		};
 		0A4DC77827F2445200712518 /* MapboxMaps */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
 			productName = MapboxMaps;
+		};
+		0A4DC79A27F61C8700712518 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

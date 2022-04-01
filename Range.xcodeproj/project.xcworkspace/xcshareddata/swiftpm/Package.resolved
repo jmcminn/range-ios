@@ -37,12 +37,12 @@
       }
     },
     {
-      "identity" : "stevia",
+      "identity" : "snapkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/freshOS/Stevia",
+      "location" : "https://github.com/SnapKit/SnapKit.git",
       "state" : {
-        "revision" : "a32dc3c015fe583080f4947edf795bced9a11108",
-        "version" : "5.1.1"
+        "revision" : "d458564516e5676af9c70b4f4b2a9178294f1bc6",
+        "version" : "5.0.1"
       }
     },
     {

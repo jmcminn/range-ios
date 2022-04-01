@@ -1,12 +1,5 @@
-//
-//  PDFPageViewController.swift
-//  Range
-//
-//  Created by raho on 18/03/2022.
-//
-
 import PDFKit
-import Stevia
+import SnapKit
 import UIKit
 
 class PDFPageViewController: UIViewController {
@@ -32,8 +25,10 @@ class PDFPageViewController: UIViewController {
         
         // we need some initial frame to setup the PDF
         let pdfView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage, autoCenter: true)
-        view.sv(pdfView)
-        pdfView.fillContainer().centerInContainer()
+        view.addSubview(pdfView)
+        pdfView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
 }
