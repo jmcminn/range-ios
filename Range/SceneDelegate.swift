@@ -1,10 +1,3 @@
-//
-//  SceneDelegate.swift
-//  Range
-//
-//  Created by raho on 18/03/2022.
-//
-
 import CoreLocation
 import PDFKit
 import UIKit
@@ -19,20 +12,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
-        let window = UIWindow(windowScene: windowScene)
+        window = UIWindow(windowScene: windowScene)
         
         guard let documentUrl = Bundle.main.url(forResource: "5451 VANDERBILT AVE-A1.1A", withExtension: "pdf") else { return }
         guard let document = PDFDocument(url: documentUrl) else { return }
         guard let pdfPage = document.page(at: 0) else { return }
-//        window.rootViewController = PDFPageViewController(pdfPage: pdfPage)
         
-//         center on the initial position used in the web app https://gitlab.com/range.io/range.io/-/blob/1e0485d391a4c7f8c7ee283a9e01aca585bcc7d3/modules/range-editor/src/redux/slices/geometry-slice.js#L40
-        let centerCoordinate = CLLocationCoordinate2D(latitude: 32.82478, longitude: -96.77528)
-        window.rootViewController = AnnotatedPDFViewController(centerCoordinate: centerCoordinate, pdfPage: pdfPage, pdfScale: 1/48.0)
+        // center on the initial position used in the web app https://gitlab.com/range.io/range.io/-/blob/1e0485d391a4c7f8c7ee283a9e01aca585bcc7d3/modules/range-editor/src/redux/slices/geometry-slice.js#L40
+        let pdfSource = PDFSource(
+            center: CLLocationCoordinate2D(latitude: 32.82478, longitude: -96.77528),
+            page: pdfPage,
+            scale: 1/48.0
+        )
         
-        self.window = window
-        window.makeKeyAndVisible()
+        let projectFC = ProjectFlowController(pdfSource: pdfSource)
+        window!.rootViewController = projectFC
+        window!.makeKeyAndVisible()
+        
+        projectFC.start()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

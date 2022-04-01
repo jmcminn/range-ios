@@ -1,10 +1,3 @@
-//
-//  TestMapViewController.swift
-//  Range
-//
-//  Created by raho on 18/03/2022.
-//
-
 import CoreLocation
 @_spi(Restricted) @_spi(Experimental) import MapboxMaps
 import PDFKit
@@ -20,9 +13,7 @@ class AnnotatedPDFViewController: UIViewController {
     
     let maxMapboxZoom = 25.5
     
-    let centerCoordinate: CLLocationCoordinate2D
-    let pdfPage: PDFPage
-    let pdfScale: Double
+    let pdfSource: PDFSource
     
     let zoomConverter: MapboxZoomConverter
     
@@ -32,11 +23,9 @@ class AnnotatedPDFViewController: UIViewController {
     var initialMetersPerPoint: Double = 0.0
     var initialZoom: Double = 0.0
     
-    init(centerCoordinate:CLLocationCoordinate2D, pdfPage: PDFPage, pdfScale: Double) {
-        self.centerCoordinate = centerCoordinate
-        self.pdfPage = pdfPage
-        self.pdfScale = pdfScale
-        self.zoomConverter = MapboxZoomConverter(latitude: centerCoordinate.latitude)
+    init(pdfSource: PDFSource) {
+        self.pdfSource = pdfSource
+        self.zoomConverter = MapboxZoomConverter(latitude: pdfSource.center.latitude)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -60,7 +49,7 @@ class AnnotatedPDFViewController: UIViewController {
     }
     
     private func setupPDFScrollView() {
-        pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
+        pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfSource.page)
         view.addSubview(pdfScrollView)
         pdfScrollView.bouncesZoom = false
         pdfScrollView.pdfPageScrollViewDelegate = self
@@ -68,7 +57,7 @@ class AnnotatedPDFViewController: UIViewController {
     
     /// Calculates initial mapbox zoom so the PDFPage fits the screen
     private func setupInitialZoomAndZoomLimits() {
-        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: pdfScale)
+        let pdfSizeInMeters = pdfSource.page.sizeInMeters(forScale: pdfSource.scale)
         let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
         let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
         initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
@@ -91,7 +80,7 @@ class AnnotatedPDFViewController: UIViewController {
     private func setupMapView() {
         // TODO: remove the token or replace with Range one (it's from Rafal's private account)
         ResourceOptionsManager.default.resourceOptions.accessToken = "pk.eyJ1IjoicmFmYWwtcmFuZ2UiLCJhIjoiY2wwd210eHE5MGJlazNlbXlianYzMmFjMiJ9.6VWS7NDvOV1-ghpaWXITHw"
-        let cameraOptions = CameraOptions(center: centerCoordinate, zoom: initialZoom)
+        let cameraOptions = CameraOptions(center: pdfSource.center, zoom: initialZoom)
         mapView = MapView(frame: view.bounds, mapInitOptions: MapInitOptions(cameraOptions: cameraOptions))
         mapView.alpha = 0.6
         do {
@@ -129,7 +118,7 @@ class AnnotatedPDFViewController: UIViewController {
             
         }
     }
-
+    
     /// Set mapbox camera center and zoom based on current pdf view contentOffset and zoomScale
     private func syncCameraStateWithPDFView() {
         
@@ -146,8 +135,8 @@ class AnnotatedPDFViewController: UIViewController {
         let yPdfCenterDistanceFromViewCenter = -contentOffset.y - viewCenter.y + viewCenter.y * zoomScale
         // move camera the other direction than the PDF
         let cameraCenter = CLLocationCoordinate2D(
-            latitude: centerCoordinate.coordinate(at: yPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 0).latitude, // up
-            longitude: centerCoordinate.coordinate(at: xPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 270).longitude // left
+            latitude: pdfSource.center.coordinate(at: yPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 0).latitude, // up
+            longitude: pdfSource.center.coordinate(at: xPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 270).longitude // left
         )
         let mapboxZoom = zoomConverter.getZoom(forMetersPerPoint: metersPerPoint)
         mapView.mapboxMap.setCamera(to: CameraOptions(center: cameraCenter, zoom: mapboxZoom))
