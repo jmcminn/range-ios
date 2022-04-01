@@ -1,10 +1,3 @@
-//
-//  PDFSize.swift
-//  Range
-//
-//  Created by raho on 25/03/2022.
-//
-
 import Foundation
 import PDFKit
 

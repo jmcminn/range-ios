@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  Range
-//
-//  Created by raho on 18/03/2022.
-//
-
 import UIKit
 
 @main

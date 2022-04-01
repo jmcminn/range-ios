@@ -1,10 +1,3 @@
-//
-//  PDFPageSize.swift
-//  RangeTests
-//
-//  Created by raho on 25/03/2022.
-//
-
 import PDFKit
 import XCTest
 

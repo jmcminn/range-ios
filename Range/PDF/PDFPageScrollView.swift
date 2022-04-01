@@ -1,10 +1,3 @@
-//
-//  PDFPageScrollView.swift
-//  Range
-//
-//  Created by raho on 18/03/2022.
-//
-
 // Based on https://github.com/Alua-Kinzhebayeva/iOS-PDF-Reader
 // If more sophisticated scroll view behavior is needed resembing the ImageScrollView here's a good repo: https://github.com/ssamadgh/PhotoScroller_Starter_Sample_Code_Part_III
 

@@ -1,10 +1,3 @@
-//
-//  MapboxZoomConverterTest.swift
-//  RangeTests
-//
-//  Created by raho on 25/03/2022.
-//
-
 import XCTest
 
 class MapboxZoomConverterTest: XCTestCase {
