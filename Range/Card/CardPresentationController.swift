@@ -14,12 +14,9 @@ import UIKit
  */
 class CardPresentationController: UIPresentationController {
     
-    // when true it's for top down drawers... tested with panViews only, by default false (bottom up drawers)
-    let showSafeAreaBlur: Bool
-    // slider is a little rounded rectangle on the top of the presentedView that shows user it can be dragged
-    let showSliderView: Bool
+    let cardConfig: CardConfiguration
     let topDown = false
-    var position: CardPosition = .min
+    var position: CardPosition
     
     var presentationContainerView: PresentationContainerView!
     var blurView: UIView?
@@ -39,10 +36,9 @@ class CardPresentationController: UIPresentationController {
     
     
     init(presentedViewController: (UIViewController & CardPresentable),
-         presenting presentingViewController: UIViewController?,
-         showSafeAreaBlur: Bool = true, showSliderView: Bool = true) {
-        self.showSafeAreaBlur = showSafeAreaBlur
-        self.showSliderView = showSliderView
+         presenting presentingViewController: UIViewController?, cardConfig: CardConfiguration) {
+        self.cardConfig = cardConfig
+        self.position = cardConfig.initialCardPosition
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
     }
     
@@ -435,7 +431,7 @@ extension CardPresentationController: PresentationContainerViewDelegate {
 /// Bluring
 extension CardPresentationController {
     func setupSafeAreaBlur() {
-        guard showSafeAreaBlur else {return}
+        guard cardConfig.showSafeAreaBlur else { return }
         
         let blur = UIBlurEffect(style: .regular)
         let blurView = UIVisualEffectView(effect: blur)
@@ -457,6 +453,8 @@ extension CardPresentationController {
 /// Slider
 extension CardPresentationController {
     func setupSliderView() {
+        guard cardConfig.showSliderView else { return }
+        
         let sliderView = UIView()
         sliderView.backgroundColor = Colors.Neutral_06
         sliderView.layer.cornerRadius = 2.5

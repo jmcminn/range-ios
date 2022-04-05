@@ -1,7 +1,9 @@
 import SnapKit
 import UIKit
 
-class ProjectActionCardViewController: UIViewController {
+class ProjectActionCardViewController: UIViewController, CardCoordinating {
+    var cardDisplayController: CardDisplayController?
+    
     
     static let topPadding = 21.0
     static let headerToActionsPadding = 16.0

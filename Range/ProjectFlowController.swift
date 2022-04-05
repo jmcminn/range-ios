@@ -28,15 +28,7 @@ final class ProjectFlowController: UIViewController {
     
     fileprivate func showActionCard() {
         let vc = ProjectActionCardViewController()
-        vc.modalPresentationStyle = .custom
-        vc.transitioningDelegate = self
+        vc.installCardDisplayController(cardConfig: CardConfiguration(showSafeAreaBlur: true))
         self.present(vc, animated: true)
-    }
-    
-}
-
-extension ProjectFlowController: UIViewControllerTransitioningDelegate {
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return CardPresentationController(presentedViewController: presented as! CardPresentable, presenting: presenting)
     }
 }
