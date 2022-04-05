@@ -2,6 +2,7 @@ import UIKit
 
 /// Card can be presented in 3 positions with heights defined by the CardPresentable protocol.
 /// `.medium` position is optional => if it's height is < 0 then only min and max will be used
+/// If the height for `.min` position is 0 then the Card will be dismissed when minimized.
 enum CardPosition: Int {
     case min = 0 // typically just the header is visible
     case medium // header + some content is visible

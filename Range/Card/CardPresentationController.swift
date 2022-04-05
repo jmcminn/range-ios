@@ -69,8 +69,9 @@ class CardPresentationController: UIPresentationController {
             forWidth: containerViewSize.width,
             cardPosition: cardPosition
         ) ?? 0.0
-        // add the bottom safearea insets when presented from bottom (but only if position support, so if height >= 0)
-        if !topDown && height >= 0 {
+        // add the bottom safearea insets when presented from bottom (but only if > 0.
+        // If it's < 0 then this position is not supported, if == 0 then it means autohide)
+        if !topDown && height > 0 {
             height += containerView?.safeAreaInsets.bottom ?? 0.0
         }
         return min(height, maxAllowedCardHeight)
@@ -385,14 +386,19 @@ extension CardPresentationController {
             height = cardHeight(forPosition: self.position)
         }
         (presentedViewController as? CardPresentable)?.cardWillChangePosition(self.position)
-        if animated {
-            let animator = animator(withVelocity: velocity)
-            animator.addAnimations {
-                self.cardHeight = height
-            }
-            animator.startAnimation()
+        if position == .min && height == 0 {
+            presentedViewController.dismiss(animated: animated)
+            return
         } else {
-            cardHeight = height
+            if animated {
+                let animator = animator(withVelocity: velocity)
+                animator.addAnimations {
+                    self.cardHeight = height
+                }
+                animator.startAnimation()
+            } else {
+                cardHeight = height
+            }
         }
         (presentedViewController as? CardPresentable)?.cardDidChangePosition(self.position)
     }
