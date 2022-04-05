@@ -51,7 +51,7 @@ class ProjectActionSelectorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = Colors.Neutral_10
+        view.backgroundColor = UIColor.Neutral_10
         
         tableView.backgroundColor = view.backgroundColor
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
@@ -60,7 +60,7 @@ class ProjectActionSelectorViewController: UIViewController {
         tableView.dataSource = self
         tableView.separatorInset = .zero
         tableView.separatorInsetReference = .fromCellEdges
-        tableView.separatorColor = Colors.Neutral_08
+        tableView.separatorColor = UIColor.Neutral_08
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ActionCell")
         
         tableView.reloadData()
@@ -82,9 +82,9 @@ extension ProjectActionSelectorViewController: UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ActionCell", for: indexPath )
-        cell.backgroundColor = Colors.Neutral_09
-        cell.imageView?.tintColor = Colors.Neutral_04
-        cell.textLabel?.textColor = Colors.Neutral_04
+        cell.backgroundColor = UIColor.Neutral_09
+        cell.imageView?.tintColor = UIColor.Neutral_04
+        cell.textLabel?.textColor = UIColor.Neutral_04
         let action = actions[indexPath.row]
         cell.textLabel?.text = action.title
         cell.imageView?.image = action.image

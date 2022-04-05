@@ -4,6 +4,7 @@ import UIKit
 class ProjectActionCardViewController: UIViewController, CardCoordinating {
     var cardDisplayController: CardDisplayController?
     
+    var onCamera: (() -> Void)?
     
     static let topPadding = 21.0
     static let headerToActionsPadding = 16.0
@@ -24,21 +25,21 @@ class ProjectActionCardViewController: UIViewController, CardCoordinating {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = Colors.Neutral_10
+        containerView.backgroundColor = UIColor.Neutral_10
         updateShadow()
         
         containerView.addSubview(searchBackground)
-        searchBackground.backgroundColor = Colors.Neutral_09
+        searchBackground.backgroundColor = UIColor.Neutral_09
         searchBackground.layer.cornerRadius = 12
         searchBackground.layer.borderWidth = 1
-        searchBackground.layer.borderColor = Colors.Neutral_08.cgColor
+        searchBackground.layer.borderColor = UIColor.Neutral_08.cgColor
         
         let searchImage = UIImage(
             systemName: "magnifyingglass",
             withConfiguration: UIImage.SymbolConfiguration(textStyle: .subheadline).applying(UIImage.SymbolConfiguration(weight: .medium))
         )
         searchIcon = UIImageView(image: searchImage)
-        searchIcon.tintColor = Colors.Neutral_05
+        searchIcon.tintColor = UIColor.Neutral_05
         searchIcon.setContentHuggingPriority(.required, for: .horizontal)
         searchIcon.setContentHuggingPriority(.required, for: .vertical)
         
@@ -59,11 +60,11 @@ class ProjectActionCardViewController: UIViewController, CardCoordinating {
         var photoButtonConfig = UIButton.Configuration.filled()
         photoButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 15, leading: 12.5, bottom: 15, trailing: 12.5)
         photoButtonConfig.background.cornerRadius = 12
-        photoButtonConfig.background.strokeColor = Colors.Primary_Blue_06
-        photoButtonConfig.baseForegroundColor = Colors.Misc_White
-        photoButtonConfig.baseBackgroundColor = Colors.Primary_Blue_04
+        photoButtonConfig.background.strokeColor = UIColor.Primary_Blue_06
+        photoButtonConfig.baseForegroundColor = UIColor.Misc_White
+        photoButtonConfig.baseBackgroundColor = UIColor.Primary_Blue_04
         
-        photoButton = UIButton(configuration: photoButtonConfig, primaryAction: UIAction(image: photoImage) { _ in })
+        photoButton = UIButton(configuration: photoButtonConfig, primaryAction: UIAction(image: photoImage) { _ in self.onCamera?() })
         photoButton.setContentHuggingPriority(.required, for: .horizontal)
         photoButton.setContentHuggingPriority(.required, for: .vertical)
         containerView.addSubview(photoButton)
@@ -99,7 +100,7 @@ class ProjectActionCardViewController: UIViewController, CardCoordinating {
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if (traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)) {
-            searchBackground.layer.borderColor = Colors.Neutral_08.cgColor
+            searchBackground.layer.borderColor = UIColor.Neutral_08.cgColor
             updateShadow()
         }
     }
@@ -107,7 +108,7 @@ class ProjectActionCardViewController: UIViewController, CardCoordinating {
     private func updateShadow() {
         let darkMode = traitCollection.userInterfaceStyle == .dark
         view.layer.shadowOpacity = darkMode ? 0.2 : 0.05
-        view.layer.shadowColor = Colors.Shadow.cgColor
+        view.layer.shadowColor = UIColor.Shadow.cgColor
     }
 }
 

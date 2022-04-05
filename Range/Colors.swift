@@ -1,6 +1,24 @@
+import SwiftUI
 import UIKit
 
-struct Colors {
+extension Color {
+    static let Misc_Black = Color("Misc_Black")
+    static let Misc_White = Color("Misc_White")
+    static let Neutral_04 = Color("Neutral_04")
+    static let Neutral_05 = Color("Neutral_05")
+    static let Neutral_06 = Color("Neutral_06")
+    static let Neutral_08 = Color("Neutral_08")
+    static let Neutral_09 = Color("Neutral_09")
+    static let Neutral_10 = Color("Neutral_10")
+    static let Primary_Blue_04 = Color("Primary_Blue_04")
+    static let Primary_Blue_06 = Color("Primary_Blue_06")
+    static let Red_03 = Color("Red_03")
+    static let Red_04 = Color("Red_04")
+    static let Shadow = Color("Shadow")
+}
+
+extension UIColor {
+    static let Misc_Black = UIColor(named: "Misc_Black")!
     static let Misc_White = UIColor(named: "Misc_White")!
     static let Neutral_04 = UIColor(named: "Neutral_04")!
     static let Neutral_05 = UIColor(named: "Neutral_05")!
@@ -10,5 +28,7 @@ struct Colors {
     static let Neutral_10 = UIColor(named: "Neutral_10")!
     static let Primary_Blue_04 = UIColor(named: "Primary_Blue_04")!
     static let Primary_Blue_06 = UIColor(named: "Primary_Blue_06")!
+    static let Red_03 = UIColor(named: "Red_03")!
+    static let Red_04 = UIColor(named: "Red_04")!
     static let Shadow = UIColor(named: "Shadow")!
 }

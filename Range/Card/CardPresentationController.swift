@@ -462,7 +462,7 @@ extension CardPresentationController {
         guard cardConfig.showSliderView else { return }
         
         let sliderView = UIView()
-        sliderView.backgroundColor = Colors.Neutral_06
+        sliderView.backgroundColor = UIColor.Neutral_06
         sliderView.layer.cornerRadius = 2.5
         presentedView?.addSubview(sliderView)
         sliderView.snp.makeConstraints { make in
