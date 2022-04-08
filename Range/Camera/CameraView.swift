@@ -87,6 +87,28 @@ struct CameraView: View {
             .background(Circle().fill(Color.Misc_Black.opacity(0.8)))
     }
     
+    var gridView: some View {
+        GeometryReader { cameraFrame in
+            Path { path in
+                let w = cameraFrame.size.width
+                let h = cameraFrame.size.height
+                path.move(to: CGPoint(x: w/3, y: 0))
+                path.addLine(to: CGPoint(x: w/3, y: h))
+                path.closeSubpath()
+                path.move(to: CGPoint(x: w*2/3, y: 0))
+                path.addLine(to: CGPoint(x: w*2/3, y: h))
+                path.closeSubpath()
+                path.move(to: CGPoint(x: 0, y: h/3))
+                path.addLine(to: CGPoint(x: w, y: h/3))
+                path.closeSubpath()
+                path.move(to: CGPoint(x: 0, y: h*2/3))
+                path.addLine(to: CGPoint(x: w, y: h*2/3))
+                path.closeSubpath()
+            }
+            .stroke(Color.Misc_White.opacity(0.5), lineWidth: 1)
+        }
+    }
+    
     var body: some View {
         GeometryReader { reader in
             ZStack {
@@ -106,6 +128,9 @@ struct CameraView: View {
                                         cameraScale = cameraService.currentZoomFactor
                                         progressingScale = 1
                                     }
+                            )
+                            .overlay(
+                                gridView
                             )
                         zoomView.padding(.bottom, 22)
                     }
