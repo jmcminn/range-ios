@@ -8,13 +8,17 @@ import UIKit
  
  It requires calling `configure` and then `start`
  */
-class CameraService {
+class CameraService: ObservableObject {
     
     enum SessionSetupResult {
         case notConfigured
         case success
         case configurationFailed
     }
+    
+    @Published public var minZoomFactor = 1.0
+    @Published public var maxZoomFactor = 10.0
+    @Published public var currentZoomFactor = 1.0
     
     public let session = AVCaptureSession()
     var isSessionRunning = false
@@ -51,6 +55,10 @@ class CameraService {
     
     // Call this on the session queue.
     private func configureSession() {
+#if targetEnvironment(simulator)
+        // don't configure on simulator...
+        return
+#endif
         session.beginConfiguration()
         
         session.sessionPreset = .photo
@@ -107,6 +115,8 @@ class CameraService {
             return
         }
         
+        maxZoomFactor = min(10.0, self.videoDeviceInput.device.activeFormat.videoMaxZoomFactor)
+        
         session.commitConfiguration()
         
         setupResult = .success
@@ -137,4 +147,19 @@ class CameraService {
             }
         }
     }
+    
+    func set(zoom: CGFloat) {
+        currentZoomFactor = max(minZoomFactor, min(zoom, maxZoomFactor))
+        let device = self.videoDeviceInput.device
+        
+        do {
+            try device.lockForConfiguration()
+            device.videoZoomFactor = currentZoomFactor
+            device.unlockForConfiguration()
+        }
+        catch {
+            print(error.localizedDescription)
+        }
+    }
+    
 }
