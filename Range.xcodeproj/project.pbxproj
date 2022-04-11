@@ -41,6 +41,8 @@
 		0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */; };
 		0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */; };
 		0A632EE827E516B7001A019B /* AnnotatedPDFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE727E516B7001A019B /* AnnotatedPDFViewController.swift */; };
+		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
+		0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* UIImage+Resize.swift */; };
 		0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232427FC777600D744F4 /* CameraPreview.swift */; };
 		0A97232727FC782B00D744F4 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232627FC782B00D744F4 /* CameraView.swift */; };
 		0A97232927FC7D9D00D744F4 /* CameraHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraHostingController.swift */; };
@@ -101,6 +103,8 @@
 		0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageViewController.swift; sourceTree = "<group>"; };
 		0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "5451 VANDERBILT AVE-A1.1A.pdf"; sourceTree = "<group>"; };
 		0A632EE727E516B7001A019B /* AnnotatedPDFViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotatedPDFViewController.swift; sourceTree = "<group>"; };
+		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
+		0A720C6228007011003D6B13 /* UIImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
 		0A97232427FC777600D744F4 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0A97232627FC782B00D744F4 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		0A97232827FC7D9D00D744F4 /* CameraHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraHostingController.swift; sourceTree = "<group>"; };
@@ -167,6 +171,7 @@
 			children = (
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
 				0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */,
+				0A720C6228007011003D6B13 /* UIImage+Resize.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -290,6 +295,7 @@
 				0A97233127FDCFAF00D744F4 /* CameraService.swift */,
 				0A97232627FC782B00D744F4 /* CameraView.swift */,
 				0A97232427FC777600D744F4 /* CameraPreview.swift */,
+				0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -440,6 +446,7 @@
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
 				0A97232927FC7D9D00D744F4 /* CameraHostingController.swift in Sources */,
+				0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */,
 				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
@@ -455,6 +462,7 @@
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
+				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,

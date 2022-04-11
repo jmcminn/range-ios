@@ -3,6 +3,7 @@ import SwiftUI
 
 class CameraHostingController: UIHostingController<CameraView>, CardCoordinating {
     var onClose: (() -> Void)?
+    var onPhotoTaken: ((Data?) -> Void)?
     var cardDisplayController: CardDisplayController?
     private let cameraService = CameraService()
     
@@ -10,10 +11,16 @@ class CameraHostingController: UIHostingController<CameraView>, CardCoordinating
         
         super.init(rootView: CameraView(cameraService: cameraService, closeAction: {}, takePhotoAction: {}))
         
-        self.rootView = CameraView(cameraService: cameraService, closeAction: { [weak self] in
-            guard let self = self else { return }
-            self.onClose?()
-        }, takePhotoAction: {})
+        self.rootView = CameraView(
+            cameraService: cameraService,
+            closeAction: { [weak self] in
+                guard let self = self else { return }
+                self.onClose?()
+            }, takePhotoAction: { [weak self] in
+                guard let self = self else { return }
+                guard let onPhotoTaken = self.onPhotoTaken else { return }
+                self.cameraService.capturePhoto(completion: onPhotoTaken)
+            })
     }
     
     required init?(coder aDecoder: NSCoder) {

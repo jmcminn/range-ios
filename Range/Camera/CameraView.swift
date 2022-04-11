@@ -75,7 +75,9 @@ struct CameraView: View {
             Button(action: takePhotoAction) {
                 Circle()
                     .frame(width: 54, height: 54, alignment: .center)
-            }.buttonStyle(TakePhotoButtonStyle())
+            }
+            .buttonStyle(TakePhotoButtonStyle())
+            .disabled(!cameraService.canCapturePhoto)
         }
     }
     
@@ -132,6 +134,20 @@ struct CameraView: View {
                             .overlay(
                                 gridView
                             )
+                            .overlay(
+                                Group {
+                                    if cameraService.willCapturePhoto {
+                                        Color.black
+                                    }
+                                }
+                                    .animation(.easeInOut(duration: 0.1), value: cameraService.willCapturePhoto)
+                            )
+                            .overlay{
+                                if cameraService.isProcessingPhoto {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: Color.Misc_White))
+                                }
+                            }
                         zoomView.padding(.bottom, 22)
                     }
                     Spacer()

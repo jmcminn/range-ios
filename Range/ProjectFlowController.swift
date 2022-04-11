@@ -1,4 +1,5 @@
 import AVFoundation
+import SnapKit
 import UIKit
 
 /// Main view controller for displaying a project.
@@ -69,6 +70,18 @@ final class ProjectFlowController: UIViewController {
                 vc.modalPresentationStyle = .fullScreen
                 vc.onClose = {
                     vc.dismiss(animated: true)
+                }
+                vc.onPhotoTaken = { data in
+                    if let data = data {
+                        vc.dismiss(animated: true)
+                        let imageView = UIImageView(image: UIImage(data: data)!.imageResized(toWidth: 100))
+                        self.view.addSubview(imageView)
+                        imageView.snp.makeConstraints { make in
+                            make.center.equalToSuperview()
+                        }
+                    } else {
+                        // TODO: error?
+                    }
                 }
                 // TODO: do we want to present as a card?
                 //        vc.installCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))

@@ -16,9 +16,12 @@ class CameraService: ObservableObject {
         case configurationFailed
     }
     
+    @Published public var canCapturePhoto = false
     @Published public var minZoomFactor = 1.0
     @Published public var maxZoomFactor = 10.0
     @Published public var currentZoomFactor = 1.0
+    @Published public var willCapturePhoto = false
+    @Published public var isProcessingPhoto = false
     
     public let session = AVCaptureSession()
     var isSessionRunning = false
@@ -29,6 +32,7 @@ class CameraService: ObservableObject {
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
     private let photoOutput = AVCapturePhotoOutput()
+    private var inProgressPhotoCaptureDelegates = [Int64: PhotoCaptureProcessor]()
     
     // TODO: add more camera session error handling from
     // https://developer.apple.com/documentation/avfoundation/cameras_and_media_capture/avcam_building_a_camera_app
@@ -134,6 +138,9 @@ class CameraService: ObservableObject {
             }
             self.session.startRunning()
             self.isSessionRunning = self.session.isRunning
+            DispatchQueue.main.async {
+                self.canCapturePhoto = true
+            }
         }
     }
     
@@ -143,6 +150,9 @@ class CameraService: ObservableObject {
                 if self.setupResult == .success {
                     self.session.stopRunning()
                     self.isSessionRunning = self.session.isRunning
+                    DispatchQueue.main.async {
+                        self.canCapturePhoto = false
+                    }
                 }
             }
         }
@@ -162,4 +172,82 @@ class CameraService: ObservableObject {
         }
     }
     
+    public func capturePhoto(completion: @escaping (Data?) -> Void) {
+        if self.setupResult != .configurationFailed {
+            self.canCapturePhoto = false
+            
+            let videoOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
+            
+            sessionQueue.async {
+                if let photoOutputConnection = self.photoOutput.connection(with: .video) {
+                    photoOutputConnection.videoOrientation = videoOrientation
+                }
+                var photoSettings = AVCapturePhotoSettings()
+                
+                // Capture HEIF photos when supported. Enable according to user settings and high-resolution photos.
+                if  self.photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+                    photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+                }
+                
+                // Sets the flash option for this capture.
+                if self.videoDeviceInput.device.isFlashAvailable {
+                    // TODO: implement flashmode
+                    photoSettings.flashMode = .auto
+                }
+                
+                photoSettings.isHighResolutionPhotoEnabled = true
+                
+                // Sets the preview thumbnail pixel format
+                if !photoSettings.__availablePreviewPhotoPixelFormatTypes.isEmpty {
+                    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoSettings.__availablePreviewPhotoPixelFormatTypes.first!]
+                }
+                
+                photoSettings.photoQualityPrioritization = .quality
+                
+                let photoCaptureProcessor = PhotoCaptureProcessor(with: photoSettings, willCapturePhotoAnimation: { [weak self] in
+                    // Tells the UI to flash the screen to signal that SwiftCamera took a photo.
+                    DispatchQueue.main.async {
+                        self?.willCapturePhoto = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self?.willCapturePhoto = false
+                    }
+                    
+                }, completionHandler: { [weak self] (photoCaptureProcessor) in
+                    // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
+                    completion(photoCaptureProcessor.photoData)
+                    
+                    self?.canCapturePhoto = true
+                    
+                    self?.sessionQueue.async {
+                        self?.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
+                    }
+                }, photoProcessingHandler: { [weak self] animate in
+                    // Animates a spinner while photo is processing
+                    if animate {
+                        self?.isProcessingPhoto = true
+                    } else {
+                        self?.isProcessingPhoto = false
+                    }
+                })
+                
+                // The photo output holds a weak reference to the photo capture delegate and stores it in an array to maintain a strong reference.
+                self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = photoCaptureProcessor
+                self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
+            }
+        }
+    }
+    
+}
+
+extension AVCaptureVideoOrientation {
+    init?(deviceOrientation: UIDeviceOrientation) {
+        switch deviceOrientation {
+        case .portrait: self = .portrait
+        case .portraitUpsideDown: self = .portraitUpsideDown
+        case .landscapeLeft: self = .landscapeRight
+        case .landscapeRight: self = .landscapeLeft
+        default: return nil
+        }
+    }
 }
