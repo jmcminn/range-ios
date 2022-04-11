@@ -16,14 +16,14 @@ class CameraService: ObservableObject {
         case configurationFailed
     }
     
-    @Published public var canCapturePhoto = false
-    @Published public var minZoomFactor = 1.0
-    @Published public var maxZoomFactor = 10.0
-    @Published public var currentZoomFactor = 1.0
-    @Published public var willCapturePhoto = false
-    @Published public var isProcessingPhoto = false
+    @Published var canCapturePhoto = false
+    @Published var currentZoomFactor = 1.0
+    @Published var willCapturePhoto = false
+    @Published var isProcessingPhoto = false
     
-    public let session = AVCaptureSession()
+    let session = AVCaptureSession()
+    var minZoomFactor = 1.0
+    var maxZoomFactor = 10.0
     var isSessionRunning = false
     private var setupResult: SessionSetupResult = .notConfigured
     // Communicate with the session and other session objects on this queue.
@@ -39,6 +39,11 @@ class CameraService: ObservableObject {
     
     /// The setupResultCallback is called on the main queue once determined
     func configure(setupResultCallback: @escaping (SessionSetupResult) -> Void) {
+#if targetEnvironment(simulator)
+        // don't configure on simulator...
+        canCapturePhoto = true
+        return
+#endif
         /*
          Setup the capture session.
          In general, it's not safe to mutate an AVCaptureSession or any of its
@@ -59,10 +64,7 @@ class CameraService: ObservableObject {
     
     // Call this on the session queue.
     private func configureSession() {
-#if targetEnvironment(simulator)
-        // don't configure on simulator...
-        return
-#endif
+        
         session.beginConfiguration()
         
         session.sessionPreset = .photo
@@ -173,6 +175,19 @@ class CameraService: ObservableObject {
     }
     
     public func capturePhoto(completion: @escaping (Data?) -> Void) {
+#if targetEnvironment(simulator)
+        // hardcoded photo for simulator
+        DispatchQueue.main.async {
+            guard let sampleImageURL = Bundle.main.url(forResource: "Rectangle 515", withExtension: "png") else { return }
+            do {
+                let imageData = try Data(contentsOf: sampleImageURL)
+                completion(imageData)
+            } catch {
+                print("Couldn't load \(sampleImageURL)")
+            }
+        }
+        return
+#endif
         if self.setupResult != .configurationFailed {
             self.canCapturePhoto = false
             
@@ -215,19 +230,22 @@ class CameraService: ObservableObject {
                     
                 }, completionHandler: { [weak self] (photoCaptureProcessor) in
                     // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
-                    completion(photoCaptureProcessor.photoData)
-                    
-                    self?.canCapturePhoto = true
+                    DispatchQueue.main.async {
+                        completion(photoCaptureProcessor.photoData)
+                        self?.canCapturePhoto = true
+                    }
                     
                     self?.sessionQueue.async {
                         self?.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
                     }
                 }, photoProcessingHandler: { [weak self] animate in
                     // Animates a spinner while photo is processing
-                    if animate {
-                        self?.isProcessingPhoto = true
-                    } else {
-                        self?.isProcessingPhoto = false
+                    DispatchQueue.main.async {
+                        if animate {
+                            self?.isProcessingPhoto = true
+                        } else {
+                            self?.isProcessingPhoto = false
+                        }
                     }
                 })
                 

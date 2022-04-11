@@ -7,6 +7,7 @@ import UIKit
 final class ProjectFlowController: UIViewController {
     
     let pdfSource: PDFSource
+    var pinView: UIView?
     
     init(pdfSource: PDFSource) {
         self.pdfSource = pdfSource
@@ -71,20 +72,27 @@ final class ProjectFlowController: UIViewController {
                 vc.onClose = {
                     vc.dismiss(animated: true)
                 }
-                vc.onPhotoTaken = { data in
-                    if let data = data {
+                vc.onPhotoTaken = { [weak self] data in
+                    if let data = data, let image = UIImage(data: data) {
+                        guard let self = self else { return }
                         vc.dismiss(animated: true)
-                        let imageView = UIImageView(image: UIImage(data: data)!.imageResized(toWidth: 100))
-                        self.view.addSubview(imageView)
-                        imageView.snp.makeConstraints { make in
-                            make.center.equalToSuperview()
+                        // hide previous pin
+                        self.pinView?.removeFromSuperview()
+                        
+                        let pin = createPhotoPin(fromImage: image)
+                        self.view.addSubview(pin)
+                        pin.snp.makeConstraints { make in
+                            make.centerX.equalToSuperview()
+                            // center pin tip on the screen center (the asset has insets defined to ignore shadow)
+                            make.bottom.equalTo(self.view.snp.centerY)
                         }
+                        self.pinView = pin
                     } else {
-                        // TODO: error?
+                        // TODO: show alert or just log?
                     }
                 }
                 // TODO: do we want to present as a card?
-                //        vc.installCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))
+                // vc.installCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))
                 fromVC.present(vc, animated: true)
             }
         }
