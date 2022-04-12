@@ -1,9 +1,5 @@
-// Based on https://github.com/Alua-Kinzhebayeva/iOS-PDF-Reader
-// If more sophisticated scroll view behavior is needed resembing the ImageScrollView here's a good repo: https://github.com/ssamadgh/PhotoScroller_Starter_Sample_Code_Part_III
-
 import PDFKit
 import UIKit
-
 
 protocol PDFPageScrollViewDelegate: AnyObject {
     func scrollViewDidScroll(_ scrollView: PDFPageScrollView)
@@ -13,16 +9,16 @@ protocol PDFPageScrollViewDelegate: AnyObject {
 /// Scroll view controlling the zooming of PDFPage
 class PDFPageScrollView: UIScrollView {
     public let pdfView: PDFPageTiledView
-    
+
     // this view has the width/height ratio of the scroll view and contains the centered pdf view.
     private let contentView: UIView
-    
+
     // whether the PDF should be centered if zoomed out
     private let autoCenter: Bool
-    
+
     /// Delegate that is informed of important interaction events
     public weak var pdfPageScrollViewDelegate: PDFPageScrollViewDelegate?
-    
+
     /// Instantiates a scrollable page view
     ///
     /// - parameter frame:            frame of the view
@@ -31,49 +27,60 @@ class PDFPageScrollView: UIScrollView {
     /// - returns: a freshly initialized page view
     init(frame: CGRect, pdfPage: PDFPage, autoCenter: Bool = false) {
         self.autoCenter = autoCenter
-        
+
         let originalPageRect = pdfPage.bounds(for: .mediaBox)
-        let scale = min(frame.width/originalPageRect.width, frame.height/originalPageRect.height)
-        let scaledPageRectSize = CGSize(width: originalPageRect.width * scale, height: originalPageRect.height * scale)
-        
+        let scale = min(
+            frame.width / originalPageRect.width,
+            frame.height / originalPageRect.height
+        )
+        let scaledPageRectSize = CGSize(
+            width: originalPageRect.width * scale,
+            height: originalPageRect.height * scale
+        )
+
         let contentViewSize = frame.size
-        let scaledPageRect = CGRect(origin: CGPoint(x: (contentViewSize.width - scaledPageRectSize.width)/2, y: (contentViewSize.height - scaledPageRectSize.height)/2), size: scaledPageRectSize)
-        
-        contentView = UIView(frame:CGRect(origin: CGPoint(x: 0, y:0 ), size: contentViewSize))
-        
+        let scaledPageRect = CGRect(
+            origin: CGPoint(x: (contentViewSize.width - scaledPageRectSize.width) / 2,
+                            y: (contentViewSize.height - scaledPageRectSize.height) / 2),
+            size: scaledPageRectSize
+        )
+
+        contentView = UIView(frame: CGRect(origin: CGPoint(x: 0, y: 0), size: contentViewSize))
+
         // Create the TiledPDFView based on the size of the PDF page
         pdfView = PDFPageTiledView(frame: scaledPageRect, scale: scale, pdfPage: pdfPage)
-        
+
         super.init(frame: frame)
-        self.backgroundColor = .white
-        
+        backgroundColor = .white
+
         let targetRect = bounds.insetBy(dx: 0, dy: 0)
         let zoomScale = zoomScaleThatFits(targetRect.size, source: bounds.size)
-        
+
         minimumZoomScale = zoomScale
         maximumZoomScale = zoomScale * 32
-        
+
         contentView.addSubview(pdfView)
         addSubview(contentView)
         contentSize = contentViewSize
-        
+
         decelerationRate = .fast
         delegate = self
         autoresizesSubviews = true
         autoresizingMask = [.flexibleHeight, .flexibleWidth]
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // Use layoutSubviews to center the PDF page in the view.
     override func layoutSubviews() {
         super.layoutSubviews()
-        if (autoCenter) {
+        if autoCenter {
             // Center the image as it becomes smaller than the size of the screen.
             let contentViewSize = contentView.frame.size
-            
+
             // Center horizontally.
             let xOffset: CGFloat
             if contentViewSize.width < bounds.width {
@@ -81,7 +88,7 @@ class PDFPageScrollView: UIScrollView {
             } else {
                 xOffset = 0
             }
-            
+
             // Center vertically.
             let yOffset: CGFloat
             if contentViewSize.height < bounds.height {
@@ -89,11 +96,11 @@ class PDFPageScrollView: UIScrollView {
             } else {
                 yOffset = 0
             }
-            
+
             contentView.frame.origin = CGPoint(x: xOffset, y: yOffset)
         }
     }
-    
+
     /// Calculates the zoom scale given a target size and a source size
     ///
     /// - parameter target: size of the target rect
@@ -105,7 +112,7 @@ class PDFPageScrollView: UIScrollView {
         let heightScale = target.height / source.height
         return (widthScale < heightScale) ? widthScale : heightScale
     }
-    
+
     /// Calculates the new zoom rect given a desired scale and a point to zoom on
     ///
     /// - parameter scale:     desired scale to zoom to
@@ -114,14 +121,19 @@ class PDFPageScrollView: UIScrollView {
     /// - returns: a new zoom rect
     func zoomRectForScale(_ scale: CGFloat, zoomPoint: CGPoint) -> CGRect {
         // Normalize current content size back to content scale of 1.0f
-        let updatedContentSize = CGSize(width: contentSize.width/zoomScale, height: contentSize.height/zoomScale)
-        
-        let translatedZoomPoint = CGPoint(x: (zoomPoint.x / bounds.width) * updatedContentSize.width,
-                                          y: (zoomPoint.y / bounds.height) * updatedContentSize.height)
-        
+        let updatedContentSize = CGSize(
+            width: contentSize.width / zoomScale,
+            height: contentSize.height / zoomScale
+        )
+
+        let translatedZoomPoint = CGPoint(
+            x: (zoomPoint.x / bounds.width) * updatedContentSize.width,
+            y: (zoomPoint.y / bounds.height) * updatedContentSize.height
+        )
+
         // derive the size of the region to zoom to
         let zoomSize = CGSize(width: bounds.width / scale, height: bounds.height / scale)
-        
+
         // offset the zoom rect so the actual zoom point is in the middle of the rectangle
         return CGRect(x: translatedZoomPoint.x - zoomSize.width / 2.0,
                       y: translatedZoomPoint.y - zoomSize.height / 2.0,
@@ -131,14 +143,15 @@ class PDFPageScrollView: UIScrollView {
 }
 
 extension PDFPageScrollView: UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return contentView
+    func viewForZooming(in _: UIScrollView) -> UIView? {
+        contentView
     }
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+
+    func scrollViewDidScroll(_: UIScrollView) {
         pdfPageScrollViewDelegate?.scrollViewDidScroll(self)
     }
-    
-    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+
+    func scrollViewDidZoom(_: UIScrollView) {
         pdfPageScrollViewDelegate?.scrollViewDidZoom(self)
     }
 }

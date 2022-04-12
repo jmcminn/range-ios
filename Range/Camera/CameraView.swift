@@ -4,25 +4,25 @@ import SwiftUI
 
 class CameraViewModel: ObservableObject {
     let service: CameraService
-    
+
     // translate the CameraService.currentZoomFactor to a string to be displayed in the view
     @Published var zoomString = ""
-    
+
     private var subscriptions = Set<AnyCancellable>()
-    
+
     init(service: CameraService) {
         self.service = service
-        service.$currentZoomFactor.sink { [weak self] (zoom) in
+        service.$currentZoomFactor.sink { [weak self] zoom in
             guard let self = self else { return }
             let zoomInt = Int(zoom)
-            let zoomDecimal: Int = Int(10 * (zoom - Double(zoomInt)))
+            let zoomDecimal: Int = .init(10 * (zoom - Double(zoomInt)))
             if zoomDecimal == 0 {
                 self.zoomString = "\(zoomInt)x"
             } else {
                 self.zoomString = "\(zoomInt),\(zoomDecimal)x"
             }
         }
-        .store(in: &self.subscriptions)
+        .store(in: &subscriptions)
     }
 }
 
@@ -31,19 +31,23 @@ struct CameraView: View {
     @ObservedObject var model: CameraViewModel
     var closeAction: () -> Void
     var takePhotoAction: () -> Void
-    
-    init(cameraService: CameraService, closeAction: @escaping () -> Void, takePhotoAction: @escaping () -> Void) {
+
+    init(
+        cameraService: CameraService,
+        closeAction: @escaping () -> Void,
+        takePhotoAction: @escaping () -> Void
+    ) {
         self.cameraService = cameraService
         self.closeAction = closeAction
         self.takePhotoAction = takePhotoAction
-        self.model = CameraViewModel(service: cameraService)
+        model = CameraViewModel(service: cameraService)
     }
-    
+
     // the current scale not affected by the MagnificationGesture in progress
     @State var cameraScale: CGFloat = 1.0
     // progress of the current MagnificationGesture
     @State var progressingScale: CGFloat = 1.0
-    
+
     var closeButton: some View {
         Button(action: closeAction) {
             Circle()
@@ -56,7 +60,7 @@ struct CameraView: View {
                 )
         }.buttonStyle(.plain)
     }
-    
+
     struct TakePhotoButtonStyle: ButtonStyle {
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
@@ -65,7 +69,7 @@ struct CameraView: View {
                 .animation(.easeInOut(duration: 0.05), value: configuration.isPressed)
         }
     }
-    
+
     var takePhotoButton: some View {
         ZStack {
             Circle()
@@ -80,7 +84,7 @@ struct CameraView: View {
             .disabled(!cameraService.canCapturePhoto)
         }
     }
-    
+
     var zoomView: some View {
         Text(model.zoomString)
             .font(.system(size: 11)).fontWeight(.semibold)
@@ -88,29 +92,29 @@ struct CameraView: View {
             .frame(width: 30, height: 30)
             .background(Circle().fill(Color.Misc_Black.opacity(0.8)))
     }
-    
+
     var gridView: some View {
         GeometryReader { cameraFrame in
             Path { path in
                 let w = cameraFrame.size.width
                 let h = cameraFrame.size.height
-                path.move(to: CGPoint(x: w/3, y: 0))
-                path.addLine(to: CGPoint(x: w/3, y: h))
+                path.move(to: CGPoint(x: w / 3, y: 0))
+                path.addLine(to: CGPoint(x: w / 3, y: h))
                 path.closeSubpath()
-                path.move(to: CGPoint(x: w*2/3, y: 0))
-                path.addLine(to: CGPoint(x: w*2/3, y: h))
+                path.move(to: CGPoint(x: w * 2 / 3, y: 0))
+                path.addLine(to: CGPoint(x: w * 2 / 3, y: h))
                 path.closeSubpath()
-                path.move(to: CGPoint(x: 0, y: h/3))
-                path.addLine(to: CGPoint(x: w, y: h/3))
+                path.move(to: CGPoint(x: 0, y: h / 3))
+                path.addLine(to: CGPoint(x: w, y: h / 3))
                 path.closeSubpath()
-                path.move(to: CGPoint(x: 0, y: h*2/3))
-                path.addLine(to: CGPoint(x: w, y: h*2/3))
+                path.move(to: CGPoint(x: 0, y: h * 2 / 3))
+                path.addLine(to: CGPoint(x: w, y: h * 2 / 3))
                 path.closeSubpath()
             }
             .stroke(Color.Misc_White.opacity(0.5), lineWidth: 1)
         }
     }
-    
+
     var body: some View {
         GeometryReader { reader in
             ZStack {
@@ -119,7 +123,7 @@ struct CameraView: View {
                     Spacer()
                     ZStack(alignment: .bottom) {
                         CameraPreview(session: cameraService.session)
-                            .frame(height: reader.size.width * 4.0/3.0)
+                            .frame(height: reader.size.width * 4.0 / 3.0)
                             .gesture(
                                 MagnificationGesture()
                                     .onChanged {
@@ -140,12 +144,16 @@ struct CameraView: View {
                                         Color.black
                                     }
                                 }
-                                    .animation(.easeInOut(duration: 0.1), value: cameraService.willCapturePhoto)
+                                .animation(
+                                    .easeInOut(duration: 0.1),
+                                    value: cameraService.willCapturePhoto
+                                )
                             )
-                            .overlay{
+                            .overlay {
                                 if cameraService.isProcessingPhoto {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: Color.Misc_White))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: Color
+                                                .Misc_White))
                                 }
                             }
                         zoomView.padding(.bottom, 22)

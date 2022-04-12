@@ -1,14 +1,6 @@
-//
-//  RangeUITests.swift
-//  RangeUITests
-//
-//  Created by raho on 18/03/2022.
-//
-
 import XCTest
 
 class RangeUITests: XCTestCase {
-
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
 

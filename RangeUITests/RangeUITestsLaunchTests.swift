@@ -1,14 +1,6 @@
-//
-//  RangeUITestsLaunchTests.swift
-//  RangeUITests
-//
-//  Created by raho on 18/03/2022.
-//
-
 import XCTest
 
 class RangeUITestsLaunchTests: XCTestCase {
-
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }

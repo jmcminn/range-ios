@@ -7,11 +7,10 @@ class PDFSource {
     let center: CLLocationCoordinate2D
     let page: PDFPage
     let scale: Double
-    
+
     init(center: CLLocationCoordinate2D, page: PDFPage, scale: Double) {
         self.center = center
         self.page = page
         self.scale = scale
     }
-    
 }

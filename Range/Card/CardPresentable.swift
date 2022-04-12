@@ -12,13 +12,15 @@ enum CardPosition: Int {
 /// To be implemented by view controllers that need to be shown using CardPresentationController.
 protocol CardPresentable: UIViewController {
     // MARK: - Input for CardPresentationController
+
     /// The height at which the drawer must be presented for given position. If negative then position is not supported (only works for medium)
     func height(forWidth width: CGFloat, cardPosition: CardPosition) -> CGFloat
-    
+
     /// If provided the scroll view will be used to drive the card view panning
     func drivingScrollView() -> UIScrollView?
-    
+
     // MARK: - Output for CardPresentable
+
     /// Notifies the delegate about position change starting
     func cardWillChangePosition(_ position: CardPosition)
 
@@ -28,7 +30,7 @@ protocol CardPresentable: UIViewController {
 
 /// Default implementations for optional CardPresentable functions
 extension CardPresentable {
-    func drivingScrollView() -> UIScrollView? { return nil }
-    func cardWillChangePosition(_ position: CardPosition) {}
-    func cardDidChangePosition(_ position: CardPosition) {}
+    func drivingScrollView() -> UIScrollView? { nil }
+    func cardWillChangePosition(_: CardPosition) {}
+    func cardDidChangePosition(_: CardPosition) {}
 }

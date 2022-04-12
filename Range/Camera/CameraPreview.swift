@@ -1,38 +1,37 @@
-import SwiftUI
 import AVFoundation
+import SwiftUI
 
 /// Wrapper to show VideoPreviewView in SwiftUI
 struct CameraPreview: UIViewRepresentable {
-    
     /// UIView with AVCaptureVideoPreviewLayer layer
     class VideoPreviewView: UIView {
         override class var layerClass: AnyClass {
             AVCaptureVideoPreviewLayer.self
         }
-        
+
         var videoPreviewLayer: AVCaptureVideoPreviewLayer {
             guard let layer = layer as? AVCaptureVideoPreviewLayer else {
-                fatalError("Expected `AVCaptureVideoPreviewLayer` type for layer. Check CameraPreview.layerClass implementation.")
+                fatalError(
+                    "Expected `AVCaptureVideoPreviewLayer` type for layer. Check CameraPreview.layerClass implementation."
+                )
             }
             return layer
         }
     }
-    
+
     let session: AVCaptureSession
-    
-    func makeUIView(context: Context) -> VideoPreviewView {
+
+    func makeUIView(context _: Context) -> VideoPreviewView {
         let view = VideoPreviewView()
         view.videoPreviewLayer.session = session
         // TODO: camera layout
 //        view.videoPreviewLayer.cornerRadius = 32
         view.videoPreviewLayer.connection?.videoOrientation = .portrait
-        
+
         return view
     }
-    
-    func updateUIView(_ uiView: VideoPreviewView, context: Context) {
-        
-    }
+
+    func updateUIView(_: VideoPreviewView, context _: Context) {}
 }
 
 struct CameraPreview_Previews: PreviewProvider {

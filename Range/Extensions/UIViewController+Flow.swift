@@ -7,7 +7,7 @@ extension UIViewController {
         viewToAddTo.addSubview(childController.view)
         childController.didMove(toParent: self)
     }
-    
+
     func remove(childController: UIViewController) {
         childController.willMove(toParent: nil)
         childController.view.removeFromSuperview()

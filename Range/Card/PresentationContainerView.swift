@@ -11,9 +11,10 @@ class PresentationContainerView: UIView {
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         guard let touchDelegate = touchDelegate,
-            touchDelegate.view(self, shouldPassthroughTouchAt: point),
-            let viewForTouch = touchDelegate.view(self, forTouchAt: point) else {
-                return super.hitTest(point, with: event)
+              touchDelegate.view(self, shouldPassthroughTouchAt: point),
+              let viewForTouch = touchDelegate.view(self, forTouchAt: point)
+        else {
+            return super.hitTest(point, with: event)
         }
 
         let pointInView = viewForTouch.convert(point, from: self)
