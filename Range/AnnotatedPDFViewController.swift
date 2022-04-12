@@ -143,16 +143,10 @@ class AnnotatedPDFViewController: UIViewController {
         let yPdfCenterDistanceFromViewCenter = -contentOffset.y - viewCenter.y + viewCenter
             .y * zoomScale
         // move camera the other direction than the PDF
-        let cameraCenter = CLLocationCoordinate2D(
-            latitude: pdfSource.center.coordinate(
-                at: yPdfCenterDistanceFromViewCenter * metersPerPoint,
-                facing: 0
-            ).latitude, // up
-            longitude: pdfSource.center.coordinate(
-                at: xPdfCenterDistanceFromViewCenter * metersPerPoint,
-                facing: 270
-            ).longitude // left
-        )
+        let cameraUp = pdfSource.center.coordinate(at: yPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 0)
+        let cameraLeft = pdfSource.center.coordinate(at: xPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 270)
+        let cameraCenter = CLLocationCoordinate2D(latitude: cameraUp.latitude,
+                                                  longitude: cameraLeft.longitude)
         let mapboxZoom = zoomConverter.getZoom(forMetersPerPoint: metersPerPoint)
         mapView.mapboxMap.setCamera(to: CameraOptions(center: cameraCenter, zoom: mapboxZoom))
     }
