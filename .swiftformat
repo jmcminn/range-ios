@@ -37,7 +37,7 @@
 --markcategories true
 --markextensions always
 --marktypes always
---maxwidth 100
+--maxwidth 120
 --modifierorder 
 --nevertrailing 
 --nospaceoperators 
