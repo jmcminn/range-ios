@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
 		0A4DC76927EDCDBD00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
@@ -71,6 +72,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
 		0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageSize.swift; sourceTree = "<group>"; };
@@ -189,6 +191,7 @@
 				0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */,
 				0A4DC79C27F716BC00712518 /* CardScrollViewDelegateProxy.swift */,
 				0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */,
+				0A4D0D342805B618007A249F /* CardHandler.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -465,6 +468,7 @@
 				0A632EE827E516B7001A019B /* AnnotatedPDFViewController.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFSource.swift in Sources */,
+				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
 				0A4DC79D27F716BC00712518 /* CardScrollViewDelegateProxy.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,

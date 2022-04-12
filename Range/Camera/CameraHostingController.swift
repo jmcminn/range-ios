@@ -76,4 +76,10 @@ extension CameraHostingController: CardPresentable {
             return CGFloat.greatestFiniteMagnitude
         }
     }
+
+    func cardDidChangePosition(_ position: CardPosition) {
+        if position == .min {
+            dismiss(animated: false)
+        }
+    }
 }
