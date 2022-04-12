@@ -12,7 +12,7 @@ func createPhotoPin(fromImage: UIImage) -> UIImageView {
 
     imageView.frame = CGRect(x: imageInset, y: imageInset, width: imageSize, height: imageSize)
     imageView.layer.cornerRadius = imageSize / 2.0
-    imageView.layer.borderWidth = 1
+    imageView.layer.borderWidth = 1.3
     imageView.layer.borderColor = UIColor.Secondary_03?.cgColor
     imageView.clipsToBounds = true
     pinView.addSubview(imageView)
