@@ -86,12 +86,6 @@ class CameraService: ObservableObject {
         #endif
     }
 
-    // some part of configuring the AVCaptureDevice failed: reset
-    private func _configurationFailed(message: String) {
-        print(message)
-        setupResult = .configurationFailed
-    }
-
     // Try to select a camera by asking AVCapture if it can use various cameras on the device
     private func _selectACaptureDevice() throws -> AVCaptureDevice {
         if let d = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) { return d }
