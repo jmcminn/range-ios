@@ -13,8 +13,8 @@ import UIKit
  *  must be dispatched to other threads to avoid waiting on the main thread.
  *
  *  However, actually drawing the camera preview into a UIView has to be done on the main thread.
- *  @see https://developer.apple.com/documentation/avfoundation/cameras_and_media_capture/avcam_building_a_camera_app
- *
+ *  #Reference
+ *  [AVCam: Building a Camera App](https://developer.apple.com/documentation/avfoundation/cameras_and_media_capture/avcam_building_a_camera_app)
  */
 class CameraService: ObservableObject {
     typealias CompletionFunction = (Data?) -> Void
@@ -90,23 +90,25 @@ class CameraService: ObservableObject {
     private func _configurationFailed(message: String) {
         print(message)
         setupResult = .configurationFailed
-        session.commitConfiguration()
     }
 
     // Try to select a camera by asking AVCapture if it can use various cameras on the device
     private func _selectACaptureDevice() throws -> AVCaptureDevice {
-        if let d = AVCaptureDevice.default(.builtInTripleCamera,   for: .video, position: .back) {return d}
-        if let d = AVCaptureDevice.default(.builtInDualCamera,     for: .video, position: .back) {return d}
-        if let d = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {return d}
-        if let d = AVCaptureDevice.default(.builtInWideAngleCamera,for: .video, position: .back) {return d}
+        if let d = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) { return d }
+        if let d = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) { return d }
+        if let d = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) { return d }
+        if let d = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) { return d }
         throw ConfigurationError.videoUnavailable()
     }
 
     // To be called on the sessionQueue
     private func _configure() {
-
         do {
             session.beginConfiguration()
+            defer {
+                session.commitConfiguration()
+            }
+
             session.sessionPreset = .photo
 
             // find some video input
@@ -119,21 +121,22 @@ class CameraService: ObservableObject {
             self.videoDeviceInput = videoDeviceInput
 
             // Add the photo output.
-            guard session.canAddOutput(photoOutput) else { throw ConfigurationError.couldntAddOutput()}
+            guard session.canAddOutput(photoOutput) else { throw ConfigurationError.couldntAddOutput() }
             session.addOutput(photoOutput)
 
             // configure the output
             photoOutput.isHighResolutionCaptureEnabled = true
             photoOutput.maxPhotoQualityPrioritization = .quality
             maxZoomFactor = min(10.0, videoDeviceInput.device.activeFormat.videoMaxZoomFactor)
-            session.commitConfiguration()
             setupResult = .success
-        } catch ConfigurationError.videoUnavailable(let message),
-                ConfigurationError.couldntAddVideo(let message),
-                ConfigurationError.couldntAddOutput(let message) {
-            _configurationFailed(message: message)
+        } catch let ConfigurationError.videoUnavailable(message),
+                    let ConfigurationError.couldntAddVideo(message),
+                    let ConfigurationError.couldntAddOutput(message) {
+            print(message)
+            setupResult = .configurationFailed
         } catch {
-            _configurationFailed(message: "Couldn't create video device input: \(error)")
+            print("Couldn't create video device input: \(error)")
+            setupResult = .configurationFailed
         }
     }
 
@@ -219,7 +222,8 @@ class CameraService: ObservableObject {
     }
 
     // If there's no camera in the simulator, just call completion on a hard-coded photo
-    private func _captureDummyPhotoForTesting(completion: @escaping CompletionFunction) { // hardcoded photo for simulator
+    private func _captureDummyPhotoForTesting(completion: @escaping CompletionFunction) {
+        // hardcoded photo for simulator
         DispatchQueue.main.async {
             guard let sampleImageURL = Bundle.main.url(
                 forResource: "Rectangle 515",
@@ -253,12 +257,11 @@ class CameraService: ObservableObject {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self?.willCapturePhoto = false
             }
-
         }
 
         // closure: we're done, we can now call the completion handler we were passed in capturePhoto
-        let makeCallbackAndCleanUp: (PhotoCaptureProcessor) -> () = { [weak self] photoCaptureProcessor in
-            guard let self = self else {return}
+        let makeCallbackAndCleanUp: (PhotoCaptureProcessor) -> Void = { [weak self] photoCaptureProcessor in
+            guard let self = self else { return }
 
             // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
             completion(photoCaptureProcessor.photoData)
@@ -271,7 +274,7 @@ class CameraService: ObservableObject {
         }
 
         // closure: iOS is processing; show a spinner
-        let showSpinnerWhilePhotoIsBeingProcessed: (Bool) -> () = { [weak self] isProcessing in
+        let showSpinnerWhilePhotoIsBeingProcessed: (Bool) -> Void = { [weak self] isProcessing in
             // Animates a spinner while photo is processing
             self?.isProcessingPhoto = isProcessing
         }
@@ -297,11 +300,11 @@ class CameraService: ObservableObject {
     private func _initializePhotoSettings() -> AVCapturePhotoSettings {
         // Capture HEIF photos when supported. Enable according to user settings and high-resolution photos.
         let photoSettings = photoOutput.availablePhotoCodecTypes.contains(.hevc)
-                ? AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
-                : AVCapturePhotoSettings()
+            ? AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+            : AVCapturePhotoSettings()
 
         // Sets the flash option for this capture.
-        if videoDeviceInput.device.isFlashAvailable {photoSettings.flashMode = .auto}
+        if videoDeviceInput.device.isFlashAvailable { photoSettings.flashMode = .auto }
 
         photoSettings.isHighResolutionPhotoEnabled = true
 
