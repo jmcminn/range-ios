@@ -1,10 +1,10 @@
 import SwiftUI
 import UIKit
 
-class CameraHostingController: UIHostingController<CameraView>, CardCoordinating {
+class CameraHostingController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
     var onPhotoTaken: ((Data?) -> Void)?
-    var cardDisplayController: CardDisplayController?
+    var modalCardDisplayController: ModalCardDisplayController?
     private let cameraService = CameraService()
 
     init() {

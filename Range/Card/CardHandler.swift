@@ -84,10 +84,29 @@ extension CardHandler {
 
 /// Animation
 extension CardHandler {
+    func setCardHeight(_ height: CGFloat, animated: Bool = false, withVelocity velocity: CGFloat = 0,
+                       completion: (() -> Void)? = nil)
+    {
+        if animated {
+            let animator = animator(withVelocity: velocity)
+            animator.addAnimations {
+                self.cardHeight = height
+            }
+            animator.addCompletion { _ in
+                completion?()
+            }
+            animator.startAnimation()
+        } else {
+            cardHeight = height
+            completion?()
+        }
+    }
+
     func setPosition(
         _ position: CardPosition,
         withVelocity velocity: CGFloat,
-        animated: Bool = false
+        animated: Bool = false,
+        completion: (() -> Void)? = nil
     ) {
         self.position = position
         var height = cardHeight(forPosition: position)
@@ -97,18 +116,9 @@ extension CardHandler {
             height = cardHeight(forPosition: self.position)
         }
         presentedViewController.cardWillChangePosition(self.position)
-        if animated {
-            let animator = animator(withVelocity: velocity)
-            animator.addAnimations {
-                self.cardHeight = height
-            }
-            animator.addCompletion { _ in
-                self.presentedViewController.cardDidChangePosition(self.position)
-            }
-            animator.startAnimation()
-        } else {
-            cardHeight = height
-            presentedViewController.cardDidChangePosition(self.position)
+        setCardHeight(height, animated: animated, withVelocity: velocity) {
+            self.presentedViewController.cardDidChangePosition(self.position)
+            completion?()
         }
     }
 

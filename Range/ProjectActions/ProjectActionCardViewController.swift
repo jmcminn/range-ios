@@ -1,8 +1,8 @@
 import SnapKit
 import UIKit
 
-class ProjectActionCardViewController: UIViewController, CardCoordinating {
-    var cardDisplayController: CardDisplayController?
+class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
+    var cardHandler: NonModalCardHandler?
 
     var onCamera: (() -> Void)?
 
@@ -27,6 +27,8 @@ class ProjectActionCardViewController: UIViewController, CardCoordinating {
         super.viewDidLoad()
         containerView.backgroundColor = UIColor.Neutral_10
         updateShadow()
+
+        containerView.installSliderView()
 
         containerView.addSubview(searchBackground)
         searchBackground.backgroundColor = UIColor.Neutral_09

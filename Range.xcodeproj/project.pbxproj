@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A07D5112807147500B6F9A2 /* NonModalCardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D5102807147500B6F9A2 /* NonModalCardHandler.swift */; };
+		0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -21,7 +23,7 @@
 		0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */; };
 		0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78227F4900600712518 /* ProjectFlowController.swift */; };
 		0A4DC78527F490CA00712518 /* PDFSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78427F490CA00712518 /* PDFSource.swift */; };
-		0A4DC78827F4955900712518 /* CardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78727F4955900712518 /* CardPresentationController.swift */; };
+		0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78727F4955900712518 /* ModalCardPresentationController.swift */; };
 		0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */; };
 		0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */; };
 		0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */; };
@@ -46,11 +48,12 @@
 		0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* UIImage+Resize.swift */; };
 		0A720C65280427F7003D6B13 /* Rectangle 515.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A720C64280427F7003D6B13 /* Rectangle 515.png */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
+		0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */; };
 		0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232427FC777600D744F4 /* CameraPreview.swift */; };
 		0A97232727FC782B00D744F4 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232627FC782B00D744F4 /* CameraView.swift */; };
 		0A97232927FC7D9D00D744F4 /* CameraHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraHostingController.swift */; };
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
-		0A97232D27FC85A900D744F4 /* CardDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* CardDisplayController.swift */; };
+		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
 /* End PBXBuildFile section */
 
@@ -72,6 +75,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A07D5102807147500B6F9A2 /* NonModalCardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardHandler.swift; sourceTree = "<group>"; };
+		0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Slider.swift"; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -83,7 +88,7 @@
 		0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Flow.swift"; sourceTree = "<group>"; };
 		0A4DC78227F4900600712518 /* ProjectFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFlowController.swift; sourceTree = "<group>"; };
 		0A4DC78427F490CA00712518 /* PDFSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFSource.swift; sourceTree = "<group>"; };
-		0A4DC78727F4955900712518 /* CardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentationController.swift; sourceTree = "<group>"; };
+		0A4DC78727F4955900712518 /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationContainerView.swift; sourceTree = "<group>"; };
 		0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentable.swift; sourceTree = "<group>"; };
 		0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectActionSelectorViewController.swift; sourceTree = "<group>"; };
@@ -111,11 +116,12 @@
 		0A720C6228007011003D6B13 /* UIImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
 		0A720C64280427F7003D6B13 /* Rectangle 515.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle 515.png"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
+		0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97232427FC777600D744F4 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0A97232627FC782B00D744F4 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		0A97232827FC7D9D00D744F4 /* CameraHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraHostingController.swift; sourceTree = "<group>"; };
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
-		0A97232C27FC85A900D744F4 /* CardDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDisplayController.swift; sourceTree = "<group>"; };
+		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -146,6 +152,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A07D50D2807095400B6F9A2 /* Modal */ = {
+			isa = PBXGroup;
+			children = (
+				0A4DC78727F4955900712518 /* ModalCardPresentationController.swift */,
+				0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */,
+				0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */,
+			);
+			path = Modal;
+			sourceTree = "<group>";
+		};
+		0A07D50E2807096400B6F9A2 /* NonModal */ = {
+			isa = PBXGroup;
+			children = (
+				0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */,
+				0A07D5102807147500B6F9A2 /* NonModalCardHandler.swift */,
+			);
+			path = NonModal;
+			sourceTree = "<group>";
+		};
 		0A4DC76327EDCA9000712518 /* Math */ = {
 			isa = PBXGroup;
 			children = (
@@ -185,13 +210,13 @@
 		0A4DC78627F4953600712518 /* Card */ = {
 			isa = PBXGroup;
 			children = (
-				0A4DC78727F4955900712518 /* CardPresentationController.swift */,
-				0A97232C27FC85A900D744F4 /* CardDisplayController.swift */,
+				0A07D50D2807095400B6F9A2 /* Modal */,
+				0A07D50E2807096400B6F9A2 /* NonModal */,
+				0A4D0D342805B618007A249F /* CardHandler.swift */,
 				0A97232A27FC839400D744F4 /* CardConfiguration.swift */,
 				0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */,
 				0A4DC79C27F716BC00712518 /* CardScrollViewDelegateProxy.swift */,
-				0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */,
-				0A4D0D342805B618007A249F /* CardHandler.swift */,
+				0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -451,9 +476,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
+				0A07D5112807147500B6F9A2 /* NonModalCardHandler.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
 				0A97232927FC7D9D00D744F4 /* CameraHostingController.swift in Sources */,
 				0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */,
@@ -461,7 +488,8 @@
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
-				0A97232D27FC85A900D744F4 /* CardDisplayController.swift in Sources */,
+				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
+				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
@@ -479,7 +507,7 @@
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
-				0A4DC78827F4955900712518 /* CardPresentationController.swift in Sources */,
+				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

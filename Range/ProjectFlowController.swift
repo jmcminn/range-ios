@@ -6,6 +6,8 @@ import UIKit
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
     let pdfSource: PDFSource
+    lazy var actionCardVC = installActionCardVC()
+    lazy var bottomBlurView = setupBottomBlur()
     var pinView: UIView?
 
     init(pdfSource: PDFSource) {
@@ -26,36 +28,48 @@ final class ProjectFlowController: UIViewController {
         let sourceVC = AnnotatedPDFViewController(pdfSource: pdfSource)
         add(childController: sourceVC)
 
-        showActionCard()
+        actionCardVC.showCard(animated: true)
+        bottomBlurView.isHidden = false
     }
 
-    fileprivate func showActionCard() {
+    fileprivate func setupBottomBlur() -> UIView {
+        let blur = UIBlurEffect(style: .regular)
+        let blurView = UIVisualEffectView(effect: blur)
+        view.addSubview(blurView)
+        blurView.snp.makeConstraints { make in
+            make.left.right.bottom.equalToSuperview()
+            make.height.equalTo(self.view.safeAreaInsets.bottom)
+        }
+        return blurView
+    }
+
+    fileprivate func installActionCardVC() -> ProjectActionCardViewController {
         let vc = ProjectActionCardViewController()
         vc.onCamera = { [weak self] in
             guard let self = self else { return }
-            self.checkPermissionsAndShowCamera(fromViewController: vc)
+            self.checkPermissionsAndShowCamera()
         }
-        vc.installCardDisplayController(cardConfig: CardConfiguration(showSafeAreaBlur: true))
-        present(vc, animated: true)
+        installCard(cardViewController: vc, cardConfig: CardConfiguration(showSafeAreaBlur: true))
+        return vc
     }
 
-    fileprivate func checkPermissionsAndShowCamera(fromViewController fromVC: UIViewController) {
+    fileprivate func checkPermissionsAndShowCamera() {
         Task {
             let cameraPermissions = await checkForCameraPermissions()
             switch cameraPermissions {
             case .authorized:
-                showCamera(fromViewController: fromVC)
+                showCamera()
             case .notAuthorized:
                 // User just denied the access, no point in showing another alert
                 break
             case .previouslyDenied:
                 // Present alert with option to go to Settings and enable the Camera
-                fromVC.present(noCameraAccessAlert, animated: true)
+                self.present(noCameraAccessAlert, animated: true)
             }
         }
     }
 
-    fileprivate func showCamera(fromViewController fromVC: UIViewController) {
+    fileprivate func showCamera() {
         let vc = CameraHostingController()
         vc.modalPresentationStyle = .fullScreen
         vc.onClose = {
@@ -64,15 +78,16 @@ final class ProjectFlowController: UIViewController {
         vc.onPhotoTaken = { [weak self] data in
             if let data = data, let image = UIImage(data: data) {
                 guard let self = self else { return }
-                vc.dismiss(animated: true)
                 self.showPin(forImage: image)
+                vc.dismiss(animated: true)
             } else {
                 // TODO: show alert or just log?
             }
         }
         // TODO: do we want to present as a card?
-        // vc.installCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))
-        fromVC.present(vc, animated: true)
+        // vc.installModalCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))
+
+        present(vc, animated: true)
     }
 
     fileprivate func showPin(forImage image: UIImage) {

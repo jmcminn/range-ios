@@ -12,7 +12,7 @@ import UIKit
  It also registers itself as a delegate for ``CardPresentable/drivingScrollView()-2kjov``.
  So if the presented card contains a scroll view, it's behavior will change so it only scrolls vertically if the card is at its full height, otherwise it'll drag the card.
  */
-class CardPresentationController: UIPresentationController {
+class ModalCardPresentationController: UIPresentationController {
     let cardConfig: CardConfiguration
     var cardHandler: CardHandler?
     var presentationContainerView: PresentationContainerView!
@@ -96,7 +96,7 @@ class CardPresentationController: UIPresentationController {
     }
 }
 
-extension CardPresentationController: PresentationContainerViewDelegate {
+extension ModalCardPresentationController: PresentationContainerViewDelegate {
     func view(_ view: PresentationContainerView, shouldPassthroughTouchAt point: CGPoint) -> Bool {
         guard let presentedView = presentedView else { return false }
         return !presentedView.bounds.contains(presentedView.convert(point, from: view))
@@ -108,7 +108,7 @@ extension CardPresentationController: PresentationContainerViewDelegate {
 }
 
 /// Bluring
-extension CardPresentationController {
+extension ModalCardPresentationController {
     func setupSafeAreaBlur() {
         guard cardConfig.showSafeAreaBlur else { return }
 
@@ -130,21 +130,10 @@ extension CardPresentationController {
 }
 
 /// Slider
-extension CardPresentationController {
+extension ModalCardPresentationController {
     func setupSliderView() {
         guard cardConfig.showSliderView else { return }
-
-        let sliderView = UIView()
-        sliderView.backgroundColor = UIColor.Neutral_06
-        sliderView.layer.cornerRadius = 2.5
-        presentedView?.addSubview(sliderView)
-        sliderView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.width.equalTo(33)
-            make.height.equalTo(5)
-            make.top.equalTo(8)
-        }
-        self.sliderView = sliderView
+        sliderView = presentedView?.installSliderView()
     }
 
     func removeSliderView() {
