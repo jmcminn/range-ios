@@ -21,11 +21,14 @@ protocol NonModalCardCoordinating: UIViewController {
 
 /// Extensions for installing and removing a card on a presenting view controller
 extension UIViewController {
+    /// Installs the `cardViewController` in this view controller
+    /// - Parameter inView: the view to which the card subview will be added. If `nil` then added to this controller `view`
     func installCard(
         cardViewController: CardPresentable & NonModalCardCoordinating,
+        inView: UIView? = nil,
         cardConfig: CardConfiguration = CardConfiguration()
     ) {
-        add(childController: cardViewController)
+        add(childController: cardViewController, toView: inView)
         let cardHandler = NonModalCardHandler(
             presentedViewController: cardViewController,
             containerView: view,

@@ -26,7 +26,6 @@ class NonModalCardHandler: CardHandler {
         cardHidden
     }
 
-    // TODO: blur
     /// Sets the position to last card position before it was hidden
     func showCard(animated: Bool, completion: (() -> Void)? = nil) {
         guard cardHidden else { return }

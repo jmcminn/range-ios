@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 
+// TODO: CameraViewController
 class CameraHostingController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
     var onPhotoTaken: ((Data?) -> Void)?
