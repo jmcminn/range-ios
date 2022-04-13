@@ -36,7 +36,7 @@ class CameraHostingController: UIHostingController<CameraView>, CardCoordinating
             if sessionSetupResult == .configurationFailed {
                 let alertController = UIAlertController(
                     title: "Camera Error",
-                    message: "Camera configuration failed. Either your device camera is not available or its missing permissions.",
+                    message: "Camera configuration failed. Either your device camera is not available or it's missing permissions.",
                     preferredStyle: .alert
                 )
                 alertController.addAction(UIAlertAction(title: "Ok", style: .cancel) { _ in
