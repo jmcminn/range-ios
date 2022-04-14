@@ -54,7 +54,7 @@
 		0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */; };
 		0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232427FC777600D744F4 /* CameraPreview.swift */; };
 		0A97232727FC782B00D744F4 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232627FC782B00D744F4 /* CameraView.swift */; };
-		0A97232927FC7D9D00D744F4 /* CameraHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraHostingController.swift */; };
+		0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraViewController.swift */; };
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
@@ -125,7 +125,7 @@
 		0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97232427FC777600D744F4 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0A97232627FC782B00D744F4 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
-		0A97232827FC7D9D00D744F4 /* CameraHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraHostingController.swift; sourceTree = "<group>"; };
+		0A97232827FC7D9D00D744F4 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
@@ -342,7 +342,7 @@
 		0A97232327FC507200D744F4 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
-				0A97232827FC7D9D00D744F4 /* CameraHostingController.swift */,
+				0A97232827FC7D9D00D744F4 /* CameraViewController.swift */,
 				0A97233127FDCFAF00D744F4 /* CameraService.swift */,
 				0A97232627FC782B00D744F4 /* CameraView.swift */,
 				0A97232427FC777600D744F4 /* CameraPreview.swift */,
@@ -499,7 +499,7 @@
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
 				0A07D5112807147500B6F9A2 /* NonModalCardHandler.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
-				0A97232927FC7D9D00D744F4 /* CameraHostingController.swift in Sources */,
+				0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */,
 				0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */,
 				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,

@@ -1,8 +1,7 @@
 import SwiftUI
 import UIKit
 
-// TODO: CameraViewController
-class CameraHostingController: UIHostingController<CameraView>, ModalCardCoordinating {
+class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
     var onPhotoTaken: ((Data?) -> Void)?
     var modalCardDisplayController: ModalCardDisplayController?
@@ -67,7 +66,7 @@ class CameraHostingController: UIHostingController<CameraView>, ModalCardCoordin
     }
 }
 
-extension CameraHostingController: CardPresentable {
+extension CameraViewController: CardPresentable {
     func height(forWidth _: CGFloat, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .min {
             return 0

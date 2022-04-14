@@ -54,7 +54,7 @@ class PhotoFlowController {
     }
 
     private func showCamera() {
-        let vc = CameraHostingController()
+        let vc = CameraViewController()
         vc.modalPresentationStyle = .fullScreen
         vc.onClose = {
             vc.dismiss(animated: true)
