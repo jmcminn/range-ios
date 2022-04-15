@@ -30,8 +30,9 @@ class PhotoCaptureProcessor: NSObject {
     /// Init takes multiple closures to be called in each step of the photo capture process
     /// - Parameters:
     ///   - requestPhotoSettings:      for tracking photo capture request
+    ///   - requestedPhotoSettings:    the parameters for capture
     ///   - willCapturePhotoAnimation: called from willCapturePhotoFor delegate method
-    ///   - completionHandler:         called from didFinishCaptureFor with true for success and false for failure///
+    ///   - completionHandler:         called from didFinishCaptureFor with true for success and false for failure
     ///   - photoProcessingHandler:    called from willCapturePhotoFor if capture has taken more than a second
     init(with requestedPhotoSettings: AVCapturePhotoSettings,
          willCapturePhotoAnimation: @escaping () -> Void,
