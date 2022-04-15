@@ -5,27 +5,17 @@ import Photos
 ///
 /// PhotoCaptureProcessor is a delegate for AVCapturePhotoCapture that's used by ``CameraService``.
 ///
-/// ## API
-///
-/// To keep PhotoCaptureProcessor generic, it expects an AVCapturePhotoSettings and three callbacks of its own:
-///
-/// - willCapturePhotoAnimation called from willCapturePhotoFor delegate method
-/// - photoProcessingHandler    called from willCapturePhotoFor if capture has taken more than a second
-/// - completionHandler         called from didFinishCaptureFor with true for success and false for failure
-///
 /// ## Reference
 /// [AVCapturePhotoCaptureDelegate](https://developer.apple.com/documentation/avfoundation/avcapturephotocapturedelegate)
 ///
 /// ## Implemented delegate methods
 ///
-/// - photoOutput:willBeginCaptureFor:            capture has resolved settings and will soon begin photo capture
-/// - photoOutput:willCapturePhotoFor:            photo capture is about to occur.
-/// - photoOutput:didFinishProcessingPhoto:error: provides the captured image and associated metadata
-/// - photoOutput:didFinishCaptureFor:error:      the capture process is complete.
+/// - `photoOutput:willBeginCaptureFor:`            capture has resolved settings and will soon begin photo capture
+/// - `photoOutput:willCapturePhotoFor:`            photo capture is about to occur.
+/// - `photoOutput:didFinishProcessingPhoto:error:` provides the captured image and associated metadata
+/// - `photoOutput:didFinishCaptureFor:error:`      the capture process is complete.
 ///
 class PhotoCaptureProcessor: NSObject {
-    lazy var context = CIContext()
-
     private(set) var requestedPhotoSettings: AVCapturePhotoSettings
     private let willCapturePhotoAnimation: () -> Void
     private let completionHandler: (PhotoCaptureProcessor) -> Void
@@ -37,7 +27,12 @@ class PhotoCaptureProcessor: NSObject {
     // The maximum time lapse before telling UI to show a spinner
     private var maxPhotoProcessingTime: CMTime?
 
-    // Init takes multiple closures to be called in each step of the photo capture process
+    /// Init takes multiple closures to be called in each step of the photo capture process
+    /// - Parameters:
+    ///   - requestPhotoSettings:      for tracking photo capture request
+    ///   - willCapturePhotoAnimation: called from willCapturePhotoFor delegate method
+    ///   - completionHandler:         called from didFinishCaptureFor with true for success and false for failure///
+    ///   - photoProcessingHandler:    called from willCapturePhotoFor if capture has taken more than a second
     init(with requestedPhotoSettings: AVCapturePhotoSettings,
          willCapturePhotoAnimation: @escaping () -> Void,
          completionHandler: @escaping (PhotoCaptureProcessor) -> Void,
