@@ -1,6 +1,14 @@
 import SwiftUI
 import UIKit
 
+/// A UIViewController whose view is a CameraView
+/// It also owns and manages a CameraService and uses it to actually take photos
+
+// A UIHostingController defines a UIViewController (from UIKit as opposed to SwiftUI) that nonetheless manages a
+// SwiftUI view hierarchy
+//
+// ModalCardCoordinating allows the CameraView to be presented as a modal, nominally in minimum, partly-raised
+// or full-screen sizes, but in fact CameraViewController overrides this behavior to allow only full-screen
 class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
     var onPhotoTaken: ((Data?) -> Void)?
@@ -30,32 +38,40 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
         fatalError("init(coder:) has not been implemented")
     }
 
+    // Display alert if CameraService configuration failed
+    private func showCameraConfigurationErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Camera Error",
+            message: "Camera configuration failed. Either your device camera is not available or it's missing permissions.",
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: "Ok", style: .cancel) { _ in
+            if let onClose = self.onClose {
+                onClose()
+            } else {
+                alertController.dismiss(animated: true)
+            }
+        })
+        present(alertController, animated: true)
+    }
+
+    // configure the CameraService when the view loads
     override func viewDidLoad() {
         super.viewDidLoad()
-        cameraService.configure { sessionSetupResult in
+        cameraService.configure { [self] sessionSetupResult in
             if sessionSetupResult == .configurationFailed {
-                let alertController = UIAlertController(
-                    title: "Camera Error",
-                    message: "Camera configuration failed. Either your device camera is not available or it's missing permissions.",
-                    preferredStyle: .alert
-                )
-                alertController.addAction(UIAlertAction(title: "Ok", style: .cancel) { _ in
-                    if let onClose = self.onClose {
-                        onClose()
-                    } else {
-                        alertController.dismiss(animated: true)
-                    }
-                })
-                self.present(alertController, animated: true)
+                showCameraConfigurationErrorAlert()
             }
         }
     }
 
+    // start the CameraService before the view appears
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         cameraService.start()
     }
 
+    // stop the CameraService before the view disappears
     override func viewWillDisappear(_ animated: Bool) {
         cameraService.stop()
         super.viewWillDisappear(animated)
@@ -66,6 +82,8 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
     }
 }
 
+// CardPresentable would normally allow a view to appear as a minimum, partly-raised, or full-screen window,
+// but in this case really only allows full-screen and dismisses the view in the minimum position
 extension CameraViewController: CardPresentable {
     func height(forWidth _: CGFloat, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .min {

@@ -2,6 +2,7 @@ import AVFoundation
 import Combine
 import SwiftUI
 
+// Helper to convert a CameraService's currentZoomFactor to a string for display on top of the photo preview
 class CameraViewModel: ObservableObject {
     let service: CameraService
 
@@ -12,7 +13,9 @@ class CameraViewModel: ObservableObject {
 
     init(service: CameraService) {
         self.service = service
-        service.$currentZoomFactor.sink { [weak self] zoom in
+
+        // update zoomString when the @Published CameraService.$currentZoomFactor changes
+        let updateZoomString: (Double) -> Void = { [weak self] zoom in
             guard let self = self else { return }
             let zoomInt = Int(zoom)
             let zoomDecimal: Int = .init(10 * (zoom - Double(zoomInt)))
@@ -22,16 +25,29 @@ class CameraViewModel: ObservableObject {
                 self.zoomString = "\(zoomInt),\(zoomDecimal)x"
             }
         }
-        .store(in: &subscriptions)
+
+        // add a listener for changes to service.$currentZoomFactor and hold a strong reference to it
+        service.$currentZoomFactor.sink(receiveValue: updateZoomString).store(in: &subscriptions)
     }
 }
 
+/// # CameraView
+///
+/// The main camera view with a pinch-zoomable photo preview and buttons to take a photo or cancel
 struct CameraView: View {
     @ObservedObject var cameraService: CameraService
     @ObservedObject var model: CameraViewModel
     var closeAction: () -> Void
     var takePhotoAction: () -> Void
 
+    /// The CameraService state (canCapturePhoto, willCapturePhoto, isProcessingPhoto) directly
+    /// affects the view and the CameraService.session is used for the photo preview. In the other
+    /// direction, zooming in the CameraView set the zoom of the CameraService
+    ///
+    /// - Parameters:
+    ///   - cameraService: manages the current state of the photo capture
+    ///   - closeAction: the user pushed the close button
+    ///   - takePhotoAction: the user pushed the takePhoto button
     init(
         cameraService: CameraService,
         closeAction: @escaping () -> Void,
@@ -70,6 +86,7 @@ struct CameraView: View {
         }
     }
 
+    // Circular button inside a larger circular ring
     var takePhotoButton: some View {
         ZStack {
             Circle()
@@ -85,6 +102,7 @@ struct CameraView: View {
         }
     }
 
+    // Text overlay on photo preview showing the current zoom level
     var zoomView: some View {
         Text(model.zoomString)
             .font(.system(size: 11)).fontWeight(.semibold)
@@ -93,6 +111,7 @@ struct CameraView: View {
             .background(Circle().fill(Color.Misc_Black.opacity(0.8)))
     }
 
+    // Grid overlay on photo preview showing a grid
     var gridView: some View {
         GeometryReader { cameraFrame in
             Path { path in
@@ -115,6 +134,45 @@ struct CameraView: View {
         }
     }
 
+    // Photo preview from the CameraService
+    private func cameraView(reader: GeometryProxy) -> some View {
+        CameraPreview(session: cameraService.session)
+            .frame(height: reader.size.width * 4.0 / 3.0)
+            .gesture(
+                MagnificationGesture()
+                    .onChanged {
+                        progressingScale = $0
+                        cameraService.set(zoom: cameraScale * progressingScale)
+                    }
+                    .onEnded { _ in
+                        cameraScale = cameraService.currentZoomFactor
+                        progressingScale = 1
+                    }
+            )
+            .overlay(
+                gridView
+            )
+            .overlay(
+                Group {
+                    if cameraService.willCapturePhoto {
+                        Color.black
+                    }
+                }
+                .animation(
+                    .easeInOut(duration: 0.1),
+                    value: cameraService.willCapturePhoto
+                )
+            )
+            .overlay {
+                if cameraService.isProcessingPhoto {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color
+                                .Misc_White))
+                }
+            }
+    }
+
+    // main view
     var body: some View {
         GeometryReader { reader in
             ZStack {
@@ -122,40 +180,7 @@ struct CameraView: View {
                 VStack {
                     Spacer()
                     ZStack(alignment: .bottom) {
-                        CameraPreview(session: cameraService.session)
-                            .frame(height: reader.size.width * 4.0 / 3.0)
-                            .gesture(
-                                MagnificationGesture()
-                                    .onChanged {
-                                        progressingScale = $0
-                                        cameraService.set(zoom: cameraScale * progressingScale)
-                                    }
-                                    .onEnded { _ in
-                                        cameraScale = cameraService.currentZoomFactor
-                                        progressingScale = 1
-                                    }
-                            )
-                            .overlay(
-                                gridView
-                            )
-                            .overlay(
-                                Group {
-                                    if cameraService.willCapturePhoto {
-                                        Color.black
-                                    }
-                                }
-                                .animation(
-                                    .easeInOut(duration: 0.1),
-                                    value: cameraService.willCapturePhoto
-                                )
-                            )
-                            .overlay {
-                                if cameraService.isProcessingPhoto {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: Color
-                                                .Misc_White))
-                                }
-                            }
+                        cameraView(reader: reader)
                         zoomView.padding(.bottom, 22)
                     }
                     Spacer()
