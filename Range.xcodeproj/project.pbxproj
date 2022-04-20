@@ -12,6 +12,12 @@
 		0A07D518280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D517280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift */; };
 		0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */; };
 		0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */; };
+		0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
+		0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */; };
+		0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */; };
+		0A07D75C281037DF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */; };
+		0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */; };
+		0A07D76128104BF900B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -83,6 +89,10 @@
 		0A07D517280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoLocationCardViewController.swift; sourceTree = "<group>"; };
 		0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassthroughView.swift; sourceTree = "<group>"; };
 		0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFlowController.swift; sourceTree = "<group>"; };
+		0A07D75528101B3400B6F9A2 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometry.swift; sourceTree = "<group>"; };
+		0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometryTest.swift; sourceTree = "<group>"; };
+		0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTest.swift; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -183,6 +193,24 @@
 				0A07D517280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift */,
 			);
 			path = AddPhotoLocation;
+			sourceTree = "<group>";
+		};
+		0A07D75428101B1C00B6F9A2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
+				0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		0A07D7592810377400B6F9A2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */,
+				0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		0A4DC76327EDCA9000712518 /* Math */ = {
@@ -286,6 +314,7 @@
 				0A4DC79427F5728500712518 /* ProjectActions */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A07D516280730A200B6F9A2 /* AddPhotoLocation */,
+				0A07D75428101B1C00B6F9A2 /* Model */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
 				0A4DC78427F490CA00712518 /* PDFSource.swift */,
@@ -304,8 +333,9 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
-				0A4DC77027EE111400712518 /* Resources */,
 				0A4DC76627EDCCFB00712518 /* Math */,
+				0A07D7592810377400B6F9A2 /* Model */,
+				0A4DC77027EE111400712518 /* Resources */,
 				0A632EC227E49639001A019B /* RangeTests.swift */,
 			);
 			path = RangeTests;
@@ -497,6 +527,7 @@
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
+				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
 				0A07D5112807147500B6F9A2 /* NonModalCardHandler.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
 				0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */,
@@ -519,6 +550,7 @@
 				0A4DC79D27F716BC00712518 /* CardScrollViewDelegateProxy.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
+				0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
@@ -537,10 +569,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A4DC76927EDCDBD00712518 /* MapboxZoomConverter.swift in Sources */,
+				0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
 				0A632EC327E49639001A019B /* RangeTests.swift in Sources */,
+				0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */,
 				0A4DC76E27EE100800712518 /* PDFPageSize.swift in Sources */,
+				0A07D76128104BF900B6F9A2 /* Geometry.swift in Sources */,
+				0A07D75C281037DF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
