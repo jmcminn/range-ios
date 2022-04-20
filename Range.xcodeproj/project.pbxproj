@@ -18,6 +18,7 @@
 		0A07D75C281037DF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */; };
 		0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */; };
 		0A07D76128104BF900B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
+		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -93,6 +94,7 @@
 		0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometry.swift; sourceTree = "<group>"; };
 		0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometryTest.swift; sourceTree = "<group>"; };
 		0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTest.swift; sourceTree = "<group>"; };
+		0A07D7622810562600B6F9A2 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 				0A632EB427E49638001A019B /* Assets.xcassets */,
 				0A4DC77B27F45DB600712518 /* Colors.xcassets */,
 				0A4DC79727F5B06200712518 /* Colors.swift */,
+				0A07D7622810562600B6F9A2 /* fonts */,
 				0A632EB927E49638001A019B /* Info.plist */,
 				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
 			);
@@ -496,6 +499,7 @@
 				0A632EB827E49638001A019B /* LaunchScreen.storyboard in Resources */,
 				0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */,
 				0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */,
+				0A07D7632810562700B6F9A2 /* fonts in Resources */,
 				0A720C65280427F7003D6B13 /* Rectangle 515.png in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
 			);

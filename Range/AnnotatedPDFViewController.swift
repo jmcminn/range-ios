@@ -21,6 +21,20 @@ class AnnotatedPDFViewController: UIViewController {
     var initialMetersPerPoint: Double = 0.0
     var initialZoom: Double = 0.0
 
+    /// A default empty style for annotations with path to local glyphs
+    var annotationsStyle: String {
+        guard let fontsPath = Bundle.main.path(forResource: "fonts", ofType: nil) else {
+            print("Couldn't find fonts, Mapbox will be broken")
+            return "{}"
+        }
+        return
+            """
+            {
+            "glyphs": "file://\(fontsPath)/{fontstack}/{range}.pbf"
+            }
+            """
+    }
+
     init(pdfSource: PDFSource) {
         self.pdfSource = pdfSource
         zoomConverter = MapboxZoomConverter(latitude: pdfSource.center.latitude)
@@ -82,16 +96,30 @@ class AnnotatedPDFViewController: UIViewController {
     }
 
     private func setupMapView() {
-        // TODO: remove the token or replace with Range one (it's from Rafal's private account)
-        ResourceOptionsManager.default.resourceOptions
-            .accessToken =
-            "pk.eyJ1IjoicmFmYWwtcmFuZ2UiLCJhIjoiY2wwd210eHE5MGJlazNlbXlianYzMmFjMiJ9.6VWS7NDvOV1-ghpaWXITHw"
+        // TODO: it seems that we don't need Mapbox accessToken for annotations
+//        ResourceOptionsManager.default.resourceOptions.accessToken =
         let cameraOptions = CameraOptions(center: pdfSource.center, zoom: initialZoom)
         mapView = MapView(
             frame: view.bounds,
-            mapInitOptions: MapInitOptions(cameraOptions: cameraOptions)
+            mapInitOptions: MapInitOptions(cameraOptions: cameraOptions, styleURI: nil)
         )
-        mapView.alpha = 0.6
+        // hack to make the Metal subview of the mapView transparent
+        // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
+        // by default it's black even if there's no layers). The trick is to make
+        // the MTKView used by Mapbox non opaque
+        mapView.subviews.forEach { subview in
+            if subview is MTKView {
+                subview.isOpaque = false
+            }
+        }
+        mapView.mapboxMap.loadStyleJSON(annotationsStyle) { result in
+            switch result {
+            case .success:
+                print("style loaded successfully")
+            case let .failure(error):
+                print("style failed to load: ", error.localizedDescription)
+            }
+        }
         do {
             try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom: maxMapboxZoom))
         } catch {

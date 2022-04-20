@@ -22,3 +22,22 @@ The project depends on the Mapbox iOS SDK which is not available publicly.
 In order for Swift Package Manager to download it, follow the instructions in “Configure your secret token” in the [Mapbox installation guide](https://docs.mapbox.com/ios/maps/guides/install/).
 
 **Note:** currently we don't have a Range Mapbox account, so in order to follow the instructions, one need to create a free mapbox account.
+
+## Mapbox
+
+### Fonts
+
+The style used for canvas annotations is using local fonts. This is achieved by providing a glyphs path in the style pointing to the `fonts` app path.
+
+Currently there's one font added to the app - `SF Pro Text Semibold`.
+
+### Converting fonts for Mapbox
+
+In order to add more fonts they need to be converted from `ttf`/`otf` to `pbf` format.
+
+To do this 
+
+1. install [node-fontnik](https://github.com/mapbox/node-fontnik)
+2. use its `/bin/build-glyphs` providing the `ttf`/`otf` as an input
+3. drag the new font directory to the `fonts` in Xcode project (make sure that the newly added directory is a "blue" folder)
+4. from now on the font can be referenced in Mapbox layers (using the name of the font directory)
