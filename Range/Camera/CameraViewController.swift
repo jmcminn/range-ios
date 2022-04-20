@@ -1,14 +1,14 @@
 import SwiftUI
 import UIKit
 
-/// A UIViewController whose view is a CameraView
-/// It also owns and manages a CameraService and uses it to actually take photos
-
 // A UIHostingController defines a UIViewController (from UIKit as opposed to SwiftUI) that nonetheless manages a
 // SwiftUI view hierarchy
 //
 // ModalCardCoordinating allows the CameraView to be presented as a modal, nominally in minimum, partly-raised
 // or full-screen sizes, but in fact CameraViewController overrides this behavior to allow only full-screen
+
+/// A UIViewController whose view is a CameraView
+/// It also owns and manages a CameraService and uses it to actually take photos
 class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
     var onPhotoTaken: ((Data?) -> Void)?
