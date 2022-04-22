@@ -5,6 +5,7 @@ import UIKit
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
     let pdfSource: PDFSource
+    var onSignOut: (() -> Void)?
 
     /// for presenting map content
     let contentContainer = PassthroughView()
@@ -54,6 +55,9 @@ final class ProjectFlowController: UIViewController {
     fileprivate func showSource() {
         let sourceVC = AnnotatedPDFViewController(pdfSource: pdfSource)
         add(childController: sourceVC, toView: contentContainer)
+        sourceVC.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         actionCardVC.showCard(animated: false)
         bottomBlurView.isHidden = false
@@ -71,7 +75,14 @@ final class ProjectFlowController: UIViewController {
     }
 
     fileprivate func installActionCardVC() -> ProjectActionCardViewController {
-        let vc = ProjectActionCardViewController()
+        let additionalCardActions = [
+            ProjectAction(
+                title: "Sign Out",
+                imageName: "rectangle.portrait.and.arrow.right",
+                handler: onSignOut
+            ),
+        ]
+        let vc = ProjectActionCardViewController(actions: additionalCardActions)
         vc.onCamera = { [weak self] in
             self?.startPhotoFlow()
         }

@@ -1,3 +1,6 @@
+import Firebase
+import FirebaseAuth
+import FirebaseCore
 import UIKit
 
 @main
@@ -6,8 +9,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Override point for customization after application launch.
-        true
+        initiateFirebase()
+
+        return true
+    }
+
+    private func initiateFirebase() {
+        FirebaseApp.configure()
+        // enable offline persistence for the database
+        Database.database().isPersistenceEnabled = true
     }
 
     // MARK: UISceneSession Lifecycle

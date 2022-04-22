@@ -1,4 +1,5 @@
 import CoreLocation
+import FirebaseAuth
 import PDFKit
 import UIKit
 
@@ -16,6 +17,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
 
+        // check whether user is authenticated
+        if Auth.auth().currentUser != nil {
+            showProject()
+        } else {
+            showAuth()
+        }
+    }
+
+    /// Start the auth flow for authenticating the user
+    private func showAuth() {
+        let authFlowController = AuthFlowController {
+            self.showProject()
+        }
+        window!.rootViewController = authFlowController
+        window!.makeKeyAndVisible()
+
+        authFlowController.start()
+    }
+
+    /// Show a default project (for now it's just a hardcoded pdf page) for authenticated user.
+    private func showProject() {
         guard let documentUrl = Bundle.main.url(
             forResource: "5451 VANDERBILT AVE-A1.1A",
             withExtension: "pdf"
@@ -31,6 +53,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
 
         let projectFC = ProjectFlowController(pdfSource: pdfSource)
+        projectFC.onSignOut = { [weak self] in
+            do {
+                try Auth.auth().signOut()
+                self?.showAuth()
+            } catch {
+                print("Error while trying to sign out: \(error)")
+            }
+        }
         window!.rootViewController = projectFC
         window!.makeKeyAndVisible()
 

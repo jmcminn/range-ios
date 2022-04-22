@@ -12,6 +12,9 @@
 		0A07D518280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D517280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift */; };
 		0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */; };
 		0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */; };
+		0A07D51E28089DDD00B6F9A2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */; };
+		0A07D5242809506C00B6F9A2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0A07D5232809506C00B6F9A2 /* FirebaseAuth */; };
+		0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0A07D5252809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta */; };
 		0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
 		0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */; };
 		0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */; };
@@ -19,6 +22,8 @@
 		0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */; };
 		0A07D76128104BF900B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
 		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
+		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
+		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -90,11 +95,14 @@
 		0A07D517280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoLocationCardViewController.swift; sourceTree = "<group>"; };
 		0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassthroughView.swift; sourceTree = "<group>"; };
 		0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFlowController.swift; sourceTree = "<group>"; };
+		0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0A07D75528101B3400B6F9A2 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometry.swift; sourceTree = "<group>"; };
 		0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometryTest.swift; sourceTree = "<group>"; };
 		0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTest.swift; sourceTree = "<group>"; };
 		0A07D7622810562600B6F9A2 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
+		0A07D7652812960500B6F9A2 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
+		0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowController.swift; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -148,8 +156,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */,
 				0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */,
 				0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */,
+				0A07D5242809506C00B6F9A2 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,6 +223,15 @@
 				0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0A07D764281295B500B6F9A2 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */,
+				0A07D7652812960500B6F9A2 /* EmailAuthView.swift */,
+			);
+			path = Auth;
 			sourceTree = "<group>";
 		};
 		0A4DC76327EDCA9000712518 /* Math */ = {
@@ -308,6 +327,7 @@
 			isa = PBXGroup;
 			children = (
 				0A632EE427E4E52E001A019B /* DemoResources */,
+				0A07D764281295B500B6F9A2 /* Auth */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0A4DC76327EDCA9000712518 /* Math */,
@@ -328,6 +348,7 @@
 				0A4DC79727F5B06200712518 /* Colors.swift */,
 				0A07D7622810562600B6F9A2 /* fonts */,
 				0A632EB927E49638001A019B /* Info.plist */,
+				0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */,
 				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
 			);
 			path = Range;
@@ -403,6 +424,8 @@
 			packageProductDependencies = (
 				0A4DC77827F2445200712518 /* MapboxMaps */,
 				0A4DC79A27F61C8700712518 /* SnapKit */,
+				0A07D5232809506C00B6F9A2 /* FirebaseAuth */,
+				0A07D5252809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -479,6 +502,7 @@
 			packageReferences = (
 				0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 				0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -502,6 +526,7 @@
 				0A07D7632810562700B6F9A2 /* fonts in Resources */,
 				0A720C65280427F7003D6B13 /* Rectangle 515.png in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
+				0A07D51E28089DDD00B6F9A2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,12 +578,14 @@
 				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
 				0A4DC79D27F716BC00712518 /* CardScrollViewDelegateProxy.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
+				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
 				0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
+				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
@@ -914,6 +941,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 		0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
@@ -933,6 +968,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0A07D5232809506C00B6F9A2 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		0A07D5252809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseDatabaseSwift-Beta";
+		};
 		0A4DC77827F2445200712518 /* MapboxMaps */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;

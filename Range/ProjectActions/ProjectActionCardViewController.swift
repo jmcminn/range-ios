@@ -2,6 +2,8 @@ import SnapKit
 import UIKit
 
 class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
+    let actions: [ProjectAction]
+
     var cardHandler: NonModalCardHandler?
 
     var onCamera: (() -> Void)?
@@ -17,6 +19,19 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
     var containerView: UIView {
         (view as! RoundShadowView).containerView
+    }
+
+    /// Initiates with additional actions to show in the action selector
+    /// - Parameters:
+    ///   - actions: array of actions
+    init(actions: [ProjectAction] = []) {
+        self.actions = actions
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func loadView() {
@@ -101,7 +116,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             make.right.equalToSuperview()
         }
 
-        actionSelectorVC = ProjectActionSelectorViewController()
+        actionSelectorVC = ProjectActionSelectorViewController(actions: actions)
         add(childController: actionSelectorVC, toView: containerView)
         actionSelectorVC.view.snp.makeConstraints { make in
             make.top.equalTo(photoButton.snp.bottom)

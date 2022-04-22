@@ -1,45 +1,38 @@
 import SnapKit
 import UIKit
 
+/// Helper class for definining actions displayed by ``ProjectActionSelectorViewController``
+class ProjectAction {
+    /// Short display title.
+    let title: String?
+    /// image systemName
+    let imageName: String?
+    /// action to be performed
+    let handler: (() -> Void)?
+    init(title: String? = nil, imageName: String? = nil, handler: (() -> Void)? = nil) {
+        self.title = title
+        self.imageName = imageName
+        self.handler = handler
+    }
+}
+
 class ProjectActionSelectorViewController: UIViewController {
     var tableView: UITableView!
-    let actions: [UIAction]
+    let actions: [ProjectAction]
 
-    init() {
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .subheadline)
-            .applying(UIImage.SymbolConfiguration(weight: .medium))
-        actions = [
-            UIAction(
-                title: "Activity Feed",
-                image: UIImage(
-                    systemName: "calendar.day.timeline.left",
-                    withConfiguration: imageConfig
-                ),
-                handler: { _ in }
-            ),
-            UIAction(
-                title: "All Media",
-                image: UIImage(systemName: "photo", withConfiguration: imageConfig),
-                handler: { _ in }
-            ),
-            UIAction(
-                title: "Photo Collections",
-                image: UIImage(
-                    systemName: "photo.on.rectangle.angled",
-                    withConfiguration: imageConfig
-                ),
-                handler: { _ in }
-            ),
-            UIAction(
-                title: "Collaborations",
-                image: UIImage(systemName: "mappin", withConfiguration: imageConfig),
-                handler: { _ in }
-            ),
-            UIAction(
-                title: "Features",
-                image: UIImage(systemName: "mappin.and.ellipse", withConfiguration: imageConfig),
-                handler: { _ in }
-            ),
+    private let imageConfig = UIImage.SymbolConfiguration(textStyle: .subheadline)
+        .applying(UIImage.SymbolConfiguration(weight: .medium))
+
+    /// Initiates with additional actions to show (besides the default ones)
+    /// - Parameters:
+    ///   - actions: array of actions
+    init(actions: [ProjectAction] = []) {
+        self.actions = actions + [
+            ProjectAction(title: "Activity Feed", imageName: "calendar.day.timeline.left"),
+            ProjectAction(title: "All Media", imageName: "photo"),
+            ProjectAction(title: "Photo Collections", imageName: "photo.on.rectangle.angled"),
+            ProjectAction(title: "Collaborations", imageName: "mappin"),
+            ProjectAction(title: "Features", imageName: "mappin.and.ellipse"),
         ]
         super.init(nibName: nil, bundle: nil)
     }
@@ -96,12 +89,16 @@ extension ProjectActionSelectorViewController: UITableViewDelegate, UITableViewD
         cell.textLabel?.textColor = UIColor.Neutral_04
         let action = actions[indexPath.row]
         cell.textLabel?.text = action.title
-        cell.imageView?.image = action.image
+        if let imageName = action.imageName {
+            cell.imageView?.image = UIImage(systemName: imageName, withConfiguration: imageConfig)
+        }
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let action = actions[indexPath.row]
+        action.handler?()
     }
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
