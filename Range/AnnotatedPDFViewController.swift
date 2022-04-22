@@ -1,4 +1,6 @@
 import CoreLocation
+import Firebase
+import FirebaseDatabaseSwift
 @_spi(Restricted) @_spi(Experimental) import MapboxMaps
 import PDFKit
 import Turf
@@ -119,6 +121,7 @@ class AnnotatedPDFViewController: UIViewController {
             case let .failure(error):
                 print("style failed to load: ", error.localizedDescription)
             }
+            self.showPins()
         }
         do {
             try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom: maxMapboxZoom))
@@ -130,7 +133,6 @@ class AnnotatedPDFViewController: UIViewController {
         mapView.ornaments.options.scaleBar.visibility = .hidden
 
         mapView.isUserInteractionEnabled = false
-
         view.addSubview(mapView)
     }
 
@@ -187,5 +189,76 @@ extension AnnotatedPDFViewController: PDFPageScrollViewDelegate {
 
     func scrollViewDidZoom(_: PDFPageScrollView) {
         syncCameraStateWithPDFView()
+    }
+}
+
+// TODO: refactor this class to separate Mapbox (annotations) and allow to switch between
+// different modes (like show photo markers, show photo pins for photo location selection, etc)
+/// A very draft approach to showing photo pins.
+extension AnnotatedPDFViewController {
+    /// observe the geometries and reload pins change is observed
+    private func showPins() {
+        Database.database().reference().child("geometryData/geometries").observe(.value) { snapshot in
+            let geometries = self.convertGeometriesSnapshotToModel(snapshot: snapshot)
+            let pins = geometries.compactMap(self.convertGeometryToPin)
+            self.pinsAnnotationManager.annotations = pins
+        }
+    }
+
+    /// Converts the geometries from firebase format to Range model for Geometry
+    private func convertGeometriesSnapshotToModel(snapshot: DataSnapshot) -> [Geometry] {
+        snapshot.children.compactMap {
+            guard let geometrySnapshot = $0 as? DataSnapshot else { return nil }
+            do {
+                return try geometrySnapshot.data(as: Geometry.self)
+            } catch {
+                print("error decoding geometry snapshot: \(error)")
+                return nil
+            }
+        }
+    }
+
+    // TODO: for now the value of photo count is hardcoded to 1
+    /// Converts the geometry to a PointAnnotation for presenting the pin.
+    private func convertGeometryToPin(geometry: Geometry) -> PointAnnotation? {
+        guard case let .point(pointGeometry) = geometry.geoJSONGeometry else {
+            // not a point geometry, ignore
+            return nil
+        }
+        var pin = PointAnnotation(id: geometry.id, coordinate: pointGeometry.position)
+        pin.iconImage = "largepin"
+        pin.iconAnchor = .bottom
+        pin.iconOffset = [0, 4]
+        pin.textField = "1"
+        pin.textSize = 17
+        pin.textOffset = [0, -2.35]
+        pin.textColor = StyleColor(UIColor.Misc_White)
+        return pin
+    }
+
+    /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins
+    private var pinsAnnotationManager: PointAnnotationManager {
+        if let annotationManager = mapView.annotations.annotationManagersById["pins"] as? PointAnnotationManager {
+            return annotationManager
+        } else {
+            // add image for pin to style
+            // TODO: content
+            if let largepinImage = UIImage(named: "largepin") {
+                do {
+                    try mapView.mapboxMap.style.addImage(largepinImage, id: "largepin", stretchX: [], stretchY: [])
+                } catch {
+                    print("Could not add image to style due to error: \(error)")
+                }
+            } else {
+                print("Couldn't load the largepin image from assets")
+            }
+
+            // create annotation manager
+            let annotationManager = mapView.annotations.makePointAnnotationManager(id: "pins")
+            annotationManager.textFont = ["SF Pro Text Semibold"]
+            annotationManager.iconAllowOverlap = true
+            annotationManager.iconIgnorePlacement = true
+            return annotationManager
+        }
     }
 }
