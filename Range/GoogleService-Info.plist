@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>572808558650-qd5jadevkd5ts9hobi8ep1tv44oc84jt.apps.googleusercontent.com</string>
+	<string>1011280388035-h6ct453p7pu2kt2ds7p1bno7uusahctq.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.572808558650-qd5jadevkd5ts9hobi8ep1tv44oc84jt</string>
+	<string>com.googleusercontent.apps.1011280388035-h6ct453p7pu2kt2ds7p1bno7uusahctq</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBZlqvRODUUsw1A18j6iiPmKRA9EVEyXK0</string>
+	<string>AIzaSyAnhFhT4am7keJvn5-zitaSpdLMFV59rao</string>
 	<key>GCM_SENDER_ID</key>
-	<string>572808558650</string>
+	<string>1011280388035</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.range.PDFPrototype</string>
+	<string>io.range.App</string>
 	<key>PROJECT_ID</key>
-	<string>dev-jeff</string>
+	<string>test-99b4c</string>
 	<key>STORAGE_BUCKET</key>
-	<string>dev-jeff.appspot.com</string>
+	<string>test-99b4c.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:572808558650:ios:af809bb1fba0710fc75d03</string>
+	<string>1:1011280388035:ios:aaed8bff6a39e9b3a8e776</string>
 	<key>DATABASE_URL</key>
-	<string>https://dev-jeff-default-rtdb.firebaseio.com</string>
+	<string>https://test-99b4c-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

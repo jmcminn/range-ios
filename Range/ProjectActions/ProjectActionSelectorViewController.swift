@@ -1,3 +1,4 @@
+import FirebaseCrashlytics
 import SnapKit
 import UIKit
 
@@ -28,7 +29,11 @@ class ProjectActionSelectorViewController: UIViewController {
     ///   - actions: array of actions
     init(actions: [ProjectAction] = []) {
         self.actions = actions + [
-            ProjectAction(title: "Activity Feed", imageName: "calendar.day.timeline.left"),
+            ProjectAction(title: "Activity Feed", imageName: "calendar.day.timeline.left", handler: {
+                Crashlytics.crashlytics().log("I think I'm gonna crash now!")
+                let numbers = [0]
+                _ = numbers[1]
+            }),
             ProjectAction(title: "All Media", imageName: "photo"),
             ProjectAction(title: "Photo Collections", imageName: "photo.on.rectangle.angled"),
             ProjectAction(title: "Collaborations", imageName: "mappin"),
