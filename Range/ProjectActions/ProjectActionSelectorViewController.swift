@@ -30,9 +30,9 @@ class ProjectActionSelectorViewController: UIViewController {
     init(actions: [ProjectAction] = []) {
         self.actions = actions + [
             ProjectAction(title: "Activity Feed", imageName: "calendar.day.timeline.left", handler: {
-                Crashlytics.crashlytics().log("I think I'm gonna crash now!")
-                let numbers = [0]
-                _ = numbers[1]
+//                Crashlytics.crashlytics().log("I think I'm gonna crash now!")
+//                let numbers = [0]
+//                _ = numbers[1]
             }),
             ProjectAction(title: "All Media", imageName: "photo"),
             ProjectAction(title: "Photo Collections", imageName: "photo.on.rectangle.angled"),
