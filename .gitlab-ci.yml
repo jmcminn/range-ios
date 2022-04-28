@@ -4,17 +4,18 @@ default:
 
 stages:
     - test
-    - deploy-to-firebase
+    - deploy
 
 run-tests:
     stage: test
     script:
         - ./gitrise.sh -w "test" -b $CI_COMMIT_REF_NAME -a $BITRISE_ACCESS_TOKEN -s $BITRISE_APP_SLUG
     rules:
-        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+        - if: $CI_COMMIT_BRANCH == "master"
 
 deploy-to-firebase:
-    stage: deploy-to-firebase
+    stage: deploy
+    needs: [run-tests]
     script:
         - ./gitrise.sh -w "deploy-to-firebase" -b $CI_COMMIT_REF_NAME -a $BITRISE_ACCESS_TOKEN -s $BITRISE_APP_SLUG
     rules:
