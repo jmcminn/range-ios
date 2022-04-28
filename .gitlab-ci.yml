@@ -14,7 +14,7 @@ run-tests:
         - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 deploy-to-firebase:
-    stage: test
+    stage: deploy-to-firebase
     script:
         - ./gitrise.sh -w "deploy-to-firebase" -b $CI_COMMIT_REF_NAME -a $BITRISE_ACCESS_TOKEN -s $BITRISE_APP_SLUG
     rules:
