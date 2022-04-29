@@ -4,15 +4,8 @@ import UIKit
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
-    let pdfSource: PDFSource
+    let canvasContainer: CanvasContainerViewController
     var onSignOut: (() -> Void)?
-
-    /// for presenting map content
-    let contentContainer = PassthroughView()
-    /// for presenting cards (on top of content)
-    let controlsContainer = PassthroughView()
-    /// for presenting views on top of controls
-    let overlaysContainer = PassthroughView()
 
     lazy var actionCardVC = installActionCardVC()
     lazy var bottomBlurView = setupBottomBlur()
@@ -20,9 +13,8 @@ final class ProjectFlowController: UIViewController {
     var photoFlow: PhotoFlowController?
 
     init(pdfSource: PDFSource) {
-        self.pdfSource = pdfSource
+        canvasContainer = CanvasContainerViewController(pdfSource: pdfSource)
         super.init(nibName: nil, bundle: nil)
-        setupContainers()
     }
 
     @available(*, unavailable)
@@ -30,35 +22,15 @@ final class ProjectFlowController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    fileprivate func setupContainers() {
-        view.addSubview(contentContainer)
-        view.addSubview(controlsContainer)
-        view.addSubview(overlaysContainer)
-        controlsContainer.backgroundColor = .clear
-        overlaysContainer.backgroundColor = .clear
-
-        contentContainer.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        controlsContainer.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        overlaysContainer.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-
     func start() {
-        showSource()
-    }
-
-    fileprivate func showSource() {
-        let sourceVC = AnnotatedPDFViewController(pdfSource: pdfSource)
-        add(childController: sourceVC, toView: contentContainer)
-        sourceVC.view.snp.makeConstraints { make in
+        add(childController: canvasContainer)
+        canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        showActionCard()
+    }
 
+    fileprivate func showActionCard() {
         actionCardVC.showCard(animated: false)
         bottomBlurView.isHidden = false
     }
@@ -66,7 +38,7 @@ final class ProjectFlowController: UIViewController {
     fileprivate func setupBottomBlur() -> UIView {
         let blur = UIBlurEffect(style: .regular)
         let blurView = UIVisualEffectView(effect: blur)
-        overlaysContainer.addSubview(blurView)
+        canvasContainer.overlays.addSubview(blurView)
         blurView.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
             make.height.equalTo(self.view.safeAreaInsets.bottom)
@@ -86,18 +58,23 @@ final class ProjectFlowController: UIViewController {
         vc.onCamera = { [weak self] in
             self?.startPhotoFlow()
         }
-        installCard(
-            cardViewController: vc,
-            inView: controlsContainer
-        )
+        canvasContainer.installCard(cardViewController: vc, inView: canvasContainer.controls)
         return vc
     }
 
     fileprivate func startPhotoFlow() {
-        photoFlow = PhotoFlowController(projectFlow: self)
+        photoFlow = PhotoFlowController(canvasContainer: canvasContainer)
         photoFlow?.onStop = { [weak self] in
+            self?.actionCardVC.showCard(animated: true)
             self?.photoFlow = nil
         }
-        photoFlow?.start()
+        photoFlow?.start { [weak self] started in
+            // hide cards if photo flow started
+            if started {
+                self?.actionCardVC.hideCard(animated: true)
+            } else {
+                self?.photoFlow = nil
+            }
+        }
     }
 }

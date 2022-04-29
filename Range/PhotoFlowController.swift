@@ -1,64 +1,69 @@
 import AVFoundation
+import Firebase
+import FirebaseDatabaseSwift
 import UIKit
 
 /// Manages the flow of taking photo(s) and assigning their locations on the map
 class PhotoFlowController {
-    unowned let projectFlow: ProjectFlowController
+    unowned let canvasContainer: CanvasContainerViewController
 
-    var pinView: UIView?
     var onStop: (() -> Void)?
+    var pinsHandler: AddPhotoPinsHandler?
+    var confirmationCardVC: AddPhotoLocationCardViewController?
 
     ///
-    /// - Parameters: projectFlow - used to control the UI state of the main project flow,
-    /// as the photo flow operates on the same base map(pdf) view
-    init(projectFlow: ProjectFlowController) {
-        self.projectFlow = projectFlow
+    /// - Parameters: canvas - the flow will operate on this canvs
+    init(canvasContainer: CanvasContainerViewController) {
+        self.canvasContainer = canvasContainer
     }
 
-    func start() {
-        checkPermissionsAndShowCamera()
+    /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
+    func start(onStarted: @escaping (Bool) -> Void) {
+        Task {
+            let started = await checkPermissionsAndShowCamera()
+            DispatchQueue.main.async {
+                onStarted(started)
+            }
+        }
     }
 
     func stop() {
-        restoreProjectFlowControlViews()
+        if let confirmationCardVC = confirmationCardVC {
+            confirmationCardVC.hideCard(animated: true) {
+                self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
+            }
+        }
+        pinsHandler?.stop()
         onStop?()
     }
 
-    // TODO: this may need some sort of state description in ProjectFlowController, like an enum of views and their state, so we can save + restore it
-    private func hideProjectFlowControlViews() {
-        projectFlow.actionCardVC.hideCard(animated: true)
-    }
-
-    private func restoreProjectFlowControlViews() {
-        projectFlow.actionCardVC.showCard(animated: true)
-    }
-
-    private func checkPermissionsAndShowCamera() {
-        Task {
-            let cameraPermissions = await checkForCameraPermissions()
-            switch cameraPermissions {
-            case .authorized:
-                DispatchQueue.main.async {
-                    self.showCamera()
-                }
-            case .notAuthorized:
-                // User just denied the access, no point in showing another alert
-                break
-            case .previouslyDenied:
-                // Present alert with option to go to Settings and enable the Camera
-                DispatchQueue.main.async {
-                    self.projectFlow.present(self.noCameraAccessAlert, animated: true)
-                }
+    /// Returns `true` if camera was shown.
+    private func checkPermissionsAndShowCamera() async -> Bool {
+        let cameraPermissions = await checkForCameraPermissions()
+        switch cameraPermissions {
+        case .authorized:
+            DispatchQueue.main.async {
+                self.showCamera()
             }
+            return true
+        case .notAuthorized:
+            // User just denied the access, no point in showing another alert
+            return false
+        case .previouslyDenied:
+            // Present alert with option to go to Settings and enable the Camera
+            DispatchQueue.main.async {
+                self.canvasContainer.present(self.noCameraAccessAlert, animated: true)
+            }
+            return false
         }
     }
 
     private func showCamera() {
         let vc = CameraViewController()
         vc.modalPresentationStyle = .fullScreen
-        vc.onClose = {
+        vc.onClose = { [weak self] in
             vc.dismiss(animated: true)
-            self.stop()
+            self?.stop()
         }
         vc.onPhotoTaken = { [weak self] data in
             if let data = data, let image = UIImage(data: data) {
@@ -71,54 +76,56 @@ class PhotoFlowController {
         // TODO: do we want to present as a card?
 //         vc.installModalCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))
 
-        projectFlow.present(vc, animated: true) {
-            self.hideProjectFlowControlViews()
-        }
+        canvasContainer.present(vc, animated: true)
     }
 
     private func onPhotoTaken(photo: UIImage) {
-        showPin(forImage: photo)
         showPhotoLocationCard()
+        showPins(forImage: photo)
     }
 
-    private func showPin(forImage image: UIImage) {
-        // hide previous pin
-        pinView?.removeFromSuperview()
-
-        let pin = createPhotoPin(fromImage: image)
-        // TODO: direct access to projectFlow views and cards seems wrong
-        projectFlow.contentContainer.addSubview(pin)
-        pin.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            // center pin tip on the screen center (the asset has insets defined to ignore shadow)
-            make.bottom.equalTo(projectFlow.view.snp.centerY)
-        }
-        pinView = pin
+    private func showPins(forImage image: UIImage) {
+        pinsHandler = AddPhotoPinsHandler(canvasContainer: canvasContainer, image: image)
+        pinsHandler?.start()
     }
 
+    /// Presents a card with cancel/confirm and registers callbacks for user actions
     private func showPhotoLocationCard() {
-        let vc = AddPhotoLocationCardViewController()
-        vc.onCancel = { [weak self] in
-            guard let self = self else { return }
-            self.pinView?.removeFromSuperview()
-            vc.hideCard(animated: true) {
-                self.projectFlow.removeCard(cardViewController: vc)
-            }
-            self.stop()
-        }
-        vc.onConfirm = { [weak self] in
-            guard let self = self else { return }
-            vc.hideCard(animated: true) {
-                self.projectFlow.removeCard(cardViewController: vc)
-            }
-            self.stop()
-        }
-        projectFlow.installCard(
-            cardViewController: vc,
-            inView: projectFlow.controlsContainer,
+        confirmationCardVC = AddPhotoLocationCardViewController()
+        confirmationCardVC!.onCancel = { [weak self] in self?.stop() }
+        confirmationCardVC!.onConfirm = { [weak self] in self?.onPhotoLocationConfirmed() }
+        canvasContainer.installCard(
+            cardViewController: confirmationCardVC!,
+            inView: canvasContainer.controls,
             cardConfig: CardConfiguration(showSafeAreaBlur: true)
         )
-        vc.showCard(animated: true)
+        confirmationCardVC!.showCard(animated: true)
+    }
+
+    /// Handle the photo location confirmation - potentially create the pin and close the flow
+    private func onPhotoLocationConfirmed() {
+        if let selectedPinId = pinsHandler?.selectedPinId {
+            // one of previous pins was selected
+            // TODO: add photo to collaboration
+            print("selected existing pin: \(selectedPinId)")
+        } else {
+            // new position for pin
+            let geometry = Geometry(
+                id: UUID().uuidString.lowercased(),
+                pointGeometry: GeoJSONPointGeometry(position: canvasContainer.annotationsMapView.cameraState.center)
+            )
+            do {
+                try Database.database().reference().child("geometryData/geometries").child(geometry.id)
+                    .setValue(from: geometry) { error in
+                        if let error = error {
+                            print("error creating geometry: \(error)")
+                        }
+                    }
+            } catch {
+                print("error saving geometry snapshot: \(error)")
+            }
+        }
+        stop()
     }
 }
 

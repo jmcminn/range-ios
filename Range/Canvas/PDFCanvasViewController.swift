@@ -1,16 +1,29 @@
 import CoreLocation
-import Firebase
-import FirebaseDatabaseSwift
 @_spi(Restricted) @_spi(Experimental) import MapboxMaps
 import PDFKit
 import Turf
 import UIKit
 
+/// Enum that defines what was the reason of camera change. Used in the canvas delegate to notify about camera changes
+enum CanvasCameraChangeReason {
+    case programmatic // the change was not directly caused by user gesture but rather by some action that resulted in camera programmatic animation
+    case pan // user panned the map interactively
+    case zoom // user zoomed the map interactively
+}
+
+/// Defines the notifications to be received by the currently registered canvas delegate.
+protocol CanvasViewControllerDelegate {
+    /// Camera has changed with given reason
+    func canvasCameraChanged(reason: CanvasCameraChangeReason)
+    /// User has tapped at given point (given in the annotations map view coordinates)
+    func canvasTapRecognized(at: CGPoint)
+}
+
 /**
  Displays background PDF with Mapbox map view on top.
  The mapbox map is receiving the user interactions and controls the PDF zoom/offset
  */
-class AnnotatedPDFViewController: UIViewController {
+class PDFCanvasViewController: UIViewController {
     let maxMapboxZoom = 25.5
 
     let pdfSource: PDFSource
@@ -24,11 +37,11 @@ class AnnotatedPDFViewController: UIViewController {
     private var initialZoom: Double = 0.0
 
     /// when animating the pdf and mapview together, we need to disable the sync of zoom/center between them
-    private var animationInProgress = false
+    private var programmaticAnimationInProgress = false
     /// display link used for pan/zoom animations
     private var displayLink: DisplayLink?
 
-    var selectedPinId: String?
+    var delegate: CanvasViewControllerDelegate?
 
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
@@ -74,6 +87,8 @@ class AnnotatedPDFViewController: UIViewController {
         pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfSource.page)
         view.addSubview(pdfScrollView)
         pdfScrollView.scrollsToTop = false // we don't want scroll to top on top bar touch
+        pdfScrollView.showsVerticalScrollIndicator = false
+        pdfScrollView.showsHorizontalScrollIndicator = false
         pdfScrollView.bouncesZoom = false
         pdfScrollView.pdfPageScrollViewDelegate = self
         pdfScrollView.addGestureRecognizer(
@@ -85,35 +100,7 @@ class AnnotatedPDFViewController: UIViewController {
     @objc func didTapView(_ sender: UITapGestureRecognizer) {
         let point = sender.location(in: sender.view)
         guard let pointInMapView = sender.view?.convert(point, to: mapView) else { return }
-        mapView.mapboxMap.queryRenderedFeatures(
-            at: pointInMapView,
-            options: nil
-        ) { result in
-            // take any of the selected features with "pins" source
-            guard case let .success(queriedFeatures) = result else { return }
-            guard let queriedFeature = queriedFeatures.first(where: { $0.source == "pins" }) else { return }
-            self.selectPin(forFeature: queriedFeature.feature)
-        }
-    }
-
-    /// Selects pin for given feature and center screen on it. If `feature` is nil then unselects the currently selected.
-    private func selectPin(forFeature feature: Feature?) {
-        if feature == nil {
-            // unselect if any selected
-            if selectedPinId != nil {
-                selectedPinId = nil
-                updatePinSelection()
-            }
-        }
-        // select a pin
-        guard case let .string(featureId) = feature?.identifier else { return }
-        guard case let .point(point) = feature?.geometry?.geometry else { return }
-        // if it's not currently selected mark it as selected and zoom to it
-        if selectedPinId != featureId {
-            selectedPinId = featureId
-            updatePinSelection()
-            animatePanAndZoom(cameraCenter: point.coordinates, mapboxZoom: mapView.cameraState.zoom)
-        }
+        delegate?.canvasTapRecognized(at: pointInMapView)
     }
 
     /// Calculates initial mapbox zoom so the PDFPage fits the screen
@@ -163,7 +150,6 @@ class AnnotatedPDFViewController: UIViewController {
             case let .failure(error):
                 print("style failed to load: ", error.localizedDescription)
             }
-            self.showPins()
         }
         do {
             try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom: maxMapboxZoom))
@@ -197,8 +183,8 @@ class AnnotatedPDFViewController: UIViewController {
     }
 
     /// Animate to given cameraCenter and mapboxZoom.
-    private func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {
-        let endContentOffset = AnnotatedPDFViewController.mapboxCenterToScrollViewContentOffset(
+    func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {
+        let endContentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
             cameraCenter: cameraCenter,
             scrollView: pdfScrollView,
             initialCenter: pdfSource.center,
@@ -218,7 +204,7 @@ class AnnotatedPDFViewController: UIViewController {
 
         // any running animation?
         displayLink?.invalidate()
-        animationInProgress = true
+        programmaticAnimationInProgress = true
         displayLink = DisplayLink(handler: { [unowned self] _, t in
             let progress = min(Double(t) / Double(duration), 1)
             let x: CGFloat = startContentOffset.x + (endContentOffset.x - startContentOffset.x) * progress
@@ -230,14 +216,14 @@ class AnnotatedPDFViewController: UIViewController {
             if t >= duration {
                 self.displayLink?.invalidate()
                 self.displayLink = nil
-                self.animationInProgress = false
+                self.programmaticAnimationInProgress = false
             }
         })
     }
 
     /// Set mapbox camera center and zoom based on current pdf view contentOffset and zoomScale
     private func syncCameraStateWithPDFView() {
-        let cameraCenter = AnnotatedPDFViewController.scrollViewStateToMapboxCenter(
+        let cameraCenter = PDFCanvasViewController.scrollViewStateToMapboxCenter(
             scrollView: pdfScrollView,
             initialCenter: pdfSource.center,
             initialMetersPerPoint: initialMetersPerPoint
@@ -300,113 +286,20 @@ class AnnotatedPDFViewController: UIViewController {
     }
 }
 
-extension AnnotatedPDFViewController: PDFPageScrollViewDelegate {
+extension PDFCanvasViewController: PDFPageScrollViewDelegate {
     func scrollViewDidScroll(_: PDFPageScrollView) {
         // controlled animation syncs the state itself
-        if !animationInProgress {
+        if !programmaticAnimationInProgress {
             syncCameraStateWithPDFView()
         }
-        // only reset pin if the user is panning (= it's not programmatically started animation)
-        if !animationInProgress {
-            selectPin(forFeature: nil)
-        }
+        delegate?.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .pan)
     }
 
     func scrollViewDidZoom(_: PDFPageScrollView) {
         // controlled animation syncs the state itself
-        if !animationInProgress {
+        if !programmaticAnimationInProgress {
             syncCameraStateWithPDFView()
         }
-    }
-}
-
-// TODO: refactor this class to separate Mapbox (annotations) and allow to switch between
-// different modes (like show photo markers, show photo pins for photo location selection, etc)
-/// A very draft approach to showing photo pins.
-extension AnnotatedPDFViewController {
-    /// observe the geometries and reload pins change is observed
-    private func showPins() {
-        Database.database().reference().child("geometryData/geometries").observe(.value) { snapshot in
-            let geometries = self.convertGeometriesSnapshotToModel(snapshot: snapshot)
-            let pins = geometries.compactMap(self.convertGeometryToPin)
-            self.pinsAnnotationManager.annotations = pins
-        }
-    }
-
-    /// Converts the geometries from firebase format to Range model for Geometry
-    private func convertGeometriesSnapshotToModel(snapshot: DataSnapshot) -> [Geometry] {
-        snapshot.children.compactMap {
-            guard let geometrySnapshot = $0 as? DataSnapshot else { return nil }
-            do {
-                return try geometrySnapshot.data(as: Geometry.self)
-            } catch {
-                print("error decoding geometry snapshot: \(error)")
-                return nil
-            }
-        }
-    }
-
-    // TODO: for now the value of photo count is hardcoded to 1
-    /// Converts the geometry to a PointAnnotation for presenting the pin.
-    private func convertGeometryToPin(geometry: Geometry) -> PointAnnotation? {
-        guard case let .point(pointGeometry) = geometry.geoJSONGeometry else {
-            // not a point geometry, ignore
-            return nil
-        }
-        let selected = geometry.id == selectedPinId
-        var pin = PointAnnotation(id: geometry.id, coordinate: pointGeometry.position)
-        pin.iconImage = "largepin"
-        pin.iconAnchor = .bottom
-        pin.iconOffset = [0, 4]
-        pin.textField = "1"
-        pin.textSize = 17
-        pin.textOffset = [0, -2.35]
-        pin.textColor = StyleColor(UIColor.Misc_White)
-        setPin(&pin, selected: selected)
-        return pin
-    }
-
-    /// Updates the currently presented pins based on `self.selectedPinId`
-    private func updatePinSelection() {
-        pinsAnnotationManager.annotations = pinsAnnotationManager.annotations.map { pin in
-            var updatedPin = pin
-            let selected = pin.id == selectedPinId
-            setPin(&updatedPin, selected: selected)
-            return updatedPin
-        }
-    }
-
-    /// Update opacity and symbol order for pins based on the selection state.
-    private func setPin(_ pin: inout PointAnnotation, selected: Bool) {
-        pin.iconOpacity = selected ? 1 : 0.4
-        pin.textOpacity = selected ? 1 : 0.4
-        // show selected above non selected
-        pin.symbolSortKey = selected ? 2 : 1
-    }
-
-    /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins
-    private var pinsAnnotationManager: PointAnnotationManager {
-        if let annotationManager = mapView.annotations.annotationManagersById["pins"] as? PointAnnotationManager {
-            return annotationManager
-        } else {
-            // add image for pin to style
-            // TODO: content
-            if let largepinImage = UIImage(named: "largepin") {
-                do {
-                    try mapView.mapboxMap.style.addImage(largepinImage, id: "largepin", stretchX: [], stretchY: [])
-                } catch {
-                    print("Could not add image to style due to error: \(error)")
-                }
-            } else {
-                print("Couldn't load the largepin image from assets")
-            }
-
-            // create annotation manager
-            let annotationManager = mapView.annotations.makePointAnnotationManager(id: "pins")
-            annotationManager.textFont = ["SF Pro Text Semibold"]
-            annotationManager.iconAllowOverlap = true
-            annotationManager.iconIgnorePlacement = true
-            return annotationManager
-        }
+        delegate?.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .zoom)
     }
 }

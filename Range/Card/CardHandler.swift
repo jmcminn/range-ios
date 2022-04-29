@@ -3,8 +3,8 @@ import UIKit
 
 /// Helper class for installing the gesture recognizers on the card-presented view controller's view and managing the card dragging.
 class CardHandler {
-    let presentedViewController: UIViewController & CardPresentable
-    let containerView: UIView
+    unowned let presentedViewController: UIViewController & CardPresentable
+    unowned let containerView: UIView
     let config: CardConfiguration
 
     let topDown = false
