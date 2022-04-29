@@ -54,7 +54,6 @@
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
 		0A632EB527E49638001A019B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB427E49638001A019B /* Assets.xcassets */; };
 		0A632EB827E49638001A019B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB627E49638001A019B /* LaunchScreen.storyboard */; };
-		0A632EC327E49639001A019B /* RangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EC227E49639001A019B /* RangeTests.swift */; };
 		0A632ECD27E49639001A019B /* RangeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632ECC27E49639001A019B /* RangeUITests.swift */; };
 		0A632ECF27E49639001A019B /* RangeUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632ECE27E49639001A019B /* RangeUITestsLaunchTests.swift */; };
 		0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */; };
@@ -133,7 +132,6 @@
 		0A632EB727E49638001A019B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A632EB927E49638001A019B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0A632EBE27E49638001A019B /* RangeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RangeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0A632EC227E49639001A019B /* RangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeTests.swift; sourceTree = "<group>"; };
 		0A632EC827E49639001A019B /* RangeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RangeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632ECC27E49639001A019B /* RangeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeUITests.swift; sourceTree = "<group>"; };
 		0A632ECE27E49639001A019B /* RangeUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -218,6 +216,7 @@
 			children = (
 				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
 				0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */,
+				0A4DC78427F490CA00712518 /* PDFSource.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -245,6 +244,21 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0A48ACDC281C0CBD0044E06E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0A632EB927E49638001A019B /* Info.plist */,
+				0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */,
+				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
+				0A632EE427E4E52E001A019B /* DemoResources */,
+				0A632EB427E49638001A019B /* Assets.xcassets */,
+				0A4DC77B27F45DB600712518 /* Colors.xcassets */,
+				0A4DC79727F5B06200712518 /* Colors.swift */,
+				0A07D7622810562600B6F9A2 /* fonts */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		0A4DC76327EDCA9000712518 /* Math */ = {
@@ -341,30 +355,22 @@
 		0A632EAA27E49636001A019B /* Range */ = {
 			isa = PBXGroup;
 			children = (
-				0A632EE427E4E52E001A019B /* DemoResources */,
+				0A48ACDC281C0CBD0044E06E /* Supporting Files */,
+				0A07D516280730A200B6F9A2 /* AddPhotoLocation */,
 				0A07D764281295B500B6F9A2 /* Auth */,
+				0A97232327FC507200D744F4 /* Camera */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0A4DC76327EDCA9000712518 /* Math */,
+				0A07D75428101B1C00B6F9A2 /* Model */,
 				0A632EDB27E4DA38001A019B /* PDF */,
-				0A97232327FC507200D744F4 /* Camera */,
 				0A4DC79427F5728500712518 /* ProjectActions */,
 				0A4DC7A227F7615700712518 /* Views */,
-				0A07D516280730A200B6F9A2 /* AddPhotoLocation */,
-				0A07D75428101B1C00B6F9A2 /* Model */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
-				0A4DC78427F490CA00712518 /* PDFSource.swift */,
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
 				0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */,
 				0A632EE727E516B7001A019B /* AnnotatedPDFViewController.swift */,
-				0A632EB427E49638001A019B /* Assets.xcassets */,
-				0A4DC77B27F45DB600712518 /* Colors.xcassets */,
-				0A4DC79727F5B06200712518 /* Colors.swift */,
-				0A07D7622810562600B6F9A2 /* fonts */,
-				0A632EB927E49638001A019B /* Info.plist */,
-				0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */,
-				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
 			);
 			path = Range;
 			sourceTree = "<group>";
@@ -375,7 +381,6 @@
 				0A4DC76627EDCCFB00712518 /* Math */,
 				0A07D7592810377400B6F9A2 /* Model */,
 				0A4DC77027EE111400712518 /* Resources */,
-				0A632EC227E49639001A019B /* RangeTests.swift */,
 			);
 			path = RangeTests;
 			sourceTree = "<group>";
@@ -621,7 +626,6 @@
 				0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
-				0A632EC327E49639001A019B /* RangeTests.swift in Sources */,
 				0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */,
 				0A4DC76E27EE100800712518 /* PDFPageSize.swift in Sources */,
 				0A07D76128104BF900B6F9A2 /* Geometry.swift in Sources */,
