@@ -20,12 +20,15 @@ struct EmailAuthView: View {
     var body: some View {
         // GeometryReader is added as a hack to avoid the whole view moving up when
         // the keyboard appears: https://developer.apple.com/forums/thread/658432s
-        GeometryReader { _ in
+        GeometryReader { geometry in
             ZStack(alignment: .top) {
                 // background that stays in place and ignores safe areas
                 Group {
                     Color.Neutral_10
-                    Image("auth_glow")
+                    Image("topglow")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geometry.size.width)
                 }.edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 0) {
