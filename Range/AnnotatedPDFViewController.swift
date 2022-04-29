@@ -20,8 +20,15 @@ class AnnotatedPDFViewController: UIViewController {
     var mapView: MapView!
     var pdfScrollView: PDFPageScrollView!
 
-    var initialMetersPerPoint: Double = 0.0
-    var initialZoom: Double = 0.0
+    private var initialMetersPerPoint: Double = 0.0
+    private var initialZoom: Double = 0.0
+
+    /// when animating the pdf and mapview together, we need to disable the sync of zoom/center between them
+    private var animationInProgress = false
+    /// display link used for pan/zoom animations
+    private var displayLink: DisplayLink?
+
+    var selectedPinId: String?
 
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
@@ -66,8 +73,47 @@ class AnnotatedPDFViewController: UIViewController {
     private func setupPDFScrollView() {
         pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfSource.page)
         view.addSubview(pdfScrollView)
+        pdfScrollView.scrollsToTop = false // we don't want scroll to top on top bar touch
         pdfScrollView.bouncesZoom = false
         pdfScrollView.pdfPageScrollViewDelegate = self
+        pdfScrollView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
+        )
+    }
+
+    /// Recognize taps in the pdf view, translate to mapbox view and handle pin taps.
+    @objc func didTapView(_ sender: UITapGestureRecognizer) {
+        let point = sender.location(in: sender.view)
+        guard let pointInMapView = sender.view?.convert(point, to: mapView) else { return }
+        mapView.mapboxMap.queryRenderedFeatures(
+            at: pointInMapView,
+            options: nil
+        ) { result in
+            // take any of the selected features with "pins" source
+            guard case let .success(queriedFeatures) = result else { return }
+            guard let queriedFeature = queriedFeatures.first(where: { $0.source == "pins" }) else { return }
+            self.selectPin(forFeature: queriedFeature.feature)
+        }
+    }
+
+    /// Selects pin for given feature and center screen on it. If `feature` is nil then unselects the currently selected.
+    private func selectPin(forFeature feature: Feature?) {
+        if feature == nil {
+            // unselect if any selected
+            if selectedPinId != nil {
+                selectedPinId = nil
+                updatePinSelection()
+            }
+        }
+        // select a pin
+        guard case let .string(featureId) = feature?.identifier else { return }
+        guard case let .point(point) = feature?.geometry?.geometry else { return }
+        // if it's not currently selected mark it as selected and zoom to it
+        if selectedPinId != featureId {
+            selectedPinId = featureId
+            updatePinSelection()
+            animatePanAndZoom(cameraCenter: point.coordinates, mapboxZoom: mapView.cameraState.zoom)
+        }
     }
 
     /// Calculates initial mapbox zoom so the PDFPage fits the screen
@@ -100,11 +146,7 @@ class AnnotatedPDFViewController: UIViewController {
     private func setupMapView() {
         // TODO: it seems that we don't need Mapbox accessToken for annotations
 //        ResourceOptionsManager.default.resourceOptions.accessToken =
-        let cameraOptions = CameraOptions(center: pdfSource.center, zoom: initialZoom)
-        mapView = MapView(
-            frame: view.bounds,
-            mapInitOptions: MapInitOptions(cameraOptions: cameraOptions, styleURI: nil)
-        )
+        mapView = MapView(frame: view.bounds)
         // hack to make the Metal subview of the mapView transparent
         // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
         // by default it's black even if there's no layers). The trick is to make
@@ -151,18 +193,70 @@ class AnnotatedPDFViewController: UIViewController {
     }
 
     @objc func resetAction() {
-        UIView.animate(withDuration: 0.1) {
-            self.pdfScrollView.zoomScale = 1
-            self.pdfScrollView.contentOffset = .zero
-        }
+        animatePanAndZoom(contentOffset: .zero, zoomScale: 1)
+    }
+
+    /// Animate to given cameraCenter and mapboxZoom.
+    private func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {
+        let endContentOffset = AnnotatedPDFViewController.mapboxCenterToScrollViewContentOffset(
+            cameraCenter: cameraCenter,
+            scrollView: pdfScrollView,
+            initialCenter: pdfSource.center,
+            initialMetersPerPoint: initialMetersPerPoint
+        )
+        let endZoomScale = initialMetersPerPoint / zoomConverter.getMetersPerPoint(forZoom: mapboxZoom)
+        animatePanAndZoom(contentOffset: endContentOffset, zoomScale: endZoomScale)
+    }
+
+    /// Animate to given pdf content offset  and zoom.
+    /// To sync PDF and Mapbox we need to "manually" animate the scrollView contentOffset and zoom, so mapbox is synced along the way
+    private func animatePanAndZoom(contentOffset endContentOffset: CGPoint, zoomScale endZoomScale: Double) {
+        let duration = 0.2
+
+        let startContentOffset = pdfScrollView.contentOffset
+        let startZoomScale = pdfScrollView.zoomScale
+
+        // any running animation?
+        displayLink?.invalidate()
+        animationInProgress = true
+        displayLink = DisplayLink(handler: { [unowned self] _, t in
+            let progress = min(Double(t) / Double(duration), 1)
+            let x: CGFloat = startContentOffset.x + (endContentOffset.x - startContentOffset.x) * progress
+            let y: CGFloat = startContentOffset.y + (endContentOffset.y - startContentOffset.y) * progress
+            let zoom: CGFloat = startZoomScale + (endZoomScale - startZoomScale) * progress
+            self.pdfScrollView.contentOffset = CGPoint(x: x, y: y)
+            self.pdfScrollView.zoomScale = zoom
+            self.syncCameraStateWithPDFView()
+            if t >= duration {
+                self.displayLink?.invalidate()
+                self.displayLink = nil
+                self.animationInProgress = false
+            }
+        })
     }
 
     /// Set mapbox camera center and zoom based on current pdf view contentOffset and zoomScale
     private func syncCameraStateWithPDFView() {
-        // The contentOffset is the distance between initial and current top/left pdf corner.
-        let contentOffset = pdfScrollView.contentOffset
-        let viewCenter = pdfScrollView.center
-        let zoomScale = pdfScrollView.zoomScale
+        let cameraCenter = AnnotatedPDFViewController.scrollViewStateToMapboxCenter(
+            scrollView: pdfScrollView,
+            initialCenter: pdfSource.center,
+            initialMetersPerPoint: initialMetersPerPoint
+        )
+        let metersPerPoint = initialMetersPerPoint / pdfScrollView.zoomScale
+        let mapboxZoom = zoomConverter.getZoom(forMetersPerPoint: metersPerPoint)
+        mapView.mapboxMap.setCamera(to: CameraOptions(center: cameraCenter, zoom: mapboxZoom))
+    }
+
+    /// Calculate what should be the camera center for Mapbox so it matches the current pdf scroll view contentOffset and zoom
+    private static func scrollViewStateToMapboxCenter(
+        scrollView: UIScrollView,
+        initialCenter: CLLocationCoordinate2D,
+        initialMetersPerPoint: Double
+    ) -> CLLocationCoordinate2D {
+        // The contentOffset is the distance between initial and current top/left corner of the content.
+        let contentOffset = scrollView.contentOffset
+        let viewCenter = scrollView.center
+        let zoomScale = scrollView.zoomScale
         let metersPerPoint = initialMetersPerPoint / zoomScale
 
         // Distance measured in screen coordinates fro current pdf center on screen to screen center.
@@ -173,22 +267,56 @@ class AnnotatedPDFViewController: UIViewController {
         let yPdfCenterDistanceFromViewCenter = -contentOffset.y - viewCenter.y + viewCenter
             .y * zoomScale
         // move camera the other direction than the PDF
-        let cameraUp = pdfSource.center.coordinate(at: yPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 0)
-        let cameraLeft = pdfSource.center.coordinate(at: xPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 270)
-        let cameraCenter = CLLocationCoordinate2D(latitude: cameraUp.latitude,
-                                                  longitude: cameraLeft.longitude)
-        let mapboxZoom = zoomConverter.getZoom(forMetersPerPoint: metersPerPoint)
-        mapView.mapboxMap.setCamera(to: CameraOptions(center: cameraCenter, zoom: mapboxZoom))
+        let cameraUp = initialCenter.coordinate(at: yPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 0)
+        let cameraLeft = initialCenter.coordinate(at: xPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 270)
+        let cameraCenter = CLLocationCoordinate2D(latitude: cameraUp.latitude, longitude: cameraLeft.longitude)
+        return cameraCenter
+    }
+
+    // calculate what should be the pdf scroll view content offset to match given mapbox camera center (at current zoom level)
+    private static func mapboxCenterToScrollViewContentOffset(
+        cameraCenter: CLLocationCoordinate2D,
+        scrollView: UIScrollView,
+        initialCenter: CLLocationCoordinate2D,
+        initialMetersPerPoint: Double
+    ) -> CGPoint {
+        let viewCenter = scrollView.center
+        let zoomScale = scrollView.zoomScale
+        let metersPerPoint = initialMetersPerPoint / zoomScale
+
+        let xSign: Double = cameraCenter.longitude > initialCenter.longitude ? -1 : 1
+        let xCameraCenterDistanceFromInitialCenter = xSign *
+            cameraCenter.distance(to: CLLocationCoordinate2D(latitude: cameraCenter.latitude,
+                                                             longitude: initialCenter.longitude)) / metersPerPoint
+        let ySign: Double = cameraCenter.latitude < initialCenter.latitude ? -1 : 1
+        let yCameraCenterDistanceFromInitialCenter = ySign *
+            cameraCenter.distance(to: CLLocationCoordinate2D(latitude: initialCenter.latitude,
+                                                             longitude: cameraCenter.longitude)) / metersPerPoint
+
+        let xOffset = -(xCameraCenterDistanceFromInitialCenter + viewCenter.x - viewCenter.x * zoomScale)
+        let yOffset = -(yCameraCenterDistanceFromInitialCenter + viewCenter.y - viewCenter.y * zoomScale)
+
+        return CGPoint(x: xOffset, y: yOffset)
     }
 }
 
 extension AnnotatedPDFViewController: PDFPageScrollViewDelegate {
     func scrollViewDidScroll(_: PDFPageScrollView) {
-        syncCameraStateWithPDFView()
+        // controlled animation syncs the state itself
+        if !animationInProgress {
+            syncCameraStateWithPDFView()
+        }
+        // only reset pin if the user is panning (= it's not programmatically started animation)
+        if !animationInProgress {
+            selectPin(forFeature: nil)
+        }
     }
 
     func scrollViewDidZoom(_: PDFPageScrollView) {
-        syncCameraStateWithPDFView()
+        // controlled animation syncs the state itself
+        if !animationInProgress {
+            syncCameraStateWithPDFView()
+        }
     }
 }
 
@@ -225,6 +353,7 @@ extension AnnotatedPDFViewController {
             // not a point geometry, ignore
             return nil
         }
+        let selected = geometry.id == selectedPinId
         var pin = PointAnnotation(id: geometry.id, coordinate: pointGeometry.position)
         pin.iconImage = "largepin"
         pin.iconAnchor = .bottom
@@ -233,7 +362,26 @@ extension AnnotatedPDFViewController {
         pin.textSize = 17
         pin.textOffset = [0, -2.35]
         pin.textColor = StyleColor(UIColor.Misc_White)
+        setPin(&pin, selected: selected)
         return pin
+    }
+
+    /// Updates the currently presented pins based on `self.selectedPinId`
+    private func updatePinSelection() {
+        pinsAnnotationManager.annotations = pinsAnnotationManager.annotations.map { pin in
+            var updatedPin = pin
+            let selected = pin.id == selectedPinId
+            setPin(&updatedPin, selected: selected)
+            return updatedPin
+        }
+    }
+
+    /// Update opacity and symbol order for pins based on the selection state.
+    private func setPin(_ pin: inout PointAnnotation, selected: Bool) {
+        pin.iconOpacity = selected ? 1 : 0.4
+        pin.textOpacity = selected ? 1 : 0.4
+        // show selected above non selected
+        pin.symbolSortKey = selected ? 2 : 1
     }
 
     /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins
