@@ -24,6 +24,7 @@
 		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
 		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
 		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
+		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A48ACD7281822680044E06E /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0A48ACD6281822680044E06E /* FirebaseCrashlytics */; };
 		0A48ACD92818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0A48ACD82818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDA281BDABF0044E06E /* DisplayLink.swift */; };
@@ -107,6 +108,7 @@
 		0A07D7622810562600B6F9A2 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		0A07D7652812960500B6F9A2 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
 		0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowController.swift; sourceTree = "<group>"; };
+		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
 		0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasContainerViewController.swift; sourceTree = "<group>"; };
 		0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoPinsHandler.swift; sourceTree = "<group>"; };
@@ -341,6 +343,7 @@
 				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
 				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
+				0A18126B283230E400A8515B /* MapTooltipView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -609,6 +612,7 @@
 				0A07D518280730CC00B6F9A2 /* AddPhotoLocationCardViewController.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
+				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFSource.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,

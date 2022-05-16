@@ -4,6 +4,9 @@ import UIKit
 protocol PDFPageScrollViewDelegate: AnyObject {
     func scrollViewDidScroll(_ scrollView: PDFPageScrollView)
     func scrollViewDidZoom(_ scrollView: PDFPageScrollView)
+    func scrollViewDidEndDragging(_ scrollView: PDFPageScrollView, willDecelerate decelerate: Bool)
+    func scrollViewDidEndDecelerating(_ scrollView: PDFPageScrollView)
+    func scrollViewDidEndZooming(_ scrollView: PDFPageScrollView, with view: UIView?, atScale scale: CGFloat)
 }
 
 /// Scroll view controlling the zooming of PDFPage
@@ -153,5 +156,17 @@ extension PDFPageScrollView: UIScrollViewDelegate {
 
     func scrollViewDidZoom(_: UIScrollView) {
         pdfPageScrollViewDelegate?.scrollViewDidZoom(self)
+    }
+
+    func scrollViewDidEndDragging(_: UIScrollView, willDecelerate decelerate: Bool) {
+        pdfPageScrollViewDelegate?.scrollViewDidEndDragging(self, willDecelerate: decelerate)
+    }
+
+    func scrollViewDidEndDecelerating(_: UIScrollView) {
+        pdfPageScrollViewDelegate?.scrollViewDidEndDecelerating(self)
+    }
+
+    func scrollViewDidEndZooming(_: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        pdfPageScrollViewDelegate?.scrollViewDidEndZooming(self, with: view, atScale: scale)
     }
 }

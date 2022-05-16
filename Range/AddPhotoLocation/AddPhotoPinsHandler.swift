@@ -18,6 +18,11 @@ class AddPhotoPinsHandler {
     /// the pin displaying a photo thumb - used for selecting a new location for the image
     var photoPinView: UIView?
 
+    /// tooltip shown for a currently selected pin
+    var featureTooltip: MapTooltipView?
+    /// tooltip shown for photoPinView
+    var photoTooltip: MapTooltipView?
+
     /// - Parameters:
     ///   - canvasContainer:    handler will add pins to this canvas
     ///   - image:              image to be displayed on the new photo pin
@@ -35,6 +40,7 @@ class AddPhotoPinsHandler {
         showPins()
         canvasContainer.pdfCanvas.delegate = self
         updatePinSelection()
+        showPhotoTooltip()
     }
 
     func stop() {
@@ -43,6 +49,7 @@ class AddPhotoPinsHandler {
             Database.database().reference().child("geometryData/geometries").removeObserver(withHandle: databaseHandle)
         }
         photoPinView?.removeFromSuperview()
+        hideTooltip()
     }
 
     /// This creates photo pin view (if not created yet) and adds to canvas content.
@@ -80,6 +87,60 @@ class AddPhotoPinsHandler {
                 mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
             )
         }
+    }
+
+    /// Hide tooltip if any presented (either feature or photo tooltip)
+    private func hideTooltip() {
+        if let tooltip = featureTooltip {
+            canvasContainer.annotationsMapView.viewAnnotations.remove(tooltip)
+            featureTooltip = nil
+        }
+        if let tooltip = photoTooltip {
+            tooltip.removeFromSuperview()
+            photoTooltip = nil
+        }
+    }
+
+    /// Shows the tooltip for given feature.
+    private func showFeatureTooltip(forFeature feature: Feature) {
+        guard case let .point(point) = feature.geometry?.geometry else { return }
+
+        let tooltip = MapTooltipView(text: "Use this location")
+        let fittingSize = CGSize(
+            width: canvasContainer.annotationsMapView.frame.size.width,
+            height: UIView.layoutFittingExpandedSize.height
+        )
+        let tooltipSize = tooltip.systemLayoutSizeFitting(fittingSize)
+        let tooltipOptions = ViewAnnotationOptions(
+            geometry: point,
+            width: tooltipSize.width.rounded(.up), // with no rounding the text was truncated...
+            height: tooltipSize.height.rounded(.up),
+            allowOverlap: true,
+            anchor: .bottom,
+            offsetY: 53
+        )
+        tooltip.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+        UIView.animate(withDuration: 0.2) {
+            tooltip.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }
+        try? canvasContainer.annotationsMapView.viewAnnotations.add(tooltip, options: tooltipOptions)
+        featureTooltip = tooltip
+    }
+
+    /// Shows the tooltip for the photo pin.
+    private func showPhotoTooltip() {
+        let tooltip = MapTooltipView(text: "New location")
+        canvasContainer.content.addSubview(tooltip)
+        tooltip.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            // center pin tip on the screen center (the asset has insets defined to ignore shadow)
+            make.bottom.equalTo(canvasContainer.content.snp.centerY).offset(-68)
+        }
+        tooltip.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+        UIView.animate(withDuration: 0.2) {
+            tooltip.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }
+        photoTooltip = tooltip
     }
 
     /// observe the geometries and reload pins change is observed
@@ -186,9 +247,17 @@ class AddPhotoPinsHandler {
 extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
     /// Reset selected pin if user panned the map
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
-        // only reset pin if the user is panning (= it's not programmatically started animation)
         if reason == .pan {
+            // only reset pin if the user is panning (= it's not programmatically started animation)
             selectPin(forFeature: nil)
+            if featureTooltip != nil {
+                hideTooltip()
+            }
+        } else if reason == .panEnd {
+            // show the tooltip for photo pin only after the pan gesture has ended
+            if photoTooltip == nil {
+                showPhotoTooltip()
+            }
         }
     }
 
@@ -199,6 +268,8 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
             guard case let .success(queriedFeatures) = result else { return }
             guard let queriedFeature = queriedFeatures.first(where: { $0.source == "pins" }) else { return }
             self.selectPin(forFeature: queriedFeature.feature)
+            self.hideTooltip()
+            self.showFeatureTooltip(forFeature: queriedFeature.feature)
         }
     }
 }

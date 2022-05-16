@@ -9,6 +9,8 @@ enum CanvasCameraChangeReason {
     case programmatic // the change was not directly caused by user gesture but rather by some action that resulted in camera programmatic animation
     case pan // user panned the map interactively
     case zoom // user zoomed the map interactively
+    case panEnd // the pan interaction has ended (together with the decelleration)
+    case zoomEnd // the zoom interaction has ended
 }
 
 /// Defines the notifications to be received by the currently registered canvas delegate.
@@ -341,5 +343,29 @@ extension PDFCanvasViewController: PDFPageScrollViewDelegate {
             syncCameraStateWithPDFView()
         }
         delegate?.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .zoom)
+    }
+
+    /// Notify about panEnd but only if not decelerating (if decelerating the panEnd will be notified on deceleration end)
+    /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
+    func scrollViewDidEndDragging(_: PDFPageScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate, !programmaticAnimationInProgress {
+            delegate?.canvasCameraChanged(reason: .panEnd)
+        }
+    }
+
+    /// Notify about panEnd when there was a deceleration
+    /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
+    func scrollViewDidEndDecelerating(_: PDFPageScrollView) {
+        if !programmaticAnimationInProgress {
+            delegate?.canvasCameraChanged(reason: .panEnd)
+        }
+    }
+
+    /// Notify about zoomEnd when there was a deceleration
+    /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
+    func scrollViewDidEndZooming(_: PDFPageScrollView, with _: UIView?, atScale _: CGFloat) {
+        if !programmaticAnimationInProgress {
+            delegate?.canvasCameraChanged(reason: .zoomEnd)
+        }
     }
 }
