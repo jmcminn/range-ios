@@ -25,6 +25,7 @@ protocol CanvasViewControllerDelegate {
  */
 class PDFCanvasViewController: UIViewController {
     let maxMapboxZoom = 25.5
+    let pdfDrivesInteractions = true
 
     let pdfSource: PDFSource
 
@@ -78,7 +79,11 @@ class PDFCanvasViewController: UIViewController {
 
         setupMapView()
 
-        syncCameraStateWithPDFView()
+        if pdfDrivesInteractions {
+            syncCameraStateWithPDFView()
+        } else {
+            syncPDFViewWithCameraState()
+        }
 
         setupDebugViews()
     }
@@ -133,7 +138,13 @@ class PDFCanvasViewController: UIViewController {
     private func setupMapView() {
         // TODO: it seems that we don't need Mapbox accessToken for annotations
 //        ResourceOptionsManager.default.resourceOptions.accessToken =
-        mapView = MapView(frame: view.bounds)
+        if pdfDrivesInteractions {
+            mapView = MapView(frame: view.bounds)
+        } else {
+            // set initial mapbox zoom level and position
+            let cameraOptions = CameraOptions(center: pdfSource.center, zoom: initialZoom)
+            mapView = MapView(frame: view.bounds, mapInitOptions: MapInitOptions(cameraOptions: cameraOptions))
+        }
         // hack to make the Metal subview of the mapView transparent
         // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
         // by default it's black even if there's no layers). The trick is to make
@@ -160,7 +171,16 @@ class PDFCanvasViewController: UIViewController {
         mapView.ornaments.options.attributionButton.visibility = .hidden
         mapView.ornaments.options.scaleBar.visibility = .hidden
 
-        mapView.isUserInteractionEnabled = false
+        if pdfDrivesInteractions {
+            mapView.isUserInteractionEnabled = false
+        } else {
+            mapView.gestures.options.pinchRotateEnabled = false
+            mapView.gestures.options.pitchEnabled = false
+            mapView.mapboxMap.onEvery(.cameraChanged, handler: { [weak self] _ in
+                guard let self = self else { return }
+                self.syncPDFViewWithCameraState()
+            })
+        }
         view.addSubview(mapView)
     }
 
@@ -223,6 +243,7 @@ class PDFCanvasViewController: UIViewController {
 
     /// Set mapbox camera center and zoom based on current pdf view contentOffset and zoomScale
     private func syncCameraStateWithPDFView() {
+        guard pdfDrivesInteractions else { return }
         let cameraCenter = PDFCanvasViewController.scrollViewStateToMapboxCenter(
             scrollView: pdfScrollView,
             initialCenter: pdfSource.center,
@@ -231,6 +252,25 @@ class PDFCanvasViewController: UIViewController {
         let metersPerPoint = initialMetersPerPoint / pdfScrollView.zoomScale
         let mapboxZoom = zoomConverter.getZoom(forMetersPerPoint: metersPerPoint)
         mapView.mapboxMap.setCamera(to: CameraOptions(center: cameraCenter, zoom: mapboxZoom))
+    }
+
+    /// Calculate and apply PDF zoom and offset based on current Mapbox camera state.
+    private func syncPDFViewWithCameraState() {
+        guard !pdfDrivesInteractions else { return }
+
+        let cameraState = mapView.cameraState
+
+        let contentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
+            cameraCenter: cameraState.center,
+            scrollView: pdfScrollView,
+            initialCenter: pdfSource.center,
+            initialMetersPerPoint: initialMetersPerPoint
+        )
+        pdfScrollView.contentOffset = contentOffset
+
+        // translate current mapbox zoom to pdf UIView.zoomScale
+        let currentMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: cameraState.zoom)
+        pdfScrollView.zoomScale = initialMetersPerPoint / currentMetersPerPoint
     }
 
     /// Calculate what should be the camera center for Mapbox so it matches the current pdf scroll view contentOffset and zoom
