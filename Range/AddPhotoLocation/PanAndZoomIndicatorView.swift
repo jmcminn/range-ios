@@ -5,7 +5,7 @@ class PanAndZoomIndicatorView: UIView {
         super.init(frame: .zero)
 
         backgroundColor = UIColor.Misc_Black
-        addDropshadowMd()
+        addDropshadowMd02()
         layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
         layer.cornerRadius = 10
 

@@ -9,7 +9,8 @@ class PhotoFlowController {
 
     var onStop: (() -> Void)?
     var pinsHandler: AddPhotoPinsHandler?
-    var confirmationCardVC: AddPhotoLocationCardViewController?
+    var topViewController: AddPhotoTopViewController?
+    var confirmationCardVC: AddPhotoConfirmationViewController?
     var panAndZoomIndicatorView: PanAndZoomIndicatorView?
 
     /// id of registered delegate
@@ -32,14 +33,15 @@ class PhotoFlowController {
     }
 
     func stop() {
+        if let canvasDelegateId = canvasDelegateId {
+            canvasContainer.pdfCanvas.removeDelegate(id: canvasDelegateId)
+        }
         if let confirmationCardVC = confirmationCardVC {
             confirmationCardVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
             }
         }
-        if let canvasDelegateId = canvasDelegateId {
-            canvasContainer.pdfCanvas.removeDelegate(id: canvasDelegateId)
-        }
+        hideTopViewController()
         pinsHandler?.stop()
         panAndZoomIndicatorView?.removeFromSuperview()
         onStop?()
@@ -89,9 +91,40 @@ class PhotoFlowController {
 
     private func onPhotoTaken(photo: UIImage) {
         canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
-        showPhotoLocationCard()
+        showTopViewController()
+        showConfirmationCard()
         showPanAndZoomIndicatorView()
         showPins(forImage: photo)
+    }
+
+    private func showTopViewController() {
+        let topViewController = AddPhotoTopViewController()
+        canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
+        topViewController.view.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(canvasContainer.controls.snp.top)
+        }
+        canvasContainer.controls.layoutIfNeeded()
+        UIView.animate(withDuration: 0.2) {
+            topViewController.view.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.top.equalToSuperview()
+            }
+            self.canvasContainer.controls.layoutIfNeeded()
+        }
+        self.topViewController = topViewController
+    }
+
+    private func hideTopViewController() {
+        if let topViewController = topViewController {
+            UIView.animate(withDuration: 0.2) {
+                topViewController.view.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.canvasContainer.controls.snp.top)
+                }
+                self.canvasContainer.controls.layoutIfNeeded()
+            }
+        }
     }
 
     private func showPins(forImage image: UIImage) {
@@ -100,8 +133,8 @@ class PhotoFlowController {
     }
 
     /// Presents a card with cancel/confirm and registers callbacks for user actions
-    private func showPhotoLocationCard() {
-        confirmationCardVC = AddPhotoLocationCardViewController()
+    private func showConfirmationCard() {
+        confirmationCardVC = AddPhotoConfirmationViewController()
         confirmationCardVC!.onCancel = { [weak self] in self?.stop() }
         confirmationCardVC!.onConfirm = { [weak self] in self?.onPhotoLocationConfirmed() }
         canvasContainer.installCard(

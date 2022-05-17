@@ -1,7 +1,7 @@
 import SnapKit
 import UIKit
 
-class AddPhotoLocationCardViewController: UIViewController, NonModalCardCoordinating {
+class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordinating {
     var cardHandler: NonModalCardHandler?
 
     static let topPadding = 21.0
@@ -58,12 +58,12 @@ class AddPhotoLocationCardViewController: UIViewController, NonModalCardCoordina
         confirmButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
         backButton.snp.makeConstraints { make in
             make.leading.equalTo(16)
-            make.top.equalTo(AddPhotoLocationCardViewController.topPadding)
+            make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
             make.trailing.equalTo(confirmButton.snp.leading).offset(-16)
         }
         confirmButton.snp.makeConstraints { make in
             make.trailing.equalTo(-16)
-            make.top.equalTo(AddPhotoLocationCardViewController.topPadding)
+            make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
         }
     }
 
@@ -80,7 +80,7 @@ class AddPhotoLocationCardViewController: UIViewController, NonModalCardCoordina
     }
 }
 
-extension AddPhotoLocationCardViewController: CardPresentable {
+extension AddPhotoConfirmationViewController: CardPresentable {
     func height(forWidth width: CGFloat, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .medium {
             return -1 // not supported
@@ -92,12 +92,12 @@ extension AddPhotoLocationCardViewController: CardPresentable {
         )
 
         return
-            AddPhotoLocationCardViewController.topPadding +
+            AddPhotoConfirmationViewController.topPadding +
             confirmButton.systemLayoutSizeFitting(
                 fittingSize,
                 withHorizontalFittingPriority: .required,
                 verticalFittingPriority: .defaultLow
             ).height +
-            AddPhotoLocationCardViewController.bottomPadding
+            AddPhotoConfirmationViewController.bottomPadding
     }
 }
