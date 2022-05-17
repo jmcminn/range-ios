@@ -8,9 +8,13 @@ class MapTooltipView: UIView {
         super.init(frame: .zero)
 
         let boxView = UIImageView(image: UIImage(named: "tooltip_box"))
+        boxView.addDropshadowMd()
+        boxView.layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
         addSubview(boxView)
 
         let arrowView = UIImageView(image: UIImage(named: "tooltip_arrow"))
+        arrowView.addDropshadowMd()
+        arrowView.layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
         addSubview(arrowView)
 
         let font = UIFont.preferredFont(forTextStyle: .subheadline)
