@@ -44,7 +44,8 @@ class PDFCanvasViewController: UIViewController {
     /// display link used for pan/zoom animations
     private var displayLink: DisplayLink?
 
-    var delegate: CanvasViewControllerDelegate?
+    /// dictionary of delegates stored per id
+    private var delegates: [UUID: CanvasViewControllerDelegate] = [:]
 
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
@@ -69,6 +70,18 @@ class PDFCanvasViewController: UIViewController {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    /// Add delegate and returns id so it can be later removed
+    func addDelegate(_ delegate: CanvasViewControllerDelegate) -> UUID {
+        let id = UUID()
+        delegates[id] = delegate
+        return id
+    }
+
+    /// remove the delegate with given id
+    func removeDelegate(id: UUID) {
+        delegates.removeValue(forKey: id)
     }
 
     override func viewDidLoad() {
@@ -107,7 +120,9 @@ class PDFCanvasViewController: UIViewController {
     @objc func didTapView(_ sender: UITapGestureRecognizer) {
         let point = sender.location(in: sender.view)
         guard let pointInMapView = sender.view?.convert(point, to: mapView) else { return }
-        delegate?.canvasTapRecognized(at: pointInMapView)
+        delegates.values.forEach {
+            $0.canvasTapRecognized(at: pointInMapView)
+        }
     }
 
     /// Calculates initial mapbox zoom so the PDFPage fits the screen
@@ -334,7 +349,9 @@ extension PDFCanvasViewController: PDFPageScrollViewDelegate {
         if !programmaticAnimationInProgress {
             syncCameraStateWithPDFView()
         }
-        delegate?.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .pan)
+        delegates.values.forEach {
+            $0.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .pan)
+        }
     }
 
     func scrollViewDidZoom(_: PDFPageScrollView) {
@@ -342,14 +359,18 @@ extension PDFCanvasViewController: PDFPageScrollViewDelegate {
         if !programmaticAnimationInProgress {
             syncCameraStateWithPDFView()
         }
-        delegate?.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .zoom)
+        delegates.values.forEach {
+            $0.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .zoom)
+        }
     }
 
     /// Notify about panEnd but only if not decelerating (if decelerating the panEnd will be notified on deceleration end)
     /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
     func scrollViewDidEndDragging(_: PDFPageScrollView, willDecelerate decelerate: Bool) {
         if !decelerate, !programmaticAnimationInProgress {
-            delegate?.canvasCameraChanged(reason: .panEnd)
+            delegates.values.forEach {
+                $0.canvasCameraChanged(reason: .panEnd)
+            }
         }
     }
 
@@ -357,7 +378,9 @@ extension PDFCanvasViewController: PDFPageScrollViewDelegate {
     /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
     func scrollViewDidEndDecelerating(_: PDFPageScrollView) {
         if !programmaticAnimationInProgress {
-            delegate?.canvasCameraChanged(reason: .panEnd)
+            delegates.values.forEach {
+                $0.canvasCameraChanged(reason: .panEnd)
+            }
         }
     }
 
@@ -365,7 +388,9 @@ extension PDFCanvasViewController: PDFPageScrollViewDelegate {
     /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
     func scrollViewDidEndZooming(_: PDFPageScrollView, with _: UIView?, atScale _: CGFloat) {
         if !programmaticAnimationInProgress {
-            delegate?.canvasCameraChanged(reason: .zoomEnd)
+            delegates.values.forEach {
+                $0.canvasCameraChanged(reason: .zoomEnd)
+            }
         }
     }
 }

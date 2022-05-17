@@ -10,6 +10,10 @@ class PhotoFlowController {
     var onStop: (() -> Void)?
     var pinsHandler: AddPhotoPinsHandler?
     var confirmationCardVC: AddPhotoLocationCardViewController?
+    var panAndZoomIndicatorView: PanAndZoomIndicatorView?
+
+    /// id of registered delegate
+    var canvasDelegateId: UUID?
 
     ///
     /// - Parameters: canvas - the flow will operate on this canvs
@@ -33,7 +37,11 @@ class PhotoFlowController {
                 self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
             }
         }
+        if let canvasDelegateId = canvasDelegateId {
+            canvasContainer.pdfCanvas.removeDelegate(id: canvasDelegateId)
+        }
         pinsHandler?.stop()
+        panAndZoomIndicatorView?.removeFromSuperview()
         onStop?()
     }
 
@@ -80,7 +88,9 @@ class PhotoFlowController {
     }
 
     private func onPhotoTaken(photo: UIImage) {
+        canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
         showPhotoLocationCard()
+        showPanAndZoomIndicatorView()
         showPins(forImage: photo)
     }
 
@@ -100,6 +110,15 @@ class PhotoFlowController {
             cardConfig: CardConfiguration(showSafeAreaBlur: true)
         )
         confirmationCardVC!.showCard(animated: true)
+    }
+
+    private func showPanAndZoomIndicatorView() {
+        panAndZoomIndicatorView = PanAndZoomIndicatorView()
+        canvasContainer.controls.addSubview(panAndZoomIndicatorView!)
+        panAndZoomIndicatorView!.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(12)
+            make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
+        }
     }
 
     /// Handle the photo location confirmation - potentially create the pin and close the flow
@@ -127,6 +146,24 @@ class PhotoFlowController {
         }
         stop()
     }
+}
+
+/// CanvasViewControllerDelegate
+extension PhotoFlowController: CanvasViewControllerDelegate {
+    func canvasCameraChanged(reason: CanvasCameraChangeReason) {
+        if reason == .pan || reason == .zoom {
+            guard let panAndZoomIndicator = panAndZoomIndicatorView else { return }
+            UIView.animate(withDuration: 0.2,
+                           animations: {
+                               panAndZoomIndicator.alpha = 0
+                           }, completion: { _ in
+                               panAndZoomIndicator.removeFromSuperview()
+                               self.panAndZoomIndicatorView = nil
+                           })
+        }
+    }
+
+    func canvasTapRecognized(at _: CGPoint) {}
 }
 
 /// Camera permissions

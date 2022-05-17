@@ -23,6 +23,9 @@ class AddPhotoPinsHandler {
     /// tooltip shown for photoPinView
     var photoTooltip: MapTooltipView?
 
+    /// id of registered delegate
+    var canvasDelegateId: UUID?
+
     /// - Parameters:
     ///   - canvasContainer:    handler will add pins to this canvas
     ///   - image:              image to be displayed on the new photo pin
@@ -38,13 +41,15 @@ class AddPhotoPinsHandler {
 
     func start() {
         showPins()
-        canvasContainer.pdfCanvas.delegate = self
+        canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
         updatePinSelection()
         showPhotoTooltip()
     }
 
     func stop() {
-        canvasContainer.pdfCanvas.delegate = nil
+        if let id = canvasDelegateId {
+            canvasContainer.pdfCanvas.removeDelegate(id: id)
+        }
         if let databaseHandle = databaseHandle {
             Database.database().reference().child("geometryData/geometries").removeObserver(withHandle: databaseHandle)
         }
