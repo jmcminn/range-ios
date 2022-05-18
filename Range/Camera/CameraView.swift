@@ -35,6 +35,9 @@ class CameraViewModel: ObservableObject {
 ///
 /// The main camera view with a pinch-zoomable photo preview and buttons to take a photo or cancel
 struct CameraView: View {
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+
     @ObservedObject var cameraService: CameraService
     @ObservedObject var model: CameraViewModel
     var closeAction: () -> Void
@@ -175,24 +178,51 @@ struct CameraView: View {
     // main view
     var body: some View {
         GeometryReader { reader in
-            ZStack {
-                Color.Misc_Black.edgesIgnoringSafeArea(.all)
-                VStack {
+            if horizontalSizeClass == .regular, verticalSizeClass == .regular {
+                // "iPad" draft layout (present controls on top of the camera view)
+                ZStack {
+                    Color.Misc_Black.edgesIgnoringSafeArea(.all)
                     Spacer()
                     ZStack(alignment: .bottom) {
                         cameraView(reader: reader)
-                        zoomView.padding(.bottom, 22)
+                        VStack {
+                            zoomView
+                            ZStack {
+                                HStack {
+                                    closeButton
+                                        .padding(20)
+                                    Spacer()
+                                }
+                                HStack {
+                                    takePhotoButton
+                                        .padding(16)
+                                }
+                            }
+                        }.padding(.bottom, 22)
                     }
                     Spacer()
-                    ZStack {
-                        HStack {
-                            closeButton
-                                .padding(20)
-                            Spacer()
+                }
+
+            } else {
+                ZStack {
+                    Color.Misc_Black.edgesIgnoringSafeArea(.all)
+                    VStack {
+                        Spacer()
+                        ZStack(alignment: .bottom) {
+                            cameraView(reader: reader)
+                            zoomView.padding(.bottom, 22)
                         }
-                        HStack {
-                            takePhotoButton
-                                .padding(16)
+                        Spacer()
+                        ZStack {
+                            HStack {
+                                closeButton
+                                    .padding(20)
+                                Spacer()
+                            }
+                            HStack {
+                                takePhotoButton
+                                    .padding(16)
+                            }
                         }
                     }
                 }
