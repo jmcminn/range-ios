@@ -21,7 +21,7 @@ class ProjectActionSelectorViewController: UIViewController {
     var tableView: UITableView!
     let actions: [ProjectAction]
 
-    private let imageConfig = UIImage.SymbolConfiguration(textStyle: .subheadline)
+    private let imageConfig = UIImage.SymbolConfiguration(textStyle: .caption1)
         .applying(UIImage.SymbolConfiguration(weight: .medium))
 
     /// Initiates with additional actions to show (besides the default ones)
@@ -49,7 +49,8 @@ class ProjectActionSelectorViewController: UIViewController {
 
     override func loadView() {
         super.loadView()
-        tableView = UITableView(frame: view.bounds, style: .insetGrouped)
+        // we use .plain style and the make it look like grouped because we need to add borders around section which grouped style doesn't support
+        tableView = UITableView(frame: view.bounds, style: .plain)
         view.addSubview(tableView)
     }
 
@@ -65,9 +66,11 @@ class ProjectActionSelectorViewController: UIViewController {
             UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.separatorInset = .zero
-        tableView.separatorInsetReference = .fromCellEdges
-        tableView.separatorColor = UIColor.Neutral_08
+        tableView.separatorStyle = .none
+        // border is now added manually to each cell:
+//        tableView.separatorInset = .zero
+//        tableView.separatorInsetReference = .fromCellEdges
+//        tableView.separatorColor = UIColor.Neutral_08
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ActionCell")
 
         tableView.reloadData()
@@ -75,6 +78,11 @@ class ProjectActionSelectorViewController: UIViewController {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    override func traitCollectionDidChange(_: UITraitCollection?) {
+        // update the border color for cells
+        tableView.reloadData()
     }
 }
 
@@ -89,9 +97,10 @@ extension ProjectActionSelectorViewController: UITableViewDelegate, UITableViewD
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ActionCell", for: indexPath)
-        cell.backgroundColor = UIColor.Neutral_09
-        cell.imageView?.tintColor = UIColor.Neutral_04
-        cell.textLabel?.textColor = UIColor.Neutral_04
+        cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
+        cell.imageView?.tintColor = traitCollection.userInterfaceStyle == .dark ? UIColor.Neutral_04 : UIColor
+            .Neutral_07
+        cell.textLabel?.textColor = cell.imageView?.tintColor
         let action = actions[indexPath.row]
         cell.textLabel?.text = action.title
         if let imageName = action.imageName {
@@ -100,7 +109,18 @@ extension ProjectActionSelectorViewController: UITableViewDelegate, UITableViewD
         return cell
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        // this should be considered a hack - there's no easy way of adding a border around the section in table view
+        tableView.addBackgroundWithBorder(
+            forCell: cell,
+            forRowAt: indexPath,
+            backgroundColor: traitCollection.userInterfaceStyle == .dark ? UIColor.Neutral_09 : UIColor.Neutral_02,
+            borderColor: traitCollection.userInterfaceStyle == .dark ? UIColor.Neutral_08 : UIColor.Neutral_03,
+            selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
+        )
+    }
+
+    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let action = actions[indexPath.row]
         action.handler?()

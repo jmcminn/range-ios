@@ -5,6 +5,8 @@ extension Color {
     static let Misc_Black = Color("Misc_Black")
     static let Misc_White = Color("Misc_White")
     static let Neutral_01 = Color("Neutral_01")
+    static let Neutral_02 = Color("Neutral_02")
+    static let Neutral_03 = Color("Neutral_03")
     static let Neutral_04 = Color("Neutral_04")
     static let Neutral_05 = Color("Neutral_05")
     static let Neutral_06 = Color("Neutral_06")
@@ -25,6 +27,8 @@ extension UIColor {
     static let Misc_Black = UIColor(named: "Misc_Black")!
     static let Misc_White = UIColor(named: "Misc_White")!
     static let Neutral_01 = UIColor(named: "Neutral_01")!
+    static let Neutral_02 = UIColor(named: "Neutral_02")!
+    static let Neutral_03 = UIColor(named: "Neutral_03")!
     static let Neutral_04 = UIColor(named: "Neutral_04")!
     static let Neutral_05 = UIColor(named: "Neutral_05")!
     static let Neutral_06 = UIColor(named: "Neutral_06")!

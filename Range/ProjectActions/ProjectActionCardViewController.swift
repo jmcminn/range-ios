@@ -121,8 +121,9 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         actionSelectorVC.view.snp.makeConstraints { make in
             make.top.equalTo(photoButton.snp.bottom)
                 .offset(ProjectActionCardViewController.headerToActionsPadding).priority(.required)
-            make.width.equalToSuperview()
-            make.bottom.equalToSuperview().priority(.required)
+            make.left.equalToSuperview().offset(16)
+            make.right.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(12).priority(.required)
         }
     }
 
@@ -162,7 +163,7 @@ extension ProjectActionCardViewController: CardPresentable {
         )
 
         if cardPosition == .max {
-            height += actionSelectorVC.tableView.contentSize.height
+            height += (actionSelectorVC.tableView.contentSize.height + 12.0)
         }
 
         return height
