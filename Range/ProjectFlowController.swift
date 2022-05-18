@@ -53,6 +53,14 @@ final class ProjectFlowController: UIViewController {
                 imageName: "rectangle.portrait.and.arrow.right",
                 handler: onSignOut
             ),
+            ProjectAction(
+                title: "Toggle Light/Dark mode",
+                imageName: "lightbulb",
+                handler: {
+                    self.view.window?.overrideUserInterfaceStyle = self.traitCollection
+                        .userInterfaceStyle == .dark ? .light : .dark
+                }
+            ),
         ]
         let vc = ProjectActionCardViewController(actions: additionalCardActions)
         vc.onCamera = { [weak self] in
