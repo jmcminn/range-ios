@@ -61,12 +61,10 @@ class AddPhotoPinsHandler {
     private func installPhotoPinView() {
         guard photoPinView == nil else { return }
 
-        let pin = createPhotoPin(fromImage: image)
+        let pin = PhotoPin(image: image)
         canvasContainer.content.addSubview(pin)
         pin.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            // center pin tip on the screen center (the asset has insets defined to ignore shadow)
-            make.bottom.equalTo(canvasContainer.content.snp.centerY)
+            make.center.equalToSuperview()
         }
         photoPinView = pin
     }
@@ -199,10 +197,18 @@ class AddPhotoPinsHandler {
             return updatedPin
         }
         if selectedPinId != nil {
-            photoPinView?.isHidden = true
+            UIView.animate(withDuration: 0.2) {
+                self.photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            } completion: { _ in
+                self.photoPinView?.isHidden = true
+            }
         } else {
             installPhotoPinView()
+            photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
             photoPinView?.isHidden = false
+            UIView.animate(withDuration: 0.2) {
+                self.photoPinView?.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }
         }
     }
 
