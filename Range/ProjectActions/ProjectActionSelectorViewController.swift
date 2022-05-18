@@ -57,7 +57,7 @@ class ProjectActionSelectorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.Neutral_10
+        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         tableView.backgroundColor = view.backgroundColor
         tableView.tableHeaderView =
@@ -98,8 +98,7 @@ extension ProjectActionSelectorViewController: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ActionCell", for: indexPath)
         cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
-        cell.imageView?.tintColor = traitCollection.userInterfaceStyle == .dark ? UIColor.Neutral_04 : UIColor
-            .Neutral_07
+        cell.imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         cell.textLabel?.textColor = cell.imageView?.tintColor
         let action = actions[indexPath.row]
         cell.textLabel?.text = action.title
@@ -114,8 +113,8 @@ extension ProjectActionSelectorViewController: UITableViewDelegate, UITableViewD
         tableView.addBackgroundWithBorder(
             forCell: cell,
             forRowAt: indexPath,
-            backgroundColor: traitCollection.userInterfaceStyle == .dark ? UIColor.Neutral_09 : UIColor.Neutral_02,
-            borderColor: traitCollection.userInterfaceStyle == .dark ? UIColor.Neutral_08 : UIColor.Neutral_03,
+            backgroundColor: .dynamicColor(light: .Neutral_02, dark: .Neutral_09),
+            borderColor: .dynamicColor(light: .Neutral_03, dark: .Neutral_08),
             selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
         )
     }

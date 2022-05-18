@@ -24,7 +24,7 @@ struct EmailAuthView: View {
             ZStack(alignment: .top) {
                 // background that stays in place and ignores safe areas
                 Group {
-                    Color.Neutral_10
+                    Color(.dynamicColor(light: .Neutral_01, dark: .Neutral_10))
                     Image("topglow")
                         .resizable()
                         .scaledToFill()
@@ -39,10 +39,10 @@ struct EmailAuthView: View {
                         .padding(EdgeInsets(top: 12, leading: 0, bottom: 40, trailing: 0))
 
                     Text("Let's get started")
-                        .foregroundColor(Color.Neutral_04)
+                        .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
                         .font(.title3.bold())
                     Text("Please enter your email and password to continue")
-                        .foregroundColor(Color.Neutral_05)
+                        .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
                         .font(.subheadline)
                         .padding(EdgeInsets(top: 5, leading: 0, bottom: 20, trailing: 0))
 

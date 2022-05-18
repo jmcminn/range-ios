@@ -40,16 +40,14 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = UIColor.Neutral_10
-        updateShadow()
+        containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         containerView.installSliderView()
 
         containerView.addSubview(searchBackground)
-        searchBackground.backgroundColor = UIColor.Neutral_09
+        searchBackground.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         searchBackground.layer.cornerRadius = 12
         searchBackground.layer.borderWidth = 1
-        searchBackground.layer.borderColor = UIColor.Neutral_08.cgColor
 
         let searchImage = UIImage(
             systemName: "magnifyingglass",
@@ -62,7 +60,10 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         searchIcon.setContentHuggingPriority(.required, for: .vertical)
 
         searchTextField = UITextField()
-        searchTextField.placeholder = "Search"
+        searchTextField.attributedPlaceholder = NSAttributedString(
+            string: "Search",
+            attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
+        )
         searchTextField.font = UIFont.preferredFont(forTextStyle: .body)
         searchTextField.adjustsFontForContentSizeCategory = true
         searchTextField.isUserInteractionEnabled = false
@@ -125,19 +126,21 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             make.right.equalToSuperview().offset(-16)
             make.bottom.equalToSuperview().offset(12).priority(.required)
         }
+
+        updateColors()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            searchBackground.layer.borderColor = UIColor.Neutral_08.cgColor
-            updateShadow()
+            updateColors()
         }
     }
 
-    private func updateShadow() {
+    private func updateColors() {
         let darkMode = traitCollection.userInterfaceStyle == .dark
         view.layer.shadowOpacity = darkMode ? 0.2 : 0.05
         view.layer.shadowColor = UIColor.Shadow.cgColor
+        searchBackground.layer.borderColor = darkMode ? UIColor.Neutral_08.cgColor : UIColor.Neutral_03.cgColor
     }
 }
 

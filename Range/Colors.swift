@@ -44,3 +44,15 @@ extension UIColor {
     static let Secondary_03 = UIColor(named: "Secondary_03")
     static let Shadow = UIColor(named: "Shadow")!
 }
+
+extension UIColor {
+    static func dynamicColor(light: UIColor, dark: UIColor) -> UIColor {
+        UIColor { $0.userInterfaceStyle == .dark ? dark : light }
+    }
+}
+
+extension Color {
+    static func dynamicColor(light: UIColor, dark: UIColor) -> Color {
+        Color(UIColor.dynamicColor(light: light, dark: dark))
+    }
+}

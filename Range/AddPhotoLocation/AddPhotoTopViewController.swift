@@ -7,20 +7,20 @@ class AddPhotoTopViewController: UIViewController {
         super.viewDidLoad()
         updateShadow()
 
-        view.backgroundColor = UIColor.Neutral_10
+        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         view.addDropshadowMd01()
 
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         let image = UIImage(systemName: "mappin.and.ellipse", withConfiguration: imageConfig)
         let imageView = UIImageView(image: image)
-        imageView.tintColor = UIColor.Neutral_04
+        imageView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
 
         let font = UIFont.preferredFont(forTextStyle: .body)
         let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
         let textLabel = UILabel()
         textLabel.text = "Add Location"
-        textLabel.textColor = UIColor.Neutral_04
+        textLabel.textColor = imageView.tintColor
         textLabel.font = boldFont
         textLabel.adjustsFontForContentSizeCategory = true
 

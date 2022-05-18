@@ -22,7 +22,7 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = UIColor.Neutral_10
+        containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         updateShadow()
 
         containerView.installSliderView()
@@ -37,12 +37,12 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         buttonConfig.background.cornerRadius = 12
 
         var backConfig = buttonConfig
-        backConfig.baseBackgroundColor = UIColor.Neutral_06
-        backConfig.baseForegroundColor = UIColor.Neutral_04
+        backConfig.baseBackgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_07)
+        backConfig.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
 
         var confirmConfig = buttonConfig
-        confirmConfig.baseBackgroundColor = UIColor.Primary_Blue_04
-        confirmConfig.baseForegroundColor = UIColor.Neutral_01
+        confirmConfig.baseBackgroundColor = .Primary_Blue_04
+        confirmConfig.baseForegroundColor = .Neutral_01
 
         let backButton = UIButton(
             configuration: backConfig,

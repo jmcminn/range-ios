@@ -4,7 +4,7 @@ extension UIView {
     /// Adds slider view to this view and returns it for reference
     @discardableResult func installSliderView() -> UIView {
         let sliderView = UIView()
-        sliderView.backgroundColor = UIColor.Neutral_06
+        sliderView.backgroundColor = .dynamicColor(light: .Neutral_05, dark: .Neutral_06)
         sliderView.layer.cornerRadius = 2.5
         addSubview(sliderView)
         sliderView.snp.makeConstraints { make in
