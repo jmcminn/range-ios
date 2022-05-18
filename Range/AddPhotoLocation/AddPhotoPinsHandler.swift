@@ -252,12 +252,10 @@ class AddPhotoPinsHandler {
 extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
     /// Reset selected pin if user panned the map
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
-        if reason == .pan {
-            // only reset pin if the user is panning (= it's not programmatically started animation)
+        if reason == .pan || reason == .zoom {
+            // only reset pin if the user is interacting with the map (= it's not programmatically started animation)
             selectPin(forFeature: nil)
-            if featureTooltip != nil {
-                hideTooltip()
-            }
+            hideTooltip()
         } else if reason == .panEnd {
             // show the tooltip for photo pin only after the pan gesture has ended
             if photoTooltip == nil {
