@@ -6,22 +6,50 @@ import SnapKit
 import Turf
 import UIKit
 
+/// Selected pin information
+struct SelectedPin {
+    let id: String
+    let point: Point
+
+    init?(fromFeature: Feature?) {
+        guard let feature = fromFeature else {
+            return nil
+        }
+        guard case let .string(featureId) = feature.identifier else { return nil }
+        guard case let .point(point) = feature.geometry?.geometry else { return nil }
+        id = featureId
+        self.point = point
+    }
+}
+
 /// Handles the pins when adding a photo annotation
 class AddPhotoPinsHandler {
     unowned let canvasContainer: CanvasContainerViewController
     let image: UIImage
 
     var databaseHandle: DatabaseHandle?
-    /// feature id (geometry id) of the currently selected pin annotation (or nil if nothing is selected and we're showing the `photoPin`)
-    var selectedPinId: String?
+
+    /// Defines the size of the rectangle used for searching pins near to the photo pin (or screen center)
+    let pinsSearchRectSize = 30.0
+
+    /// The rectangle used for searching pins near to the photo pin (or screen center)
+    lazy var pinsSearchRect = CGRect(
+        x: canvasContainer.annotationsMapView.center.x - pinsSearchRectSize / 2.0,
+        y: canvasContainer.annotationsMapView.center.y - pinsSearchRectSize / 2.0,
+        width: pinsSearchRectSize,
+        height: pinsSearchRectSize
+    )
+
+    /// selected pin or nil if nothing is selected and we're showing the `photoPin`
+    var selectedPin: SelectedPin?
 
     /// the pin displaying a photo thumb - used for selecting a new location for the image
     var photoPinView: UIView?
 
     /// tooltip shown for a currently selected pin
-    var featureTooltip: MapTooltipView?
+    var selectedPinTooltip: MapTooltipView?
     /// tooltip shown for photoPinView
-    var photoTooltip: MapTooltipView?
+    var photoPinTooltip: MapTooltipView?
 
     /// id of registered delegate
     var canvasDelegateId: UUID?
@@ -43,7 +71,7 @@ class AddPhotoPinsHandler {
         showPins()
         canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
         updatePinSelection()
-        showPhotoTooltip()
+        showPhotoPinTooltip()
     }
 
     func stop() {
@@ -69,44 +97,22 @@ class AddPhotoPinsHandler {
         photoPinView = pin
     }
 
-    /// Selects pin for given feature and center screen on it. If `feature` is nil then unselects the currently selected.
-    private func selectPin(forFeature feature: Feature?) {
-        if feature == nil {
-            // unselect if any selected
-            if selectedPinId != nil {
-                selectedPinId = nil
-                updatePinSelection()
-            }
-        }
-        // select a pin
-        guard case let .string(featureId) = feature?.identifier else { return }
-        guard case let .point(point) = feature?.geometry?.geometry else { return }
-        // if it's not currently selected mark it as selected and zoom to it
-        if selectedPinId != featureId {
-            selectedPinId = featureId
-            updatePinSelection()
-            canvasContainer.pdfCanvas.animatePanAndZoom(
-                cameraCenter: point.coordinates,
-                mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
-            )
-        }
-    }
-
     /// Hide tooltip if any presented (either feature or photo tooltip)
     private func hideTooltip() {
-        if let tooltip = featureTooltip {
+        if let tooltip = selectedPinTooltip {
             canvasContainer.annotationsMapView.viewAnnotations.remove(tooltip)
-            featureTooltip = nil
+            selectedPinTooltip = nil
         }
-        if let tooltip = photoTooltip {
+        if let tooltip = photoPinTooltip {
             tooltip.removeFromSuperview()
-            photoTooltip = nil
+            photoPinTooltip = nil
         }
     }
 
-    /// Shows the tooltip for given feature.
-    private func showFeatureTooltip(forFeature feature: Feature) {
-        guard case let .point(point) = feature.geometry?.geometry else { return }
+    /// Shows the tooltip for the selected pin.
+    private func showSelectedPinTooltip() {
+        hideTooltip()
+        guard let point = selectedPin?.point else { return }
 
         let tooltip = MapTooltipView(text: "Use this location")
         let fittingSize = CGSize(
@@ -127,11 +133,13 @@ class AddPhotoPinsHandler {
             tooltip.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
         try? canvasContainer.annotationsMapView.viewAnnotations.add(tooltip, options: tooltipOptions)
-        featureTooltip = tooltip
+        selectedPinTooltip = tooltip
     }
 
     /// Shows the tooltip for the photo pin.
-    private func showPhotoTooltip() {
+    private func showPhotoPinTooltip() {
+        hideTooltip()
+        guard photoPinTooltip == nil else { return } // already shown
         let tooltip = MapTooltipView(text: "New location")
         canvasContainer.content.addSubview(tooltip)
         tooltip.snp.makeConstraints { make in
@@ -143,7 +151,7 @@ class AddPhotoPinsHandler {
         UIView.animate(withDuration: 0.2) {
             tooltip.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
-        photoTooltip = tooltip
+        photoPinTooltip = tooltip
     }
 
     /// observe the geometries and reload pins change is observed
@@ -175,7 +183,7 @@ class AddPhotoPinsHandler {
             // not a point geometry, ignore
             return nil
         }
-        let selected = geometry.id == selectedPinId
+        let selected = geometry.id == selectedPin?.id
         var pin = PointAnnotation(id: geometry.id, coordinate: pointGeometry.position)
         pin.iconImage = "largepin"
         pin.iconAnchor = .bottom
@@ -183,7 +191,7 @@ class AddPhotoPinsHandler {
         pin.textField = "1"
         pin.textSize = 17
         pin.textOffset = [0, -2.35]
-        pin.textColor = StyleColor(UIColor.Misc_White)
+        pin.textColor = StyleColor(.Neutral_01)
         setPin(&pin, selected: selected)
         return pin
     }
@@ -192,20 +200,20 @@ class AddPhotoPinsHandler {
     private func updatePinSelection() {
         pinsAnnotationManager.annotations = pinsAnnotationManager.annotations.map { pin in
             var updatedPin = pin
-            let selected = pin.id == selectedPinId
+            let selected = pin.id == selectedPin?.id
             setPin(&updatedPin, selected: selected)
             return updatedPin
         }
-        if selectedPinId != nil {
+        if selectedPin != nil {
             UIView.animate(withDuration: 0.2) {
                 self.photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
             } completion: { _ in
-                self.photoPinView?.isHidden = true
+                self.photoPinView?.isHidden = self.selectedPin != nil
             }
         } else {
             installPhotoPinView()
             photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            photoPinView?.isHidden = false
+            photoPinView?.isHidden = selectedPin != nil
             UIView.animate(withDuration: 0.2) {
                 self.photoPinView?.transform = CGAffineTransform(scaleX: 1, y: 1)
             }
@@ -255,30 +263,91 @@ class AddPhotoPinsHandler {
     }
 }
 
+/// Handling of user interaction
+extension AddPhotoPinsHandler {
+    /// Returns the pin closest to the center of the map view. The pin must be within ``pinsSearchRect``
+    private func findPinClosestToCenter(completion: @escaping (SelectedPin?) -> Void) {
+        let mapViewCenter = canvasContainer.annotationsMapView.center
+
+        canvasContainer.annotationsMapView.mapboxMap.queryRenderedFeatures(
+            in: pinsSearchRect,
+            options: RenderedQueryOptions(layerIds: ["pins"], filter: nil)
+        ) { result in
+            guard case let .success(queriedFeatures) = result else {
+                completion(nil)
+                return
+            }
+            let closestPin = queriedFeatures
+                .filter { $0.source == "pins" }
+                .compactMap { SelectedPin(fromFeature: $0.feature) }
+                .filter {
+                    // only points in the search rectangle
+                    self.pinsSearchRect
+                        .contains(self.canvasContainer.annotationsMapView.mapboxMap.point(for: $0.point.coordinates))
+                }
+                .sorted {
+                    // find closest to the center (so closest to the photo pin)
+                    let point0 = self.canvasContainer.annotationsMapView.mapboxMap.point(for: $0.point.coordinates)
+                    let point1 = self.canvasContainer.annotationsMapView.mapboxMap.point(for: $1.point.coordinates)
+
+                    return CGPointDistanceSquared(from: mapViewCenter, to: point0) <
+                        CGPointDistanceSquared(from: mapViewCenter, to: point1)
+                }
+                .first
+            completion(closestPin)
+        }
+    }
+
+    /// Searches for pin at given map view coordinates and selects *any* found one
+    /// If any pin is selected the canvas animates to center on it.
+    private func selectPin(at point: CGPoint) {
+        canvasContainer.annotationsMapView.mapboxMap.queryRenderedFeatures(
+            at: point,
+            options: RenderedQueryOptions(layerIds: ["pins"], filter: nil)
+        ) { result in
+            // take any of the selected features with "pins" source
+            guard case let .success(queriedFeatures) = result else { return }
+            guard let feature = queriedFeatures.first?.feature else { return }
+            guard let newSelectedPin = SelectedPin(fromFeature: feature) else { return }
+            // if it's not currently selected mark it as selected and zoom to it
+            if newSelectedPin.id != self.selectedPin?.id {
+                self.hideTooltip()
+                self.selectedPin = newSelectedPin
+                self.updatePinSelection()
+                self.canvasContainer.pdfCanvas.animatePanAndZoom(
+                    cameraCenter: newSelectedPin.point.coordinates,
+                    mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
+                )
+                self.showSelectedPinTooltip()
+            }
+        }
+    }
+}
+
+/// Notifications of user interactions
 extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
     /// Reset selected pin if user panned the map
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
         if reason == .pan || reason == .zoom {
-            // only reset pin if the user is interacting with the map (= it's not programmatically started animation)
-            selectPin(forFeature: nil)
             hideTooltip()
+            findPinClosestToCenter { pin in
+                // either select the closest feature or deselect if no feature found
+                if self.selectedPin?.id != pin?.id {
+                    self.selectedPin = pin
+                    self.updatePinSelection()
+                }
+            }
         } else if reason == .panEnd {
-            // show the tooltip for photo pin only after the pan gesture has ended
-            if photoTooltip == nil {
-                showPhotoTooltip()
+            // show the tooltip after the pan gesture has ended
+            if selectedPin != nil {
+                showSelectedPinTooltip()
+            } else {
+                showPhotoPinTooltip()
             }
         }
     }
 
-    /// Select tapped pin or do nothing if no pin was tapped
     func canvasTapRecognized(at point: CGPoint) {
-        canvasContainer.annotationsMapView.mapboxMap.queryRenderedFeatures(at: point) { result in
-            // take any of the selected features with "pins" source
-            guard case let .success(queriedFeatures) = result else { return }
-            guard let queriedFeature = queriedFeatures.first(where: { $0.source == "pins" }) else { return }
-            self.selectPin(forFeature: queriedFeature.feature)
-            self.hideTooltip()
-            self.showFeatureTooltip(forFeature: queriedFeature.feature)
-        }
+        selectPin(at: point)
     }
 }

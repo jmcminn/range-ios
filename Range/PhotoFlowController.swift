@@ -156,10 +156,10 @@ class PhotoFlowController {
 
     /// Handle the photo location confirmation - potentially create the pin and close the flow
     private func onPhotoLocationConfirmed() {
-        if let selectedPinId = pinsHandler?.selectedPinId {
+        if let selectedPin = pinsHandler?.selectedPin {
             // one of previous pins was selected
             // TODO: add photo to collaboration
-            print("selected existing pin: \(selectedPinId)")
+            print("selected existing pin: \(selectedPin)")
         } else {
             // new position for pin
             let geometry = Geometry(
