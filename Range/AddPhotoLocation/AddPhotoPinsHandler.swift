@@ -20,6 +20,14 @@ struct SelectedPin {
         id = featureId
         self.point = point
     }
+
+    init?(fromPointAnnotation: PointAnnotation?) {
+        guard let pointAnnotation = fromPointAnnotation else {
+            return nil
+        }
+        id = pointAnnotation.id
+        point = pointAnnotation.point
+    }
 }
 
 /// Handles the pins when adding a photo annotation
@@ -39,6 +47,9 @@ class AddPhotoPinsHandler {
         width: pinsSearchRectSize,
         height: pinsSearchRectSize
     )
+
+    /// whether the pins have loaded at least once (used to initiate the selectedPin with the ``lastPhotoPinId``)
+    var pinsLoadedInitially = false
 
     /// selected pin or nil if nothing is selected and we're showing the `photoPin`
     var selectedPin: SelectedPin?
@@ -68,10 +79,9 @@ class AddPhotoPinsHandler {
     }
 
     func start() {
-        showPins()
+        installPhotoPinView()
+        loadAndDisplayPins()
         canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
-        updatePinSelection()
-        showPhotoPinTooltip()
     }
 
     func stop() {
@@ -94,6 +104,7 @@ class AddPhotoPinsHandler {
         pin.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
+        pin.isHidden = true
         photoPinView = pin
     }
 
@@ -112,16 +123,17 @@ class AddPhotoPinsHandler {
     /// Shows the tooltip for the selected pin.
     private func showSelectedPinTooltip() {
         hideTooltip()
-        guard let point = selectedPin?.point else { return }
+        guard let pin = selectedPin else { return }
 
-        let tooltip = MapTooltipView(text: "Use this location")
+        let tooltip = MapTooltipView(text:
+            pin.id == lastPhotoPinId ? "Use last location" : "Use this location")
         let fittingSize = CGSize(
             width: canvasContainer.annotationsMapView.frame.size.width,
             height: UIView.layoutFittingExpandedSize.height
         )
         let tooltipSize = tooltip.systemLayoutSizeFitting(fittingSize)
         let tooltipOptions = ViewAnnotationOptions(
-            geometry: point,
+            geometry: pin.point,
             width: tooltipSize.width.rounded(.up), // with no rounding the text was truncated...
             height: tooltipSize.height.rounded(.up),
             allowOverlap: true,
@@ -154,12 +166,39 @@ class AddPhotoPinsHandler {
         photoPinTooltip = tooltip
     }
 
-    /// observe the geometries and reload pins change is observed
-    private func showPins() {
+    /// Checks if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.
+    /// Otherwise show photo pin in the center of the screen
+    private func selectInitialPin() {
+        if let lastPhotoPin = SelectedPin(
+            fromPointAnnotation: pinsAnnotationManager.annotations.first(where: { $0.id == lastPhotoPinId })
+        ) {
+            selectedPin = lastPhotoPin
+            canvasContainer.pdfCanvas.animatePanAndZoom(
+                cameraCenter: lastPhotoPin.point.coordinates,
+                mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
+            )
+        }
+        updatePinSelection()
+        // show the tooltip after the pan gesture has ended
+        if selectedPin != nil {
+            showSelectedPinTooltip()
+        } else {
+            showPhotoPinTooltip()
+        }
+    }
+
+    /// observe the geometries and reload pins when the change is observed
+    private func loadAndDisplayPins() {
         databaseHandle = Database.database().reference().child("geometryData/geometries").observe(.value) { snapshot in
             let geometries = self.convertGeometriesSnapshotToModel(snapshot: snapshot)
             let pins = geometries.compactMap(self.convertGeometryToPin)
             self.pinsAnnotationManager.annotations = pins
+            if !self.pinsLoadedInitially {
+                self.pinsLoadedInitially = true
+                // on first load we need to see if there's a pin matching lastPhotoPinId
+                self.selectInitialPin()
+            }
+            // TODO: if currently selected pin is gone we need to switch back to photoPin (is it even possible?)
         }
     }
 
@@ -211,7 +250,6 @@ class AddPhotoPinsHandler {
                 self.photoPinView?.isHidden = self.selectedPin != nil
             }
         } else {
-            installPhotoPinView()
             photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
             photoPinView?.isHidden = selectedPin != nil
             UIView.animate(withDuration: 0.2) {

@@ -157,7 +157,7 @@ class PhotoFlowController {
     /// Handle the photo location confirmation - potentially create the pin and close the flow
     private func onPhotoLocationConfirmed() {
         if let selectedPin = pinsHandler?.selectedPin {
-            // one of previous pins was selected
+            lastPhotoPinId = selectedPin.id
             // TODO: add photo to collaboration
             print("selected existing pin: \(selectedPin)")
         } else {
@@ -166,6 +166,7 @@ class PhotoFlowController {
                 id: UUID().uuidString.lowercased(),
                 pointGeometry: GeoJSONPointGeometry(position: canvasContainer.annotationsMapView.cameraState.center)
             )
+            lastPhotoPinId = geometry.id
             do {
                 try Database.database().reference().child("geometryData/geometries").child(geometry.id)
                     .setValue(from: geometry) { error in
