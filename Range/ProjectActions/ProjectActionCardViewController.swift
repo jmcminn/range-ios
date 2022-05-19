@@ -86,8 +86,8 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         )
         photoButtonConfig.background.cornerRadius = 12
         photoButtonConfig.background.strokeColor = UIColor.Primary_Blue_06
-        photoButtonConfig.baseForegroundColor = UIColor.Misc_White
-        photoButtonConfig.baseBackgroundColor = UIColor.Primary_Blue_04
+        photoButtonConfig.baseForegroundColor = .Neutral_01
+        photoButtonConfig.baseBackgroundColor = .Primary_Blue_04
 
         photoButton = UIButton(
             configuration: photoButtonConfig,

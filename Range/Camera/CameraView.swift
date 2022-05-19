@@ -75,7 +75,7 @@ struct CameraView: View {
                 .frame(width: 50, height: 50)
                 .overlay(
                     Image(systemName: "xmark")
-                        .foregroundColor(Color.Misc_White)
+                        .foregroundColor(Color.Neutral_01)
                 )
         }.buttonStyle(.plain)
     }
@@ -83,7 +83,7 @@ struct CameraView: View {
     struct TakePhotoButtonStyle: ButtonStyle {
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
-                .foregroundColor(Color.Misc_White)
+                .foregroundColor(Color.Neutral_01)
                 .scaleEffect(configuration.isPressed ? 0.9 : 1)
                 .animation(.easeInOut(duration: 0.05), value: configuration.isPressed)
         }
@@ -93,7 +93,7 @@ struct CameraView: View {
     var takePhotoButton: some View {
         ZStack {
             Circle()
-                .strokeBorder(Color.Misc_White, lineWidth: 4)
+                .strokeBorder(Color.Neutral_01, lineWidth: 4)
                 .foregroundColor(.clear)
                 .frame(width: 66, height: 66, alignment: .center)
             Button(action: takePhotoAction) {
@@ -109,9 +109,9 @@ struct CameraView: View {
     var zoomView: some View {
         Text(model.zoomString)
             .font(.system(size: 11)).fontWeight(.semibold)
-            .foregroundColor(Color.Misc_White)
+            .foregroundColor(Color.Neutral_01)
             .frame(width: 30, height: 30)
-            .background(Circle().fill(Color.Misc_Black.opacity(0.8)))
+            .background(Circle().fill(Color.Neutral_10.opacity(0.8)))
     }
 
     // Grid overlay on photo preview showing a grid
@@ -133,7 +133,7 @@ struct CameraView: View {
                 path.addLine(to: CGPoint(x: w, y: h * 2 / 3))
                 path.closeSubpath()
             }
-            .stroke(Color.Misc_White.opacity(0.5), lineWidth: 1)
+            .stroke(Color.Neutral_01.opacity(0.5), lineWidth: 1)
         }
     }
 
@@ -170,7 +170,7 @@ struct CameraView: View {
                 if cameraService.isProcessingPhoto {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: Color
-                                .Misc_White))
+                                .Neutral_01))
                 }
             }
     }
@@ -181,7 +181,7 @@ struct CameraView: View {
             if horizontalSizeClass == .regular, verticalSizeClass == .regular {
                 // "iPad" draft layout (present controls on top of the camera view)
                 ZStack {
-                    Color.Misc_Black.edgesIgnoringSafeArea(.all)
+                    Color.Neutral_10.edgesIgnoringSafeArea(.all)
                     Spacer()
                     ZStack(alignment: .bottom) {
                         cameraView(reader: reader)
@@ -205,7 +205,7 @@ struct CameraView: View {
 
             } else {
                 ZStack {
-                    Color.Misc_Black.edgesIgnoringSafeArea(.all)
+                    Color.Neutral_10.edgesIgnoringSafeArea(.all)
                     VStack {
                         Spacer()
                         ZStack(alignment: .bottom) {

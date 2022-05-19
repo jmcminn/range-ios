@@ -2,8 +2,6 @@ import SwiftUI
 import UIKit
 
 extension Color {
-    static let Misc_Black = Color("Misc_Black")
-    static let Misc_White = Color("Misc_White")
     static let Neutral_01 = Color("Neutral_01")
     static let Neutral_02 = Color("Neutral_02")
     static let Neutral_03 = Color("Neutral_03")
@@ -24,8 +22,6 @@ extension Color {
 }
 
 extension UIColor {
-    static let Misc_Black = UIColor(named: "Misc_Black")!
-    static let Misc_White = UIColor(named: "Misc_White")!
     static let Neutral_01 = UIColor(named: "Neutral_01")!
     static let Neutral_02 = UIColor(named: "Neutral_02")!
     static let Neutral_03 = UIColor(named: "Neutral_03")!

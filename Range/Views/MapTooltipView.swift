@@ -21,7 +21,7 @@ class MapTooltipView: UIView {
         let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
         let textLabel = UILabel()
         textLabel.text = text
-        textLabel.textColor = UIColor.Misc_White
+        textLabel.textColor = .Neutral_01
         textLabel.font = boldFont
         textLabel.adjustsFontForContentSizeCategory = true
         addSubview(textLabel)

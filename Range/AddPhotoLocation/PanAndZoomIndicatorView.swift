@@ -4,7 +4,7 @@ class PanAndZoomIndicatorView: UIView {
     init() {
         super.init(frame: .zero)
 
-        backgroundColor = UIColor.Misc_Black
+        backgroundColor = UIColor.Neutral_10
         addDropshadowMd02()
         layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
         layer.cornerRadius = 10
@@ -13,7 +13,7 @@ class PanAndZoomIndicatorView: UIView {
         let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
         let textLabel = UILabel()
         textLabel.text = "Pan and zoom to adjust the location"
-        textLabel.textColor = UIColor.Misc_White
+        textLabel.textColor = UIColor.Neutral_01
         textLabel.font = boldFont
         textLabel.adjustsFontForContentSizeCategory = true
         addSubview(textLabel)
