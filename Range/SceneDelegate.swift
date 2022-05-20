@@ -46,13 +46,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let pdfPage = document.page(at: 0) else { return }
 
         // center on the initial position used in the web app https://gitlab.com/range.io/range.io/-/blob/1e0485d391a4c7f8c7ee283a9e01aca585bcc7d3/modules/range-editor/src/redux/slices/geometry-slice.js#L40
-        let pdfSource = PDFSource(
+        let pdfCanvas = PDFCanvas(
             center: CLLocationCoordinate2D(latitude: 32.82478, longitude: -96.77528),
             page: pdfPage,
             scale: 1 / 48.0
         )
 
-        let projectFC = ProjectFlowController(pdfSource: pdfSource)
+        let projectFC = ProjectFlowController(pdfCanvas: pdfCanvas)
         projectFC.onSignOut = { [weak self] in
             do {
                 try Auth.auth().signOut()

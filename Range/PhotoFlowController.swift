@@ -34,7 +34,7 @@ class PhotoFlowController {
 
     func stop() {
         if let canvasDelegateId = canvasDelegateId {
-            canvasContainer.pdfCanvas.removeDelegate(id: canvasDelegateId)
+            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
         }
         if let confirmationCardVC = confirmationCardVC {
             confirmationCardVC.hideCard(animated: true) {
@@ -90,7 +90,7 @@ class PhotoFlowController {
     }
 
     private func onPhotoTaken(photo: UIImage) {
-        canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
+        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
         showTopViewController()
         showConfirmationCard()
         showPanAndZoomIndicatorView()

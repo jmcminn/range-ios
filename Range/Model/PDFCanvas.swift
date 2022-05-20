@@ -2,8 +2,8 @@ import CoreLocation
 import Foundation
 import PDFKit
 
-/// Model class to describe the displayed PDF (page). This is only a temporary solution for the demo PDF setup.
-class PDFSource {
+/// Model class to describe the PDF canvas.
+class PDFCanvas {
     let center: CLLocationCoordinate2D
     let page: PDFPage
     let scale: Double

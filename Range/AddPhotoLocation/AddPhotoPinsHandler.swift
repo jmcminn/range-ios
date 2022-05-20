@@ -88,12 +88,12 @@ class AddPhotoPinsHandler {
             // on first load we need to see if there's a pin matching lastPhotoPinId
             self?.selectInitialPin()
         })
-        canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
+        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
     }
 
     func stop() {
         if let id = canvasDelegateId {
-            canvasContainer.pdfCanvas.removeDelegate(id: id)
+            canvasContainer.pdfCanvasViewController.removeDelegate(id: id)
         }
         if let databaseHandle = databaseHandle {
             Database.database().reference().child("geometryData/geometries").removeObserver(withHandle: databaseHandle)
@@ -109,7 +109,7 @@ class AddPhotoPinsHandler {
             fromPointAnnotation: pinsAnnotationManager.annotations.first(where: { $0.id == lastPhotoPinId })
         ) {
             selectedPin = lastPhotoPin
-            canvasContainer.pdfCanvas.animatePanAndZoom(
+            canvasContainer.pdfCanvasViewController.animatePanAndZoom(
                 cameraCenter: lastPhotoPin.point.coordinates,
                 mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
             )
@@ -410,7 +410,7 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
             if let selectedPin = selectedPin {
                 showSelectedPinTooltip()
                 if DebugSettings().centerCanvasOnPinSnap {
-                    canvasContainer.pdfCanvas.animatePanAndZoom(
+                    canvasContainer.pdfCanvasViewController.animatePanAndZoom(
                         cameraCenter: selectedPin.point.coordinates,
                         mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
                     )
@@ -435,7 +435,7 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
             self.selectedPin = pin
             self.updatePinSelection()
             self.updatePhotoPinVisibility()
-            self.canvasContainer.pdfCanvas.animatePanAndZoom(
+            self.canvasContainer.pdfCanvasViewController.animatePanAndZoom(
                 cameraCenter: pin.point.coordinates,
                 mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
             )

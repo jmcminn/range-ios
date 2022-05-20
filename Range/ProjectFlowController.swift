@@ -13,8 +13,8 @@ final class ProjectFlowController: UIViewController {
 
     var photoFlow: PhotoFlowController?
 
-    init(pdfSource: PDFSource) {
-        canvasContainer = CanvasContainerViewController(pdfSource: pdfSource)
+    init(pdfCanvas: PDFCanvas) {
+        canvasContainer = CanvasContainerViewController(pdfCanvas: pdfCanvas)
         super.init(nibName: nil, bundle: nil)
     }
 
