@@ -1,5 +1,6 @@
 import UIKit
 
+/// Simple "toast" view that says "Pan and zoom to adjust the location"
 class PanAndZoomIndicatorView: UIView {
     init() {
         super.init(frame: .zero)

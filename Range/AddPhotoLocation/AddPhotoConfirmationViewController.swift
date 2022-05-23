@@ -1,6 +1,7 @@
 import SnapKit
 import UIKit
 
+/// View to accept ("Confirm Location") or cancel ("Back") your in-progress photo placement
 class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordinating {
     var cardHandler: NonModalCardHandler?
 
@@ -80,6 +81,7 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
     }
 }
 
+/// AddPhotoConfirmationViewController is a CardPresentable, but of a fixed size never partially-open
 extension AddPhotoConfirmationViewController: CardPresentable {
     func height(forWidth width: CGFloat, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .medium {

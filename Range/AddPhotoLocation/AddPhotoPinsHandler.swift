@@ -6,7 +6,7 @@ import SnapKit
 import Turf
 import UIKit
 
-/// Selected pin information
+/// Selected pin information, instantiated from a Turf Feature or a Mapbox PointAnnotation
 struct SelectedPin {
     let id: String
     let point: Point

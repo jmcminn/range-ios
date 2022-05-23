@@ -81,6 +81,7 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
+		A6E81ABA9BD2650744186E6E /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = A6E8166BBA53B1A993643B7A /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +170,7 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		A6E8166BBA53B1A993643B7A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +230,7 @@
 				0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */,
 				0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */,
 				0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */,
+				A6E8166BBA53B1A993643B7A /* README.md */,
 			);
 			path = AddPhotoLocation;
 			sourceTree = "<group>";
@@ -659,6 +662,7 @@
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
+				A6E81ABA9BD2650744186E6E /* README.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
