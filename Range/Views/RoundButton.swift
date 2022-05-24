@@ -9,7 +9,7 @@ class RoundButton: UIControl {
         backgroundColor = .Neutral_10
         layer.cornerRadius = size / 2.0
 
-        addDropshadowMd02()
+        setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
         isHighlighted = false
 
         snp.makeConstraints { make in
@@ -35,7 +35,7 @@ class RoundButton: UIControl {
     /// Update the shadow opacity when the button is pressed.
     override var isHighlighted: Bool {
         didSet {
-            layer.shadowOpacity = isHighlighted ? 0.4 : 0.2
+            layer.shadowOpacity = isHighlighted ? 0.4 : 0.1
         }
     }
 }

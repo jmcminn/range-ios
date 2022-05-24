@@ -8,7 +8,16 @@ class AddPhotoTopViewController: UIViewController {
         updateShadow()
 
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
-        view.addDropshadowMd01()
+
+        let bottomStroke = UIView()
+        bottomStroke
+            .backgroundColor = .dynamicColor(light: .Neutral_04,
+                                             dark: .Neutral_10) // in dark mode the same color as background as we don't want the stroke
+        view.addSubview(bottomStroke)
+        bottomStroke.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
 
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
@@ -45,7 +54,10 @@ class AddPhotoTopViewController: UIViewController {
 
     private func updateShadow() {
         let darkMode = traitCollection.userInterfaceStyle == .dark
-        view.layer.shadowOpacity = darkMode ? 0.2 : 0.05
-        view.layer.shadowColor = UIColor.Shadow.cgColor
+        if darkMode {
+            view.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
+        } else {
+            view.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
+        }
     }
 }

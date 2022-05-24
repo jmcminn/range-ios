@@ -2,15 +2,11 @@ import UIKit
 
 /// Extension adding shadows defined in Figma.
 extension UIView {
-    func addDropshadowMd01() {
-        layer.shadowOpacity = 0.1
-        layer.shadowRadius = 10
-        layer.shadowOffset = CGSize(width: 0, height: 10)
-    }
-
-    func addDropshadowMd02() {
-        layer.shadowOpacity = 0.2
-        layer.shadowRadius = 10
-        layer.shadowOffset = CGSize(width: 0, height: 10)
+    /// Translation from Figma parameters to layer properties
+    func setShadowWithFigmaValues(x: CGFloat = 0, y: CGFloat, blur: CGFloat, opacity: Float) {
+        layer.shadowOffset = CGSize(width: x, height: y)
+        layer.shadowRadius = blur / 2.0
+        layer.shadowOpacity = opacity
+        layer.shadowColor = UIColor.Neutral_10.cgColor
     }
 }

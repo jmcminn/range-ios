@@ -8,12 +8,12 @@ class MapTooltipView: UIView {
         super.init(frame: .zero)
 
         let boxView = UIImageView(image: UIImage(named: "tooltip_box"))
-        boxView.addDropshadowMd02()
+        boxView.setShadowWithFigmaValues(y: 6, blur: 10, opacity: 0.2)
         boxView.layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
         addSubview(boxView)
 
         let arrowView = UIImageView(image: UIImage(named: "tooltip_arrow"))
-        arrowView.addDropshadowMd02()
+        arrowView.setShadowWithFigmaValues(y: 6, blur: 10, opacity: 0.2)
         arrowView.layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
         addSubview(arrowView)
 

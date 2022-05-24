@@ -18,7 +18,6 @@ extension Color {
     static let Red_04 = Color("Red_04")
     static let Secondary_02 = Color("Secondary_02")
     static let Secondary_03 = Color("Secondary_03")
-    static let Shadow = Color("Shadow")
 }
 
 extension UIColor {
@@ -40,7 +39,6 @@ extension UIColor {
     static let Red_04 = UIColor(named: "Red_04")!
     static let Secondary_02 = UIColor(named: "Secondary_02")
     static let Secondary_03 = UIColor(named: "Secondary_03")
-    static let Shadow = UIColor(named: "Shadow")!
 }
 
 extension UIColor {

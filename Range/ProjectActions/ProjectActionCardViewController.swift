@@ -17,8 +17,12 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     var photoButton: UIButton!
     var actionSelectorVC: ProjectActionSelectorViewController!
 
+    var roundedShadowView: RoundShadowView {
+        view as! RoundShadowView
+    }
+
     var containerView: UIView {
-        (view as! RoundShadowView).containerView
+        roundedShadowView.containerView
     }
 
     /// Initiates with additional actions to show in the action selector
@@ -138,8 +142,13 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
     private func updateColors() {
         let darkMode = traitCollection.userInterfaceStyle == .dark
-        view.layer.shadowOpacity = darkMode ? 0.2 : 0.05
-        view.layer.shadowColor = UIColor.Shadow.cgColor
+        if darkMode {
+            view.setShadowWithFigmaValues(y: -6, blur: 10, opacity: 0.2)
+        } else {
+            view.setShadowWithFigmaValues(y: -3, blur: 6, opacity: 0.05)
+        }
+        // stroke not visible in dark mode (same color as background)
+        roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
         searchBackground.layer.borderColor = darkMode ? UIColor.Neutral_08.cgColor : UIColor.Neutral_03.cgColor
     }
 }

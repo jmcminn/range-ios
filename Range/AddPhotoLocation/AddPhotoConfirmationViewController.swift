@@ -13,8 +13,12 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
 
     var confirmButton: UIButton!
 
+    var roundedShadowView: RoundShadowView {
+        view as! RoundShadowView
+    }
+
     var containerView: UIView {
-        (view as! RoundShadowView).containerView
+        roundedShadowView.containerView
     }
 
     override func loadView() {
@@ -24,9 +28,7 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
     override func viewDidLoad() {
         super.viewDidLoad()
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
-        updateShadow()
-
-        containerView.installSliderView()
+        updateColors()
 
         var buttonConfig = UIButton.Configuration.filled()
         buttonConfig.contentInsets = NSDirectionalEdgeInsets(
@@ -70,14 +72,19 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateShadow()
+            updateColors()
         }
     }
 
-    private func updateShadow() {
+    private func updateColors() {
         let darkMode = traitCollection.userInterfaceStyle == .dark
-        view.layer.shadowOpacity = darkMode ? 0.2 : 0.05
-        view.layer.shadowColor = UIColor.Shadow.cgColor
+        if darkMode {
+            view.setShadowWithFigmaValues(y: -6, blur: 10, opacity: 0.2)
+        } else {
+            view.setShadowWithFigmaValues(y: -3, blur: 6, opacity: 0.05)
+        }
+        // stroke not visible in dark mode (same color as background)
+        roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
     }
 }
 

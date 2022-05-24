@@ -6,8 +6,7 @@ class PanAndZoomIndicatorView: UIView {
         super.init(frame: .zero)
 
         backgroundColor = UIColor.Neutral_10
-        addDropshadowMd02()
-        layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
+        setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
         layer.cornerRadius = 10
 
         let font = UIFont.preferredFont(forTextStyle: .subheadline)
