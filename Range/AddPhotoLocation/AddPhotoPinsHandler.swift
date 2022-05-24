@@ -397,6 +397,12 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
                     self.selectedPin = pin
                     self.updatePinSelection()
                     self.updatePhotoPinVisibility()
+                    if let pin = pin, DebugSettings().centerScreenOnPinSnap {
+                        self.canvasContainer.pdfCanvas.animatePanAndZoom(
+                            cameraCenter: pin.point.coordinates,
+                            mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
+                        )
+                    }
                 }
             }
         } else if reason == .panEnd {

@@ -29,6 +29,9 @@
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
 		0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
+		0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3308283CE1B200D04A1C /* DebugSettings.swift */; };
+		0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */; };
+		0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330D283CE8C800D04A1C /* RoundButton.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
 		0A48ACD7281822680044E06E /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0A48ACD6281822680044E06E /* FirebaseCrashlytics */; };
@@ -120,6 +123,9 @@
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
 		0A2F3306283CB5A500D04A1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0A2F3308283CE1B200D04A1C /* DebugSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettings.swift; sourceTree = "<group>"; };
+		0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
+		0A2F330D283CE8C800D04A1C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
@@ -265,6 +271,15 @@
 			path = Auth;
 			sourceTree = "<group>";
 		};
+		0A2F3307283CE19100D04A1C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				0A2F3308283CE1B200D04A1C /* DebugSettings.swift */,
+				0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		0A48ACD5281822680044E06E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -366,6 +381,7 @@
 				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
+				0A2F330D283CE8C800D04A1C /* RoundButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -405,6 +421,7 @@
 				0A07D75428101B1C00B6F9A2 /* Model */,
 				0A632EDB27E4DA38001A019B /* PDF */,
 				0A4DC79427F5728500712518 /* ProjectActions */,
+				0A2F3307283CE19100D04A1C /* Settings */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
@@ -614,6 +631,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
+				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
@@ -634,6 +652,7 @@
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
+				0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
@@ -651,6 +670,7 @@
 				0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
+				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsHandler.swift in Sources */,

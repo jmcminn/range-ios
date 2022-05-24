@@ -1,4 +1,5 @@
 import SnapKit
+import SwiftUI
 import UIKit
 
 /// Main view controller for displaying a project.
@@ -27,12 +28,33 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        showDebugSettingsButton()
         showActionCard()
     }
 
     fileprivate func showActionCard() {
         actionCardVC.showCard(animated: false)
         bottomBlurView.isHidden = false
+    }
+
+    // TODO: this should be hidden in the production version
+    /// Shows a button that shows the debug settings view
+    fileprivate func showDebugSettingsButton() {
+        let button = RoundButton(image: UIImage(systemName: "gearshape") ?? UIImage())
+        canvasContainer.controls.addSubview(button)
+        button.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-10)
+            make.centerY.equalToSuperview()
+        }
+        button.addTarget(self, action: #selector(showDebugSettingsAction), for: .touchUpInside)
+    }
+
+    /// Shows view controller for debug settings
+    @objc func showDebugSettingsAction() {
+        let debugSettingsVC = UIHostingController(
+            rootView: DebugSettingsView().environmentObject(DebugSettings())
+        )
+        present(debugSettingsVC, animated: true)
     }
 
     fileprivate func setupBottomBlur() -> UIView {
