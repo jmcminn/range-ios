@@ -81,7 +81,6 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
-		A6E81ABA9BD2650744186E6E /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = A6E8166BBA53B1A993643B7A /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,6 +119,7 @@
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
+		0A2F3306283CB5A500D04A1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
@@ -207,6 +207,7 @@
 		0A07D50D2807095400B6F9A2 /* Modal */ = {
 			isa = PBXGroup;
 			children = (
+				0A2F3306283CB5A500D04A1C /* README.md */,
 				0A4DC78727F4955900712518 /* ModalCardPresentationController.swift */,
 				0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */,
 				0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */,
@@ -226,11 +227,11 @@
 		0A07D516280730A200B6F9A2 /* AddPhotoLocation */ = {
 			isa = PBXGroup;
 			children = (
+				A6E8166BBA53B1A993643B7A /* README.md */,
 				0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */,
 				0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */,
 				0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */,
 				0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */,
-				A6E8166BBA53B1A993643B7A /* README.md */,
 			);
 			path = AddPhotoLocation;
 			sourceTree = "<group>";
@@ -662,7 +663,6 @@
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
-				A6E81ABA9BD2650744186E6E /* README.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

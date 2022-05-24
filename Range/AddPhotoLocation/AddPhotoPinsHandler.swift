@@ -80,7 +80,10 @@ class AddPhotoPinsHandler {
 
     func start() {
         installPhotoPinView()
-        loadAndDisplayPins()
+        loadAndDisplayPins(onInitialLoad: { [weak self] in
+            // on first load we need to see if there's a pin matching lastPhotoPinId
+            self?.selectInitialPin()
+        })
         canvasDelegateId = canvasContainer.pdfCanvas.addDelegate(self)
     }
 
@@ -95,19 +98,34 @@ class AddPhotoPinsHandler {
         hideTooltip()
     }
 
-    /// This creates photo pin view (if not created yet) and adds to canvas content.
-    private func installPhotoPinView() {
-        guard photoPinView == nil else { return }
-
-        let pin = PhotoPin(image: image)
-        canvasContainer.content.addSubview(pin)
-        pin.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+    /// Checks if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.
+    /// Otherwise show photo pin in the center of the screen
+    private func selectInitialPin() {
+        if let lastPhotoPin = SelectedPin(
+            fromPointAnnotation: pinsAnnotationManager.annotations.first(where: { $0.id == lastPhotoPinId })
+        ) {
+            selectedPin = lastPhotoPin
+            canvasContainer.pdfCanvas.animatePanAndZoom(
+                cameraCenter: lastPhotoPin.point.coordinates,
+                mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
+            )
         }
-        pin.isHidden = true
-        photoPinView = pin
+        updatePinSelection()
+        updatePhotoPinVisibility()
+        if selectedPin != nil {
+            showSelectedPinTooltip()
+        } else {
+            showPhotoPinTooltip()
+        }
     }
+}
 
+/// Handling of tooltips for the pins.
+/// There are 2 kinds of tooltips
+/// 1. tooltip for mapbox pink pins that are displayed as view annotations (https://docs.mapbox.com/ios/maps/guides/annotations/view-annotations/)
+///      They are added as mapbox view annotations because they need to follow the pins when the canvas is panned.
+/// 2. tooltip for photo pin - added as a native view because it needs to stay center over the photo pin view
+extension AddPhotoPinsHandler {
     /// Hide tooltip if any presented (either feature or photo tooltip)
     private func hideTooltip() {
         if let tooltip = selectedPinTooltip {
@@ -120,7 +138,7 @@ class AddPhotoPinsHandler {
         }
     }
 
-    /// Shows the tooltip for the selected pin.
+    /// Shows the tooltip for the selected pin using mapbox view annotations.
     private func showSelectedPinTooltip() {
         hideTooltip()
         guard let pin = selectedPin else { return }
@@ -148,7 +166,7 @@ class AddPhotoPinsHandler {
         selectedPinTooltip = tooltip
     }
 
-    /// Shows the tooltip for the photo pin.
+    /// Shows the tooltip for the photo pin as a native view added to the canvasContainer content
     private func showPhotoPinTooltip() {
         hideTooltip()
         guard photoPinTooltip == nil else { return } // already shown
@@ -165,38 +183,63 @@ class AddPhotoPinsHandler {
         }
         photoPinTooltip = tooltip
     }
+}
 
-    /// Checks if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.
-    /// Otherwise show photo pin in the center of the screen
-    private func selectInitialPin() {
-        if let lastPhotoPin = SelectedPin(
-            fromPointAnnotation: pinsAnnotationManager.annotations.first(where: { $0.id == lastPhotoPinId })
-        ) {
-            selectedPin = lastPhotoPin
-            canvasContainer.pdfCanvas.animatePanAndZoom(
-                cameraCenter: lastPhotoPin.point.coordinates,
-                mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
-            )
+/// Handling of photo pin which is a special pin that is displayed as a native view in the center of the screen.
+/// It acts a pointer for selecting a new pin coordinates by panning and zooming the canvas)
+extension AddPhotoPinsHandler {
+    /// This creates photo pin view (if not created yet) and adds to canvas content.
+    private func installPhotoPinView() {
+        guard photoPinView == nil else { return }
+
+        let pin = PhotoPin(image: image)
+        canvasContainer.content.addSubview(pin)
+        pin.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
-        updatePinSelection()
-        // show the tooltip after the pan gesture has ended
-        if selectedPin != nil {
-            showSelectedPinTooltip()
-        } else {
-            showPhotoPinTooltip()
-        }
+        pin.isHidden = true
+        photoPinView = pin
     }
 
+    /// Animates showing or hiding the photo pin based on currently selectedPin (if no pin selected then show the photo pin)
+    private func updatePhotoPinVisibility() {
+        if selectedPin != nil {
+            // pink pin selected, animate out the photo pin
+            UIView.animate(withDuration: 0.2) {
+                self.photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            } completion: { _ in
+                self.photoPinView?.isHidden = self.selectedPin != nil
+            }
+        } else {
+            // no pink pin selected, animate in the photo pin
+            photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            photoPinView?.isHidden = selectedPin != nil
+            UIView.animate(withDuration: 0.2) {
+                self.photoPinView?.transform = CGAffineTransform(scaleX: 1, y: 1)
+            }
+        }
+    }
+}
+
+/// Handling of display pins from "database" as mapbox annotations
+/// - loading of geometries from the "database" and converting to mapbox annotations
+/// - converting geometries to pin annotations
+/// - updating annotations on pin selection (so unselected pins have reduced opacity)
+///
+/// #Reference
+/// [Mapbox annotations](https://docs.mapbox.com/ios/maps/guides/annotations/annotations/)
+extension AddPhotoPinsHandler {
     /// observe the geometries and reload pins when the change is observed
-    private func loadAndDisplayPins() {
+    ///  - Parameters:
+    ///         - onInitialLoad: callback called only once when the pins are initially loaded
+    private func loadAndDisplayPins(onInitialLoad: @escaping () -> Void) {
         databaseHandle = Database.database().reference().child("geometryData/geometries").observe(.value) { snapshot in
             let geometries = self.convertGeometriesSnapshotToModel(snapshot: snapshot)
             let pins = geometries.compactMap(self.convertGeometryToPin)
             self.pinsAnnotationManager.annotations = pins
             if !self.pinsLoadedInitially {
                 self.pinsLoadedInitially = true
-                // on first load we need to see if there's a pin matching lastPhotoPinId
-                self.selectInitialPin()
+                onInitialLoad()
             }
             // TODO: if currently selected pin is gone we need to switch back to photoPin (is it even possible?)
         }
@@ -235,26 +278,13 @@ class AddPhotoPinsHandler {
         return pin
     }
 
-    /// Updates the currently presented pins based on `self.selectedPinId`
+    /// Updates the visuals of currently presented pins based on `self.selectedPinId`
     private func updatePinSelection() {
         pinsAnnotationManager.annotations = pinsAnnotationManager.annotations.map { pin in
             var updatedPin = pin
             let selected = pin.id == selectedPin?.id
             setPin(&updatedPin, selected: selected)
             return updatedPin
-        }
-        if selectedPin != nil {
-            UIView.animate(withDuration: 0.2) {
-                self.photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            } completion: { _ in
-                self.photoPinView?.isHidden = self.selectedPin != nil
-            }
-        } else {
-            photoPinView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            photoPinView?.isHidden = selectedPin != nil
-            UIView.animate(withDuration: 0.2) {
-                self.photoPinView?.transform = CGAffineTransform(scaleX: 1, y: 1)
-            }
         }
     }
 
@@ -301,9 +331,11 @@ class AddPhotoPinsHandler {
     }
 }
 
-/// Handling of user interaction
+/// Pin search methods
 extension AddPhotoPinsHandler {
     /// Returns the pin closest to the center of the map view. The pin must be within ``pinsSearchRect``
+    /// - Parameters:
+    ///     -  completion: callback to be called with the result
     private func findPinClosestToCenter(completion: @escaping (SelectedPin?) -> Void) {
         let mapViewCenter = canvasContainer.annotationsMapView.center
 
@@ -337,8 +369,10 @@ extension AddPhotoPinsHandler {
     }
 
     /// Searches for pin at given map view coordinates and selects *any* found one
-    /// If any pin is selected the canvas animates to center on it.
-    private func selectPin(at point: CGPoint) {
+    /// - Parameters:
+    ///     - point: search for pin at given map view coordinates
+    ///     - completion: callback to be called with the result
+    private func findPin(at point: CGPoint, completion: @escaping (SelectedPin?) -> Void) {
         canvasContainer.annotationsMapView.mapboxMap.queryRenderedFeatures(
             at: point,
             options: RenderedQueryOptions(layerIds: ["pins"], filter: nil)
@@ -346,23 +380,12 @@ extension AddPhotoPinsHandler {
             // take any of the selected features with "pins" source
             guard case let .success(queriedFeatures) = result else { return }
             guard let feature = queriedFeatures.first?.feature else { return }
-            guard let newSelectedPin = SelectedPin(fromFeature: feature) else { return }
-            // if it's not currently selected mark it as selected and zoom to it
-            if newSelectedPin.id != self.selectedPin?.id {
-                self.hideTooltip()
-                self.selectedPin = newSelectedPin
-                self.updatePinSelection()
-                self.canvasContainer.pdfCanvas.animatePanAndZoom(
-                    cameraCenter: newSelectedPin.point.coordinates,
-                    mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
-                )
-                self.showSelectedPinTooltip()
-            }
+            completion(SelectedPin(fromFeature: feature))
         }
     }
 }
 
-/// Notifications of user interactions
+/// Canvas user interactions handling
 extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
     /// Reset selected pin if user panned the map
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
@@ -373,6 +396,7 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
                 if self.selectedPin?.id != pin?.id {
                     self.selectedPin = pin
                     self.updatePinSelection()
+                    self.updatePhotoPinVisibility()
                 }
             }
         } else if reason == .panEnd {
@@ -385,7 +409,21 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
         }
     }
 
+    /// Searches for pin at given map view coordinates and selects *any* found one
+    /// If any pin is selected the canvas animates to center on it.
     func canvasTapRecognized(at point: CGPoint) {
-        selectPin(at: point)
+        findPin(at: point) { pin in
+            // check if a pin different that currently selectedPin was tapped
+            guard let pin = pin, pin.id != self.selectedPin?.id else { return }
+            self.hideTooltip()
+            self.selectedPin = pin
+            self.updatePinSelection()
+            self.updatePhotoPinVisibility()
+            self.canvasContainer.pdfCanvas.animatePanAndZoom(
+                cameraCenter: pin.point.coordinates,
+                mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
+            )
+            self.showSelectedPinTooltip()
+        }
     }
 }

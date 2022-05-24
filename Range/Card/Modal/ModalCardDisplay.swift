@@ -27,7 +27,7 @@ extension ModalCardCoordinating {
     }
 }
 
-/// Class to store the `CardConfiguration` and provide the `CardPresentationController` when presenting a view controller modally.
+/// Class to store the `CardConfiguration` and provide the `ModalCardPresentationController` when presenting a view controller modally.
 class ModalCardDisplayController: NSObject, UIViewControllerTransitioningDelegate {
     let cardConfig: CardConfiguration
     init(cardConfig: CardConfiguration) {

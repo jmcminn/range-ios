@@ -44,7 +44,7 @@ extension UIViewController {
     }
 }
 
-/// extensions for showing and hiding a card on the coordinating controller.
+/// extensions for showing and hiding a card on the card view controller.
 extension NonModalCardCoordinating {
     func showCard(animated: Bool, completion: (() -> Void)? = nil) {
         guard let cardHandler = cardHandler else {

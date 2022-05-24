@@ -18,7 +18,7 @@ class CanvasContainerViewController: UIViewController {
 
     /// for presenting map content
     let content = PassthroughView()
-    /// for presenting cards (on top of content)
+    /// for presenting cards and other controls (on top of content)
     let controls = PassthroughView()
     /// for presenting views on top of controls
     let overlays = PassthroughView()

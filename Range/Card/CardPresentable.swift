@@ -8,7 +8,7 @@ enum CardPosition: Int, CaseIterable {
     case max // the view takes the whole screen
 }
 
-/// To be implemented by view controllers that need to be shown using CardPresentationController.
+/// To be implemented by view controllers that need to be shown as modal or non modal cards
 protocol CardPresentable: UIViewController {
     // MARK: - Input for CardPresentationController
 

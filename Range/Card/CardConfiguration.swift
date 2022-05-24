@@ -1,6 +1,7 @@
 import Foundation
 
-/// Configuration for CardPresentationController
+/// Configuration for card presentation, modal or non modal.
+/// Some properties are valid only for a particular presentation style - see the properties documentation.
 struct CardConfiguration {
     var initialCardPosition: CardPosition = .min
 
