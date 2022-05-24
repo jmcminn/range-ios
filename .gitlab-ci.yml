@@ -15,7 +15,6 @@ run-tests:
 
 deploy-to-firebase:
     stage: deploy
-    needs: [run-tests]
     script:
         - ./gitrise.sh -w "deploy-to-firebase" -b $CI_COMMIT_REF_NAME -a $BITRISE_ACCESS_TOKEN -s $BITRISE_APP_SLUG
     rules:
