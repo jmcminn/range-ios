@@ -35,6 +35,9 @@ class AddPhotoPinsHandler {
     unowned let canvasContainer: CanvasContainerViewController
     let image: UIImage
 
+    // Initialize Impact Feedback Generator
+    let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+
     var databaseHandle: DatabaseHandle?
 
     /// Defines the size of the rectangle used for searching pins near to the photo pin (or screen center)
@@ -71,6 +74,7 @@ class AddPhotoPinsHandler {
     init(canvasContainer: CanvasContainerViewController, image: UIImage) {
         self.canvasContainer = canvasContainer
         self.image = image
+        feedbackGenerator.prepare()
     }
 
     deinit {
@@ -394,10 +398,12 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
             findPinClosestToCenter { pin in
                 // either select the closest feature or deselect if no feature found
                 if self.selectedPin?.id != pin?.id {
+                    self.feedbackGenerator.impactOccurred()
+                    self.feedbackGenerator.prepare()
                     self.selectedPin = pin
                     self.updatePinSelection()
                     self.updatePhotoPinVisibility()
-                    if let pin = pin, DebugSettings().centerScreenOnPinSnap {
+                    if let pin = pin, DebugSettings().centerCanvasOnPinSnap {
                         self.canvasContainer.pdfCanvas.animatePanAndZoom(
                             cameraCenter: pin.point.coordinates,
                             mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
@@ -421,6 +427,10 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
         findPin(at: point) { pin in
             // check if a pin different that currently selectedPin was tapped
             guard let pin = pin, pin.id != self.selectedPin?.id else { return }
+            if DebugSettings().hapticFeedbackOnPinTapSelection {
+                self.feedbackGenerator.impactOccurred()
+                self.feedbackGenerator.prepare()
+            }
             self.hideTooltip()
             self.selectedPin = pin
             self.updatePinSelection()
