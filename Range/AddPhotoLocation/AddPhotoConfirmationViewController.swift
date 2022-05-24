@@ -40,8 +40,9 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         buttonConfig.background.cornerRadius = 12
 
         var backConfig = buttonConfig
-        backConfig.baseBackgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_07)
+        backConfig.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         backConfig.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        backConfig.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
 
         var confirmConfig = buttonConfig
         confirmConfig.baseBackgroundColor = .Primary_Blue_04
@@ -53,7 +54,7 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         )
         confirmButton = UIButton(
             configuration: confirmConfig,
-            primaryAction: UIAction(title: "Confirm Location") { [weak self] _ in self?.onConfirm?() }
+            primaryAction: UIAction(title: "Confirm") { [weak self] _ in self?.onConfirm?() }
         )
         containerView.addSubview(backButton)
         containerView.addSubview(confirmButton)
@@ -63,6 +64,7 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
             make.leading.equalTo(16)
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
             make.trailing.equalTo(confirmButton.snp.leading).offset(-16)
+            make.width.equalTo(confirmButton.snp.width)
         }
         confirmButton.snp.makeConstraints { make in
             make.trailing.equalTo(-16)
