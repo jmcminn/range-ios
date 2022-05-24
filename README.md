@@ -34,7 +34,7 @@ We have 2 workflows defined on Bitrise:
 
 1. `test` 
   - running `swiftformat` linter, building the project and running the tests
-  - triggered from Gitlab for all merge requests
+  - triggered from Gitlab on each push to `develop` branch
 2. `deploy-to-firebse`
   - updates the build number (not commited to the repo, just sync with current bitrise build number)
   - builds the app for ad-hoc distribution

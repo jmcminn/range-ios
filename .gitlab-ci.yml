@@ -11,7 +11,7 @@ run-tests:
     script:
         - ./gitrise.sh -w "test" -b $CI_COMMIT_REF_NAME -a $BITRISE_ACCESS_TOKEN -s $BITRISE_APP_SLUG
     rules:
-        - if: $CI_COMMIT_BRANCH == "master"
+        - if: $CI_COMMIT_BRANCH == "develop"
 
 deploy-to-firebase:
     stage: deploy
