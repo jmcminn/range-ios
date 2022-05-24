@@ -1,4 +1,5 @@
 import CoreLocation
+@testable import Range
 import XCTest
 
 class GeometryTest: XCTestCase {

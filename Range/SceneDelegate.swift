@@ -1,10 +1,15 @@
 import CoreLocation
 import FirebaseAuth
 import PDFKit
+import RealmSwift
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var projectModel: ProjectModel?
+    var projectModelFirebaseSync: ProjectModelFirebaseSync?
+
+    var projectFC: ProjectFlowController?
 
     func scene(
         _ scene: UIScene,
@@ -19,7 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // check whether user is authenticated
         if Auth.auth().currentUser != nil {
-            showProject()
+            loadAndShowProject()
         } else {
             showAuth()
         }
@@ -27,8 +32,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Start the auth flow for authenticating the user
     private func showAuth() {
-        let authFlowController = AuthFlowController {
-            self.showProject()
+        let authFlowController = AuthFlowController { [weak self] in
+            self?.loadAndShowProject(initializeWindow: false)
         }
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
@@ -36,35 +41,103 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         authFlowController.start()
     }
 
-    /// Show a default project (for now it's just a hardcoded pdf page) for authenticated user.
-    private func showProject() {
-        guard let documentUrl = Bundle.main.url(
-            forResource: "5451 VANDERBILT AVE-A1.1A",
-            withExtension: "pdf"
-        ) else { return }
-        guard let document = PDFDocument(url: documentUrl) else { return }
-        guard let pdfPage = document.page(at: 0) else { return }
+    /// Loads and shows the project or displays the alert view if loading project failed
+    /// - Parameters:
+    ///     - initializeWindow - whether the window needs to be initialized (was never made key and visible) or is there a view controller already there (like showing project from the auth flow)
+    private func loadAndShowProject(initializeWindow: Bool = true) {
+        if initializeWindow {
+            window!.rootViewController = LaunchScreenViewController()
+            window!.makeKeyAndVisible()
+        }
+        // TODO: projectId hardcoded for now
+        let projectId = "474503d1-1adc-4268-88fe-2a797148f16d"
 
-        // center on the initial position used in the web app https://gitlab.com/range.io/range.io/-/blob/1e0485d391a4c7f8c7ee283a9e01aca585bcc7d3/modules/range-editor/src/redux/slices/geometry-slice.js#L40
-        let pdfCanvas = PDFCanvas(
-            center: CLLocationCoordinate2D(latitude: 32.82478, longitude: -96.77528),
-            page: pdfPage,
-            scale: 1 / 48.0
-        )
-
-        let projectFC = ProjectFlowController(pdfCanvas: pdfCanvas)
-        projectFC.onSignOut = { [weak self] in
+        Task {
             do {
-                try Auth.auth().signOut()
-                self?.showAuth()
+                try await createProjectModel(projectId: projectId)
+                if let model = projectModel {
+                    try self.showProject(model: model)
+                }
             } catch {
-                print("Error while trying to sign out: \(error)")
+                print("Error loading project: ", error)
+                showProjectOpenError(withMessage: error.localizedDescription)
             }
+        }
+    }
+
+    /// Present alert controller with project loading error message
+    private func showProjectOpenError(withMessage message: String) {
+        let alertController = UIAlertController(
+            title: "Loading project failed",
+            message: message,
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: "Ok", style: .cancel) { _ in
+            alertController.dismiss(animated: true)
+        })
+        if let viewController = window?.rootViewController {
+            viewController.present(alertController, animated: true)
+        } else {
+            // TODO: show some (project) loading view controller and present the alert from it?
+            window!.rootViewController = LaunchScreenViewController()
+            window!.makeKeyAndVisible()
+            window!.rootViewController!.present(alertController, animated: true)
+        }
+    }
+
+    /// Loads project
+    /// This can throw if project model cannot be loaded
+    ///
+    /// - Parameters:
+    ///     - projectId: id of the project
+    /// - Returns: loaded ProjectModel
+    private func createProjectModel(projectId: String) async throws {
+        let model = try ProjectModel(projectId: projectId)
+        print("project realm file url: ", model.realmConfig.fileURL?.path as Any)
+
+        let firebaseSync = ProjectModelFirebaseSync(model: model)
+
+        if !model.isProjectDownloaded() {
+            // do initial sync if project is not downloaded yet
+            do {
+                try await firebaseSync.doInitialSync()
+            } catch {
+                print("Initial Firebase sync error: ", error)
+            }
+        }
+        // at this point the project is either downloaded or it couldn't be downloaded
+        try model.loadProject()
+        projectModel = model
+        projectModelFirebaseSync = firebaseSync
+    }
+
+    /// Shows a project for given ProjectModel (the model should be loaded)
+    private func showProject(model: ProjectModel) throws {
+        let projectFC = try ProjectFlowController(model: model)
+        projectFC.onSignOut = { [weak self] in
+            self?.signOut()
         }
         window!.rootViewController = projectFC
         window!.makeKeyAndVisible()
 
         projectFC.start()
+        self.projectFC = projectFC
+    }
+
+    private func signOut() {
+        projectFC?.stop()
+        projectFC = nil
+        projectModel = nil
+        projectModelFirebaseSync = nil
+        do {
+            try Auth.auth().signOut()
+        } catch {
+            print("Error while trying to sign out: \(error)")
+        }
+        showAuth()
+        // TODO: delete all realm files on sign in when the user is different from the previous one?
+        // We need to delete all projects, so Realm.deleteFiles(for: config) is not enough, manual removal
+        // like describe here https://github.com/realm/realm-swift/issues/4625 needed
     }
 
     func sceneDidDisconnect(_: UIScene) {

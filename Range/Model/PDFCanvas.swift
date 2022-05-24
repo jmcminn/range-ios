@@ -1,16 +1,30 @@
 import CoreLocation
 import Foundation
 import PDFKit
+import RealmSwift
 
-/// Model class to describe the PDF canvas.
-class PDFCanvas {
-    let center: CLLocationCoordinate2D
-    let page: PDFPage
-    let scale: Double
+/// Realm object for `project/details/canvases/<id>`.
+class PDFCanvas: Object {
+    /// Primary key, UUID
+    @Persisted(primaryKey: true) var id: String
+    /// URL of the PDF
+    @Persisted var url: String
+    /// 0-based PDF page number
+    @Persisted var pageNumber: Int
+    /// the scale of PDF. Example value: 48.0, meaning the scale is 1:48
+    @Persisted var userDefinedScale: Double
 
-    init(center: CLLocationCoordinate2D, page: PDFPage, scale: Double) {
-        self.center = center
-        self.page = page
-        self.scale = scale
+    /// Default initializer required by Realm.
+    override init() {
+        super.init()
+    }
+
+    /// Initializer to init all the fields of object.
+    init(id: String, url: String, pageNumber: Int, userDefinedScale: Double) {
+        super.init()
+        self.id = id
+        self.url = url
+        self.pageNumber = pageNumber
+        self.userDefinedScale = userDefinedScale
     }
 }

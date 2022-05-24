@@ -18,9 +18,7 @@
 		0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
 		0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */; };
 		0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */; };
-		0A07D75C281037DF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */; };
 		0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */; };
-		0A07D76128104BF900B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
 		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
 		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
 		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
@@ -29,13 +27,21 @@
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
 		0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
+		0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F02836CA0500D04A1C /* ProjectModel.swift */; };
+		0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */; };
+		0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 0A2F32F52837BF2F00D04A1C /* Realm */; };
+		0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0A2F32F72837BF2F00D04A1C /* RealmSwift */; };
+		0A2F32FA2837CBBB00D04A1C /* ProjectModelFirebaseSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F92837CBBB00D04A1C /* ProjectModelFirebaseSync.swift */; };
+		0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */; };
+		0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3300283B737C00D04A1C /* CustomPersistable.swift */; };
+		0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3302283BDC2B00D04A1C /* FirebasePDFCanvas.swift */; };
+		0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */; };
 		0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3308283CE1B200D04A1C /* DebugSettings.swift */; };
 		0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */; };
 		0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330D283CE8C800D04A1C /* RoundButton.swift */; };
-		0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F02836CA0500D04A1C /* ProjectModel.swift */; };
-		0A2F32F32836D72C00D04A1C /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F22836D72C00D04A1C /* Project.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
+		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
 		0A48ACD7281822680044E06E /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0A48ACD6281822680044E06E /* FirebaseCrashlytics */; };
 		0A48ACD92818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0A48ACD82818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDA281BDABF0044E06E /* DisplayLink.swift */; };
@@ -44,10 +50,8 @@
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
-		0A4DC76927EDCDBD00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */; };
 		0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76C27EE100400712518 /* PDFPageSizeTest.swift */; };
-		0A4DC76E27EE100800712518 /* PDFPageSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */; };
 		0A4DC77227EE112D00712518 /* test.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A4DC77127EE112D00712518 /* test.pdf */; };
 		0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC77827F2445200712518 /* MapboxMaps */; };
 		0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A4DC77B27F45DB600712518 /* Colors.xcassets */; };
@@ -124,14 +128,21 @@
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
+		0A2F32F02836CA0500D04A1C /* ProjectModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModel.swift; sourceTree = "<group>"; };
+		0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectSummary.swift; sourceTree = "<group>"; };
+		0A2F32F92837CBBB00D04A1C /* ProjectModelFirebaseSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelFirebaseSync.swift; sourceTree = "<group>"; };
+		0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseProjectSummary.swift; sourceTree = "<group>"; };
+		0A2F3300283B737C00D04A1C /* CustomPersistable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPersistable.swift; sourceTree = "<group>"; };
+		0A2F3302283BDC2B00D04A1C /* FirebasePDFCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebasePDFCanvas.swift; sourceTree = "<group>"; };
+		0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenViewController.swift; sourceTree = "<group>"; };
 		0A2F3306283CB5A500D04A1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A2F3308283CE1B200D04A1C /* DebugSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettings.swift; sourceTree = "<group>"; };
 		0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
 		0A2F330D283CE8C800D04A1C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
-		0A2F32F02836CA0500D04A1C /* ProjectModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModel.swift; sourceTree = "<group>"; };
-		0A2F32F22836D72C00D04A1C /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTest.swift; sourceTree = "<group>"; };
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
 		0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasContainerViewController.swift; sourceTree = "<group>"; };
 		0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoPinsHandler.swift; sourceTree = "<group>"; };
@@ -188,6 +199,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */,
+				0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */,
 				0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */,
 				0A48ACD92818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */,
@@ -249,12 +262,14 @@
 		0A07D75428101B1C00B6F9A2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				0A45622E283E327500BA8D21 /* README.md */,
 				0A2F32F02836CA0500D04A1C /* ProjectModel.swift */,
-				0A2F32F22836D72C00D04A1C /* Project.swift */,
+				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
 				0A4DC78427F490CA00712518 /* PDFCanvas.swift */,
 				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
 				0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */,
-				0A3BBAF328368567005358C7 /* UserDefaults.swift */,
+				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
+				0A2F32FD2837E85E00D04A1C /* Firebase */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -262,6 +277,7 @@
 		0A07D7592810377400B6F9A2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */,
 				0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */,
 				0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */,
 			);
@@ -277,11 +293,22 @@
 			path = Auth;
 			sourceTree = "<group>";
 		};
+		0A2F32FD2837E85E00D04A1C /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				0A2F32F92837CBBB00D04A1C /* ProjectModelFirebaseSync.swift */,
+				0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */,
+				0A2F3302283BDC2B00D04A1C /* FirebasePDFCanvas.swift */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
 		0A2F3307283CE19100D04A1C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				0A2F3308283CE1B200D04A1C /* DebugSettings.swift */,
 				0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */,
+				0A3BBAF328368567005358C7 /* UserDefaults.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -429,6 +456,7 @@
 				0A4DC79427F5728500712518 /* ProjectActions */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A4DC7A227F7615700712518 /* Views */,
+				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
@@ -510,6 +538,8 @@
 				0A07D5252809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta */,
 				0A48ACD6281822680044E06E /* FirebaseCrashlytics */,
 				0A48ACD82818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport */,
+				0A2F32F52837BF2F00D04A1C /* Realm */,
+				0A2F32F72837BF2F00D04A1C /* RealmSwift */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -587,6 +617,7 @@
 				0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 				0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -656,6 +687,7 @@
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
+				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */,
@@ -663,19 +695,21 @@
 				0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
+				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
-				0A2F32F32836D72C00D04A1C /* Project.swift in Sources */,
+				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A4DC79D27F716BC00712518 /* CardScrollViewDelegateProxy.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
 				0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
+				0A2F32FA2837CBBB00D04A1C /* ProjectModelFirebaseSync.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
@@ -689,6 +723,8 @@
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
+				0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */,
+				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 			);
@@ -698,14 +734,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A4DC76927EDCDBD00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
 				0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */,
-				0A4DC76E27EE100800712518 /* PDFPageSize.swift in Sources */,
-				0A07D76128104BF900B6F9A2 /* Geometry.swift in Sources */,
-				0A07D75C281037DF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */,
+				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1055,6 +1088,14 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.26.0;
+			};
+		};
 		0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
@@ -1083,6 +1124,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseDatabaseSwift-Beta";
+		};
+		0A2F32F52837BF2F00D04A1C /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		0A2F32F72837BF2F00D04A1C /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		0A48ACD6281822680044E06E /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -58,9 +58,9 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
     // configure the CameraService when the view loads
     override func viewDidLoad() {
         super.viewDidLoad()
-        cameraService.configure { [self] sessionSetupResult in
+        cameraService.configure { [weak self] sessionSetupResult in
             if sessionSetupResult == .configurationFailed {
-                showCameraConfigurationErrorAlert()
+                self?.showCameraConfigurationErrorAlert()
             }
         }
     }

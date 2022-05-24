@@ -1,3 +1,4 @@
+@testable import Range
 import XCTest
 
 class MapboxZoomConverterTest: XCTestCase {

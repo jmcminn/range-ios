@@ -1,4 +1,5 @@
 import PDFKit
+@testable import Range
 import XCTest
 
 class PDFPageSize: XCTestCase {

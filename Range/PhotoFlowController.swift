@@ -71,13 +71,13 @@ class PhotoFlowController {
     private func showCamera() {
         let vc = CameraViewController()
         vc.modalPresentationStyle = .fullScreen
-        vc.onClose = { [weak self] in
-            vc.dismiss(animated: true)
+        vc.onClose = { [weak self, weak vc] in
+            vc?.dismiss(animated: true)
             self?.stop()
         }
-        vc.onPhotoTaken = { [weak self] data in
+        vc.onPhotoTaken = { [weak self, weak vc] data in
             if let data = data, let image = UIImage(data: data) {
-                vc.dismiss(animated: true)
+                vc?.dismiss(animated: true)
                 self?.onPhotoTaken(photo: image)
             } else {
                 // TODO: show alert or just log?

@@ -21,6 +21,24 @@ protocol CanvasViewControllerDelegate {
     func canvasTapRecognized(at: CGPoint)
 }
 
+// possible errors for ProjectModel
+enum PDFCanvasViewControllerError: Error {
+    case canvasNotFound
+    case pdfPageLoadFailed
+}
+
+// Error extension to provide localized descriptions of errors
+extension PDFCanvasViewControllerError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .canvasNotFound:
+            return "No canvas found"
+        case .pdfPageLoadFailed:
+            return "Couldn't load the PDF page"
+        }
+    }
+}
+
 /**
  Displays background PDF with Mapbox map view on top.
  The mapbox map is receiving the user interactions and controls the PDF zoom/offset
@@ -29,7 +47,9 @@ class PDFCanvasViewController: UIViewController {
     let maxMapboxZoom = 25.5
     let pdfDrivesInteractions = true
 
+    unowned let model: ProjectModel
     let pdfCanvas: PDFCanvas
+    let pdfPage: PDFPage
 
     let zoomConverter: MapboxZoomConverter
 
@@ -61,10 +81,32 @@ class PDFCanvasViewController: UIViewController {
             """
     }
 
-    init(pdfCanvas: PDFCanvas) {
+    init(model: ProjectModel) throws {
+        // TODO: canvasId hardcoded for now
+        let canvasId = "e5db7eb2-bd9f-44ba-9c90-e6e6e528b930"
+        guard let pdfCanvas = model.mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId)?.freeze() else {
+            throw PDFCanvasViewControllerError.canvasNotFound
+        }
+        self.model = model
         self.pdfCanvas = pdfCanvas
-        zoomConverter = MapboxZoomConverter(latitude: pdfCanvas.center.latitude)
+        pdfPage = try PDFCanvasViewController.loadPDFPage(pdfCanvas: pdfCanvas)
+
+        zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
+    }
+
+    // TODO: for now it is assumed that url is just a file name from the app bundle
+    /// Loads pdf page for given canvas or throws if cannot load.
+    fileprivate static func loadPDFPage(pdfCanvas: PDFCanvas) throws -> PDFPage {
+        guard
+            let documentUrl = Bundle.main.url(
+                forResource: pdfCanvas.url,
+                withExtension: nil
+            ),
+            let document = PDFDocument(url: documentUrl),
+            let page = document.page(at: pdfCanvas.pageNumber)
+        else { throw PDFCanvasViewControllerError.pdfPageLoadFailed }
+        return page
     }
 
     @available(*, unavailable)
@@ -104,7 +146,7 @@ class PDFCanvasViewController: UIViewController {
     }
 
     private func setupPDFScrollView() {
-        pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfCanvas.page)
+        pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
         view.addSubview(pdfScrollView)
         pdfScrollView.scrollsToTop = false // we don't want scroll to top on top bar touch
         pdfScrollView.showsVerticalScrollIndicator = false
@@ -127,7 +169,7 @@ class PDFCanvasViewController: UIViewController {
 
     /// Calculates initial mapbox zoom so the PDFPage fits the screen
     private func setupInitialZoomAndZoomLimits() {
-        let pdfSizeInMeters = pdfCanvas.page.sizeInMeters(forScale: pdfCanvas.scale)
+        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / pdfCanvas.userDefinedScale)
         let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
         let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
         initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
@@ -159,7 +201,7 @@ class PDFCanvasViewController: UIViewController {
             mapView = MapView(frame: view.bounds)
         } else {
             // set initial mapbox zoom level and position
-            let cameraOptions = CameraOptions(center: pdfCanvas.center, zoom: initialZoom)
+            let cameraOptions = CameraOptions(center: model.projectSummary.center, zoom: initialZoom)
             mapView = MapView(frame: view.bounds, mapInitOptions: MapInitOptions(cameraOptions: cameraOptions))
         }
         // hack to make the Metal subview of the mapView transparent
@@ -224,7 +266,7 @@ class PDFCanvasViewController: UIViewController {
         let endContentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
             cameraCenter: cameraCenter,
             scrollView: pdfScrollView,
-            initialCenter: pdfCanvas.center,
+            initialCenter: model.projectSummary.center,
             initialMetersPerPoint: initialMetersPerPoint
         )
         let endZoomScale = initialMetersPerPoint / zoomConverter.getMetersPerPoint(forZoom: mapboxZoom)
@@ -263,7 +305,7 @@ class PDFCanvasViewController: UIViewController {
         guard pdfDrivesInteractions else { return }
         let cameraCenter = PDFCanvasViewController.scrollViewStateToMapboxCenter(
             scrollView: pdfScrollView,
-            initialCenter: pdfCanvas.center,
+            initialCenter: model.projectSummary.center,
             initialMetersPerPoint: initialMetersPerPoint
         )
         let metersPerPoint = initialMetersPerPoint / pdfScrollView.zoomScale
@@ -280,7 +322,7 @@ class PDFCanvasViewController: UIViewController {
         let contentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
             cameraCenter: cameraState.center,
             scrollView: pdfScrollView,
-            initialCenter: pdfCanvas.center,
+            initialCenter: model.projectSummary.center,
             initialMetersPerPoint: initialMetersPerPoint
         )
         pdfScrollView.contentOffset = contentOffset

@@ -5,8 +5,6 @@ import UIKit
 /// View controller responsible for displaying background canvas (PDF, mapbox, ... background) +
 /// foreground mapbox annotations mapView + container views displayed on top of the canvas
 class CanvasContainerViewController: UIViewController {
-    let pdfCanvas: PDFCanvas
-
     /// 2in1 canvas for displaying pdf(background) + mapbox(foreground).
     /// Will be refactored when we have option to present mapbox(background + foreground)
     let pdfCanvasViewController: PDFCanvasViewController
@@ -23,9 +21,8 @@ class CanvasContainerViewController: UIViewController {
     /// for presenting views on top of controls
     let overlays = PassthroughView()
 
-    init(pdfCanvas: PDFCanvas) {
-        self.pdfCanvas = pdfCanvas
-        pdfCanvasViewController = PDFCanvasViewController(pdfCanvas: pdfCanvas)
+    init(model: ProjectModel) throws {
+        pdfCanvasViewController = try PDFCanvasViewController(model: model)
         super.init(nibName: nil, bundle: nil)
     }
 

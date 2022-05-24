@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func initiateFirebase() {
         FirebaseApp.configure()
         // enable offline persistence for the database
-        Database.database().isPersistenceEnabled = true
+//        Database.database().isPersistenceEnabled = true
     }
 
     // MARK: UISceneSession Lifecycle

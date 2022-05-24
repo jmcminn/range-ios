@@ -95,7 +95,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
         photoButton = UIButton(
             configuration: photoButtonConfig,
-            primaryAction: UIAction(image: photoImage) { _ in self.onCamera?() }
+            primaryAction: UIAction(image: photoImage) { [weak self] _ in self?.onCamera?() }
         )
         photoButton.setContentHuggingPriority(.required, for: .horizontal)
         photoButton.setContentHuggingPriority(.required, for: .vertical)

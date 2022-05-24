@@ -13,8 +13,8 @@ final class ProjectFlowController: UIViewController {
 
     var photoFlow: PhotoFlowController?
 
-    init(pdfCanvas: PDFCanvas) {
-        canvasContainer = CanvasContainerViewController(pdfCanvas: pdfCanvas)
+    init(model: ProjectModel) throws {
+        canvasContainer = try CanvasContainerViewController(model: model)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -30,6 +30,11 @@ final class ProjectFlowController: UIViewController {
         }
         showDebugSettingsButton()
         showActionCard()
+    }
+
+    func stop() {
+        canvasContainer.removeCard(cardViewController: actionCardVC)
+        remove(childController: canvasContainer)
     }
 
     fileprivate func showActionCard() {
@@ -61,7 +66,8 @@ final class ProjectFlowController: UIViewController {
         let blur = UIBlurEffect(style: .regular)
         let blurView = UIVisualEffectView(effect: blur)
         canvasContainer.overlays.addSubview(blurView)
-        blurView.snp.makeConstraints { make in
+        blurView.snp.makeConstraints { [weak self] make in
+            guard let self = self else { return }
             make.left.right.bottom.equalToSuperview()
             make.height.equalTo(self.view.safeAreaInsets.bottom)
         }
@@ -73,12 +79,15 @@ final class ProjectFlowController: UIViewController {
             ProjectAction(
                 title: "Sign Out",
                 imageName: "rectangle.portrait.and.arrow.right",
-                handler: onSignOut
+                handler: { [weak self] in
+                    self?.onSignOut?()
+                }
             ),
             ProjectAction(
                 title: "Toggle Light/Dark mode",
                 imageName: "lightbulb",
-                handler: {
+                handler: { [weak self] in
+                    guard let self = self else { return }
                     self.view.window?.overrideUserInterfaceStyle = self.traitCollection
                         .userInterfaceStyle == .dark ? .light : .dark
                 }

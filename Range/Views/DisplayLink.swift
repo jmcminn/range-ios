@@ -25,6 +25,7 @@ import UIKit
 
         caDisplayLink?.add(to: .current, forMode: .common)
 
+        // TODO: deregister and test
         NotificationCenter.default.addObserver(self, selector: #selector(willResignActive),
                                                name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive),
