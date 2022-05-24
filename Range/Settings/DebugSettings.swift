@@ -29,7 +29,7 @@ final class DebugSettings: ObservableObject {
 
         defaults.register(defaults: [
             Keys.centerCanvasOnPinSnap: true,
-            Keys.hapticFeedbackOnPinTapSelection: false,
+            Keys.hapticFeedbackOnPinTapSelection: true,
         ])
 
         _centerCanvasOnPinSnap = .init(initialValue: defaults.bool(forKey: Keys.centerCanvasOnPinSnap))

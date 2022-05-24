@@ -403,18 +403,18 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
                     self.selectedPin = pin
                     self.updatePinSelection()
                     self.updatePhotoPinVisibility()
-                    if let pin = pin, DebugSettings().centerCanvasOnPinSnap {
-                        self.canvasContainer.pdfCanvas.animatePanAndZoom(
-                            cameraCenter: pin.point.coordinates,
-                            mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
-                        )
-                    }
                 }
             }
         } else if reason == .panEnd {
             // show the tooltip after the pan gesture has ended
-            if selectedPin != nil {
+            if let selectedPin = selectedPin {
                 showSelectedPinTooltip()
+                if DebugSettings().centerCanvasOnPinSnap {
+                    canvasContainer.pdfCanvas.animatePanAndZoom(
+                        cameraCenter: selectedPin.point.coordinates,
+                        mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
+                    )
+                }
             } else {
                 showPhotoPinTooltip()
             }
