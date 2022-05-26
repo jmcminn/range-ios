@@ -96,18 +96,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("project realm file url: ", model.realmConfig.fileURL?.path ?? "")
 
         let firebaseSync = ProjectModelFirebaseSync(model: model)
+        try await firebaseSync.start()
 
-        if !model.isProjectDownloaded() {
-            // do initial sync if project is not downloaded yet
-            do {
-                try await firebaseSync.doInitialSync()
-            } catch {
-                print("Initial Firebase sync error: ", error)
-            }
-        }
-        // at this point the project is either downloaded or it couldn't be downloaded
         try model.loadProject()
-        firebaseSync.start()
+
         projectModel = model
         projectModelFirebaseSync = firebaseSync
     }

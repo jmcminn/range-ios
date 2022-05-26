@@ -89,6 +89,8 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
+		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
+		0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -189,6 +191,8 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
+		0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFeature.swift; sourceTree = "<group>"; };
 		A6E8166BBA53B1A993643B7A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -262,10 +266,11 @@
 			children = (
 				0A45622E283E327500BA8D21 /* README.md */,
 				0A2F32F02836CA0500D04A1C /* ProjectModel.swift */,
+				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
 				0A4DC78427F490CA00712518 /* PDFCanvas.swift */,
 				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
-				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
+				0AFAF1B5283FC9EB002F216A /* Feature.swift */,
 				0A2F32FD2837E85E00D04A1C /* Firebase */,
 			);
 			path = Model;
@@ -296,6 +301,7 @@
 				0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */,
 				0A2F3302283BDC2B00D04A1C /* FirebasePDFCanvas.swift */,
 				0A456237283E792200BA8D21 /* FirebaseGeometry.swift */,
+				0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -666,6 +672,7 @@
 			files = (
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
+				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
@@ -694,6 +701,7 @@
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
+				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,

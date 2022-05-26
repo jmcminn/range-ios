@@ -23,10 +23,10 @@ There is an **important** assumption that the app should not be aware of Firebas
   - `ProjectModelFirebaseSync` - entry point for Realm <-> Firebase synchronization
   - `Firebase*` (e.g. `FirebaseProjectSummary`) - structs modelling the Firebase data, used to decode from Firebase representation to Realm objects 
   
-### Geometry
+### Model classes names
 
-Range geometry (from the backend model) is represented as a `Geometry` class but...
-Mapbox is using `Geometry` as an alias for `Turf.Geometry` but it shouldn't be too confusing (?)
+Range geometry/feature (from the backend model) are represented as a `Geometry`/`Feature` classes but...
+Mapbox is using `Geometry`/`Feature` as aliases for `Turf.Geometry`/`Turf.Feature` but it shouldn't be too confusing (?)
 
 
 ### Local database

@@ -10,7 +10,7 @@ struct SelectedPin {
     let id: String
     let point: Point
 
-    init?(fromFeature: Feature?) {
+    init?(fromFeature: Turf.Feature?) {
         guard let feature = fromFeature else {
             return nil
         }

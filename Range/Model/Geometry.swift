@@ -18,6 +18,8 @@ class Geometry: Object {
     @Persisted var annotationType: AnnotationType
     /// the geometry shape is stored as Turf.Geometry as this is what Mapbox uses for representing geometries in their SDK
     @Persisted var geometry: Turf.Geometry
+    /// features for this geometry, the order doesn't matter so it's a set
+    @Persisted var features: MutableSet<Feature>
 
     /// Default initializer required by Realm.
     override init() {
