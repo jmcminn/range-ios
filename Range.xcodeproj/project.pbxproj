@@ -16,9 +16,7 @@
 		0A07D5242809506C00B6F9A2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0A07D5232809506C00B6F9A2 /* FirebaseAuth */; };
 		0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0A07D5252809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta */; };
 		0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75528101B3400B6F9A2 /* Geometry.swift */; };
-		0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */; };
-		0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */; };
-		0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */; };
+		0A07D76028104BF000B6F9A2 /* FirebaseGeometryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */; };
 		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
 		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
 		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
@@ -42,6 +40,7 @@
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
+		0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A456237283E792200BA8D21 /* FirebaseGeometry.swift */; };
 		0A48ACD7281822680044E06E /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0A48ACD6281822680044E06E /* FirebaseCrashlytics */; };
 		0A48ACD92818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0A48ACD82818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDA281BDABF0044E06E /* DisplayLink.swift */; };
@@ -117,9 +116,7 @@
 		0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFlowController.swift; sourceTree = "<group>"; };
 		0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0A07D75528101B3400B6F9A2 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
-		0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometry.swift; sourceTree = "<group>"; };
-		0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONPointGeometryTest.swift; sourceTree = "<group>"; };
-		0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTest.swift; sourceTree = "<group>"; };
+		0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseGeometryTest.swift; sourceTree = "<group>"; };
 		0A07D7622810562600B6F9A2 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		0A07D7652812960500B6F9A2 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
 		0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowController.swift; sourceTree = "<group>"; };
@@ -143,6 +140,7 @@
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTest.swift; sourceTree = "<group>"; };
+		0A456237283E792200BA8D21 /* FirebaseGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseGeometry.swift; sourceTree = "<group>"; };
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
 		0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasContainerViewController.swift; sourceTree = "<group>"; };
 		0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoPinsHandler.swift; sourceTree = "<group>"; };
@@ -267,7 +265,6 @@
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
 				0A4DC78427F490CA00712518 /* PDFCanvas.swift */,
 				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
-				0A07D757281022BF00B6F9A2 /* GeoJSONPointGeometry.swift */,
 				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
 				0A2F32FD2837E85E00D04A1C /* Firebase */,
 			);
@@ -278,8 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */,
-				0A07D75F28104BF000B6F9A2 /* GeometryTest.swift */,
-				0A07D75A2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift */,
+				0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -299,6 +295,7 @@
 				0A2F32F92837CBBB00D04A1C /* ProjectModelFirebaseSync.swift */,
 				0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */,
 				0A2F3302283BDC2B00D04A1C /* FirebasePDFCanvas.swift */,
+				0A456237283E792200BA8D21 /* FirebaseGeometry.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -707,7 +704,6 @@
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
-				0A07D758281022BF00B6F9A2 /* GeoJSONPointGeometry.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A2F32FA2837CBBB00D04A1C /* ProjectModelFirebaseSync.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
@@ -716,6 +712,7 @@
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsHandler.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
+				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */,
@@ -734,10 +731,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A07D76028104BF000B6F9A2 /* GeometryTest.swift in Sources */,
+				0A07D76028104BF000B6F9A2 /* FirebaseGeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
-				0A07D75B2810379900B6F9A2 /* GeoJSONPointGeometryTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

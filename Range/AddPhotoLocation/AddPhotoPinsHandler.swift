@@ -1,7 +1,6 @@
 import CoreLocation
-import Firebase
-import FirebaseDatabaseSwift
 import MapboxMaps
+import RealmSwift
 import SnapKit
 import Turf
 import UIKit
@@ -32,13 +31,15 @@ struct SelectedPin {
 
 /// Handles the pins when adding a photo annotation
 class AddPhotoPinsHandler {
+    unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
     let image: UIImage
 
     // Initialize Impact Feedback Generator
     let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
 
-    var databaseHandle: DatabaseHandle?
+    /// Token for notifications about changes in the canvas geometries
+    var geometriesNotificationToken: NotificationToken?
 
     /// Defines the size of the rectangle used for searching pins near to the photo pin (or screen center)
     let pinsSearchRectSize = 30.0
@@ -69,9 +70,11 @@ class AddPhotoPinsHandler {
     var canvasDelegateId: UUID?
 
     /// - Parameters:
+    ///   - model:              model to read the pins from
     ///   - canvasContainer:    handler will add pins to this canvas
     ///   - image:              image to be displayed on the new photo pin
-    init(canvasContainer: CanvasContainerViewController, image: UIImage) {
+    init(model: ProjectModel, canvasContainer: CanvasContainerViewController, image: UIImage) {
+        self.model = model
         self.canvasContainer = canvasContainer
         self.image = image
         feedbackGenerator.prepare()
@@ -95,9 +98,7 @@ class AddPhotoPinsHandler {
         if let id = canvasDelegateId {
             canvasContainer.pdfCanvasViewController.removeDelegate(id: id)
         }
-        if let databaseHandle = databaseHandle {
-            Database.database().reference().child("geometryData/geometries").removeObserver(withHandle: databaseHandle)
-        }
+        geometriesNotificationToken?.invalidate()
         photoPinView?.removeFromSuperview()
         hideTooltip()
     }
@@ -237,40 +238,31 @@ extension AddPhotoPinsHandler {
     ///  - Parameters:
     ///         - onInitialLoad: callback called only once when the pins are initially loaded
     private func loadAndDisplayPins(onInitialLoad: @escaping () -> Void) {
-        databaseHandle = Database.database().reference().child("geometryData/geometries").observe(.value) { snapshot in
-            let geometries = self.convertGeometriesSnapshotToModel(snapshot: snapshot)
-            let pins = geometries.compactMap(self.convertGeometryToPin)
-            self.pinsAnnotationManager.annotations = pins
-            if !self.pinsLoadedInitially {
-                self.pinsLoadedInitially = true
-                onInitialLoad()
+        geometriesNotificationToken = canvasContainer.pdfCanvasViewController.pdfCanvas.geometries
+            .observe { [weak self] changes in
+                guard let self = self else { return }
+                switch changes {
+                case let .initial(geometries):
+                    self.pinsAnnotationManager.annotations = Array(geometries.compactMap(self.convertGeometryToPin))
+                    self.pinsLoadedInitially = true
+                    onInitialLoad()
+                case .update(let geometries, deletions: _, insertions: _, modifications: _):
+                    self.pinsAnnotationManager.annotations = Array(geometries.compactMap(self.convertGeometryToPin))
+                case let .error(error):
+                    print("geometries observing error: ", error)
+                }
             }
-            // TODO: if currently selected pin is gone we need to switch back to photoPin (is it even possible?)
-        }
-    }
-
-    /// Converts the geometries from firebase format to Range model for Geometry
-    private func convertGeometriesSnapshotToModel(snapshot: DataSnapshot) -> [Geometry] {
-        snapshot.children.compactMap {
-            guard let geometrySnapshot = $0 as? DataSnapshot else { return nil }
-            do {
-                return try geometrySnapshot.data(as: Geometry.self)
-            } catch {
-                print("error decoding geometry snapshot: \(error)")
-                return nil
-            }
-        }
     }
 
     // TODO: for now the value of photo count is hardcoded to 1
     /// Converts the geometry to a PointAnnotation for presenting the pin.
     private func convertGeometryToPin(geometry: Geometry) -> PointAnnotation? {
-        guard case let .point(pointGeometry) = geometry.geoJSONGeometry else {
+        guard case let .point(point) = geometry.geometry else {
             // not a point geometry, ignore
             return nil
         }
         let selected = geometry.id == selectedPin?.id
-        var pin = PointAnnotation(id: geometry.id, coordinate: pointGeometry.position)
+        var pin = PointAnnotation(id: geometry.id, point: point)
         pin.iconImage = "largepin"
         pin.iconAnchor = .bottom
         pin.iconOffset = [0, 4]

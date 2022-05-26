@@ -13,6 +13,8 @@ class PDFCanvas: Object {
     @Persisted var pageNumber: Int
     /// the scale of PDF. Example value: 48.0, meaning the scale is 1:48
     @Persisted var userDefinedScale: Double
+    /// geometries for this canvas, the order doesn't matter so it's a set
+    @Persisted var geometries: MutableSet<Geometry>
 
     /// Default initializer required by Realm.
     override init() {

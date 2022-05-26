@@ -5,6 +5,7 @@ import UIKit
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
+    unowned let model: ProjectModel
     let canvasContainer: CanvasContainerViewController
     var onSignOut: (() -> Void)?
 
@@ -14,6 +15,7 @@ final class ProjectFlowController: UIViewController {
     var photoFlow: PhotoFlowController?
 
     init(model: ProjectModel) throws {
+        self.model = model
         canvasContainer = try CanvasContainerViewController(model: model)
         super.init(nibName: nil, bundle: nil)
     }
@@ -102,7 +104,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     fileprivate func startPhotoFlow() {
-        photoFlow = PhotoFlowController(canvasContainer: canvasContainer)
+        photoFlow = PhotoFlowController(model: model, canvasContainer: canvasContainer)
         photoFlow?.onStop = { [weak self] in
             self?.actionCardVC.showCard(animated: true)
             self?.photoFlow = nil

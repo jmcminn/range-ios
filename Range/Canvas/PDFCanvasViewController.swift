@@ -84,7 +84,7 @@ class PDFCanvasViewController: UIViewController {
     init(model: ProjectModel) throws {
         // TODO: canvasId hardcoded for now
         let canvasId = "e5db7eb2-bd9f-44ba-9c90-e6e6e528b930"
-        guard let pdfCanvas = model.mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId)?.freeze() else {
+        guard let pdfCanvas = model.mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId) else {
             throw PDFCanvasViewControllerError.canvasNotFound
         }
         self.model = model

@@ -1,6 +1,7 @@
 import CoreLocation
 import Foundation
 import RealmSwift
+import Turf
 
 /// Support for custom types not supported natively by Realm Swift SDK
 /// https://www.mongodb.com/docs/realm/sdk/swift/data-types/type-projection/
@@ -28,5 +29,41 @@ extension CLLocationCoordinate2D: CustomPersistable {
     // When writing to the database, this converts the mapped type to a persistable type.
     public var persistableValue: PersistedType {
         Location(value: [latitude, longitude])
+    }
+}
+
+/// Store Turf.Geometry in the Realm as a JSON string
+extension Turf.Geometry: FailableCustomPersistable {
+    // Define the storage object that is persisted to the database.
+    // The `PersistedType` must be a type that Realm supports.
+    // In this example, the PersistedType is an embedded object.
+    public typealias PersistedType = String
+    // Construct an instance of the mapped type from the persisted type.
+    // When reading from the database, this converts the persisted type to the mapped type.
+    public init?(persistedValue: PersistedType) {
+        if let data = persistedValue.data(using: .utf8) {
+            do {
+                let decoded = try JSONDecoder().decode(Turf.Geometry.self, from: data)
+                self = decoded
+                return
+            } catch {
+                print("exception decoding geometry: ", error)
+            }
+        }
+        return nil
+    }
+
+    // Construct an instance of the persisted type from the mapped type.
+    // When writing to the database, this converts the mapped type to a persistable type.
+    public var persistableValue: PersistedType {
+        do {
+            let encoded = try JSONEncoder().encode(self)
+            if let json = String(data: encoded, encoding: .utf8) {
+                return json
+            }
+        } catch {
+            print("exception encoding geometry: ", error)
+        }
+        return ""
     }
 }

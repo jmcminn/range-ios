@@ -1,10 +1,10 @@
 import AVFoundation
-import Firebase
-import FirebaseDatabaseSwift
+import Turf
 import UIKit
 
 /// Manages the flow of taking photo(s) and assigning their locations on the map
 class PhotoFlowController {
+    unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
     var onStop: (() -> Void)?
@@ -17,8 +17,11 @@ class PhotoFlowController {
     var canvasDelegateId: UUID?
 
     ///
-    /// - Parameters: canvas - the flow will operate on this canvs
-    init(canvasContainer: CanvasContainerViewController) {
+    /// - Parameters:
+    ///     - canvas: - the flow will operate on this canvas
+    ///     - model: - the project model
+    init(model: ProjectModel, canvasContainer: CanvasContainerViewController) {
+        self.model = model
         self.canvasContainer = canvasContainer
     }
 
@@ -128,7 +131,7 @@ class PhotoFlowController {
     }
 
     private func showPins(forImage image: UIImage) {
-        pinsHandler = AddPhotoPinsHandler(canvasContainer: canvasContainer, image: image)
+        pinsHandler = AddPhotoPinsHandler(model: model, canvasContainer: canvasContainer, image: image)
         pinsHandler?.start()
     }
 
@@ -162,21 +165,24 @@ class PhotoFlowController {
             print("selected existing pin: \(selectedPin)")
         } else {
             // new position for pin
-            let geometry = Geometry(
-                id: UUID().uuidString.lowercased(),
-                pointGeometry: GeoJSONPointGeometry(position: canvasContainer.annotationsMapView.cameraState.center)
-            )
-            lastPhotoPinId = geometry.id
-            do {
-                try Database.database().reference().child("geometryData/geometries").child(geometry.id)
-                    .setValue(from: geometry) { error in
-                        if let error = error {
-                            print("error creating geometry: \(error)")
-                        }
-                    }
-            } catch {
-                print("error saving geometry snapshot: \(error)")
-            }
+            // TODO: 38 here
+//            let geometry = FirebaseGeometry(
+//                id: UUID().uuidString.lowercased(),
+//                // TODO: 38 need to have canvasId here, should come from current canvas id
+//                canvasId: "a",
+//                coordinates: canvasContainer.annotationsMapView.cameraState.center
+//            )
+//            lastPhotoPinId = geometry.id
+//            do {
+//                try Database.database().reference().child("geometryData/geometries").child(geometry.id)
+//                    .setValue(from: geometry) { error in
+//                        if let error = error {
+//                            print("error creating geometry: \(error)")
+//                        }
+//                    }
+//            } catch {
+//                print("error saving geometry snapshot: \(error)")
+//            }
         }
         stop()
     }

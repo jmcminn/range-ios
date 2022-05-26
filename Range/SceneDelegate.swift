@@ -93,7 +93,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// - Returns: loaded ProjectModel
     private func createProjectModel(projectId: String) async throws {
         let model = try ProjectModel(projectId: projectId)
-        print("project realm file url: ", model.realmConfig.fileURL?.path as Any)
+        print("project realm file url: ", model.realmConfig.fileURL?.path ?? "")
 
         let firebaseSync = ProjectModelFirebaseSync(model: model)
 
@@ -107,6 +107,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         // at this point the project is either downloaded or it couldn't be downloaded
         try model.loadProject()
+        firebaseSync.start()
         projectModel = model
         projectModelFirebaseSync = firebaseSync
     }
