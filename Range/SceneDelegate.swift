@@ -1,5 +1,6 @@
 import CoreLocation
 import FirebaseAuth
+import OSLog
 import PDFKit
 import RealmSwift
 import UIKit
@@ -59,7 +60,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     try self.showProject(model: model)
                 }
             } catch {
-                print("Error loading project: ", error)
+                Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
+                signOut()
                 showProjectOpenError(withMessage: error.localizedDescription)
             }
         }
@@ -93,7 +95,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// - Returns: loaded ProjectModel
     private func createProjectModel(projectId: String) async throws {
         let model = try ProjectModel(projectId: projectId)
-        print("project realm file url: ", model.realmConfig.fileURL?.path ?? "")
+        Logger.model.info("project realm file url: \(model.realmConfig.fileURL?.path ?? "")")
 
         let firebaseSync = ProjectModelFirebaseSync(model: model)
         try await firebaseSync.start()
@@ -125,7 +127,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         do {
             try Auth.auth().signOut()
         } catch {
-            print("Error while trying to sign out: \(error)")
+            Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
         }
         showAuth()
         // TODO: delete all realm files on sign in when the user is different from the previous one?

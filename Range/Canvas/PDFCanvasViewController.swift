@@ -1,5 +1,6 @@
 import CoreLocation
 @_spi(Restricted) @_spi(Experimental) import MapboxMaps
+import OSLog
 import PDFKit
 import Turf
 import UIKit
@@ -70,7 +71,7 @@ class PDFCanvasViewController: UIViewController {
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
         guard let fontsPath = Bundle.main.path(forResource: "fonts", ofType: nil) else {
-            print("Couldn't find fonts, Mapbox will be broken")
+            Logger.assets.fault("Couldn't find fonts, Mapbox will be broken")
             return "{}"
         }
         return
@@ -216,15 +217,15 @@ class PDFCanvasViewController: UIViewController {
         mapView.mapboxMap.loadStyleJSON(annotationsStyle) { result in
             switch result {
             case .success:
-                print("style loaded successfully")
+                Logger.mapbox.debug("annotations style loaded successfully")
             case let .failure(error):
-                print("style failed to load: ", error.localizedDescription)
+                Logger.mapbox.error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
             }
         }
         do {
             try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom: maxMapboxZoom))
         } catch {
-            print("Unexpected error: \(error).")
+            Logger.mapbox.error("set initial camera bounds failed: \(error.localizedDescription, privacy: .public)")
         }
 
         mapView.ornaments.options.attributionButton.visibility = .hidden

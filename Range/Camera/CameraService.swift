@@ -1,6 +1,7 @@
 import AVFoundation
 import Combine
 import Foundation
+import OSLog
 import UIKit
 
 /**
@@ -20,7 +21,7 @@ class CameraService: ObservableObject {
     typealias CompletionFunction = (Data?) -> Void
     typealias SetupResultCallbackFunction = (SessionSetupResult) -> Void
 
-    enum SessionSetupResult {
+    enum SessionSetupResult: String {
         case notConfigured
         case success
         case configurationFailed
@@ -126,10 +127,10 @@ class CameraService: ObservableObject {
         } catch let ConfigurationError.videoUnavailable(message),
                     let ConfigurationError.couldntAddVideo(message),
                     let ConfigurationError.couldntAddOutput(message) {
-            print(message)
+            Logger.camera.error("device configuration failed: \(message, privacy: .public)")
             setupResult = .configurationFailed
         } catch {
-            print("Couldn't create video device input: \(error)")
+            Logger.camera.error("device creation failed: \(error.localizedDescription, privacy: .public)")
             setupResult = .configurationFailed
         }
     }
@@ -142,11 +143,11 @@ class CameraService: ObservableObject {
     func start() {
         sessionQueue.async {
             guard self.setupResult == .success else {
-                print("configuration problem: \(self.setupResult)")
+                Logger.camera.error("configuration problem: \(String(describing: self.setupResult))")
                 return
             }
             guard !self.isSessionRunning else {
-                print("session already started")
+                Logger.camera.error("session already started: \(String(describing: self.setupResult))")
                 return
             }
 
@@ -188,7 +189,7 @@ class CameraService: ObservableObject {
             device.videoZoomFactor = currentZoomFactor
             device.unlockForConfiguration()
         } catch {
-            print(error.localizedDescription)
+            Logger.camera.error("setZoom failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -228,7 +229,7 @@ class CameraService: ObservableObject {
                 let imageData = try Data(contentsOf: sampleImageURL)
                 completion(imageData)
             } catch {
-                print("Couldn't load \(sampleImageURL)")
+                Logger.assets.error("Couldn't load the \(sampleImageURL, privacy: .public) image from bundle")
             }
         }
     }

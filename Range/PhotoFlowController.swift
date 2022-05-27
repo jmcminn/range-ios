@@ -1,4 +1,5 @@
 import AVFoundation
+import OSLog
 import Turf
 import UIKit
 
@@ -161,8 +162,8 @@ class PhotoFlowController {
     private func onPhotoLocationConfirmed() {
         if let selectedPin = pinsHandler?.selectedPin {
             lastPhotoPinId = selectedPin.id
-            // TODO: add photo to collaboration
-            print("selected existing pin: \(selectedPin)")
+            // TODO: 38 add photo to collaboration
+//            print("selected existing pin: \(selectedPin)")
         } else {
             // new position for pin
             // TODO: 38 here
@@ -241,9 +242,7 @@ private extension PhotoFlowController {
         if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
             alertController.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
                 if UIApplication.shared.canOpenURL(settingsUrl) {
-                    UIApplication.shared.open(settingsUrl) { success in
-                        print("Settings opened: \(success)")
-                    }
+                    UIApplication.shared.open(settingsUrl)
                 }
             })
         }

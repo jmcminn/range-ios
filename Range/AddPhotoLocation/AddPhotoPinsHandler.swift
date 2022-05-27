@@ -1,5 +1,6 @@
 import CoreLocation
 import MapboxMaps
+import OSLog
 import RealmSwift
 import SnapKit
 import Turf
@@ -249,7 +250,7 @@ extension AddPhotoPinsHandler {
                 case .update(let geometries, deletions: _, insertions: _, modifications: _):
                     self.pinsAnnotationManager.annotations = Array(geometries.compactMap(self.convertGeometryToPin))
                 case let .error(error):
-                    print("geometries observing error: ", error)
+                    Logger.model.error("observing geometries failed: \(error.localizedDescription, privacy: .public)")
                 }
             }
     }
@@ -310,10 +311,10 @@ extension AddPhotoPinsHandler {
                         stretchY: []
                     )
                 } catch {
-                    print("Could not add image to style due to error: \(error)")
+                    Logger.mapbox.error("addImage to style failed: \(error.localizedDescription, privacy: .public)")
                 }
             } else {
-                print("Couldn't load the largepin image from assets")
+                Logger.assets.error("Couldn't load the largepin image from assets")
             }
 
             // create annotation manager

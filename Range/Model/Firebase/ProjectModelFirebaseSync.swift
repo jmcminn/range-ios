@@ -1,6 +1,7 @@
 import Firebase
 import FirebaseDatabaseSwift
 import Foundation
+import OSLog
 import RealmSwift
 
 /// Some helper methods for Firebase DatabaseReference
@@ -34,8 +35,8 @@ class ProjectModelFirebaseSync {
     /// Background serial queue to perform firebase to Realm sync operations on.
     private let syncQueue = DispatchQueue(label: "firebase-sync-queue")
 
-    /// Firebase database handle
-    private let database: Database
+    /// Firebase database reference
+    private let databaseRef: DatabaseReference
 
     /// Array of handles for firebase listeners
     private var databaseHandles = Set<DatabaseHandle>()
@@ -44,19 +45,15 @@ class ProjectModelFirebaseSync {
     private var realm: Realm!
 
     /// Firebase paths
-    private lazy var projectSummaryReference = database
-        .reference(withPath: "projects/\(model.projectId)/summary")
-    private lazy var canvasesReference = database
-        .reference(withPath: "projects/\(model.projectId)/details/canvases")
-    private lazy var geometriesReference = database
-        .reference(withPath: "projects/\(model.projectId)/details/geometries")
-    private lazy var featuresReference = database
-        .reference(withPath: "projects/\(model.projectId)/details/features")
+    private lazy var projectSummaryReference = databaseRef.child("projects/\(model.projectId)/summary")
+    private lazy var canvasesReference = databaseRef.child("projects/\(model.projectId)/details/canvases")
+    private lazy var geometriesReference = databaseRef.child("projects/\(model.projectId)/details/geometries")
+    private lazy var featuresReference = databaseRef.child("projects/\(model.projectId)/details/features")
 
     /// Initialize sync for given `ProjectModel`
     init(model: ProjectModel) {
         self.model = model
-        database = Database.database()
+        databaseRef = Database.database().reference()
     }
 
     deinit {
@@ -88,27 +85,27 @@ class ProjectModelFirebaseSync {
 
         // after this point it's only registering for observation and the function returns
         geometriesReference._observe(.childAdded, on: syncQueue) { [weak self] in
-            print("_addGeometry: ", $0)
+            Logger.firebase.debug("onGeometryAdded \($0.key, privacy: .public)")
             self?._upsertGeometry($0)
         }
         geometriesReference._observe(.childRemoved, on: syncQueue) { [weak self] in
-            print("_removeGeometry: ", $0)
+            Logger.firebase.debug("onGeometryRemoved \($0.key, privacy: .public)")
             self?._removeGeometry($0)
         }
         geometriesReference._observe(.childChanged, on: syncQueue) { [weak self] in
-            print("_changeGeometry: ", $0)
+            Logger.firebase.debug("onGeometryChanged \($0.key, privacy: .public)")
             self?._upsertGeometry($0)
         }
         featuresReference._observe(.childAdded, on: syncQueue) { [weak self] in
-            print("_addFeature: ", $0)
+            Logger.firebase.debug("onFeatureAdded \($0.key, privacy: .public)")
             self?._upsertFeature($0)
         }
         featuresReference._observe(.childRemoved, on: syncQueue) { [weak self] in
-            print("_removeFeature: ", $0)
+            Logger.firebase.debug("onFeatureRemoved \($0.key, privacy: .public)")
             self?._removeFeature($0)
         }
         featuresReference._observe(.childChanged, on: syncQueue) { [weak self] in
-            print("_changeFeature: ", $0)
+            Logger.firebase.debug("onFeatureChanged \($0.key, privacy: .public)")
             self?._upsertFeature($0)
         }
     }
@@ -163,7 +160,7 @@ extension ProjectModelFirebaseSync {
                 realm.add(canvas, update: .modified)
             }
         } catch {
-            print("error adding canvas: \(error)")
+            Logger.firebase.error("UpsertCanvas failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -174,15 +171,26 @@ extension ProjectModelFirebaseSync {
                 let firebaseGeometry = try snapshot.data(as: FirebaseGeometry.self)
                 guard let canvas = realm.object(ofType: PDFCanvas.self, forPrimaryKey: firebaseGeometry.canvasId)
                 else {
-                    print("Warning: geometry for not existing canvas: ", firebaseGeometry)
+                    Logger.firebase
+                        .error(
+                            "upsertGeometry failed [\(firebaseGeometry.geometry.id, privacy: .public)]: canvas not found [\(firebaseGeometry.canvasId, privacy: .public)]"
+                        )
                     return
                 }
                 let geometry = firebaseGeometry.geometry
                 realm.add(geometry, update: .modified)
                 canvas.geometries.insert(geometry)
             }
+        } catch let DecodingError.dataCorrupted(context) {
+            Logger.firebase
+                .error(
+                    "decodeGeometry failed [\(snapshot.key, privacy: .public)]: \(context.debugDescription, privacy: .public)"
+                )
         } catch {
-            print("error adding geometry: \(error)")
+            Logger.firebase
+                .error(
+                    "upsertGeometry failed [\(snapshot.key, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
+                )
         }
     }
 
@@ -199,7 +207,7 @@ extension ProjectModelFirebaseSync {
                 realm.delete(geometry)
             }
         } catch {
-            print("error removing geometry: \(error)")
+            Logger.firebase.error("removeGeometry failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -210,7 +218,10 @@ extension ProjectModelFirebaseSync {
                 let firebaseFeature = try snapshot.data(as: FirebaseFeature.self)
                 guard let geometry = realm.object(ofType: Geometry.self, forPrimaryKey: firebaseFeature.geometryId)
                 else {
-                    print("Warning: feature for not existing geometry: ", firebaseFeature)
+                    Logger.firebase
+                        .error(
+                            "upsertFeature failed [\(firebaseFeature.feature.id, privacy: .public)]: geometry not found [\(firebaseFeature.geometryId, privacy: .public)]"
+                        )
                     return
                 }
                 let feature = firebaseFeature.feature
@@ -218,7 +229,7 @@ extension ProjectModelFirebaseSync {
                 geometry.features.insert(feature)
             }
         } catch {
-            print("error adding feature: \(error)")
+            Logger.firebase.error("upsertFeature failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -234,7 +245,7 @@ extension ProjectModelFirebaseSync {
                 realm.delete(feature)
             }
         } catch {
-            print("error removing feature: \(error)")
+            Logger.firebase.error("removeFeature failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 }

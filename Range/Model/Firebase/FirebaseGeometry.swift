@@ -46,7 +46,7 @@ struct FirebaseGeometry: Codable {
             throw DecodingError.dataCorruptedError(
                 forKey: .annotationType,
                 in: container,
-                debugDescription: "Unsupported annotationType"
+                debugDescription: "Unsupported annotationType: \(type)"
             )
         }
         var coordinatesContainer = try container.nestedUnkeyedContainer(forKey: .coordinates)

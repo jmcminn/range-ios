@@ -1,3 +1,4 @@
+import OSLog
 import UIKit
 
 // This implementation is based on https://github.com/applidium/ADOverlayContainer and https://github.com/babylonhealth/DrawerKit
@@ -40,7 +41,7 @@ class ModalCardPresentationController: UIPresentationController {
             )
             cardHandler?.install()
         } else {
-            print("containerView is nil, cannot install the card handler")
+            Logger.ui.fault("containerView is nil, cannot install the card handler")
         }
         setupSafeAreaBlur()
         setupSliderView()

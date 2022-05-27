@@ -69,7 +69,7 @@ class FirebaseGeometryTest: XCTestCase {
             else {
                 XCTFail("unexpected error: \(error)"); return
             }
-            XCTAssertEqual(context.debugDescription, "Unsupported annotationType")
+            XCTAssertEqual(context.debugDescription, "Unsupported annotationType: polygon")
         }
     }
 

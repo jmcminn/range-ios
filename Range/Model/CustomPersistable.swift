@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import OSLog
 import RealmSwift
 import Turf
 
@@ -47,7 +48,7 @@ extension Turf.Geometry: FailableCustomPersistable {
                 self = decoded
                 return
             } catch {
-                print("exception decoding geometry: ", error)
+                Logger.model.error("decoding geometry failed: \(error.localizedDescription, privacy: .public)")
             }
         }
         return nil
@@ -62,7 +63,7 @@ extension Turf.Geometry: FailableCustomPersistable {
                 return json
             }
         } catch {
-            print("exception encoding geometry: ", error)
+            Logger.model.error("encoding geometry failed: \(error.localizedDescription, privacy: .public)")
         }
         return ""
     }

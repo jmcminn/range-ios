@@ -89,6 +89,7 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
+		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */; };
 /* End PBXBuildFile section */
@@ -191,6 +192,8 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
+		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
 		0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFeature.swift; sourceTree = "<group>"; };
 		A6E8166BBA53B1A993643B7A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -453,6 +456,7 @@
 				0A48ACDD281C115C0044E06E /* Canvas */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
+				0AF812B72840D52A00F7BD09 /* Logging */,
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A07D75428101B1C00B6F9A2 /* Model */,
 				0A632EDB27E4DA38001A019B /* PDF */,
@@ -516,6 +520,15 @@
 				0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */,
 			);
 			path = Camera;
+			sourceTree = "<group>";
+		};
+		0AF812B72840D52A00F7BD09 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				0AF812BA2840D5AC00F7BD09 /* README.md */,
+				0AF812B82840D53700F7BD09 /* Logging.swift */,
+			);
+			path = Logging;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -722,6 +735,7 @@
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
+				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,

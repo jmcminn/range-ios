@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import Photos
 
 /// # PhotoCaptureProcessor
@@ -78,7 +79,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             self.photoProcessingHandler(false)
         }
         if let error = error {
-            print("Error capturing photo: \(error)")
+            Logger.camera.error("capture photo failed: \(error.localizedDescription, privacy: .public)")
         } else {
             photoData = photo.fileDataRepresentation()
         }
@@ -87,7 +88,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
     /// photoOutput:didFinishCaptureFor:error:
     func photoOutput(_: AVCapturePhotoOutput, didFinishCaptureFor _: AVCaptureResolvedPhotoSettings, error: Error?) {
         if let error = error {
-            print("Error capturing photo: \(error)")
+            Logger.camera.error("capture photo failed: \(error.localizedDescription, privacy: .public)")
         }
         DispatchQueue.main.async {
             self.completionHandler(self)
