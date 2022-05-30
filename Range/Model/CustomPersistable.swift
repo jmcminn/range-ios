@@ -3,6 +3,7 @@ import Foundation
 import OSLog
 import RealmSwift
 import Turf
+import UIKit
 
 /// Support for custom types not supported natively by Realm Swift SDK
 /// https://www.mongodb.com/docs/realm/sdk/swift/data-types/type-projection/

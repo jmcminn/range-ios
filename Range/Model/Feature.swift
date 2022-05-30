@@ -5,10 +5,12 @@ import RealmSwift
 class Feature: Object {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
-    /// Backlink to the Geometry. This is automatically updated whenever this feature is added to or removed from a geometry
-    @Persisted(originProperty: "features") var geometry: LinkingObjects<Geometry>
     /// name
     @Persisted var name: String
+    /// Backlink to the Geometry. This is automatically updated whenever this feature is added to or removed from a geometry
+    @Persisted(originProperty: "features") var geometry: LinkingObjects<Geometry>
+    /// collaborations for this feature, the order doesn't matter so it's a set
+    @Persisted var collaborations: MutableSet<Collaboration>
 
     /// Default initializer required by Realm.
     override init() {

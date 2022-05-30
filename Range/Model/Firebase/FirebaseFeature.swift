@@ -14,36 +14,15 @@ import Foundation
 struct FirebaseFeature: Codable {
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id
-        case geometry
-        case name
+        case id, geometryId = "geometry", name
     }
 
-    /// UUID identifier of the parent
+    let id: String
     let geometryId: String
-    /// decodes into Range Feature
-    let feature: Feature
+    let name: String
 
-    /// Constructor taking the geometry
-    init(geometryId: String, feature: Feature) {
-        self.geometryId = geometryId
-        self.feature = feature
-    }
-
-    /// Custom implementation of decoding that handles different geometry types
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let id = try container.decode(String.self, forKey: .id)
-        geometryId = try container.decode(String.self, forKey: .geometry)
-        let name = try container.decode(String.self, forKey: .name)
-        feature = Feature(id: id, name: name)
-    }
-
-    /// Custom implementation of encoding that handles different geometry types
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(feature.id, forKey: .id)
-        try container.encode(geometryId, forKey: .geometry)
-        try container.encode(feature.name, forKey: .name)
+    /// decoded Feature
+    var feature: Feature {
+        Feature(id: id, name: name)
     }
 }

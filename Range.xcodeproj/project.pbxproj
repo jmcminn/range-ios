@@ -37,6 +37,8 @@
 		0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3308283CE1B200D04A1C /* DebugSettings.swift */; };
 		0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */; };
 		0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330D283CE8C800D04A1C /* RoundButton.swift */; };
+		0A34C17928450C2B00BEDC7C /* Firebase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */; };
+		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
@@ -83,6 +85,11 @@
 		0A720C65280427F7003D6B13 /* Rectangle 515.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A720C64280427F7003D6B13 /* Rectangle 515.png */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
 		0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */; };
+		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
+		0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4122844E05A0097888A /* Collaboration.swift */; };
+		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
+		0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */; };
+		0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */; };
 		0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232427FC777600D744F4 /* CameraPreview.swift */; };
 		0A97232727FC782B00D744F4 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232627FC782B00D744F4 /* CameraView.swift */; };
 		0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraViewController.swift */; };
@@ -139,6 +146,8 @@
 		0A2F3308283CE1B200D04A1C /* DebugSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettings.swift; sourceTree = "<group>"; };
 		0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
 		0A2F330D283CE8C800D04A1C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
+		0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Extensions.swift"; sourceTree = "<group>"; };
+		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -186,6 +195,11 @@
 		0A720C64280427F7003D6B13 /* Rectangle 515.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle 515.png"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
 		0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDisplay.swift; sourceTree = "<group>"; };
+		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
+		0A7FC4122844E05A0097888A /* Collaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collaboration.swift; sourceTree = "<group>"; };
+		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
+		0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
+		0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusName.swift; sourceTree = "<group>"; };
 		0A97232427FC777600D744F4 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0A97232627FC782B00D744F4 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		0A97232827FC7D9D00D744F4 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
@@ -271,9 +285,11 @@
 				0A2F32F02836CA0500D04A1C /* ProjectModel.swift */,
 				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
+				0A7FC4142844E0670097888A /* Status.swift */,
 				0A4DC78427F490CA00712518 /* PDFCanvas.swift */,
 				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
 				0AFAF1B5283FC9EB002F216A /* Feature.swift */,
+				0A7FC4122844E05A0097888A /* Collaboration.swift */,
 				0A2F32FD2837E85E00D04A1C /* Firebase */,
 			);
 			path = Model;
@@ -301,10 +317,13 @@
 			isa = PBXGroup;
 			children = (
 				0A2F32F92837CBBB00D04A1C /* ProjectModelFirebaseSync.swift */,
+				0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */,
 				0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */,
+				0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */,
 				0A2F3302283BDC2B00D04A1C /* FirebasePDFCanvas.swift */,
 				0A456237283E792200BA8D21 /* FirebaseGeometry.swift */,
 				0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */,
+				0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -385,6 +404,8 @@
 				0A720C6228007011003D6B13 /* UIImage+Resize.swift */,
 				0A18126E28339EC800A8515B /* UIView+Shadow.swift */,
 				0A1812742834CFBB00A8515B /* UITableView+Borders.swift */,
+				0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */,
+				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -709,12 +730,15 @@
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
+				0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */,
 				0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
+				0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */,
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
+				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
@@ -737,10 +761,14 @@
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
+				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
+				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
+				0A7FC4152844E0670097888A /* Status.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
+				0A34C17928450C2B00BEDC7C /* Firebase+Extensions.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
