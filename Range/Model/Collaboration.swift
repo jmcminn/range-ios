@@ -7,9 +7,9 @@ class Collaboration: Object {
     @Persisted(primaryKey: true) var id: String
     /// Backlink to the Feature. This is automatically updated whenever this coolaboration is added to or removed from the parent
     @Persisted(originProperty: "collaborations") var feature: LinkingObjects<Feature>
-    /// Backlink to the Status. This is automatically updated whenever this coolaboration is added to or removed from the status
-    /// Status is not really a parent of the collaboration, but to have this backling we need to model it on the Status level
-    @Persisted(originProperty: "collaborations") var status: LinkingObjects<Status>
+    // collaboration status, needs to be optional because of how Realm
+    // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
+    @Persisted var status: Status?
     /// name
     @Persisted var name: String
     /// description (can't really use the description name for it as it's already used)

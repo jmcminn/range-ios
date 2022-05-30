@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import RealmSwift
 import Turf
 
 /// Represents the `Geometry` (`projects/details/geometries` path in Firebase)
@@ -16,7 +17,9 @@ import Turf
 ///         "annotationType" : "photoMarker",
 ///         "coordinates": [-96.77546339604037, 32.82483564429168]
 ///     }
-struct FirebaseGeometry: Codable {
+struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
+    typealias ModelType = Geometry
+
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
         case id
@@ -26,9 +29,9 @@ struct FirebaseGeometry: Codable {
     }
 
     /// UUID identifier of parent canvas
-    let canvasId: String
+    var canvasId: String
     /// decodes into Range Geometry
-    let geometry: Geometry
+    var geometry: Geometry
 
     /// Constructor taking the geometry
     init(canvasId: String, geometry: Geometry) {
@@ -72,5 +75,14 @@ struct FirebaseGeometry: Codable {
                                                 debugDescription: "Unsupported geometry")
             throw EncodingError.invalidValue(self, context)
         }
+    }
+
+    /// Add or update the geometry and add to canvas. Fails if canvas not found for geometry
+    func upsert(_ realm: Realm) throws {
+        guard let canvas = realm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId) else {
+            throw "canvas not found: \(canvasId)"
+        }
+        realm.add(geometry, update: .modified)
+        canvas.geometries.insert(geometry)
     }
 }

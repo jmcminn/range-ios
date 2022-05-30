@@ -95,7 +95,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// - Returns: loaded ProjectModel
     private func createProjectModel(projectId: String) async throws {
         let model = try ProjectModel(projectId: projectId)
-        Logger.model.info("project realm file url: \(model.realmConfig.fileURL?.path ?? "")")
 
         let firebaseSync = ProjectModelFirebaseSync(model: model)
         try await firebaseSync.start()

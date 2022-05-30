@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import RealmSwift
 
 /// Represents the `Collaboration` (`projects/details/collaboration` path in Firebase)
 ///
@@ -13,7 +14,9 @@ import Foundation
 ///         "description": "description"
 ///         "tags"       : // not implemented on iOS yet
 ///     }
-struct FirebaseCollaboration: Codable {
+struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
+    typealias ModelType = Collaboration
+
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
         case id, featureId = "feature", statusId = "statusName", name, collaborationDescription = "description"
@@ -25,8 +28,17 @@ struct FirebaseCollaboration: Codable {
     let name: String
     let collaborationDescription: String
 
-    /// decoded Collaboration
-    var collaboration: Collaboration {
-        Collaboration(id: id, name: name, description: collaborationDescription)
+    /// Add or update the collaboration and add it to the feature. Also sets the status. Fails if feature or status not found
+    func upsert(_ realm: Realm) throws {
+        guard let feature = realm.object(ofType: Feature.self, forPrimaryKey: featureId) else {
+            throw "feature not found: \(featureId)"
+        }
+        guard let status = realm.object(ofType: Status.self, forPrimaryKey: statusId) else {
+            throw "status not found: \(statusId)"
+        }
+        let collaboration = Collaboration(id: id, name: name, description: collaborationDescription)
+        collaboration.status = status
+        realm.add(collaboration, update: .modified)
+        feature.collaborations.insert(collaboration)
     }
 }

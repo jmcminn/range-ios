@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import RealmSwift
 
 /// Represents the `Feature` (`projects/details/features` path in Firebase)
 ///
@@ -11,18 +12,25 @@ import Foundation
 ///         "name"     : "name",
 ///         "description": "..."  // optional, not implemented on iOS
 ///     }
-struct FirebaseFeature: Codable {
+struct FirebaseFeature: Codable, FirebaseToRealmSyncable {
+    typealias ModelType = Feature
+
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
         case id, geometryId = "geometry", name
     }
 
-    let id: String
-    let geometryId: String
-    let name: String
+    var id: String
+    var geometryId: String
+    var name: String
 
-    /// decoded Feature
-    var feature: Feature {
-        Feature(id: id, name: name)
+    /// Add or update the feature. It fails with warning only
+    func upsert(_ realm: Realm) throws {
+        guard let geometry = realm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
+            throw "geometry not found: \(geometryId)"
+        }
+        let feature = Feature(id: id, name: name)
+        realm.add(feature, update: .modified)
+        geometry.features.insert(feature)
     }
 }

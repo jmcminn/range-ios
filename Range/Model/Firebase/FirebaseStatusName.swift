@@ -1,4 +1,5 @@
 import Foundation
+import RealmSwift
 
 /// Represents the `Status` (`projects/details/statusNames` path in Firebase)
 ///
@@ -11,15 +12,20 @@ import Foundation
 ///         "isInitial"  : true,
 ///         "isCompleted": false,
 ///     }
-struct FirebaseStatusName: Codable {
-    let id: String
-    let name: String
-    let color: String
-    let isInitial: Bool
-    let isCompleted: Bool
+struct FirebaseStatusName: Codable, FirebaseToRealmSyncable {
+    typealias ModelType = Status
 
-//    The decoded Status
-    var status: Status {
-        Status(id: id, name: name, hexColor: color, isInitial: isInitial, isCompleted: isCompleted)
+    var id: String
+    var name: String
+    var color: String
+    var isInitial: Bool
+    var isCompleted: Bool
+
+    /// Add or update the status
+    func upsert(_ realm: Realm) throws {
+        realm.add(
+            Status(id: id, name: name, hexColor: color, isInitial: isInitial, isCompleted: isCompleted),
+            update: .modified
+        )
     }
 }

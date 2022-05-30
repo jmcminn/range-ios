@@ -4,6 +4,14 @@ import Foundation
 import OSLog
 import RealmSwift
 
+/// Protocol to be adopted by firebase objects that can be stored in Realm
+protocol FirebaseToRealmSyncable {
+    /// The type used to store the objects in the model Realm db
+    associatedtype ModelType: Object
+    /// Upsert this element to given Realm. Will be performed in a realm write transaction
+    func upsert(_ realm: Realm) throws
+}
+
 /// Synchronizes given `ProjectModel` with Firebase Realtime db
 class ProjectModelFirebaseSync {
     /// The model to synchronize Firebase with
@@ -15,11 +23,8 @@ class ProjectModelFirebaseSync {
     /// Firebase database reference
     private let databaseRef: DatabaseReference
 
-    /// Array of handles for firebase listeners
-    private var databaseHandles = Set<DatabaseHandle>()
-
     /// Realm used by the sync on the firebaseSyncQueue to update the db with Firebase changes
-    private var realm: Realm!
+    private var syncRealm: Realm!
 
     /// Firebase paths
     private lazy var projectSummaryReference = databaseRef.child("projects/\(model.projectId)/summary")
@@ -57,24 +62,16 @@ class ProjectModelFirebaseSync {
     func start() async throws {
         // create the realm on the syncQueue
         try await _asyncOnFirebaseSyncQueue {
-            self.realm = try Realm(configuration: self.model.realmConfig, queue: self.syncQueue)
+            self.syncRealm = try Realm(configuration: self.model.realmConfig, queue: self.syncQueue)
         }
         // wait for the initial sync of project summary and canvases
         try await doInitialSync()
 
         // after this point it's only registering for observation and the function returns
-        syncDetails(statusNamesReference,
-                    upsert: { [weak self] in try self?._upsertStatus($0) },
-                    remove: { [weak self] in try self?._removeStatus($0) })
-        syncDetails(geometriesReference,
-                    upsert: { [weak self] in try self?._upsertGeometry($0) },
-                    remove: { [weak self] in try self?._removeGeometry($0) })
-        syncDetails(featuresReference,
-                    upsert: { [weak self] in try self?._upsertFeature($0) },
-                    remove: { [weak self] in try self?._removeFeature($0) })
-        syncDetails(collaborationsReference,
-                    upsert: { [weak self] in try self?._upsertCollaboration($0) },
-                    remove: { [weak self] in try self?._removeCollaboration($0) })
+        syncDetails(statusNamesReference, as: FirebaseStatusName.self)
+        syncDetails(geometriesReference, as: FirebaseGeometry.self)
+        syncDetails(featuresReference, as: FirebaseFeature.self)
+        syncDetails(collaborationsReference, as: FirebaseCollaboration.self)
     }
 
     /// Do the initial sync by observing the single event of type `.value` for project summary and canvases and storing the objects in the model.
@@ -91,46 +88,59 @@ class ProjectModelFirebaseSync {
         // store in the db
         try await _asyncOnFirebaseSyncQueue { [weak self] in
             guard let self = self else { return }
-            try self._upsertProjectSummary(projectSummarySnapshot)
-            for canvasSnapshot in canvases.children {
-                guard let snapshot = canvasSnapshot as? DataSnapshot else { break }
-                self._upsertCanvas(snapshot)
+            try self.syncRealm.write {
+                let projectSummary = try projectSummarySnapshot.data(as: FirebaseProjectSummary.self)
+                try projectSummary.upsert(self.syncRealm)
+
+                for canvasSnapshot in canvases.children {
+                    guard let snapshot = canvasSnapshot as? DataSnapshot else { break }
+                    let canvas = try snapshot.data(as: FirebasePDFCanvas.self)
+                    try canvas.upsert(self.syncRealm)
+                }
             }
         }
     }
 
-    /// Convenience function to register listeners for given reference and invoke provided functions on changes
-    /// - Parameters:
+    /// Convenience function to register listeners for given reference and invoke FirebaseToRealmSyncable methods on decoded objects to update the Realm state.
+    ///  - Parameters:
     ///     - dbReference:  the reference to observe for .childAdded, .childChanged and .childRemoved
-    ///     - upsert:             invoked on .childAdded and .childChanged
-    ///     - remove:           invoked on .childRemoved
-    private func syncDetails(
+    ///     - type: the type to use for decoding the firebase SnapshotData for given db reference
+    private func syncDetails<T: Decodable & FirebaseToRealmSyncable>(
         _ dbReference: DatabaseReference,
-        upsert: @escaping (DataSnapshot) throws -> Void,
-        remove: @escaping (DataSnapshot) throws -> Void
+        as type: T.Type
     ) {
+        /// Applies the changes from snapshot to Realm
+        let syncSnapshot: (Realm, DataEventType, DataSnapshot) throws -> Void = { realm, event, snapshot in
+            let firebaseObject = try snapshot.data(as: type)
+            try realm.write {
+                if event == .childAdded || event == .childChanged {
+                    try firebaseObject.upsert(realm)
+                } else if event == .childRemoved {
+                    guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: snapshot.key)
+                    else {
+                        return
+                    }
+                    realm.delete(object)
+                } else {
+                    throw "Event type \(event) not handled"
+                }
+            }
+        }
+
         guard let loggingKey = dbReference.key else { fatalError("Reference has no key: \(dbReference)") }
         dbReference._observe(.childAdded, .childChanged, .childRemoved, on: syncQueue) { [weak self] event, snapshot in
             guard let self = self else { return }
             Logger.firebase.debug("\(loggingKey) \(event) \(snapshot.key, privacy: .public)")
             do {
-                try self.realm.write {
-                    switch event {
-                    case .childAdded, .childChanged: try upsert(snapshot)
-                    case .childRemoved: try remove(snapshot)
-                    default: fatalError("Event type \(event) not handled")
-                    }
-                }
+                try syncSnapshot(self.syncRealm, event, snapshot)
             } catch let DecodingError.dataCorrupted(context) {
-                Logger.firebase
-                    .error(
-                        "\(loggingKey) decode failed [\(snapshot.key, privacy: .public)]: \(context.debugDescription, privacy: .public)"
-                    )
+                Logger.firebase.error(
+                    "\(loggingKey) decode failed [\(snapshot.key, privacy: .public)]: \(context.debugDescription, privacy: .public)"
+                )
             } catch {
-                Logger.firebase
-                    .error(
-                        "\(loggingKey) \(event) failed [\(snapshot.key, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
-                    )
+                Logger.firebase.error(
+                    "\(loggingKey) \(event) failed [\(snapshot.key, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
+                )
             }
         }
     }
@@ -139,138 +149,5 @@ class ProjectModelFirebaseSync {
     /// Will be called on deinit
     func stop() {
         geometriesReference.removeAllObservers()
-    }
-}
-
-// MARK: - Model updates from firebase snapshots
-
-/// - Warning: All functions should be run on the firebaseSyncQueue
-extension ProjectModelFirebaseSync {
-    /// Add or update the project summary. It throws on failure (as project summary is required to proceed)
-    private func _upsertProjectSummary(_ snapshot: DataSnapshot) throws {
-        try realm.write {
-            let projectSummary = try snapshot.data(as: FirebaseProjectSummary.self).projectSummary
-            realm.add(projectSummary, update: .modified)
-        }
-    }
-
-    /// Add or update canvas.
-    /// If decoding fails for a canvas it is ignored
-    private func _upsertCanvas(_ snapshot: DataSnapshot) {
-        do {
-            try realm.write {
-                let canvas = try snapshot.data(as: FirebasePDFCanvas.self).pdfCanvas
-                realm.add(canvas, update: .modified)
-            }
-        } catch {
-            Logger.firebase.error("upsertCanvas failed: \(error.localizedDescription, privacy: .public)")
-        }
-    }
-
-    /// Add or update status.
-    /// If decoding fails for a status name it is ignored
-}
-
-// MARK: - sync statuses
-
-/// - Warning: All functions should be run on the firebaseSyncQueue in a realm write transaction
-extension ProjectModelFirebaseSync {
-    /// Add or update a status. It fails with warning only
-    private func _upsertStatus(_ snapshot: DataSnapshot) throws {
-        let status = try snapshot.data(as: FirebaseStatusName.self).status
-        realm.add(status, update: .modified)
-    }
-
-    /// Remove the feature
-    private func _removeStatus(_ snapshot: DataSnapshot) throws {
-        let firebaseStatus = try snapshot.data(as: FirebaseStatusName.self)
-        guard let status = realm.object(
-            ofType: Status.self,
-            forPrimaryKey: firebaseStatus.id
-        ) else { return }
-        realm.delete(status)
-    }
-}
-
-// MARK: - geometries sync
-
-/// - Warning: All functions should be run on the firebaseSyncQueue in a realm write transaction
-extension ProjectModelFirebaseSync {
-    /// Add or update the geometry. It fails with warning only
-    private func _upsertGeometry(_ snapshot: DataSnapshot) throws {
-        let firebaseGeometry = try snapshot.data(as: FirebaseGeometry.self)
-        guard let canvas = realm.object(ofType: PDFCanvas.self, forPrimaryKey: firebaseGeometry.canvasId) else {
-            throw "canvas not found \(firebaseGeometry.canvasId)"
-        }
-        let geometry = firebaseGeometry.geometry
-        realm.add(geometry, update: .modified)
-        canvas.geometries.insert(geometry)
-    }
-
-    // TODO: 38 remove everything "below" ?? web doesn't do it currently...
-    /// Remove the geometry
-    private func _removeGeometry(_ snapshot: DataSnapshot) throws {
-        let firebaseGeometry = try snapshot.data(as: FirebaseGeometry.self)
-        guard let geometry = realm.object(
-            ofType: Geometry.self,
-            forPrimaryKey: firebaseGeometry.geometry.id
-        ) else { return }
-        realm.delete(geometry)
-    }
-}
-
-// MARK: - sync features
-
-/// - Warning: All functions should be run on the firebaseSyncQueue in a realm write transaction
-extension ProjectModelFirebaseSync {
-    /// Add or update the feature. It fails with warning only
-    private func _upsertFeature(_ snapshot: DataSnapshot) throws {
-        let firebaseFeature = try snapshot.data(as: FirebaseFeature.self)
-        guard let geometry = realm.object(ofType: Geometry.self, forPrimaryKey: firebaseFeature.geometryId) else {
-            throw "geometry not found \(firebaseFeature.geometryId)"
-        }
-        let feature = firebaseFeature.feature
-        realm.add(feature, update: .modified)
-        geometry.features.insert(feature)
-    }
-
-    /// Remove the feature
-    private func _removeFeature(_ snapshot: DataSnapshot) throws {
-        let firebaseFeature = try snapshot.data(as: FirebaseFeature.self)
-        guard let feature = realm.object(
-            ofType: Feature.self,
-            forPrimaryKey: firebaseFeature.id
-        ) else { return }
-        realm.delete(feature)
-    }
-}
-
-// MARK: - sync collaborations
-
-/// - Warning: All functions should be run on the firebaseSyncQueue in a realm write transaction
-extension ProjectModelFirebaseSync {
-    /// Add or update a collaboration. It fails with warning only
-    private func _upsertCollaboration(_ snapshot: DataSnapshot) throws {
-        let firebaseCollaboration = try snapshot.data(as: FirebaseCollaboration.self)
-        guard let feature = realm.object(ofType: Feature.self, forPrimaryKey: firebaseCollaboration.featureId) else {
-            throw "feature not found \(firebaseCollaboration.featureId)"
-        }
-        guard let status = realm.object(ofType: Status.self, forPrimaryKey: firebaseCollaboration.statusId) else {
-            throw "status not found \(firebaseCollaboration.statusId)"
-        }
-        let collaboration = firebaseCollaboration.collaboration
-        realm.add(collaboration, update: .modified)
-        feature.collaborations.insert(collaboration)
-        status.collaborations.insert(collaboration)
-    }
-
-    /// Remove the collaboration
-    private func _removeCollaboration(_ snapshot: DataSnapshot) throws {
-        let firebaseCollaboration = try snapshot.data(as: FirebaseCollaboration.self)
-        guard let collaboration = realm.object(
-            ofType: Collaboration.self,
-            forPrimaryKey: firebaseCollaboration.id
-        ) else { return }
-        realm.delete(collaboration)
     }
 }

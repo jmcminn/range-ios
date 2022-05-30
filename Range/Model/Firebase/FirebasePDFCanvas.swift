@@ -1,14 +1,18 @@
 import Foundation
+import RealmSwift
 
-/// Decodable for ``PDFCanvas`` (`projects/details/canvases` path in Firebase)
+/// Represents the ``PDFCanvas`` (`projects/details/canvases` path in Firebase)
 /// There's no support for encoding currently as it's a readonly data
-struct FirebasePDFCanvas: Decodable {
-    let id: String
-    let url: String
-    let pageNumber: Int
-    let userDefinedScale: Double
+struct FirebasePDFCanvas: Decodable, FirebaseToRealmSyncable {
+    typealias ModelType = PDFCanvas
+    var id: String
+    var url: String
+    var pageNumber: Int
+    var userDefinedScale: Double
 
-    var pdfCanvas: PDFCanvas {
-        PDFCanvas(id: id, url: url, pageNumber: pageNumber, userDefinedScale: userDefinedScale)
+    /// Adds or updates the canvas to Realm database.
+    func upsert(_ realm: Realm) throws {
+        let canvas = PDFCanvas(id: id, url: url, pageNumber: pageNumber, userDefinedScale: userDefinedScale)
+        realm.add(canvas, update: .modified)
     }
 }

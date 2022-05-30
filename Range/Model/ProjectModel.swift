@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import OSLog
 import RealmSwift
 
 // possible errors for ProjectModel
@@ -46,6 +47,7 @@ class ProjectModel {
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent(self.projectId)
             config.fileURL!.appendPathExtension("realm")
+            Logger.model.info("project realm file url: \(config.fileURL?.path ?? "")")
         }
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)

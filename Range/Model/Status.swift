@@ -13,8 +13,6 @@ class Status: Object {
     @Persisted var isInitial: Bool
     /// The status denoting that the collaboration is complete
     @Persisted var isCompleted: Bool
-    /// collaboration with this status. Required to model the status property on collaboration
-    @Persisted var collaborations: MutableSet<Collaboration>
 
     /// Couldn't add CustomPersistable for UIColor, so we store the `hexColor` in db and add `color` variable to store UIColor.
     lazy var color = UIColor(hexString: hexColor)

@@ -1,12 +1,18 @@
 import CoreLocation
 import Foundation
+import RealmSwift
 
-/// Decodable for ``ProjectSummary`` (`projects/summary` path in Firebase)
+/// Represents the `ProjectSummary`` (`projects/summary` path in Firebase)
+/// Allows for decoding and storing the decoded object in Realm
 /// There's no support for encoding currently as it's a readonly data
 /// This struct exists because conformance to `Decodable` cannot be added in class extension and we don't want to polute Realm model with Firebase related logic.
-struct FirebaseProjectSummary: Decodable {
-    /// The decoded projectSummary
-    let projectSummary: ProjectSummary
+struct FirebaseProjectSummary: Decodable, FirebaseToRealmSyncable {
+    typealias ModelType = ProjectSummary
+
+    /// The decoded id
+    var id: String
+    /// center
+    var center: CLLocationCoordinate2D
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
@@ -17,12 +23,11 @@ struct FirebaseProjectSummary: Decodable {
     /// Custom implementation of decoding that checks for proper type and translates the `coordinates` array into `position`.
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let id = try container.decode(String.self, forKey: .id)
+        id = try container.decode(String.self, forKey: .id)
         var coordinatesContainer = try container.nestedUnkeyedContainer(forKey: .center)
         let longitude = try coordinatesContainer.decode(Double.self)
         let latitude = try coordinatesContainer.decode(Double.self)
-        let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        projectSummary = ProjectSummary(id: id, center: center)
+        center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 
 //    func encode(to encoder: Encoder) throws {
@@ -32,4 +37,10 @@ struct FirebaseProjectSummary: Decodable {
 //        try coordinatesContainer.encode(center.longitude)
 //        try coordinatesContainer.encode(center.latitude)
 //    }
+
+    /// Adds or updates project summary in the Realm database
+    func upsert(_ realm: Realm) throws {
+        let projectSummary = ProjectSummary(id: id, center: center)
+        realm.add(projectSummary, update: .modified)
+    }
 }

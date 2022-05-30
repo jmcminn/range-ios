@@ -39,6 +39,8 @@
 		0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330D283CE8C800D04A1C /* RoundButton.swift */; };
 		0A34C17928450C2B00BEDC7C /* Firebase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
+		0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */; };
+		0A34C181284552AC00BEDC7C /* FirebaseFeatureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
@@ -148,6 +150,8 @@
 		0A2F330D283CE8C800D04A1C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Extensions.swift"; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
+		0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusNameTest.swift; sourceTree = "<group>"; };
+		0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFeatureTest.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -299,7 +303,9 @@
 			isa = PBXGroup;
 			children = (
 				0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */,
+				0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */,
 				0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */,
+				0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -784,6 +790,8 @@
 				0A07D76028104BF000B6F9A2 /* FirebaseGeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
+				0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */,
+				0A34C181284552AC00BEDC7C /* FirebaseFeatureTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
