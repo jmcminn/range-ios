@@ -10,9 +10,8 @@ class Upload: Object {
     @Persisted var author: Participant?
     // timestamp (since 1970)
     @Persisted var timestamp: TimeInterval
-    // TODO: 38 convert to URL ?
     // url
-    @Persisted var url: String
+    @Persisted var url: URL
     // name
     @Persisted var name: String
     // description
@@ -25,7 +24,7 @@ class Upload: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, timestamp: TimeInterval, url: String, name: String, description: String) {
+    init(id: String, timestamp: TimeInterval, url: URL, name: String, description: String) {
         super.init()
         self.id = id
         self.timestamp = timestamp

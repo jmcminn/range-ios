@@ -9,9 +9,8 @@ class Participant: Object {
     @Persisted var firstName: String
     /// user last name
     @Persisted var lastName: String
-    // TODO: convert to URL once it's a real URL
     /// avatar url
-    @Persisted var avatarUrl: String?
+    @Persisted var avatarUrl: URL?
     /// email
     @Persisted var email: String
 
@@ -21,7 +20,7 @@ class Participant: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, firstName: String, lastName: String, avatarUrl: String?, email: String) {
+    init(id: String, firstName: String, lastName: String, avatarUrl: URL?, email: String) {
         super.init()
         self.id = id
         self.firstName = firstName

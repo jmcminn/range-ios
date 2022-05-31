@@ -24,7 +24,7 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
         case id, parentId = "parent", parentType, authorId = "author", timestamp, name,
-             uploadDescription = "description", url, correlationId = "correlation"
+             uploadDescription = "description", urlString = "url", correlationId = "correlation"
     }
 
     var id: String
@@ -34,7 +34,7 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
     var timestamp: Int
     var name: String
     var uploadDescription: String
-    var url: String
+    var urlString: String
     var correlationId: String
 
     /// Add or update the upload and add it to appropriate parent (based on parentType). Also sets the author. Fails if parent or author not found
@@ -47,6 +47,9 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
         }
         guard let author = realm.object(ofType: Participant.self, forPrimaryKey: authorId) else {
             throw "author not found: \(authorId)"
+        }
+        guard let url = URL(string: urlString) else {
+            throw "malformed url: \(urlString)"
         }
         let upload = Upload(
             id: id,

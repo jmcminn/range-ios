@@ -23,7 +23,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             timestamp: 1,
             name: "",
             uploadDescription: "",
-            url: "",
+            urlString: "https://range.io/image",
             correlationId: ""
         )
         try realm.write {
@@ -44,7 +44,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             timestamp: 1,
             name: "",
             uploadDescription: "",
-            url: "",
+            urlString: "https://range.io/image",
             correlationId: ""
         )
         try realm.write {
@@ -70,7 +70,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             timestamp: 1,
             name: "",
             uploadDescription: "",
-            url: "",
+            urlString: "https://range.io/image",
             correlationId: ""
         )
         try realm.write {
@@ -78,6 +78,39 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
                 try firebaseUpload.upsert(realm)
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "author not found: user1")
+            }
+        }
+    }
+
+    func testAddUploadToCollaboration_malformedUrl() throws {
+        let user1 = Participant(
+            id: "user1",
+            firstName: "First",
+            lastName: "Last",
+            avatarUrl: nil,
+            email: "first@last.com"
+        )
+        let collaboration1 = Collaboration(id: "collaboration1", name: "Collaboration1", description: "")
+        try realm.write {
+            realm.add([user1, collaboration1])
+        }
+
+        let firebaseUpload = FirebaseUpload(
+            id: "upload1",
+            parentId: "collaboration1",
+            parentType: "Collaboration",
+            authorId: "user1",
+            timestamp: 1,
+            name: "",
+            uploadDescription: "",
+            urlString: "https://range.io/image 2",
+            correlationId: ""
+        )
+        try realm.write {
+            XCTAssertThrowsError(
+                try firebaseUpload.upsert(realm)
+            ) { error in
+                XCTAssertEqual(error.localizedDescription, "malformed url: https://range.io/image 2")
             }
         }
     }
@@ -108,7 +141,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             timestamp: 1,
             name: "upload 1",
             uploadDescription: "upload 1 description",
-            url: "https://range.io/image",
+            urlString: "https://range.io/image",
             correlationId: ""
         )
         try realm.write {
@@ -123,7 +156,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         XCTAssertEqual(upload1.name, "upload 1")
         XCTAssertEqual(upload1.uploadDescription, "upload 1 description")
         XCTAssertEqual(upload1.author, user1)
-        XCTAssertEqual(upload1.url, "https://range.io/image")
+        XCTAssertEqual(upload1.url.absoluteString, "https://range.io/image")
 
         // 3. update upload1
         firebaseUpload1.name = "upload 1 ..."
@@ -143,7 +176,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             timestamp: 1,
             name: "upload 2",
             uploadDescription: "upload 2 description",
-            url: "https://range.io/image2",
+            urlString: "https://range.io/image",
             correlationId: ""
         )
         try realm.write {

@@ -25,7 +25,6 @@ class FirebaseFeatureRealmSyncTest: XCTestCase {
         }
     }
 
-    // TODO: 38
     func testAddFeatureToGeometry_successful() throws {
         // 1. create 2 geometries with no features
         let geometry1 = Geometry(

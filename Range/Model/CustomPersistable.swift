@@ -69,3 +69,12 @@ extension Turf.Geometry: FailableCustomPersistable {
         return ""
     }
 }
+
+/// Store URL as String, it's failable as initiating URL with String returns nil for not well formed urls
+extension URL: FailableCustomPersistable {
+    public typealias PersistedType = String
+    // Construct URL from String
+    public init?(persistedValue: String) { self.init(string: persistedValue) }
+    // Get String to store in the database
+    public var persistableValue: String { absoluteString }
+}
