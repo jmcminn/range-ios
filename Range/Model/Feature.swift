@@ -12,6 +12,13 @@ class Feature: Object {
     /// collaborations for this feature, the order doesn't matter so it's a set
     @Persisted var collaborations: MutableSet<Collaboration>
 
+    /// Count all uploads from all collections
+    var uploadsCount: Int {
+        collaborations.reduce(0) { count, collaboration in
+            count + collaboration.uploads.count
+        }
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

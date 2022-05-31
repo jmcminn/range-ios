@@ -235,11 +235,45 @@ extension AddPhotoPinsHandler {
 /// #Reference
 /// [Mapbox annotations](https://docs.mapbox.com/ios/maps/guides/annotations/annotations/)
 extension AddPhotoPinsHandler {
+    /// Update pins with new geometries and description of changes
+    /// see: https://www.mongodb.com/docs/realm/sdk/swift/examples/react-to-changes/#register-a-collection-change-listener
+    private func updatePins(from geometries: Results<Geometry>, deletions: [Int], insertions: [Int],
+                            modifications: [Int])
+    {
+        var pins = pinsAnnotationManager.annotations
+        // first deletions
+        // sorted descending so we can remove indices from the last to first
+        for deletionIndex in deletions.sorted(by: >) {
+            // remove the annotation
+            pins.remove(at: deletionIndex)
+        }
+        // then insertions
+        for insertionIndex in insertions {
+            // create new annotation
+            if let pin = convertGeometryToPin(geometry: geometries[insertionIndex]) {
+                pins.append(pin)
+            }
+        }
+        // then modifications{
+        // map of geometry.id => index in geometries
+        var modificationsMap = [String: Int]()
+        modifications.forEach { modificationIndex in
+            modificationsMap[geometries[modificationIndex].id] = modificationIndex
+        }
+        // recreate pins for modificated geometries
+        pins = pins.compactMap { pin in
+            guard let geometryIndex = modificationsMap[pin.id] else { return pin }
+            return convertGeometryToPin(geometry: geometries[geometryIndex])
+        }
+        pinsAnnotationManager.annotations = pins
+    }
+
     /// observe the geometries and reload pins when the change is observed
     ///  - Parameters:
     ///         - onInitialLoad: callback called only once when the pins are initially loaded
     private func loadAndDisplayPins(onInitialLoad: @escaping () -> Void) {
         geometriesNotificationToken = canvasContainer.pdfCanvasViewController.pdfCanvas.geometries
+            .where { $0.annotationType == .photoMarker }
             .observe { [weak self] changes in
                 guard let self = self else { return }
                 switch changes {
@@ -247,8 +281,13 @@ extension AddPhotoPinsHandler {
                     self.pinsAnnotationManager.annotations = Array(geometries.compactMap(self.convertGeometryToPin))
                     self.pinsLoadedInitially = true
                     onInitialLoad()
-                case .update(let geometries, deletions: _, insertions: _, modifications: _):
-                    self.pinsAnnotationManager.annotations = Array(geometries.compactMap(self.convertGeometryToPin))
+                case let .update(geometries, deletions, insertions, modifications):
+                    self.updatePins(
+                        from: geometries,
+                        deletions: deletions,
+                        insertions: insertions,
+                        modifications: modifications
+                    )
                 case let .error(error):
                     Logger.model.error("observing geometries failed: \(error.localizedDescription, privacy: .public)")
                 }
@@ -267,7 +306,7 @@ extension AddPhotoPinsHandler {
         pin.iconImage = "largepin"
         pin.iconAnchor = .bottom
         pin.iconOffset = [0, 4]
-        pin.textField = "1"
+        pin.textField = String(geometry.uploadsCount)
         pin.textSize = 17
         pin.textOffset = [0, -2.35]
         pin.textColor = StyleColor(.Neutral_01)

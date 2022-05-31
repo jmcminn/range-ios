@@ -17,9 +17,17 @@ class Geometry: Object {
     /// annotation type
     @Persisted var annotationType: AnnotationType
     /// the geometry shape is stored as Turf.Geometry as this is what Mapbox uses for representing geometries in their SDK
-    @Persisted var geometry: Turf.Geometry
+    /// some default is needed otherwise it cannot be marked as required (or it will crash when querying geometries using realm filters)
+    @Persisted var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
     /// features for this geometry, the order doesn't matter so it's a set
     @Persisted var features: MutableSet<Feature>
+
+    /// Count all uploads from all features
+    var uploadsCount: Int {
+        features.reduce(0) { count, feature in
+            count + feature.uploadsCount
+        }
+    }
 
     /// Default initializer required by Realm.
     override init() {
