@@ -25,7 +25,10 @@ There's multiple ways to read logs
 2. macOS Console.app can be used to view the logs - it shows the logs no matter if the app is started from the Xcode or not - useful for viewing logs when the app starts in background, etc. To enable Info/Debug logs go to `Action` / `Include Info/Debug Messages`. There's a bug that currently doesn't show Debug logs from the simulator. 
 
 3. `log` command can be used to stream the simulator logs in the console:
-```xcrun simctl spawn booted log stream --debug --predicate 'subsystem == "com.example.yourapp"'``` (source: [apple dev forum thread](https://developer.apple.com/forums/thread/82736))
+```xcrun simctl spawn booted log stream  --predicate 'subsystem == "io.range.App"' --level debug --style compact```
+(source: [apple dev forum thread](https://developer.apple.com/forums/thread/82736))
+
+
 
 When viewing the logs in the Console.app or `log` it's recommended to limit the subsystem to the one used by the app, which is: `io.range.App`.
 
