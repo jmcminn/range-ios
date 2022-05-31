@@ -14,6 +14,8 @@ class Collaboration: Object {
     @Persisted var name: String
     /// description (can't really use the description name for it as it's already used)
     @Persisted var collaborationDescription: String
+    /// comments, the order doesn't matter so it's a set (the order is controlled by the comment timestamp when displaying in the UI)
+    @Persisted var comments: MutableSet<Comment>
 
     /// Default initializer required by Realm.
     override init() {

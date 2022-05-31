@@ -26,13 +26,15 @@ class ProjectModelFirebaseSync {
     /// Realm used by the sync on the firebaseSyncQueue to update the db with Firebase changes
     private var syncRealm: Realm!
 
-    /// Firebase paths
+    /// Firebase references
     private lazy var projectSummaryReference = databaseRef.child("projects/\(model.projectId)/summary")
     private lazy var statusNamesReference = databaseRef.child("projects/\(model.projectId)/details/statusNames")
+    private lazy var participantsReference = databaseRef.child("projects/\(model.projectId)/details/participants")
     private lazy var canvasesReference = databaseRef.child("projects/\(model.projectId)/details/canvases")
     private lazy var geometriesReference = databaseRef.child("projects/\(model.projectId)/details/geometries")
     private lazy var featuresReference = databaseRef.child("projects/\(model.projectId)/details/features")
     private lazy var collaborationsReference = databaseRef.child("projects/\(model.projectId)/details/collaborations")
+    private lazy var commentsReference = databaseRef.child("projects/\(model.projectId)/details/comments")
 
     /// Initialize sync for given `ProjectModel`
     init(model: ProjectModel) {
@@ -69,9 +71,11 @@ class ProjectModelFirebaseSync {
 
         // after this point it's only registering for observation and the function returns
         syncDetails(statusNamesReference, as: FirebaseStatusName.self)
+        syncDetails(participantsReference, as: FirebaseParticipant.self)
         syncDetails(geometriesReference, as: FirebaseGeometry.self)
         syncDetails(featuresReference, as: FirebaseFeature.self)
         syncDetails(collaborationsReference, as: FirebaseCollaboration.self)
+        syncDetails(commentsReference, as: FirebaseComment.self)
     }
 
     /// Do the initial sync by observing the single event of type `.value` for project summary and canvases and storing the objects in the model.

@@ -52,7 +52,7 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
         }
     }
 
-    func testAddFeatureToGeometry_successful() throws {
+    func testAddCollaborationToFeature_successful() throws {
         // 1. create 2 features and a status
         let status1 = Status(id: "status1", name: "Status", hexColor: "#000000", isInitial: true, isCompleted: false)
         let feature1 = Feature(id: "feature1", name: "Feature1")
