@@ -22,11 +22,11 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
         case id, featureId = "feature", statusId = "statusName", name, collaborationDescription = "description"
     }
 
-    let id: String
-    let featureId: String
-    let statusId: String
-    let name: String
-    let collaborationDescription: String
+    var id: String
+    var featureId: String
+    var statusId: String
+    var name: String
+    var collaborationDescription: String
 
     /// Add or update the collaboration and add it to the feature. Also sets the status. Fails if feature or status not found
     func upsert(_ realm: Realm) throws {
