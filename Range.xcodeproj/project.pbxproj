@@ -47,6 +47,9 @@
 		0A34C1892845FE9C00BEDC7C /* FirebaseComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1882845FE9C00BEDC7C /* FirebaseComment.swift */; };
 		0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18A2845FF1700BEDC7C /* Comment.swift */; };
 		0A34C18D2846030800BEDC7C /* FirebaseCommentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18C2846030800BEDC7C /* FirebaseCommentTest.swift */; };
+		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
+		0A34C1912846190A00BEDC7C /* FirebaseUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirebaseUpload.swift */; };
+		0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
@@ -164,6 +167,9 @@
 		0A34C1882845FE9C00BEDC7C /* FirebaseComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseComment.swift; sourceTree = "<group>"; };
 		0A34C18A2845FF1700BEDC7C /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		0A34C18C2846030800BEDC7C /* FirebaseCommentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCommentTest.swift; sourceTree = "<group>"; };
+		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
+		0A34C1902846190900BEDC7C /* FirebaseUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpload.swift; sourceTree = "<group>"; };
+		0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUploadTest.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -308,6 +314,7 @@
 				0AFAF1B5283FC9EB002F216A /* Feature.swift */,
 				0A7FC4122844E05A0097888A /* Collaboration.swift */,
 				0A34C18A2845FF1700BEDC7C /* Comment.swift */,
+				0A34C18E2846134000BEDC7C /* Upload.swift */,
 				0A2F32FD2837E85E00D04A1C /* Firebase */,
 			);
 			path = Model;
@@ -322,6 +329,7 @@
 				0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */,
 				0A34C1822845F89700BEDC7C /* FirebaseCollaborationTest.swift */,
 				0A34C18C2846030800BEDC7C /* FirebaseCommentTest.swift */,
+				0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -348,6 +356,7 @@
 				0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */,
 				0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */,
 				0A34C1882845FE9C00BEDC7C /* FirebaseComment.swift */,
+				0A34C1902846190900BEDC7C /* FirebaseUpload.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -779,6 +788,7 @@
 				0A2F32FA2837CBBB00D04A1C /* ProjectModelFirebaseSync.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
+				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
 				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
 				0A34C1892845FE9C00BEDC7C /* FirebaseComment.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
@@ -796,6 +806,7 @@
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
+				0A34C1912846190A00BEDC7C /* FirebaseUpload.swift in Sources */,
 				0A34C17928450C2B00BEDC7C /* Firebase+Extensions.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */,
@@ -817,6 +828,7 @@
 				0A34C181284552AC00BEDC7C /* FirebaseFeatureTest.swift in Sources */,
 				0A34C1832845F89700BEDC7C /* FirebaseCollaborationTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
+				0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -28,13 +28,15 @@ class ProjectModelFirebaseSync {
 
     /// Firebase references
     private lazy var projectSummaryReference = databaseRef.child("projects/\(model.projectId)/summary")
-    private lazy var statusNamesReference = databaseRef.child("projects/\(model.projectId)/details/statusNames")
-    private lazy var participantsReference = databaseRef.child("projects/\(model.projectId)/details/participants")
-    private lazy var canvasesReference = databaseRef.child("projects/\(model.projectId)/details/canvases")
-    private lazy var geometriesReference = databaseRef.child("projects/\(model.projectId)/details/geometries")
-    private lazy var featuresReference = databaseRef.child("projects/\(model.projectId)/details/features")
-    private lazy var collaborationsReference = databaseRef.child("projects/\(model.projectId)/details/collaborations")
-    private lazy var commentsReference = databaseRef.child("projects/\(model.projectId)/details/comments")
+    private lazy var projectDetailsReference = databaseRef.child("projects/\(model.projectId)/details")
+    private lazy var statusNamesReference = projectDetailsReference.child("statusNames")
+    private lazy var participantsReference = projectDetailsReference.child("participants")
+    private lazy var canvasesReference = projectDetailsReference.child("canvases")
+    private lazy var geometriesReference = projectDetailsReference.child("geometries")
+    private lazy var featuresReference = projectDetailsReference.child("features")
+    private lazy var collaborationsReference = projectDetailsReference.child("collaborations")
+    private lazy var commentsReference = projectDetailsReference.child("comments")
+    private lazy var uploadsReference = projectDetailsReference.child("uploads")
 
     /// Initialize sync for given `ProjectModel`
     init(model: ProjectModel) {
@@ -76,6 +78,7 @@ class ProjectModelFirebaseSync {
         syncDetails(featuresReference, as: FirebaseFeature.self)
         syncDetails(collaborationsReference, as: FirebaseCollaboration.self)
         syncDetails(commentsReference, as: FirebaseComment.self)
+        syncDetails(uploadsReference, as: FirebaseUpload.self)
     }
 
     /// Do the initial sync by observing the single event of type `.value` for project summary and canvases and storing the objects in the model.

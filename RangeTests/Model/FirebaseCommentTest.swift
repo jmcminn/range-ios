@@ -27,7 +27,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             XCTAssertThrowsError(
                 try firebaseComment.upsert(realm)
             ) { error in
-                XCTAssertEqual(error.localizedDescription, "parentType not supported for comment: Feature")
+                XCTAssertEqual(error.localizedDescription, "parentType not supported: Feature")
             }
         }
     }

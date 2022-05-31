@@ -35,7 +35,7 @@ struct FirebaseComment: Codable, FirebaseToRealmSyncable {
     /// Add or update the comment and add it to appropriate parent (based on parentType). Also sets the authr. Fails if parent or author not found
     func upsert(_ realm: Realm) throws {
         guard parentType == "Collaboration" else {
-            throw "parentType not supported for comment: \(parentType)"
+            throw "parentType not supported: \(parentType)"
         }
         guard let collaboration = realm.object(ofType: Collaboration.self, forPrimaryKey: parentId) else {
             throw "collaboration not found: \(parentId)"
