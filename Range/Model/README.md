@@ -21,7 +21,7 @@ There is an **important** assumption that the app should not be aware of Firebas
 - `CustomPersistable` - support for custom types not supported natively by Realm Swift SDK
 - `Firebase/`
   - `ProjectModelFirebaseSync` - entry point for Realm <-> Firebase synchronization
-  - `Firebase*` (e.g. `FirebaseProjectSummary`) - structs modelling the Firebase data, used to decode from Firebase representation to Realm objects 
+  - `Firebase*` (e.g. `FirebaseProjectSummary`) - structs modelling the Firebase data, used to decode from Firebase representation to Realm objects and for upserting objects into Realm databaseo
   
 ### Model classes names
 
@@ -50,7 +50,13 @@ Any changes made in the iOS app will be stored in the Realm, so they are immedia
 
 The entry point for Firebase synchronization is the `ProjectModelFirebaseSync` class.
 
-It is used for doing the initial sync of project (`doInitialSync` method) and then starting the synchronization of changes.
+The synchronization starts by calling the `start` function, which first does (and awaits) for the initial sync (`doInitialSync` method) and then starts observing the firebase paths.
 
 The initial sync is required to complete at least once before the project can be open, so the UI can rely on the fact that the project data is available in the local db (it wouldn't make sense to show project if fetching project summary or canvases failed). Once it's done the subsequent runs of the app can use the offline data stored in Realm.
+
+#### Firebase paths to Realm objects
+
+Each interesting firebase path is observed using `ProjectModelFirebaseSync.syncDetails` function, which accepts a type that implements the Swift `Codable` protocol (so it can decode from Firebase) and also the custom `FirebaseToRealmSyncable` which associates the type with a Realm object type and provides an implementation of upserting it in the Realm db.
+
+So for example `FirebaseGeometry` class provides implementation of decoding `geometries` from Firebase and upserting `Geometry` into Realm db.
 

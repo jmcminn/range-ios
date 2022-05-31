@@ -162,14 +162,14 @@ class PhotoFlowController {
     private func onPhotoLocationConfirmed() {
         if let selectedPin = pinsHandler?.selectedPin {
             lastPhotoPinId = selectedPin.id
-            // TODO: 38 add photo to collaboration
+            // TODO: 44 add photo to collaboration
 //            print("selected existing pin: \(selectedPin)")
         } else {
             // new position for pin
-            // TODO: 38 here
+            // TODO: 44 here
 //            let geometry = FirebaseGeometry(
 //                id: UUID().uuidString.lowercased(),
-//                // TODO: 38 need to have canvasId here, should come from current canvas id
+//                // TODO: 44 need to have canvasId here, should come from current canvas id
 //                canvasId: "a",
 //                coordinates: canvasContainer.annotationsMapView.cameraState.center
 //            )

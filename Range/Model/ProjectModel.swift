@@ -39,7 +39,7 @@ class ProjectModel {
     init(projectId: String, inMemory: Bool = false) throws {
         self.projectId = projectId.lowercased()
         var config = Realm.Configuration.defaultConfiguration
-        // TODO: 38 for now we just remove the Realm and resync if migration needed...
+        // TODO: 44 for now we just remove the Realm and resync if migration needed...
         config.deleteRealmIfMigrationNeeded = true
         if inMemory {
             config.inMemoryIdentifier = self.projectId
@@ -71,7 +71,7 @@ class ProjectModel {
     private func getProjectSummary() -> ProjectSummary? {
         mainRealm.object(ofType: ProjectSummary.self, forPrimaryKey: projectId)
     }
-    // TODO: 38 (methods should be async?)
+    // TODO: 44 (methods should be async?)
 //    func addPhoto(_: UIImage, toCollaboration _: Collaboration) {}
 //    func addPhoto(_: UIImage, at _: CLLocationCoordinate2D) {}
 }
