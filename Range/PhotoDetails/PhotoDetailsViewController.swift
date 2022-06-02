@@ -32,7 +32,7 @@ class PhotoDetailsViewController: UIViewController {
     }
 }
 
-// MARK: - Bottom Back/Next navigation
+// MARK: - build views
 
 extension PhotoDetailsViewController {
     private func buildTagsDescriptionSegmentedControl() {
@@ -64,40 +64,15 @@ extension PhotoDetailsViewController {
             make.height.equalTo(1)
         }
 
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)
-            .applying(UIImage.SymbolConfiguration(weight: .regular))
-
-        var buttonConfig = UIButton.Configuration.filled()
-        buttonConfig.contentInsets = NSDirectionalEdgeInsets(
-            top: 15,
-            leading: 28,
-            bottom: 15,
-            trailing: 28
-        )
-        buttonConfig.background.cornerRadius = 12
-        buttonConfig.imagePadding = 5
-        buttonConfig.preferredSymbolConfigurationForImage = imageConfig
-
-        var backConfig = buttonConfig
-        backConfig.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-        backConfig.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        backConfig.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
-        backConfig.imagePlacement = .leading
-
-        var nextConfig = buttonConfig
-        nextConfig.baseBackgroundColor = .Primary_Blue_04
-        nextConfig.baseForegroundColor = .Neutral_01
-        nextConfig.imagePlacement = .trailing
-
         let backButton = UIButton(
-            configuration: backConfig,
+            configuration: UIButton.Configuration.bottomBackButton(),
             primaryAction: UIAction(
                 title: "Back",
                 image: UIImage(systemName: "arrow.backward")
             ) { [weak self] _ in self?.onBack?() }
         )
         let nextButton = UIButton(
-            configuration: nextConfig,
+            configuration: UIButton.Configuration.bottomNextButton(),
             primaryAction: UIAction(
                 title: "Next",
                 image: UIImage(systemName: "arrow.forward")

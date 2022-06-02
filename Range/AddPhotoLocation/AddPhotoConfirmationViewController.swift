@@ -30,30 +30,12 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         updateColors()
 
-        var buttonConfig = UIButton.Configuration.filled()
-        buttonConfig.contentInsets = NSDirectionalEdgeInsets(
-            top: 15,
-            leading: 28,
-            bottom: 15,
-            trailing: 28
-        )
-        buttonConfig.background.cornerRadius = 12
-
-        var backConfig = buttonConfig
-        backConfig.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-        backConfig.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        backConfig.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
-
-        var confirmConfig = buttonConfig
-        confirmConfig.baseBackgroundColor = .Primary_Blue_04
-        confirmConfig.baseForegroundColor = .Neutral_01
-
         let backButton = UIButton(
-            configuration: backConfig,
+            configuration: UIButton.Configuration.bottomBackButton(),
             primaryAction: UIAction(title: "Back") { [weak self] _ in self?.onCancel?() }
         )
         confirmButton = UIButton(
-            configuration: confirmConfig,
+            configuration: UIButton.Configuration.bottomNextButton(),
             primaryAction: UIAction(title: "Confirm") { [weak self] _ in self?.onConfirm?() }
         )
         containerView.addSubview(backButton)
