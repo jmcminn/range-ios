@@ -37,6 +37,9 @@
 		0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3308283CE1B200D04A1C /* DebugSettings.swift */; };
 		0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */; };
 		0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330D283CE8C800D04A1C /* RoundButton.swift */; };
+		0A30E8B02847AFAB00A50D54 /* PhotoDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */; };
+		0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */; };
+		0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */; };
 		0A34C17928450C2B00BEDC7C /* Firebase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */; };
@@ -157,6 +160,9 @@
 		0A2F3308283CE1B200D04A1C /* DebugSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettings.swift; sourceTree = "<group>"; };
 		0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
 		0A2F330D283CE8C800D04A1C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
+		0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsViewController.swift; sourceTree = "<group>"; };
+		0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControl.swift; sourceTree = "<group>"; };
+		0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Padding.swift"; sourceTree = "<group>"; };
 		0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Extensions.swift"; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusNameTest.swift; sourceTree = "<group>"; };
@@ -371,6 +377,14 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		0A30E8AE2847AF5200A50D54 /* PhotoDetails */ = {
+			isa = PBXGroup;
+			children = (
+				0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */,
+			);
+			path = PhotoDetails;
+			sourceTree = "<group>";
+		};
 		0A48ACD5281822680044E06E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -439,6 +453,7 @@
 				0A1812742834CFBB00A8515B /* UITableView+Borders.swift */,
 				0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */,
 				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
+				0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -475,6 +490,7 @@
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
 				0A2F330D283CE8C800D04A1C /* RoundButton.swift */,
+				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -514,6 +530,7 @@
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A07D75428101B1C00B6F9A2 /* Model */,
 				0A632EDB27E4DA38001A019B /* PDF */,
+				0A30E8AE2847AF5200A50D54 /* PhotoDetails */,
 				0A4DC79427F5728500712518 /* ProjectActions */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A4DC7A227F7615700712518 /* Views */,
@@ -751,6 +768,7 @@
 				0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */,
 				0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */,
 				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,
+				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
@@ -759,6 +777,7 @@
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
+				0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */,
@@ -807,6 +826,7 @@
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
 				0A34C1912846190A00BEDC7C /* FirebaseUpload.swift in Sources */,
+				0A30E8B02847AFAB00A50D54 /* PhotoDetailsViewController.swift in Sources */,
 				0A34C17928450C2B00BEDC7C /* Firebase+Extensions.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */,
