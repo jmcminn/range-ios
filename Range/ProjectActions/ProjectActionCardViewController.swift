@@ -11,9 +11,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     static let topPadding = 21.0
     static let headerToActionsPadding = 16.0
 
-    var searchBackground = UIView()
-    var searchIcon: UIImageView!
-    var searchTextField: UITextField!
+    var searchView: SearchView!
     var photoButton: UIButton!
     var actionSelectorVC: ProjectActionSelectorViewController!
 
@@ -48,32 +46,9 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
         containerView.installSliderView()
 
-        containerView.addSubview(searchBackground)
-        searchBackground.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-        searchBackground.layer.cornerRadius = 12
-        searchBackground.layer.borderWidth = 1
-
-        let searchImage = UIImage(
-            systemName: "magnifyingglass",
-            withConfiguration: UIImage.SymbolConfiguration(textStyle: .subheadline)
-                .applying(UIImage.SymbolConfiguration(weight: .medium))
-        )
-        searchIcon = UIImageView(image: searchImage)
-        searchIcon.tintColor = UIColor.Neutral_05
-        searchIcon.setContentHuggingPriority(.required, for: .horizontal)
-        searchIcon.setContentHuggingPriority(.required, for: .vertical)
-
-        searchTextField = UITextField()
-        searchTextField.attributedPlaceholder = NSAttributedString(
-            string: "Search",
-            attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
-        )
-        searchTextField.font = UIFont.preferredFont(forTextStyle: .body)
-        searchTextField.adjustsFontForContentSizeCategory = true
-        searchTextField.isUserInteractionEnabled = false
-
-        searchBackground.addSubview(searchIcon)
-        searchBackground.addSubview(searchTextField)
+        searchView = SearchView(placeholderText: "Search")
+        searchView.isUserInteractionEnabled = false
+        containerView.addSubview(searchView)
 
         let photoImage = UIImage(
             systemName: "camera",
@@ -105,20 +80,11 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             make.right.equalTo(-16)
             make.top.equalTo(ProjectActionCardViewController.topPadding)
         }
-        searchBackground.snp.makeConstraints { make in
+        searchView.snp.makeConstraints { make in
             make.top.equalTo(photoButton)
             make.left.equalTo(16)
             make.height.equalTo(photoButton)
             make.right.equalTo(photoButton.snp.left).offset(-16)
-        }
-        searchIcon.snp.makeConstraints { make in
-            make.left.equalTo(12)
-            make.centerY.equalToSuperview()
-        }
-        searchTextField.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.left.equalTo(searchIcon.snp.right).offset(12)
-            make.right.equalToSuperview()
         }
 
         actionSelectorVC = ProjectActionSelectorViewController(actions: actions)
@@ -149,7 +115,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         }
         // stroke not visible in dark mode (same color as background)
         roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
-        searchBackground.layer.borderColor = darkMode ? UIColor.Neutral_08.cgColor : UIColor.Neutral_03.cgColor
+        searchView.updateColors()
     }
 }
 

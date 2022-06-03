@@ -6,7 +6,7 @@ import UIKit
 /// - the iOS component doesn't support setting background
 /// - it adds the shadow for selected element in the light mode
 /// - it doesn't allow to display image+text for a segment
-
+///
 /// - Warning: some colors need to be manually updated on user interface style change (dark/light)
 ///             as it's applied as CGColor - use `updateColors` function for this.
 class SegmentedControl: UIView {

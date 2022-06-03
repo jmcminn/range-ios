@@ -6,6 +6,7 @@ class PhotoDetailsViewController: UIViewController {
     var onNext: (() -> Void)?
 
     var tagsDescriptionSegmentedControl: SegmentedControl?
+    var tagsSearchView: SearchView?
 
     override func viewDidLoad() {
         // TODO: 51 dark only?
@@ -18,17 +19,20 @@ class PhotoDetailsViewController: UIViewController {
 
     private func buildViews() {
         buildTagsDescriptionSegmentedControl()
+        buildTagsSearchView()
         buildBottomBar()
-    }
-
-    private func updateColors() {
-        tagsDescriptionSegmentedControl?.updateColors()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColors()
         }
+    }
+
+    /// update colors that don't adapt automatically to appearance change
+    private func updateColors() {
+        tagsDescriptionSegmentedControl?.updateColors()
+        tagsSearchView?.updateColors()
     }
 }
 
@@ -47,9 +51,22 @@ extension PhotoDetailsViewController {
         view.addSubview(segmentedControl)
         segmentedControl.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
+            // TODO: 51 positioning
             make.top.equalToSuperview().offset(50)
         }
         tagsDescriptionSegmentedControl = segmentedControl
+    }
+
+    private func buildTagsSearchView() {
+        let tagsSearchView = SearchView(placeholderText: "Search for, or add a tag")
+        view.addSubview(tagsSearchView)
+        tagsSearchView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(40)
+            // TODO: 51 positioning
+            make.top.equalToSuperview().offset(100)
+        }
+        self.tagsSearchView = tagsSearchView
     }
 
     private func buildBottomBar() {

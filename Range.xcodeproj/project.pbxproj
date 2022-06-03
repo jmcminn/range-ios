@@ -41,6 +41,7 @@
 		0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */; };
 		0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */; };
 		0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */; };
+		0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B82849E06F00A50D54 /* SearchView.swift */; };
 		0A34C17928450C2B00BEDC7C /* Firebase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */; };
@@ -165,6 +166,7 @@
 		0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControl.swift; sourceTree = "<group>"; };
 		0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Padding.swift"; sourceTree = "<group>"; };
 		0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
+		0A30E8B82849E06F00A50D54 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		0A34C17828450C2B00BEDC7C /* Firebase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Extensions.swift"; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusNameTest.swift; sourceTree = "<group>"; };
@@ -488,11 +490,12 @@
 			isa = PBXGroup;
 			children = (
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
-				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
-				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
-				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
+				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
+				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
 				0A2F330D283CE8C800D04A1C /* RoundButton.swift */,
+				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
+				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
 				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
 			);
 			path = Views;
@@ -776,6 +779,7 @@
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
+				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
