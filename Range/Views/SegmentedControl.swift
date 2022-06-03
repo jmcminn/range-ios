@@ -198,7 +198,7 @@ class SegmentedControl: UIView {
     private func buildSelectedSegmentIndicator() {
         selectedSegmentIndicator = UIView()
         selectedSegmentIndicator.layer.cornerRadius = 7
-        selectedSegmentIndicator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
+        selectedSegmentIndicator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         insertSubview(selectedSegmentIndicator, at: 0)
     }
 

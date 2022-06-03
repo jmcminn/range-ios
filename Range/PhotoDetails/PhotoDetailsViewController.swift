@@ -2,11 +2,27 @@ import Foundation
 import UIKit
 
 class PhotoDetailsViewController: UIViewController {
+    /// The photo
+    let image: UIImage
+
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
 
-    var tagsDescriptionSegmentedControl: SegmentedControl?
-    var tagsSearchView: SearchView?
+    var photoView: UIImageView!
+    var tagsDescriptionSegmentedControl: SegmentedControl!
+    var tagsSearchView: SearchView!
+
+    /// - Parameters:
+    ///   - image:          photo to tag, ...
+    init(image: UIImage) {
+        self.image = image
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         // TODO: 51 dark only?
@@ -15,9 +31,11 @@ class PhotoDetailsViewController: UIViewController {
         navigationController?.isNavigationBarHidden = true
 
         buildViews()
+        updateColors()
     }
 
     private func buildViews() {
+        buildPhotoView()
         buildTagsDescriptionSegmentedControl()
         buildTagsSearchView()
         buildBottomBar()
@@ -31,6 +49,7 @@ class PhotoDetailsViewController: UIViewController {
 
     /// update colors that don't adapt automatically to appearance change
     private func updateColors() {
+        photoView.layer.borderColor = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_08).cgColor
         tagsDescriptionSegmentedControl?.updateColors()
         tagsSearchView?.updateColors()
     }
@@ -39,8 +58,26 @@ class PhotoDetailsViewController: UIViewController {
 // MARK: - build views
 
 extension PhotoDetailsViewController {
+    private func buildPhotoView() {
+        photoView = UIImageView(image: image)
+        let height2WidthRatio = image.size.height / image.size.width
+        photoView.layer.cornerRadius = 13
+        photoView.layer.borderWidth = 1
+        photoView.clipsToBounds = true
+        photoView.contentMode = .scaleAspectFill
+        view.addSubview(photoView)
+        photoView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            // try to keep the aspect ratio (but priority is high and not required)
+            make.height.equalTo(photoView.snp.width).multipliedBy(height2WidthRatio).priority(.high)
+            // not take more than 0.6 of the view
+            make.height.lessThanOrEqualToSuperview().multipliedBy(0.6)
+        }
+    }
+
     private func buildTagsDescriptionSegmentedControl() {
-        let segmentedControl = SegmentedControl(items: [
+        tagsDescriptionSegmentedControl = SegmentedControl(items: [
             UIAction(title: "Tags", image: UIImage(systemName: "tag"), handler: { _ in print("tags") }),
             UIAction(
                 title: "Description",
@@ -48,25 +85,21 @@ extension PhotoDetailsViewController {
                 handler: { _ in print("description") }
             ),
         ])
-        view.addSubview(segmentedControl)
-        segmentedControl.snp.makeConstraints { make in
+        view.addSubview(tagsDescriptionSegmentedControl)
+        tagsDescriptionSegmentedControl.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
-            // TODO: 51 positioning
-            make.top.equalToSuperview().offset(50)
+            make.top.equalTo(photoView.snp.bottom).offset(16)
         }
-        tagsDescriptionSegmentedControl = segmentedControl
     }
 
     private func buildTagsSearchView() {
-        let tagsSearchView = SearchView(placeholderText: "Search for, or add a tag")
+        tagsSearchView = SearchView(placeholderText: "Search for, or add a tag")
         view.addSubview(tagsSearchView)
         tagsSearchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(40)
-            // TODO: 51 positioning
-            make.top.equalToSuperview().offset(100)
+            make.top.equalTo(tagsDescriptionSegmentedControl.snp.bottom).offset(16)
         }
-        self.tagsSearchView = tagsSearchView
     }
 
     private func buildBottomBar() {
