@@ -1,20 +1,41 @@
 import Foundation
 import UIKit
 
+// TODO: 51 headers:
+// Dragging:
+/// header 1
+/// header 2
+/// scroll View
+///
+/// header n can drag up/down headers [1...n]
+///
+/// scroll view drags everything
+/// header can be configured to expand:
+/// a) on offset 0 (once the scroll scrolled to the top)
+///   XOR
+/// b) expand early (on drag down)
+/// scroll view collapses headers 1 -> n
+/// expands n -> 1
+
 class PhotoDetailsViewController: UIViewController {
+    unowned let model: ProjectModel
     /// The photo
     let image: UIImage
 
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
 
+    var bottomBar: UIView!
     var photoView: UIImageView!
     var tagsDescriptionSegmentedControl: SegmentedControl!
     var tagsSearchView: SearchView!
+//    var tagsVC: TagsViewController!
 
     /// - Parameters:
+    ///   - model:          model
     ///   - image:          photo to tag, ...
-    init(image: UIImage) {
+    init(model: ProjectModel, image: UIImage) {
+        self.model = model
         self.image = image
         super.init(nibName: nil, bundle: nil)
     }
@@ -35,10 +56,12 @@ class PhotoDetailsViewController: UIViewController {
     }
 
     private func buildViews() {
+        buildBottomBar()
+
         buildPhotoView()
         buildTagsDescriptionSegmentedControl()
         buildTagsSearchView()
-        buildBottomBar()
+        buildTagsView()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -49,7 +72,7 @@ class PhotoDetailsViewController: UIViewController {
 
     /// update colors that don't adapt automatically to appearance change
     private func updateColors() {
-        photoView.layer.borderColor = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_08).cgColor
+        photoView?.layer.borderColor = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_08).cgColor
         tagsDescriptionSegmentedControl?.updateColors()
         tagsSearchView?.updateColors()
     }
@@ -72,15 +95,20 @@ extension PhotoDetailsViewController {
             // try to keep the aspect ratio (but priority is high and not required)
             make.height.equalTo(photoView.snp.width).multipliedBy(height2WidthRatio).priority(.high)
             // not take more than 0.6 of the view
-            make.height.lessThanOrEqualToSuperview().multipliedBy(0.6)
+            // TODO: 51 bring back the 0.6 version
+            make.height.lessThanOrEqualToSuperview().multipliedBy(0.2)
         }
     }
 
     private func buildTagsDescriptionSegmentedControl() {
         tagsDescriptionSegmentedControl = SegmentedControl(items: [
-            UIAction(title: "Tags", image: UIImage(systemName: "tag"), handler: { _ in print("tags") }),
             UIAction(
-                title: "Description",
+                title: String(localized: "Tags"),
+                image: UIImage(systemName: "tag"),
+                handler: { _ in print("tags") }
+            ),
+            UIAction(
+                title: String(localized: "Description"),
                 image: UIImage(systemName: "text.quote"),
                 handler: { _ in print("description") }
             ),
@@ -93,7 +121,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildTagsSearchView() {
-        tagsSearchView = SearchView(placeholderText: "Search for, or add a tag")
+        tagsSearchView = SearchView(placeholderText: String(localized: "Search for, or add a tag"))
         view.addSubview(tagsSearchView)
         tagsSearchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
@@ -103,12 +131,12 @@ extension PhotoDetailsViewController {
     }
 
     private func buildBottomBar() {
-        let bottomBarView = UIView()
-        bottomBarView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        bottomBar = UIView()
+        bottomBar.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         let stroke = UIView()
         stroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
-        bottomBarView.addSubview(stroke)
+        bottomBar.addSubview(stroke)
         stroke.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
             make.height.equalTo(1)
@@ -117,19 +145,19 @@ extension PhotoDetailsViewController {
         let backButton = UIButton(
             configuration: UIButton.Configuration.bottomBackButton(),
             primaryAction: UIAction(
-                title: "Back",
+                title: String(localized: "Back"),
                 image: UIImage(systemName: "arrow.backward")
             ) { [weak self] _ in self?.onBack?() }
         )
         let nextButton = UIButton(
             configuration: UIButton.Configuration.bottomNextButton(),
             primaryAction: UIAction(
-                title: "Next",
+                title: String(localized: "Next"),
                 image: UIImage(systemName: "arrow.forward")
             ) { [weak self] _ in self?.onNext?() }
         )
-        bottomBarView.addSubview(backButton)
-        bottomBarView.addSubview(nextButton)
+        bottomBar.addSubview(backButton)
+        bottomBar.addSubview(nextButton)
         backButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
         nextButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
         backButton.snp.makeConstraints { make in
@@ -143,13 +171,23 @@ extension PhotoDetailsViewController {
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
         }
 
-        view.addSubview(bottomBarView)
-        bottomBarView.snp.makeConstraints { make in
+        view.addSubview(bottomBar)
+        bottomBar.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
             make.height.equalTo(backButton.snp.height)
                 .offset(AddPhotoConfirmationViewController.topPadding + AddPhotoConfirmationViewController
                     .bottomPadding)
+        }
+    }
+
+    private func buildTagsView() {
+        let tagsVC = TagsViewController(model: model)
+        add(childController: tagsVC)
+        tagsVC.view.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(tagsSearchView.snp.bottom).offset(16)
+            make.bottom.equalTo(bottomBar.snp.top)
         }
     }
 }
