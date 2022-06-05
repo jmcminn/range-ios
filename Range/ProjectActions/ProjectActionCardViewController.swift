@@ -92,8 +92,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         actionSelectorVC.view.snp.makeConstraints { make in
             make.top.equalTo(photoButton.snp.bottom)
                 .offset(ProjectActionCardViewController.headerToActionsPadding).priority(.required)
-            make.left.equalToSuperview().offset(16)
-            make.right.equalToSuperview().offset(-16)
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().offset(12).priority(.required)
         }
 
