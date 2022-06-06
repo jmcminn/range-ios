@@ -83,7 +83,6 @@
 		0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */; };
 		0A4DC79827F5B06200712518 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79727F5B06200712518 /* Colors.swift */; };
 		0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC79A27F61C8700712518 /* SnapKit */; };
-		0A4DC79D27F716BC00712518 /* CardScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79C27F716BC00712518 /* CardScrollViewDelegateProxy.swift */; };
 		0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */; };
 		0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC7A327F7618D00712518 /* RoundShadowView.swift */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
@@ -113,6 +112,7 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
+		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */; };
@@ -206,7 +206,6 @@
 		0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentable.swift; sourceTree = "<group>"; };
 		0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectActionSelectorViewController.swift; sourceTree = "<group>"; };
 		0A4DC79727F5B06200712518 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
-		0A4DC79C27F716BC00712518 /* CardScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Properties.swift"; sourceTree = "<group>"; };
 		0A4DC7A327F7618D00712518 /* RoundShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowView.swift; sourceTree = "<group>"; };
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -240,6 +239,7 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
@@ -481,7 +481,6 @@
 				0A4D0D342805B618007A249F /* CardHandler.swift */,
 				0A97232A27FC839400D744F4 /* CardConfiguration.swift */,
 				0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */,
-				0A4DC79C27F716BC00712518 /* CardScrollViewDelegateProxy.swift */,
 				0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */,
 			);
 			path = Card;
@@ -507,6 +506,7 @@
 				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
 				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
 				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
+				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -817,7 +817,6 @@
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
-				0A4DC79D27F716BC00712518 /* CardScrollViewDelegateProxy.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
@@ -835,6 +834,7 @@
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
+				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,

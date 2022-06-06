@@ -1,22 +1,13 @@
 import UIKit
 
-protocol CardScrollViewDelegate: AnyObject {
-    func cardScrollViewWillBeginDragging(_ scrollView: UIScrollView)
-    func cardScrollViewDidScroll(_ scrollView: UIScrollView)
-    func cardScrollView(_ scrollView: UIScrollView,
-                        willEndDraggingwithVelocity velocity: CGPoint,
-                        targetContentOffset: UnsafeMutablePointer<CGPoint>)
-}
-
 /**
- CardPresentationController needs to intercept the scroll view events from the scrollView in the card.
- This class replaces the original delegate on a provided UIScrollView and dispatches the calls to both, the original and the CardScrollViewDelegate.
+ This class replaces the original delegate on a provided UIScrollView and dispatches the calls to both, the original and the "forwardTo" delegate.
  */
-class CardScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
+class UIScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
     private var scrollViewObservation: NSKeyValueObservation?
-    private weak var originalDelegate: UIScrollViewDelegate?
     private weak var scrollView: UIScrollView?
-    private weak var delegate: CardScrollViewDelegate?
+    private weak var originalDelegate: UIScrollViewDelegate?
+    private weak var forwardToDelegate: UIScrollViewDelegate?
 
     deinit {
         cancelForwarding()
@@ -40,18 +31,18 @@ class CardScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
     }
 
     func forward(
-        to delegate: CardScrollViewDelegate,
+        to forwardToDelegate: UIScrollViewDelegate,
         delegateInvocationsFrom scrollView: UIScrollView
     ) {
         guard !(scrollView.delegate === self) else { return }
         cancelForwarding()
-        self.delegate = delegate
         originalDelegate = scrollView.delegate
+        self.forwardToDelegate = forwardToDelegate
         self.scrollView = scrollView
         scrollView.delegate = self
         scrollViewObservation = scrollView.observe(\.delegate) { [weak self] scrollView, _ in
             guard !(scrollView.delegate === self) else { return }
-            if let proxy = scrollView.delegate as? CardScrollViewDelegateProxy {
+            if let proxy = scrollView.delegate as? UIScrollViewDelegateProxy {
                 proxy.originalDelegate = self?.originalDelegate
                 self?.cancelForwarding(restoresDelegate: false)
             } else {
@@ -65,7 +56,7 @@ class CardScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
     // MARK: - UIScrollViewDelegate
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        delegate?.cardScrollViewDidScroll(scrollView)
+        forwardToDelegate?.scrollViewDidScroll?(scrollView)
         originalDelegate?.scrollViewDidScroll?(scrollView)
     }
 
@@ -73,20 +64,16 @@ class CardScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
                                    withVelocity velocity: CGPoint,
                                    targetContentOffset: UnsafeMutablePointer<CGPoint>)
     {
-        delegate?.cardScrollView(
-            scrollView,
-            willEndDraggingwithVelocity: CGPoint(x: -1000 * velocity.x, y: -1000 * velocity.y),
-            targetContentOffset: targetContentOffset
-        )
-        originalDelegate?.scrollViewWillEndDragging?(
-            scrollView,
-            withVelocity: velocity,
-            targetContentOffset: targetContentOffset
-        )
+        forwardToDelegate?.scrollViewWillEndDragging?(scrollView,
+                                                      withVelocity: velocity,
+                                                      targetContentOffset: targetContentOffset)
+        originalDelegate?.scrollViewWillEndDragging?(scrollView,
+                                                     withVelocity: velocity,
+                                                     targetContentOffset: targetContentOffset)
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        delegate?.cardScrollViewWillBeginDragging(scrollView)
+        forwardToDelegate?.scrollViewWillBeginDragging?(scrollView)
         originalDelegate?.scrollViewWillBeginDragging?(scrollView)
     }
 

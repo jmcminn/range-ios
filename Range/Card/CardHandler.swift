@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 /// Helper class for installing the gesture recognizers on the card-presented view controller's view and managing the card dragging.
-class CardHandler {
+class CardHandler: NSObject {
     unowned let presentedViewController: UIViewController & CardPresentable
     unowned let containerView: UIView
     let config: CardConfiguration
@@ -11,7 +11,7 @@ class CardHandler {
     var position: CardPosition
 
     var dragGestureRecognizer: UIPanGestureRecognizer?
-    var scrollViewDelegateProxy: CardScrollViewDelegateProxy?
+    var scrollViewDelegateProxy: UIScrollViewDelegateProxy?
     var scrollViewTranslation: CGFloat = 0.0
     var drawerTranslation: CGFloat = 0.0
     var lastContentOffsetWhileScrolling = CGPoint.zero
@@ -250,7 +250,7 @@ private extension CardHandler {
 }
 
 /// Scroll view handling
-extension CardHandler: CardScrollViewDelegate {
+extension CardHandler: UIScrollViewDelegate {
     enum CardTranslationPosition {
         case top
         case bottom
@@ -260,7 +260,7 @@ extension CardHandler: CardScrollViewDelegate {
 
     func setupScrollViewDelegate() {
         guard let drivingScrollView = presentedViewController.drivingScrollView() else { return }
-        let delegateProxy = CardScrollViewDelegateProxy()
+        let delegateProxy = UIScrollViewDelegateProxy()
         delegateProxy.forward(to: self, delegateInvocationsFrom: drivingScrollView)
         scrollViewDelegateProxy = delegateProxy
     }
@@ -271,7 +271,7 @@ extension CardHandler: CardScrollViewDelegate {
         }
     }
 
-    func cardScrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if shouldDrag(scrollView) {
             scrollView.showsVerticalScrollIndicator = false
         } else {
@@ -279,7 +279,7 @@ extension CardHandler: CardScrollViewDelegate {
         }
     }
 
-    func cardScrollViewDidScroll(_ scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let previousTranslation = scrollViewTranslation
         scrollViewTranslation = scrollView.panGestureRecognizer.translation(in: scrollView).y
         if shouldDrag(scrollView) {
@@ -299,9 +299,9 @@ extension CardHandler: CardScrollViewDelegate {
         }
     }
 
-    func cardScrollView(
+    func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
-        willEndDraggingwithVelocity velocity: CGPoint,
+        withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
         drawerTranslation = 0
@@ -323,9 +323,10 @@ extension CardHandler: CardScrollViewDelegate {
         }
         // If the card is in flight and the user scrolls bottom, we ignore the velocity and we do not
         // modify the target offset.
-        let adjustedVelocity = shouldDrag(scrollView) ? velocity.y : 0.0
+        let velocity = -1000 * velocity.y
+        let adjustedVelocity = shouldDrag(scrollView) ? velocity : 0.0
         let targetPosition = targetPosition(withVelocity: adjustedVelocity)
-        setPosition(targetPosition, withVelocity: velocity.y, animated: true)
+        setPosition(targetPosition, withVelocity: velocity, animated: true)
     }
 
     func shouldDrag(_ scrollView: UIScrollView) -> Bool {
