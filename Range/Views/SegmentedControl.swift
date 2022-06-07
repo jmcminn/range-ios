@@ -112,8 +112,12 @@ class SegmentedControl: UIView {
 
     /// Calcualtes the frame for a button at given index
     private func buttonFrame(atIndex index: Int) -> CGRect {
-        CGRect(
-            x: SegmentedControl.contentPadding + (buttonWidth + SegmentedControl.buttonsSpacing) * Double(index),
+        // for the last button align it to the right, as rounding down may result in too big padding on the right
+        let x = index == buttons.count - 1
+            ? frame.width - SegmentedControl.contentPadding - buttonWidth
+            : SegmentedControl.contentPadding + (buttonWidth + SegmentedControl.buttonsSpacing) * Double(index)
+        return CGRect(
+            x: x,
             y: SegmentedControl.contentPadding,
             width: buttonWidth,
             height: SegmentedControl.height - 2 * SegmentedControl.contentPadding
