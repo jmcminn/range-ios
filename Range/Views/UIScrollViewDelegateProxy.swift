@@ -60,6 +60,11 @@ class UIScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
         originalDelegate?.scrollViewDidScroll?(scrollView)
     }
 
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        forwardToDelegate?.scrollViewWillBeginDragging?(scrollView)
+        originalDelegate?.scrollViewWillBeginDragging?(scrollView)
+    }
+
     func scrollViewWillEndDragging(_ scrollView: UIScrollView,
                                    withVelocity velocity: CGPoint,
                                    targetContentOffset: UnsafeMutablePointer<CGPoint>)
@@ -72,9 +77,14 @@ class UIScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
                                                      targetContentOffset: targetContentOffset)
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        forwardToDelegate?.scrollViewWillBeginDragging?(scrollView)
-        originalDelegate?.scrollViewWillBeginDragging?(scrollView)
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        forwardToDelegate?.scrollViewDidEndDragging?(scrollView, willDecelerate: decelerate)
+        originalDelegate?.scrollViewDidEndDragging?(scrollView, willDecelerate: decelerate)
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        forwardToDelegate?.scrollViewDidEndDecelerating?(scrollView)
+        originalDelegate?.scrollViewDidEndDecelerating?(scrollView)
     }
 
     private func cancelForwarding(restoresDelegate: Bool) {

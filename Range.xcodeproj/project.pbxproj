@@ -112,7 +112,11 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
+		0AD0254D284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0254C284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift */; };
+		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */; };
+		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
+		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */; };
@@ -239,7 +243,11 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		0AD0254C284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+HeaderExpander.swift"; sourceTree = "<group>"; };
+		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderView.swift; sourceTree = "<group>"; };
+		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderView.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
+		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
@@ -387,6 +395,8 @@
 			isa = PBXGroup;
 			children = (
 				0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */,
+				0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */,
+				0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */,
 			);
 			path = PhotoDetails;
 			sourceTree = "<group>";
@@ -541,6 +551,7 @@
 				0A97232327FC507200D744F4 /* Camera */,
 				0A48ACDD281C115C0044E06E /* Canvas */,
 				0A4DC78627F4953600712518 /* Card */,
+				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0AF812B72840D52A00F7BD09 /* Logging */,
 				0A4DC76327EDCA9000712518 /* Math */,
@@ -608,6 +619,15 @@
 				0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */,
 			);
 			path = Camera;
+			sourceTree = "<group>";
+		};
+		0AD0254B284D1A1500106CA5 /* HeaderExpand */ = {
+			isa = PBXGroup;
+			children = (
+				0AD0255C285079C000106CA5 /* HeaderExpander.swift */,
+				0AD0254C284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift */,
+			);
+			path = HeaderExpand;
 			sourceTree = "<group>";
 		};
 		0AF812B72840D52A00F7BD09 /* Logging */ = {
@@ -790,6 +810,7 @@
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
+				0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */,
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
@@ -811,6 +832,7 @@
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
+				0AD0254D284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
@@ -820,6 +842,7 @@
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
+				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderView.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A2F32FA2837CBBB00D04A1C /* ProjectModelFirebaseSync.swift in Sources */,
@@ -835,6 +858,7 @@
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
+				0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,

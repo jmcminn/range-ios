@@ -1,21 +1,6 @@
 import Foundation
+import SnapKit
 import UIKit
-
-// TODO: 51 headers:
-// Dragging:
-/// header 1
-/// header 2
-/// scroll View
-///
-/// header n can drag up/down headers [1...n]
-///
-/// scroll view drags everything
-/// header can be configured to expand:
-/// a) on offset 0 (once the scroll scrolled to the top)
-///   XOR
-/// b) expand early (on drag down)
-/// scroll view collapses headers 1 -> n
-/// expands n -> 1
 
 class PhotoDetailsViewController: UIViewController {
     unowned let model: ProjectModel
@@ -25,11 +10,16 @@ class PhotoDetailsViewController: UIViewController {
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
 
+    var headerView: PhotoDetailsHeaderView!
+    var headerViewHeightConstraint: Constraint?
+    var tagsHeaderView: PhotoDetailsTagsHeaderView!
+    var tagsHeaderViewHeightConstraint: Constraint?
+
     var bottomBar: UIView!
-    var photoView: UIImageView!
-    var tagsDescriptionSegmentedControl: SegmentedControl!
-    var tagsSearchView: SearchView!
-//    var tagsVC: TagsViewController!
+
+    var tagsVC: TagsViewController!
+
+    var tagsHeaderExpander: HeaderExpander!
 
     /// - Parameters:
     ///   - model:          model
@@ -50,18 +40,89 @@ class PhotoDetailsViewController: UIViewController {
 //        overrideUserInterfaceStyle = .dark
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         navigationController?.isNavigationBarHidden = true
+    }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         buildViews()
         updateColors()
+//        view.setNeedsLayout()
+        view.layoutIfNeeded()
+
+        tagsHeaderExpander = HeaderExpander(
+            drivingScrollView: tagsVC.tableView,
+            viewToPan: view,
+            configuration: [.expandLate, .expandEarly],
+            headersHeightsUpdateCallback: { [weak self] in
+                self?.updateHeaders(heights: $0, animationDuration: $1)
+            }
+        )
+        tagsHeaderExpander.activate(headersInputMetrics: [headerInputMetrics(), tagsHeaderInputMetrics()])
+    }
+
+    private func headerInputMetrics() -> HeaderInputMetrics {
+        let spaceBetweenViews = 16.0
+        let horizontalMargin = 16.0
+        let collapsedHeight = SegmentedControl.height + spaceBetweenViews
+
+        // show the photo in correct aspect ratio, but no more than 0.6 height of the view for the header
+        let imageHeight2WidthRatio = image.size.height / image.size.width
+        // 16 is the margins
+        let imageHeight = (view.frame.width - 2 * horizontalMargin) * imageHeight2WidthRatio
+        // TODO: 51 0.6
+        let expandedHeight = min(0.5 * view.frame.height, imageHeight + spaceBetweenViews + collapsedHeight)
+
+        return HeaderInputMetrics(
+            initialHeight: headerView.frame.height,
+            collapsedHeight: collapsedHeight,
+            expandedHeight: expandedHeight
+        )
+    }
+
+    private func tagsHeaderInputMetrics() -> HeaderInputMetrics {
+        HeaderInputMetrics(initialHeight: tagsHeaderView.frame.height,
+                           collapsedHeight: 32 /* =selected tags height */ + 16 /* = spaceBetweenViews*/,
+                           expandedHeight: 40 /* =search */ + 16 /* = padding*/ + 32 /* = selected tags height */ + 16)
     }
 
     private func buildViews() {
+        buildHeaderView()
+        buildTagsHeaderView()
+        buildTagsView()
         buildBottomBar()
 
-        buildPhotoView()
-        buildTagsDescriptionSegmentedControl()
-        buildTagsSearchView()
-        buildTagsView()
+        view.addSubview(headerView)
+        view.insertSubview(tagsHeaderView, belowSubview: headerView)
+        add(childController: tagsVC)
+        view.insertSubview(tagsVC.view, belowSubview: tagsHeaderView)
+        view.addSubview(bottomBar)
+
+        headerView.snp.makeConstraints { make in
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.equalToSuperview()
+            self.headerViewHeightConstraint = make.height.equalTo(headerInputMetrics().expandedHeight).constraint
+        }
+        tagsHeaderView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            self.tagsHeaderViewHeightConstraint = make.height.equalTo(tagsHeaderInputMetrics().expandedHeight)
+                .constraint
+        }
+        tagsVC.view.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            // TODO: 51 headerexpander2:
+//            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            // TODO: 51 headerexpander3:
+            make.top.equalTo(tagsHeaderView.snp.bottom)
+            make.bottom.equalTo(bottomBar.snp.top)
+        }
+        bottomBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+//            make.height.equalTo(backButton.snp.height)
+//                .offset(AddPhotoConfirmationViewController.topPadding + AddPhotoConfirmationViewController
+//                    .bottomPadding)
+        }
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -72,62 +133,41 @@ class PhotoDetailsViewController: UIViewController {
 
     /// update colors that don't adapt automatically to appearance change
     private func updateColors() {
-        photoView?.layer.borderColor = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_08).cgColor
-        tagsDescriptionSegmentedControl?.updateColors()
-        tagsSearchView?.updateColors()
+        headerView?.updateColors()
+        tagsHeaderView?.updateColors()
+    }
+}
+
+// MARK: - header scrolling
+
+extension PhotoDetailsViewController {
+    func updateHeaders(heights: [CGFloat], animationDuration: TimeInterval) {
+        // TODO: 51
+        headerViewHeightConstraint?.update(offset: heights[0])
+        tagsHeaderViewHeightConstraint?.update(offset: heights[1])
+        if animationDuration > 0 {
+            UIView.animate(withDuration: animationDuration) {
+                self.view.layoutIfNeeded()
+            }
+        }
     }
 }
 
 // MARK: - build views
 
 extension PhotoDetailsViewController {
-    private func buildPhotoView() {
-        photoView = UIImageView(image: image)
-        let height2WidthRatio = image.size.height / image.size.width
-        photoView.layer.cornerRadius = 13
-        photoView.layer.borderWidth = 1
-        photoView.clipsToBounds = true
-        photoView.contentMode = .scaleAspectFill
-        view.addSubview(photoView)
-        photoView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            // try to keep the aspect ratio (but priority is high and not required)
-            make.height.equalTo(photoView.snp.width).multipliedBy(height2WidthRatio).priority(.high)
-            // not take more than 0.6 of the view
-            // TODO: 51 bring back the 0.6 version
-            make.height.lessThanOrEqualToSuperview().multipliedBy(0.2)
-        }
+    private func buildHeaderView() {
+        headerView = PhotoDetailsHeaderView(image: image)
+        // TODO: 51
+//        headerView.layer.borderWidth = 0.5
+//        headerView.layer.borderColor = UIColor.orange.withAlphaComponent(0.2).cgColor
     }
 
-    private func buildTagsDescriptionSegmentedControl() {
-        tagsDescriptionSegmentedControl = SegmentedControl(items: [
-            UIAction(
-                title: String(localized: "Tags"),
-                image: UIImage(systemName: "tag"),
-                handler: { _ in print("tags") }
-            ),
-            UIAction(
-                title: String(localized: "Description"),
-                image: UIImage(systemName: "text.quote"),
-                handler: { _ in print("description") }
-            ),
-        ])
-        view.addSubview(tagsDescriptionSegmentedControl)
-        tagsDescriptionSegmentedControl.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(photoView.snp.bottom).offset(16)
-        }
-    }
-
-    private func buildTagsSearchView() {
-        tagsSearchView = SearchView(placeholderText: String(localized: "Search for, or add a tag"))
-        view.addSubview(tagsSearchView)
-        tagsSearchView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40)
-            make.top.equalTo(tagsDescriptionSegmentedControl.snp.bottom).offset(16)
-        }
+    private func buildTagsHeaderView() {
+        tagsHeaderView = PhotoDetailsTagsHeaderView()
+        // TODO: 51
+//        tagsHeaderView.layer.borderWidth = 0.5
+//        tagsHeaderView.layer.borderColor = UIColor.yellow.withAlphaComponent(0.2).cgColor
     }
 
     private func buildBottomBar() {
@@ -165,29 +205,20 @@ extension PhotoDetailsViewController {
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
             make.trailing.equalTo(nextButton.snp.leading).offset(-16)
             make.width.equalTo(nextButton.snp.width)
+            make.bottom.equalToSuperview().inset(AddPhotoConfirmationViewController.bottomPadding)
         }
         nextButton.snp.makeConstraints { make in
             make.trailing.equalTo(-16)
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
         }
-
-        view.addSubview(bottomBar)
-        bottomBar.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
-            make.height.equalTo(backButton.snp.height)
-                .offset(AddPhotoConfirmationViewController.topPadding + AddPhotoConfirmationViewController
-                    .bottomPadding)
-        }
     }
 
     private func buildTagsView() {
-        let tagsVC = TagsViewController(model: model)
-        add(childController: tagsVC)
-        tagsVC.view.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(tagsSearchView.snp.bottom).offset(16)
-            make.bottom.equalTo(bottomBar.snp.top)
+        tagsVC = TagsViewController(model: model)
+        // TODO: 51 never?
+        tagsVC.tableView.contentInsetAdjustmentBehavior = .never
+        tagsVC.onScroll = { [weak self] in
+            self?.view.endEditing(true)
         }
     }
 }

@@ -11,7 +11,7 @@ import UIKit
 ///             as it's applied as CGColor - use `updateColors` function for this.
 class SegmentedControl: UIView {
     // hardcoded view height
-    private static let height = 32.0
+    static let height = 32.0
     // horizontal spacing between buttons
     private static let buttonsSpacing = 5.0
     // space between buttons and view bounds

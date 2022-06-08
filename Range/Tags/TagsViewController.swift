@@ -4,10 +4,11 @@ import UIKit
 class TagsViewController: UIViewController {
     unowned let model: ProjectModel
     let tableView: UITableView
+    var onScroll: (() -> Void)?
 
     init(model: ProjectModel) {
         self.model = model
-        tableView = UITableView(frame: .zero, style: .plain)
+        tableView = UITableView(frame: .zero, style: .grouped) // grouped so the section headers don't float
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -57,7 +58,8 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        2
+//        1
+        5
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -109,5 +111,9 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_: UITableView, heightForFooterInSection _: Int) -> CGFloat {
         16
+    }
+
+    func scrollViewDidScroll(_: UIScrollView) {
+        onScroll?()
     }
 }

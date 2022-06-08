@@ -7,6 +7,7 @@ import UIKit
 class SearchView: UIView {
     /// Force unwrapped - don't use before `setupIcon`
     private var iconView: UIImageView!
+    private var textField: UITextField!
 
     init(placeholderText: String) {
         super.init(frame: .zero)
@@ -15,6 +16,18 @@ class SearchView: UIView {
         setupIcon()
         setupTextField(placeholderText: placeholderText)
         updateColors()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        // alpha is 1 for frame height >= 40 then drops by 0.1 from 40 till 30
+        let alpha = frame.height >= 40
+            ? 1.0
+            : max(frame.height - 30, 0) / 10.0
+        // if the view is getting lower let's hide the internal views
+        iconView.alpha = alpha
+        textField.alpha = alpha
     }
 
     /// Setup the background, corner of the view
@@ -43,7 +56,7 @@ class SearchView: UIView {
 
     /// Setup the text field used for entering the search term
     private func setupTextField(placeholderText: String) {
-        let textField = UITextField()
+        textField = UITextField()
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholderText,
             attributes: [.foregroundColor: UIColor.Neutral_05]

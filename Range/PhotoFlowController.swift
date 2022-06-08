@@ -74,23 +74,33 @@ class PhotoFlowController {
 
     private func showCamera() {
         let vc = CameraViewController()
-        vc.modalPresentationStyle = .fullScreen
+        let navC = UINavigationController(rootViewController: vc)
         vc.onClose = { [weak self, weak vc] in
             vc?.dismiss(animated: true)
             self?.stop()
         }
-        vc.onPhotoTaken = { [weak self, weak vc] data in
-            if let data = data, let image = UIImage(data: data) {
-                vc?.dismiss(animated: true)
-                self?.onPhotoTaken(photo: image)
+        // TODO: 51 implement the flow
+        vc.onPhotoTaken = { [weak self, weak vc, weak navC] data in
+            if let self = self, let data = data, let image = UIImage(data: data) {
+                let detailsVC = PhotoDetailsViewController(model: self.model, image: image)
+                detailsVC.onBack = {
+                    navC?.popToViewController(vc!, animated: true)
+                }
+                detailsVC.onNext = {
+                    navC?.dismiss(animated: true)
+                    self.onPhotoTaken(photo: image)
+                }
+                navC?.pushViewController(detailsVC, animated: true)
             } else {
                 // TODO: show alert or just log?
             }
         }
+//        vc.modalPresentationStyle = .fullScreen
+        navC.modalPresentationStyle = .fullScreen
         // TODO: do we want to present as a card?
 //         vc.installModalCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))
 
-        canvasContainer.present(vc, animated: true)
+        canvasContainer.present(navC, animated: true)
     }
 
     private func onPhotoTaken(photo: UIImage) {
