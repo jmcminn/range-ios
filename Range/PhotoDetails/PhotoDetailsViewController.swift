@@ -23,6 +23,7 @@ class PhotoDetailsViewController: UIViewController {
 
     var tagsVC: TagsViewController!
 
+    /// The expander activated when tags are selected
     var tagsHeaderExpander: HeaderExpander!
 
     /// - Parameters:
@@ -173,6 +174,16 @@ extension PhotoDetailsViewController {
 extension PhotoDetailsViewController {
     private func buildHeaderView() {
         headerView = PhotoDetailsHeaderView(image: image)
+        headerView.onTagsSelected = { [weak self] in
+            // collapse the main header
+            self?.tagsHeaderExpander.setFirstExpandedHeader(1, animated: true)
+            // TODO: 51 switch to tags if not yet switched
+        }
+        headerView.onDescriptionSelected = { [weak self] in
+            // collapse the main header
+            self?.tagsHeaderExpander.setFirstExpandedHeader(1, animated: true)
+            // TODO: 51 switch to description if not yet switched and focus on the text view
+        }
     }
 
     private func buildTagsHeaderView() {

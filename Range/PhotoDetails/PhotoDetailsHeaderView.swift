@@ -7,6 +7,8 @@ class PhotoDetailsHeaderView: UIView {
 
     var photoView: UIImageView!
     var tagsDescriptionSegmentedControl: SegmentedControl!
+    var onTagsSelected: (() -> Void)?
+    var onDescriptionSelected: (() -> Void)?
 
     init(image: UIImage) {
         self.image = image
@@ -59,12 +61,12 @@ class PhotoDetailsHeaderView: UIView {
             UIAction(
                 title: String(localized: "Tags"),
                 image: UIImage(systemName: "tag"),
-                handler: { _ in print("tags") }
+                handler: { [weak self] _ in self?.onTagsSelected?() }
             ),
             UIAction(
                 title: String(localized: "Description"),
                 image: UIImage(systemName: "text.quote"),
-                handler: { _ in print("description") }
+                handler: { [weak self] _ in self?.onDescriptionSelected?() }
             ),
         ])
     }

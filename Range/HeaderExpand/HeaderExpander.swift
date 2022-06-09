@@ -39,7 +39,6 @@ struct HeadersState {
 }
 
 // TODO: 51 headers:
-// - handle "Tags" tap to animate to the top
 // - handle keyboard on search to animate to the top
 // - implement switching
 // - handle expand early (LATER)
@@ -81,6 +80,8 @@ class HeaderExpander: NSObject {
     /// change in header height from the beginning of the pan (from the `gestureInitialHeadersState`
     private var headerTranslation: CGFloat = 0.0
     private var lastContentOffsetWhileScrolling = CGPoint.zero
+    /// The default value for animation duration for header expand/collapse when it's not calculated based on scroll velocity.
+    private let animationDuration = 0.2
 
     /// header metrics with which it was activated, force unwrapped as it's only used after activation
     private var headersInputMetrics: [HeaderInputMetrics]! {
@@ -184,11 +185,13 @@ class HeaderExpander: NSObject {
         scrollView.contentOffset = contentOffset
     }
 
-    // TODO: 51
     /// Since the headers are always collapsed from first to last and expanded from last to first
     /// setting first expanded header can be used to expand all headers with number >= headerNumber.
     /// To collapse all invoke with `headerNumber` = headers.count
-    func setFirstExpandedHeader(headerNumber _: Int, animated _: Bool) {}
+    func setFirstExpandedHeader(_ headerNumber: Int, animated _: Bool) {
+        headersState = headersState(forFirstExpandedHeader: headerNumber)
+        headersHeightsUpdateCallback(headersState.heights, animationDuration)
+    }
 }
 
 // MARK: - scroll view delegate
@@ -274,9 +277,8 @@ extension HeaderExpander: UIScrollViewDelegate {
             if let targetHeadersState = targetHeadersState(withVelocity: velocity) {
                 // calculate animation duration based on velocity and target content offset but
                 // use some minimal value (velocity might be very high, etc)
-                let minimalAnimationDuration = 0.2
                 let animationDuration: TimeInterval = max(
-                    minimalAnimationDuration,
+                    animationDuration,
                     velocity != 0.0
                         ? abs((scrollView.contentOffset.y - targetContentOffset.pointee.y) / velocity)
                         : 0.0
