@@ -10,6 +10,10 @@ class PhotoDetailsViewController: UIViewController {
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
 
+    /// vertical space between the views
+    private let spaceBetweenViews = 16.0
+    /// margin on the left/right
+    private let horizontalMargin = 16.0
     var headerView: PhotoDetailsHeaderView!
     var headerViewHeightConstraint: Constraint?
     var tagsHeaderView: PhotoDetailsTagsHeaderView!
@@ -46,7 +50,6 @@ class PhotoDetailsViewController: UIViewController {
         super.viewWillAppear(animated)
         buildViews()
         updateColors()
-//        view.setNeedsLayout()
         view.layoutIfNeeded()
 
         tagsHeaderExpander = HeaderExpander(
@@ -60,23 +63,41 @@ class PhotoDetailsViewController: UIViewController {
         tagsHeaderExpander.activate(headersInputMetrics: [headerInputMetrics(), tagsHeaderInputMetrics()])
     }
 
-    private func headerInputMetrics() -> HeaderInputMetrics {
-        let spaceBetweenViews = 16.0
-        let horizontalMargin = 16.0
-        let collapsedHeight = SegmentedControl.height + spaceBetweenViews
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
 
-        // show the photo in correct aspect ratio, but no more than 0.6 height of the view for the header
-        let imageHeight2WidthRatio = image.size.height / image.size.width
-        // 16 is the margins
-        let imageHeight = (view.frame.width - 2 * horizontalMargin) * imageHeight2WidthRatio
-        // TODO: 51 0.6
-        let expandedHeight = min(0.5 * view.frame.height, imageHeight + spaceBetweenViews + collapsedHeight)
+        updateHeaderPhotoAlpha()
+    }
+
+    /// Updates the alpha of the header photo based on its height (to hide it when collapsing)
+    private func updateHeaderPhotoAlpha() {
+        // header photo alpha is 1 for the expanded header state and then drops to 0 when
+        // photo is 50pt high
+        let maxPhotoViewHeight = maxHeaderPhotoHeight()
+        let alpha = headerView.photoView.frame.height >= maxPhotoViewHeight
+            ? 1.0
+            : max((headerView.photoView.frame.height - 50) / (maxPhotoViewHeight - 50), 0)
+        headerView.photoView.alpha = alpha
+    }
+
+    private func headerInputMetrics() -> HeaderInputMetrics {
+        let collapsedHeight = spaceBetweenViews / 2.0 /* = some space over the segmented control */ +
+            SegmentedControl.height + spaceBetweenViews
+        let expandedHeight = maxHeaderPhotoHeight() + spaceBetweenViews / 2.0 + collapsedHeight
 
         return HeaderInputMetrics(
             initialHeight: headerView.frame.height,
             collapsedHeight: collapsedHeight,
             expandedHeight: expandedHeight
         )
+    }
+
+    private func maxHeaderPhotoHeight() -> CGFloat {
+        // show the photo in correct aspect ratio, but no more than 0.6 height of the view for the header
+        let imageHeight2WidthRatio = image.size.height / image.size.width
+        // 16 is the margins
+        let imageHeight = (view.frame.width - 2 * 16.0) * imageHeight2WidthRatio
+        return min(0.5 * view.frame.height, imageHeight)
     }
 
     private func tagsHeaderInputMetrics() -> HeaderInputMetrics {
@@ -110,18 +131,12 @@ class PhotoDetailsViewController: UIViewController {
         }
         tagsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            // TODO: 51 headerexpander2:
-//            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            // TODO: 51 headerexpander3:
             make.top.equalTo(tagsHeaderView.snp.bottom)
             make.bottom.equalTo(bottomBar.snp.top)
         }
         bottomBar.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
-//            make.height.equalTo(backButton.snp.height)
-//                .offset(AddPhotoConfirmationViewController.topPadding + AddPhotoConfirmationViewController
-//                    .bottomPadding)
         }
     }
 
@@ -142,12 +157,12 @@ class PhotoDetailsViewController: UIViewController {
 
 extension PhotoDetailsViewController {
     func updateHeaders(heights: [CGFloat], animationDuration: TimeInterval) {
-        // TODO: 51
         headerViewHeightConstraint?.update(offset: heights[0])
         tagsHeaderViewHeightConstraint?.update(offset: heights[1])
         if animationDuration > 0 {
             UIView.animate(withDuration: animationDuration) {
                 self.view.layoutIfNeeded()
+                self.updateHeaderPhotoAlpha()
             }
         }
     }
@@ -158,16 +173,10 @@ extension PhotoDetailsViewController {
 extension PhotoDetailsViewController {
     private func buildHeaderView() {
         headerView = PhotoDetailsHeaderView(image: image)
-        // TODO: 51
-//        headerView.layer.borderWidth = 0.5
-//        headerView.layer.borderColor = UIColor.orange.withAlphaComponent(0.2).cgColor
     }
 
     private func buildTagsHeaderView() {
         tagsHeaderView = PhotoDetailsTagsHeaderView()
-        // TODO: 51
-//        tagsHeaderView.layer.borderWidth = 0.5
-//        tagsHeaderView.layer.borderColor = UIColor.yellow.withAlphaComponent(0.2).cgColor
     }
 
     private func buildBottomBar() {
@@ -215,7 +224,6 @@ extension PhotoDetailsViewController {
 
     private func buildTagsView() {
         tagsVC = TagsViewController(model: model)
-        // TODO: 51 never?
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.onScroll = { [weak self] in
             self?.view.endEditing(true)

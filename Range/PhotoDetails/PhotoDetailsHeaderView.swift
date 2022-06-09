@@ -35,17 +35,6 @@ class PhotoDetailsHeaderView: UIView {
         }
     }
 
-    // if this view is collapsed hide the photoView
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        // alpha is 1 for frame height >= 100 then drops by 0.1 from 100 till 50
-        let alpha = frame.height >= 150
-            ? 1.0
-            : max(frame.height - 100, 0) / 10.0
-        photoView.alpha = alpha
-    }
-
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -59,10 +48,10 @@ class PhotoDetailsHeaderView: UIView {
 
     private func buildPhotoView() {
         photoView = UIImageView(image: image)
-        photoView.layer.cornerRadius = 13
-        photoView.layer.borderWidth = 1
+//        photoView.layer.cornerRadius = 13
+//        photoView.layer.borderWidth = 1
         photoView.clipsToBounds = true
-        photoView.contentMode = .scaleAspectFill
+        photoView.contentMode = .scaleAspectFit
     }
 
     private func buildTagsDescriptionSegmentedControl() {

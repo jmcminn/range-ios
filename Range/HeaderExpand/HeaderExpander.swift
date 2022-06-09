@@ -39,14 +39,11 @@ struct HeadersState {
 }
 
 // TODO: 51 headers:
-// - animate to min/max positions
 // - handle "Tags" tap to animate to the top
 // - handle keyboard on search to animate to the top
 // - implement switching
-// - handle expand early
+// - handle expand early (LATER)
 // - tap on tags / description to minimize 1st header
-// - update scrollIndicatorInsets
-// - scrollToTop on status bar tapped
 
 // Dragging:
 /// header 1

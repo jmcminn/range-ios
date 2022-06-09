@@ -2,6 +2,16 @@ import CoreMIDI
 import SnapKit
 import UIKit
 
+/// Extend UIButton to provide higher hit area for the segmented control buttons - the view itself is pretty
+/// low (32 points) and the buttons even lower (28 points), so let's add 10 points on the top and bottom.
+class SegmentedControlButton: UIButton {
+    override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
+        let biggerFrame = bounds.insetBy(dx: 0, dy: -10)
+
+        return biggerFrame.contains(point)
+    }
+}
+
 /// Custom implementation of UISegmentedControl because:
 /// - the iOS component doesn't support setting background
 /// - it adds the shadow for selected element in the light mode
@@ -39,11 +49,20 @@ class SegmentedControl: UIView {
         buildSelectedSegmentIndicator()
         updateColors()
         setSelectedSegmentIndex(0, animated: false)
+
+        isUserInteractionEnabled = true
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    /// Override to detect points in the SegmentedControlButton(s) which have frames outside the view bounds
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        subviews.contains { subview in
+            subview.point(inside: convert(point, to: subview), with: event)
+        }
     }
 
     /// Override to calculate the current width for buttons and selected segment and positions for separators
@@ -149,7 +168,7 @@ class SegmentedControl: UIView {
         // we need to use the old way of configuring the button
         // bug: https://developer.apple.com/forums/thread/699622
         buttons = actions.map { action in
-            UIButton(primaryAction: action)
+            SegmentedControlButton(primaryAction: action)
         }
         for (index, button) in buttons.enumerated() {
             button.setInsets(
