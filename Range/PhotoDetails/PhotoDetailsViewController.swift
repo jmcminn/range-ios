@@ -56,7 +56,7 @@ class PhotoDetailsViewController: UIViewController {
         tagsHeaderExpander = HeaderExpander(
             drivingScrollView: tagsVC.tableView,
             viewToPan: view,
-            configuration: [.expandLate, .expandEarly],
+//            configuration: [.expandLate, .expandEarly],
             headersHeightsUpdateCallback: { [weak self] in
                 self?.updateHeaders(heights: $0, animationDuration: $1)
             }
@@ -188,6 +188,7 @@ extension PhotoDetailsViewController {
 
     private func buildTagsHeaderView() {
         tagsHeaderView = PhotoDetailsTagsHeaderView()
+        tagsHeaderView.searchView.delegate = self
     }
 
     private func buildBottomBar() {
@@ -239,5 +240,13 @@ extension PhotoDetailsViewController {
         tagsVC.onScroll = { [weak self] in
             self?.view.endEditing(true)
         }
+    }
+}
+
+// MARK: tags handling
+
+extension PhotoDetailsViewController: SearchViewDelegate {
+    func searchViewActivated(_: SearchView) {
+        tagsHeaderExpander.setFirstExpandedHeader(1, animated: true)
     }
 }

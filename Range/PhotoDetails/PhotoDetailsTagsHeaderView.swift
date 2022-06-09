@@ -1,7 +1,7 @@
 import UIKit
 
 class PhotoDetailsTagsHeaderView: UIView {
-    var tagsSearchView: SearchView!
+    var searchView: SearchView!
     var selectedTagsView: UIView!
 
     init() {
@@ -16,10 +16,10 @@ class PhotoDetailsTagsHeaderView: UIView {
         buildTagsSearchView()
         buildSelectedTagsView()
 
-        addSubview(tagsSearchView)
+        addSubview(searchView)
         addSubview(selectedTagsView)
 
-        tagsSearchView.snp.makeConstraints { make in
+        searchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview()
             make.bottom.equalTo(selectedTagsView.snp.top).offset(-16)
@@ -39,11 +39,11 @@ class PhotoDetailsTagsHeaderView: UIView {
 
     /// update colors that don't adapt automatically to appearance change
     func updateColors() {
-        tagsSearchView?.updateColors()
+        searchView?.updateColors()
     }
 
     private func buildTagsSearchView() {
-        tagsSearchView = SearchView(placeholderText: String(localized: "Search for, or add a tag"))
+        searchView = SearchView(placeholderText: String(localized: "Search for, or add a tag"))
     }
 
     private func buildSelectedTagsView() {

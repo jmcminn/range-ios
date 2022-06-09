@@ -1,13 +1,20 @@
 import UIKit
 
-/// Search view is a styled search field wrapped in a view with a border and a search icon
+protocol SearchViewDelegate: AnyObject {
+    func searchViewActivated(_: SearchView)
+}
 
+/// Search view is a styled search field wrapped in a view with a border and a search icon
+///
 /// - Warning: some colors need to be manually updated on user interface style change (dark/light)
 ///             as it's applied as CGColor - use `updateColors` function for this.
 class SearchView: UIView {
     /// Force unwrapped - don't use before `setupIcon`
     private var iconView: UIImageView!
     private var textField: UITextField!
+
+    /// delegate
+    unowned var delegate: SearchViewDelegate?
 
     init(placeholderText: String) {
         super.init(frame: .zero)
@@ -64,6 +71,7 @@ class SearchView: UIView {
         textField.font = UIFont.preferredFont(forTextStyle: .body)
         textField.adjustsFontForContentSizeCategory = true
         textField.tintColor = .Primary_Blue_04
+        textField.delegate = self
         addSubview(textField)
         textField.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
@@ -80,5 +88,14 @@ class SearchView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - textField delegate
+
+extension SearchView: UITextFieldDelegate {
+    func textFieldShouldBeginEditing(_: UITextField) -> Bool {
+        delegate?.searchViewActivated(self)
+        return true
     }
 }

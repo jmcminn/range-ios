@@ -1,13 +1,15 @@
 import UIKit
 
+// TODO: expand early - not supported for now
+// It would require changes in the shouldDragHeaders - so it drags even if not at the top of scroll
 /// Configuration of expandable header. Currently it's only an enum with expanding behavior
-enum HeaderExpandingBehavior {
-    // expand as soon as user scrolls down (no matter what's the current scroll offset)
-    case expandEarly
-    // expand when user scrolls down but only after the scroll view content reached
-    // it's minimal value (so the scroll shows the top of the content):
-    case expandLate
-}
+// enum HeaderExpandingBehavior {
+//    // expand as soon as user scrolls down (no matter what's the current scroll offset)
+//    case expandEarly
+//    // expand when user scrolls down but only after the scroll view content reached
+//    // it's minimal value (so the scroll shows the top of the content):
+//    case expandLate
+// }
 
 /// Struct used for activating the `HeaderExpander`. Describes the metrics for one header
 struct HeaderInputMetrics {
@@ -39,10 +41,8 @@ struct HeadersState {
 }
 
 // TODO: 51 headers:
-// - handle keyboard on search to animate to the top
 // - implement switching
 // - handle expand early (LATER)
-// - tap on tags / description to minimize 1st header
 
 // Dragging:
 /// header 1
@@ -72,7 +72,7 @@ class HeaderExpander: NSObject {
 
     private unowned let scrollView: UIScrollView
     private unowned let viewToPan: UIView
-    private let configuration: [HeaderExpandingBehavior]
+//    private let configuration: [HeaderExpandingBehavior]
     private let headersHeightsUpdateCallback: ([CGFloat], TimeInterval) -> Void
 
     /// last translation (y gesture position) when dragging
@@ -116,12 +116,12 @@ class HeaderExpander: NSObject {
     init(
         drivingScrollView scrollView: UIScrollView,
         viewToPan: UIView,
-        configuration: [HeaderExpandingBehavior],
+//        configuration: [HeaderExpandingBehavior],
         headersHeightsUpdateCallback: @escaping ([CGFloat], TimeInterval) -> Void
     ) {
         self.scrollView = scrollView
         self.viewToPan = viewToPan
-        self.configuration = configuration
+//        self.configuration = configuration
         self.headersHeightsUpdateCallback = headersHeightsUpdateCallback
     }
 
@@ -239,7 +239,6 @@ extension HeaderExpander: UIScrollViewDelegate {
         if !headersState.allCollapsed {
             return true
         }
-        // TODO: 51 expand early headers cause dragging even if not at the top of the content
         // if headers are collapsed but we're scrolling down and already at the top of the
         // content then drag too
         if scrollView.isContentOriginInBounds, !scrollView.scrollsUp {
@@ -295,7 +294,6 @@ extension HeaderExpander: UIScrollViewDelegate {
 // MARK: - state calculationss
 
 extension HeaderExpander {
-    // TODO: 51 decide on early expands... (we need to know if it's expanding)
     /// calculate header states for given total height
     private func headersState(forTotalHeight totalHeight: CGFloat) -> HeadersState {
         // output heights
