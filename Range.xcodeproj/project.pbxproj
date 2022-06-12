@@ -65,6 +65,7 @@
 		0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDA281BDABF0044E06E /* DisplayLink.swift */; };
 		0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */; };
 		0A48ACE1281C1ADD0044E06E /* AddPhotoPinsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */; };
+		0A4995B52854C28200E571FB /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995B42854C28200E571FB /* TextView.swift */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -112,7 +113,6 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
-		0AD0254D284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0254C284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */; };
 		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -194,6 +194,7 @@
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
 		0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasContainerViewController.swift; sourceTree = "<group>"; };
 		0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoPinsHandler.swift; sourceTree = "<group>"; };
+		0A4995B42854C28200E571FB /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -243,7 +244,6 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
-		0AD0254C284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+HeaderExpander.swift"; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderView.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderView.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -516,6 +516,7 @@
 				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
 				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
 				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
+				0A4995B42854C28200E571FB /* TextView.swift */,
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 			);
 			path = Views;
@@ -625,7 +626,6 @@
 			isa = PBXGroup;
 			children = (
 				0AD0255C285079C000106CA5 /* HeaderExpander.swift */,
-				0AD0254C284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift */,
 			);
 			path = HeaderExpand;
 			sourceTree = "<group>";
@@ -832,13 +832,13 @@
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
-				0AD0254D284D1C2000106CA5 /* UIScrollView+HeaderExpander.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
+				0A4995B52854C28200E571FB /* TextView.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,

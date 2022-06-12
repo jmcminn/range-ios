@@ -11,7 +11,7 @@ class CardHandler: NSObject {
     var position: CardPosition
 
     var dragGestureRecognizer: UIPanGestureRecognizer?
-    var scrollViewDelegateProxy: UIScrollViewDelegateProxy?
+//    var scrollViewDelegateProxy: UIScrollViewDelegateProxy?
     var scrollViewTranslation: CGFloat = 0.0
     var drawerTranslation: CGFloat = 0.0
     var lastContentOffsetWhileScrolling = CGPoint.zero
@@ -259,16 +259,11 @@ extension CardHandler: UIScrollViewDelegate {
     }
 
     func setupScrollViewDelegate() {
-        guard let drivingScrollView = presentedViewController.drivingScrollView() else { return }
-        let delegateProxy = UIScrollViewDelegateProxy()
-        delegateProxy.forward(to: self, delegateInvocationsFrom: drivingScrollView)
-        scrollViewDelegateProxy = delegateProxy
+        presentedViewController.drivingScrollView()?.forwardDelegateInvocations(to: self)
     }
 
     func removeScrollViewDelegate() {
-        if let delegateProxy = scrollViewDelegateProxy {
-            delegateProxy.cancelForwarding()
-        }
+        presentedViewController.drivingScrollView()?.cancelForwardingDelegateInvocations(to: self)
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

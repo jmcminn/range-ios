@@ -4,7 +4,6 @@ import UIKit
 class TagsViewController: UIViewController {
     unowned let model: ProjectModel
     let tableView: UITableView
-    var onScroll: (() -> Void)?
 
     init(model: ProjectModel) {
         self.model = model
@@ -111,9 +110,5 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_: UITableView, heightForFooterInSection _: Int) -> CGFloat {
         16
-    }
-
-    func scrollViewDidScroll(_: UIScrollView) {
-        onScroll?()
     }
 }

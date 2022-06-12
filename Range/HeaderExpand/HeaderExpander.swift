@@ -40,10 +40,6 @@ struct HeadersState {
     lazy var heights: [CGFloat] = headersStates.map(\.height)
 }
 
-// TODO: 51 headers:
-// - implement switching
-// - handle expand early (LATER)
-
 // Dragging:
 /// header 1
 /// header 2
@@ -71,7 +67,7 @@ class HeaderExpander: NSObject {
     static let minimumDragExpectedDuration = 0.1
 
     private unowned let scrollView: UIScrollView
-    private unowned let viewToPan: UIView
+    private unowned let contentView: UIView
 //    private let configuration: [HeaderExpandingBehavior]
     private let headersHeightsUpdateCallback: ([CGFloat], TimeInterval) -> Void
 
@@ -112,37 +108,52 @@ class HeaderExpander: NSObject {
     /// header expansion
     private var maxAllowedTotalHeadersHeight: CGFloat?
 
-    ///
+    /// - Parameters
+    ///     - scrollView:
+    ///     - contentView:     the view that contains the headers and the scroll view. It is assumed that headers and scroll take the
+    ///     whole height of the contentView
+    ///     - headersHeightsUpdateCallback: callback that is run whenever the headers' heights need to be updated
     init(
         drivingScrollView scrollView: UIScrollView,
-        viewToPan: UIView,
+        contentView: UIView,
 //        configuration: [HeaderExpandingBehavior],
         headersHeightsUpdateCallback: @escaping ([CGFloat], TimeInterval) -> Void
     ) {
         self.scrollView = scrollView
-        self.viewToPan = viewToPan
+        self.contentView = contentView
 //        self.configuration = configuration
         self.headersHeightsUpdateCallback = headersHeightsUpdateCallback
+    }
+
+    var bottomContentEdgeInset: CGFloat = 0.0 {
+        didSet {
+            updateContentInset()
+        }
     }
 
     /// First activation sets the scroll view content offset to match the current headers state.
     /// Subsequent activations preserve the content offset if possible (the headers may have changed their heights in the meantime, so
     /// it may still be necessary to adjust the offset)
+    /// - Parameters:
+    ///     - headersInputMetrics: metrics defining the header(s) sizes
     func activate(headersInputMetrics: [HeaderInputMetrics]) {
         self.headersInputMetrics = headersInputMetrics
-        // make the scrollView gesture recognizer recognize on the whole view - so panning cover headers too
-        viewToPan.addGestureRecognizer(scrollView.panGestureRecognizer)
+        headersState = headersState(forTotalHeight: totalInitialHeadersHeight)
 
+        // make the scrollView gesture recognizer recognize on the whole view - so panning cover headers too
+        contentView.addGestureRecognizer(scrollView.panGestureRecognizer)
+
+        // scroll to the top on activation
+        scrollView.setContentOffset(.zero, animated: false)
         setupScrollViewObservers()
         setupScrollViewDelegate()
-
-        headersState = headersState(forTotalHeight: totalInitialHeadersHeight)
+        updateContentInset()
     }
 
     /// Deactivate the header expander.
     /// It removes the scroll pan gesture recognizer from the viewToPan and stops updating the header(s) height(s) on scroll view changes
     func deactivate() {
-        viewToPan.removeGestureRecognizer(scrollView.panGestureRecognizer)
+        contentView.removeGestureRecognizer(scrollView.panGestureRecognizer)
         scrollView.addGestureRecognizer(scrollView.panGestureRecognizer)
         removeScrollViewObservers()
         removeScrollViewDelegate()
@@ -166,21 +177,24 @@ class HeaderExpander: NSObject {
     /// In addition to observes the header expander needs the scroll view delegate notifications to handle animating headers to their collapsed/expanded
     /// states on gesture end
     private func setupScrollViewDelegate() {
-        let delegateProxy = UIScrollViewDelegateProxy()
-        delegateProxy.forward(to: self, delegateInvocationsFrom: scrollView)
-        scrollViewDelegateProxy = delegateProxy
+        scrollView.forwardDelegateInvocations(to: self)
     }
 
     private func removeScrollViewDelegate() {
-        scrollViewDelegateProxy?.cancelForwarding()
+        scrollView.cancelForwardingDelegateInvocations(to: self)
     }
 
     /// Updates the content inset so the headers can collapse (adds some bottom inset if the content is too short)
     private func updateContentInset() {
         let contentOffset = scrollView.contentOffset
-        // optionally limit the inset when max allowed total headers height is set, so the content
-        // bounces early (and not reveals the expanded headers)
-        let bottomInset = max(0, scrollView.frame.height - totalCollapsedHeadersHeight - scrollView.contentSize.height)
+        // bottom inset is what is missing for scrollview content with collapsed headers to
+        // occupy the whole height (minus the bottomContentEdgeInset that may be optionally added
+        // below the scroll view
+        let bottomInset = max(
+            0,
+            contentView.frame.height - totalCollapsedHeadersHeight - scrollView.contentSize.height
+                - bottomContentEdgeInset
+        )
         scrollView.contentInset.bottom = bottomInset
         scrollView.contentOffset = contentOffset
     }
@@ -200,6 +214,12 @@ extension HeaderExpander: UIScrollViewDelegate {
     /// Save the state at the beginning of the drag gesture
     func scrollViewWillBeginDragging(_: UIScrollView) {
         gestureInitialHeadersState = headersState
+
+        if shouldDragHeaders() {
+            scrollView.showsVerticalScrollIndicator = false
+        } else {
+            scrollView.showsVerticalScrollIndicator = true
+        }
     }
 
     /// handle scroll by either dragging (in which case the contentOffset is manually set on scrollView to prevent scrolling)
@@ -207,9 +227,9 @@ extension HeaderExpander: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let previousTranslation = scrollViewTranslation
         scrollViewTranslation = scrollView.panGestureRecognizer.translation(in: scrollView).y
-        if shouldDragHeaders(scrollView) {
+        if shouldDragHeaders() {
             headerTranslation += scrollViewTranslation - previousTranslation
-            let offset = adjustedContentOffset(scrollView)
+            let offset = adjustedContentOffset()
             lastContentOffsetWhileScrolling = offset
             scrollView.contentOffset = offset // Warning : calls `scrollViewDidScroll(_:)` again
             let height = gestureInitialHeadersState.totalHeight + headerTranslation
@@ -219,7 +239,7 @@ extension HeaderExpander: UIScrollViewDelegate {
         }
     }
 
-    func adjustedContentOffset(_: UIScrollView) -> CGPoint {
+    func adjustedContentOffset() -> CGPoint {
         var contentOffset = lastContentOffsetWhileScrolling
         let topInset = -scrollView.contentInset.top
         // Between two `scrollViewDidScroll:` calls,
@@ -231,7 +251,7 @@ extension HeaderExpander: UIScrollViewDelegate {
     }
 
     /// Whether the headers should be dragged or the scrolling should be allowed
-    func shouldDragHeaders(_ scrollView: UIScrollView) -> Bool {
+    func shouldDragHeaders() -> Bool {
         if !scrollView.isTracking {
             return false
         }
@@ -271,7 +291,7 @@ extension HeaderExpander: UIScrollViewDelegate {
         // if the user drags while the animation did not finish.
         scrollView.panGestureRecognizer.setTranslation(.zero, in: nil)
 
-        if shouldDragHeaders(scrollView) {
+        if shouldDragHeaders() {
             let velocity = -1000 * velocity.y
             if let targetHeadersState = targetHeadersState(withVelocity: velocity) {
                 // calculate animation duration based on velocity and target content offset but

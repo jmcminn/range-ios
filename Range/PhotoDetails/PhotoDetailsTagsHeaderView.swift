@@ -3,21 +3,32 @@ import UIKit
 class PhotoDetailsTagsHeaderView: UIView {
     var searchView: SearchView!
     var selectedTagsView: UIView!
+    private var bottomStroke: UIView!
+
+    var bottomStrokeVisible: Bool = false {
+        didSet {
+            updateBottomStroke()
+        }
+    }
 
     init() {
         super.init(frame: .zero)
 
         backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         buildViews()
+
+        updateBottomStroke()
     }
 
     /// Creates views, adds them to header and configure the layout
     private func buildViews() {
         buildTagsSearchView()
         buildSelectedTagsView()
+        buildBottomStroke()
 
         addSubview(searchView)
         addSubview(selectedTagsView)
+        addSubview(bottomStroke)
 
         searchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
@@ -30,6 +41,10 @@ class PhotoDetailsTagsHeaderView: UIView {
             make.height.equalTo(32)
             make.bottom.equalToSuperview().inset(16)
         }
+        bottomStroke.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
     }
 
     @available(*, unavailable)
@@ -40,6 +55,7 @@ class PhotoDetailsTagsHeaderView: UIView {
     /// update colors that don't adapt automatically to appearance change
     func updateColors() {
         searchView?.updateColors()
+        updateShadow()
     }
 
     private func buildTagsSearchView() {
@@ -50,5 +66,28 @@ class PhotoDetailsTagsHeaderView: UIView {
         selectedTagsView = UIView()
         selectedTagsView.layer.borderColor = UIColor.Primary_Blue_06.cgColor
         selectedTagsView.layer.borderWidth = 1
+    }
+
+    private func buildBottomStroke() {
+        bottomStroke = UIView()
+        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
+    }
+
+    private func updateBottomStroke() {
+        bottomStroke.isHidden = !bottomStrokeVisible
+        updateShadow()
+    }
+
+    private func updateShadow() {
+        if bottomStrokeVisible {
+            let darkMode = traitCollection.userInterfaceStyle == .dark
+            if darkMode {
+                setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
+            } else {
+                setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
+            }
+        } else {
+            layer.shadowOpacity = 0
+        }
     }
 }
