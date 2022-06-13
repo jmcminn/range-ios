@@ -1,45 +1,5 @@
 import UIKit
 
-// TODO: expand early - not supported for now
-// It would require changes in the shouldDragHeaders - so it drags even if not at the top of scroll
-/// Configuration of expandable header. Currently it's only an enum with expanding behavior
-// enum HeaderExpandingBehavior {
-//    // expand as soon as user scrolls down (no matter what's the current scroll offset)
-//    case expandEarly
-//    // expand when user scrolls down but only after the scroll view content reached
-//    // it's minimal value (so the scroll shows the top of the content):
-//    case expandLate
-// }
-
-/// Struct used for activating the `HeaderExpander`. Describes the metrics for one header
-struct HeaderInputMetrics {
-    var initialHeight: CGFloat // initial header height when activating the expander
-    var collapsedHeight: CGFloat // minimal allowed height in the collapsed form
-    var expandedHeight: CGFloat // maximal height in the expanded form (although the 1st header
-    // might get over expanded)
-}
-
-/// Possible header expansion values
-enum HeaderExpansion {
-    case collapsed // has its collapsed height
-    case partiallyExpanded // has the height between collapsed and expanded
-    case expanded // has its expanded height
-    case overExpanded // has height higher than the expanded height
-}
-
-/// Possible state for the header.
-struct HeaderState {
-    var height: CGFloat // current height
-    var expansion: HeaderExpansion // expansion state based on the height and input metrics
-}
-
-struct HeadersState {
-    let headersStates: [HeaderState]
-    let totalHeight: CGFloat
-    lazy var allCollapsed: Bool = headersStates.allSatisfy { $0.expansion == .collapsed }
-    lazy var heights: [CGFloat] = headersStates.map(\.height)
-}
-
 // Dragging:
 /// header 1
 /// header 2
@@ -55,20 +15,35 @@ struct HeadersState {
 /// scroll view collapses headers 1 -> n
 /// expands n -> 1
 
-/// Docs:
+/// HeaderExpander controls the height of 1..n headers based on user interactions with the driving scroll views
+/// The layout is assumed to be:
+///     - header 1
+///     - header 2
+///     - header ...
+///     - scrollView
 ///
-/// For screens with a header but multiple driving scroll views (that user can switch between) use multiple HeaderExpanders
+/// The expander keeps the internal state of calculated header heights and invokes the callback provided at init for the actual header
+/// updates in the UI.
+///
+/// The expander expands the headers from n to 1, so from the most bottom one to the top one.
+/// The expander collapses the headers from 1 to n, so from the top to bottom
+///
+/// User can only scroll the content if the headers are collapsed. And similarly, user can only expand headers if the scroll view is at the top
+/// So the expander works by deciding whether the gesture should drag or not based on the current scroll view offset and headers state -
+/// see `shouldDragHeaders` function.
+///
+/// For screens with a header and multiple driving scroll views (that user can switch between) use multiple HeaderExpanders
 /// and activate/deactivate them as user is switching the scroll view
 class HeaderExpander: NSObject {
     // configuration
-    /// The minimum velocity to reach to move forward. The default value is 400 pt/s.
-//    static let minimumDragVelocityToChangePosition = 400.0
     /// The minimum duration defines the minimum translation duration to expect.
     static let minimumDragExpectedDuration = 0.1
 
+    /// unowned references to content view and scroll view
     private unowned let scrollView: UIScrollView
     private unowned let contentView: UIView
-//    private let configuration: [HeaderExpandingBehavior]
+    /// callback to be called each time headers need to be updated
+    /// Invoked with an array of new headers heights and the animation time (0 = not animated)
     private let headersHeightsUpdateCallback: ([CGFloat], TimeInterval) -> Void
 
     /// last translation (y gesture position) when dragging
@@ -80,24 +55,15 @@ class HeaderExpander: NSObject {
     private let animationDuration = 0.2
 
     /// header metrics with which it was activated, force unwrapped as it's only used after activation
-    private var headersInputMetrics: [HeaderInputMetrics]! {
-        didSet {
-            totalInitialHeadersHeight = headersInputMetrics.map(\.initialHeight).reduce(0.0, +)
-            totalCollapsedHeadersHeight = headersInputMetrics.map(\.collapsedHeight).reduce(0.0, +)
-            totalExpandedHeadersHeight = headersInputMetrics.map(\.expandedHeight).reduce(0.0, +)
-        }
-    }
+    private var inputMetrics: HeadersInputMetrics!
+    /// Calculator for current input metrics. Force unwrapped as it's only used after the expander was activated
+    private var calculator: HeaderExpanderCalculator!
 
     /// updated by the expander
     private var headersState: HeadersState!
 
     /// the state at the time when scroll view began dragging
     private var gestureInitialHeadersState: HeadersState!
-
-    /// required for calculaction, precomputed when setting `headersMetrics`
-    private var totalInitialHeadersHeight: CGFloat = 0
-    private var totalCollapsedHeadersHeight: CGFloat = 0
-    private var totalExpandedHeadersHeight: CGFloat = 0
 
     /// handles for observing scroll view properties
     private var observations = [NSKeyValueObservation]()
@@ -109,7 +75,7 @@ class HeaderExpander: NSObject {
     private var maxAllowedTotalHeadersHeight: CGFloat?
 
     /// - Parameters
-    ///     - scrollView:
+    ///     - scrollView:   the scroll view that drives the interaction
     ///     - contentView:     the view that contains the headers and the scroll view. It is assumed that headers and scroll take the
     ///     whole height of the contentView
     ///     - headersHeightsUpdateCallback: callback that is run whenever the headers' heights need to be updated
@@ -125,20 +91,21 @@ class HeaderExpander: NSObject {
         self.headersHeightsUpdateCallback = headersHeightsUpdateCallback
     }
 
+    /// By default it is assumed that headers and scroll view take the whole height of the contentView, but this may be adjusted using
+    /// this parameter
     var bottomContentEdgeInset: CGFloat = 0.0 {
         didSet {
             updateContentInset()
         }
     }
 
-    /// First activation sets the scroll view content offset to match the current headers state.
-    /// Subsequent activations preserve the content offset if possible (the headers may have changed their heights in the meantime, so
-    /// it may still be necessary to adjust the offset)
+    /// Start tracking the scroll view changes
     /// - Parameters:
     ///     - headersInputMetrics: metrics defining the header(s) sizes
     func activate(headersInputMetrics: [HeaderInputMetrics]) {
-        self.headersInputMetrics = headersInputMetrics
-        headersState = headersState(forTotalHeight: totalInitialHeadersHeight)
+        inputMetrics = HeadersInputMetrics(headersInputMetrics)
+        calculator = HeaderExpanderCalculator(inputMetrics: inputMetrics)
+        headersState = calculator.headersState(forTotalHeight: inputMetrics.totalInitialHeadersHeight)
 
         // make the scrollView gesture recognizer recognize on the whole view - so panning cover headers too
         contentView.addGestureRecognizer(scrollView.panGestureRecognizer)
@@ -174,8 +141,8 @@ class HeaderExpander: NSObject {
         observations.removeAll()
     }
 
-    /// In addition to observes the header expander needs the scroll view delegate notifications to handle animating headers to their collapsed/expanded
-    /// states on gesture end
+    /// In addition to observes the header expander needs the scroll view delegate notifications to handle animating headers
+    /// to their collapsed/expanded states on gesture end
     private func setupScrollViewDelegate() {
         scrollView.forwardDelegateInvocations(to: self)
     }
@@ -192,8 +159,8 @@ class HeaderExpander: NSObject {
         // below the scroll view
         let bottomInset = max(
             0,
-            contentView.frame.height - totalCollapsedHeadersHeight - scrollView.contentSize.height
-                - bottomContentEdgeInset
+            contentView.frame.height - inputMetrics.totalCollapsedHeadersHeight
+                - scrollView.contentSize.height - bottomContentEdgeInset
         )
         scrollView.contentInset.bottom = bottomInset
         scrollView.contentOffset = contentOffset
@@ -203,7 +170,7 @@ class HeaderExpander: NSObject {
     /// setting first expanded header can be used to expand all headers with number >= headerNumber.
     /// To collapse all invoke with `headerNumber` = headers.count
     func setFirstExpandedHeader(_ headerNumber: Int, animated _: Bool) {
-        headersState = headersState(forFirstExpandedHeader: headerNumber)
+        headersState = calculator.headersState(forFirstExpandedHeader: headerNumber)
         headersHeightsUpdateCallback(headersState.heights, animationDuration)
     }
 }
@@ -239,6 +206,9 @@ extension HeaderExpander: UIScrollViewDelegate {
         }
     }
 
+    /// Hack: When dragging we ignore the offset changes in scroll view (override them) but if the user pans really fast and is quite close
+    /// to the top of the content, we can get the `scrollViewDidScroll` already when it should drag and ignore the offset change
+    /// to 0, fix it here.
     func adjustedContentOffset() -> CGPoint {
         var contentOffset = lastContentOffsetWhileScrolling
         let topInset = -scrollView.contentInset.top
@@ -271,11 +241,12 @@ extension HeaderExpander: UIScrollViewDelegate {
     /// sets `headersState` based on height. Applies rubberBand effect if the height is too big and clamps to min collapsed height.
     func dragHeaders(toHeight height: CGFloat) {
         var height = height
-        if height > totalExpandedHeadersHeight {
-            height = totalExpandedHeadersHeight * (1 + log10(height / totalExpandedHeadersHeight))
+        if height > inputMetrics.totalExpandedHeadersHeight {
+            height = inputMetrics
+                .totalExpandedHeadersHeight * (1 + log10(height / inputMetrics.totalExpandedHeadersHeight))
         }
-        height = max(totalCollapsedHeadersHeight, height)
-        headersState = headersState(forTotalHeight: height)
+        height = max(inputMetrics.totalCollapsedHeadersHeight, height)
+        headersState = calculator.headersState(forTotalHeight: height)
         headersHeightsUpdateCallback(headersState.heights, 0.0)
     }
 
@@ -291,9 +262,15 @@ extension HeaderExpander: UIScrollViewDelegate {
         // if the user drags while the animation did not finish.
         scrollView.panGestureRecognizer.setTranslation(.zero, in: nil)
 
+        // if should drag then calculate the target headers state (so they're only in collapsed/
+        // expanded state) and reset the targetContentOffset so there scroll view doesn't scroll
         if shouldDragHeaders() {
             let velocity = -1000 * velocity.y
-            if let targetHeadersState = targetHeadersState(withVelocity: velocity) {
+            if let targetHeadersState = calculator.targetHeadersState(
+                forInitialState: gestureInitialHeadersState,
+                currentState: headersState,
+                velocity: velocity
+            ) {
                 // calculate animation duration based on velocity and target content offset but
                 // use some minimal value (velocity might be very high, etc)
                 let animationDuration: TimeInterval = max(
@@ -308,121 +285,5 @@ extension HeaderExpander: UIScrollViewDelegate {
             // if we drag headers we don't want the content offset change
             targetContentOffset.pointee.y = lastContentOffsetWhileScrolling.y
         }
-    }
-}
-
-// MARK: - state calculationss
-
-extension HeaderExpander {
-    /// calculate header states for given total height
-    private func headersState(forTotalHeight totalHeight: CGFloat) -> HeadersState {
-        // output heights
-        var heights = headersInputMetrics.map(\.collapsedHeight)
-        // the height to be spread over n=>1 headers on top of their collapsed heights
-        var heightToSpreadOverHeaders = totalHeight - totalCollapsedHeadersHeight
-        var currentHeader = headersInputMetrics.count - 1
-        while currentHeader > 0, heightToSpreadOverHeaders > 0 {
-            // do not add more than the diff between expanded and collapsed
-            let heightToAdd = min(
-                heightToSpreadOverHeaders,
-                headersInputMetrics[currentHeader].expandedHeight - headersInputMetrics[currentHeader]
-                    .collapsedHeight
-            )
-            heights[currentHeader] += heightToAdd
-            heightToSpreadOverHeaders -= heightToAdd
-            currentHeader -= 1
-        }
-        // header 0 gets all the remaining height
-        heights[0] += heightToSpreadOverHeaders
-        return headersState(forHeights: heights)
-    }
-
-    /// Converts heights to states with appropriate expansion states based on the heights
-    private func headersState(forHeights heights: [CGFloat]) -> HeadersState {
-        let headersStates: [HeaderState] = zip(headersInputMetrics, heights)
-            .map { inputMetrics, height in
-                let expansion: HeaderExpansion
-                if height > inputMetrics.expandedHeight {
-                    expansion = .overExpanded
-                } else if height == inputMetrics.expandedHeight {
-                    expansion = .expanded
-                } else if height > inputMetrics.collapsedHeight {
-                    expansion = .partiallyExpanded
-                } else {
-                    expansion = .collapsed
-                }
-                return HeaderState(height: height, expansion: expansion)
-            }
-        let totalHeight = headersStates.map(\.height).reduce(0.0, +)
-        return HeadersState(headersStates: headersStates, totalHeight: totalHeight)
-    }
-
-    /// Calculates target headers state based on the current state (total height) and velocity
-    /// - Returns: HeadersState if state needs to change, otherwise `nil`
-    func targetHeadersState(withVelocity velocity: CGFloat) -> HeadersState? {
-        // if the first header is overexpanded just make it expanded
-        if headersState.headersStates.first?.expansion == .overExpanded {
-            return headersState(forTotalHeight: totalExpandedHeadersHeight)
-        }
-
-        // possibly expand or collapse a header if it's partially expanded
-        // (there can only be 1 header in this state)
-        if let firstPartiallyExpandedIndex = headersState.headersStates
-            .firstIndex(where: { $0.expansion == .partiallyExpanded })
-        {
-            let metrics = headersInputMetrics[firstPartiallyExpandedIndex]
-            let initialState = gestureInitialHeadersState.headersStates[firstPartiallyExpandedIndex]
-            let currentState = headersState.headersStates[firstPartiallyExpandedIndex]
-            // low velocity
-            if abs(velocity) < 150 {
-                // for low velocity prefer changing state from the previous one (before gesture
-                // started) if travelled more than 30 % away from the previous state
-                let expandedToCollapsedDelta = metrics.expandedHeight - metrics.collapsedHeight
-                if initialState.expansion == .collapsed {
-                    if currentState.height >= metrics.collapsedHeight + 0.3 * expandedToCollapsedDelta {
-                        // expand
-                        return headersState(forFirstExpandedHeader: firstPartiallyExpandedIndex)
-                    } else {
-                        // collapse
-                        return headersState(forFirstExpandedHeader: firstPartiallyExpandedIndex + 1)
-                    }
-                } else { // expanded
-                    if currentState.height <= metrics.expandedHeight - 0.3 * expandedToCollapsedDelta {
-                        // collapse
-                        return headersState(forFirstExpandedHeader: firstPartiallyExpandedIndex + 1)
-                    } else {
-                        // expand
-                        return headersState(forFirstExpandedHeader: firstPartiallyExpandedIndex)
-                    }
-                }
-            } else {
-                // for bigger velocities take the target height into account
-                let targetTotalHeight = headersState.totalHeight + HeaderExpander
-                    .minimumDragExpectedDuration * velocity
-                // assign all extra total height to this header
-                let targetHeaderHeight = targetTotalHeight - headersState.totalHeight + currentState.height
-                if targetHeaderHeight >= (metrics.expandedHeight + metrics.collapsedHeight) / 2 {
-                    // closer to expanded, expand:
-                    return headersState(forFirstExpandedHeader: firstPartiallyExpandedIndex)
-
-                } else {
-                    // collapse
-                    return headersState(forFirstExpandedHeader: firstPartiallyExpandedIndex + 1)
-                }
-            }
-        }
-        return nil
-    }
-
-    /// Since the headers are always collapsed from first to last and expanded from last to first
-    /// setting first expanded header can be used to expand all headers with number >= headerNumber.
-    /// To collapse all invoke with `headerNumber` = headers.count
-    func headersState(forFirstExpandedHeader headerNumber: Int) -> HeadersState {
-        let heights = (0 ..< headersInputMetrics.count).map { index in
-            index >= headerNumber
-                ? headersInputMetrics[index].expandedHeight
-                : headersInputMetrics[index].collapsedHeight
-        }
-        return headersState(forHeights: heights)
     }
 }

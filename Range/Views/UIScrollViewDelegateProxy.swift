@@ -49,7 +49,7 @@ class UIScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
     /// observation token to deregister
     private var scrollViewObservation: NSKeyValueObservation?
     /// scroll view this proxy is attached to
-    private unowned let scrollView: UIScrollView
+    private weak var scrollView: UIScrollView?
     /// original delegate to be restored when this proxy is uninstalled from the scroll view
     private weak var originalDelegate: UIScrollViewDelegate?
     /// the delegate to forward to
@@ -93,10 +93,13 @@ class UIScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
         }
     }
 
+    /// Start forwarding delegate invocations to given delegate.
+    /// Only stores a weak reference to it.
     func forward(to forwardToDelegate: UIScrollViewDelegate) {
         forwardToDelegates.add(forwardToDelegate)
     }
 
+    /// Cancel forwarding to given delegate
     func cancelForwarding(to forwardToDelegate: UIScrollViewDelegate) {
         forwardToDelegates.remove(forwardToDelegate)
         if !isForwarding {
@@ -104,11 +107,11 @@ class UIScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
         }
     }
 
+    /// uninstall the proxy from the scroll view delegate
     private func uninstall() {
         scrollViewObservation?.invalidate()
         forwardToDelegates.removeAllObjects()
-        scrollViewObservation?.invalidate()
-        scrollView.delegate = originalDelegate
+        scrollView?.delegate = originalDelegate
     }
 
     // MARK: - UIScrollViewDelegate

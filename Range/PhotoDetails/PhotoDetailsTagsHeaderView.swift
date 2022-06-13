@@ -1,10 +1,14 @@
 import UIKit
 
+/// Header view for tags.
+/// Contains a search view and selected tags below.
+/// The layout supports collapsing the search view.
 class PhotoDetailsTagsHeaderView: UIView {
     var searchView: SearchView!
     var selectedTagsView: UIView!
     private var bottomStroke: UIView!
 
+    /// shows/hides the bottom stroke (+ the shadow)
     var bottomStrokeVisible: Bool = false {
         didSet {
             updateBottomStroke()
@@ -73,11 +77,13 @@ class PhotoDetailsTagsHeaderView: UIView {
         bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
     }
 
+    /// update bottom stroke visibility (+ shadow)
     private func updateBottomStroke() {
         bottomStroke.isHidden = !bottomStrokeVisible
         updateShadow()
     }
 
+    /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
     private func updateShadow() {
         if bottomStrokeVisible {
             let darkMode = traitCollection.userInterfaceStyle == .dark

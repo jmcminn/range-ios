@@ -1,12 +1,14 @@
 import UIKit
 
 /// Header view with the photo and tags/description switch
+/// The layout supports collapsing the photo view
 class PhotoDetailsHeaderView: UIView {
     /// The photo
     private let image: UIImage
 
     var photoView: UIImageView!
     var tagsDescriptionSegmentedControl: SegmentedControl!
+    /// Callbacks for the tags/description switch
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
 

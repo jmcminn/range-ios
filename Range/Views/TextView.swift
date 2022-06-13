@@ -6,7 +6,9 @@ import UIKit
 /// - Warning: some colors need to be manually updated on user interface style change (dark/light)
 ///             as it's applied as CGColor - use `updateColors` function for this.
 class TextView: UIView {
+    /// wrapped text view, exposed for adding delegate
     let textView = UITextView()
+
     private let backgroundView = UIView()
 
     /// callback for Done accessory button

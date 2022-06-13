@@ -66,6 +66,8 @@
 		0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */; };
 		0A48ACE1281C1ADD0044E06E /* AddPhotoPinsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */; };
 		0A4995B52854C28200E571FB /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995B42854C28200E571FB /* TextView.swift */; };
+		0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995B62857449B00E571FB /* HeaderExpanding.swift */; };
+		0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995B928574CC600E571FB /* HeaderExpanderCalculator.swift */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -195,6 +197,9 @@
 		0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasContainerViewController.swift; sourceTree = "<group>"; };
 		0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoPinsHandler.swift; sourceTree = "<group>"; };
 		0A4995B42854C28200E571FB /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
+		0A4995B62857449B00E571FB /* HeaderExpanding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpanding.swift; sourceTree = "<group>"; };
+		0A4995B828574B7200E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0A4995B928574CC600E571FB /* HeaderExpanderCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpanderCalculator.swift; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -625,7 +630,10 @@
 		0AD0254B284D1A1500106CA5 /* HeaderExpand */ = {
 			isa = PBXGroup;
 			children = (
+				0A4995B828574B7200E571FB /* README.md */,
+				0A4995B62857449B00E571FB /* HeaderExpanding.swift */,
 				0AD0255C285079C000106CA5 /* HeaderExpander.swift */,
+				0A4995B928574CC600E571FB /* HeaderExpanderCalculator.swift */,
 			);
 			path = HeaderExpand;
 			sourceTree = "<group>";
@@ -830,6 +838,7 @@
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
+				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
@@ -865,6 +874,7 @@
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
+				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
