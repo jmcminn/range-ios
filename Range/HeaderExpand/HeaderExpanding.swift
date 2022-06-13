@@ -9,7 +9,7 @@ struct HeaderInputMetrics {
 }
 
 /// Metrics for all the headers controlled by a `HeaderExpander`
-struct HeadersInputMetrics {
+struct HeadersInputMetrics: ExpressibleByArrayLiteral {
     /// the input metrics
     let metrics: [HeaderInputMetrics]
     /// precalculated total values
@@ -23,28 +23,36 @@ struct HeadersInputMetrics {
         totalExpandedHeadersHeight = metrics.map(\.expandedHeight).reduce(0.0, +)
     }
 
+    /// can directly assign from array of HeaderState(s)
+    init(arrayLiteral metrics: HeaderInputMetrics...) {
+        self = HeadersInputMetrics(metrics)
+    }
+
     // for convenience add direct access to metrics with subscript operator
     subscript(index: Int) -> HeaderInputMetrics {
         metrics[index]
     }
 }
 
-/// Possible header expansion values
-enum HeaderExpansion {
-    case collapsed // has its collapsed height
-    case partiallyExpanded // has the height between collapsed and expanded
-    case expanded // has its expanded height
-    case overExpanded // has height higher than the expanded height
-}
+/// Possible header states with corresponding heights
+enum HeaderState: Equatable {
+    case collapsed(CGFloat) // has its collapsed height
+    case partiallyExpanded(CGFloat) // has the height between collapsed and expanded
+    case expanded(CGFloat) // has its expanded height
+    case overExpanded(CGFloat) // has height higher than the expanded height
 
-/// Possible state for the header.
-struct HeaderState {
-    var height: CGFloat // current height
-    var expansion: HeaderExpansion // expansion state based on the height and input metrics
+    /// swift way of accessing the associated value
+    /// exposed as a property for convenience
+    var height: CGFloat {
+        switch self {
+        case let .collapsed(h), let .partiallyExpanded(h), let .expanded(h), let .overExpanded(h):
+            return h
+        }
+    }
 }
 
 /// State for all the headers controlled by a `HeaderExpander`
-struct HeadersState {
+struct HeadersState: Equatable, ExpressibleByArrayLiteral {
     /// states
     let states: [HeaderState]
     /// precalculated total and other convenience properties
@@ -54,13 +62,23 @@ struct HeadersState {
     init(_ states: [HeaderState]) {
         self.states = states
         totalHeight = states.map(\.height).reduce(0.0, +)
-        allCollapsed = states.allSatisfy { $0.expansion == .collapsed }
+        allCollapsed = states.allSatisfy { if case .collapsed = $0 { return true } else { return false } }
         heights = states.map(\.height)
     }
 
-    // for convenience add direct access to states with subscript operator
+    /// can directly assign from array of HeaderState(s)
+    init(arrayLiteral states: HeaderState...) {
+        self = HeadersState(states)
+    }
+
+    /// for convenience add direct access to states with subscript operator
     subscript(index: Int) -> HeaderState {
         states[index]
+    }
+
+    /// equatable to check for states only (the rest is derived anyway)
+    static func == (lhs: HeadersState, rhs: HeadersState) -> Bool {
+        lhs.states == rhs.states
     }
 }
 

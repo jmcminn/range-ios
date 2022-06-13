@@ -15,20 +15,22 @@ class HeaderExpanderCalculator {
         var heights = inputMetrics.metrics.map(\.collapsedHeight)
         // the height to be spread over n=>1 headers on top of their collapsed heights
         var heightToSpreadOverHeaders = totalHeight - inputMetrics.totalCollapsedHeadersHeight
-        var currentHeader = inputMetrics.metrics.count - 1
-        while currentHeader > 0, heightToSpreadOverHeaders > 0 {
-            // do not add more than the diff between expanded and collapsed
-            let heightToAdd = min(
-                heightToSpreadOverHeaders,
-                inputMetrics[currentHeader].expandedHeight
-                    - inputMetrics[currentHeader].collapsedHeight
-            )
-            heights[currentHeader] += heightToAdd
-            heightToSpreadOverHeaders -= heightToAdd
-            currentHeader -= 1
+        if heightToSpreadOverHeaders > 0 {
+            var currentHeader = inputMetrics.metrics.count - 1
+            while currentHeader > 0, heightToSpreadOverHeaders > 0 {
+                // do not add more than the diff between expanded and collapsed
+                let heightToAdd = min(
+                    heightToSpreadOverHeaders,
+                    inputMetrics[currentHeader].expandedHeight
+                        - inputMetrics[currentHeader].collapsedHeight
+                )
+                heights[currentHeader] += heightToAdd
+                heightToSpreadOverHeaders -= heightToAdd
+                currentHeader -= 1
+            }
+            // header 0 gets all the remaining height
+            heights[0] += heightToSpreadOverHeaders
         }
-        // header 0 gets all the remaining height
-        heights[0] += heightToSpreadOverHeaders
         return headersState(forHeights: heights)
     }
 
@@ -36,17 +38,15 @@ class HeaderExpanderCalculator {
     private func headersState(forHeights heights: [CGFloat]) -> HeadersState {
         let states: [HeaderState] = zip(inputMetrics.metrics, heights)
             .map { inputMetrics, height in
-                let expansion: HeaderExpansion
                 if height > inputMetrics.expandedHeight {
-                    expansion = .overExpanded
+                    return .overExpanded(height)
                 } else if height == inputMetrics.expandedHeight {
-                    expansion = .expanded
+                    return .expanded(height)
                 } else if height > inputMetrics.collapsedHeight {
-                    expansion = .partiallyExpanded
+                    return .partiallyExpanded(height)
                 } else {
-                    expansion = .collapsed
+                    return .collapsed(height)
                 }
-                return HeaderState(height: height, expansion: expansion)
             }
         return HeadersState(states)
     }
@@ -65,14 +65,14 @@ class HeaderExpanderCalculator {
                             velocity: CGFloat) -> HeadersState?
     {
         // if the first header is overexpanded just make it expanded
-        if headersState.states.first?.expansion == .overExpanded {
+        if case .overExpanded = headersState.states.first {
             return self.headersState(forTotalHeight: inputMetrics.totalExpandedHeadersHeight)
         }
 
         // possibly expand or collapse a header if it's partially expanded
         // (there can only be 1 header in this state)
         if let firstPartiallyExpandedIndex = headersState.states
-            .firstIndex(where: { $0.expansion == .partiallyExpanded })
+            .firstIndex(where: { if case .partiallyExpanded = $0 { return true } else { return false } })
         {
             let metrics = inputMetrics[firstPartiallyExpandedIndex]
             let initialState = initialHeadersState[firstPartiallyExpandedIndex]
@@ -82,7 +82,7 @@ class HeaderExpanderCalculator {
                 // for low velocity prefer changing state from the previous one (before gesture
                 // started) if travelled more than 30 % away from the previous state
                 let expandedToCollapsedDelta = metrics.expandedHeight - metrics.collapsedHeight
-                if initialState.expansion == .collapsed {
+                if case .collapsed = initialState {
                     if currentState.height >= metrics.collapsedHeight + 0.3 * expandedToCollapsedDelta {
                         // expand
                         return self.headersState(forFirstExpandedHeader: firstPartiallyExpandedIndex)

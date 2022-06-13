@@ -1,20 +1,5 @@
 import UIKit
 
-// Dragging:
-/// header 1
-/// header 2
-/// scroll View
-///
-/// header n can drag up/down headers [1...n]
-///
-/// scroll view drags everything
-/// header can be configured to expand:
-/// a) on offset 0 (once the scroll scrolled to the top)
-///   XOR
-/// b) expand early (on drag down)
-/// scroll view collapses headers 1 -> n
-/// expands n -> 1
-
 /// HeaderExpander controls the height of 1..n headers based on user interactions with the driving scroll views
 /// The layout is assumed to be:
 ///     - header 1
@@ -25,8 +10,8 @@ import UIKit
 /// The expander keeps the internal state of calculated header heights and invokes the callback provided at init for the actual header
 /// updates in the UI.
 ///
-/// The expander expands the headers from n to 1, so from the most bottom one to the top one.
-/// The expander collapses the headers from 1 to n, so from the top to bottom
+/// The expander expands the headers from n to 1, so from the most bottom one to the top one, or looking at it from the different
+/// perspective, it collapses the headers from 1 to n, so from the top to bottom
 ///
 /// User can only scroll the content if the headers are collapsed. And similarly, user can only expand headers if the scroll view is at the top
 /// So the expander works by deciding whether the gesture should drag or not based on the current scroll view offset and headers state -
@@ -250,6 +235,13 @@ extension HeaderExpander: UIScrollViewDelegate {
         headersHeightsUpdateCallback(headersState.heights, 0.0)
     }
 
+    /// Calculate the target heades state based on the state when interaction started, current state and velocity
+    ///
+    /// 1. if first header is overexpanded just bring it to expanded no matter what is the velocity
+    /// 2. for low velocity the target state doesn't use velocity at all and rather checks if expansion passed a 30% mark towards new state
+    /// 3. for higher velocity it's being used to calculate a target header but in a way that don't expands/collapses more than 1 header
+    ///     it will not expand/collapse any header if it isn't partially expanded currently as the assumption is that user has to initiate the
+    ///     expansion/collapse
     func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,

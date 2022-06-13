@@ -68,6 +68,7 @@
 		0A4995B52854C28200E571FB /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995B42854C28200E571FB /* TextView.swift */; };
 		0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995B62857449B00E571FB /* HeaderExpanding.swift */; };
 		0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995B928574CC600E571FB /* HeaderExpanderCalculator.swift */; };
+		0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995BC2857699A00E571FB /* HeaderExpanderCalculatorTest.swift */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -200,6 +201,7 @@
 		0A4995B62857449B00E571FB /* HeaderExpanding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpanding.swift; sourceTree = "<group>"; };
 		0A4995B828574B7200E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A4995B928574CC600E571FB /* HeaderExpanderCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpanderCalculator.swift; sourceTree = "<group>"; };
+		0A4995BC2857699A00E571FB /* HeaderExpanderCalculatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpanderCalculatorTest.swift; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -445,6 +447,14 @@
 			path = Canvas;
 			sourceTree = "<group>";
 		};
+		0A4995BB2857697F00E571FB /* HeaderExpand */ = {
+			isa = PBXGroup;
+			children = (
+				0A4995BC2857699A00E571FB /* HeaderExpanderCalculatorTest.swift */,
+			);
+			path = HeaderExpand;
+			sourceTree = "<group>";
+		};
 		0A4DC76327EDCA9000712518 /* Math */ = {
 			isa = PBXGroup;
 			children = (
@@ -580,6 +590,7 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
+				0A4995BB2857697F00E571FB /* HeaderExpand */,
 				0A4DC76627EDCCFB00712518 /* Math */,
 				0A07D7592810377400B6F9A2 /* Model */,
 				0A4DC77027EE111400712518 /* Resources */,
@@ -903,6 +914,7 @@
 				0A34C1832845F89700BEDC7C /* FirebaseCollaborationTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */,
+				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1135,7 +1147,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6J9775C8Y5;
+				DEVELOPMENT_TEAM = 635N8CQN8T;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
@@ -1155,7 +1167,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6J9775C8Y5;
+				DEVELOPMENT_TEAM = 635N8CQN8T;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
