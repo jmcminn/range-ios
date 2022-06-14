@@ -211,6 +211,12 @@ extension PhotoDetailsViewController {
         } else {
             descriptionHeaderExpander.activate(headersInputMetrics: [headerInputMetrics()])
             descriptionHeaderExpander.bottomContentEdgeInset = 0
+
+            // if nothing entered into description then begin editing (this will also collapse
+            // the header)
+            if !descriptionView.textView.hasText {
+                descriptionView.textView.becomeFirstResponder()
+            }
         }
     }
 }
