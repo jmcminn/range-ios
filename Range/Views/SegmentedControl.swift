@@ -1,5 +1,4 @@
 import CoreMIDI
-import SnapKit
 import UIKit
 
 /// Extend UIButton to provide higher hit area for the segmented control buttons - the view itself is pretty
@@ -156,9 +155,6 @@ class SegmentedControl: UIView {
         layer.cornerRadius = 9
         layer.borderWidth = 1
         backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-        snp.makeConstraints { make in
-            make.height.equalTo(SegmentedControl.height)
-        }
     }
 
     /// Builds the buttons from actions

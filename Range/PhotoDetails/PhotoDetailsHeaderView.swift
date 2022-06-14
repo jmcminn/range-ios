@@ -27,16 +27,36 @@ class PhotoDetailsHeaderView: UIView {
 
         addSubview(photoView)
         addSubview(tagsDescriptionSegmentedControl)
+    }
 
-        photoView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().priority(.high) // if the view is collapsed don't enforce this constraint
-            make.height.greaterThanOrEqualTo(30)
-            make.bottom.equalTo(tagsDescriptionSegmentedControl.snp.top).offset(-16)
-        }
-        tagsDescriptionSegmentedControl.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview().inset(16)
-        }
+    /// layout subviews manually instead of using autolayout because we need to exactly calculate the frame for the photoView to match
+    /// the photo aspect ratio.
+    /// When photoView frame was wider (as wide as the superview) then animation of the header size introduced a weird effect that a
+    /// photo scaled from the right side (when growing) instead of preserving the x center. This problem goes away if the frame is
+    /// adjusted to exactly match the photo, so the .scaleAspectFit is only effective when the header is over expanded (so when the
+    /// photo reached the maximum width)
+    override func layoutSubviews() {
+        let margin = 16.0
+        let width = bounds.width
+        let height = bounds.height
+
+        tagsDescriptionSegmentedControl.frame = CGRect(
+            x: margin,
+            y: height - margin - SegmentedControl.height,
+            width: width - 2 * margin,
+            height: SegmentedControl.height
+        )
+
+        // let's make it at least 30pt high, for smaller headers it'll disappear because of the
+        // alpha control (see PhotoDetailsViewController)
+        let photoViewHeight = max(30, tagsDescriptionSegmentedControl.frame.minY - margin)
+        let photoViewWidth = min(width - 32, image.size.width / image.size.height * photoViewHeight)
+        photoView.frame = CGRect(
+            x: (width - photoViewWidth) / 2,
+            y: tagsDescriptionSegmentedControl.frame.minY - margin - photoViewHeight,
+            width: photoViewWidth,
+            height: photoViewHeight
+        )
     }
 
     @available(*, unavailable)
@@ -46,14 +66,11 @@ class PhotoDetailsHeaderView: UIView {
 
     /// update colors that don't adapt automatically to appearance change
     func updateColors() {
-        photoView?.layer.borderColor = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_08).cgColor
         tagsDescriptionSegmentedControl?.updateColors()
     }
 
     private func buildPhotoView() {
         photoView = UIImageView(image: image)
-//        photoView.layer.cornerRadius = 13
-//        photoView.layer.borderWidth = 1
         photoView.clipsToBounds = true
         photoView.contentMode = .scaleAspectFit
     }
