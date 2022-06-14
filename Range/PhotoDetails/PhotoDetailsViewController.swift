@@ -97,15 +97,15 @@ class PhotoDetailsViewController: UIViewController {
         tagsHeaderExpander = HeaderExpander(
             drivingScrollView: tagsVC.tableView,
             contentView: contentView,
-            headersHeightsUpdateCallback: { [weak self] in
-                self?.updateHeaders(heights: $0, animationDuration: $1)
+            headersUpdateCallback: { [weak self] in
+                self?.updateHeaders(state: $0, animationDuration: $1)
             }
         )
         descriptionHeaderExpander = HeaderExpander(
             drivingScrollView: descriptionView.textView,
             contentView: contentView,
-            headersHeightsUpdateCallback: { [weak self] in
-                self?.updateHeaders(heights: $0, animationDuration: $1)
+            headersUpdateCallback: { [weak self] in
+                self?.updateHeaders(state: $0, animationDuration: $1)
             }
         )
         updateUIForMode(.tags)
@@ -263,7 +263,8 @@ extension PhotoDetailsViewController {
                            expandedHeight: 40 /* =search */ + 16 /* = padding*/ + 32 /* = selected tags height */ + 16)
     }
 
-    func updateHeaders(heights: [CGFloat], animationDuration: TimeInterval) {
+    func updateHeaders(state: HeadersState, animationDuration: TimeInterval) {
+        let heights = state.heights
         headerViewHeightConstraint?.update(offset: heights[0])
         if heights.count > 1 {
             tagsHeaderViewHeightConstraint?.update(offset: heights[1])
@@ -275,6 +276,10 @@ extension PhotoDetailsViewController {
             }
         } else {
             updateHeaderPhotoAlpha()
+        }
+        // if user expands the photo while editing the description let's end editing
+        if mode == .description, case .expanded = state.states[0] {
+            view.endEditing(true)
         }
     }
 }
