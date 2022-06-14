@@ -24,9 +24,9 @@ class PhotoDetailsViewController: UIViewController {
     }
 
     private var mode: Mode = .tags {
-        didSet {
-            guard oldValue != mode else { return }
-            updateUIForMode(mode)
+        willSet(newMode) {
+            guard newMode != mode else { return }
+            updateUIForMode(newMode)
         }
     }
 
