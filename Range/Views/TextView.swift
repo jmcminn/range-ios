@@ -60,7 +60,7 @@ class TextView: UIView {
 
         /// adapt the background height to content size if contentHugging is enabled
         let backgroundHeight = contentHugging
-            ? textView.contentSize.height
+            ? max(textView.contentSize.height, 110)
             : bounds.height
         backgroundView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: backgroundHeight)
     }
