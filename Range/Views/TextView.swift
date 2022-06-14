@@ -10,6 +10,7 @@ class TextView: UIView {
     let textView = UITextView()
 
     private let backgroundView = UIView()
+    private let placeholderLabel = UILabel()
 
     /// callback for Done accessory button
     var onDone: (() -> Void)?
@@ -21,29 +22,37 @@ class TextView: UIView {
         }
     }
 
-    init() {
+    init(placeholderText: String) {
         super.init(frame: .zero)
 
-        buildViews()
+        backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+
+        setupBackgroundView()
+        setupTextView()
+        setupPlaceholderLabel(placeholderText: placeholderText)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(textChanged),
+            name: UITextView.textDidChangeNotification,
+            object: textView
+        )
+
         updateColors()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    /// show or hide the placeholder depending on the content of the text view
+    @objc func textChanged(notification _: NSNotification) {
+        placeholderLabel.isHidden = textView.hasText
     }
 
     /// Adapt CG colors to interface style change
     public func updateColors() {
         backgroundView.layer.borderColor = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_08).cgColor
-    }
-
-    private func buildViews() {
-        backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
-
-        buildBackgroundView()
-        buildTextView()
-
-        addSubview(backgroundView)
-        addSubview(textView)
-        textView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
     }
 
     override func layoutSubviews() {
@@ -56,13 +65,14 @@ class TextView: UIView {
         backgroundView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: backgroundHeight)
     }
 
-    private func buildBackgroundView() {
+    private func setupBackgroundView() {
         backgroundView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         backgroundView.layer.cornerRadius = 16
         backgroundView.layer.borderWidth = 1
+        addSubview(backgroundView)
     }
 
-    private func buildTextView() {
+    private func setupTextView() {
         textView.backgroundColor = .clear
         // we need some scroll indicator insets as the borders are rounded
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 5)
@@ -74,11 +84,31 @@ class TextView: UIView {
         textView.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         textView.font = UIFont.preferredFont(forTextStyle: .body)
         textView.adjustsFontForContentSizeCategory = true
-        textView.inputAccessoryView = buildInputAccessoryView()
+        textView.inputAccessoryView = setupInputAccessoryView()
+        addSubview(textView)
+        textView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+
+    /// UITextView doesn't support placeholder, create a label for placeholder
+    private func setupPlaceholderLabel(placeholderText: String) {
+        placeholderLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        placeholderLabel.textColor = .dynamicColor(light: .Neutral_05, dark: .Neutral_05)
+        placeholderLabel.backgroundColor = .clear
+        placeholderLabel.adjustsFontForContentSizeCategory = true
+        placeholderLabel.text = placeholderText
+        placeholderLabel.sizeToFit()
+        addSubview(placeholderLabel)
+        placeholderLabel.snp.makeConstraints { make in
+            // 12 is the text container inset, 5 and 0.5 is derived experimentally
+            make.leading.equalToSuperview().inset(12 + 5)
+            make.top.equalToSuperview().offset(12 + 0.5)
+        }
     }
 
     /// Create "Done" button that will be shown above the keyboard
-    private func buildInputAccessoryView() -> UIView {
+    private func setupInputAccessoryView() -> UIView {
         // the width doesn't matter, it'll be equal to the keyboard(screen) width
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 80))
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)

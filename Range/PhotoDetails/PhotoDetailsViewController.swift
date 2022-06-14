@@ -395,7 +395,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildDescriptionTextView() {
-        descriptionView = TextView()
+        descriptionView = TextView(placeholderText: "Add a description")
         descriptionView.textView.delegate = self
         descriptionView.onDone = { [weak self] in
             self?.view.endEditing(true)
