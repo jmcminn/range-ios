@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1011280388035-h6ct453p7pu2kt2ds7p1bno7uusahctq.apps.googleusercontent.com</string>
+	<string>1015622064814-folagjdh01kajtaset6van9euommo3pk.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1011280388035-h6ct453p7pu2kt2ds7p1bno7uusahctq</string>
+	<string>com.googleusercontent.apps.1015622064814-folagjdh01kajtaset6van9euommo3pk</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAnhFhT4am7keJvn5-zitaSpdLMFV59rao</string>
+	<string>AIzaSyABylJo9Mn-jah1wTS6MEZfPNsMkH9QG5Q</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1011280388035</string>
+	<string>1015622064814</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>io.range.App</string>
 	<key>PROJECT_ID</key>
-	<string>test-99b4c</string>
+	<string>development-18fcf</string>
 	<key>STORAGE_BUCKET</key>
-	<string>test-99b4c.appspot.com</string>
+	<string>development-18fcf.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1011280388035:ios:aaed8bff6a39e9b3a8e776</string>
+	<string>1:1015622064814:ios:de6eac6d62f0f087b7eb3f</string>
 	<key>DATABASE_URL</key>
-	<string>https://test-99b4c-default-rtdb.firebaseio.com</string>
+	<string>https://development-18fcf-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

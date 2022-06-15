@@ -30,6 +30,7 @@ class ProjectModelFirebaseSync {
     private lazy var projectSummaryReference = databaseRef.child("projects/\(model.projectId)/summary")
     private lazy var projectDetailsReference = databaseRef.child("projects/\(model.projectId)/details")
     private lazy var statusNamesReference = projectDetailsReference.child("statusNames")
+    private lazy var tagNamesReference = projectDetailsReference.child("tagNames")
     private lazy var participantsReference = projectDetailsReference.child("participants")
     private lazy var canvasesReference = projectDetailsReference.child("canvases")
     private lazy var geometriesReference = projectDetailsReference.child("geometries")
@@ -73,6 +74,7 @@ class ProjectModelFirebaseSync {
 
         // after this point it's only registering for observation and the function returns
         syncDetails(statusNamesReference, as: FirebaseStatusName.self)
+        syncDetails(tagNamesReference, as: FirebaseTagName.self)
         syncDetails(participantsReference, as: FirebaseParticipant.self)
         syncDetails(geometriesReference, as: FirebaseGeometry.self)
         syncDetails(featuresReference, as: FirebaseFeature.self)

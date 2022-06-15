@@ -79,7 +79,7 @@ class PhotoFlowController {
             vc?.dismiss(animated: true)
             self?.stop()
         }
-        // TODO: 51 implement the flow
+        // TODO: 69 implement the flow
         vc.onPhotoTaken = { [weak self, weak vc, weak navC] data in
             if let self = self, let data = data, let image = UIImage(data: data) {
                 let detailsVC = PhotoDetailsViewController(model: self.model, image: image)

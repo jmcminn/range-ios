@@ -79,7 +79,7 @@ class PhotoDetailsViewController: UIViewController {
     }
 
     override func viewDidLoad() {
-        // TODO: 51 dark only?
+        // TODO: 69 dark only?
 //        overrideUserInterfaceStyle = .dark
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         contentView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
@@ -131,7 +131,7 @@ class PhotoDetailsViewController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    // TODO: 51 move it to a separate PhotoDetailsDescriptionHandler
+    // TODO: 69 move it to a separate PhotoDetailsDescriptionHandler
     /// Adjust the description constraints when keyboard shows
     @objc func keyboardWillShow(notification: NSNotification) {
         // Get required info out of the notification
@@ -143,7 +143,7 @@ class PhotoDetailsViewController: UIViewController {
             // Transform the keyboard's frame into our view's coordinate system
             let endRect = view.convert((endValue as AnyObject).cgRectValue, from: view.window)
 
-            // TODO: 51 refactor this method to make it shorter
+            // TODO: 69 refactor this method to make it shorter
             if mode == .description {
                 let scrollView = descriptionView.textView
                 let scrollRect = scrollView.convert(scrollView.frame, to: view.window)
@@ -427,7 +427,7 @@ extension PhotoDetailsViewController {
 
 // MARK: tags handling
 
-// TODO: 51 move it to PhotoDetailsTagsHandler
+// TODO: 69 move it to PhotoDetailsTagsHandler
 extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
     /// when the keyboard shows for the search tags collapse the main header, so the search field goes to the top
     func searchViewActivated(_: SearchView) {
@@ -445,7 +445,7 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
 
 // MARK: description handling
 
-// TODO: 51 move it to PhotoDetailsDescriptionHandler
+// TODO: 69 move it to PhotoDetailsDescriptionHandler
 extension PhotoDetailsViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_: UITextView) {
         // collapse header when starting editing
