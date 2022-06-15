@@ -45,19 +45,13 @@ class HeaderExpander: NSObject {
     private var calculator: HeaderExpanderCalculator!
 
     /// updated by the expander
-    private var headersState: HeadersState!
+    private(set) var headersState: HeadersState!
 
     /// the state at the time when scroll view began dragging
     private var gestureInitialHeadersState: HeadersState!
 
     /// handles for observing scroll view properties
     private var observations = [NSKeyValueObservation]()
-    /// to become a drivingScrollView delegate
-    private var scrollViewDelegateProxy: UIScrollViewDelegateProxy?
-
-    /// by default it's nil, so there's not limit enforced but may be limited during scroll view deceleration to disallow
-    /// header expansion
-    private var maxAllowedTotalHeadersHeight: CGFloat?
 
     /// - Parameters
     ///     - scrollView:   the scroll view that drives the interaction
@@ -91,15 +85,20 @@ class HeaderExpander: NSObject {
         inputMetrics = HeadersInputMetrics(headersInputMetrics)
         calculator = HeaderExpanderCalculator(inputMetrics: inputMetrics)
         headersState = calculator.headersState(forTotalHeight: inputMetrics.totalInitialHeadersHeight)
+        updateContentInset()
 
         // make the scrollView gesture recognizer recognize on the whole view - so panning cover headers too
         contentView.addGestureRecognizer(scrollView.panGestureRecognizer)
 
-        // scroll to the top on activation
-        scrollView.setContentOffset(.zero, animated: false)
+        // If content offset is non zero but the headers are not collapsed then reset to zero,
+        // as the offset might be != zero only for collapsed headers
+        // (the headers may have changed while being controlled by another expander and this one
+        // was inactive)
+        if !headersState.allCollapsed, scrollView.contentOffset.y != 0 {
+            scrollView.setContentOffset(.zero, animated: false)
+        }
         setupScrollViewObservers()
         setupScrollViewDelegate()
-        updateContentInset()
     }
 
     /// Deactivate the header expander.

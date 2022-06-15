@@ -2,11 +2,11 @@ import UIKit
 
 /// A table view with 3 sections: recent, popular and all project tags
 class TagsViewController: UIViewController {
-    unowned let model: ProjectModel
+    unowned let viewModel: TagsViewModel
     let tableView: UITableView
 
-    init(model: ProjectModel) {
-        self.model = model
+    init(viewModel: TagsViewModel) {
+        self.viewModel = viewModel
         tableView = UITableView(frame: .zero, style: .grouped) // grouped so the section headers don't float
         super.init(nibName: nil, bundle: nil)
     }
@@ -21,13 +21,14 @@ class TagsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TagCell")
+        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: "TagCell")
         view.addSubview(tableView)
 
-        tableView.reloadData()
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        tableView.reloadData()
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
@@ -43,30 +44,28 @@ class TagsViewController: UIViewController {
 
 extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        3
+        1
     }
 
-    func tableView(_: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return String(localized: "Recent Tags")
-        } else if section == 1 {
-            return String(localized: "Popular Tags")
-        } else {
-            return String(localized: "All Tags (A-Z)")
-        }
+    func tableView(_: UITableView, titleForHeaderInSection _: Int) -> String? {
+//        if section == 0 {
+//            return String(localized: "Recent Tags")
+//        } else if section == 1 {
+//            return String(localized: "Popular Tags")
+//        } else {
+        String(localized: "All Tags (A-Z)")
+//        }
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
 //        1
-        5
+        viewModel.allTags.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
         cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
-        cell.imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        cell.textLabel?.textColor = cell.imageView?.tintColor
-        cell.textLabel?.text = "test"
+        cell.tagViewModel = viewModel.allTags[indexPath.row]
         return cell
     }
 
@@ -100,7 +99,9 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
         UIView()
     }
 
-    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let tag = viewModel.allTags[indexPath.row]
+        viewModel.set(tag: tag, selected: !tag.selected)
         tableView.deselectRow(at: indexPath, animated: true)
     }
 

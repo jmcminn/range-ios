@@ -1,6 +1,12 @@
 import UIKit
 
-protocol SearchViewDelegate: AnyObject {
+/// SearchView delegate, needs to be objc protocol because:
+/// https://stackoverflow.com/questions/54403315/store-typealias-as-class-type-in-nshashtable
+/// btw. the answer https://stackoverflow.com/a/54409652 is only partially right, as adding a Ref doesn't fix anything as
+/// the ref is not stored anywhere strongly and is basically gone the moment it's inserted into NSHashTable
+/// https://stackoverflow.com/questions/33112559/protocol-doesnt-conform-to-itself
+/// So protocol doesn't confirm to itself unless it's an objc one. and NSHashTable needs AnyObject
+@objc protocol SearchViewDelegate: AnyObject {
     func searchViewActivated(_: SearchView)
 }
 
@@ -13,8 +19,8 @@ class SearchView: UIView {
     private var iconView: UIImageView!
     private var textField: UITextField!
 
-    /// delegate
-    unowned var delegate: SearchViewDelegate?
+    /// Allows for multiple delegates
+    private var delegates = NSHashTable<SearchViewDelegate>.weakObjects()
 
     init(placeholderText: String) {
         super.init(frame: .zero)
@@ -23,6 +29,12 @@ class SearchView: UIView {
         setupIcon()
         setupTextField(placeholderText: placeholderText)
         updateColors()
+    }
+
+    /// Add delegate
+    /// No option for removal as delegates are stored weakly
+    func addDelegate(_ delegate: SearchViewDelegate) {
+        delegates.add(delegate)
     }
 
     override func layoutSubviews() {
@@ -95,7 +107,7 @@ class SearchView: UIView {
 
 extension SearchView: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_: UITextField) -> Bool {
-        delegate?.searchViewActivated(self)
+        delegates.allObjects.forEach { $0.searchViewActivated(self) }
         return true
     }
 }

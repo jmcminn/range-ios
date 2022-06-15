@@ -16,6 +16,7 @@ class PhotoDetailsViewController: UIViewController {
     unowned let model: ProjectModel
     /// The photo
     let image: UIImage
+    let tagsViewModel: TagsViewModel
 
     /// The mode of the PhotoDetailsViewController
     private enum Mode {
@@ -26,7 +27,11 @@ class PhotoDetailsViewController: UIViewController {
     private var mode: Mode = .tags {
         willSet(newMode) {
             guard newMode != mode else { return }
-            updateUIForMode(newMode)
+            newModeWillSet(newMode)
+        }
+        didSet {
+            guard mode != oldValue else { return }
+            newModeDidSet()
         }
     }
 
@@ -45,7 +50,7 @@ class PhotoDetailsViewController: UIViewController {
     /// header views and their updatable constraints
     var headerView: PhotoDetailsHeaderView!
     var headerViewHeightConstraint: Constraint?
-    var tagsHeaderView: PhotoDetailsTagsHeaderView!
+    var tagsHeaderVC: PhotoDetailsTagsHeaderViewController!
     var tagsHeaderViewHeightConstraint: Constraint?
 
     var bottomBar: UIView!
@@ -64,13 +69,19 @@ class PhotoDetailsViewController: UIViewController {
         mode == .tags ? tagsHeaderExpander : descriptionHeaderExpander
     }
 
+    /// handler coordinating the behavior of tags search and display of results
+    var tagsHandler: TagsHandler!
+
     /// - Parameters:
     ///   - model:          model
     ///   - image:          photo to tag, ...
     init(model: ProjectModel, image: UIImage) {
         self.model = model
         self.image = image
+        tagsViewModel = TagsViewModel(model: model)
         super.init(nibName: nil, bundle: nil)
+
+        tagsViewModel.addDelegate(self)
     }
 
     @available(*, unavailable)
@@ -94,6 +105,12 @@ class PhotoDetailsViewController: UIViewController {
         view.setNeedsLayout()
         view.layoutIfNeeded()
 
+        tagsHandler = TagsHandler(
+            viewModel: tagsViewModel,
+            searchView: tagsHeaderVC.searchView,
+            selectedTagsVC: tagsHeaderVC.selectedTagsVC,
+            tagsVC: tagsVC
+        )
         tagsHeaderExpander = HeaderExpander(
             drivingScrollView: tagsVC.tableView,
             contentView: contentView,
@@ -108,7 +125,9 @@ class PhotoDetailsViewController: UIViewController {
                 self?.updateHeaders(state: $0, animationDuration: $1)
             }
         )
-        updateUIForMode(.tags)
+        // run the mode change related code initially
+        newModeWillSet(.tags)
+        newModeDidSet()
 
         // install keyboard observers
         NotificationCenter.default.addObserver(
@@ -131,45 +150,6 @@ class PhotoDetailsViewController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    // TODO: 69 move it to a separate PhotoDetailsDescriptionHandler
-    /// Adjust the description constraints when keyboard shows
-    @objc func keyboardWillShow(notification: NSNotification) {
-        // Get required info out of the notification
-        if let userInfo = notification.userInfo,
-           let endValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey],
-           let durationValue = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey],
-           let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey]
-        {
-            // Transform the keyboard's frame into our view's coordinate system
-            let endRect = view.convert((endValue as AnyObject).cgRectValue, from: view.window)
-
-            // TODO: 69 refactor this method to make it shorter
-            if mode == .description {
-                let scrollView = descriptionView.textView
-                let scrollRect = scrollView.convert(scrollView.frame, to: view.window)
-                // Find out how much the keyboard overlaps our scroll view
-                let keyboardOverlap = scrollRect.maxY - endRect.origin.y
-
-                descriptionViewBottomConstraint?.update(inset: keyboardOverlap)
-                descriptionHeaderExpander.bottomContentEdgeInset = keyboardOverlap
-            }
-
-            let duration = (durationValue as AnyObject).doubleValue
-            let options = UIView.AnimationOptions(rawValue: UInt((curveValue as AnyObject).integerValue << 16))
-            UIView.animate(withDuration: duration!, delay: 0, options: options, animations: {
-                self.view.layoutIfNeeded()
-            }, completion: nil)
-        }
-    }
-
-    /// Reset description constraints when the keyboard hides
-    @objc func keyboardWillHide(notification _: NSNotification) {
-        if mode == .description {
-            descriptionViewBottomConstraint?.update(inset: 0)
-            descriptionHeaderExpander.bottomContentEdgeInset = 0
-        }
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -186,7 +166,6 @@ class PhotoDetailsViewController: UIViewController {
     /// update colors that don't adapt automatically to appearance change
     private func updateColors() {
         headerView?.updateColors()
-        tagsHeaderView?.updateColors()
         descriptionView?.updateColors()
     }
 }
@@ -194,13 +173,13 @@ class PhotoDetailsViewController: UIViewController {
 // MARK: - mode changes
 
 extension PhotoDetailsViewController {
-    /// adapts the UI to new mode
-    private func updateUIForMode(_ mode: Mode) {
+    /// adapts the UI to new mode that *will* be set
+    private func newModeWillSet(_ mode: Mode) {
         // hide keyboard
         view.endEditing(true)
 
         // update views visibility
-        tagsHeaderView.isHidden = mode != .tags
+        tagsHeaderVC.view.isHidden = mode != .tags
         tagsVC.view.isHidden = mode != .tags
         descriptionView.isHidden = mode != .description
 
@@ -211,9 +190,16 @@ extension PhotoDetailsViewController {
         } else {
             descriptionHeaderExpander.activate(headersInputMetrics: [headerInputMetrics()])
             descriptionHeaderExpander.bottomContentEdgeInset = 0
+        }
+    }
 
+    /// after new mode was set
+    private func newModeDidSet() {
+        if mode == .description {
             // if nothing entered into description then begin editing (this will also collapse
             // the header)
+            // this needs to happen after the mode was set so the keyboard handling works for
+            // description
             if !descriptionView.textView.hasText {
                 descriptionView.textView.becomeFirstResponder()
             }
@@ -258,9 +244,16 @@ extension PhotoDetailsViewController {
     }
 
     private func tagsHeaderInputMetrics() -> HeaderInputMetrics {
-        HeaderInputMetrics(initialHeight: tagsHeaderView.frame.height,
-                           collapsedHeight: 32 /* =selected tags height */ + 16 /* = spaceBetweenViews*/,
-                           expandedHeight: 40 /* =search */ + 16 /* = padding*/ + 32 /* = selected tags height */ + 16)
+        tagsHeaderInputMetrics(tagsVisible: !tagsViewModel.selectedTags.isEmpty)
+    }
+
+    private func tagsHeaderInputMetrics(tagsVisible: Bool) -> HeaderInputMetrics {
+        let collapsedHeight: CGFloat = tagsVisible
+            ? 32 /* =selected tags height */ + 16 /* = spaceBetweenViews*/
+            : 1 // leave 1 for the bottom stroke to be visible
+        return HeaderInputMetrics(initialHeight: tagsHeaderVC.view.frame.height,
+                                  collapsedHeight: collapsedHeight,
+                                  expandedHeight: 40 /* =search */ + 16 /* = padding*/ + collapsedHeight)
     }
 
     func updateHeaders(state: HeadersState, animationDuration: TimeInterval) {
@@ -297,9 +290,10 @@ extension PhotoDetailsViewController {
 
         view.addSubview(contentView)
         contentView.addSubview(headerView)
-        contentView.insertSubview(tagsHeaderView, belowSubview: headerView)
+        add(childController: tagsHeaderVC)
+        contentView.insertSubview(tagsHeaderVC.view, belowSubview: headerView)
         add(childController: tagsVC)
-        contentView.insertSubview(tagsVC.view, belowSubview: tagsHeaderView)
+        contentView.insertSubview(tagsVC.view, belowSubview: tagsHeaderVC.view)
         contentView.insertSubview(descriptionView, belowSubview: headerView)
 
         view.addSubview(bottomBar)
@@ -313,7 +307,7 @@ extension PhotoDetailsViewController {
             make.top.leading.trailing.equalToSuperview()
             self.headerViewHeightConstraint = make.height.equalTo(headerInputMetrics().expandedHeight).constraint
         }
-        tagsHeaderView.snp.makeConstraints { make in
+        tagsHeaderVC.view.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.equalToSuperview()
             self.tagsHeaderViewHeightConstraint = make.height.equalTo(tagsHeaderInputMetrics().expandedHeight)
@@ -321,7 +315,7 @@ extension PhotoDetailsViewController {
         }
         tagsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(tagsHeaderView.snp.bottom)
+            make.top.equalTo(tagsHeaderVC.view.snp.bottom)
             make.bottom.equalTo(bottomBar.snp.top)
         }
         descriptionView.snp.makeConstraints { make in
@@ -346,8 +340,9 @@ extension PhotoDetailsViewController {
     }
 
     private func buildTagsHeaderView() {
-        tagsHeaderView = PhotoDetailsTagsHeaderView()
-        tagsHeaderView.searchView.delegate = self
+        tagsHeaderVC = PhotoDetailsTagsHeaderViewController(viewModel: tagsViewModel)
+//        tagsHeaderVC.searchView.delegate = self
+        tagsHeaderVC.searchView.addDelegate(self)
     }
 
     private func buildBottomBar() {
@@ -394,7 +389,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildTagsView() {
-        tagsVC = TagsViewController(model: model)
+        tagsVC = TagsViewController(viewModel: tagsViewModel)
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)
     }
@@ -427,25 +422,81 @@ extension PhotoDetailsViewController {
 
 // MARK: tags handling
 
-// TODO: 69 move it to PhotoDetailsTagsHandler
 extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
     /// when the keyboard shows for the search tags collapse the main header, so the search field goes to the top
     func searchViewActivated(_: SearchView) {
         tagsHeaderExpander.setFirstExpandedHeader(1, animated: true)
     }
 
-    /// on tags scroll end the editing and adjust the header bottom stroke visibility
+    /// on tags scroll adjust the header bottom stroke visibility
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView === tagsVC.tableView {
-            view.endEditing(true)
-            tagsHeaderView.bottomStrokeVisible = scrollView.contentOffset.y > 0
+            tagsHeaderVC.bottomStrokeVisible = scrollView.contentOffset.y > 0
+        }
+    }
+}
+
+// MARK: - tags view model delegate
+
+extension PhotoDetailsViewController: TagsViewModelDelegate {
+    /// React to selected tags changes by animating in/out the selected tags in the header and updating the header expander
+    func viewModel(_: TagsViewModel, tag _: TagViewModel, selected: Bool, indexInSelectedTags _: Int) {
+        guard mode == .tags else { return }
+
+        // only handle first selected tag (show tags) or last unselected (hide tags)
+        guard (selected == true && tagsViewModel.selectedTags.count == 1)
+            || (selected == false && tagsViewModel.selectedTags.count == 0) else { return }
+
+        // deactive the expander as we'll be adjusting the header heights
+        tagsHeaderExpander.deactivate()
+
+        // calculate new tags header height keeping its collapsed/expanded state
+        let newTagsHeaderHeight: CGFloat
+        if case .collapsed = tagsHeaderExpander.headersState.states[1] {
+            newTagsHeaderHeight = tagsHeaderInputMetrics(tagsVisible: selected).collapsedHeight
+        } else {
+            newTagsHeaderHeight = tagsHeaderInputMetrics(tagsVisible: selected).expandedHeight
+        }
+
+        let reactivateExpander = {
+            // reactivate the expander with new metrics
+            self.tagsHeaderExpander
+                .activate(headersInputMetrics: [self.headerInputMetrics(), self.tagsHeaderInputMetrics()])
+        }
+
+        if selected {
+            // showing the tags
+            tagsHeaderVC.selectedTagsWillShow()
+            tagsHeaderViewHeightConstraint?.update(offset: newTagsHeaderHeight)
+            // first animate the header height
+            UIView.animate(withDuration: 0.1) {
+                self.view.layoutIfNeeded()
+            } completion: { _ in
+                // when enough room show the selected tags
+                self.tagsHeaderVC.setSelectedTagsVisible(selected, animated: true)
+                // and reactivate the expander as the header already has its target height
+                reactivateExpander()
+            }
+        } else {
+            // hiding the tags
+            tagsHeaderVC.selectedTagsWillHide()
+            // first hide the tags
+            tagsHeaderVC.setSelectedTagsVisible(false, animated: true) {
+                // then animate the header to its new height
+                self.tagsHeaderViewHeightConstraint?.update(offset: newTagsHeaderHeight)
+                UIView.animate(withDuration: 0.2) {
+                    self.view.layoutIfNeeded()
+                } completion: { _ in
+                    // and reactivate the expander as the header already has its target height
+                    reactivateExpander()
+                }
+            }
         }
     }
 }
 
 // MARK: description handling
 
-// TODO: 69 move it to PhotoDetailsDescriptionHandler
 extension PhotoDetailsViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_: UITextView) {
         // collapse header when starting editing
@@ -460,5 +511,46 @@ extension PhotoDetailsViewController: UITextViewDelegate {
 
     func textViewDidEndEditing(_: UITextView) {
         descriptionView.contentHugging = true
+    }
+}
+
+// MARK: keyboard handling
+
+extension PhotoDetailsViewController {
+    /// Adjust the description constraints when keyboard shows
+    @objc func keyboardWillShow(notification: NSNotification) {
+        // Get required info out of the notification
+        if let userInfo = notification.userInfo,
+           let endValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey],
+           let durationValue = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey],
+           let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey]
+        {
+            // Transform the keyboard's frame into our view's coordinate system
+            let endRect = view.convert((endValue as AnyObject).cgRectValue, from: view.window)
+
+            if mode == .description {
+                let scrollView = descriptionView.textView
+                let scrollRect = scrollView.superview!.convert(scrollView.frame, to: view.window)
+                // Find out how much the keyboard overlaps our scroll view
+                let keyboardOverlap = scrollRect.maxY - endRect.origin.y
+
+                descriptionViewBottomConstraint?.update(inset: keyboardOverlap)
+                descriptionHeaderExpander.bottomContentEdgeInset = keyboardOverlap
+            }
+
+            let duration = (durationValue as AnyObject).doubleValue
+            let options = UIView.AnimationOptions(rawValue: UInt((curveValue as AnyObject).integerValue << 16))
+            UIView.animate(withDuration: duration!, delay: 0, options: options, animations: {
+                self.view.layoutIfNeeded()
+            }, completion: nil)
+        }
+    }
+
+    /// Reset description constraints when the keyboard hides
+    @objc func keyboardWillHide(notification _: NSNotification) {
+        if mode == .description {
+            descriptionViewBottomConstraint?.update(inset: 0)
+            descriptionHeaderExpander.bottomContentEdgeInset = 0
+        }
     }
 }

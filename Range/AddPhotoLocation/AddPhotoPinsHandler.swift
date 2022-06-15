@@ -294,7 +294,6 @@ extension AddPhotoPinsHandler {
             }
     }
 
-    // TODO: for now the value of photo count is hardcoded to 1
     /// Converts the geometry to a PointAnnotation for presenting the pin.
     private func convertGeometryToPin(geometry: Geometry) -> PointAnnotation? {
         guard case let .point(point) = geometry.geometry else {

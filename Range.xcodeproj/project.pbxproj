@@ -72,6 +72,11 @@
 		0A4995BF2858D00100E571FB /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995BE2858D00100E571FB /* Tag.swift */; };
 		0A4995C12858D05D00E571FB /* FirebaseTagName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C02858D05D00E571FB /* FirebaseTagName.swift */; };
 		0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */; };
+		0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */; };
+		0A4995CA285A26BB00E571FB /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */; };
+		0A4995CC285A53F000E571FB /* TagsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CB285A53F000E571FB /* TagsHandler.swift */; };
+		0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CD285B264C00E571FB /* TagTableViewCell.swift */; };
+		0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CF285B647600E571FB /* TagsViewModel.swift */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -120,7 +125,7 @@
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */; };
-		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */; };
+		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
@@ -208,6 +213,12 @@
 		0A4995BE2858D00100E571FB /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		0A4995C02858D05D00E571FB /* FirebaseTagName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTagName.swift; sourceTree = "<group>"; };
 		0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTagNameTest.swift; sourceTree = "<group>"; };
+		0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagsViewController.swift; sourceTree = "<group>"; };
+		0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A4995CB285A53F000E571FB /* TagsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsHandler.swift; sourceTree = "<group>"; };
+		0A4995CD285B264C00E571FB /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
+		0A4995CF285B647600E571FB /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
+		0A4995D1285C9D1E00E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
@@ -258,7 +269,7 @@
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderView.swift; sourceTree = "<group>"; };
-		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderView.swift; sourceTree = "<group>"; };
+		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
@@ -412,7 +423,7 @@
 			children = (
 				0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */,
 				0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */,
-				0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift */,
+				0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */,
 			);
 			path = PhotoDetails;
 			sourceTree = "<group>";
@@ -420,7 +431,13 @@
 		0A30E8BA284A090000A50D54 /* Tags */ = {
 			isa = PBXGroup;
 			children = (
+				0A4995D1285C9D1E00E571FB /* README.md */,
+				0A4995CF285B647600E571FB /* TagsViewModel.swift */,
+				0A4995CB285A53F000E571FB /* TagsHandler.swift */,
 				0A30E8BB284A0EAB00A50D54 /* TagsViewController.swift */,
+				0A4995CD285B264C00E571FB /* TagTableViewCell.swift */,
+				0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */,
+				0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */,
 			);
 			path = Tags;
 			sourceTree = "<group>";
@@ -834,6 +851,7 @@
 				0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */,
 				0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */,
 				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,
+				0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */,
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
@@ -848,6 +866,7 @@
 				0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
+				0A4995CA285A26BB00E571FB /* TagCollectionViewCell.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */,
@@ -875,6 +894,7 @@
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderView.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
+				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,
 				0A2F32FA2837CBBB00D04A1C /* ProjectModelFirebaseSync.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
@@ -885,10 +905,12 @@
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsHandler.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
+				0A4995CC285A53F000E571FB /* TagsHandler.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
+				0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
-				0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderView.swift in Sources */,
+				0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
