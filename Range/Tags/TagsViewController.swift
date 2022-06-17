@@ -9,6 +9,8 @@ class TagsViewController: UIViewController {
         self.viewModel = viewModel
         tableView = UITableView(frame: .zero, style: .grouped) // grouped so the section headers don't float
         super.init(nibName: nil, bundle: nil)
+
+        viewModel.addDelegate(self)
     }
 
     override func viewDidLoad() {
@@ -42,30 +44,65 @@ class TagsViewController: UIViewController {
     }
 }
 
+// MARK: - TagsViewModel
+
+extension TagsViewController: TagsViewModelDelegate {
+    /// reload table view when view model filtered - either show the filtered tags or all tags if filter is empty
+    func tagsViewModelFiltered(_: TagsViewModel) {
+        tableView.reloadData()
+    }
+
+    var showFilteredTags: Bool {
+        !viewModel.filterString.isEmpty
+    }
+}
+
+// MARK: - UITableView delegate and data source
+
 extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
+    /// for filtered tags the last row is the "create tag" row
+    func isCreateTagRow(_ indexPath: IndexPath) -> Bool {
+        showFilteredTags && indexPath.row == viewModel.filteredTags.count
+    }
+
+    func tag(for indexPath: IndexPath) -> TagViewModel {
+        showFilteredTags
+            ? viewModel.filteredTags[indexPath.row]
+            : viewModel.allTags[indexPath.row]
+    }
+
     func numberOfSections(in _: UITableView) -> Int {
         1
     }
 
     func tableView(_: UITableView, titleForHeaderInSection _: Int) -> String? {
+        // no header for filtered tags
+        guard !showFilteredTags else { return nil }
 //        if section == 0 {
 //            return String(localized: "Recent Tags")
 //        } else if section == 1 {
 //            return String(localized: "Popular Tags")
 //        } else {
-        String(localized: "All Tags (A-Z)")
+        return String(localized: "All Tags (A-Z)")
 //        }
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
 //        1
-        viewModel.allTags.count
+        showFilteredTags
+            ? // if there's no direct match in filtered tags then add one more row for creating tag
+            (viewModel.filteredTagsContainDirectMatch ? viewModel.filteredTags.count : viewModel.filteredTags
+                .count + 1)
+            : viewModel.allTags.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
-        cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
-        cell.tagViewModel = viewModel.allTags[indexPath.row]
+        if isCreateTagRow(indexPath) {
+            cell.displayCreateNewTag(viewModel.filterString)
+        } else {
+            cell.tagViewModel = tag(for: indexPath)
+        }
         return cell
     }
 
@@ -100,13 +137,25 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let tag = viewModel.allTags[indexPath.row]
-        viewModel.set(tag: tag, selected: !tag.selected)
-        tableView.deselectRow(at: indexPath, animated: true)
+        if isCreateTagRow(indexPath) {
+            let tag = TagViewModel(name: viewModel.filterStringTrimmed)
+            // add new tag
+            viewModel.add(tag: tag)
+            // mark it selected
+            viewModel.set(tag: tag, selected: true)
+            // and remove the filter
+            viewModel.filter(by: "")
+            tableView.deselectRow(at: indexPath, animated: true)
+        } else {
+            let tag = tag(for: indexPath)
+            viewModel.set(tag: tag, selected: !tag.selected)
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        36
+        // no header for filtered tags
+        showFilteredTags ? 0 : 36
     }
 
     func tableView(_: UITableView, heightForFooterInSection _: Int) -> CGFloat {

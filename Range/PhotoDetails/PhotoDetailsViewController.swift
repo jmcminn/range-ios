@@ -69,9 +69,6 @@ class PhotoDetailsViewController: UIViewController {
         mode == .tags ? tagsHeaderExpander : descriptionHeaderExpander
     }
 
-    /// handler coordinating the behavior of tags search and display of results
-    var tagsHandler: TagsHandler!
-
     /// - Parameters:
     ///   - model:          model
     ///   - image:          photo to tag, ...
@@ -90,7 +87,7 @@ class PhotoDetailsViewController: UIViewController {
     }
 
     override func viewDidLoad() {
-        // TODO: 69 dark only?
+        // TODO: 72 dark only?
 //        overrideUserInterfaceStyle = .dark
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         contentView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
@@ -105,12 +102,6 @@ class PhotoDetailsViewController: UIViewController {
         view.setNeedsLayout()
         view.layoutIfNeeded()
 
-        tagsHandler = TagsHandler(
-            viewModel: tagsViewModel,
-            searchView: tagsHeaderVC.searchView,
-            selectedTagsVC: tagsHeaderVC.selectedTagsVC,
-            tagsVC: tagsVC
-        )
         tagsHeaderExpander = HeaderExpander(
             drivingScrollView: tagsVC.tableView,
             contentView: contentView,
@@ -428,10 +419,15 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
         tagsHeaderExpander.setFirstExpandedHeader(1, animated: true)
     }
 
+    func searchView(_: SearchView, textDidChange text: String) {
+        tagsViewModel.filter(by: text)
+    }
+
     /// on tags scroll adjust the header bottom stroke visibility
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView === tagsVC.tableView {
             tagsHeaderVC.bottomStrokeVisible = scrollView.contentOffset.y > 0
+            tagsHeaderVC.searchView.endEditing(true)
         }
     }
 }
@@ -440,7 +436,7 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
 
 extension PhotoDetailsViewController: TagsViewModelDelegate {
     /// React to selected tags changes by animating in/out the selected tags in the header and updating the header expander
-    func viewModel(_: TagsViewModel, tag _: TagViewModel, selected: Bool, indexInSelectedTags _: Int) {
+    func tagsViewModel(_: TagsViewModel, tag _: TagViewModel, selected: Bool, indexInSelectedTags _: Int) {
         guard mode == .tags else { return }
 
         // only handle first selected tag (show tags) or last unselected (hide tags)
@@ -492,6 +488,11 @@ extension PhotoDetailsViewController: TagsViewModelDelegate {
                 }
             }
         }
+    }
+
+    /// When the filter is updated on TagsViewModel update the search field (as the update might not originate from the search field)
+    func tagsViewModelFiltered(_ viewModel: TagsViewModel) {
+        tagsHeaderVC.searchView.textField.text = viewModel.filterString
     }
 }
 

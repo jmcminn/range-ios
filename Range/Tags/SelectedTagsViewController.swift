@@ -45,7 +45,7 @@ class SelectedTagsViewController: UIViewController {
 
 extension SelectedTagsViewController: TagsViewModelDelegate {
     /// update selected tags when view model changes
-    func viewModel(_: TagsViewModel, tag _: TagViewModel, selected: Bool, indexInSelectedTags: Int) {
+    func tagsViewModel(_: TagsViewModel, tag _: TagViewModel, selected: Bool, indexInSelectedTags: Int) {
         let indexPath = IndexPath(item: indexInSelectedTags, section: 0)
         if selected {
             collectionView.insertItems(at: [indexPath])

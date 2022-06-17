@@ -74,9 +74,9 @@
 		0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */; };
 		0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */; };
 		0A4995CA285A26BB00E571FB /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */; };
-		0A4995CC285A53F000E571FB /* TagsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CB285A53F000E571FB /* TagsHandler.swift */; };
 		0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CD285B264C00E571FB /* TagTableViewCell.swift */; };
 		0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CF285B647600E571FB /* TagsViewModel.swift */; };
+		0A4995D5286099D800E571FB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995D4286099D800E571FB /* Algorithms */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -215,7 +215,6 @@
 		0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTagNameTest.swift; sourceTree = "<group>"; };
 		0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagsViewController.swift; sourceTree = "<group>"; };
 		0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
-		0A4995CB285A53F000E571FB /* TagsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsHandler.swift; sourceTree = "<group>"; };
 		0A4995CD285B264C00E571FB /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
 		0A4995CF285B647600E571FB /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
 		0A4995D1285C9D1E00E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -284,6 +283,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A4995D5286099D800E571FB /* Algorithms in Frameworks */,
 				0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */,
 				0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */,
 				0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */,
@@ -433,7 +433,6 @@
 			children = (
 				0A4995D1285C9D1E00E571FB /* README.md */,
 				0A4995CF285B647600E571FB /* TagsViewModel.swift */,
-				0A4995CB285A53F000E571FB /* TagsHandler.swift */,
 				0A30E8BB284A0EAB00A50D54 /* TagsViewController.swift */,
 				0A4995CD285B264C00E571FB /* TagTableViewCell.swift */,
 				0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */,
@@ -709,6 +708,7 @@
 				0A48ACD82818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport */,
 				0A2F32F52837BF2F00D04A1C /* Realm */,
 				0A2F32F72837BF2F00D04A1C /* RealmSwift */,
+				0A4995D4286099D800E571FB /* Algorithms */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -787,6 +787,7 @@
 				0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */,
+				0A4995D3286099D800E571FB /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -905,7 +906,6 @@
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsHandler.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
-				0A4995CC285A53F000E571FB /* TagsHandler.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
 				0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
@@ -1308,6 +1308,14 @@
 				minimumVersion = 10.26.0;
 			};
 		};
+		0A4995D3286099D800E571FB /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
@@ -1356,6 +1364,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalyticsWithoutAdIdSupport;
+		};
+		0A4995D4286099D800E571FB /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A4995D3286099D800E571FB /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
 		};
 		0A4DC77827F2445200712518 /* MapboxMaps */ = {
 			isa = XCSwiftPackageProductDependency;

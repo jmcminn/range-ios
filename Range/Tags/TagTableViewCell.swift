@@ -8,6 +8,7 @@ class TagTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         textLabel?.textColor = imageView?.tintColor
+        backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
     }
 
     @available(*, unavailable)
@@ -32,6 +33,24 @@ class TagTableViewCell: UITableViewCell {
                 textLabel?.text = ""
             }
         }
+    }
+
+    /// displays a 'create ... tag'
+    func displayCreateNewTag(_ name: String) {
+        let attributedText =
+            NSMutableAttributedString(
+                string: "Create '\(name)' tag",
+                attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
+            )
+        if let range = attributedText.string.range(of: "'\(name)'") {
+            let nsRange = NSRange(range, in: attributedText.string)
+            attributedText.setAttributes(
+                [.foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04)],
+                range: nsRange
+            )
+        }
+        textLabel?.attributedText = attributedText
+        imageView?.image = UIImage(named: "add_circle")
     }
 
     /// Update the image based on current tag selection state
