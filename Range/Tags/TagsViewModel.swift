@@ -45,12 +45,12 @@ class TagsViewModel: NSObject {
             selectedTags.append(tag)
             let insertIndex = selectedTags.count - 1
             delegates.allObjects
-                .forEach { $0.viewModel?(self, tag: tag, selected: true, indexInSelectedTags: insertIndex) }
+                .forEach { $0.tagsViewModel?(self, tag: tag, selected: true, indexInSelectedTags: insertIndex) }
         } else {
             if let deleteIndex = selectedTags.firstIndex(of: tag) {
                 selectedTags.remove(at: deleteIndex)
                 delegates.allObjects
-                    .forEach { $0.viewModel?(self, tag: tag, selected: false, indexInSelectedTags: deleteIndex) }
+                    .forEach { $0.tagsViewModel?(self, tag: tag, selected: false, indexInSelectedTags: deleteIndex) }
             }
         }
     }
@@ -70,7 +70,7 @@ class TagsViewModel: NSObject {
             filterTerms.allSatisfy { tag.searchName.contains($0) }
         }
         filteredTagsContainDirectMatch = filteredTags.contains(where: { $0.name == self.filterStringTrimmed })
-        delegates.allObjects.forEach { $0.viewModelFiltered?(self) }
+        delegates.allObjects.forEach { $0.tagsViewModelFiltered?(self) }
     }
 
     func add(tag: TagViewModel) {
