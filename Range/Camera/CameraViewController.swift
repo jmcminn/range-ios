@@ -11,7 +11,7 @@ import UIKit
 /// It also owns and manages a CameraService and uses it to actually take photos
 class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
-    var onPhotoTaken: ((Data?) -> Void)?
+    var onPhotoTaken: ((UIImage) -> Void)?
     var modalCardDisplayController: ModalCardDisplayController?
     private let cameraService = CameraService()
 
@@ -23,14 +23,22 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
         rootView = CameraView(
             cameraService: cameraService,
             closeAction: { [weak self] in
-                guard let self = self else { return }
-                self.onClose?()
+                self?.onClose?()
             }, takePhotoAction: { [weak self] in
-                guard let self = self else { return }
-                guard let onPhotoTaken = self.onPhotoTaken else { return }
-                self.cameraService.capturePhoto(completion: onPhotoTaken)
+                self?.takePhotoAction()
             }
         )
+    }
+
+    private func takePhotoAction() {
+        guard let onPhotoTaken = onPhotoTaken else { return }
+        cameraService.capturePhoto { [weak self] data in
+            if let data = data, let image = UIImage(data: data) {
+                onPhotoTaken(image)
+            } else {
+                self?.showCapturePhotoErrorAlert()
+            }
+        }
     }
 
     @available(*, unavailable)
@@ -52,6 +60,16 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
                 alertController.dismiss(animated: true)
             }
         })
+        present(alertController, animated: true)
+    }
+
+    private func showCapturePhotoErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Camera Error",
+            message: "Error while taking the photo, please try again.",
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
         present(alertController, animated: true)
     }
 

@@ -12,7 +12,7 @@ final class ProjectFlowController: UIViewController {
     lazy var actionCardVC = installActionCardVC()
     lazy var bottomBlurView = setupBottomBlur()
 
-    var photoFlow: PhotoFlowController?
+    var addPhotoFlow: AddPhotoFlowController?
 
     init(model: ProjectModel) throws {
         self.model = model
@@ -97,24 +97,24 @@ final class ProjectFlowController: UIViewController {
         ]
         let vc = ProjectActionCardViewController(actions: additionalCardActions)
         vc.onCamera = { [weak self] in
-            self?.startPhotoFlow()
+            self?.startAddPhotoFlow()
         }
         canvasContainer.installCard(cardViewController: vc, inView: canvasContainer.controls)
         return vc
     }
 
-    fileprivate func startPhotoFlow() {
-        photoFlow = PhotoFlowController(model: model, canvasContainer: canvasContainer)
-        photoFlow?.onStop = { [weak self] in
+    fileprivate func startAddPhotoFlow() {
+        addPhotoFlow = AddPhotoFlowController(model: model, canvasContainer: canvasContainer)
+        addPhotoFlow?.onStop = { [weak self] in
             self?.actionCardVC.showCard(animated: true)
-            self?.photoFlow = nil
+            self?.addPhotoFlow = nil
         }
-        photoFlow?.start { [weak self] started in
+        addPhotoFlow?.start { [weak self] started in
             // hide cards if photo flow started
             if started {
                 self?.actionCardVC.hideCard(animated: true)
             } else {
-                self?.photoFlow = nil
+                self?.addPhotoFlow = nil
             }
         }
     }

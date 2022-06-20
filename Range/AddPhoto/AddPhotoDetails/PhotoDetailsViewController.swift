@@ -13,7 +13,6 @@ import UIKit
 /// Each mode has its own `HeaderExpander` that gets activated when switching to that mode and deactivated otherwise, so
 /// there is always 1 expander controlling the current header(s) height(s).
 class PhotoDetailsViewController: UIViewController {
-    unowned let model: ProjectModel
     /// The photo
     let image: UIImage
     let tagsViewModel: TagsViewModel
@@ -37,7 +36,8 @@ class PhotoDetailsViewController: UIViewController {
 
     /// Callbacks exposed for the flow control
     var onBack: (() -> Void)?
-    var onNext: (() -> Void)?
+    /// provides list of selected tags and the descripton
+    var onNext: (([TagViewModel], String) -> Void)?
 
     /// vertical space between the views
     private let spaceBetweenViews = 16.0
@@ -73,7 +73,6 @@ class PhotoDetailsViewController: UIViewController {
     ///   - model:          model
     ///   - image:          photo to tag, ...
     init(model: ProjectModel, image: UIImage) {
-        self.model = model
         self.image = image
         tagsViewModel = TagsViewModel(model: model)
         super.init(nibName: nil, bundle: nil)
@@ -87,7 +86,7 @@ class PhotoDetailsViewController: UIViewController {
     }
 
     override func viewDidLoad() {
-        // TODO: 72 dark only?
+        // TODO: 73 dark only?
 //        overrideUserInterfaceStyle = .dark
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         contentView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
@@ -158,6 +157,11 @@ class PhotoDetailsViewController: UIViewController {
     private func updateColors() {
         headerView?.updateColors()
         descriptionView?.updateColors()
+    }
+
+    /// invoked on 'next' action
+    private func onNextAction() {
+        onNext?(tagsViewModel.selectedTags, descriptionView.textView.text)
     }
 }
 
@@ -360,7 +364,7 @@ extension PhotoDetailsViewController {
             primaryAction: UIAction(
                 title: String(localized: "Next"),
                 image: UIImage(systemName: "arrow.forward")
-            ) { [weak self] _ in self?.onNext?() }
+            ) { [weak self] _ in self?.onNextAction() }
         )
         bottomBar.addSubview(backButton)
         bottomBar.addSubview(nextButton)

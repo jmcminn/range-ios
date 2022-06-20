@@ -3,8 +3,8 @@ import OSLog
 import Turf
 import UIKit
 
-/// Manages the flow of taking photo(s) and assigning their locations on the map
-class PhotoFlowController {
+/// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
+class AddPhotoFlowController {
     unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
@@ -16,6 +16,13 @@ class PhotoFlowController {
 
     /// id of registered delegate
     var canvasDelegateId: UUID?
+
+    /// photo from the camera step
+    var image: UIImage!
+    /// tags from the details step
+    var tags: [TagViewModel]!
+    /// description from the details step
+    var photoDescription: String!
 
     ///
     /// - Parameters:
@@ -37,17 +44,6 @@ class PhotoFlowController {
     }
 
     func stop() {
-        if let canvasDelegateId = canvasDelegateId {
-            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
-        }
-        if let confirmationCardVC = confirmationCardVC {
-            confirmationCardVC.hideCard(animated: true) {
-                self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
-            }
-        }
-        hideTopViewController()
-        pinsHandler?.stop()
-        panAndZoomIndicatorView?.removeFromSuperview()
         onStop?()
     }
 
@@ -72,6 +68,7 @@ class PhotoFlowController {
         }
     }
 
+    /// Present camera view in a new navigation controller presented modally on top of the canvas container
     private func showCamera() {
         let vc = CameraViewController()
         let navC = UINavigationController(rootViewController: vc)
@@ -79,38 +76,112 @@ class PhotoFlowController {
             vc?.dismiss(animated: true)
             self?.stop()
         }
-        // TODO: 72 implement the flow
-        vc.onPhotoTaken = { [weak self, weak vc, weak navC] data in
-            if let self = self, let data = data, let image = UIImage(data: data) {
-                let detailsVC = PhotoDetailsViewController(model: self.model, image: image)
-                detailsVC.onBack = {
-                    navC?.popToViewController(vc!, animated: true)
-                }
-                detailsVC.onNext = {
-                    navC?.dismiss(animated: true)
-                    self.onPhotoTaken(photo: image)
-                }
-                navC?.pushViewController(detailsVC, animated: true)
-            } else {
-                // TODO: show alert or just log?
-            }
+        vc.onPhotoTaken = { [weak self] image in
+            self?.onPhotoTaken(image: image)
         }
-//        vc.modalPresentationStyle = .fullScreen
         navC.modalPresentationStyle = .fullScreen
-        // TODO: do we want to present as a card?
-//         vc.installModalCardDisplayController(cardConfig: CardConfiguration(initialCardPosition: .max))
-
         canvasContainer.present(navC, animated: true)
     }
 
-    private func onPhotoTaken(photo: UIImage) {
+    /// Store the image and proceed to the photo details selection step
+    private func onPhotoTaken(image: UIImage) {
+        self.image = image
+        selectPhotoDetails()
+    }
+
+    /// push photo details view controller onto the navigation controller for the camera screen
+    private func selectPhotoDetails() {
+        let detailsVC = PhotoDetailsViewController(model: model, image: image)
+        detailsVC.onBack = { [weak detailsVC] in
+            detailsVC?.navigationController?.popViewController(animated: true)
+        }
+        detailsVC.onNext = { [weak self] tags, photoDescription in
+            self?.onPhotoDetailsSelected(tags: tags, photoDescription: photoDescription)
+        }
+        (canvasContainer.presentedViewController as? UINavigationController)?
+            .pushViewController(detailsVC, animated: true)
+    }
+
+    /// Store the photo details and proceed to the location selection step
+    private func onPhotoDetailsSelected(tags: [TagViewModel], photoDescription: String) {
+        self.tags = tags
+        self.photoDescription = photoDescription
+        canvasContainer.dismiss(animated: true)
+        selectPhotoLocation()
+    }
+
+    /// Adapt the UI for the location selection
+    private func selectPhotoLocation() {
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
         showTopViewController()
         showConfirmationCard()
         showPanAndZoomIndicatorView()
-        showPins(forImage: photo)
+        showPins()
     }
 
+    /// Store the photo location, save all the data and stop the flow
+    private func onPhotoLocationSelected() {
+        if let selectedPin = pinsHandler?.selectedPin {
+            lastPhotoPinId = selectedPin.id
+            // TODO: 73 add upload with description and tags to this geometry
+        } else {
+            // TODO: 73 create new geometry/feature/collaboration and add photo...
+//            let canvas = canvasContainer.pdfCanvasViewController.pdfCanvas
+            //            let geometry = FirebaseGeometry(
+            //                id: UUID().uuidString.lowercased(),
+            //                canvasId: "a",
+            //                coordinates: canvasContainer.annotationsMapView.cameraState.center
+            //            )
+            //            lastPhotoPinId = geometry.id
+        }
+        dismissPhotoLocationSelectionUI()
+        stop()
+    }
+
+//        if let selectedPin = pinsHandler?.selectedPin {
+//            lastPhotoPinId = selectedPin.id
+//            print("selected existing pin: \(selectedPin)")
+//        } else {
+    // new position for pin
+//            let geometry = FirebaseGeometry(
+//                id: UUID().uuidString.lowercased(),
+//                // TODO: 73 need to have canvasId here, should come from current canvas id
+//                canvasId: "a",
+//                coordinates: canvasContainer.annotationsMapView.cameraState.center
+//            )
+//            lastPhotoPinId = geometry.id
+//            do {
+//                try Database.database().reference().child("geometryData/geometries").child(geometry.id)
+//                    .setValue(from: geometry) { error in
+//                        if let error = error {
+//                            print("error creating geometry: \(error)")
+//                        }
+//                    }
+//            } catch {
+//                print("error saving geometry snapshot: \(error)")
+//            }
+//        }
+}
+
+// MARK: - photo location selection UI adaptation
+
+extension AddPhotoFlowController {
+    /// remove the photo location selection views/handlers
+    private func dismissPhotoLocationSelectionUI() {
+        if let canvasDelegateId = canvasDelegateId {
+            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
+        }
+        if let confirmationCardVC = confirmationCardVC {
+            confirmationCardVC.hideCard(animated: true) {
+                self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
+            }
+        }
+        hideTopViewController()
+        pinsHandler?.stop()
+        panAndZoomIndicatorView?.removeFromSuperview()
+    }
+
+    /// shows the view controller covering the top of of the screen
     private func showTopViewController() {
         let topViewController = AddPhotoTopViewController()
         canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
@@ -129,6 +200,7 @@ class PhotoFlowController {
         self.topViewController = topViewController
     }
 
+    /// hides the top view controller
     private func hideTopViewController() {
         if let topViewController = topViewController {
             UIView.animate(withDuration: 0.2) {
@@ -141,16 +213,24 @@ class PhotoFlowController {
         }
     }
 
-    private func showPins(forImage image: UIImage) {
-        pinsHandler = AddPhotoPinsHandler(model: model, canvasContainer: canvasContainer, image: image)
+    /// Starts the pin handler that adds the pins to the canvas and allows for the selection
+    private func showPins() {
+        pinsHandler = AddPhotoPinsHandler(model: model,
+                                          canvasContainer: canvasContainer,
+                                          image: image)
         pinsHandler?.start()
     }
 
     /// Presents a card with cancel/confirm and registers callbacks for user actions
     private func showConfirmationCard() {
         confirmationCardVC = AddPhotoConfirmationViewController()
-        confirmationCardVC!.onCancel = { [weak self] in self?.stop() }
-        confirmationCardVC!.onConfirm = { [weak self] in self?.onPhotoLocationConfirmed() }
+        confirmationCardVC!.onCancel = { [weak self] in
+            self?.dismissPhotoLocationSelectionUI()
+            self?.stop()
+        }
+        confirmationCardVC!.onConfirm = { [weak self] in
+            self?.onPhotoLocationSelected()
+        }
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,
             inView: canvasContainer.controls,
@@ -167,40 +247,10 @@ class PhotoFlowController {
             make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
         }
     }
-
-    /// Handle the photo location confirmation - potentially create the pin and close the flow
-    private func onPhotoLocationConfirmed() {
-        if let selectedPin = pinsHandler?.selectedPin {
-            lastPhotoPinId = selectedPin.id
-            // TODO: 44 add photo to collaboration
-//            print("selected existing pin: \(selectedPin)")
-        } else {
-            // new position for pin
-            // TODO: 44 here
-//            let geometry = FirebaseGeometry(
-//                id: UUID().uuidString.lowercased(),
-//                // TODO: 44 need to have canvasId here, should come from current canvas id
-//                canvasId: "a",
-//                coordinates: canvasContainer.annotationsMapView.cameraState.center
-//            )
-//            lastPhotoPinId = geometry.id
-//            do {
-//                try Database.database().reference().child("geometryData/geometries").child(geometry.id)
-//                    .setValue(from: geometry) { error in
-//                        if let error = error {
-//                            print("error creating geometry: \(error)")
-//                        }
-//                    }
-//            } catch {
-//                print("error saving geometry snapshot: \(error)")
-//            }
-        }
-        stop()
-    }
 }
 
 /// CanvasViewControllerDelegate
-extension PhotoFlowController: CanvasViewControllerDelegate {
+extension AddPhotoFlowController: CanvasViewControllerDelegate {
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
         if reason == .pan || reason == .zoom {
             guard let panAndZoomIndicator = panAndZoomIndicatorView else { return }
@@ -218,7 +268,7 @@ extension PhotoFlowController: CanvasViewControllerDelegate {
 }
 
 /// Camera permissions
-private extension PhotoFlowController {
+private extension AddPhotoFlowController {
     enum PermissionsResult {
         case authorized
         case notAuthorized

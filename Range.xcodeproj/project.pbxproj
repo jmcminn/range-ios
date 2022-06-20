@@ -11,7 +11,7 @@
 		0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */; };
 		0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */; };
 		0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */; };
-		0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */; };
+		0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51B2808063C00B6F9A2 /* AddPhotoFlowController.swift */; };
 		0A07D51E28089DDD00B6F9A2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */; };
 		0A07D5242809506C00B6F9A2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0A07D5232809506C00B6F9A2 /* FirebaseAuth */; };
 		0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0A07D5252809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta */; };
@@ -155,7 +155,7 @@
 		0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Slider.swift"; sourceTree = "<group>"; };
 		0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoConfirmationViewController.swift; sourceTree = "<group>"; };
 		0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassthroughView.swift; sourceTree = "<group>"; };
-		0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFlowController.swift; sourceTree = "<group>"; };
+		0A07D51B2808063C00B6F9A2 /* AddPhotoFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoFlowController.swift; sourceTree = "<group>"; };
 		0A07D51D28089DDD00B6F9A2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0A07D75528101B3400B6F9A2 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseGeometryTest.swift; sourceTree = "<group>"; };
@@ -418,14 +418,14 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		0A30E8AE2847AF5200A50D54 /* PhotoDetails */ = {
+		0A30E8AE2847AF5200A50D54 /* AddPhotoDetails */ = {
 			isa = PBXGroup;
 			children = (
 				0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */,
 				0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */,
 				0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */,
 			);
-			path = PhotoDetails;
+			path = AddPhotoDetails;
 			sourceTree = "<group>";
 		};
 		0A30E8BA284A090000A50D54 /* Tags */ = {
@@ -478,6 +478,16 @@
 				0A4995BC2857699A00E571FB /* HeaderExpanderCalculatorTest.swift */,
 			);
 			path = HeaderExpand;
+			sourceTree = "<group>";
+		};
+		0A4995D62860C6A900E571FB /* AddPhoto */ = {
+			isa = PBXGroup;
+			children = (
+				0A30E8AE2847AF5200A50D54 /* AddPhotoDetails */,
+				0A07D516280730A200B6F9A2 /* AddPhotoLocation */,
+				0A07D51B2808063C00B6F9A2 /* AddPhotoFlowController.swift */,
+			);
+			path = AddPhoto;
 			sourceTree = "<group>";
 		};
 		0A4DC76327EDCA9000712518 /* Math */ = {
@@ -587,7 +597,7 @@
 			isa = PBXGroup;
 			children = (
 				0A48ACDC281C0CBD0044E06E /* Supporting Files */,
-				0A07D516280730A200B6F9A2 /* AddPhotoLocation */,
+				0A4995D62860C6A900E571FB /* AddPhoto */,
 				0A07D764281295B500B6F9A2 /* Auth */,
 				0A97232327FC507200D744F4 /* Camera */,
 				0A48ACDD281C115C0044E06E /* Canvas */,
@@ -598,7 +608,6 @@
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A07D75428101B1C00B6F9A2 /* Model */,
 				0A632EDB27E4DA38001A019B /* PDF */,
-				0A30E8AE2847AF5200A50D54 /* PhotoDetails */,
 				0A4DC79427F5728500712518 /* ProjectActions */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A30E8BA284A090000A50D54 /* Tags */,
@@ -607,7 +616,6 @@
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
-				0A07D51B2808063C00B6F9A2 /* PhotoFlowController.swift */,
 			);
 			path = Range;
 			sourceTree = "<group>";
@@ -915,7 +923,7 @@
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
-				0A07D51C2808063C00B6F9A2 /* PhotoFlowController.swift in Sources */,
+				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,

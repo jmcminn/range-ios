@@ -37,16 +37,16 @@ class AddPhotoPinsHandler {
     let image: UIImage
 
     // Initialize Impact Feedback Generator
-    let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+    private let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
 
     /// Token for notifications about changes in the canvas geometries
-    var geometriesNotificationToken: NotificationToken?
+    private var geometriesNotificationToken: NotificationToken?
 
     /// Defines the size of the rectangle used for searching pins near to the photo pin (or screen center)
-    let pinsSearchRectSize = 30.0
+    private let pinsSearchRectSize = 30.0
 
     /// The rectangle used for searching pins near to the photo pin (or screen center)
-    lazy var pinsSearchRect = CGRect(
+    private lazy var pinsSearchRect = CGRect(
         x: canvasContainer.annotationsMapView.center.x - pinsSearchRectSize / 2.0,
         y: canvasContainer.annotationsMapView.center.y - pinsSearchRectSize / 2.0,
         width: pinsSearchRectSize,
@@ -54,21 +54,21 @@ class AddPhotoPinsHandler {
     )
 
     /// whether the pins have loaded at least once (used to initiate the selectedPin with the ``lastPhotoPinId``)
-    var pinsLoadedInitially = false
+    private var pinsLoadedInitially = false
 
     /// selected pin or nil if nothing is selected and we're showing the `photoPin`
     var selectedPin: SelectedPin?
 
     /// the pin displaying a photo thumb - used for selecting a new location for the image
-    var photoPinView: UIView?
+    private var photoPinView: UIView?
 
     /// tooltip shown for a currently selected pin
-    var selectedPinTooltip: MapTooltipView?
+    private var selectedPinTooltip: MapTooltipView?
     /// tooltip shown for photoPinView
-    var photoPinTooltip: MapTooltipView?
+    private var photoPinTooltip: MapTooltipView?
 
     /// id of registered delegate
-    var canvasDelegateId: UUID?
+    private var canvasDelegateId: UUID?
 
     /// - Parameters:
     ///   - model:              model to read the pins from
