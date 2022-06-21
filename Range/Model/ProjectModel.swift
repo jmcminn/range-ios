@@ -1,11 +1,18 @@
 import CoreLocation
 import Foundation
+import Kingfisher
 import OSLog
 import RealmSwift
+import UIKit
 
 // possible errors for ProjectModel
 enum ModelError: Error {
     case summaryNotFound
+    case currentUserNotFound
+    case canvasNotFound
+    case geometryNotFound
+    case featureNotFound
+    case collaborationNotFound
 }
 
 // model error extension to provide localized descriptions of errors
@@ -14,6 +21,16 @@ extension ModelError: LocalizedError {
         switch self {
         case .summaryNotFound:
             return "Couldn't load project"
+        case .currentUserNotFound:
+            return "Couldn't load user data"
+        case .canvasNotFound:
+            return "Canvas not found"
+        case .geometryNotFound:
+            return "Geometry not found"
+        case .featureNotFound:
+            return "Feature not found"
+        case .collaborationNotFound:
+            return "Collaboration not found"
         }
     }
 }
@@ -21,6 +38,8 @@ extension ModelError: LocalizedError {
 /// Responsible for configuring the Realm for given project (id).
 /// Contains all the business methods for project (like adding photo, etc.)
 class ProjectModel {
+    /// The Range id of the current logged in user
+    let userId: String
     /// The UUID for the project
     let projectId: String
     /// Configuration for creating realms to access this project objects
@@ -30,13 +49,27 @@ class ProjectModel {
 
     /// Project summary, only available after `loadProject`
     private(set) var projectSummary: ProjectSummary!
+    /// Participant object for current user (user with id = `userId`)
+    private(set) var currentUser: Participant!
+
+    /// Background serial queue to perform write operations.
+    let writeQueue = DispatchQueue(label: "model-write-queue")
+    /// Realm operating on `writeQueue`, initialized on first use
+    var writeRealm: Realm?
+
+    // TODO: 44 revisit the disk cache storage - how does it play with using cache later for
+    // downloaded images???
+    /// Using Kingfisher image cache for local images store (configured disk cache to never expire)
+    let localPhotosCache = ImageCache(name: "local-photos")
 
     /// Initializes the model with Realm file url for given projectId (every project has a separate realm)
     /// - Parameters:
+    ///     - userId:           Range id of the logged in user
     ///     - projectId:        id of the project, will be used for the realm identifier
     ///     - inMemory:      optional parameter to create the Realm in memory (for tests), but default `false`
     /// - Warning: to be called on the Main thread
-    init(projectId: String, inMemory: Bool = false) throws {
+    init(userId: String, projectId: String, inMemory: Bool = false) throws {
+        self.userId = userId
         self.projectId = projectId.lowercased()
         var config = Realm.Configuration.defaultConfiguration
         // TODO: 44 for now we just remove the Realm and resync if migration needed...
@@ -51,12 +84,13 @@ class ProjectModel {
         }
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
+        localPhotosCache.diskStorage.config.expiration = .never
     }
 
     /// Returns `true` if the project is available for offline usage
-    /// The current implementation relies on the project summary being available.
+    /// The current implementation relies on the project summary and the participant for current user being available.
     func isProjectDownloaded() -> Bool {
-        getProjectSummary() != nil
+        getProjectSummary() != nil && getCurrentUser() != nil
     }
 
     /// Initial method to be called on the model after initiating it. It checks that all required project data is available and fails otherwise.
@@ -65,13 +99,19 @@ class ProjectModel {
             throw ModelError.summaryNotFound
         }
         projectSummary = summary
+        guard let user = getCurrentUser() else {
+            throw ModelError.currentUserNotFound
+        }
+        currentUser = user
     }
 
     /// Loads the project summary for this project.
     private func getProjectSummary() -> ProjectSummary? {
         mainRealm.object(ofType: ProjectSummary.self, forPrimaryKey: projectId)
     }
-    // TODO: 44 (methods should be async?)
-//    func addPhoto(_: UIImage, toCollaboration _: Collaboration) {}
-//    func addPhoto(_: UIImage, at _: CLLocationCoordinate2D) {}
+
+    /// Loads the current user
+    private func getCurrentUser() -> Participant? {
+        mainRealm.object(ofType: Participant.self, forPrimaryKey: userId)
+    }
 }

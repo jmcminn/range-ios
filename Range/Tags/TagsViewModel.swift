@@ -112,7 +112,7 @@ class TagViewModel: NSObject {
     let searchName: String
     @objc fileprivate(set) dynamic var selected: Bool = false
 
-    // TODO: 73 tag with local id should be marked as "local" when saving to realm
+    // TODO: 44 tag with local id should be marked as "local" when saving to realm
     init(id: String = UUID().uuidString.lowercased(), name: String) {
         self.id = id
         self.name = name

@@ -19,10 +19,14 @@ class AddPhotoFlowController {
 
     /// photo from the camera step
     var image: UIImage!
+    /// source data for the `image`
+    var imageData: Data!
     /// tags from the details step
     var tags: [TagViewModel]!
     /// description from the details step
     var photoDescription: String!
+    /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
+    var geometryId: String?
 
     ///
     /// - Parameters:
@@ -76,15 +80,16 @@ class AddPhotoFlowController {
             vc?.dismiss(animated: true)
             self?.stop()
         }
-        vc.onPhotoTaken = { [weak self] image in
-            self?.onPhotoTaken(image: image)
+        vc.onPhotoTaken = { [weak self] data, image in
+            self?.onPhotoTaken(data: data, image: image)
         }
         navC.modalPresentationStyle = .fullScreen
         canvasContainer.present(navC, animated: true)
     }
 
     /// Store the image and proceed to the photo details selection step
-    private func onPhotoTaken(image: UIImage) {
+    private func onPhotoTaken(data: Data, image: UIImage) {
+        imageData = data
         self.image = image
         selectPhotoDetails()
     }
@@ -121,46 +126,40 @@ class AddPhotoFlowController {
 
     /// Store the photo location, save all the data and stop the flow
     private func onPhotoLocationSelected() {
-        if let selectedPin = pinsHandler?.selectedPin {
-            lastPhotoPinId = selectedPin.id
-            // TODO: 73 add upload with description and tags to this geometry
-        } else {
-            // TODO: 73 create new geometry/feature/collaboration and add photo...
-//            let canvas = canvasContainer.pdfCanvasViewController.pdfCanvas
-            //            let geometry = FirebaseGeometry(
-            //                id: UUID().uuidString.lowercased(),
-            //                canvasId: "a",
-            //                coordinates: canvasContainer.annotationsMapView.cameraState.center
-            //            )
-            //            lastPhotoPinId = geometry.id
+        // TODO: 73 disable the UI for a while...
+        geometryId = pinsHandler?.selectedPin?.id
+        Task {
+            do {
+                try await _storeData()
+            } catch {
+                // TODO: 73 here log + show error
+                Logger.model.error("xxx: \(error.localizedDescription, privacy: .public)")
+            }
         }
         dismissPhotoLocationSelectionUI()
         stop()
     }
 
-//        if let selectedPin = pinsHandler?.selectedPin {
-//            lastPhotoPinId = selectedPin.id
-//            print("selected existing pin: \(selectedPin)")
-//        } else {
-    // new position for pin
-//            let geometry = FirebaseGeometry(
-//                id: UUID().uuidString.lowercased(),
-//                // TODO: 73 need to have canvasId here, should come from current canvas id
-//                canvasId: "a",
-//                coordinates: canvasContainer.annotationsMapView.cameraState.center
-//            )
-//            lastPhotoPinId = geometry.id
-//            do {
-//                try Database.database().reference().child("geometryData/geometries").child(geometry.id)
-//                    .setValue(from: geometry) { error in
-//                        if let error = error {
-//                            print("error creating geometry: \(error)")
-//                        }
-//                    }
-//            } catch {
-//                print("error saving geometry snapshot: \(error)")
-//            }
-//        }
+    /// Async function to store the new photo data in the realm DB
+    @MainActor
+    private func _storeData() async throws {
+        let collaboration: Collaboration
+        if let geometryId = geometryId {
+            collaboration = try await model.getOrAddCollaboration(forGeometryId: geometryId)
+        } else {
+            collaboration = try await model.createPhotoMarker(
+                canvas: canvasContainer.pdfCanvasViewController.pdfCanvas,
+                coordinates: canvasContainer.annotationsMapView.cameraState.center
+            )
+        }
+        _ = try await model.addUpload(
+            imageData,
+            tags: tags,
+            description: photoDescription,
+            toCollaboration: collaboration
+        )
+        lastPhotoPinId = collaboration.feature[0].geometry[0].id
+    }
 }
 
 // MARK: - photo location selection UI adaptation

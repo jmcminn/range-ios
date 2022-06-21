@@ -77,6 +77,7 @@
 		0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CD285B264C00E571FB /* TagTableViewCell.swift */; };
 		0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CF285B647600E571FB /* TagsViewModel.swift */; };
 		0A4995D5286099D800E571FB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995D4286099D800E571FB /* Algorithms */; };
+		0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995DA2861DBE600E571FB /* Kingfisher */; };
 		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -128,6 +129,10 @@
 		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
+		0AD9B75428620821005ACFD7 /* ProjectModel+Write.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Write.swift */; };
+		0AD9B75628620938005ACFD7 /* ProjectModelWriteTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75528620938005ACFD7 /* ProjectModelWriteTest.swift */; };
+		0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75728621782005ACFD7 /* Result+Throws.swift */; };
+		0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75928624204005ACFD7 /* Authentication.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */; };
@@ -271,6 +276,10 @@
 		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
+		0AD9B75328620821005ACFD7 /* ProjectModel+Write.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Write.swift"; sourceTree = "<group>"; };
+		0AD9B75528620938005ACFD7 /* ProjectModelWriteTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelWriteTest.swift; sourceTree = "<group>"; };
+		0AD9B75728621782005ACFD7 /* Result+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Throws.swift"; sourceTree = "<group>"; };
+		0AD9B75928624204005ACFD7 /* Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
@@ -287,6 +296,7 @@
 				0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */,
 				0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */,
 				0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */,
+				0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */,
 				0A48ACD92818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */,
 				0A48ACD7281822680044E06E /* FirebaseCrashlytics in Frameworks */,
@@ -349,6 +359,7 @@
 			children = (
 				0A45622E283E327500BA8D21 /* README.md */,
 				0A2F32F02836CA0500D04A1C /* ProjectModel.swift */,
+				0AD9B75328620821005ACFD7 /* ProjectModel+Write.swift */,
 				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
 				0A7FC4142844E0670097888A /* Status.swift */,
@@ -369,6 +380,7 @@
 			isa = PBXGroup;
 			children = (
 				0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */,
+				0AD9B75528620938005ACFD7 /* ProjectModelWriteTest.swift */,
 				0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */,
 				0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */,
 				0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */,
@@ -383,6 +395,7 @@
 		0A07D764281295B500B6F9A2 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				0AD9B75928624204005ACFD7 /* Authentication.swift */,
 				0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */,
 				0A07D7652812960500B6F9A2 /* EmailAuthView.swift */,
 			);
@@ -529,6 +542,7 @@
 				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
 				0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */,
 				0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */,
+				0AD9B75728621782005ACFD7 /* Result+Throws.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -717,6 +731,7 @@
 				0A2F32F52837BF2F00D04A1C /* Realm */,
 				0A2F32F72837BF2F00D04A1C /* RealmSwift */,
 				0A4995D4286099D800E571FB /* Algorithms */,
+				0A4995DA2861DBE600E571FB /* Kingfisher */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -796,6 +811,7 @@
 				0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */,
 				0A4995D3286099D800E571FB /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				0A4995D92861DBE600E571FB /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -891,6 +907,7 @@
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A4995BF2858D00100E571FB /* Tag.swift in Sources */,
+				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
@@ -936,9 +953,11 @@
 				0A4995C12858D05D00E571FB /* FirebaseTagName.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */,
+				0AD9B75428620821005ACFD7 /* ProjectModel+Write.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
+				0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -947,6 +966,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A34C18D2846030800BEDC7C /* FirebaseCommentTest.swift in Sources */,
+				0AD9B75628620938005ACFD7 /* ProjectModelWriteTest.swift in Sources */,
 				0A07D76028104BF000B6F9A2 /* FirebaseGeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
@@ -1324,6 +1344,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		0A4995D92861DBE600E571FB /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 		0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
@@ -1377,6 +1405,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A4995D3286099D800E571FB /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
+		};
+		0A4995DA2861DBE600E571FB /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A4995D92861DBE600E571FB /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		0A4DC77827F2445200712518 /* MapboxMaps */ = {
 			isa = XCSwiftPackageProductDependency;

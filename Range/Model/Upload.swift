@@ -16,6 +16,8 @@ class Upload: Object {
     @Persisted var name: String
     // description
     @Persisted var uploadDescription: String
+    /// tags attached to the upload, ordered
+    @Persisted var tags: List<Tag>
     // TODO: 44 correlation
 
     /// Default initializer required by Realm.

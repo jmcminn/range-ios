@@ -10,7 +10,7 @@ class FirebaseTagNameRealmSyncTest: XCTestCase {
 
     override func setUpWithError() throws {
         // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(projectId: UUID().uuidString, inMemory: true)
+        model = try ProjectModel(userId: "user1", projectId: UUID().uuidString, inMemory: true)
         realm = model.mainRealm
     }
 

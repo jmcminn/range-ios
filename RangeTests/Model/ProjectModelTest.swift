@@ -8,7 +8,7 @@ class ProjectModelTest: XCTestCase {
 
     override func setUpWithError() throws {
         // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(projectId: UUID().uuidString, inMemory: true)
+        model = try ProjectModel(userId: "user1", projectId: UUID().uuidString, inMemory: true)
     }
 
     override func tearDownWithError() throws {}
@@ -17,10 +17,12 @@ class ProjectModelTest: XCTestCase {
         XCTAssertFalse(model.isProjectDownloaded())
     }
 
-    func testIsProjectDownloaded_summaryPresent() throws {
+    func testIsProjectDownloaded_summaryAndCurrentUserPresent() throws {
         try model.mainRealm.write {
             model.mainRealm.add(ProjectSummary(id: model.projectId, center:
                 CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+            model.mainRealm.add(Participant(id: "user1", firstName: "", lastName: "",
+                                            avatarUrl: nil, email: ""))
         }
         XCTAssertTrue(model.isProjectDownloaded())
     }
@@ -38,10 +40,29 @@ class ProjectModelTest: XCTestCase {
         }
     }
 
-    func testLoadProject_summaryPresent() throws {
+    func testLoadProject_noCurrentUser() throws {
         try model.mainRealm.write {
             model.mainRealm.add(ProjectSummary(id: model.projectId, center:
                 CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+        }
+        XCTAssertThrowsError(
+            try model.loadProject()
+        ) { error in
+            guard
+                let error = error as? ModelError
+            else {
+                XCTFail("unexpected error: \(error)"); return
+            }
+            XCTAssertEqual(error, ModelError.currentUserNotFound)
+        }
+    }
+
+    func testLoadProject_summaryAndCurrentUserPresent() throws {
+        try model.mainRealm.write {
+            model.mainRealm.add(ProjectSummary(id: model.projectId, center:
+                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+            model.mainRealm.add(Participant(id: "user1", firstName: "", lastName: "",
+                                            avatarUrl: nil, email: ""))
         }
         try model.loadProject()
         XCTAssertEqual(model.projectSummary.id, model.projectId)

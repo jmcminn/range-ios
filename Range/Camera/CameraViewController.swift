@@ -11,7 +11,7 @@ import UIKit
 /// It also owns and manages a CameraService and uses it to actually take photos
 class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
-    var onPhotoTaken: ((UIImage) -> Void)?
+    var onPhotoTaken: ((Data, UIImage) -> Void)?
     var modalCardDisplayController: ModalCardDisplayController?
     private let cameraService = CameraService()
 
@@ -34,7 +34,7 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
         guard let onPhotoTaken = onPhotoTaken else { return }
         cameraService.capturePhoto { [weak self] data in
             if let data = data, let image = UIImage(data: data) {
-                onPhotoTaken(image)
+                onPhotoTaken(data, image)
             } else {
                 self?.showCapturePhotoErrorAlert()
             }

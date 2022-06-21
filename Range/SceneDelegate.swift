@@ -24,8 +24,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
 
         // check whether user is authenticated
-        if Auth.auth().currentUser != nil {
-            loadAndShowProject()
+        if let user = Auth.auth().currentUser {
+            getUserId(forUser: user) { result in
+                switch result {
+                case .failure:
+                    self.showAuth()
+                case let .success(userId):
+                    self.loadAndShowProject(userId: userId)
+                }
+            }
         } else {
             showAuth()
         }
@@ -33,8 +40,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Start the auth flow for authenticating the user
     private func showAuth() {
-        let authFlowController = AuthFlowController { [weak self] in
-            self?.loadAndShowProject(initializeWindow: false)
+        let authFlowController = AuthFlowController { [weak self] userId in
+            self?.loadAndShowProject(userId: userId, initializeWindow: false)
         }
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
@@ -45,7 +52,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// Loads and shows the project or displays the alert view if loading project failed
     /// - Parameters:
     ///     - initializeWindow - whether the window needs to be initialized (was never made key and visible) or is there a view controller already there (like showing project from the auth flow)
-    private func loadAndShowProject(initializeWindow: Bool = true) {
+    private func loadAndShowProject(userId: String, initializeWindow: Bool = true) {
         if initializeWindow {
             window!.rootViewController = LaunchScreenViewController()
             window!.makeKeyAndVisible()
@@ -55,7 +62,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         Task {
             do {
-                try await createProjectModel(projectId: projectId)
+                try await createProjectModel(userId: userId, projectId: projectId)
                 if let model = projectModel {
                     try self.showProject(model: model)
                 }
@@ -91,10 +98,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// This can throw if project model cannot be loaded
     ///
     /// - Parameters:
+    ///     - userId: range id of the logged in user
     ///     - projectId: id of the project
     /// - Returns: loaded ProjectModel
-    private func createProjectModel(projectId: String) async throws {
-        let model = try ProjectModel(projectId: projectId)
+    private func createProjectModel(userId: String, projectId: String) async throws {
+        let model = try ProjectModel(userId: userId, projectId: projectId)
 
         let firebaseSync = ProjectModelFirebaseSync(model: model)
         try await firebaseSync.start()

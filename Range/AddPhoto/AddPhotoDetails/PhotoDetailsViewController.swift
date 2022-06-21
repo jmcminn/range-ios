@@ -86,8 +86,7 @@ class PhotoDetailsViewController: UIViewController {
     }
 
     override func viewDidLoad() {
-        // TODO: 73 dark only?
-//        overrideUserInterfaceStyle = .dark
+        overrideUserInterfaceStyle = .dark
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         contentView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         navigationController?.isNavigationBarHidden = true

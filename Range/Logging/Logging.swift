@@ -8,6 +8,8 @@ extension Logger {
 
     /// App assets related logs (errors loading images)
     static let assets = Logger(subsystem: subsystem, category: "assets")
+    /// authentication logs
+    static let auth = Logger(subsystem: subsystem, category: "auth")
     /// camera
     static let camera = Logger(subsystem: subsystem, category: "camera")
     /// Everything mapbox

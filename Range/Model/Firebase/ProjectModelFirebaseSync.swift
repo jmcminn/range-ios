@@ -89,10 +89,12 @@ class ProjectModelFirebaseSync {
         // do this in parallel
         async let projectSummaryRequest = projectSummaryReference._observeSingleEvent(.value)
         async let canvasesRequest = canvasesReference._observeSingleEvent(.value)
+        async let participantsRequest = participantsReference._observeSingleEvent(.value)
 
         // await for results
         let projectSummarySnapshot = try await projectSummaryRequest
         let canvases = try await canvasesRequest
+        let participants = try await participantsRequest
 
         // store in the db
         try await _asyncOnFirebaseSyncQueue { [weak self] in
@@ -105,6 +107,11 @@ class ProjectModelFirebaseSync {
                     guard let snapshot = canvasSnapshot as? DataSnapshot else { break }
                     let canvas = try snapshot.data(as: FirebasePDFCanvas.self)
                     try canvas.upsert(self.syncRealm)
+                }
+                for participantSnapshot in participants.children {
+                    guard let snapshot = participantSnapshot as? DataSnapshot else { break }
+                    let participant = try snapshot.data(as: FirebaseParticipant.self)
+                    try participant.upsert(self.syncRealm)
                 }
             }
         }

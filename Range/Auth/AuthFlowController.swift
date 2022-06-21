@@ -5,14 +5,14 @@ import UIKit
 
 /// The flow controller for authentication
 final class AuthFlowController: UIViewController {
-    /// callback for when authentication has successfully finished
-    let onAuthenticated: () -> Void
+    /// callback for when authentication has successfully finished, called with the Range userId
+    let onAuthenticated: (String) -> Void
 
     /// Initiates with callback for resolving the flow.
     /// - Important: Please note that this flow can only be resolved after the user successfully authenticates
     /// - Parameters:
-    ///   - onAuthenticated: callback for resolving the flow
-    init(onAuthenticated: @escaping () -> Void) {
+    ///   - onAuthenticated: callback for resolving the flow, called with the Range userId
+    init(onAuthenticated: @escaping (String) -> Void) {
         self.onAuthenticated = onAuthenticated
         super.init(nibName: nil, bundle: nil)
     }
@@ -49,13 +49,25 @@ final class AuthFlowController: UIViewController {
     private func authenticate(byEmailAndPassword model: EmailAuthViewModel) {
         model.isAuthenticating = true
         Auth.auth()
-            .signIn(withEmail: model.email, password: model.password) { [weak self] _, error in
+            .signIn(withEmail: model.email, password: model.password) { [weak self] result, error in
+                guard let self = self else { return }
                 model.isAuthenticating = false
                 guard error == nil else {
-                    self?.showAuthenticationError(withMessage: error!.localizedDescription)
+                    self.showAuthenticationError(withMessage: error!.localizedDescription)
                     return
                 }
-                self?.onAuthenticated()
+                guard let user = result?.user else {
+                    self.showAuthenticationError(withMessage: "Unknown error")
+                    return
+                }
+                getUserId(forUser: user) { result in
+                    switch result {
+                    case let .failure(error):
+                        self.showAuthenticationError(withMessage: error.localizedDescription)
+                    case let .success(userId):
+                        self.onAuthenticated(userId)
+                    }
+                }
             }
     }
 
