@@ -338,7 +338,7 @@ extension PhotoDetailsViewController {
 
     private func buildTagsHeaderView() {
         tagsHeaderVC = PhotoDetailsTagsHeaderViewController(viewModel: tagsViewModel)
-//        tagsHeaderVC.searchView.delegate = self
+        tagsHeaderVC.searchView.textField.returnKeyType = .done
         tagsHeaderVC.searchView.addDelegate(self)
     }
 
@@ -427,6 +427,17 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
 
     func searchView(_: SearchView, textDidChange text: String) {
         tagsViewModel.filter(by: text)
+    }
+
+    func searchViewReturnButtonTapped(_ searchView: SearchView) {
+        // if the filter is entered and the only option is to add new tag - add it
+        if !tagsViewModel.filterStringTrimmed.isEmpty, tagsViewModel.filteredTags.isEmpty {
+            let tag = TagViewModel(name: tagsViewModel.filterStringTrimmed)
+            tagsViewModel.add(tag: tag)
+            tagsViewModel.set(tag: tag, selected: true)
+            tagsViewModel.filter(by: "")
+        }
+        searchView.endEditing(true)
     }
 
     /// on tags scroll adjust the header bottom stroke visibility

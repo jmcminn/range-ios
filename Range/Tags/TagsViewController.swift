@@ -53,7 +53,7 @@ extension TagsViewController: TagsViewModelDelegate {
     }
 
     var showFilteredTags: Bool {
-        !viewModel.filterString.isEmpty
+        !viewModel.filterStringTrimmed.isEmpty
     }
 }
 
@@ -99,7 +99,7 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
         if isCreateTagRow(indexPath) {
-            cell.displayCreateNewTag(viewModel.filterString)
+            cell.displayCreateNewTag(viewModel.filterStringTrimmed)
         } else {
             cell.tagViewModel = tag(for: indexPath)
         }

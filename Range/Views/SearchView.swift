@@ -11,6 +11,8 @@ import UIKit
     @objc optional func searchViewActivated(_: SearchView)
     /// Invoked whenever the text in search view changes.
     @objc optional func searchView(_: SearchView, textDidChange: String)
+    /// Invoked when the return button was hit on the keyboard
+    @objc optional func searchViewReturnButtonTapped(_: SearchView)
 }
 
 /// Search view is a styled search field wrapped in a view with a border and a search icon
@@ -125,5 +127,10 @@ extension SearchView: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_: UITextField) -> Bool {
         delegates.allObjects.forEach { $0.searchViewActivated?(self) }
         return true
+    }
+
+    func textFieldShouldReturn(_: UITextField) -> Bool {
+        delegates.allObjects.forEach { $0.searchViewReturnButtonTapped?(self) }
+        return false
     }
 }
