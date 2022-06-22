@@ -190,11 +190,14 @@ extension PhotoDetailsViewController {
     /// after new mode was set
     private func newModeDidSet() {
         if mode == .description {
-            // if nothing entered into description then begin editing (this will also collapse
-            // the header)
             // this needs to happen after the mode was set so the keyboard handling works for
             // description
-            if !descriptionView.textView.hasText {
+
+            // if nothing entered into description or description is in full view (headers collapsed)
+            // then begin editing (this will also collapse the header)
+            if !descriptionView.textView.hasText ||
+                descriptionHeaderExpander.headersState.allCollapsed
+            {
                 descriptionView.textView.becomeFirstResponder()
             }
         }
