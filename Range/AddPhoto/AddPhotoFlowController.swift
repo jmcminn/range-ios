@@ -126,18 +126,46 @@ class AddPhotoFlowController {
 
     /// Store the photo location, save all the data and stop the flow
     private func onPhotoLocationSelected() {
-        // TODO: 73 disable the UI for a while...
+        // show activity view (a spinner) that covers the screen disabling any user interactions
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .black.withAlphaComponent(0.2)
+        canvasContainer.view.addSubview(activityView)
+        activityView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        activityView.startAnimating()
+
         geometryId = pinsHandler?.selectedPin?.id
         Task {
             do {
+                // hide the spinner when data store call is finished
+                defer {
+                    DispatchQueue.main.async {
+                        activityView.removeFromSuperview()
+                    }
+                }
                 try await _storeData()
+                DispatchQueue.main.async {
+                    self.dismissPhotoLocationSelectionUI()
+                    self.stop()
+                }
             } catch {
-                // TODO: 73 here log + show error
-                Logger.model.error("xxx: \(error.localizedDescription, privacy: .public)")
+                Logger.model.error("photo location data store error: \(error.localizedDescription, privacy: .public)")
+                DispatchQueue.main.async {
+                    self.showError(withMessage: error.localizedDescription)
+                }
             }
         }
-        dismissPhotoLocationSelectionUI()
-        stop()
+    }
+
+    private func showError(withMessage message: String) {
+        let alertController = UIAlertController(
+            title: "Add photo error",
+            message: message,
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        canvasContainer.present(alertController, animated: true)
     }
 
     /// Async function to store the new photo data in the realm DB
