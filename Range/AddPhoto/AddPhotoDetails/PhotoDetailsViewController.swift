@@ -131,6 +131,8 @@ class PhotoDetailsViewController: UIViewController {
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
+
+        installHorizontalSwipeRecognizers()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -200,6 +202,26 @@ extension PhotoDetailsViewController {
             {
                 descriptionView.textView.becomeFirstResponder()
             }
+        }
+    }
+
+    private func installHorizontalSwipeRecognizers() {
+        let leftSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(onHorizontalSwipe(_:)))
+        leftSwipeRecognizer.direction = .left
+        view.addGestureRecognizer(leftSwipeRecognizer)
+        let rightSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(onHorizontalSwipe(_:)))
+        rightSwipeRecognizer.direction = .right
+        view.addGestureRecognizer(rightSwipeRecognizer)
+    }
+
+    @objc private func onHorizontalSwipe(_ sender: UISwipeGestureRecognizer) {
+        if sender.direction == .left {
+            mode = .description
+            headerView.tagsDescriptionSegmentedControl.setSelectedSegmentIndex(1, animated: true)
+        }
+        if sender.direction == .right {
+            mode = .tags
+            headerView.tagsDescriptionSegmentedControl.setSelectedSegmentIndex(0, animated: true)
         }
     }
 }

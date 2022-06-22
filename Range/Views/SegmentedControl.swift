@@ -77,7 +77,7 @@ class SegmentedControl: UIView {
     }
 
     /// updates the current selected index
-    private func setSelectedSegmentIndex(_ index: Int, animated: Bool) {
+    func setSelectedSegmentIndex(_ index: Int, animated: Bool) {
         selectedSegmentIndex = index
         /// update the configuration based on the selected index
         updateButtonsSelectedStyle()
