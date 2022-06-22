@@ -183,7 +183,7 @@ extension PhotoDetailsViewController {
             tagsHeaderExpander.activate(headersInputMetrics: [headerInputMetrics(), tagsHeaderInputMetrics()])
         } else {
             descriptionHeaderExpander.activate(headersInputMetrics: [headerInputMetrics()])
-            descriptionHeaderExpander.bottomContentEdgeInset = 0
+            descriptionHeaderExpander.bottomContentEdgeInset = 16
         }
     }
 
@@ -318,7 +318,7 @@ extension PhotoDetailsViewController {
         descriptionView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
-            self.descriptionViewBottomConstraint = make.bottom.equalToSuperview().constraint
+            self.descriptionViewBottomConstraint = make.bottom.equalToSuperview().inset(16).constraint
         }
         bottomBar.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -508,16 +508,11 @@ extension PhotoDetailsViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_: UITextView) {
         // collapse header when starting editing
         headerExpander.setFirstExpandedHeader(1, animated: true)
-        descriptionView.contentHugging = false
     }
 
     func textViewDidChange(_: UITextView) {
         // back to collapsed when typing
         headerExpander.setFirstExpandedHeader(1, animated: true)
-    }
-
-    func textViewDidEndEditing(_: UITextView) {
-        descriptionView.contentHugging = true
     }
 }
 
@@ -539,7 +534,7 @@ extension PhotoDetailsViewController {
                 let scrollView = descriptionView.textView
                 let scrollRect = scrollView.superview!.convert(scrollView.frame, to: view.window)
                 // Find out how much the keyboard overlaps our scroll view
-                let keyboardOverlap = scrollRect.maxY - endRect.origin.y
+                let keyboardOverlap = scrollRect.maxY - endRect.origin.y + 16
 
                 descriptionViewBottomConstraint?.update(inset: keyboardOverlap)
                 descriptionHeaderExpander.bottomContentEdgeInset = keyboardOverlap
@@ -556,8 +551,8 @@ extension PhotoDetailsViewController {
     /// Reset description constraints when the keyboard hides
     @objc func keyboardWillHide(notification _: NSNotification) {
         if mode == .description {
-            descriptionViewBottomConstraint?.update(inset: 0)
-            descriptionHeaderExpander.bottomContentEdgeInset = 0
+            descriptionViewBottomConstraint?.update(inset: 16)
+            descriptionHeaderExpander.bottomContentEdgeInset = 16
         }
     }
 }

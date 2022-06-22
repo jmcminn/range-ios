@@ -15,13 +15,6 @@ class TextView: UIView {
     /// callback for Done accessory button
     var onDone: (() -> Void)?
 
-    /// whether the bordered background should hug the text (`true`) or extend to the view bounds (`false`)
-    var contentHugging: Bool = true {
-        didSet {
-            setNeedsLayout()
-        }
-    }
-
     init(placeholderText: String) {
         super.init(frame: .zero)
 
@@ -58,21 +51,14 @@ class TextView: UIView {
             : UIColor.Neutral_03.cgColor
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        /// adapt the background height to content size if contentHugging is enabled
-        let backgroundHeight = contentHugging
-            ? max(textView.contentSize.height, 110)
-            : bounds.height
-        backgroundView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: backgroundHeight)
-    }
-
     private func setupBackgroundView() {
         backgroundView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         backgroundView.layer.cornerRadius = 16
         backgroundView.layer.borderWidth = 1
         addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     private func setupTextView() {
