@@ -5,6 +5,8 @@ import Foundation
 class TagsViewModel: NSObject {
     /// all tags whether selected or not
     private(set) var allTags: [TagViewModel]
+    /// up to 10 recently applied tags for current project
+    private(set) var lastAppliedTags: [TagViewModel]
     /// a subset of all tags storing selected tags in order they were being selected
     private(set) var selectedTags: [TagViewModel] = []
     /// filter to be used on `allTags` to derive `filteredTags`
@@ -25,8 +27,14 @@ class TagsViewModel: NSObject {
     init(model: ProjectModel) {
         let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
         allTags = model.mainRealm.objects(Tag.self)
-            .map { TagViewModel(id: $0.id, name: $0.name) }
+            .map { TagViewModel(id: $0.id, name: $0.name, lastApplied: $0.lastApplied) }
             .sorted(using: nameSort)
+
+        lastAppliedTags = Array(allTags
+            .filter { $0.lastApplied != nil }
+            .sorted(by: { $0.lastApplied! > $1.lastApplied! })
+            .prefix(10))
+
         super.init()
     }
 
@@ -37,6 +45,8 @@ class TagsViewModel: NSObject {
     }
 
     /// Mark tag as selected/deselected and notify delegates
+    /// - Warning: TagsViewModel operates on references, so the tag passed to this method needs to be obtained from the
+    /// viewmodel alltags, selectedtags, etc... and not a new object
     func set(tag: TagViewModel, selected: Bool) {
         tag.selected = selected
 
@@ -108,14 +118,24 @@ class TagsViewModel: NSObject {
 class TagViewModel: NSObject {
     let id: String
     @objc let name: String
+    let lastApplied: TimeInterval?
     /// for searching we store a version of string that is diacriticInsensitive and caseInsensitive
     let searchName: String
     @objc fileprivate(set) dynamic var selected: Bool = false
 
     // TODO: 44 tag with local id should be marked as "local" when saving to realm
-    init(id: String = UUID().uuidString.lowercased(), name: String) {
+    /// - Parameters:
+    ///   - id: if not provided then automatically created for new tags
+    ///   - name: name of the tag
+    ///   - lastApplied: if not provided then set to 0 for new tags, meaning not applied yet
+    init(
+        id: String = UUID().uuidString.lowercased(),
+        name: String,
+        lastApplied: TimeInterval? = nil
+    ) {
         self.id = id
         self.name = name
+        self.lastApplied = lastApplied
         searchName = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
     }
 

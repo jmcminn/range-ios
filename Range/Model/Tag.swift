@@ -7,6 +7,9 @@ class Tag: Object {
     @Persisted(primaryKey: true) var id: String
     // name
     @Persisted var name: String
+    /// timestamp (since 1970), for tracking recent tags used by a user on this device for this project.
+    /// Not synchronized with backend
+    @Persisted var lastApplied: TimeInterval?
 
     /// Default initializer required by Realm.
     override init() {
@@ -14,9 +17,10 @@ class Tag: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String) {
+    init(id: String, name: String, lastApplied: TimeInterval? = nil) {
         super.init()
         self.id = id
         self.name = name
+        self.lastApplied = lastApplied
     }
 }

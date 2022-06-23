@@ -44,13 +44,26 @@ extension UIColor {
 }
 
 extension UIColor {
+    /// Color that automatically adapts to light/dark
     static func dynamicColor(light: UIColor, dark: UIColor) -> UIColor {
         UIColor { $0.userInterfaceStyle == .dark ? dark : light }
     }
 }
 
 extension Color {
+    /// Color that automatically adapts to light/dark
     static func dynamicColor(light: UIColor, dark: UIColor) -> Color {
         Color(UIColor.dynamicColor(light: light, dark: dark))
+    }
+}
+
+extension UITraitEnvironment {
+    /// shortcut for `traitCollection.userInterfaceStyle == .dark ? dark : light`
+    ///
+    /// For cases where UIColor.dynamicColor doesn't work - observed that it doesn't work when manually overriding userInterfaceStyle
+    ///
+    /// - Warning: Doesn't automatically change color!!!
+    func chooseColor(light: UIColor, dark: UIColor) -> UIColor {
+        traitCollection.userInterfaceStyle == .dark ? dark : light
     }
 }

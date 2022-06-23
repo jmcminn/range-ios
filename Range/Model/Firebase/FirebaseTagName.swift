@@ -19,6 +19,12 @@ struct FirebaseTagName: Codable, FirebaseToRealmSyncable {
 
     /// Add or update the tag
     func upsert(_ realm: Realm) throws {
-        realm.add(Tag(id: id, name: name), update: .modified)
+        let tag = Tag(id: id, name: name)
+
+        // if the tag has local lastApplied keep it
+        if let existingTag = realm.object(ofType: Tag.self, forPrimaryKey: id) {
+            tag.lastApplied = existingTag.lastApplied
+        }
+        realm.add(tag, update: .modified)
     }
 }

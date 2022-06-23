@@ -2,15 +2,52 @@ import UIKit
 
 /// A table view with 3 sections: recent, popular and all project tags
 class TagsViewController: UIViewController {
+    /// Sections for not filtered view
+    private enum Section {
+        case recent
+        case popular
+        case all
+
+        func localizedTitle() -> String {
+            switch self {
+            case .recent:
+                return String(localized: "Recent Tags")
+            case .popular:
+                return String(localized: "Popular Tags")
+            case .all:
+                return String(localized: "All Tags (A-Z)")
+            }
+        }
+    }
+
     unowned let viewModel: TagsViewModel
     let tableView: UITableView
+    private let notFilteredSections: [Section]
+    /// if the "show more" was enabled for given section. "Show more" button shows when there's more
+    /// than 4 recent/popular tags, but once user selects this option it shows all of the recent/popular tags
+    /// and doesn't allow to hide more
+    private var showingMore: [Section: Bool] = [:]
+
+    /// By default show only up to this number of recent tags and add "show more" button if there's more
+    private let showLessTagsLimit = 4
 
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
         tableView = UITableView(frame: .zero, style: .grouped) // grouped so the section headers don't float
+        notFilteredSections = TagsViewController.getNotFilteredSections(viewModel: viewModel)
         super.init(nibName: nil, bundle: nil)
 
         viewModel.addDelegate(self)
+    }
+
+    private static func getNotFilteredSections(viewModel: TagsViewModel) -> [Section] {
+        var sections: [Section] = []
+        if !viewModel.lastAppliedTags.isEmpty {
+            sections.append(.recent)
+        }
+        sections.append(.all)
+
+        return sections
     }
 
     override func viewDidLoad() {
@@ -24,6 +61,7 @@ class TagsViewController: UIViewController {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.register(TagTableViewCell.self, forCellReuseIdentifier: "TagCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ShowMoreCell")
         view.addSubview(tableView)
 
         tableView.snp.makeConstraints { make in
@@ -65,45 +103,95 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
         showFilteredTags && indexPath.row == viewModel.filteredTags.count
     }
 
+    /// Return the appropriate tags from view model for given section number
+    func tags(inNonFilteredSection section: Int) -> [TagViewModel] {
+        switch notFilteredSections[section] {
+        case .recent:
+            return viewModel.lastAppliedTags
+        case .popular:
+            return []
+        case .all:
+            return viewModel.allTags
+        }
+    }
+
+    /// whether to show "show more" button for given section (and limit the number of tags to `showLessTagsLimit`)
+    func showMoreButtonForSection(sectionNumber: Int) -> Bool {
+        // show all tags for .all section
+        let section = notFilteredSections[sectionNumber]
+        guard section != .all else { return false }
+
+        let tagsCount = tags(inNonFilteredSection: sectionNumber).count
+
+        if tagsCount <= showLessTagsLimit {
+            return false
+        } else {
+            if showingMore[section] ?? false {
+                return false
+            } else {
+                return true
+            }
+        }
+    }
+
+    /// for not filtered tags is it the "show more" button row
+    func isShowMoreRow(_ indexPath: IndexPath) -> Bool {
+        showMoreButtonForSection(sectionNumber: indexPath.section) &&
+            indexPath.row == showLessTagsLimit
+    }
+
+    /// Convenience method to get tag based on IndexPath
     func tag(for indexPath: IndexPath) -> TagViewModel {
         showFilteredTags
             ? viewModel.filteredTags[indexPath.row]
-            : viewModel.allTags[indexPath.row]
+            : tags(inNonFilteredSection: indexPath.section)[indexPath.row]
     }
 
     func numberOfSections(in _: UITableView) -> Int {
-        1
+        showFilteredTags
+            ? 1
+            : notFilteredSections.count
     }
 
-    func tableView(_: UITableView, titleForHeaderInSection _: Int) -> String? {
+    func tableView(_: UITableView, titleForHeaderInSection section: Int) -> String? {
         // no header for filtered tags
         guard !showFilteredTags else { return nil }
-//        if section == 0 {
-//            return String(localized: "Recent Tags")
-//        } else if section == 1 {
-//            return String(localized: "Popular Tags")
-//        } else {
-        return String(localized: "All Tags (A-Z)")
-//        }
+        return notFilteredSections[section].localizedTitle()
     }
 
-    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-//        1
-        showFilteredTags
-            ? // if there's no direct match in filtered tags then add one more row for creating tag
-            (viewModel.filteredTagsContainDirectMatch ? viewModel.filteredTags.count : viewModel.filteredTags
-                .count + 1)
-            : viewModel.allTags.count
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if showFilteredTags {
+            // if there's no direct match in filtered tags then add one more row for creating tag
+            return viewModel.filteredTagsContainDirectMatch
+                ? viewModel.filteredTags.count
+                : viewModel.filteredTags.count + 1
+        }
+        if showMoreButtonForSection(sectionNumber: section) {
+            return showLessTagsLimit + 1
+        } else {
+            return tags(inNonFilteredSection: section).count
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
         if isCreateTagRow(indexPath) {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
             cell.displayCreateNewTag(viewModel.filterStringTrimmed)
+            return cell
+        } else if isShowMoreRow(indexPath) {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ShowMoreCell", for: indexPath)
+            cell.textLabel?.text = "Show more"
+            cell.textLabel?.textAlignment = .center
+            cell.textLabel?.textColor = .Primary_Blue_04
+            let font = UIFont.preferredFont(forTextStyle: .subheadline)
+            let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
+            cell.textLabel?.font = boldFont
+            return cell
         } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
             cell.tagViewModel = tag(for: indexPath)
+            return cell
         }
-        return cell
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -111,8 +199,9 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.addBackgroundWithBorder(
             forCell: cell,
             forRowAt: indexPath,
-            backgroundColor: .dynamicColor(light: .Neutral_02, dark: .Neutral_09),
-            borderColor: .dynamicColor(light: .Neutral_03, dark: .Neutral_08),
+            // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
+            backgroundColor: chooseColor(light: .Neutral_02, dark: .Neutral_09),
+            borderColor: chooseColor(light: .Neutral_03, dark: .Neutral_08),
             selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
         )
     }
@@ -146,6 +235,18 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
             // and remove the filter
             viewModel.filter(by: "")
             tableView.deselectRow(at: indexPath, animated: true)
+        } else if isShowMoreRow(indexPath) {
+            showingMore[notFilteredSections[indexPath.section]] = true
+            // insert rows from
+            tableView.beginUpdates()
+            // reload the "show more" row
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+            // insert remaining rows
+            let indexPaths =
+                (showLessTagsLimit + 1 ..< tags(inNonFilteredSection: indexPath.section).count)
+                    .map { IndexPath(row: $0, section: indexPath.section) }
+            tableView.insertRows(at: indexPaths, with: .bottom)
+            tableView.endUpdates()
         } else {
             let tag = tag(for: indexPath)
             viewModel.set(tag: tag, selected: !tag.selected)

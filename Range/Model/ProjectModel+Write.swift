@@ -98,12 +98,14 @@ extension ProjectModel {
         let localUploadURL = try await _asyncStoreImage(data, key: uploadId)
         let upload = Upload(
             id: uploadId,
-            timestamp: TimeInterval(),
+            timestamp: Date.now.timeIntervalSince1970,
             url: localUploadURL,
             name: "",
             description: description
         )
-        let tags = tagViewModels.map { Tag(id: $0.id, name: $0.name) }
+        let tags = tagViewModels.map {
+            Tag(id: $0.id, name: $0.name, lastApplied: Date.now.timeIntervalSince1970)
+        }
 
         try await _asyncWrite { realm in
             guard let user = realm.object(ofType: Participant.self,
