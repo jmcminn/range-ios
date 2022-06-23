@@ -58,6 +58,7 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
             name: name,
             description: uploadDescription
         )
+        // TODO: 44 add tags for upload, and update tag.uploads when upserting
         upload.author = author
         realm.add(upload, update: .modified)
         collaboration.uploads.insert(upload)

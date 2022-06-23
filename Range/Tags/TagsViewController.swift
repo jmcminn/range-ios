@@ -45,6 +45,9 @@ class TagsViewController: UIViewController {
         if !viewModel.lastAppliedTags.isEmpty {
             sections.append(.recent)
         }
+        if !viewModel.mostUsedTags.isEmpty {
+            sections.append(.popular)
+        }
         sections.append(.all)
 
         return sections
@@ -109,7 +112,7 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
         case .recent:
             return viewModel.lastAppliedTags
         case .popular:
-            return []
+            return viewModel.mostUsedTags
         case .all:
             return viewModel.allTags
         }
@@ -136,8 +139,9 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
 
     /// for not filtered tags is it the "show more" button row
     func isShowMoreRow(_ indexPath: IndexPath) -> Bool {
-        showMoreButtonForSection(sectionNumber: indexPath.section) &&
-            indexPath.row == showLessTagsLimit
+        !showFilteredTags
+            && showMoreButtonForSection(sectionNumber: indexPath.section)
+            && indexPath.row == showLessTagsLimit
     }
 
     /// Convenience method to get tag based on IndexPath
@@ -180,6 +184,7 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         } else if isShowMoreRow(indexPath) {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ShowMoreCell", for: indexPath)
+            cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
             cell.textLabel?.text = "Show more"
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.textColor = .Primary_Blue_04

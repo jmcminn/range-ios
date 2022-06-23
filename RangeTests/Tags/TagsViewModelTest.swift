@@ -120,4 +120,32 @@ class TagsViewModelTest: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(viewModel.filteredTags.first { $0.id == "t2" }).selected)
         XCTAssertEqual(viewModel.selectedTags, [t2])
     }
+
+    func testMostUsedTags() throws {
+        let upload1 = Upload(
+            id: "upload1",
+            timestamp: 0,
+            url: URL(fileURLWithPath: "//test"),
+            name: "",
+            description: ""
+        )
+        let upload2 = Upload(
+            id: "upload2",
+            timestamp: 0,
+            url: URL(fileURLWithPath: "//test"),
+            name: "",
+            description: ""
+        )
+        try realm.write {
+            realm.add([upload1, upload2])
+            realm.object(ofType: Tag.self, forPrimaryKey: "t1")!.uploads.insert(upload1)
+            realm.object(ofType: Tag.self, forPrimaryKey: "t2")!.uploads.insert(upload1)
+            realm.object(ofType: Tag.self, forPrimaryKey: "t3")!.uploads.insert(upload1)
+            realm.object(ofType: Tag.self, forPrimaryKey: "t3")!.uploads.insert(upload2)
+        }
+
+        let viewModel = TagsViewModel(model: model)
+        XCTAssertEqual(viewModel.mostUsedTags.map(\.id), ["t3", "t1", "t2"])
+        XCTAssertEqual(viewModel.mostUsedTags.map(\.usageCount), [2, 1, 1])
+    }
 }

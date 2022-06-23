@@ -121,6 +121,7 @@ extension ProjectModel {
             realm.add(upload)
             realm.add(tags, update: .modified)
             upload.tags.append(objectsIn: tags)
+            tags.forEach { $0.uploads.insert(upload) }
             upload.author = user
             collaboration.uploads.insert(upload)
         }

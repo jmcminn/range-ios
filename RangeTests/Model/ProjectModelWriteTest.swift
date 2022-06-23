@@ -164,5 +164,13 @@ class ProjectModelWriteTest: XCTestCase {
         XCTAssertEqual(upload.uploadDescription, "upload description")
         XCTAssertTrue(upload.url.isFileURL)
         XCTAssertTrue(model.localPhotosCache.isCached(forKey: upload.id))
+        XCTAssertEqual(
+            try XCTUnwrap(realm.object(ofType: Tag.self, forPrimaryKey: "tag1")).uploads.first,
+            upload
+        )
+        XCTAssertEqual(
+            try XCTUnwrap(realm.object(ofType: Tag.self, forPrimaryKey: "tag1")).uploads.first,
+            upload
+        )
     }
 }

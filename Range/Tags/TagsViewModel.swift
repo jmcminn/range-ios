@@ -7,6 +7,8 @@ class TagsViewModel: NSObject {
     private(set) var allTags: [TagViewModel]
     /// up to 10 recently applied tags for current project
     private(set) var lastAppliedTags: [TagViewModel]
+    /// up to 10 most applied tags for current project
+    private(set) var mostUsedTags: [TagViewModel]
     /// a subset of all tags storing selected tags in order they were being selected
     private(set) var selectedTags: [TagViewModel] = []
     /// filter to be used on `allTags` to derive `filteredTags`
@@ -27,12 +29,17 @@ class TagsViewModel: NSObject {
     init(model: ProjectModel) {
         let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
         allTags = model.mainRealm.objects(Tag.self)
-            .map { TagViewModel(id: $0.id, name: $0.name, lastApplied: $0.lastApplied) }
+            .map { TagViewModel(id: $0.id, name: $0.name, lastApplied: $0.lastApplied, usageCount: $0.usageCount) }
             .sorted(using: nameSort)
 
         lastAppliedTags = Array(allTags
             .filter { $0.lastApplied != nil }
             .sorted(by: { $0.lastApplied! > $1.lastApplied! })
+            .prefix(10))
+
+        mostUsedTags = Array(allTags
+            .filter { $0.usageCount > 0 }
+            .sorted(by: { $0.usageCount >= $1.usageCount })
             .prefix(10))
 
         super.init()
@@ -119,6 +126,8 @@ class TagViewModel: NSObject {
     let id: String
     @objc let name: String
     let lastApplied: TimeInterval?
+    /// to how many object the tag is applied
+    let usageCount: Int
     /// for searching we store a version of string that is diacriticInsensitive and caseInsensitive
     let searchName: String
     @objc fileprivate(set) dynamic var selected: Bool = false
@@ -131,11 +140,13 @@ class TagViewModel: NSObject {
     init(
         id: String = UUID().uuidString.lowercased(),
         name: String,
-        lastApplied: TimeInterval? = nil
+        lastApplied: TimeInterval? = nil,
+        usageCount: Int = 0
     ) {
         self.id = id
         self.name = name
         self.lastApplied = lastApplied
+        self.usageCount = usageCount
         searchName = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
     }
 

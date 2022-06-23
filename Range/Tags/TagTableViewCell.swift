@@ -28,7 +28,26 @@ class TagTableViewCell: UITableViewCell {
                     changeHandler: { [weak self] _, _ in self?.updateSelection() }
                 )
                 updateSelection()
-                textLabel?.text = tagViewModel.name
+
+                let countText = "(\(tagViewModel.usageCount))"
+                let attributedText =
+                    NSMutableAttributedString(
+                        string: "\(tagViewModel.name) \(countText)",
+                        attributes: [.foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04)]
+                    )
+                if let range = attributedText.string.range(of: countText) {
+                    let nsRange = NSRange(range, in: attributedText.string)
+                    let font = UIFont.preferredFont(forTextStyle: .footnote)
+                    let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
+                    attributedText.setAttributes(
+                        [
+                            .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05),
+                            .font: boldFont,
+                        ],
+                        range: nsRange
+                    )
+                }
+                textLabel?.attributedText = attributedText
             } else {
                 textLabel?.text = ""
             }
