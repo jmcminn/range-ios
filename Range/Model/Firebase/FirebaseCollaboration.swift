@@ -19,7 +19,8 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id, featureId = "feature", statusId = "statusName", name, collaborationDescription = "description"
+        case id, featureId = "feature", statusId = "statusName", name,
+             collaborationDescription = "description", tagIds = "tags"
     }
 
     var id: String
@@ -27,6 +28,7 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
     var statusId: String
     var name: String
     var collaborationDescription: String
+    var tagIds: [String]
 
     /// Add or update the collaboration and add it to the feature. Also sets the status. Fails if feature or status not found
     func upsert(_ realm: Realm) throws {
@@ -38,7 +40,11 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
         }
         let collaboration = Collaboration(id: id, name: name, description: collaborationDescription)
         collaboration.status = status
+        collaboration.tags.removeAll()
+        let tags = tagIds.compactMap { realm.object(ofType: Tag.self, forPrimaryKey: $0) }
+        collaboration.tags.append(objectsIn: tags)
         realm.add(collaboration, update: .modified)
+        tags.forEach { $0.collaborations.insert(collaboration) }
         feature.collaborations.insert(collaboration)
     }
 }

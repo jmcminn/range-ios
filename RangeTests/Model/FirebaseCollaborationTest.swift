@@ -20,7 +20,8 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: ""
+            collaborationDescription: "",
+            tagIds: []
         )
         try realm.write {
             XCTAssertThrowsError(
@@ -41,7 +42,8 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: ""
+            collaborationDescription: "",
+            tagIds: []
         )
         try realm.write {
             XCTAssertThrowsError(
@@ -57,8 +59,9 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
         let status1 = Status(id: "status1", name: "Status", hexColor: "#000000", isInitial: true, isCompleted: false)
         let feature1 = Feature(id: "feature1", name: "Feature1")
         let feature2 = Feature(id: "feature2", name: "Feature2")
+        let tag = Tag(id: "tag1", name: "tag 1", lastApplied: nil)
         try realm.write {
-            realm.add([status1, feature1, feature2])
+            realm.add([status1, feature1, feature2, tag])
         }
         XCTAssertEqual(feature1.collaborations.count, 0)
         XCTAssertEqual(feature2.collaborations.count, 0)
@@ -69,7 +72,8 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: ""
+            collaborationDescription: "",
+            tagIds: ["tag1"]
         )
         try realm.write {
             try firebaseCollaboration1.upsert(realm)
@@ -82,6 +86,8 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
         XCTAssertEqual(collaboration1.name, "Collaboration1")
         XCTAssertEqual(collaboration1.status, status1)
         XCTAssertEqual(collaboration1.feature.first, feature1)
+        XCTAssertEqual(collaboration1.tags.first, tag)
+        XCTAssertEqual(tag.collaborations.first, collaboration1)
 
         // 3. update collaboration1
         firebaseCollaboration1.name = "Collaboration1..."
@@ -98,7 +104,8 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration2",
-            collaborationDescription: ""
+            collaborationDescription: "",
+            tagIds: []
         )
         try realm.write {
             try firebaseCollaboration2.upsert(realm)

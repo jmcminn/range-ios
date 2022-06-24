@@ -18,6 +18,8 @@ class Collaboration: Object {
     @Persisted var comments: MutableSet<Comment>
     /// uploads, the order doesn't matter so it's a set (the order is controlled by the upload timestamp when displaying in the UI)
     @Persisted var uploads: MutableSet<Upload>
+    /// tags attached to the upload, ordered
+    @Persisted var tags: List<Tag>
 
     /// Default initializer required by Realm.
     override init() {
