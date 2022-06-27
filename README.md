@@ -23,6 +23,12 @@ In order for Swift Package Manager to download it, follow the instructions in â€
 
 **Note:** currently we don't have a Range Mapbox account, so in order to follow the instructions, one need to create a free mapbox account.
 
+## Firebase connection
+
+By default the app connects to Range `development` firebase account.
+
+To switch to Firebase emulator use the `Range firebase emulator` scheme instead of `Range` to start the app.
+
 
 ## CI/CD
 
