@@ -22,9 +22,9 @@ class AddPhotoFlowController {
     /// source data for the `image`
     var imageData: Data!
     /// tags from the details step
-    var tags: [TagViewModel]!
+    var tags: [TagViewModel] = []
     /// description from the details step
-    var photoDescription: String!
+    var photoDescription: String = ""
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
     var geometryId: String?
 
@@ -74,8 +74,14 @@ class AddPhotoFlowController {
 
     /// Present camera view in a new navigation controller presented modally on top of the canvas container
     private func showCamera() {
+        let navC = UINavigationController(rootViewController: createCameraViewController())
+        navC.modalPresentationStyle = .fullScreen
+        canvasContainer.present(navC, animated: true)
+    }
+
+    /// Creates the `CameraViewController` and installs the flow callbacks
+    private func createCameraViewController() -> CameraViewController {
         let vc = CameraViewController()
-        let navC = UINavigationController(rootViewController: vc)
         vc.onClose = { [weak self, weak vc] in
             vc?.dismiss(animated: true)
             self?.stop()
@@ -83,8 +89,7 @@ class AddPhotoFlowController {
         vc.onPhotoTaken = { [weak self] data, image in
             self?.onPhotoTaken(data: data, image: image)
         }
-        navC.modalPresentationStyle = .fullScreen
-        canvasContainer.present(navC, animated: true)
+        return vc
     }
 
     /// Store the image and proceed to the photo details selection step
@@ -96,15 +101,25 @@ class AddPhotoFlowController {
 
     /// push photo details view controller onto the navigation controller for the camera screen
     private func selectPhotoDetails() {
-        let detailsVC = PhotoDetailsViewController(model: model, image: image)
+        (canvasContainer.presentedViewController as? UINavigationController)?
+            .pushViewController(createPhotoDetailsViewController(), animated: true)
+    }
+
+    /// Creates the `PhotoDetailsViewController` and installs the flow callbacks
+    private func createPhotoDetailsViewController() -> PhotoDetailsViewController {
+        let detailsVC = PhotoDetailsViewController(
+            model: model,
+            image: image,
+            initialSelectedTags: tags,
+            initialDescription: photoDescription
+        )
         detailsVC.onBack = { [weak detailsVC] in
             detailsVC?.navigationController?.popViewController(animated: true)
         }
         detailsVC.onNext = { [weak self] tags, photoDescription in
             self?.onPhotoDetailsSelected(tags: tags, photoDescription: photoDescription)
         }
-        (canvasContainer.presentedViewController as? UINavigationController)?
-            .pushViewController(detailsVC, animated: true)
+        return detailsVC
     }
 
     /// Store the photo details and proceed to the location selection step
@@ -122,6 +137,17 @@ class AddPhotoFlowController {
         showConfirmationCard()
         showPanAndZoomIndicatorView()
         showPins()
+    }
+
+    /// go back from photo location selection to photo details
+    private func onPhotoLocationBack() {
+        dismissPhotoLocationSelectionUI()
+        // setup a navigation controller with camera and photo details, so user can go back
+        // from the details to camera screen
+        let navC = UINavigationController()
+        navC.viewControllers = [createCameraViewController(), createPhotoDetailsViewController()]
+        navC.modalPresentationStyle = .fullScreen
+        canvasContainer.present(navC, animated: true)
     }
 
     /// Store the photo location, save all the data and stop the flow
@@ -206,6 +232,7 @@ extension AddPhotoFlowController {
         hideTopViewController()
         pinsHandler?.stop()
         panAndZoomIndicatorView?.removeFromSuperview()
+        pinsHandler = nil
     }
 
     /// shows the view controller covering the top of of the screen
@@ -252,8 +279,7 @@ extension AddPhotoFlowController {
     private func showConfirmationCard() {
         confirmationCardVC = AddPhotoConfirmationViewController()
         confirmationCardVC!.onCancel = { [weak self] in
-            self?.dismissPhotoLocationSelectionUI()
-            self?.stop()
+            self?.onPhotoLocationBack()
         }
         confirmationCardVC!.onConfirm = { [weak self] in
             self?.onPhotoLocationSelected()

@@ -64,6 +64,16 @@ class TagsViewModelTest: XCTestCase {
         )
     }
 
+    func testInit_initialSelectedTags() throws {
+        let viewModel = TagsViewModel(model: model, initialSelectedTags: [
+            TagViewModel(id: "t1", name: "A"), // existing tag
+            TagViewModel(id: "t100", name: "Abc"), // new tag
+        ])
+        XCTAssertEqual(viewModel.allTags.map(\.name),
+                       ["3", "4", "5", "6", "a", "A", "Abc", "x"])
+        XCTAssertEqual(viewModel.selectedTags.map(\.id), ["t1", "t100"])
+    }
+
     func testFilter_caseInsensitive() {
         let viewModel = TagsViewModel(model: model)
         viewModel.filter(by: "a")
@@ -108,17 +118,14 @@ class TagsViewModelTest: XCTestCase {
     func testSetTagSelected() throws {
         let viewModel = TagsViewModel(model: model)
 
-        let t2 = try XCTUnwrap(viewModel.allTags.first { $0.id == "t2" })
+        viewModel.set(tagWithId: "t2", selected: true)
 
-        viewModel.set(tag: t2, selected: true)
-
-        viewModel.filter(by: t2.name)
+        viewModel.filter(by: "a")
         // should show as selected in allTags and filteredTags and lastAppliedTags
-        XCTAssertTrue(t2.selected)
         XCTAssertTrue(try XCTUnwrap(viewModel.allTags.first { $0.id == "t2" }).selected)
         XCTAssertTrue(try XCTUnwrap(viewModel.lastAppliedTags.first { $0.id == "t2" }).selected)
         XCTAssertTrue(try XCTUnwrap(viewModel.filteredTags.first { $0.id == "t2" }).selected)
-        XCTAssertEqual(viewModel.selectedTags, [t2])
+        XCTAssertEqual(viewModel.selectedTags.map(\.id), ["t2"])
     }
 
     func testMostUsedTags() throws {

@@ -76,7 +76,7 @@ extension SelectedTagsViewController: UICollectionViewDataSource, UICollectionVi
         cell.tagViewModel = tag
         cell.onDeselect = { [weak self, weak tag] in
             guard let tag = tag else { return }
-            self?.viewModel.set(tag: tag, selected: false)
+            self?.viewModel.set(tagWithId: tag.id, selected: false)
         }
         return cell
     }

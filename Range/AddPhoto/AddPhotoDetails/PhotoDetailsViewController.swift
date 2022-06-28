@@ -16,6 +16,7 @@ class PhotoDetailsViewController: UIViewController {
     /// The photo
     let image: UIImage
     let tagsViewModel: TagsViewModel
+    let initialDescription: String
 
     /// The mode of the PhotoDetailsViewController
     private enum Mode {
@@ -70,11 +71,18 @@ class PhotoDetailsViewController: UIViewController {
     }
 
     /// - Parameters:
-    ///   - model:          model
-    ///   - image:          photo to tag, ...
-    init(model: ProjectModel, image: UIImage) {
+    ///   - model:                 model
+    ///   - image:                 photo to tag, ...
+    ///   - initialSelectedTags:   preselected tags
+    ///   - initialDescription:    initial contents of the description text view
+    init(model: ProjectModel,
+         image: UIImage,
+         initialSelectedTags: [TagViewModel],
+         initialDescription: String)
+    {
         self.image = image
-        tagsViewModel = TagsViewModel(model: model)
+        tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialSelectedTags)
+        self.initialDescription = initialDescription
         super.init(nibName: nil, bundle: nil)
 
         tagsViewModel.addDelegate(self)
@@ -422,6 +430,7 @@ extension PhotoDetailsViewController {
             self?.headerExpander.setFirstExpandedHeader(0, animated: true)
             self?.descriptionView.textView.setContentOffset(.zero, animated: true)
         }
+        descriptionView.textView.text = initialDescription
 //        descriptionView.textView.text =
 //            """
 //            1. This is the description that is being typed into the keyboard input
@@ -456,7 +465,7 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
         if !tagsViewModel.filterStringTrimmed.isEmpty, tagsViewModel.filteredTags.isEmpty {
             let tag = TagViewModel(name: tagsViewModel.filterStringTrimmed)
             tagsViewModel.add(tag: tag)
-            tagsViewModel.set(tag: tag, selected: true)
+            tagsViewModel.set(tagWithId: tag.id, selected: true)
             tagsViewModel.filter(by: "")
         }
         searchView.endEditing(true)

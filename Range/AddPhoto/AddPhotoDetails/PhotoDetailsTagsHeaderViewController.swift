@@ -19,7 +19,7 @@ class PhotoDetailsTagsHeaderViewController: UIViewController {
     private var bottomStroke: UIView!
 
     /// current state of selected tags
-    private var selectedTagsState: TagsState = .hidden
+    private var selectedTagsState: TagsState
 
     /// shows/hides the bottom stroke (+ the shadow)
     var bottomStrokeVisible: Bool = false {
@@ -30,6 +30,7 @@ class PhotoDetailsTagsHeaderViewController: UIViewController {
 
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
+        selectedTagsState = viewModel.selectedTags.isEmpty ? .hidden : .visible
         super.init(nibName: nil, bundle: nil)
 
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
@@ -88,7 +89,7 @@ class PhotoDetailsTagsHeaderViewController: UIViewController {
         view.addSubview(bottomStroke)
 
         // hidden by default
-        selectedTagsVC.view.isHidden = true
+        selectedTagsVC.view.isHidden = viewModel.selectedTags.isEmpty
         selectedTagsVC.view.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(48) // make this view higher than in the design to have bigger buttons

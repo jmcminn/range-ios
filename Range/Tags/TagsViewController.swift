@@ -236,7 +236,7 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
             // add new tag
             viewModel.add(tag: tag)
             // mark it selected
-            viewModel.set(tag: tag, selected: true)
+            viewModel.set(tagWithId: tag.id, selected: true)
             // and remove the filter
             viewModel.filter(by: "")
             tableView.deselectRow(at: indexPath, animated: true)
@@ -254,7 +254,7 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
             tableView.endUpdates()
         } else {
             let tag = tag(for: indexPath)
-            viewModel.set(tag: tag, selected: !tag.selected)
+            viewModel.set(tagWithId: tag.id, selected: !tag.selected)
             tableView.deselectRow(at: indexPath, animated: true)
         }
     }

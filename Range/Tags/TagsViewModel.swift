@@ -5,6 +5,8 @@ import Foundation
 class TagsViewModel: NSObject {
     /// all tags whether selected or not
     private(set) var allTags: [TagViewModel]
+    /// For fast tag lookup by id
+    private var allTagsIndex: [String: TagViewModel]
     /// up to 10 recently applied tags for current project
     private(set) var lastAppliedTags: [TagViewModel]
     /// up to 10 most applied tags for current project
@@ -26,7 +28,7 @@ class TagsViewModel: NSObject {
     /// Allows for multiple delegates
     private var delegates = NSHashTable<TagsViewModelDelegate>.weakObjects()
 
-    init(model: ProjectModel) {
+    init(model: ProjectModel, initialSelectedTags: [TagViewModel] = []) {
         let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
         allTags = model.mainRealm.objects(Tag.self)
             .map { TagViewModel(id: $0.id, name: $0.name, lastApplied: $0.lastApplied, usageCount: $0.usageCount) }
@@ -42,7 +44,16 @@ class TagsViewModel: NSObject {
             .sorted(by: { $0.usageCount >= $1.usageCount })
             .prefix(10))
 
+        allTagsIndex = Dictionary(uniqueKeysWithValues: zip(allTags.map(\.id), allTags))
+
         super.init()
+
+        // initialSelectedTags might be new tags or existing tags that need to be preselected
+
+        initialSelectedTags.forEach {
+            self.add(tag: $0)
+            self.set(tagWithId: $0.id, selected: true)
+        }
     }
 
     /// Add delegate
@@ -51,10 +62,11 @@ class TagsViewModel: NSObject {
         delegates.add(delegate)
     }
 
-    /// Mark tag as selected/deselected and notify delegates
-    /// - Warning: TagsViewModel operates on references, so the tag passed to this method needs to be obtained from the
-    /// viewmodel alltags, selectedtags, etc... and not a new object
-    func set(tag: TagViewModel, selected: Bool) {
+    /// Mark tag with given id as selected/deselected and notify delegates
+    /// If tag with given id is not present it's ignored
+    func set(tagWithId tagId: String, selected: Bool) {
+        // find tag with matching id in this view model tags
+        guard let tag = allTagsIndex[tagId] else { return }
         tag.selected = selected
 
         if tag.selected {
@@ -91,12 +103,14 @@ class TagsViewModel: NSObject {
     }
 
     func add(tag: TagViewModel) {
+        guard allTagsIndex[tag.id] == nil else { return }
         // this gives a binary search result for insertion point by finding the index of the first
         // tag with a name "higher" than the new tag name
         let insertionIndex = allTags.partitioningIndex {
             nameSort.compare($0, tag) == .orderedDescending
         }
         allTags.insert(tag, at: insertionIndex)
+        allTagsIndex[tag.id] = tag
     }
 }
 

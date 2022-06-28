@@ -102,6 +102,7 @@ class AddPhotoPinsHandler {
         geometriesNotificationToken?.invalidate()
         photoPinView?.removeFromSuperview()
         hideTooltip()
+        canvasContainer.annotationsMapView.annotations.removeAnnotationManager(withId: "pins")
     }
 
     /// Checks if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.
