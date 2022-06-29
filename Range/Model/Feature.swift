@@ -11,6 +11,8 @@ class Feature: Object {
     @Persisted(originProperty: "features") var geometry: LinkingObjects<Geometry>
     /// collaborations for this feature, the order doesn't matter so it's a set
     @Persisted var collaborations: MutableSet<Collaboration>
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Count all uploads from all collections
     var uploadsCount: Int {
@@ -25,9 +27,19 @@ class Feature: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String) {
+    init(id: String, name: String, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.name = name
+        self.placeholder = placeholder
+    }
+
+    /// Convenience initializer for placeholder Feature
+    convenience init(placeholder id: String) {
+        self.init(
+            id: id,
+            name: "",
+            placeholder: true
+        )
     }
 }

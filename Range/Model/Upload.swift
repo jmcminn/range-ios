@@ -15,7 +15,7 @@ class Upload: Object {
     // name
     @Persisted var name: String
     // description
-    @Persisted var uploadDescription: String
+    @Persisted var uploadDescription: String?
     /// tags attached to the upload, ordered
     @Persisted var tags: List<Tag>
     // TODO: 44 correlation
@@ -26,7 +26,7 @@ class Upload: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, timestamp: TimeInterval, url: URL, name: String, description: String) {
+    init(id: String, timestamp: TimeInterval, url: URL, name: String, description: String?) {
         super.init()
         self.id = id
         self.timestamp = timestamp

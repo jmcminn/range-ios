@@ -136,7 +136,7 @@ class TagsViewModel: NSObject {
 }
 
 /// View model for a tag with selection support
-class TagViewModel: NSObject {
+class TagViewModel: NSObject, Codable {
     let id: String
     @objc let name: String
     let lastApplied: TimeInterval?

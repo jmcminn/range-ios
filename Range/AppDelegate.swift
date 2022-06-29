@@ -1,6 +1,7 @@
 import Firebase
 import FirebaseAuth
 import FirebaseCore
+import FirebaseFirestore
 import OSLog
 import UIKit
 
@@ -31,13 +32,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             FirebaseApp.configure(options: options)
             Auth.auth().useEmulator(withHost: "localhost", port: 9099)
             Database.database().useEmulator(withHost: "localhost", port: 9000)
+            let settings = Firestore.firestore().settings
+            settings.host = "localhost:9001"
+            settings.isPersistenceEnabled = false
+            settings.isSSLEnabled = false
+            Firestore.firestore().settings = settings
         } else {
             Logger.firebase.debug("Using firebase project: \(FirebaseOptions.defaultOptions()?.projectID ?? "?")")
             FirebaseApp.configure()
         }
 
         // enable offline persistence for the database
-        Database.database().isPersistenceEnabled = true
+        // TODO: 44
+//        Database.database().isPersistenceEnabled = true
+        Database.database().isPersistenceEnabled = false
     }
 
     // MARK: UISceneSession Lifecycle

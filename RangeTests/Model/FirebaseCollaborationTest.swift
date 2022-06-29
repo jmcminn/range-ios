@@ -20,7 +20,7 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: "",
+            description: "",
             tagIds: []
         )
         try realm.write {
@@ -42,7 +42,7 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: "",
+            description: "",
             tagIds: []
         )
         try realm.write {
@@ -72,7 +72,7 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: "",
+            description: "",
             tagIds: ["tag1"]
         )
         try realm.write {
@@ -104,7 +104,7 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
             featureId: "feature1",
             statusId: "status1",
             name: "Collaboration2",
-            collaborationDescription: "",
+            description: "",
             tagIds: []
         )
         try realm.write {
@@ -123,5 +123,26 @@ class FirebaseCollaborationRealmSyncTest: XCTestCase {
         XCTAssertEqual(feature1.collaborations.count, 1)
         XCTAssertEqual(feature2.collaborations.count, 0)
         XCTAssertEqual(feature1.collaborations.first, collaboration1)
+    }
+
+    func testAddCollaborationToFeature_statusIsOptional() throws {
+        let feature1 = Feature(id: "feature1", name: "Feature1")
+        try realm.write {
+            realm.add(feature1)
+        }
+        let firebaseCollaboration = FirebaseCollaboration(
+            id: "collaboration1",
+            featureId: "feature1",
+            statusId: nil,
+            name: "Collaboration1",
+            description: "",
+            tagIds: []
+        )
+        try realm.write {
+            try firebaseCollaboration.upsert(realm)
+        }
+
+        let collaboration = try XCTUnwrap(realm.object(ofType: Collaboration.self, forPrimaryKey: "collaboration1"))
+        XCTAssertNil(collaboration.status)
     }
 }

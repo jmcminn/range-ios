@@ -21,6 +21,8 @@ class Geometry: Object {
     @Persisted var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
     /// features for this geometry, the order doesn't matter so it's a set
     @Persisted var features: MutableSet<Feature>
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Count all uploads from all features
     var uploadsCount: Int {
@@ -35,10 +37,21 @@ class Geometry: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, annotationType: AnnotationType, geometry: Turf.Geometry) {
+    init(id: String, annotationType: AnnotationType, geometry: Turf.Geometry, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.annotationType = annotationType
         self.geometry = geometry
+        self.placeholder = placeholder
+    }
+
+    /// Convenience initializer for placeholder Geometry
+    convenience init(placeholder id: String) {
+        self.init(
+            id: id,
+            annotationType: .photoMarker,
+            geometry: .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0))),
+            placeholder: true
+        )
     }
 }

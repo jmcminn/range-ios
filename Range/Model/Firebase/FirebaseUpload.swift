@@ -33,9 +33,9 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
     var authorId: String
     var timestamp: Int
     var name: String
-    var uploadDescription: String
+    var uploadDescription: String?
     var urlString: String
-    var correlationId: String
+    var correlationId: String?
 
     /// Add or update the upload and add it to appropriate parent (based on parentType). Also sets the author. Fails if parent or author not found
     func upsert(_ realm: Realm) throws {

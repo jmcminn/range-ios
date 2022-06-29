@@ -13,6 +13,7 @@ enum ModelError: Error {
     case geometryNotFound
     case featureNotFound
     case collaborationNotFound
+    case statusNotFound
 }
 
 // model error extension to provide localized descriptions of errors
@@ -31,8 +32,23 @@ extension ModelError: LocalizedError {
             return "Feature not found"
         case .collaborationNotFound:
             return "Collaboration not found"
+        case .statusNotFound:
+            return "Status not found"
         }
     }
+}
+
+protocol ProjectModelWriter: AnyObject {
+    func write(_ closure: @escaping (Realm) throws -> Void) async throws
+}
+
+/// To be implemented by the backend synchronizer to update the data on the backend.
+/// Currently implemented by `ProjectModelFirebaseSync`
+protocol ProjectModelRemoteUpdater: AnyObject {
+    // TODO: 44 not needed if Command class works (can be stored)
+    func runActionCommand(_: ActionCommand, writer: ProjectModelWriter) async throws
+    // TODO: 44 document
+    func runCommand(_: Command, writer: ProjectModelWriter) async throws -> Bool
 }
 
 /// Responsible for configuring the Realm for given project (id).
@@ -61,6 +77,8 @@ class ProjectModel {
     // downloaded images???
     /// Using Kingfisher image cache for local images store (configured disk cache to never expire)
     let localPhotosCache = ImageCache(name: "local-photos")
+
+    weak var remoteUpdater: ProjectModelRemoteUpdater?
 
     /// Initializes the model with Realm file url for given projectId (every project has a separate realm)
     /// - Parameters:

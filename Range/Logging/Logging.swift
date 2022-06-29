@@ -18,6 +18,8 @@ extension Logger {
     static let model = Logger(subsystem: subsystem, category: "model")
     /// Firebase sync related logs
     static let firebase = Logger(subsystem: subsystem, category: "firebase")
+    /// Firestore sync related logs
+    static let firestore = Logger(subsystem: subsystem, category: "firestore")
     /// anything UI related
     static let ui = Logger(subsystem: subsystem, category: "ui")
 }

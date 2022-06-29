@@ -197,22 +197,30 @@ class AddPhotoFlowController {
     /// Async function to store the new photo data in the realm DB
     @MainActor
     private func _storeData() async throws {
-        let collaboration: Collaboration
+        let collaborationId: String
         if let geometryId = geometryId {
-            collaboration = try await model.getOrAddCollaboration(forGeometryId: geometryId)
+            try await model.getOrAddCollaboration(forGeometryId: geometryId)
+//            collaboration = try await model.getOrAddCollaboration(forGeometryId: geometryId)
+            lastPhotoPinId = geometryId
         } else {
-            collaboration = try await model.createPhotoMarker(
+//            collaboration = try await model.createPhotoMarker(
+//                canvas: canvasContainer.pdfCanvasViewController.pdfCanvas,
+//                coordinates: canvasContainer.annotationsMapView.cameraState.center
+//            )
+            let command = try await model.createPhotoMarker(
                 canvas: canvasContainer.pdfCanvasViewController.pdfCanvas,
                 coordinates: canvasContainer.annotationsMapView.cameraState.center
             )
+            lastPhotoPinId = command.geometryId
+            collaborationId = command.collaborationId
         }
-        _ = try await model.addUpload(
-            imageData,
-            tags: tags,
-            description: photoDescription,
-            toCollaboration: collaboration
-        )
-        lastPhotoPinId = collaboration.feature[0].geometry[0].id
+        // TODO: 44
+//        _ = try await model.addUpload(
+//            imageData,
+//            tags: tags,
+//            description: photoDescription,
+//            toCollaboration: collaboration
+//        )
     }
 }
 
