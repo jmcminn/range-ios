@@ -8,7 +8,6 @@ import RealmSwift
 /// Encoded as:
 ///
 ///     {
-///         "id"         : "0521fccf-3799-4786-aab1-e5e5108c0807",
 ///         "feature"    : "e5db7eb2-bd9f-44ba-9c90-e6e6e528b930",
 ///         "statusName" : "6403e6dd-52df-4f4b-bf06-167e53b27e7a",
 ///         "name"       : "name",
@@ -20,11 +19,10 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id, featureId = "feature", statusId = "statusName", name,
+        case featureId = "feature", statusId = "statusName", name,
              collaborationDescription = "description", tagIds = "tags"
     }
 
-    var id: String
     var featureId: String
     var statusId: String?
     var name: String
@@ -33,14 +31,12 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
 
     /// Default initializer with all properties
     init(
-        id: String,
         featureId: String,
         statusId: String?,
         name: String,
         description: String,
         tagIds: [String]
     ) {
-        self.id = id
         self.featureId = featureId
         self.statusId = statusId
         self.name = name
@@ -54,7 +50,6 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
         let statusId = collaboration.status?.id
         let tagIds = Array(collaboration.tags.map(\.id))
         self.init(
-            id: collaboration.id,
             featureId: featureId,
             statusId: statusId,
             name: collaboration.name,
@@ -64,7 +59,7 @@ struct FirebaseCollaboration: Codable, FirebaseToRealmSyncable {
     }
 
     /// Add or update the collaboration and add it to the feature. Also sets the status. Fails if feature or status not found
-    func upsert(_ realm: Realm) throws {
+    func upsert(_ realm: Realm, id: String) throws {
         let feature: Feature
         if let f = realm.object(ofType: Feature.self, forPrimaryKey: featureId) {
             feature = f

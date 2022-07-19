@@ -18,7 +18,6 @@ class FirebaseStatusNameRealmSyncTest: XCTestCase {
     func testStatusSync() throws {
         // 1. initial status
         var firebaseStatus = FirebaseStatusName(
-            id: "status1",
             name: "In progress",
             color: "#123456",
             isInitial: true,
@@ -27,11 +26,11 @@ class FirebaseStatusNameRealmSyncTest: XCTestCase {
 
         // when creating initial status
         try realm.write {
-            try firebaseStatus.upsert(realm)
+            try firebaseStatus.upsert(realm, id: "1")
         }
 
         // it gets stored with all properties
-        guard let status = realm.object(ofType: Status.self, forPrimaryKey: "status1") else {
+        guard let status = realm.object(ofType: Status.self, forPrimaryKey: "1") else {
             throw "status1 not found"
         }
         XCTAssertEqual(status.name, "In progress")
@@ -43,7 +42,7 @@ class FirebaseStatusNameRealmSyncTest: XCTestCase {
         firebaseStatus.name = "In progress..."
         // update the status
         try realm.write {
-            try firebaseStatus.upsert(realm)
+            try firebaseStatus.upsert(realm, id: "1")
         }
         // check status after update
         XCTAssertEqual(status.name, "In progress...")

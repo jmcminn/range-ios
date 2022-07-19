@@ -8,7 +8,6 @@ import RealmSwift
 /// Encoded as:
 ///
 ///     {
-///         "id":  "6ebe0ded-414b-4a5e-be09-5d079d5dd7dc",
 ///         "parent": "0ab55565-baf2-4361-8177-dfd4edfe343c",
 ///         "parentType": "Collaboration",
 ///         "author": "718d800c-0174-4128-9c5b-6e47a76d3c0e",
@@ -23,11 +22,10 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id, parentId = "parent", parentType, authorId = "author", timestamp, name,
+        case parentId = "parent", parentType, authorId = "author", timestamp, name,
              uploadDescription = "description", urlString = "url", correlationId = "correlation"
     }
 
-    var id: String
     var parentId: String
     var parentType: String
     var authorId: String
@@ -38,7 +36,7 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
     var correlationId: String?
 
     /// Add or update the upload and add it to appropriate parent (based on parentType). Also sets the author. Fails if parent or author not found
-    func upsert(_ realm: Realm) throws {
+    func upsert(_ realm: Realm, id: String) throws {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }

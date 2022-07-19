@@ -9,8 +9,6 @@ import RealmSwift
 struct FirebaseProjectSummary: Decodable, FirebaseToRealmSyncable {
     typealias ModelType = ProjectSummary
 
-    /// The decoded id
-    var id: String
     /// center
     var center: CLLocationCoordinate2D
 
@@ -23,7 +21,6 @@ struct FirebaseProjectSummary: Decodable, FirebaseToRealmSyncable {
     /// Custom implementation of decoding that checks for proper type and translates the `coordinates` array into `position`.
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
         var coordinatesContainer = try container.nestedUnkeyedContainer(forKey: .center)
         let longitude = try coordinatesContainer.decode(Double.self)
         let latitude = try coordinatesContainer.decode(Double.self)
@@ -39,7 +36,7 @@ struct FirebaseProjectSummary: Decodable, FirebaseToRealmSyncable {
 //    }
 
     /// Adds or updates project summary in the Realm database
-    func upsert(_ realm: Realm) throws {
+    func upsert(_ realm: Realm, id: String) throws {
         let projectSummary = ProjectSummary(id: id, center: center)
         realm.add(projectSummary, update: .modified)
     }

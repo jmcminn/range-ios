@@ -9,8 +9,8 @@ import RealmSwift
 protocol FirebaseToRealmSyncable {
     /// The type used to store the objects in the model Realm db
     associatedtype ModelType: Object
-    /// Upsert this element to given Realm. Will be performed in a realm write transaction
-    func upsert(_ realm: Realm) throws
+    /// Upsert this element with given id to given Realm. Will be performed in a realm write transaction
+    func upsert(_ realm: Realm, id: String) throws
 }
 
 /// Synchronizes given `ProjectModel` with Firebase Realtime db
@@ -130,17 +130,17 @@ class ProjectModelFirebaseSync {
             guard let self = self else { return }
             try self.syncRealm.write {
                 let projectSummary = try projectSummarySnapshot.data(as: FirebaseProjectSummary.self)
-                try projectSummary.upsert(self.syncRealm)
+                try projectSummary.upsert(self.syncRealm, id: projectSummarySnapshot.key)
 
                 for canvasSnapshot in canvases.children {
                     guard let snapshot = canvasSnapshot as? DataSnapshot else { break }
                     let canvas = try snapshot.data(as: FirebasePDFCanvas.self)
-                    try canvas.upsert(self.syncRealm)
+                    try canvas.upsert(self.syncRealm, id: snapshot.key)
                 }
                 for participantSnapshot in participants.children {
                     guard let snapshot = participantSnapshot as? DataSnapshot else { break }
                     let participant = try snapshot.data(as: FirebaseParticipant.self)
-                    try participant.upsert(self.syncRealm)
+                    try participant.upsert(self.syncRealm, id: snapshot.key)
                 }
             }
         }
@@ -159,7 +159,7 @@ class ProjectModelFirebaseSync {
             let firebaseObject = try snapshot.data(as: type)
             try realm.write {
                 if event == .childAdded || event == .childChanged {
-                    try firebaseObject.upsert(realm)
+                    try firebaseObject.upsert(realm, id: snapshot.key)
                 } else if event == .childRemoved {
                     guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: snapshot.key)
                     else {

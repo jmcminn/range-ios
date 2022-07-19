@@ -16,7 +16,6 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
 
     func testAddComment_wrongParentType() throws {
         let firebaseComment = FirebaseComment(
-            id: "comment1",
             parentId: "feature1",
             parentType: "Feature",
             authorId: "user1",
@@ -25,7 +24,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
         )
         try realm.write {
             XCTAssertThrowsError(
-                try firebaseComment.upsert(realm)
+                try firebaseComment.upsert(realm, id: "1")
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "parentType not supported: Feature")
             }
@@ -34,7 +33,6 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
 
     func testAddCommentToCollaboration_parentNotFound() throws {
         let firebaseComment = FirebaseComment(
-            id: "comment1",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -43,7 +41,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
         )
         try realm.write {
             XCTAssertThrowsError(
-                try firebaseComment.upsert(realm)
+                try firebaseComment.upsert(realm, id: "1")
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "collaboration not found: collaboration1")
             }
@@ -57,7 +55,6 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
         }
 
         let firebaseComment = FirebaseComment(
-            id: "comment1",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -66,7 +63,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
         )
         try realm.write {
             XCTAssertThrowsError(
-                try firebaseComment.upsert(realm)
+                try firebaseComment.upsert(realm, id: "1")
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "author not found: user1")
             }
@@ -92,7 +89,6 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
 
         // 2. add comment to collaboration1
         var firebaseComment1 = FirebaseComment(
-            id: "comment1",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -100,11 +96,11 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             text: "comment 1"
         )
         try realm.write {
-            try firebaseComment1.upsert(realm)
+            try firebaseComment1.upsert(realm, id: "1")
         }
         XCTAssertEqual(collaboration1.comments.count, 1)
         XCTAssertEqual(collaboration2.comments.count, 0)
-        guard let comment1 = realm.object(ofType: Comment.self, forPrimaryKey: "comment1") else {
+        guard let comment1 = realm.object(ofType: Comment.self, forPrimaryKey: "1") else {
             throw "comment1 not found"
         }
         XCTAssertEqual(comment1.text, "comment 1")
@@ -114,7 +110,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
         // 3. update comment1
         firebaseComment1.text = "comment 1 ..."
         try realm.write {
-            try firebaseComment1.upsert(realm)
+            try firebaseComment1.upsert(realm, id: "1")
         }
         XCTAssertEqual(collaboration1.comments.count, 1)
         XCTAssertEqual(collaboration2.comments.count, 0)
@@ -122,7 +118,6 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
 
         // 4. add another comment to collaboration1
         let firebaseComment2 = FirebaseComment(
-            id: "comment2",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -130,14 +125,14 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             text: "comment 2"
         )
         try realm.write {
-            try firebaseComment2.upsert(realm)
+            try firebaseComment2.upsert(realm, id: "2")
         }
         XCTAssertEqual(collaboration1.comments.count, 2)
         XCTAssertEqual(collaboration2.comments.count, 0)
 
         // 5. remove comment2
         try realm.write {
-            guard let comment2 = realm.object(ofType: Comment.self, forPrimaryKey: "comment2") else {
+            guard let comment2 = realm.object(ofType: Comment.self, forPrimaryKey: "2") else {
                 throw "comment2 not found"
             }
             realm.delete(comment2)

@@ -12,7 +12,6 @@ import Turf
 /// Encoded as:
 ///
 ///     {
-///         "id"       : "0521fccf-3799-4786-aab1-e5e5108c0807",
 ///         "canvas"   : "e5db7eb2-bd9f-44ba-9c90-e6e6e528b930",
 ///         "annotationType" : "photoMarker",
 ///         "coordinates": [-96.77546339604037, 32.82483564429168]
@@ -22,14 +21,11 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id
         case canvas
         case annotationType
         case coordinates
     }
 
-    /// UUID of the geometry
-    var id: String
     /// UUID identifier of parent canvas
     var canvasId: String
     /// the only supported annotation type is photo marker
@@ -38,8 +34,7 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
     var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
 
     /// Initializer to init all the fields of object.
-    init(id: String, canvasId: String, geometry: Turf.Geometry) {
-        self.id = id
+    init(canvasId: String, geometry: Turf.Geometry) {
         self.canvasId = canvasId
         self.geometry = geometry
     }
@@ -47,7 +42,6 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
     /// Custom implementation of decoding that handles different geometry types
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
         canvasId = try container.decode(String.self, forKey: .canvas)
         let type = try container.decode(String.self, forKey: .annotationType)
         if type != annotationType.rawValue {
@@ -78,7 +72,6 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
     /// Custom implementation of encoding that handles different geometry types
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
         try container.encode(canvasId, forKey: .canvas)
         try container.encode(annotationType.rawValue, forKey: .annotationType)
         switch geometry {
@@ -104,7 +97,7 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
     }
 
     /// Add or update the geometry and add to canvas. Fails if canvas not found for geometry
-    func upsert(_ realm: Realm) throws {
+    func upsert(_ realm: Realm, id: String) throws {
         guard let canvas = realm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId) else {
             throw "canvas not found: \(canvasId)"
         }

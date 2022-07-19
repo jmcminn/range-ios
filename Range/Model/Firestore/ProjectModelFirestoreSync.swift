@@ -73,14 +73,14 @@ class ProjectModelFirestoreSync {
 
         // store in the db
         try await _asyncWrite { realm in
-            try projectSummary.upsert(realm)
+            try projectSummary.upsert(realm, id: self.model.projectId)
             try canvases.documents.forEach {
                 let canvas = try $0.data(as: FirebasePDFCanvas.self)
-                try canvas.upsert(realm)
+                try canvas.upsert(realm, id: $0.documentID)
             }
             try participants.documents.forEach {
                 let participant = try $0.data(as: FirebaseParticipant.self)
-                try participant.upsert(realm)
+                try participant.upsert(realm, id: $0.documentID)
             }
         }
     }
@@ -99,7 +99,7 @@ class ProjectModelFirestoreSync {
                 let firebaseObject = try snapshot.data(as: type)
                 try realm.write {
                     if changeType == .added || changeType == .modified {
-                        try firebaseObject.upsert(realm)
+                        try firebaseObject.upsert(realm, id: snapshot.documentID)
                     } else if changeType == .removed {
                         guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: snapshot.documentID)
                         else {

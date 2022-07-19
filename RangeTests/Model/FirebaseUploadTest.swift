@@ -16,7 +16,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
 
     func testAddUpload_wrongParentType() throws {
         let firebaseUpload = FirebaseUpload(
-            id: "upload1",
             parentId: "feature1",
             parentType: "Feature",
             authorId: "user1",
@@ -28,7 +27,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         )
         try realm.write {
             XCTAssertThrowsError(
-                try firebaseUpload.upsert(realm)
+                try firebaseUpload.upsert(realm, id: "upload1")
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "parentType not supported: Feature")
             }
@@ -37,7 +36,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
 
     func testAddUploadToCollaboration_parentNotFound() throws {
         let firebaseUpload = FirebaseUpload(
-            id: "upload1",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -49,7 +47,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         )
         try realm.write {
             XCTAssertThrowsError(
-                try firebaseUpload.upsert(realm)
+                try firebaseUpload.upsert(realm, id: "upload1")
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "collaboration not found: collaboration1")
             }
@@ -63,7 +61,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         }
 
         let firebaseUpload = FirebaseUpload(
-            id: "upload1",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -75,7 +72,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         )
         try realm.write {
             XCTAssertThrowsError(
-                try firebaseUpload.upsert(realm)
+                try firebaseUpload.upsert(realm, id: "upload1")
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "author not found: user1")
             }
@@ -96,7 +93,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         }
 
         let firebaseUpload = FirebaseUpload(
-            id: "upload1",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -108,7 +104,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         )
         try realm.write {
             XCTAssertThrowsError(
-                try firebaseUpload.upsert(realm)
+                try firebaseUpload.upsert(realm, id: "upload1")
             ) { error in
                 XCTAssertEqual(error.localizedDescription, "malformed url: https://range.io/image 2")
             }
@@ -134,7 +130,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
 
         // 2. add upload to collaboration1
         var firebaseUpload1 = FirebaseUpload(
-            id: "upload1",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -145,7 +140,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             correlationId: ""
         )
         try realm.write {
-            try firebaseUpload1.upsert(realm)
+            try firebaseUpload1.upsert(realm, id: "upload1")
         }
         XCTAssertEqual(collaboration1.uploads.count, 1)
         XCTAssertEqual(collaboration2.uploads.count, 0)
@@ -161,7 +156,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
         // 3. update upload1
         firebaseUpload1.name = "upload 1 ..."
         try realm.write {
-            try firebaseUpload1.upsert(realm)
+            try firebaseUpload1.upsert(realm, id: "upload1")
         }
         XCTAssertEqual(collaboration1.uploads.count, 1)
         XCTAssertEqual(collaboration2.uploads.count, 0)
@@ -169,7 +164,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
 
         // 4. add another upload to collaboration1
         let firebaseUpload2 = FirebaseUpload(
-            id: "upload2",
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
@@ -180,7 +174,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             correlationId: ""
         )
         try realm.write {
-            try firebaseUpload2.upsert(realm)
+            try firebaseUpload2.upsert(realm, id: "upload2")
         }
         XCTAssertEqual(collaboration1.uploads.count, 2)
         XCTAssertEqual(collaboration2.uploads.count, 0)

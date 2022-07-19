@@ -8,7 +8,6 @@ import RealmSwift
 /// Encoded as:
 ///
 ///     {
-///         "id": "d7dc75fd-331d-4baa-b49e-403a7183280e",
 ///         "parent": "13083d62-03a1-43d7-8eb0-ca5bb8b357f3",
 ///         "parentType": "Collaboration",
 ///         "author": "9e06df97-aa0f-4e0f-8c78-8892bfb126ec",
@@ -21,10 +20,9 @@ struct FirebaseComment: Codable, FirebaseToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id, parentId = "parent", parentType, authorId = "author", timestamp, text, isCompleted
+        case parentId = "parent", parentType, authorId = "author", timestamp, text, isCompleted
     }
 
-    var id: String
     var parentId: String
     var parentType: String
     var authorId: String
@@ -33,7 +31,7 @@ struct FirebaseComment: Codable, FirebaseToRealmSyncable {
     var isCompleted: Bool?
 
     /// Add or update the comment and add it to appropriate parent (based on parentType). Also sets the authr. Fails if parent or author not found
-    func upsert(_ realm: Realm) throws {
+    func upsert(_ realm: Realm, id: String) throws {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }

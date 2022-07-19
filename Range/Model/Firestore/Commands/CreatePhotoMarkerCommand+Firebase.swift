@@ -14,13 +14,11 @@ extension CreatePhotoMarkerCommand: FirestoreCommand {
         writer _: ProjectModelWriter
     ) async throws {
         let geometry = FirebaseGeometry(
-            id: geometryId,
             canvasId: canvasId,
             geometry: .point(Point(coordinates))
         )
-        let feature = FirebaseFeature(id: featureId, geometryId: geometryId, name: "")
+        let feature = FirebaseFeature(geometryId: geometryId, name: "")
         let collaboration = FirebaseCollaboration(
-            id: collaborationId,
             featureId: featureId,
             statusId: nil,
             name: "",
@@ -42,11 +40,11 @@ extension CreatePhotoMarkerCommand: FirestoreCommand {
         let collaborationData = try Firestore.Encoder().encode(collaboration)
         try await sync.firestore.runTransaction { transaction, _ -> Any? in
             transaction
-                .setData(geometryData, forDocument: sync.geometriesRef.document(geometry.id))
-                .setData(featureData, forDocument: sync.featuresRef.document(feature.id))
+                .setData(geometryData, forDocument: sync.geometriesRef.document(geometryId))
+                .setData(featureData, forDocument: sync.featuresRef.document(self.featureId))
                 .setData(
                     collaborationData,
-                    forDocument: sync.collaborationsRef.document(collaboration.id)
+                    forDocument: sync.collaborationsRef.document(self.collaborationId)
                 )
         }
     }
@@ -82,13 +80,11 @@ extension CreatePhotoMarkerCommand: FirebaseCommand {
 //        let geometryId = geometryId
 
         let firebaseGeometry = FirebaseGeometry(
-            id: geometryId,
             canvasId: canvasId,
             geometry: .point(Point(coordinates))
         )
-        let firebaseFeature = FirebaseFeature(id: featureId, geometryId: geometryId, name: "")
+        let firebaseFeature = FirebaseFeature(geometryId: geometryId, name: "")
         let firebaseCollaboration = FirebaseCollaboration(
-            id: collaborationId,
             featureId: featureId,
             statusId: nil,
             name: "",

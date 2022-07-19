@@ -17,18 +17,15 @@ class FirebaseTagNameRealmSyncTest: XCTestCase {
     // Tests how upserting/removing the FirebaseTagName is reflected in the Realm db
     func testTagSync() throws {
         // 1. initial status
-        var firebaseTagName = FirebaseTagName(
-            id: "tag1",
-            name: "kitchen"
-        )
+        var firebaseTagName = FirebaseTagName(name: "kitchen")
 
         // when creating initial tag
         try realm.write {
-            try firebaseTagName.upsert(realm)
+            try firebaseTagName.upsert(realm, id: "1")
         }
 
         // it gets stored with all properties
-        guard let tag = realm.object(ofType: Tag.self, forPrimaryKey: "tag1") else {
+        guard let tag = realm.object(ofType: Tag.self, forPrimaryKey: "1") else {
             throw "tag1 not found"
         }
         XCTAssertEqual(tag.name, "kitchen")
@@ -37,7 +34,7 @@ class FirebaseTagNameRealmSyncTest: XCTestCase {
         firebaseTagName.name = "kitchen..."
         // update object
         try realm.write {
-            try firebaseTagName.upsert(realm)
+            try firebaseTagName.upsert(realm, id: "1")
         }
         // check status after update
         XCTAssertEqual(tag.name, "kitchen...")
@@ -45,18 +42,15 @@ class FirebaseTagNameRealmSyncTest: XCTestCase {
 
     func testTagSync_dontOverwriteLastApplied() throws {
         // 1. initial tag
-        var firebaseTagName = FirebaseTagName(
-            id: "tag1",
-            name: "kitchen"
-        )
+        var firebaseTagName = FirebaseTagName(name: "kitchen")
 
         // when creating initial tag
         try realm.write {
-            try firebaseTagName.upsert(realm)
+            try firebaseTagName.upsert(realm, id: "1")
         }
 
         // it gets stored with all properties
-        guard let tag = realm.object(ofType: Tag.self, forPrimaryKey: "tag1") else {
+        guard let tag = realm.object(ofType: Tag.self, forPrimaryKey: "1") else {
             throw "tag1 not found"
         }
         XCTAssertEqual(tag.name, "kitchen")
@@ -70,7 +64,7 @@ class FirebaseTagNameRealmSyncTest: XCTestCase {
         firebaseTagName.name = "kitchen..."
         // update object
         try realm.write {
-            try firebaseTagName.upsert(realm)
+            try firebaseTagName.upsert(realm, id: "1")
         }
         // check status after update
         XCTAssertEqual(tag.name, "kitchen...")

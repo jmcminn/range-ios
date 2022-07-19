@@ -7,8 +7,6 @@ import RealmSwift
 ///
 /// Encoded as:
 /// {
-///     "id": "23d84cf0-ee41-4dd5-8d91-940fd331a309",
-///     "firebaseUid": "T8BAFTzwCVWtawq6yS9Ygax9Uxi1",
 ///     "projectRole": "admin",
 ///     "firstName": "Name",
 ///     "lastName": "Last name",
@@ -21,10 +19,9 @@ struct FirebaseParticipant: Decodable, FirebaseToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id, firstName, lastName, avatarUrlString = "avatarUrl", email
+        case firstName, lastName, avatarUrlString = "avatarUrl", email
     }
 
-    var id: String
     var firstName: String
     var lastName: String
     var avatarUrlString: String?
@@ -32,7 +29,7 @@ struct FirebaseParticipant: Decodable, FirebaseToRealmSyncable {
 
     /// Add or update the status.
     /// Ignores not well formed avatarUrl
-    func upsert(_ realm: Realm) throws {
+    func upsert(_ realm: Realm, id: String) throws {
         let avatarUrl: URL?
         if let avatarUrlString = avatarUrlString {
             avatarUrl = URL(string: avatarUrlString)
