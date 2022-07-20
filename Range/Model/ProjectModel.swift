@@ -14,6 +14,7 @@ enum ModelError: Error {
     case featureNotFound
     case collaborationNotFound
     case statusNotFound
+    case malformedUrl(_ url: String)
 }
 
 // model error extension to provide localized descriptions of errors
@@ -34,6 +35,8 @@ extension ModelError: LocalizedError {
             return "Collaboration not found"
         case .statusNotFound:
             return "Status not found"
+        case let .malformedUrl(url):
+            return "Malformed URL: \(url)"
         }
     }
 }
@@ -46,9 +49,9 @@ protocol ProjectModelWriter: AnyObject {
 /// Currently implemented by `ProjectModelFirebaseSync`
 protocol ProjectModelRemoteUpdater: AnyObject {
     // TODO: 44 not needed if Command class works (can be stored)
-    func runActionCommand(_: ActionCommand, writer: ProjectModelWriter) async throws
+//    func runActionCommand(_: ActionCommand, writer: ProjectModelWriter) async throws
     // TODO: 44 document
-    func runCommand(_: Command, writer: ProjectModelWriter) async throws -> Bool
+    func runCommands(_: [Command], writer: ProjectModelWriter) async throws
 }
 
 /// Responsible for configuring the Realm for given project (id).

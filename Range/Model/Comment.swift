@@ -2,7 +2,7 @@ import RealmSwift
 import UIKit
 
 /// Realm object for `project/details/comments/<id>`.
-class Comment: Object {
+class Comment: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     // comment authr, needs to be optional because of how Realm
@@ -14,6 +14,8 @@ class Comment: Object {
     @Persisted var text: String
     // optional because it might be not marked as "to complete"
     @Persisted var isCompleted: Bool?
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Default initializer required by Realm.
     override init() {
@@ -21,11 +23,23 @@ class Comment: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, timestamp: TimeInterval, text: String, isCompleted: Bool?) {
+    init(id: String, timestamp: TimeInterval, text: String, isCompleted: Bool?, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.timestamp = timestamp
         self.text = text
         self.isCompleted = isCompleted
+        self.placeholder = placeholder
+    }
+
+    /// Convenience initializer for placeholder object
+    required convenience init(placeholderId id: String) {
+        self.init(
+            id: id,
+            timestamp: 0,
+            text: "",
+            isCompleted: nil,
+            placeholder: true
+        )
     }
 }

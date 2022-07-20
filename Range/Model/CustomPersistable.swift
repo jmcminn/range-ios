@@ -34,6 +34,32 @@ extension CLLocationCoordinate2D: CustomPersistable {
     }
 }
 
+// TODO: 44 move somewhere and document
+struct LocationCoordinate2DCodable: Codable {
+    var latitude: CLLocationDegrees
+    var longitude: CLLocationDegrees
+    var decodedCoordinates: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(longitude)
+        try container.encode(latitude)
+    }
+
+    init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        longitude = try container.decode(CLLocationDegrees.self)
+        latitude = try container.decode(CLLocationDegrees.self)
+    }
+
+    init(_ coordinates: CLLocationCoordinate2D) {
+        latitude = coordinates.latitude
+        longitude = coordinates.longitude
+    }
+}
+
 /// Store Turf.Geometry in the Realm as a JSON string
 extension Turf.Geometry: FailableCustomPersistable {
     // Define the storage object that is persisted to the database.
@@ -79,38 +105,39 @@ extension URL: FailableCustomPersistable {
     public var persistableValue: String { absoluteString }
 }
 
+// TODO: 44 here
 /// Store ActionCommand in the Realm as a JSON string
-extension ActionCommand: FailableCustomPersistable {
-    // Define the storage object that is persisted to the database.
-    // The `PersistedType` must be a type that Realm supports.
-    // In this example, the PersistedType is an embedded object.
-    public typealias PersistedType = String
-    // Construct an instance of the mapped type from the persisted type.
-    // When reading from the database, this converts the persisted type to the mapped type.
-    public init?(persistedValue: PersistedType) {
-        if let data = persistedValue.data(using: .utf8) {
-            do {
-                let decoded = try JSONDecoder().decode(ActionCommand.self, from: data)
-                self = decoded
-                return
-            } catch {
-                Logger.model.error("decoding action command failed: \(error.localizedDescription, privacy: .public)")
-            }
-        }
-        return nil
-    }
-
-    // Construct an instance of the persisted type from the mapped type.
-    // When writing to the database, this converts the mapped type to a persistable type.
-    public var persistableValue: PersistedType {
-        do {
-            let encoded = try JSONEncoder().encode(self)
-            if let json = String(data: encoded, encoding: .utf8) {
-                return json
-            }
-        } catch {
-            Logger.model.error("encoding action command failed: \(error.localizedDescription, privacy: .public)")
-        }
-        return ""
-    }
-}
+// extension ActionCommand: FailableCustomPersistable {
+//    // Define the storage object that is persisted to the database.
+//    // The `PersistedType` must be a type that Realm supports.
+//    // In this example, the PersistedType is an embedded object.
+//    public typealias PersistedType = String
+//    // Construct an instance of the mapped type from the persisted type.
+//    // When reading from the database, this converts the persisted type to the mapped type.
+//    public init?(persistedValue: PersistedType) {
+//        if let data = persistedValue.data(using: .utf8) {
+//            do {
+//                let decoded = try JSONDecoder().decode(ActionCommand.self, from: data)
+//                self = decoded
+//                return
+//            } catch {
+//                Logger.model.error("decoding action command failed: \(error.localizedDescription, privacy: .public)")
+//            }
+//        }
+//        return nil
+//    }
+//
+//    // Construct an instance of the persisted type from the mapped type.
+//    // When writing to the database, this converts the mapped type to a persistable type.
+//    public var persistableValue: PersistedType {
+//        do {
+//            let encoded = try JSONEncoder().encode(self)
+//            if let json = String(data: encoded, encoding: .utf8) {
+//                return json
+//            }
+//        } catch {
+//            Logger.model.error("encoding action command failed: \(error.localizedDescription, privacy: .public)")
+//        }
+//        return ""
+//    }
+// }

@@ -2,7 +2,7 @@ import RealmSwift
 import UIKit
 
 /// Realm object for `project/details/participants/<id>`.
-class Participant: Object {
+class Participant: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// user first name
@@ -13,6 +13,8 @@ class Participant: Object {
     @Persisted var avatarUrl: URL?
     /// email
     @Persisted var email: String
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Default initializer required by Realm.
     override init() {
@@ -20,12 +22,25 @@ class Participant: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, firstName: String, lastName: String, avatarUrl: URL?, email: String) {
+    init(id: String, firstName: String, lastName: String, avatarUrl: URL?, email: String, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.avatarUrl = avatarUrl
         self.email = email
+        self.placeholder = placeholder
+    }
+
+    /// Convenience initializer for placeholder object
+    required convenience init(placeholderId id: String) {
+        self.init(
+            id: id,
+            firstName: "",
+            lastName: "",
+            avatarUrl: nil,
+            email: "",
+            placeholder: true
+        )
     }
 }

@@ -1,9 +1,8 @@
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 import Foundation
 import RealmSwift
 
 protocol FirestoreCommand {
-    func applyToFirestore(
-        firestoreSync: ProjectModelFirestoreSync,
-        writer: ProjectModelWriter
-    ) async throws
+    func applyToFirestore(inTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws
 }

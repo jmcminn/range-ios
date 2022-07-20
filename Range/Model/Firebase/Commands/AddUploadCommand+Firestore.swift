@@ -1,13 +1,21 @@
+import FirebaseFirestore
 import Foundation
-import RealmSwift
 
 extension AddUploadCommand: FirestoreCommand {
-    // TODO: 44 from write perspective the operations are:
-    // 1. create new tags
-    // 2. add photo to storage
-    // 3. create the upload
-    func applyToFirestore(
-        firestoreSync _: ProjectModelFirestoreSync,
-        writer _: ProjectModelWriter
-    ) async throws {}
+    func applyToFirestore(inTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
+        let firestoreObject = FirebaseUpload(
+            parentId: parentId,
+            parentType: parentType,
+            authorId: authorId,
+            timestamp: Int(timestamp),
+            name: name,
+            uploadDescription: uploadDescription,
+            urlString: url?.absoluteString,
+            correlationId: correlationId
+        )
+        try transaction.setData(
+            from: firestoreObject,
+            forDocument: context.uploadsRef.document(uploadId)
+        )
+    }
 }

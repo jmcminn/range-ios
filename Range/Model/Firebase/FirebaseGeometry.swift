@@ -1,9 +1,10 @@
 import CoreLocation
+import FirebaseFirestoreSwift
 import Foundation
 import RealmSwift
 import Turf
 
-/// Represents the `Geometry` (`projects/details/geometries` path in Firebase)
+/// Represents the `Geometry` (`projects/geometries` path in Firebase)
 ///
 /// It may contain GeoJSON geometries with different types.
 ///
@@ -14,9 +15,9 @@ import Turf
 ///     {
 ///         "canvas"   : "e5db7eb2-bd9f-44ba-9c90-e6e6e528b930",
 ///         "annotationType" : "photoMarker",
-///         "coordinates": [-96.77546339604037, 32.82483564429168]
+///         "coordinates": "[-96.77546339604037, 32.82483564429168]"
 ///     }
-struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
+struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Geometry
 
     /// CodingKeys used by Codable as a keys in the encoded form
@@ -51,12 +52,6 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
                 debugDescription: "Unsupported annotationType: \(type)"
             )
         }
-        // TODO: 44 firebase
-//        var coordinatesContainer = try container.nestedUnkeyedContainer(forKey: .coordinates)
-//        let longitude = try coordinatesContainer.decode(Double.self)
-//        let latitude = try coordinatesContainer.decode(Double.self)
-//        let coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        // TODO: 44 vs firestore
         let coordinatesString = try container.decode(String.self, forKey: .coordinates)
         let coordinatesData = try coordinatesString.data(using: .utf8).or(error: DecodingError.dataCorruptedError(
             forKey: .annotationType,
@@ -76,11 +71,6 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
         try container.encode(annotationType.rawValue, forKey: .annotationType)
         switch geometry {
         case let .point(point):
-            // TODO: 44 firebase
-//            var coordinatesContainer = container.nestedUnkeyedContainer(forKey: .coordinates)
-//            try coordinatesContainer.encode(point.coordinates.longitude)
-//            try coordinatesContainer.encode(point.coordinates.latitude)
-            // TODO: 44 vs firestore
             let coordinatesArray: [Double] = [point.coordinates.longitude, point.coordinates.latitude]
             let coordinatesData: Data = try JSONEncoder().encode(coordinatesArray)
             let coordinatesString = try String(data: coordinatesData, encoding: .utf8)
@@ -96,13 +86,7 @@ struct FirebaseGeometry: Codable, FirebaseToRealmSyncable {
         }
     }
 
-    /// Add or update the geometry and add to canvas. Fails if canvas not found for geometry
-    func upsert(_ realm: Realm, id: String) throws {
-        guard let canvas = realm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId) else {
-            throw "canvas not found: \(canvasId)"
-        }
-        let geometry = Geometry(id: id, annotationType: annotationType, geometry: geometry)
-        realm.add(geometry, update: .modified)
-        canvas.geometries.insert(geometry)
+    func upsertCommand(id: String) throws -> Command {
+        AddGeometryCommand(geometryId: id, canvasId: canvasId, annotationType: annotationType, geometry: geometry)
     }
 }

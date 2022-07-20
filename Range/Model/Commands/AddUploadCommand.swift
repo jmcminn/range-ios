@@ -1,62 +1,31 @@
 import Foundation
 import RealmSwift
 
-class AddUploadCommand: Command, Equatable, Codable {
+struct AddUploadCommand: Command {
     let uploadId: String
-    let collaborationId: String
-    let userId: String
-    let localUploadURL: URL
-    let tagViewModels: [TagViewModel]
-    let uploadDescription: String
+    let correlationId: String
+    let parentType: String
+    let parentId: String
+    let authorId: String
+    let timestamp: TimeInterval
+    let name: String?
+    let uploadDescription: String?
+    let url: URL?
 
-    init(
-        uploadId: String,
-        collaborationId: String,
-        userId: String,
-        localUploadURL: URL,
-        tags tagViewModels: [TagViewModel],
-        description: String
-    ) {
-        self.uploadId = uploadId
-        self.collaborationId = collaborationId
-        self.userId = userId
-        self.localUploadURL = localUploadURL
-        self.tagViewModels = tagViewModels
-        uploadDescription = description
-    }
-
-    static func == (lhs: AddUploadCommand, rhs: AddUploadCommand) -> Bool {
-        lhs.uploadId == rhs.uploadId
-    }
-}
-
-extension AddUploadCommand: LocalCommand {
-    func applyLocally(writer: ProjectModelWriter) async throws {
+    func applyLocally(inRealm realm: Realm) throws {
+        let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
+        let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
         let upload = Upload(
             id: uploadId,
-            timestamp: Date.now.timeIntervalSince1970,
-            url: localUploadURL,
-            name: "",
-            description: uploadDescription
+            timestamp: timestamp,
+            url: url,
+            name: name,
+            description: uploadDescription,
+            correlationId: correlationId
         )
-        let tags = tagViewModels.map {
-            Tag(id: $0.id, name: $0.name, lastApplied: Date.now.timeIntervalSince1970)
-        }
-
-        try await writer.write { realm in
-            guard let user = realm.object(ofType: Participant.self, forPrimaryKey: self.userId) else {
-                throw ModelError.currentUserNotFound
-            }
-            guard let collaboration = realm.object(ofType: Collaboration.self, forPrimaryKey: self.collaborationId)
-            else {
-                throw ModelError.collaborationNotFound
-            }
-            realm.add(upload)
-            realm.add(tags, update: .modified)
-            upload.tags.append(objectsIn: tags)
-            tags.forEach { $0.uploads.insert(upload) }
-            upload.author = user
-            collaboration.uploads.insert(upload)
-        }
+        // TODO: 44 add tags for upload, and update tag.uploads when upserting
+        upload.author = author
+        realm.add(upload, update: .modified)
+        collaboration.uploads.insert(upload)
     }
 }

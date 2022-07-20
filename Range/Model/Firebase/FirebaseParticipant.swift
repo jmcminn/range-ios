@@ -2,7 +2,7 @@ import Foundation
 import OSLog
 import RealmSwift
 
-/// Represents the `Participant` (`projects/details/participants` path in Firebase)
+/// Represents the `Participant` (`projects/participants` path in Firebase)
 /// Decodable only - it's a readonly data
 ///
 /// Encoded as:
@@ -14,7 +14,7 @@ import RealmSwift
 ///     "avatarUrl": "name.png",
 ///     "email": "email@domain.com"
 /// }
-struct FirebaseParticipant: Decodable, FirebaseToRealmSyncable {
+struct FirebaseParticipant: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Participant
 
     /// CodingKeys used by Codable as a keys in the encoded form
@@ -29,7 +29,7 @@ struct FirebaseParticipant: Decodable, FirebaseToRealmSyncable {
 
     /// Add or update the status.
     /// Ignores not well formed avatarUrl
-    func upsert(_ realm: Realm, id: String) throws {
+    func upsertCommand(id: String) throws -> Command {
         let avatarUrl: URL?
         if let avatarUrlString = avatarUrlString {
             avatarUrl = URL(string: avatarUrlString)
@@ -39,9 +39,12 @@ struct FirebaseParticipant: Decodable, FirebaseToRealmSyncable {
         } else {
             avatarUrl = nil
         }
-        realm.add(
-            Participant(id: id, firstName: firstName, lastName: lastName, avatarUrl: avatarUrl, email: email),
-            update: .modified
+        return AddParticipantCommand(
+            participantId: id,
+            firstName: firstName,
+            lastName: lastName,
+            avatarUrl: avatarUrl,
+            email: email
         )
     }
 }

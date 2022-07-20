@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/details/collaborations/<id>`
-class Collaboration: Object {
+class Collaboration: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Backlink to the Feature. This is automatically updated whenever this coolaboration is added to or removed from the parent
@@ -20,6 +20,8 @@ class Collaboration: Object {
     @Persisted var uploads: MutableSet<Upload>
     /// tags attached to the upload, ordered
     @Persisted var tags: List<Tag>
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Default initializer required by Realm.
     override init() {
@@ -27,10 +29,21 @@ class Collaboration: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, description: String) {
+    init(id: String, name: String, description: String, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.name = name
         collaborationDescription = description
+        self.placeholder = placeholder
+    }
+
+    /// Convenience initializer for placeholder object
+    required convenience init(placeholderId id: String) {
+        self.init(
+            id: id,
+            name: "",
+            description: "",
+            placeholder: true
+        )
     }
 }

@@ -3,7 +3,7 @@ import CoreLocation
 import Foundation
 import RealmSwift
 
-/// Represents the `Upload` (`projects/details/uploads` path in Firebase)
+/// Represents the `Upload` (`projects/uploads` path in Firebase)
 ///
 /// Encoded as:
 ///
@@ -17,7 +17,7 @@ import RealmSwift
 ///         "url": "http....",
 ///         "correlation": "6ebe0ded-414b-4a5e-be09-5d079d5dd7dc"
 ///     }
-struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
+struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Upload
 
     /// CodingKeys used by Codable as a keys in the encoded form
@@ -30,35 +30,31 @@ struct FirebaseUpload: Codable, FirebaseToRealmSyncable {
     var parentType: String
     var authorId: String
     var timestamp: Int
-    var name: String
+    var name: String?
     var uploadDescription: String?
-    var urlString: String
-    var correlationId: String?
+    var urlString: String?
+    var correlationId: String
 
-    /// Add or update the upload and add it to appropriate parent (based on parentType). Also sets the author. Fails if parent or author not found
-    func upsert(_ realm: Realm, id: String) throws {
+    func upsertCommand(id: String) throws -> Command {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
-        guard let collaboration = realm.object(ofType: Collaboration.self, forPrimaryKey: parentId) else {
-            throw "collaboration not found: \(parentId)"
+        let url: URL?
+        if let urlString = urlString {
+            url = try URL(string: urlString).or(error: ModelError.malformedUrl(urlString))
+        } else {
+            url = nil
         }
-        guard let author = realm.object(ofType: Participant.self, forPrimaryKey: authorId) else {
-            throw "author not found: \(authorId)"
-        }
-        guard let url = URL(string: urlString) else {
-            throw "malformed url: \(urlString)"
-        }
-        let upload = Upload(
-            id: id,
+        return AddUploadCommand(
+            uploadId: id,
+            correlationId: correlationId,
+            parentType: parentType,
+            parentId: parentId,
+            authorId: authorId,
             timestamp: TimeInterval(timestamp),
-            url: url,
             name: name,
-            description: uploadDescription
+            uploadDescription: uploadDescription,
+            url: url
         )
-        // TODO: 44 add tags for upload, and update tag.uploads when upserting
-        upload.author = author
-        realm.add(upload, update: .modified)
-        collaboration.uploads.insert(upload)
     }
 }

@@ -2,11 +2,11 @@ import CoreLocation
 import Foundation
 import RealmSwift
 
-/// Represents the `ProjectSummary`` (`projects/summary` path in Firebase)
+/// Represents the `ProjectSummary`` (`projects/` path in Firestore)
 /// Allows for decoding and storing the decoded object in Realm
 /// There's no support for encoding currently as it's a readonly data
 /// This struct exists because conformance to `Decodable` cannot be added in class extension and we don't want to polute Realm model with Firebase related logic.
-struct FirebaseProjectSummary: Decodable, FirebaseToRealmSyncable {
+struct FirebaseProjectSummary: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = ProjectSummary
 
     /// center
@@ -14,7 +14,6 @@ struct FirebaseProjectSummary: Decodable, FirebaseToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case id
         case center
     }
 
@@ -35,9 +34,7 @@ struct FirebaseProjectSummary: Decodable, FirebaseToRealmSyncable {
 //        try coordinatesContainer.encode(center.latitude)
 //    }
 
-    /// Adds or updates project summary in the Realm database
-    func upsert(_ realm: Realm, id: String) throws {
-        let projectSummary = ProjectSummary(id: id, center: center)
-        realm.add(projectSummary, update: .modified)
+    func upsertCommand(id: String) throws -> Command {
+        AddProjectSummaryCommand(projectId: id, center: center)
     }
 }

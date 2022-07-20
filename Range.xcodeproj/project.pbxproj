@@ -114,6 +114,19 @@
 		0A720C65280427F7003D6B13 /* Rectangle 515.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A720C64280427F7003D6B13 /* Rectangle 515.png */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
 		0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */; };
+		0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F362888302400708C6B /* AddGeometryCommand.swift */; };
+		0A724F39288835A600708C6B /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F38288835A600708C6B /* Placeholder.swift */; };
+		0A724F3B288840AD00708C6B /* AddGeometryCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F3A288840AD00708C6B /* AddGeometryCommand+Firestore.swift */; };
+		0A724F3D2888483600708C6B /* AddFeatureCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F3C2888483600708C6B /* AddFeatureCommand.swift */; };
+		0A724F3F28884A9100708C6B /* AddCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F3E28884A9100708C6B /* AddCollaborationCommand.swift */; };
+		0A724F4128884D7A00708C6B /* AddFeatureCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4028884D7A00708C6B /* AddFeatureCommand+Firestore.swift */; };
+		0A724F4328884DF700708C6B /* AddCollaborationCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4228884DF700708C6B /* AddCollaborationCommand+Firestore.swift */; };
+		0A724F4528887A7D00708C6B /* AddProjectSummaryCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4428887A7D00708C6B /* AddProjectSummaryCommand.swift */; };
+		0A724F4728887B7200708C6B /* AddStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4628887B7200708C6B /* AddStatusCommand.swift */; };
+		0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4828887C6D00708C6B /* AddTagCommand.swift */; };
+		0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4A28887CF400708C6B /* AddParticipantCommand.swift */; };
+		0A724F4D28887E4C00708C6B /* AddPDFCanvasCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4C28887E4C00708C6B /* AddPDFCanvasCommand.swift */; };
+		0A724F4F28887ED400708C6B /* AddCommentCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4E28887ED300708C6B /* AddCommentCommand.swift */; };
 		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
 		0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4122844E05A0097888A /* Collaboration.swift */; };
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
@@ -139,11 +152,8 @@
 		0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */; };
 		0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B7672869E55E005ACFD7 /* Command.swift */; };
 		0AD9B76B286A1726005ACFD7 /* AddUploadCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */; };
-		0AD9B76D286A179D005ACFD7 /* CreatePhotoMarkerCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B76C286A179D005ACFD7 /* CreatePhotoMarkerCommand.swift */; };
-		0AD9B76F286A1B87005ACFD7 /* CreatePhotoMarkerCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B76E286A1B87005ACFD7 /* CreatePhotoMarkerCommand+Firestore.swift */; };
 		0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */; };
 		0AD9B773286B0F56005ACFD7 /* Command+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B772286B0F56005ACFD7 /* Command+Firestore.swift */; };
-		0AD9B775286B13E4005ACFD7 /* ActionCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B774286B13E4005ACFD7 /* ActionCommand+Firestore.swift */; };
 		0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */; };
 		0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */; };
 		0AD9B77C286E2925005ACFD7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0AD9B77B286E2925005ACFD7 /* FirebaseFirestore */; };
@@ -277,6 +287,19 @@
 		0A720C64280427F7003D6B13 /* Rectangle 515.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle 515.png"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
 		0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDisplay.swift; sourceTree = "<group>"; };
+		0A724F362888302400708C6B /* AddGeometryCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGeometryCommand.swift; sourceTree = "<group>"; };
+		0A724F38288835A600708C6B /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
+		0A724F3A288840AD00708C6B /* AddGeometryCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddGeometryCommand+Firestore.swift"; sourceTree = "<group>"; };
+		0A724F3C2888483600708C6B /* AddFeatureCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFeatureCommand.swift; sourceTree = "<group>"; };
+		0A724F3E28884A9100708C6B /* AddCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCollaborationCommand.swift; sourceTree = "<group>"; };
+		0A724F4028884D7A00708C6B /* AddFeatureCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddFeatureCommand+Firestore.swift"; sourceTree = "<group>"; };
+		0A724F4228884DF700708C6B /* AddCollaborationCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddCollaborationCommand+Firestore.swift"; sourceTree = "<group>"; };
+		0A724F4428887A7D00708C6B /* AddProjectSummaryCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProjectSummaryCommand.swift; sourceTree = "<group>"; };
+		0A724F4628887B7200708C6B /* AddStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStatusCommand.swift; sourceTree = "<group>"; };
+		0A724F4828887C6D00708C6B /* AddTagCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagCommand.swift; sourceTree = "<group>"; };
+		0A724F4A28887CF400708C6B /* AddParticipantCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantCommand.swift; sourceTree = "<group>"; };
+		0A724F4C28887E4C00708C6B /* AddPDFCanvasCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPDFCanvasCommand.swift; sourceTree = "<group>"; };
+		0A724F4E28887ED300708C6B /* AddCommentCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentCommand.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
 		0A7FC4122844E05A0097888A /* Collaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collaboration.swift; sourceTree = "<group>"; };
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
@@ -302,11 +325,8 @@
 		0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadCommand.swift; sourceTree = "<group>"; };
 		0AD9B7672869E55E005ACFD7 /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddUploadCommand+Firestore.swift"; sourceTree = "<group>"; };
-		0AD9B76C286A179D005ACFD7 /* CreatePhotoMarkerCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePhotoMarkerCommand.swift; sourceTree = "<group>"; };
-		0AD9B76E286A1B87005ACFD7 /* CreatePhotoMarkerCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreatePhotoMarkerCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewWithPlaceholder.swift; sourceTree = "<group>"; };
 		0AD9B772286B0F56005ACFD7 /* Command+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Command+Firestore.swift"; sourceTree = "<group>"; };
-		0AD9B774286B13E4005ACFD7 /* ActionCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ActionCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Throws.swift"; sourceTree = "<group>"; };
 		0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelFirestoreSync.swift; sourceTree = "<group>"; };
 		0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
@@ -393,6 +413,7 @@
 				0A2F32F02836CA0500D04A1C /* ProjectModel.swift */,
 				0AD9B75328620821005ACFD7 /* ProjectModel+Write.swift */,
 				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
+				0A724F38288835A600708C6B /* Placeholder.swift */,
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
 				0A7FC4142844E0670097888A /* Status.swift */,
 				0A4995BE2858D00100E571FB /* Tag.swift */,
@@ -749,7 +770,15 @@
 				0AD9B761286773C8005ACFD7 /* Action.swift */,
 				0AD9B7632869DDFE005ACFD7 /* ActionCommand.swift */,
 				0AD9B7672869E55E005ACFD7 /* Command.swift */,
-				0AD9B76C286A179D005ACFD7 /* CreatePhotoMarkerCommand.swift */,
+				0A724F4428887A7D00708C6B /* AddProjectSummaryCommand.swift */,
+				0A724F4628887B7200708C6B /* AddStatusCommand.swift */,
+				0A724F4828887C6D00708C6B /* AddTagCommand.swift */,
+				0A724F4A28887CF400708C6B /* AddParticipantCommand.swift */,
+				0A724F4C28887E4C00708C6B /* AddPDFCanvasCommand.swift */,
+				0A724F362888302400708C6B /* AddGeometryCommand.swift */,
+				0A724F3C2888483600708C6B /* AddFeatureCommand.swift */,
+				0A724F3E28884A9100708C6B /* AddCollaborationCommand.swift */,
+				0A724F4E28887ED300708C6B /* AddCommentCommand.swift */,
 				0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */,
 			);
 			path = Commands;
@@ -759,8 +788,9 @@
 			isa = PBXGroup;
 			children = (
 				0AD9B772286B0F56005ACFD7 /* Command+Firestore.swift */,
-				0AD9B774286B13E4005ACFD7 /* ActionCommand+Firestore.swift */,
-				0AD9B76E286A1B87005ACFD7 /* CreatePhotoMarkerCommand+Firestore.swift */,
+				0A724F3A288840AD00708C6B /* AddGeometryCommand+Firestore.swift */,
+				0A724F4028884D7A00708C6B /* AddFeatureCommand+Firestore.swift */,
+				0A724F4228884DF700708C6B /* AddCollaborationCommand+Firestore.swift */,
 				0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */,
 			);
 			path = Commands;
@@ -933,15 +963,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AD9B76D286A179D005ACFD7 /* CreatePhotoMarkerCommand.swift in Sources */,
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
 				0AD9B762286773C8005ACFD7 /* Action.swift in Sources */,
 				0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
+				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
+				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
+				0A724F4328884DF700708C6B /* AddCollaborationCommand+Firestore.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
@@ -955,6 +987,8 @@
 				0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */,
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,
+				0A724F4128884D7A00708C6B /* AddFeatureCommand+Firestore.swift in Sources */,
+				0A724F3F28884A9100708C6B /* AddCollaborationCommand.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
@@ -964,10 +998,11 @@
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
-				0AD9B76F286A1B87005ACFD7 /* CreatePhotoMarkerCommand+Firestore.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
+				0A724F4528887A7D00708C6B /* AddProjectSummaryCommand.swift in Sources */,
 				0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
+				0A724F4728887B7200708C6B /* AddStatusCommand.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* TagCollectionViewCell.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */,
@@ -981,6 +1016,7 @@
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
+				0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
@@ -989,6 +1025,8 @@
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A4995BF2858D00100E571FB /* Tag.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
+				0A724F4D28887E4C00708C6B /* AddPDFCanvasCommand.swift in Sources */,
+				0A724F3B288840AD00708C6B /* AddGeometryCommand+Firestore.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0AD9B7642869DDFE005ACFD7 /* ActionCommand.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
@@ -1008,11 +1046,12 @@
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
-				0AD9B775286B13E4005ACFD7 /* ActionCommand+Firestore.swift in Sources */,
 				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
 				0A34C1892845FE9C00BEDC7C /* FirebaseComment.swift in Sources */,
+				0A724F4F28887ED400708C6B /* AddCommentCommand.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsHandler.swift in Sources */,
+				0A724F3D2888483600708C6B /* AddFeatureCommand.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
 				0AD9B76B286A1726005ACFD7 /* AddUploadCommand+Firestore.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
@@ -1043,6 +1082,7 @@
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 				0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */,
+				0A724F39288835A600708C6B /* Placeholder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1441,7 +1481,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_CFBundleDisplayName = "Range emulator";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

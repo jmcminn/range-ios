@@ -4,7 +4,7 @@ import PDFKit
 import RealmSwift
 
 /// Realm object for `project/details/canvases/<id>`.
-class PDFCanvas: Object {
+class PDFCanvas: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// URL of the PDF
@@ -15,6 +15,8 @@ class PDFCanvas: Object {
     @Persisted var userDefinedScale: Double
     /// geometries for this canvas, the order doesn't matter so it's a set
     @Persisted var geometries: MutableSet<Geometry>
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Default initializer required by Realm.
     override init() {
@@ -22,11 +24,17 @@ class PDFCanvas: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, url: String, pageNumber: Int, userDefinedScale: Double) {
+    init(id: String, url: String, pageNumber: Int, userDefinedScale: Double, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.url = url
         self.pageNumber = pageNumber
         self.userDefinedScale = userDefinedScale
+        self.placeholder = placeholder
+    }
+
+    /// Convenience initializer for placeholder object
+    required convenience init(placeholderId id: String) {
+        self.init(id: id, url: "", pageNumber: 0, userDefinedScale: 0, placeholder: true)
     }
 }

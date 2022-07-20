@@ -2,7 +2,8 @@ import RealmSwift
 import UIKit
 
 /// Realm object for `project/details/tagNames/<id>`.
-class Tag: Object {
+class Tag: Object, WithPlaceholder {
+    // TODO: 44 don't show placeholder tags anywhere...
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     // name
@@ -14,6 +15,8 @@ class Tag: Object {
     @Persisted var collaborations: MutableSet<Collaboration>
     /// all the uploads the tag is attached to
     @Persisted var uploads: MutableSet<Upload>
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Count how many times the tag was applied. Sum uploads, collaborations, etc.
     /// For now only uploads...
@@ -27,10 +30,16 @@ class Tag: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, lastApplied: TimeInterval? = nil) {
+    init(id: String, name: String, lastApplied: TimeInterval? = nil, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.name = name
         self.lastApplied = lastApplied
+        self.placeholder = placeholder
+    }
+
+    /// Convenience initializer for placeholder object
+    required convenience init(placeholderId id: String) {
+        self.init(id: id, name: "", lastApplied: nil, placeholder: true)
     }
 }

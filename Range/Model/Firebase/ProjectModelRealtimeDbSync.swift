@@ -80,31 +80,32 @@ class ProjectModelRealtimeDbSync {
         try await doInitialSync()
 
         // after this point it's only registering for observation and the function returns
-        syncDetails(statusNamesReference, as: FirebaseStatusName.self)
-        syncDetails(tagNamesReference, as: FirebaseTagName.self)
-        syncDetails(participantsReference, as: FirebaseParticipant.self)
-        syncDetails(geometriesReference, as: FirebaseGeometry.self)
-        syncDetails(featuresReference, as: FirebaseFeature.self)
-        syncDetails(collaborationsReference, as: FirebaseCollaboration.self)
-        syncDetails(commentsReference, as: FirebaseComment.self)
-        syncDetails(uploadsReference, as: FirebaseUpload.self)
+//        syncDetails(statusNamesReference, as: FirebaseStatusName.self)
+//        syncDetails(tagNamesReference, as: FirebaseTagName.self)
+//        syncDetails(participantsReference, as: FirebaseParticipant.self)
+//        syncDetails(geometriesReference, as: FirebaseGeometry.self)
+//        syncDetails(featuresReference, as: FirebaseFeature.self)
+//        syncDetails(collaborationsReference, as: FirebaseCollaboration.self)
+//        syncDetails(commentsReference, as: FirebaseComment.self)
+//        syncDetails(uploadsReference, as: FirebaseUpload.self)
 
+        // TODO: 44 this will become some photo upload action (?)
         /// observe any changes in actions
-        try await _asyncOnFirebaseSyncQueue {
-            self.actionsNotificationToken = self.syncRealm.objects(Action.self)
-                .observe(on: self.syncQueue) { [weak self] changes in
-                    guard let self = self else { return }
-                    switch changes {
-                    case let .initial(actions):
-                        self.onActionsChange(actions)
-                    case let .update(actions, _, _, _):
-                        self.onActionsChange(actions)
-                    case let .error(error):
-                        Logger.model
-                            .error("observing actions failed: \(error.localizedDescription, privacy: .public)")
-                    }
-                }
-        }
+//        try await _asyncOnFirebaseSyncQueue {
+//            self.actionsNotificationToken = self.syncRealm.objects(Action.self)
+//                .observe(on: self.syncQueue) { [weak self] changes in
+//                    guard let self = self else { return }
+//                    switch changes {
+//                    case let .initial(actions):
+//                        self.onActionsChange(actions)
+//                    case let .update(actions, _, _, _):
+//                        self.onActionsChange(actions)
+//                    case let .error(error):
+//                        Logger.model
+//                            .error("observing actions failed: \(error.localizedDescription, privacy: .public)")
+//                    }
+//                }
+//        }
 
 //        model.remoteUpdater = self
     }
@@ -113,37 +114,34 @@ class ProjectModelRealtimeDbSync {
     /// We use observe instead of `getData` as this is recommended by Firebase and not forces the server side communication if not needed
     private func doInitialSync() async throws {
         // do this in parallel
-        async let test = projectSummaryReference.getData()
-        print("XXX ", try await test)
-
-        async let projectSummaryRequest = projectSummaryReference._observeSingleEvent(.value)
-        async let canvasesRequest = canvasesReference._observeSingleEvent(.value)
-        async let participantsRequest = participantsReference._observeSingleEvent(.value)
-
-        // await for results
-        let projectSummarySnapshot = try await projectSummaryRequest
-        let canvases = try await canvasesRequest
-        let participants = try await participantsRequest
-
-        // store in the db
-        try await _asyncOnFirebaseSyncQueue { [weak self] in
-            guard let self = self else { return }
-            try self.syncRealm.write {
-                let projectSummary = try projectSummarySnapshot.data(as: FirebaseProjectSummary.self)
-                try projectSummary.upsert(self.syncRealm, id: projectSummarySnapshot.key)
-
-                for canvasSnapshot in canvases.children {
-                    guard let snapshot = canvasSnapshot as? DataSnapshot else { break }
-                    let canvas = try snapshot.data(as: FirebasePDFCanvas.self)
-                    try canvas.upsert(self.syncRealm, id: snapshot.key)
-                }
-                for participantSnapshot in participants.children {
-                    guard let snapshot = participantSnapshot as? DataSnapshot else { break }
-                    let participant = try snapshot.data(as: FirebaseParticipant.self)
-                    try participant.upsert(self.syncRealm, id: snapshot.key)
-                }
-            }
-        }
+//        async let projectSummaryRequest = projectSummaryReference._observeSingleEvent(.value)
+//        async let canvasesRequest = canvasesReference._observeSingleEvent(.value)
+//        async let participantsRequest = participantsReference._observeSingleEvent(.value)
+//
+//        // await for results
+//        let projectSummarySnapshot = try await projectSummaryRequest
+//        let canvases = try await canvasesRequest
+//        let participants = try await participantsRequest
+//
+//        // store in the db
+//        try await _asyncOnFirebaseSyncQueue { [weak self] in
+//            guard let self = self else { return }
+//            try self.syncRealm.write {
+//                let projectSummary = try projectSummarySnapshot.data(as: FirebaseProjectSummary.self)
+//                try projectSummary.upsert(self.syncRealm, id: projectSummarySnapshot.key)
+//
+//                for canvasSnapshot in canvases.children {
+//                    guard let snapshot = canvasSnapshot as? DataSnapshot else { break }
+//                    let canvas = try snapshot.data(as: FirebasePDFCanvas.self)
+//                    try canvas.upsert(self.syncRealm, id: snapshot.key)
+//                }
+//                for participantSnapshot in participants.children {
+//                    guard let snapshot = participantSnapshot as? DataSnapshot else { break }
+//                    let participant = try snapshot.data(as: FirebaseParticipant.self)
+//                    try participant.upsert(self.syncRealm, id: snapshot.key)
+//                }
+//            }
+//        }
     }
 
     /// Convenience function to register listeners for given reference and invoke FirebaseToRealmSyncable methods on decoded objects to update the Realm state.
@@ -220,35 +218,35 @@ class ProjectModelRealtimeDbSync {
 extension ProjectModelRealtimeDbSync {
     /// Potentially trigger the Firebase write on actions update
     /// Performed on the syncQueue
-    func onActionsChange(_ actions: Results<Action>) {
-        // TODO: 44 how to test it?
-
-        if let action = actions.first {
-            do {
-                if try maybePerformAction(action) {
-                    // successfully performed, delete it
-                    syncRealm.delete(action)
-                }
-            } catch {
-                Logger.firebase.error("action failed: \(error.localizedDescription, privacy: .public)")
-                action.retryCount += 1
-                action.lastErrorMessage = error.localizedDescription
-                // TODO: 44 move to some external "exponential backoff" calculator (?)
-                action.nextAttemptAt = Date.now.timeIntervalSince1970
-                    + min(pow(2, Double(action.retryCount)), maxBackoff)
-            }
-        }
-    }
+//    func onActionsChange(_ actions: Results<Action>) {
+//        // TODO: 44 how to test it?
+//
+//        if let action = actions.first {
+//            do {
+//                if try maybePerformAction(action) {
+//                    // successfully performed, delete it
+//                    syncRealm.delete(action)
+//                }
+//            } catch {
+//                Logger.firebase.error("action failed: \(error.localizedDescription, privacy: .public)")
+//                action.retryCount += 1
+//                action.lastErrorMessage = error.localizedDescription
+//                // TODO: 44 move to some external "exponential backoff" calculator (?)
+//                action.nextAttemptAt = Date.now.timeIntervalSince1970
+//                    + min(pow(2, Double(action.retryCount)), maxBackoff)
+//            }
+//        }
+//    }
 
     // TODO: 44 only try if there's network access
     /// Perform action if retry conditions are met
     /// - Returns: `true` if it was performed
-    func maybePerformAction(_: Action) throws -> Bool {
-        // TODO: 44 NWPathMonitor for connection monitoring?
-//        guard action.shouldPerform(at: Date.now.timeIntervalSince1970) else { return false }
-//        try action.command.firebaseCommand.applyToFirebase(firebaseSync: self, in: syncRealm)
-        true
-    }
+//    func maybePerformAction(_: Action) throws -> Bool {
+//        // TODO: 44 NWPathMonitor for connection monitoring?
+    ////        guard action.shouldPerform(at: Date.now.timeIntervalSince1970) else { return false }
+    ////        try action.command.firebaseCommand.applyToFirebase(firebaseSync: self, in: syncRealm)
+//        true
+//    }
 }
 
 // extension ProjectModelFirebaseSync: ProjectModelRemoteUpdater {

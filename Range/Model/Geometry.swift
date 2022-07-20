@@ -4,7 +4,7 @@ import RealmSwift
 import Turf
 
 /// Realm object for `project/details/geometry/<id>`
-class Geometry: Object {
+class Geometry: Object, WithPlaceholder {
     /// Supported annotation types, all others are ignored by Range iOS app
     enum AnnotationType: String, PersistableEnum {
         case photoMarker
@@ -45,8 +45,8 @@ class Geometry: Object {
         self.placeholder = placeholder
     }
 
-    /// Convenience initializer for placeholder Geometry
-    convenience init(placeholder id: String) {
+    /// Convenience initializer for placeholder object
+    required convenience init(placeholderId id: String) {
         self.init(
             id: id,
             annotationType: .photoMarker,

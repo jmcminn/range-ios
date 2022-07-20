@@ -2,11 +2,13 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/details/feature/<id>`
-class Feature: Object {
+class Feature: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// name
     @Persisted var name: String
+    /// description (can't really use the description name for it as it's already used)
+    @Persisted var featureDescription: String
     /// Backlink to the Geometry. This is automatically updated whenever this feature is added to or removed from a geometry
     @Persisted(originProperty: "features") var geometry: LinkingObjects<Geometry>
     /// collaborations for this feature, the order doesn't matter so it's a set
@@ -27,18 +29,20 @@ class Feature: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, placeholder: Bool = false) {
+    init(id: String, name: String, description: String, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.name = name
+        featureDescription = description
         self.placeholder = placeholder
     }
 
-    /// Convenience initializer for placeholder Feature
-    convenience init(placeholder id: String) {
+    /// Convenience initializer for placeholder object
+    required convenience init(placeholderId id: String) {
         self.init(
             id: id,
             name: "",
+            description: "",
             placeholder: true
         )
     }

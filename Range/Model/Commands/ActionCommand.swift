@@ -1,4 +1,5 @@
 import Foundation
+import RealmSwift
 
 /// This will be encoded as for example:
 ///  {
@@ -16,16 +17,16 @@ import Foundation
 /// Not ideal, the "_0" level is not really needed and is responsible for the unnamed command associated value but to get rid of it
 /// there would have to be a custom codable implementation that switches over all the cases and does the manual encoded, decode.
 /// Not ideal either but at least it's keyed by the enum cases...
-enum ActionCommand: Equatable, Codable {
-    case createPhotoMarker(_ command: CreatePhotoMarkerCommand)
-    case addUpload(_ command: AddUploadCommand)
-
-    func applyLocally(writer: ProjectModelWriter) async throws {
-        switch self {
-        case let .createPhotoMarker(c):
-            try await c.applyLocally(writer: writer)
-        case let .addUpload(c):
-            try await c.applyLocally(writer: writer)
-        }
-    }
-}
+// enum ActionCommand: Equatable, Codable {
+//    case createPhotoMarker(_ command: CreatePhotoMarkerCommand)
+//    case addUpload(_ command: AddUploadCommand)
+//
+//    func applyLocally(inRealm realm: Realm) throws {
+//        switch self {
+//        case let .createPhotoMarker(c):
+//            try c.applyLocally(inRealm: realm)
+//        case let .addUpload(c):
+//            try c.applyLocally(inRealm: realm)
+//        }
+//    }
+// }

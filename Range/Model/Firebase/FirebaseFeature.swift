@@ -3,7 +3,7 @@ import Foundation
 import OSLog
 import RealmSwift
 
-/// Represents the `Feature` (`projects/details/features` path in Firebase)
+/// Represents the `Feature` (`projects/features` path in Firebase)
 ///
 /// Encoded as:
 ///
@@ -12,44 +12,32 @@ import RealmSwift
 ///         "name"     : "name",
 ///         "description": "..."  // optional, not implemented on iOS
 ///     }
-struct FirebaseFeature: Codable, FirebaseToRealmSyncable {
+struct FirebaseFeature: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Feature
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case geometryId = "geometry", name
+        case geometryId = "geometry", name, featureDescription = "description"
     }
 
     var geometryId: String
     var name: String
+    var featureDescription: String
 
     /// For constructing with all properties
-    init(geometryId: String, name: String) {
+    init(geometryId: String, name: String, description: String) {
         self.geometryId = geometryId
         self.name = name
+        featureDescription = description
     }
 
     /// For constructing from the `Feature` object
     /// geometryId is passed here and not taken from the Feature as it is kind of optional in the Feature and it is required here
     init(geometryId: String, feature: Feature) {
-        self.init(geometryId: geometryId, name: feature.name)
+        self.init(geometryId: geometryId, name: feature.name, description: feature.featureDescription)
     }
 
-    /// Add or update the feature. It fails with warning only
-    func upsert(_ realm: Realm, id: String) throws {
-        let geometry: Geometry
-        if let g = realm.object(ofType: Geometry.self, forPrimaryKey: geometryId) {
-            geometry = g
-        } else {
-            Logger.firestore
-                .debug(
-                    "Geometry not found for feature \(id, privacy: .public), creating a placeholder \(geometryId, privacy: .public)"
-                )
-            geometry = Geometry(placeholder: geometryId)
-            realm.add(geometry)
-        }
-        let feature = Feature(id: id, name: name)
-        realm.add(feature, update: .modified)
-        geometry.features.insert(feature)
+    func upsertCommand(id: String) throws -> Command {
+        AddFeatureCommand(featureId: id, geometryId: geometryId, name: name, featureDescription: featureDescription)
     }
 }
