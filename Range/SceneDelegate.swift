@@ -8,7 +8,6 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var projectModel: ProjectModel?
-    var projectModelFirebaseSync: ProjectModelFirebaseSync?
     var projectModelFirestoreSync: ProjectModelFirestoreSync?
 
     var projectFC: ProjectFlowController?
@@ -105,16 +104,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func createProjectModel(userId: String, projectId: String) async throws {
         let model = try ProjectModel(userId: userId, projectId: projectId)
 
-//        let firebaseSync = ProjectModelFirebaseSync(model: model)
-//        try await firebaseSync.start()
-
         let firestoreSync = ProjectModelFirestoreSync(model: model)
         try await firestoreSync.start()
 
         try model.loadProject()
 
         projectModel = model
-//        projectModelFirebaseSync = firebaseSync
         projectModelFirestoreSync = firestoreSync
     }
 
@@ -135,7 +130,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         projectFC?.stop()
         projectFC = nil
         projectModel = nil
-        projectModelFirebaseSync = nil
         projectModelFirestoreSync = nil
         do {
             try Auth.auth().signOut()

@@ -14,7 +14,7 @@ protocol FirebaseToRealmSyncable {
 }
 
 /// Synchronizes given `ProjectModel` with Firebase Realtime db
-class ProjectModelFirebaseSync {
+class ProjectModelRealtimeDbSync {
     /// The model to synchronize Firebase with
     private unowned let model: ProjectModel
 
@@ -217,7 +217,7 @@ class ProjectModelFirebaseSync {
 // 2a. on success remove the action and repeat
 // 2b. on failure adjust retry count, next attempt and set a timer
 // TODO: 44 add network conditions
-extension ProjectModelFirebaseSync {
+extension ProjectModelRealtimeDbSync {
     /// Potentially trigger the Firebase write on actions update
     /// Performed on the syncQueue
     func onActionsChange(_ actions: Results<Action>) {
