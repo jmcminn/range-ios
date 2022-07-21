@@ -1,8 +1,8 @@
 import Foundation
 import RealmSwift
 
-// TODO: 44 command should be object with Locally and Firestore extensions and remove actionCommand for now?
-// it can be useful later for storing in db, but for now we should be passing commands and not actionCOMmands
+/// A protocol for commands - command objects for performing changes on the Realm db.
+/// Some commands have extensions to apply them to the backend.
 protocol Command {
     /// Apply the changes locally in given Realm. Will be performed in a realm write transaction
     func apply(inRealm realm: Realm) throws

@@ -1,6 +1,7 @@
 import Foundation
 import RealmSwift
 
+// TODO: 90 not needed?
 /// This will be encoded as for example:
 ///  {
 ///    "addUpload": {

@@ -89,7 +89,7 @@ class ProjectModelRealtimeDbSync {
 //        syncDetails(commentsReference, as: FirebaseComment.self)
 //        syncDetails(uploadsReference, as: FirebaseUpload.self)
 
-        // TODO: 44 this will become some photo upload action (?)
+        // TODO: 90 this will become some photo upload action (?)
         /// observe any changes in actions
 //        try await _asyncOnFirebaseSyncQueue {
 //            self.actionsNotificationToken = self.syncRealm.objects(Action.self)
@@ -208,18 +208,18 @@ class ProjectModelRealtimeDbSync {
     }
 }
 
-// TODO: 44 change into docs:
+// TODO: 90 change into docs:
 // 0. listen (realm way) for actions and go to 1.
 // 1. get action
 // 2. check retry count/etc and run it or (re)set a timer
 // 2a. on success remove the action and repeat
 // 2b. on failure adjust retry count, next attempt and set a timer
-// TODO: 44 add network conditions
+// TODO: 90 add network conditions
 extension ProjectModelRealtimeDbSync {
     /// Potentially trigger the Firebase write on actions update
     /// Performed on the syncQueue
 //    func onActionsChange(_ actions: Results<Action>) {
-//        // TODO: 44 how to test it?
+//        // TODO: 90 how to test it?
 //
 //        if let action = actions.first {
 //            do {
@@ -231,18 +231,18 @@ extension ProjectModelRealtimeDbSync {
 //                Logger.firebase.error("action failed: \(error.localizedDescription, privacy: .public)")
 //                action.retryCount += 1
 //                action.lastErrorMessage = error.localizedDescription
-//                // TODO: 44 move to some external "exponential backoff" calculator (?)
+//                // TODO: 90 move to some external "exponential backoff" calculator (?)
 //                action.nextAttemptAt = Date.now.timeIntervalSince1970
 //                    + min(pow(2, Double(action.retryCount)), maxBackoff)
 //            }
 //        }
 //    }
 
-    // TODO: 44 only try if there's network access
+    // TODO: 90 only try if there's network access
     /// Perform action if retry conditions are met
     /// - Returns: `true` if it was performed
 //    func maybePerformAction(_: Action) throws -> Bool {
-//        // TODO: 44 NWPathMonitor for connection monitoring?
+//        // TODO: 90 NWPathMonitor for connection monitoring?
     ////        guard action.shouldPerform(at: Date.now.timeIntervalSince1970) else { return false }
     ////        try action.command.firebaseCommand.applyToFirebase(firebaseSync: self, in: syncRealm)
 //        true

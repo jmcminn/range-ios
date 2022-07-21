@@ -180,9 +180,6 @@ class ProjectModelFirestoreSync {
 
 extension ProjectModelFirestoreSync: ProjectModelRemoteUpdater {
     func runCommands(_ commands: [Command], writer _: ProjectModelWriter) async throws {
-//        firestore.runTransaction { transaction, _ in
-//        } completion: { object, error in
-//        }
         try await firestore.runTransaction { transaction, errorPointer -> Any? in
             for command in commands {
                 do {
@@ -195,31 +192,6 @@ extension ProjectModelFirestoreSync: ProjectModelRemoteUpdater {
             // don't return nil, it's supposed to work but it crashes
             return true
         }
-
-//        try await firestore.runTransaction ({ transaction, _ -> Any? in
-//            try commands.forEach {
-//                try ($0 as! FirestoreCommand).applyToFirestore(inTransaction: transaction, context: ctx)
-//            }
-//            return nil
-//        }
-//
-        ////        if let command = command as? FirestoreCommand {
-//        // TODO: 44
-        ////            try await command.applyToFirestore(firestoreSync: self, writer: writer)
-        ////            return true
-        ////        }
-        ////        return false
-//    }) { (object, error) in
-//            if let error = error {
-//                print("Transaction failed: \(error)")
-//            } else {
-//                print("Transaction successfully committed!")
-//            }
-//        }
-
-//    func runActionCommand(_: ActionCommand, writer _: ProjectModelWriter) async throws {
-//        // TODO: 44
-        ////        try await command.firestoreCommand.applyToFirestore(firestoreSync: self, writer: writer)
     }
 }
 

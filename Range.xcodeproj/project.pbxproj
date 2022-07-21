@@ -150,8 +150,8 @@
 		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
-		0AD9B75428620821005ACFD7 /* ProjectModel+Write.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Write.swift */; };
-		0AD9B75628620938005ACFD7 /* ProjectModelWriteTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75528620938005ACFD7 /* ProjectModelWriteTest.swift */; };
+		0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */; };
+		0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */; };
 		0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75728621782005ACFD7 /* Result+Throws.swift */; };
 		0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75928624204005ACFD7 /* Authentication.swift */; };
 		0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75C28644D99005ACFD7 /* TagsViewModelTest.swift */; };
@@ -331,8 +331,8 @@
 		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
-		0AD9B75328620821005ACFD7 /* ProjectModel+Write.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Write.swift"; sourceTree = "<group>"; };
-		0AD9B75528620938005ACFD7 /* ProjectModelWriteTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelWriteTest.swift; sourceTree = "<group>"; };
+		0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Commands.swift"; sourceTree = "<group>"; };
+		0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelCommandsTest.swift; sourceTree = "<group>"; };
 		0AD9B75728621782005ACFD7 /* Result+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Throws.swift"; sourceTree = "<group>"; };
 		0AD9B75928624204005ACFD7 /* Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		0AD9B75C28644D99005ACFD7 /* TagsViewModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModelTest.swift; sourceTree = "<group>"; };
@@ -427,7 +427,7 @@
 			children = (
 				0A45622E283E327500BA8D21 /* README.md */,
 				0A2F32F02836CA0500D04A1C /* ProjectModel.swift */,
-				0AD9B75328620821005ACFD7 /* ProjectModel+Write.swift */,
+				0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */,
 				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
 				0A724F38288835A600708C6B /* Placeholder.swift */,
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
@@ -451,7 +451,7 @@
 			children = (
 				0A724F522889730300708C6B /* Commands */,
 				0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */,
-				0AD9B75528620938005ACFD7 /* ProjectModelWriteTest.swift */,
+				0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */,
 				0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */,
 				0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */,
 				0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */,
@@ -1110,7 +1110,7 @@
 				0A4995C12858D05D00E571FB /* FirebaseTagName.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */,
-				0AD9B75428620821005ACFD7 /* ProjectModel+Write.swift in Sources */,
+				0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
@@ -1125,7 +1125,7 @@
 			files = (
 				0A34C18D2846030800BEDC7C /* FirebaseCommentTest.swift in Sources */,
 				0A724F5C28897DE500708C6B /* AddCollaborationCommandTest.swift in Sources */,
-				0AD9B75628620938005ACFD7 /* ProjectModelWriteTest.swift in Sources */,
+				0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */,
 				0A07D76028104BF000B6F9A2 /* FirebaseGeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A724F542889733000708C6B /* AddTagCommandTest.swift in Sources */,

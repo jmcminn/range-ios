@@ -19,7 +19,7 @@ struct AddCollaborationCommand: Command, Equatable {
         realm.add(collaboration, update: .modified)
         let tags = tagIds.compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
         collaboration.tags.append(objectsIn: tags)
-        // TODO: 44 remove the collaboration from the tags it was attached to and is not anymore
+        // TODO: 44 remove the collaboration from the tags it was attached to and is not anymore + unit test
         tags.forEach { $0.collaborations.insert(collaboration) }
         feature.collaborations.insert(collaboration)
     }

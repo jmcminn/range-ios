@@ -48,8 +48,6 @@ protocol ProjectModelWriter: AnyObject {
 /// To be implemented by the backend synchronizer to update the data on the backend.
 /// Currently implemented by `ProjectModelFirebaseSync`
 protocol ProjectModelRemoteUpdater: AnyObject {
-    // TODO: 44 not needed if Command class works (can be stored)
-//    func runActionCommand(_: ActionCommand, writer: ProjectModelWriter) async throws
     // TODO: 44 document
     func runCommands(_: [Command], writer: ProjectModelWriter) async throws
 }
@@ -76,7 +74,7 @@ class ProjectModel {
     /// Realm operating on `writeQueue`, initialized on first use
     var writeRealm: Realm?
 
-    // TODO: 44 revisit the disk cache storage - how does it play with using cache later for
+    // TODO: 90 revisit the disk cache storage - how does it play with using cache later for
     // downloaded images???
     /// Using Kingfisher image cache for local images store (configured disk cache to never expire)
     let localPhotosCache = ImageCache(name: "local-photos")
@@ -93,7 +91,7 @@ class ProjectModel {
         self.userId = userId
         self.projectId = projectId.lowercased()
         var config = Realm.Configuration.defaultConfiguration
-        // TODO: 44 for now we just remove the Realm and resync if migration needed...
+        // TODO: 90 for now we just remove the Realm and resync if migration needed...
         config.deleteRealmIfMigrationNeeded = true
         if inMemory {
             config.inMemoryIdentifier = self.projectId

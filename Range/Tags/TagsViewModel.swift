@@ -172,7 +172,7 @@ class TagViewModel: NSObject, Codable {
 
     /// Convenience initializer for new tags with auto generated id and given name
     convenience init(newTagWithName name: String) {
-        self.init(id: UUID().uuidString.lowercased(), name: name, lastApplied: nil, usageCount: 0, newTag: true)
+        self.init(id: generateRealmId(), name: name, lastApplied: nil, usageCount: 0, newTag: true)
     }
 
     /// equatable to check for id only

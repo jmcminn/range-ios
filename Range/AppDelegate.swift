@@ -17,9 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func initiateFirebase() {
-        // firebase emulator enabled in Xcode environment variables.
-        // Set to true in the "Range firebase emulator" scheme
-
+        // firebase emulator enabled in the "Debug firebase emulator" configuration
+        // in the `FIREBASE_PROJECT` custom build setting
+        // if set to "emulator" then run on emulator, otherwise on the configuration
+        // provided in GoogleService-Info.plist
         let firebaseProject = Bundle.main.object(forInfoDictionaryKey: "FirebaseProject") as! String
         if firebaseProject == "emulator" {
             Logger.firebase.debug("Using firebase emulator")
@@ -43,11 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Logger.firebase.debug("Using firebase project: \(FirebaseOptions.defaultOptions()?.projectID ?? "?")")
             FirebaseApp.configure()
         }
-
-        // enable offline persistence for the database
-        // TODO: 44
-//        Database.database().isPersistenceEnabled = true
-        Database.database().isPersistenceEnabled = false
     }
 
     // MARK: UISceneSession Lifecycle
