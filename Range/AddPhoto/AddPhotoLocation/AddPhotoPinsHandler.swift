@@ -274,7 +274,11 @@ extension AddPhotoPinsHandler {
     ///         - onInitialLoad: callback called only once when the pins are initially loaded
     private func loadAndDisplayPins(onInitialLoad: @escaping () -> Void) {
         geometriesNotificationToken = canvasContainer.pdfCanvasViewController.pdfCanvas.geometries
-            .where { $0.annotationType == .photoMarker }
+            .where { $0.placeholder == false &&
+                $0.annotationType == .photoMarker &&
+                // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
+                ($0.features.collaborations.count > 0).count > 0
+            }
             .observe { [weak self] changes in
                 guard let self = self else { return }
                 switch changes {

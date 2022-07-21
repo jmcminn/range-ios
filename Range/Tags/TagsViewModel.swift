@@ -1,5 +1,6 @@
 import Algorithms
 import Foundation
+import RealmSwift
 
 /// View model for list of tags and support for selecting/deselecting tags
 class TagsViewModel: NSObject {
@@ -31,6 +32,7 @@ class TagsViewModel: NSObject {
     init(model: ProjectModel, initialSelectedTags: [TagViewModel] = []) {
         let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
         allTags = model.mainRealm.objects(Tag.self)
+            .where { $0.placeholder == false }
             .map { TagViewModel(id: $0.id, name: $0.name, lastApplied: $0.lastApplied, usageCount: $0.usageCount) }
             .sorted(using: nameSort)
 

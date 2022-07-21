@@ -3,7 +3,6 @@ import UIKit
 
 /// Realm object for `project/details/tagNames/<id>`.
 class Tag: Object, WithPlaceholder {
-    // TODO: 44 don't show placeholder tags anywhere...
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     // name
