@@ -80,7 +80,7 @@ extension ProjectModel {
     @MainActor
     func addPhoto(
         _: Data,
-        tags _: [TagViewModel],
+        tags: [TagViewModel],
         description: String,
         at coordinates: CLLocationCoordinate2D,
         in canvas: PDFCanvas
@@ -106,6 +106,7 @@ extension ProjectModel {
             tagIds: []
         )
         let uploadId = generateRealmId()
+        // TODO: 44 create new tags first
         let addUploadCmd = AddUploadCommand(
             uploadId: uploadId,
             correlationId: uploadId,
@@ -115,13 +116,10 @@ extension ProjectModel {
             timestamp: Date.now.timeIntervalSince1970,
             name: nil,
             uploadDescription: description,
-            url: nil
+            url: nil,
+            tagIds: tags.map(\.id)
         )
         // TODO: 44 do something with Data
-
-        // TODO: 44 create new tags first
-        // TODO: 44 uploadCmd with tags, photo, description
-
         try await runCommands([addGeometryCmd, addFeatureCmd, addCollaborationCmd, addUploadCmd])
         return addGeometryCmd.geometryId
     }

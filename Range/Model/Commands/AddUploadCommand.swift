@@ -11,6 +11,7 @@ struct AddUploadCommand: Command {
     let name: String?
     let uploadDescription: String?
     let url: URL?
+    var tagIds: [String]
 
     func applyLocally(inRealm realm: Realm) throws {
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
@@ -23,9 +24,14 @@ struct AddUploadCommand: Command {
             description: uploadDescription,
             correlationId: correlationId
         )
-        // TODO: 44 add tags for upload, and update tag.uploads when upserting
         upload.author = author
         realm.add(upload, update: .modified)
+
+        let tags = tagIds.compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
+        upload.tags.append(objectsIn: tags)
+        // TODO: 44 remove the object from the tags it was attached to and is not anymore
+        tags.forEach { $0.uploads.insert(upload) }
+
         collaboration.uploads.insert(upload)
     }
 }

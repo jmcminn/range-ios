@@ -11,7 +11,8 @@ extension AddUploadCommand: FirestoreCommand {
             name: name,
             uploadDescription: uploadDescription,
             urlString: url?.absoluteString,
-            correlationId: correlationId
+            correlationId: correlationId,
+            tagIds: tagIds
         )
         try transaction.setData(
             from: firestoreObject,
