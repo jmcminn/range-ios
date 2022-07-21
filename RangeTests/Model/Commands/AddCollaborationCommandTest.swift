@@ -132,4 +132,45 @@ class AddCollaborationCommandTest: XCTestCase {
         let collaboration = try XCTUnwrap(realm.object(ofType: Collaboration.self, forPrimaryKey: "collaboration1"))
         XCTAssertNil(collaboration.status)
     }
+
+    func testApplyInRealm_updateTags() throws {
+        let feature1 = Feature(id: "feature1", name: "Feature1", description: "")
+        let tag1 = Tag(id: "tag1", name: "tag 1")
+        let tag2 = Tag(id: "tag2", name: "tag 2")
+        let tag3 = Tag(id: "tag3", name: "tag 3")
+        try realm.write {
+            realm.add([feature1, tag1, tag2, tag3])
+        }
+
+        // given a collaboration with tag1 and tag2
+        var cmd = AddCollaborationCommand(
+            collaborationId: "collaboration1",
+            featureId: "feature1",
+            name: "",
+            collaborationDescription: "",
+            statusId: nil,
+            tagIds: ["tag1", "tag2"]
+        )
+        try realm.write {
+            try cmd.apply(inRealm: realm)
+        }
+        // tags have the collaboration attached
+        let collaboration = try XCTUnwrap(realm.object(ofType: Collaboration.self, forPrimaryKey: "collaboration1"))
+        XCTAssertEqual(collaboration.tags.map(\.id), ["tag1", "tag2"])
+        XCTAssertEqual(tag1.collaborations.count, 1)
+        XCTAssertEqual(tag2.collaborations.count, 1)
+        XCTAssertEqual(tag3.collaborations.count, 0)
+
+        // when switching collaboration tags
+        cmd.tagIds = ["tag2", "tag3"]
+        try realm.write {
+            try cmd.apply(inRealm: realm)
+        }
+
+        // then tag <-> collaboration links are updated
+        XCTAssertEqual(collaboration.tags.map(\.id), ["tag2", "tag3"])
+        XCTAssertEqual(tag1.collaborations.count, 0)
+        XCTAssertEqual(tag2.collaborations.count, 1)
+        XCTAssertEqual(tag3.collaborations.count, 1)
+    }
 }

@@ -10,6 +10,18 @@ struct AddCollaborationCommand: Command, Equatable {
     var tagIds: [String]
 
     func apply(inRealm realm: Realm) throws {
+        // remove the collaboration from the tags it was attached to and is not anymore
+        if let existingCollaboration = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId) {
+            // for fast lookup
+            let tagIdsSet = Set(tagIds)
+            for tag in existingCollaboration.tags {
+                if !tagIdsSet.contains(tag.id) {
+                    // updated tags don't contain this tag, remove the collaboration from it
+                    tag.collaborations.remove(existingCollaboration)
+                }
+            }
+        }
+
         let feature = realm.objectOrPlaceholder(ofType: Feature.self, forPrimaryKey: featureId)
         let collaboration = Collaboration(id: collaborationId, name: name, description: collaborationDescription)
         if let statusId = statusId {
@@ -19,7 +31,6 @@ struct AddCollaborationCommand: Command, Equatable {
         realm.add(collaboration, update: .modified)
         let tags = tagIds.compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
         collaboration.tags.append(objectsIn: tags)
-        // TODO: 44 remove the collaboration from the tags it was attached to and is not anymore + unit test
         tags.forEach { $0.collaborations.insert(collaboration) }
         feature.collaborations.insert(collaboration)
     }

@@ -125,4 +125,48 @@ class AddUplaodCommandTest: XCTestCase {
         XCTAssertEqual(collaboration2.uploads.count, 0)
         XCTAssertEqual(collaboration1.uploads.first, upload1)
     }
+
+    func testApplyInRealm_updateTags() throws {
+        let tag1 = Tag(id: "tag1", name: "tag 1")
+        let tag2 = Tag(id: "tag2", name: "tag 2")
+        let tag3 = Tag(id: "tag3", name: "tag 3")
+        try realm.write {
+            realm.add([tag1, tag2, tag3])
+        }
+
+        // given an upload with tag1 and tag2
+        var cmd = AddUploadCommand(
+            uploadId: "upload1",
+            correlationId: "upload1",
+            parentType: "Collaboration",
+            parentId: "collaboration1",
+            authorId: "user1",
+            timestamp: 1,
+            name: "upload 1",
+            uploadDescription: "upload 1 description",
+            url: URL(string: "https://range.io/image"),
+            tagIds: ["tag1", "tag2"]
+        )
+        try realm.write {
+            try cmd.apply(inRealm: realm)
+        }
+        // tags have the upload attached
+        let upload = try XCTUnwrap(realm.object(ofType: Upload.self, forPrimaryKey: "upload1"))
+        XCTAssertEqual(upload.tags.map(\.id), ["tag1", "tag2"])
+        XCTAssertEqual(tag1.uploads.count, 1)
+        XCTAssertEqual(tag2.uploads.count, 1)
+        XCTAssertEqual(tag3.uploads.count, 0)
+
+        // when switching upload tags
+        cmd.tagIds = ["tag2", "tag3"]
+        try realm.write {
+            try cmd.apply(inRealm: realm)
+        }
+
+        // then tag <-> upload links are updated
+        XCTAssertEqual(upload.tags.map(\.id), ["tag2", "tag3"])
+        XCTAssertEqual(tag1.uploads.count, 0)
+        XCTAssertEqual(tag2.uploads.count, 1)
+        XCTAssertEqual(tag3.uploads.count, 1)
+    }
 }
