@@ -198,13 +198,12 @@ class AddPhotoFlowController {
     @MainActor
     private func _storeData() async throws {
         if let geometryId = geometryId {
-            // TODO: 44 here
-//            lastPhotoPinId = try await model.addPhoto(
-//                imageData,
-//                tags: tags,
-//                description: photoDescription,
-//                toCollaborationForGeometryId: geometryId
-//            )
+            try await model.addPhoto(
+                imageData,
+                tags: tags,
+                description: photoDescription,
+                toCollaborationForGeometryId: geometryId
+            )
             lastPhotoPinId = geometryId
         } else {
             lastPhotoPinId = try await model.addPhoto(

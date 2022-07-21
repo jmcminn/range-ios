@@ -11,75 +11,85 @@ func generateRealmId() -> String {
 
 /// ProjectModel extension for write operations
 extension ProjectModel {
-    /// Creates a new geometry of photoMarker type and adds it to given canvas.
-    /// Creates a feature attached to this geometry and creates the collaboration attached to the feature.
-    /// Returns the collaboration
+    /// If geometry with given id has no feature it creates the feature
+    /// If the feature has no collaboration it creates the collaboration
+    /// Creates all new tags and creates an upload with given tags and description and adds it to a collaboration
+    /// Throws error if geometry with given id not found.
     ///
     /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     ///
     /// - Parameters:
-    ///     - canvas: should be from the `mainRealm`
-    ///     - coordinates: the coordinates for the photo marker
-    /// - Returns: CreatePhotoMarkerCommand that contains collaborationId, etc.
-//    @MainActor
-//    func createPhotoMarker(canvas: PDFCanvas,
-//                           coordinates: CLLocationCoordinate2D) async throws -> CreatePhotoMarkerCommand
-//    {
-//        // set ids to support retry, etc.
-//        let collaborationId = generateRealmId()
-//        let command = CreatePhotoMarkerCommand(
-//            canvasId: canvas.id,
-//            geometryId: generateRealmId(),
-//            featureId: generateRealmId(),
-//            collaborationId: collaborationId,
-//            coordinates: coordinates
-//        )
-//        try await runActionCommand(.createPhotoMarker(command))
-//        return command
-//    }
-
-    /// Returns the first collaboration from the first feature from the geometry with given id.
-    /// If geometry has no features it creates a feature.
-    /// If feature has no collaborations it creates a collaboration
-    /// Throws error if geometry with given id not found.
-    /// Throws error if creation of feature or collaboration fails
-//    @MainActor
-//    func getOrAddCollaboration(forGeometryId geometryId: String) async throws -> String {
-//        // TODO: 44 from write perspective the operations are:
-//        // 1. maybe create a feature
-//        // 2. maybe create a collaboration
-//        try await write { realm in
-//            guard let geometry = realm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
-//                throw ModelError.geometryNotFound
-//            }
-//            let createFeature: Bool = geometry.features.isEmpty
-//            let createCollaboration: Bool
-//            if createFeature {
-//                createCollaboration = true
-//            } else {
-//                createCollaboration = geometry.features[0].collaborations.isEmpty
-//            }
-//
-//            if createFeature {}
-//            // now there should be a feature in geometry
-    ////                let feature = Feature(id: generateRealmId(), name: "")
-    ////                realm.add(feature, update: .error)
-    ////                geometry.features.insert(feature)
-    ////            let feature = geometry.features[0]
-    ////            if feature.collaborations.isEmpty {
-    ////                let collaboration = Collaboration(id: generateRealmId(), name: "", description: "")
-    ////                realm.add(collaboration, update: .error)
-    ////                feature.collaborations.insert(collaboration)
-    ////            }
-//        }
-//        // TODO: 44 here
-//        return ""
-//    }
-
+    ///     - imageData: the data for the image
+    ///     - tags: array of tags, existing or new ones
+    ///     - description: upload description
+    ///     - geometryId: 'photoMarker' to add the upload to (to it's first feature/first collaboration)
     @MainActor
     func addPhoto(
-        _: Data,
+        _ imageData: Data,
+        tags: [TagViewModel],
+        description: String,
+        toCollaborationForGeometryId geometryId: String
+    ) async throws {
+        guard let geometry = mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
+            throw ModelError.geometryNotFound
+        }
+
+        var commands: [Command] = []
+
+        // create feature if geometry has no feature
+        let featureId: String
+        if let feature = geometry.features.first {
+            featureId = feature.id
+        } else {
+            featureId = generateRealmId()
+            commands.append(AddFeatureCommand(
+                featureId: featureId,
+                geometryId: geometryId,
+                name: "",
+                featureDescription: ""
+            ))
+        }
+
+        // create collaboration if not there yet
+        let collaborationId: String
+        if let feature = geometry.features.first, let collaboration = feature.collaborations.first {
+            collaborationId = collaboration.id
+        } else {
+            collaborationId = generateRealmId()
+            commands.append(AddCollaborationCommand(
+                collaborationId: collaborationId,
+                featureId: featureId,
+                name: "",
+                collaborationDescription: "",
+                statusId: nil,
+                tagIds: []
+            ))
+        }
+
+        commands.append(contentsOf:
+            _commandsForAddPhoto(imageData, tags: tags, description: description,
+                                 toCollaboration: collaborationId))
+        try await runCommands(commands)
+    }
+
+    /// Creates a new geometry of photoMarker type and adds it to given canvas.
+    /// Creates a feature attached to this geometry and creates the collaboration attached to the feature.
+    /// Creates all new tags and creates an upload with given tags and description and adds it to a collaboration
+    ///
+    /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
+    /// The write operation will be executed on a `writeRealm` so not on the main thread
+    ///
+    /// - Parameters:
+    ///     - imageData: the data for the image
+    ///     - tags: array of tags, existing or new ones
+    ///     - description: upload description
+    ///     - coordinates: the coordinates for the photo marker
+    ///     - canvas: should be from the `mainRealm`
+    /// - Returns: id of the newly created geometry
+    @MainActor
+    func addPhoto(
+        _ imageData: Data,
         tags: [TagViewModel],
         description: String,
         at coordinates: CLLocationCoordinate2D,
@@ -105,13 +115,31 @@ extension ProjectModel {
             statusId: nil,
             tagIds: []
         )
+        var commands: [Command] = [addGeometryCmd, addFeatureCmd, addCollaborationCmd]
+        commands.append(contentsOf: _commandsForAddPhoto(
+            imageData,
+            tags: tags,
+            description: description,
+            toCollaboration: addCollaborationCmd.collaborationId
+        ))
+
+        try await runCommands(commands)
+        return addGeometryCmd.geometryId
+    }
+
+    /// Returns commands for adding new photo with given tags (some of them may require creation) to collaboration with given id
+    /// Stores the upload data in the disk cache, creates and upload object and adds it to a collaboration
+    func _commandsForAddPhoto(_: Data,
+                              tags: [TagViewModel],
+                              description: String, toCollaboration collaborationId: String) -> [Command]
+    {
         let uploadId = generateRealmId()
         // TODO: 44 create new tags first
         let addUploadCmd = AddUploadCommand(
             uploadId: uploadId,
             correlationId: uploadId,
             parentType: "Collaboration",
-            parentId: addCollaborationCmd.collaborationId,
+            parentId: collaborationId,
             authorId: userId,
             timestamp: Date.now.timeIntervalSince1970,
             name: nil,
@@ -120,12 +148,9 @@ extension ProjectModel {
             tagIds: tags.map(\.id)
         )
         // TODO: 44 do something with Data
-        try await runCommands([addGeometryCmd, addFeatureCmd, addCollaborationCmd, addUploadCmd])
-        return addGeometryCmd.geometryId
+        return [addUploadCmd]
     }
 
-    /// Stores the upload data in the disk cache, creates and upload object and adds it to a collaboration
-//    @MainActor
 //    func addPhoto(_ data: Data,
 //                  tags tagViewModels: [TagViewModel],
 //                  description: String,

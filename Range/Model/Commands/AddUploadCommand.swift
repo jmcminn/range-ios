@@ -30,6 +30,7 @@ struct AddUploadCommand: Command {
         let tags = tagIds.compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
         upload.tags.append(objectsIn: tags)
         // TODO: 44 remove the object from the tags it was attached to and is not anymore
+        // unit test first...
         tags.forEach { $0.uploads.insert(upload) }
 
         collaboration.uploads.insert(upload)
