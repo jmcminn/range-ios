@@ -7,7 +7,7 @@ struct AddProjectSummaryCommand: Command {
     let center: CLLocationCoordinate2D
 
     /// Adds or updates project summary in the Realm database
-    func applyLocally(inRealm realm: Realm) throws {
+    func apply(inRealm realm: Realm) throws {
         let projectSummary = ProjectSummary(id: projectId, center: center)
         realm.add(projectSummary, update: .modified)
     }

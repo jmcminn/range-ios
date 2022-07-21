@@ -463,7 +463,7 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
     func searchViewReturnButtonTapped(_ searchView: SearchView) {
         // if the filter is entered and the only option is to add new tag - add it
         if !tagsViewModel.filterStringTrimmed.isEmpty, tagsViewModel.filteredTags.isEmpty {
-            let tag = TagViewModel(name: tagsViewModel.filterStringTrimmed)
+            let tag = TagViewModel(newTagWithName: tagsViewModel.filterStringTrimmed)
             tagsViewModel.add(tag: tag)
             tagsViewModel.set(tagWithId: tag.id, selected: true)
             tagsViewModel.filter(by: "")

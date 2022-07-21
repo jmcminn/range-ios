@@ -100,14 +100,14 @@ class ProjectModelFirestoreSync {
 
         // store in the db
         try await _asyncWrite { realm in
-            try projectSummary.upsertCommand(id: self.model.projectId).applyLocally(inRealm: realm)
+            try projectSummary.upsertCommand(id: self.model.projectId).apply(inRealm: realm)
             try canvases.documents.forEach {
                 let canvas = try $0.data(as: FirebasePDFCanvas.self)
-                try canvas.upsertCommand(id: $0.documentID).applyLocally(inRealm: realm)
+                try canvas.upsertCommand(id: $0.documentID).apply(inRealm: realm)
             }
             try participants.documents.forEach {
                 let participant = try $0.data(as: FirebaseParticipant.self)
-                try participant.upsertCommand(id: $0.documentID).applyLocally(inRealm: realm)
+                try participant.upsertCommand(id: $0.documentID).apply(inRealm: realm)
             }
         }
     }
@@ -127,7 +127,7 @@ class ProjectModelFirestoreSync {
                 let firebaseObject = try snapshot.data(as: type, decoder: decoder)
                 try realm.write {
                     if changeType == .added || changeType == .modified {
-                        try firebaseObject.upsertCommand(id: snapshot.documentID).applyLocally(inRealm: realm)
+                        try firebaseObject.upsertCommand(id: snapshot.documentID).apply(inRealm: realm)
                     } else if changeType == .removed {
                         guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: snapshot.documentID)
                         else {
@@ -186,7 +186,7 @@ extension ProjectModelFirestoreSync: ProjectModelRemoteUpdater {
         try await firestore.runTransaction { transaction, errorPointer -> Any? in
             for command in commands {
                 do {
-                    try (command as! FirestoreCommand).applyToFirestore(inTransaction: transaction, context: self.ctx)
+                    try (command as! FirestoreCommand).apply(inFirestoreTransaction: transaction, context: self.ctx)
                 } catch let error as NSError {
                     errorPointer?.pointee = error
                     return false

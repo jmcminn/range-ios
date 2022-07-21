@@ -8,7 +8,7 @@ struct AddParticipantCommand: Command {
     var avatarUrl: URL?
     var email: String
 
-    func applyLocally(inRealm realm: Realm) throws {
+    func apply(inRealm realm: Realm) throws {
         let participant = Participant(
             id: participantId,
             firstName: firstName,

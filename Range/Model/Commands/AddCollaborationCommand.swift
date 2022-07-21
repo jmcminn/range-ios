@@ -1,15 +1,15 @@
 import Foundation
 import RealmSwift
 
-struct AddCollaborationCommand: Command {
+struct AddCollaborationCommand: Command, Equatable {
     let collaborationId: String
-    let featureId: String
-    let name: String
-    let collaborationDescription: String
-    let statusId: String?
+    var featureId: String
+    var name: String
+    var collaborationDescription: String
+    var statusId: String?
     var tagIds: [String]
 
-    func applyLocally(inRealm realm: Realm) throws {
+    func apply(inRealm realm: Realm) throws {
         let feature = realm.objectOrPlaceholder(ofType: Feature.self, forPrimaryKey: featureId)
         let collaboration = Collaboration(id: collaborationId, name: name, description: collaborationDescription)
         if let statusId = statusId {

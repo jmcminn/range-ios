@@ -6,7 +6,7 @@ import RealmSwift
 import UIKit
 
 // possible errors for ProjectModel
-enum ModelError: Error {
+enum ModelError: Error, Equatable {
     case summaryNotFound
     case currentUserNotFound
     case canvasNotFound

@@ -142,26 +142,37 @@ class TagViewModel: NSObject, Codable {
     let lastApplied: TimeInterval?
     /// to how many object the tag is applied
     let usageCount: Int
+    /// whether this is a new tag that should be created in the db
+    let newTag: Bool
     /// for searching we store a version of string that is diacriticInsensitive and caseInsensitive
     let searchName: String
     @objc fileprivate(set) dynamic var selected: Bool = false
 
-    // TODO: 44 tag with local id should be marked as "local" when saving to realm
+    /// Initializer for existing tags
     /// - Parameters:
-    ///   - id: if not provided then automatically created for new tags
+    ///   - id: id
     ///   - name: name of the tag
-    ///   - lastApplied: if not provided then set to 0 for new tags, meaning not applied yet
+    ///   - lastApplied: last applied timestamp
+    ///   - usageCount: usage count
+    ///   - newTag: whether this is a new tag to be created in the db
     init(
-        id: String = UUID().uuidString.lowercased(),
+        id: String,
         name: String,
-        lastApplied: TimeInterval? = nil,
-        usageCount: Int = 0
+        lastApplied: TimeInterval?,
+        usageCount: Int,
+        newTag: Bool = false
     ) {
         self.id = id
         self.name = name
         self.lastApplied = lastApplied
         self.usageCount = usageCount
+        self.newTag = newTag
         searchName = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+    }
+
+    /// Convenience initializer for new tags with auto generated id and given name
+    convenience init(newTagWithName name: String) {
+        self.init(id: UUID().uuidString.lowercased(), name: name, lastApplied: nil, usageCount: 0, newTag: true)
     }
 
     /// equatable to check for id only

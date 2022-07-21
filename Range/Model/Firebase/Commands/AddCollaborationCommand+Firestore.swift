@@ -2,7 +2,7 @@ import FirebaseFirestore
 import Foundation
 
 extension AddCollaborationCommand: FirestoreCommand {
-    func applyToFirestore(inTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
+    func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreObject = FirebaseCollaboration(
             featureId: featureId,
             statusId: statusId,

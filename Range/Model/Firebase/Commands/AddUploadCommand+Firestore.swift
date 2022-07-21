@@ -2,7 +2,7 @@ import FirebaseFirestore
 import Foundation
 
 extension AddUploadCommand: FirestoreCommand {
-    func applyToFirestore(inTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
+    func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreObject = FirebaseUpload(
             parentId: parentId,
             parentType: parentType,

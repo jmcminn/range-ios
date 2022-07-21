@@ -1,14 +1,14 @@
 import Foundation
 import RealmSwift
 
-struct AddStatusCommand: Command {
+struct AddStatusCommand: Command, Equatable {
     let statusId: String
-    let name: String
-    let color: String
-    let isInitial: Bool
-    let isCompleted: Bool
+    var name: String
+    var color: String
+    var isInitial: Bool
+    var isCompleted: Bool
 
-    func applyLocally(inRealm realm: Realm) throws {
+    func apply(inRealm realm: Realm) throws {
         let status = Status(id: statusId, name: name, hexColor: color, isInitial: isInitial, isCompleted: isCompleted)
         realm.add(status, update: .modified)
     }

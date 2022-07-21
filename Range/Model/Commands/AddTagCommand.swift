@@ -1,11 +1,11 @@
 import Foundation
 import RealmSwift
 
-struct AddTagCommand: Command {
+struct AddTagCommand: Command, Equatable {
     let tagId: String
-    let name: String
+    var name: String
 
-    func applyLocally(inRealm realm: Realm) throws {
+    func apply(inRealm realm: Realm) throws {
         let tag = Tag(id: tagId, name: name)
         // if the tag has local lastApplied keep it
         if let existingTag = realm.object(ofType: Tag.self, forPrimaryKey: tagId) {

@@ -1,19 +1,19 @@
 import Foundation
 import RealmSwift
 
-struct AddUploadCommand: Command {
+struct AddUploadCommand: Command, Equatable {
     let uploadId: String
-    let correlationId: String
-    let parentType: String
-    let parentId: String
-    let authorId: String
-    let timestamp: TimeInterval
-    let name: String?
-    let uploadDescription: String?
-    let url: URL?
+    var correlationId: String
+    var parentType: String
+    var parentId: String
+    var authorId: String
+    var timestamp: TimeInterval
+    var name: String?
+    var uploadDescription: String?
+    var url: URL?
     var tagIds: [String]
 
-    func applyLocally(inRealm realm: Realm) throws {
+    func apply(inRealm realm: Realm) throws {
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
         let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
         let upload = Upload(

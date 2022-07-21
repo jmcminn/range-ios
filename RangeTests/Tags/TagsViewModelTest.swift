@@ -66,8 +66,8 @@ class TagsViewModelTest: XCTestCase {
 
     func testInit_initialSelectedTags() throws {
         let viewModel = TagsViewModel(model: model, initialSelectedTags: [
-            TagViewModel(id: "t1", name: "A"), // existing tag
-            TagViewModel(id: "t100", name: "Abc"), // new tag
+            TagViewModel(id: "t1", name: "A", lastApplied: nil, usageCount: 0), // existing tag
+            TagViewModel(id: "t100", name: "Abc", lastApplied: nil, usageCount: 0, newTag: true), // new tag
         ])
         XCTAssertEqual(viewModel.allTags.map(\.name),
                        ["3", "4", "5", "6", "a", "A", "Abc", "x"])
@@ -105,13 +105,13 @@ class TagsViewModelTest: XCTestCase {
 
     func testAddTag_keepsOrder() {
         let viewModel = TagsViewModel(model: model)
-        viewModel.add(tag: TagViewModel(name: "b"))
+        viewModel.add(tag: TagViewModel(newTagWithName: "b"))
         XCTAssertEqual(viewModel.allTags.map(\.name), ["3", "4", "5", "6", "a", "A", "b", "x"])
 
-        viewModel.add(tag: TagViewModel(name: "1"))
+        viewModel.add(tag: TagViewModel(newTagWithName: "1"))
         XCTAssertEqual(viewModel.allTags.map(\.name), ["1", "3", "4", "5", "6", "a", "A", "b", "x"])
 
-        viewModel.add(tag: TagViewModel(name: "Z"))
+        viewModel.add(tag: TagViewModel(newTagWithName: "Z"))
         XCTAssertEqual(viewModel.allTags.map(\.name), ["1", "3", "4", "5", "6", "a", "A", "b", "x", "Z"])
     }
 
@@ -134,14 +134,16 @@ class TagsViewModelTest: XCTestCase {
             timestamp: 0,
             url: URL(fileURLWithPath: "//test"),
             name: "",
-            description: ""
+            description: "",
+            correlationId: "upload1"
         )
         let upload2 = Upload(
             id: "upload2",
             timestamp: 0,
             url: URL(fileURLWithPath: "//test"),
             name: "",
-            description: ""
+            description: "",
+            correlationId: "upload1"
         )
         try realm.write {
             realm.add([upload1, upload2])

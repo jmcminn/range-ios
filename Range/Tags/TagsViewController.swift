@@ -232,7 +232,7 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isCreateTagRow(indexPath) {
-            let tag = TagViewModel(name: viewModel.filterStringTrimmed)
+            let tag = TagViewModel(newTagWithName: viewModel.filterStringTrimmed)
             // add new tag
             viewModel.add(tag: tag)
             // mark it selected

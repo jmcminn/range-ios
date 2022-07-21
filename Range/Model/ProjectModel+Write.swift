@@ -11,6 +11,8 @@ func generateRealmId() -> String {
 
 /// ProjectModel extension for write operations
 extension ProjectModel {
+    // TODO: 44 tests for these methods... or maybe actually tests for _commands and the execution should be somewhere else?
+
     /// If geometry with given id has no feature it creates the feature
     /// If the feature has no collaboration it creates the collaboration
     /// Creates all new tags and creates an upload with given tags and description and adds it to a collaboration
@@ -133,8 +135,16 @@ extension ProjectModel {
                               tags: [TagViewModel],
                               description: String, toCollaboration collaborationId: String) -> [Command]
     {
+        // TODO: 44 do something with Data
+
+        var commands: [Command] = []
+
+        // add all new tags
+        commands.append(contentsOf: tags
+            .filter(\.newTag)
+            .map { AddTagCommand(tagId: $0.id, name: $0.name) })
+
         let uploadId = generateRealmId()
-        // TODO: 44 create new tags first
         let addUploadCmd = AddUploadCommand(
             uploadId: uploadId,
             correlationId: uploadId,
@@ -147,8 +157,9 @@ extension ProjectModel {
             url: nil,
             tagIds: tags.map(\.id)
         )
-        // TODO: 44 do something with Data
-        return [addUploadCmd]
+        commands.append(addUploadCmd)
+
+        return commands
     }
 
 //    func addPhoto(_ data: Data,
@@ -179,7 +190,7 @@ extension ProjectModel {
         } else {
             // if remote not supported then try locally
             try await write { realm in
-                try commands.forEach { try $0.applyLocally(inRealm: realm) }
+                try commands.forEach { try $0.apply(inRealm: realm) }
             }
         }
     }

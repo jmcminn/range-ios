@@ -1,88 +1,22 @@
-import CoreLocation
 @testable import Range
-import RealmSwift
-import Turf
 import XCTest
 
-class FirebaseFeatureRealmSyncTest: XCTestCase {
-    var model: ProjectModel!
-    var realm: Realm!
-
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(userId: "user1", projectId: UUID().uuidString, inMemory: true)
-        realm = model.mainRealm
-    }
-
-    // TODO: 44 fix to test for placeholder
-//    func testAddFeatureToGeometry_geometryNotFound() throws {
-//        let firebaseFeature = FirebaseFeature(geometryId: "geometry1", name: "name")
-//        try realm.write {
-//            XCTAssertThrowsError(
-//                try firebaseFeature.upsert(realm, id: "1")
-//            ) { error in
-//                XCTAssertEqual(error.localizedDescription, "geometry not found: geometry1")
-//            }
-//        }
-//    }
-
-    func testAddFeatureToGeometry_successful() throws {
-        // 1. create 2 geometries with no features
-        let geometry1 = Geometry(
-            id: "geometry1",
-            annotationType: .photoMarker,
-            geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+class FirebaseFeatureTest: XCTestCase {
+    // Tests if firebase object creates a proper upsert command
+    func testUpsertCommand() throws {
+        let firebaseFeature = FirebaseFeature(
+            geometryId: "geometry1",
+            name: "name",
+            description: "description"
         )
-        let geometry2 = Geometry(
-            id: "geometry2",
-            annotationType: .photoMarker,
-            geometry: .point(Point(CLLocationCoordinate2D(latitude: 33.5, longitude: -96.5)))
+        XCTAssertEqual(
+            try firebaseFeature.upsertCommand(id: "feature1") as? AddFeatureCommand,
+            AddFeatureCommand(
+                featureId: "feature1",
+                geometryId: "geometry1",
+                name: "name",
+                featureDescription: "description"
+            )
         )
-        try realm.write {
-            realm.add([geometry1, geometry2])
-        }
-        XCTAssertEqual(geometry1.features.count, 0)
-        XCTAssertEqual(geometry2.features.count, 0)
-
-        // 2. add feature to geometry1
-        var firebaseFeature1 = FirebaseFeature(geometryId: "geometry1", name: "Feature1")
-        try realm.write {
-            try firebaseFeature1.upsert(realm, id: "1")
-        }
-        XCTAssertEqual(geometry1.features.count, 1)
-        XCTAssertEqual(geometry2.features.count, 0)
-        guard let feature1 = realm.object(ofType: Feature.self, forPrimaryKey: "1") else {
-            throw "feature1 not found"
-        }
-        XCTAssertEqual(feature1.name, "Feature1")
-        XCTAssertEqual(feature1.geometry.first, geometry1)
-//
-        // 3. update feature1
-        firebaseFeature1.name = "Feature1..."
-        try realm.write {
-            try firebaseFeature1.upsert(realm, id: "1")
-        }
-        XCTAssertEqual(geometry1.features.count, 1)
-        XCTAssertEqual(geometry2.features.count, 0)
-        XCTAssertEqual(feature1.name, "Feature1...")
-
-        // 4. add another feature to geometry1
-        let firebaseFeature2 = FirebaseFeature(geometryId: "geometry1", name: "Feature2")
-        try realm.write {
-            try firebaseFeature2.upsert(realm, id: "2")
-        }
-        XCTAssertEqual(geometry1.features.count, 2)
-        XCTAssertEqual(geometry2.features.count, 0)
-
-        // 5. remove feature2
-        try realm.write {
-            guard let feature2 = realm.object(ofType: Feature.self, forPrimaryKey: "2") else {
-                throw "feature2 not found"
-            }
-            realm.delete(feature2)
-        }
-        XCTAssertEqual(geometry1.features.count, 1)
-        XCTAssertEqual(geometry2.features.count, 0)
-        XCTAssertEqual(geometry1.features.first, feature1)
     }
 }

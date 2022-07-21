@@ -1,10 +1,9 @@
 import CoreLocation
 @testable import Range
-import RealmSwift
 import Turf
 import XCTest
 
-class FirebaseGeometryEncodingTest: XCTestCase {
+class FirebaseGeometryTest: XCTestCase {
     func testEncode_unsupportedGeometry() throws {
         let geometry = FirebaseGeometry(
             canvasId: "5678",
@@ -84,89 +83,21 @@ class FirebaseGeometryEncodingTest: XCTestCase {
         XCTAssertEqual(point.coordinates.longitude, -96.5, accuracy: 0.000000001)
         XCTAssertEqual(point.coordinates.latitude, 32.5, accuracy: 0.000000001)
     }
-}
 
-class FirebaseGeometryRealmSyncTest: XCTestCase {
-    var model: ProjectModel!
-    var realm: Realm!
-
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(userId: "user1", projectId: UUID().uuidString, inMemory: true)
-        realm = model.mainRealm
-    }
-
-    // Throws when adding geometry to not existing canvas
-    func testUpsert_canvasNotFound() throws {
+    // Tests if firebase object creates a proper upsert command
+    func testUpsertCommand() throws {
         let firebaseGeometry = FirebaseGeometry(
             canvasId: "canvas1",
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
-        try realm.write {
-            XCTAssertThrowsError(
-                try firebaseGeometry.upsert(realm, id: "1")
-            ) { error in
-                XCTAssertEqual(error.localizedDescription, "canvas not found: canvas1")
-            }
-        }
-    }
-
-    // Tests that geometries are added to the canvas
-    func testUpsert_successful() throws {
-        // 1. create 2 empty canvases
-        let canvas1 = PDFCanvas(id: "canvas1", url: "url1", pageNumber: 0, userDefinedScale: 1)
-        let canvas2 = PDFCanvas(id: "canvas2", url: "url2", pageNumber: 0, userDefinedScale: 1)
-        try realm.write {
-            realm.add([canvas1, canvas2])
-        }
-        XCTAssertEqual(canvas1.geometries.count, 0)
-        XCTAssertEqual(canvas2.geometries.count, 0)
-
-        // 2. add geometry to canvas1
-        var firebaseGeometry1 = FirebaseGeometry(
-            canvasId: "canvas1",
-            geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+        XCTAssertEqual(
+            try firebaseGeometry.upsertCommand(id: "geometry1") as? AddGeometryCommand,
+            AddGeometryCommand(
+                geometryId: "geometry1",
+                canvasId: "canvas1",
+                annotationType: .photoMarker,
+                geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+            )
         )
-        try realm.write {
-            try firebaseGeometry1.upsert(realm, id: "1")
-        }
-        XCTAssertEqual(canvas1.geometries.count, 1)
-        XCTAssertEqual(canvas2.geometries.count, 0)
-        guard let geometry1 = realm.object(ofType: Geometry.self, forPrimaryKey: "1") else {
-            throw "geometry1 not found"
-        }
-        XCTAssertEqual(geometry1.annotationType, .photoMarker)
-        XCTAssertEqual(geometry1.geometry, .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5))))
-
-        // 3. update the geometry in canvas1
-        firebaseGeometry1.geometry = .point(Point(CLLocationCoordinate2D(latitude: 32.6, longitude: -96.5)))
-        try realm.write {
-            try firebaseGeometry1.upsert(realm, id: "1")
-        }
-        XCTAssertEqual(canvas1.geometries.count, 1)
-        XCTAssertEqual(canvas2.geometries.count, 0)
-        XCTAssertEqual(geometry1.geometry, .point(Point(CLLocationCoordinate2D(latitude: 32.6, longitude: -96.5))))
-
-        // 4. add another geometry to canvas1
-        let firebaseGeometry2 = FirebaseGeometry(
-            canvasId: "canvas1",
-            geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.7, longitude: -96.5)))
-        )
-        try realm.write {
-            try firebaseGeometry2.upsert(realm, id: "2")
-        }
-        XCTAssertEqual(canvas1.geometries.count, 2)
-        XCTAssertEqual(canvas2.geometries.count, 0)
-
-        // 5. remove geometry2
-        try realm.write {
-            guard let geometry2 = realm.object(ofType: Geometry.self, forPrimaryKey: "2") else {
-                throw "geometry2 not found"
-            }
-            realm.delete(geometry2)
-        }
-        XCTAssertEqual(canvas1.geometries.count, 1)
-        XCTAssertEqual(canvas2.geometries.count, 0)
-        XCTAssertEqual(canvas1.geometries.first?.id, "1")
     }
 }
