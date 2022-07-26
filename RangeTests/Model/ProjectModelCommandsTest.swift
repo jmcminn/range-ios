@@ -7,6 +7,7 @@ import Turf
 import XCTest
 
 class ProjectModelCommandsTest: XCTestCase {
+    var pendingUploadsModel: PendingUploadsModel!
     var model: ProjectModel!
     var realm: Realm!
     var canvas: PDFCanvas!
@@ -14,8 +15,14 @@ class ProjectModelCommandsTest: XCTestCase {
 
     @MainActor
     override func setUpWithError() throws {
+        pendingUploadsModel = try PendingUploadsModel(inMemory: true)
         // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(userId: "user1", projectId: UUID().uuidString, inMemory: true)
+        model = try ProjectModel(
+            userId: "user1",
+            projectId: UUID().uuidString,
+            pendingUploadsModel: pendingUploadsModel,
+            inMemory: true
+        )
         realm = model.mainRealm
         canvas = PDFCanvas(id: "canvas1", url: "url1", pageNumber: 0, userDefinedScale: 1)
         try realm.write {
@@ -64,8 +71,9 @@ class ProjectModelCommandsTest: XCTestCase {
         waitForExpectations(timeout: 1)
     }
 
-    // test commands created for adding a photo for given collaboration id
-    func testAddPhoto_forCollaboration() throws {
+    // test commands created for adding an upload for given collaboration id
+    @MainActor
+    func testAddUpload() throws {
         let tag1 = Tag(id: "tag1", name: "tag 1")
         try realm.write {
             realm.add(tag1)
@@ -74,24 +82,24 @@ class ProjectModelCommandsTest: XCTestCase {
         // tag will be added
         let newTagViewModel = TagViewModel(newTagWithName: "tag 2")
         let commands =
-            model._addPhoto(Data(),
-                            tags: [
-                                TagViewModel(
-                                    id: tag1.id,
-                                    name: tag1.name,
-                                    lastApplied: tag1.lastApplied,
-                                    usageCount: tag1.usageCount
-                                ),
-                                newTagViewModel,
-                            ],
-                            description: "upload description",
-                            toCollaboration: "collaboration1")
+            model._addUpload(uploadId: "upload1",
+                             tags: [
+                                 TagViewModel(
+                                     id: tag1.id,
+                                     name: tag1.name,
+                                     lastApplied: tag1.lastApplied,
+                                     usageCount: tag1.usageCount
+                                 ),
+                                 newTagViewModel,
+                             ],
+                             description: "upload description",
+                             toCollaboration: "collaboration1")
         XCTAssertEqual(commands.count, 2)
         XCTAssertEqual(commands[0] as? AddTagCommand, AddTagCommand(tagId: newTagViewModel.id, name: "tag 2"))
         let addUploadCmd = try XCTUnwrap(commands[1] as? AddUploadCommand)
         XCTAssertEqual(addUploadCmd, AddUploadCommand(
-            uploadId: addUploadCmd.uploadId,
-            correlationId: addUploadCmd.uploadId,
+            uploadId: "upload1",
+            correlationId: "upload1",
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: model.userId,
@@ -105,14 +113,15 @@ class ProjectModelCommandsTest: XCTestCase {
 
     // test commands created for adding a photo at a given location
     // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
-    func testAddPhoto_atLocation() throws {
+    @MainActor
+    func testAddPhoto_atLocation() async throws {
         let geometryId = generateRealmId()
-        let commands = model.addPhoto(Data(),
-                                      tags: [],
-                                      description: "",
-                                      at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-                                      in: canvas,
-                                      geometryId: geometryId)
+        let commands = try await model.addPhoto(Data(),
+                                                tags: [],
+                                                description: "",
+                                                at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
+                                                in: canvas,
+                                                geometryId: geometryId)
         XCTAssertEqual(commands.count, 4)
         let addGeometryCmd = try XCTUnwrap(commands[0] as? AddGeometryCommand)
         XCTAssertEqual(addGeometryCmd, AddGeometryCommand(
@@ -147,10 +156,12 @@ class ProjectModelCommandsTest: XCTestCase {
 
     // test commands created for adding a photo for given geometry
     // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
-    func testAddPhoto_forGeometry_geometryNotFound() throws {
-        XCTAssertThrowsError(
-            try model.addPhoto(Data(), tags: [], description: "", toCollaborationForGeometryId: "geometry1")
-        ) { error in
+    @MainActor
+    func testAddPhoto_forGeometry_geometryNotFound() async throws {
+        do {
+            try await model.addPhoto(Data(), tags: [], description: "", toCollaborationForGeometryId: "geometry1")
+            XCTFail("should throw error")
+        } catch {
             guard
                 let error = error as? ModelError
             else {
@@ -162,7 +173,8 @@ class ProjectModelCommandsTest: XCTestCase {
 
     // test commands created for adding a photo for given geometry
     // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
-    func testAddPhoto_forGeometry_noFeature() throws {
+    @MainActor
+    func testAddPhoto_forGeometry_noFeature() async throws {
         try realm.write {
             realm.add(Geometry(
                 id: "geometry1",
@@ -170,7 +182,12 @@ class ProjectModelCommandsTest: XCTestCase {
                 geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
             ))
         }
-        let commands = try model.addPhoto(Data(), tags: [], description: "", toCollaborationForGeometryId: "geometry1")
+        let commands = try await model.addPhoto(
+            Data(),
+            tags: [],
+            description: "",
+            toCollaborationForGeometryId: "geometry1"
+        )
         XCTAssertEqual(commands.count, 3)
         XCTAssertTrue(commands[0] is AddFeatureCommand)
         XCTAssertTrue(commands[1] is AddCollaborationCommand)
@@ -179,7 +196,8 @@ class ProjectModelCommandsTest: XCTestCase {
 
     // test commands created for adding a photo for given geometry
     // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
-    func testAddPhoto_forGeometry_noCollaboration() throws {
+    @MainActor
+    func testAddPhoto_forGeometry_noCollaboration() async throws {
         // the geometry and feature is there
         try realm.write {
             let geometry = Geometry(
@@ -191,7 +209,12 @@ class ProjectModelCommandsTest: XCTestCase {
             realm.add([feature, geometry])
             geometry.features.insert(feature)
         }
-        let commands = try model.addPhoto(Data(), tags: [], description: "", toCollaborationForGeometryId: "geometry1")
+        let commands = try await model.addPhoto(
+            Data(),
+            tags: [],
+            description: "",
+            toCollaborationForGeometryId: "geometry1"
+        )
         XCTAssertEqual(commands.count, 2)
         XCTAssertTrue(commands[0] is AddCollaborationCommand)
         XCTAssertTrue(commands[1] is AddUploadCommand)
@@ -199,7 +222,8 @@ class ProjectModelCommandsTest: XCTestCase {
 
     // test commands created for adding a photo for given geometry
     // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
-    func testAddPhoto_forGeometry() throws {
+    @MainActor
+    func testAddPhoto_forGeometry() async throws {
         // the geometry, feature and collaboration are there
         try realm.write {
             let geometry = Geometry(
@@ -213,7 +237,12 @@ class ProjectModelCommandsTest: XCTestCase {
             geometry.features.insert(feature)
             feature.collaborations.insert(collaboration)
         }
-        let commands = try model.addPhoto(Data(), tags: [], description: "", toCollaborationForGeometryId: "geometry1")
+        let commands = try await model.addPhoto(
+            Data(),
+            tags: [],
+            description: "",
+            toCollaborationForGeometryId: "geometry1"
+        )
         XCTAssertEqual(commands.count, 1)
         let addUploadCmd = try XCTUnwrap(commands[0] as? AddUploadCommand)
         XCTAssertEqual(addUploadCmd.parentId, "collaboration1")

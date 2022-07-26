@@ -1,6 +1,7 @@
 import FirebaseFirestore
 import Foundation
 
+/// Apply the `Upload` add/update in Firestore.
 extension AddUploadCommand: FirestoreCommand {
     func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreObject = FirebaseUpload(

@@ -8,6 +8,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var projectModel: ProjectModel?
+    var pendingUploadsModel: PendingUploadsModel?
     var projectModelFirestoreSync: ProjectModelFirestoreSync?
 
     var projectFC: ProjectFlowController?
@@ -102,15 +103,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///     - projectId: id of the project
     /// - Returns: loaded ProjectModel
     private func createProjectModel(userId: String, projectId: String) async throws {
-        let model = try ProjectModel(userId: userId, projectId: projectId)
+        let _pendingUploadsModel = try PendingUploadsModel()
+        try await _pendingUploadsModel.start()
 
-        let firestoreSync = ProjectModelFirestoreSync(model: model)
-        try await firestoreSync.start()
+        let _projectModel = try ProjectModel(
+            userId: userId,
+            projectId: projectId,
+            pendingUploadsModel: _pendingUploadsModel
+        )
 
-        try model.loadProject()
+        let _projectModelFirestoreSync = ProjectModelFirestoreSync(model: _projectModel)
+        try await _projectModelFirestoreSync.start()
 
-        projectModel = model
-        projectModelFirestoreSync = firestoreSync
+        try _projectModel.loadProject()
+
+        pendingUploadsModel = _pendingUploadsModel
+        projectModel = _projectModel
+        projectModelFirestoreSync = _projectModelFirestoreSync
     }
 
     /// Shows a project for given ProjectModel (the model should be loaded)
@@ -129,6 +138,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func signOut() {
         projectFC?.stop()
         projectFC = nil
+        pendingUploadsModel?.stop()
+        pendingUploadsModel = nil
         projectModel = nil
         projectModelFirestoreSync = nil
         do {

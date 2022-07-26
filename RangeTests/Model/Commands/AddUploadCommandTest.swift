@@ -4,13 +4,21 @@ import RealmSwift
 import Turf
 import XCTest
 
-class AddUplaodCommandTest: XCTestCase {
+class AddUploadCommandTest: XCTestCase {
+    var pendingUploadsModel: PendingUploadsModel!
     var model: ProjectModel!
     var realm: Realm!
 
+    @MainActor
     override func setUpWithError() throws {
+        pendingUploadsModel = try PendingUploadsModel(inMemory: true)
         // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(userId: "user1", projectId: UUID().uuidString, inMemory: true)
+        model = try ProjectModel(
+            userId: "user1",
+            projectId: UUID().uuidString,
+            pendingUploadsModel: pendingUploadsModel,
+            inMemory: true
+        )
         realm = model.mainRealm
     }
 

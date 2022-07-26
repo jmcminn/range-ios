@@ -2,6 +2,7 @@ import Firebase
 import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
+import FirebaseStorage
 import OSLog
 import UIKit
 
@@ -35,6 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             FirebaseApp.configure(options: options)
             Auth.auth().useEmulator(withHost: "localhost", port: 9099)
             Database.database().useEmulator(withHost: "localhost", port: 9000)
+            Storage.storage().useEmulator(withHost: "localhost", port: 9199)
             let settings = Firestore.firestore().settings
             settings.host = "localhost:9001"
             settings.isPersistenceEnabled = false

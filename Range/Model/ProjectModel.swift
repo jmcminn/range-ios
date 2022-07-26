@@ -41,14 +41,17 @@ extension ModelError: LocalizedError {
     }
 }
 
+/// Protocol implemented by the `ProjectModel` that gives a way to run given closure in the Realm write transaction.
+/// Used to pass to methods that may need to write to Realm, instead of passing the `ProjectModel`.
 protocol ProjectModelWriter: AnyObject {
+    /// Runs given closure on the writeQueue in the writeRealm transaction as an async function
     func write(_ closure: @escaping (Realm) throws -> Void) async throws
 }
 
 /// To be implemented by the backend synchronizer to update the data on the backend.
-/// Currently implemented by `ProjectModelFirebaseSync`
+/// Currently implemented by `ProjectModelFirestoreSync`
 protocol ProjectModelRemoteUpdater: AnyObject {
-    // TODO: 44 document
+    /// Apply given commands to the backend, possibly making local changes using the `writer`
     func runCommands(_: [Command], writer: ProjectModelWriter) async throws
 }
 
@@ -59,6 +62,8 @@ class ProjectModel {
     let userId: String
     /// The UUID for the project
     let projectId: String
+    /// global pending uploads
+    unowned let pendingUploadsModel: PendingUploadsModel
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
     /// Main thread Realm
@@ -72,12 +77,7 @@ class ProjectModel {
     /// Background serial queue to perform write operations.
     let writeQueue = DispatchQueue(label: "model-write-queue")
     /// Realm operating on `writeQueue`, initialized on first use
-    var writeRealm: Realm?
-
-    // TODO: 90 revisit the disk cache storage - how does it play with using cache later for
-    // downloaded images???
-    /// Using Kingfisher image cache for local images store (configured disk cache to never expire)
-    let localPhotosCache = ImageCache(name: "local-photos")
+    var writeRealm: Realm!
 
     weak var remoteUpdater: ProjectModelRemoteUpdater?
 
@@ -85,13 +85,15 @@ class ProjectModel {
     /// - Parameters:
     ///     - userId:           Range id of the logged in user
     ///     - projectId:        id of the project, will be used for the realm identifier
+    ///     - pendingUploadsModel:       keep unowned reference to the global pending uploads
     ///     - inMemory:      optional parameter to create the Realm in memory (for tests), but default `false`
     /// - Warning: to be called on the Main thread
-    init(userId: String, projectId: String, inMemory: Bool = false) throws {
+    init(userId: String, projectId: String, pendingUploadsModel: PendingUploadsModel, inMemory: Bool = false) throws {
         self.userId = userId
         self.projectId = projectId.lowercased()
+        self.pendingUploadsModel = pendingUploadsModel
         var config = Realm.Configuration.defaultConfiguration
-        // TODO: 90 for now we just remove the Realm and resync if migration needed...
+        // TODO: [db-migration] for now we just remove the Realm and resync if migration needed...
         config.deleteRealmIfMigrationNeeded = true
         if inMemory {
             config.inMemoryIdentifier = self.projectId
@@ -101,9 +103,13 @@ class ProjectModel {
             config.fileURL!.appendPathExtension("realm")
             Logger.model.info("project realm file url: \(config.fileURL?.path ?? "")")
         }
+        config.objectTypes = [
+            ProjectSummary.self, Status.self, Tag.self, Participant.self, PDFCanvas.self,
+            Geometry.self, Feature.self, Collaboration.self, Comment.self, Upload.self,
+            Location.self,
+        ]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
-        localPhotosCache.diskStorage.config.expiration = .never
     }
 
     /// Returns `true` if the project is available for offline usage
@@ -132,5 +138,20 @@ class ProjectModel {
     /// Loads the current user
     private func getCurrentUser() -> Participant? {
         mainRealm.object(ofType: Participant.self, forPrimaryKey: userId)
+    }
+}
+
+extension ProjectModel: ProjectModelWriter {
+    /// Runs given closure on the writeQueue in the writeRealm transaction as an async function
+    func write(_ closure: @escaping (Realm) throws -> Void) async throws {
+        try await _asyncOnQueue(queue: writeQueue) { [self] in
+            if writeRealm == nil {
+                writeRealm = try Realm(configuration: realmConfig, queue: writeQueue)
+            }
+            // at this point writeRealm is set or it threw an error
+            try writeRealm!.write {
+                try closure(writeRealm!)
+            }
+        }
     }
 }

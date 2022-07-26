@@ -5,6 +5,9 @@ import Network
 import OSLog
 import RealmSwift
 
+/// TODO: 90 Remove it in a separate commit so it can be easily looked up in the repo history
+/// also remove the package dependencies and FirebaseDatabase imports
+/// ACHTUNG: This class is not used anymore... and will be removed in the near future
 /// Protocol to be adopted by firebase objects that can be stored in Realm
 protocol FirebaseToRealmSyncable {
     /// The type used to store the objects in the model Realm db
@@ -39,12 +42,6 @@ class ProjectModelRealtimeDbSync {
     lazy var collaborationsReference = projectDetailsReference.child("collaborations")
     lazy var commentsReference = projectDetailsReference.child("comments")
     lazy var uploadsReference = projectDetailsReference.child("uploads")
-
-    /// Token for notifications about changes in the actions
-    private var actionsNotificationToken: NotificationToken?
-
-    /// maximum backoff for retrying actions (in seconds)
-    private let maxBackoff: TimeInterval = 64
 
     /// Initialize sync for given `ProjectModel`
     init(model: ProjectModel) {
@@ -88,26 +85,6 @@ class ProjectModelRealtimeDbSync {
 //        syncDetails(collaborationsReference, as: FirebaseCollaboration.self)
 //        syncDetails(commentsReference, as: FirebaseComment.self)
 //        syncDetails(uploadsReference, as: FirebaseUpload.self)
-
-        // TODO: 90 this will become some photo upload action (?)
-        /// observe any changes in actions
-//        try await _asyncOnFirebaseSyncQueue {
-//            self.actionsNotificationToken = self.syncRealm.objects(Action.self)
-//                .observe(on: self.syncQueue) { [weak self] changes in
-//                    guard let self = self else { return }
-//                    switch changes {
-//                    case let .initial(actions):
-//                        self.onActionsChange(actions)
-//                    case let .update(actions, _, _, _):
-//                        self.onActionsChange(actions)
-//                    case let .error(error):
-//                        Logger.model
-//                            .error("observing actions failed: \(error.localizedDescription, privacy: .public)")
-//                    }
-//                }
-//        }
-
-//        model.remoteUpdater = self
     }
 
     /// Do the initial sync by observing the single event of type `.value` for project summary and canvases and storing the objects in the model.
@@ -202,55 +179,5 @@ class ProjectModelRealtimeDbSync {
         collaborationsReference.removeAllObservers()
         commentsReference.removeAllObservers()
         uploadsReference.removeAllObservers()
-
-        actionsNotificationToken?.invalidate()
-//        model.remoteUpdater = nil
     }
 }
-
-// TODO: 90 change into docs:
-// 0. listen (realm way) for actions and go to 1.
-// 1. get action
-// 2. check retry count/etc and run it or (re)set a timer
-// 2a. on success remove the action and repeat
-// 2b. on failure adjust retry count, next attempt and set a timer
-// TODO: 90 add network conditions
-extension ProjectModelRealtimeDbSync {
-    /// Potentially trigger the Firebase write on actions update
-    /// Performed on the syncQueue
-//    func onActionsChange(_ actions: Results<Action>) {
-//        // TODO: 90 how to test it?
-//
-//        if let action = actions.first {
-//            do {
-//                if try maybePerformAction(action) {
-//                    // successfully performed, delete it
-//                    syncRealm.delete(action)
-//                }
-//            } catch {
-//                Logger.firebase.error("action failed: \(error.localizedDescription, privacy: .public)")
-//                action.retryCount += 1
-//                action.lastErrorMessage = error.localizedDescription
-//                // TODO: 90 move to some external "exponential backoff" calculator (?)
-//                action.nextAttemptAt = Date.now.timeIntervalSince1970
-//                    + min(pow(2, Double(action.retryCount)), maxBackoff)
-//            }
-//        }
-//    }
-
-    // TODO: 90 only try if there's network access
-    /// Perform action if retry conditions are met
-    /// - Returns: `true` if it was performed
-//    func maybePerformAction(_: Action) throws -> Bool {
-//        // TODO: 90 NWPathMonitor for connection monitoring?
-    ////        guard action.shouldPerform(at: Date.now.timeIntervalSince1970) else { return false }
-    ////        try action.command.firebaseCommand.applyToFirebase(firebaseSync: self, in: syncRealm)
-//        true
-//    }
-}
-
-// extension ProjectModelFirebaseSync: ProjectModelRemoteUpdater {
-//    func runActionCommand(_ command: ActionCommand, in realm: Realm) async throws {
-//        try await command.firebaseCommand.applyToFirebase(firebaseSync: self, in: realm)
-//    }
-// }

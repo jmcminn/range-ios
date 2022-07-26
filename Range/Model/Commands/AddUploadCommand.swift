@@ -1,6 +1,7 @@
 import Foundation
 import RealmSwift
 
+/// Add or update the `Upload`.
 struct AddUploadCommand: Command, Equatable {
     let uploadId: String
     var correlationId: String

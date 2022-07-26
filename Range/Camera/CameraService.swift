@@ -222,7 +222,7 @@ class CameraService: ObservableObject {
         DispatchQueue.main.async {
             guard let sampleImageURL = Bundle.main.url(
                 forResource: "Rectangle 515",
-                withExtension: "png"
+                withExtension: "jpg"
             ) else { return }
 
             do {
@@ -259,7 +259,10 @@ class CameraService: ObservableObject {
             guard let self = self else { return }
 
             // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
-            completion(photoCaptureProcessor.photoData)
+
+            // TODO: this is where we would resize the photo if we don't want the "high-res" 4032
+            let resizedPhotoData = resizeImage(imageData: photoCaptureProcessor.photoData, maxResolution: 4032)
+            completion(resizedPhotoData)
             self.canCapturePhoto = true
 
             self.sessionQueue.async {
@@ -293,10 +296,16 @@ class CameraService: ObservableObject {
     // define photo-capture settings. Prefer: HEIF, auto flash mode, high resolution, quality priority, preview format
     // TODO: implement flashmode
     private func _initializePhotoSettings() -> AVCapturePhotoSettings {
-        // Capture HEIF photos when supported. Enable according to user settings and high-resolution photos.
-        let photoSettings = photoOutput.availablePhotoCodecTypes.contains(.hevc)
-            ? AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
-            : AVCapturePhotoSettings()
+        // Capture JPEG photos when supported. Enable according to user settings and high-resolution photos.
+        let photoSettings: AVCapturePhotoSettings
+        if photoOutput.availablePhotoCodecTypes.contains(.jpeg) {
+            photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg,
+                                                            AVVideoCompressionPropertiesKey: [AVVideoQualityKey: 0.75]])
+        } else {
+            // TODO: is there a case where jpeg is not supported?
+            photoSettings = AVCapturePhotoSettings()
+            Logger.camera.error("available photo codec types has no jpeg")
+        }
 
         // Sets the flash option for this capture.
         if videoDeviceInput.device.isFlashAvailable { photoSettings.flashMode = .auto }

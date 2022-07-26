@@ -1,6 +1,7 @@
 import Foundation
 import RealmSwift
 
+/// Add or update the `Collaboration`.
 struct AddCollaborationCommand: Command, Equatable {
     let collaborationId: String
     var featureId: String

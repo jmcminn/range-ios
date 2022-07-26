@@ -2,9 +2,10 @@ import CoreLocation
 import Foundation
 import RealmSwift
 
-struct AddProjectSummaryCommand: Command {
+/// Add or update the `ProjectSummary`.
+struct AddProjectSummaryCommand: Command, Equatable {
     let projectId: String
-    let center: CLLocationCoordinate2D
+    var center: CLLocationCoordinate2D
 
     /// Adds or updates project summary in the Realm database
     func apply(inRealm realm: Realm) throws {

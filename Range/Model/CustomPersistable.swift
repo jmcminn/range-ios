@@ -34,7 +34,8 @@ extension CLLocationCoordinate2D: CustomPersistable {
     }
 }
 
-// TODO: 44 move somewhere and document
+/// Custom LocationCoordinate2D implementation that implements `Codable` (so it can be stored in the db, etc.) and allow
+/// for conversion from/to `CLLocationCoordinate2D`.
 struct LocationCoordinate2DCodable: Codable {
     var latitude: CLLocationDegrees
     var longitude: CLLocationDegrees

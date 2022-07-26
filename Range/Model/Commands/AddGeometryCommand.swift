@@ -2,6 +2,7 @@ import Foundation
 import RealmSwift
 import Turf
 
+/// Add or update the `Geometry`.
 struct AddGeometryCommand: Command, Equatable {
     let geometryId: String
     var canvasId: String

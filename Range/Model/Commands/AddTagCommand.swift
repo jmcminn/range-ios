@@ -1,6 +1,7 @@
 import Foundation
 import RealmSwift
 
+/// Add or update the `Tag`.
 struct AddTagCommand: Command, Equatable {
     let tagId: String
     var name: String

@@ -82,6 +82,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             Logger.camera.error("capture photo failed: \(error.localizedDescription, privacy: .public)")
         } else {
             photoData = photo.fileDataRepresentation()
+//            Logger.camera.debug("original photo metadata: \(photo.metadata)")
         }
     }
 

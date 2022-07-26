@@ -110,8 +110,7 @@
 		0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */; };
 		0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */; };
 		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
-		0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* UIImage+Resize.swift */; };
-		0A720C65280427F7003D6B13 /* Rectangle 515.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A720C64280427F7003D6B13 /* Rectangle 515.png */; };
+		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
 		0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */; };
 		0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F362888302400708C6B /* AddGeometryCommand.swift */; };
@@ -135,6 +134,13 @@
 		0A724F5C28897DE500708C6B /* AddCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5B28897DE500708C6B /* AddCollaborationCommandTest.swift */; };
 		0A724F5E288980F800708C6B /* AddCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5D288980F800708C6B /* AddCommentCommandTest.swift */; };
 		0A724F6028898B9400708C6B /* AddUploadCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5F28898B9400708C6B /* AddUploadCommandTest.swift */; };
+		0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F62288AAFFD00708C6B /* PendingUpload.swift */; };
+		0A724F65288AF07800708C6B /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F64288AF07800708C6B /* PendingUploadsModel.swift */; };
+		0A724F67288B0C8C00708C6B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0A724F66288B0C8C00708C6B /* FirebaseStorage */; };
+		0A724F69288B0C8C00708C6B /* FirebaseStorageSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0A724F68288B0C8C00708C6B /* FirebaseStorageSwift-Beta */; };
+		0A724F6B288B12F800708C6B /* Rectangle 515.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* Rectangle 515.jpg */; };
+		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
+		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
 		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
 		0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4122844E05A0097888A /* Collaboration.swift */; };
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
@@ -291,8 +297,7 @@
 		0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "5451 VANDERBILT AVE-A1.1A.pdf"; sourceTree = "<group>"; };
 		0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFCanvasViewController.swift; sourceTree = "<group>"; };
 		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
-		0A720C6228007011003D6B13 /* UIImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
-		0A720C64280427F7003D6B13 /* Rectangle 515.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle 515.png"; sourceTree = "<group>"; };
+		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
 		0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A724F362888302400708C6B /* AddGeometryCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGeometryCommand.swift; sourceTree = "<group>"; };
@@ -316,6 +321,11 @@
 		0A724F5B28897DE500708C6B /* AddCollaborationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCollaborationCommandTest.swift; sourceTree = "<group>"; };
 		0A724F5D288980F800708C6B /* AddCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A724F5F28898B9400708C6B /* AddUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadCommandTest.swift; sourceTree = "<group>"; };
+		0A724F62288AAFFD00708C6B /* PendingUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUpload.swift; sourceTree = "<group>"; };
+		0A724F64288AF07800708C6B /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
+		0A724F6A288B12F800708C6B /* Rectangle 515.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Rectangle 515.jpg"; sourceTree = "<group>"; };
+		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
+		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
 		0A7FC4122844E05A0097888A /* Collaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collaboration.swift; sourceTree = "<group>"; };
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
@@ -363,9 +373,11 @@
 				0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */,
 				0A07D5262809506C00B6F9A2 /* FirebaseDatabaseSwift-Beta in Frameworks */,
 				0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */,
+				0A724F69288B0C8C00708C6B /* FirebaseStorageSwift-Beta in Frameworks */,
 				0A48ACD92818228B0044E06E /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */,
 				0A48ACD7281822680044E06E /* FirebaseCrashlytics in Frameworks */,
+				0A724F67288B0C8C00708C6B /* FirebaseStorage in Frameworks */,
 				0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */,
 				0AD9B77E286E2925005ACFD7 /* FirebaseFirestoreSwift-Beta in Frameworks */,
 				0AD9B77C286E2925005ACFD7 /* FirebaseFirestore in Frameworks */,
@@ -607,17 +619,19 @@
 		0A4DC77F27F48FBA00712518 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				0A724F6C28900D4400708C6B /* Async.swift */,
 				0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */,
 				0AD9B75728621782005ACFD7 /* Result+Throws.swift */,
 				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
 				0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */,
 				0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */,
 				0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */,
-				0A720C6228007011003D6B13 /* UIImage+Resize.swift */,
+				0A720C6228007011003D6B13 /* Image+Resize.swift */,
 				0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */,
 				0A1812742834CFBB00A8515B /* UITableView+Borders.swift */,
 				0A18126E28339EC800A8515B /* UIView+Shadow.swift */,
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
+				0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -697,6 +711,7 @@
 				0AF812B72840D52A00F7BD09 /* Logging */,
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A07D75428101B1C00B6F9A2 /* Model */,
+				0A724F61288AAFCF00708C6B /* ModelUploads */,
 				0A632EDB27E4DA38001A019B /* PDF */,
 				0A4DC79427F5728500712518 /* ProjectActions */,
 				0A2F3307283CE19100D04A1C /* Settings */,
@@ -745,7 +760,7 @@
 			isa = PBXGroup;
 			children = (
 				0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */,
-				0A720C64280427F7003D6B13 /* Rectangle 515.png */,
+				0A724F6A288B12F800708C6B /* Rectangle 515.jpg */,
 			);
 			path = DemoResources;
 			sourceTree = "<group>";
@@ -762,6 +777,15 @@
 				0A724F5F28898B9400708C6B /* AddUploadCommandTest.swift */,
 			);
 			path = Commands;
+			sourceTree = "<group>";
+		};
+		0A724F61288AAFCF00708C6B /* ModelUploads */ = {
+			isa = PBXGroup;
+			children = (
+				0A724F64288AF07800708C6B /* PendingUploadsModel.swift */,
+				0A724F62288AAFFD00708C6B /* PendingUpload.swift */,
+			);
+			path = ModelUploads;
 			sourceTree = "<group>";
 		};
 		0A97232327FC507200D744F4 /* Camera */ = {
@@ -866,6 +890,8 @@
 				0A4995DA2861DBE600E571FB /* Kingfisher */,
 				0AD9B77B286E2925005ACFD7 /* FirebaseFirestore */,
 				0AD9B77D286E2925005ACFD7 /* FirebaseFirestoreSwift-Beta */,
+				0A724F66288B0C8C00708C6B /* FirebaseStorage */,
+				0A724F68288B0C8C00708C6B /* FirebaseStorageSwift-Beta */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -967,8 +993,8 @@
 				0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */,
 				0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */,
 				0A07D7632810562700B6F9A2 /* fonts in Resources */,
-				0A720C65280427F7003D6B13 /* Rectangle 515.png in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
+				0A724F6B288B12F800708C6B /* Rectangle 515.jpg in Resources */,
 				0A07D51E28089DDD00B6F9A2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -997,6 +1023,7 @@
 			files = (
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
 				0AD9B762286773C8005ACFD7 /* Action.swift in Sources */,
+				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
@@ -1051,6 +1078,7 @@
 				0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,
+				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
@@ -1062,6 +1090,7 @@
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0AD9B7642869DDFE005ACFD7 /* ActionCommand.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
+				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
@@ -1079,7 +1108,7 @@
 				0A724F5128894A8500708C6B /* AddTagCommand+Firestore.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
-				0A720C6328007011003D6B13 /* UIImage+Resize.swift in Sources */,
+				0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */,
 				0A34C1892845FE9C00BEDC7C /* FirebaseComment.swift in Sources */,
 				0A724F4F28887ED400708C6B /* AddCommentCommand.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
@@ -1098,6 +1127,7 @@
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
+				0A724F65288AF07800708C6B /* PendingUploadsModel.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
@@ -1727,6 +1757,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		0A724F66288B0C8C00708C6B /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		0A724F68288B0C8C00708C6B /* FirebaseStorageSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseStorageSwift-Beta";
 		};
 		0AD9B77B286E2925005ACFD7 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;

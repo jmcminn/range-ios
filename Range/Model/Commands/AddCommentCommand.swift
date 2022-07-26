@@ -1,6 +1,7 @@
 import Foundation
 import RealmSwift
 
+/// Add or update the `Comment`.
 struct AddCommentCommand: Command, Equatable {
     let commentId: String
     var parentType: String

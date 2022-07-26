@@ -4,13 +4,6 @@ import Foundation
 import OSLog
 import RealmSwift
 
-//
-//          applyLocally                         upsertCmd                       decode
-// Realm  <--------------                      <-----------                    <--------
-//                         AddGeometryCommand                FirebaseGeometry             Firestore
-// Memory  ------------->                      ----------->                    --------->
-//          addGeometry                         applyToFirestore                encode + save
-
 /// Protocol to be adopted by firebase objects that can be stored in Realm
 protocol FirestoreToRealmSyncable {
     /// The type used to store the objects in the model Realm db
@@ -19,6 +12,7 @@ protocol FirestoreToRealmSyncable {
     func upsertCommand(id: String) throws -> Command
 }
 
+/// A context for firestore commands. It stores the current projectId and provides the references to all the project collections.
 class ProjectModelFirestoreContext {
     let projectId: String
     private unowned let firestore: Firestore
@@ -40,16 +34,18 @@ class ProjectModelFirestoreContext {
     }
 }
 
+//
+//          applyLocally                         upsertCmd                       decode
+// Realm  <--------------                      <-----------                    <--------
+//                         AddGeometryCommand                FirebaseGeometry             Firestore
+// Memory  ------------->                      ----------->                    --------->
+//          addGeometry                         applyToFirestore                encode + save
+
+/// This object provides the way to sync Firestore backend data with local Realm db.
 class ProjectModelFirestoreSync {
     /// The model to synchronize Firebase with
     private unowned let model: ProjectModel
     private let ctx: ProjectModelFirestoreContext
-
-    /// Background serial queue to perform firebase to Realm sync operations on.
-    private let syncQueue = DispatchQueue(label: "firestore-sync-queue")
-
-    /// Realm used by the sync on the syncQueue to update the db with Firebase changes
-    private var syncRealm: Realm!
 
     /// Firestore reference
     let firestore: Firestore
@@ -99,7 +95,7 @@ class ProjectModelFirestoreSync {
         let participants = try await participantsRequest
 
         // store in the db
-        try await _asyncWrite { realm in
+        try await model.write { realm in
             try projectSummary.upsertCommand(id: self.model.projectId).apply(inRealm: realm)
             try canvases.documents.forEach {
                 let canvas = try $0.data(as: FirebasePDFCanvas.self)
@@ -146,12 +142,12 @@ class ProjectModelFirestoreSync {
                 Logger.firestore.error("\(loggingKey) fetching snapshots failed: \(error!.localizedDescription)")
                 return
             }
-            self.syncQueue.async {
+            self.model.writeQueue.async {
                 snapshot.documentChanges.forEach { diff in
                     let document = diff.document
                     Logger.firestore.debug("\(loggingKey) \(diff.type) \(document.documentID, privacy: .public)")
                     do {
-                        try syncDocument(self.syncRealm, diff.type, document)
+                        try syncDocument(self.model.writeRealm, diff.type, document)
                     } catch let DecodingError.dataCorrupted(context),
                                 let DecodingError.keyNotFound(_, context),
                                 let DecodingError.valueNotFound(_, context),
@@ -178,7 +174,13 @@ class ProjectModelFirestoreSync {
     }
 }
 
+/// Implementation of the remote updater protocol.
+/// ProjectModelFirestoreSync registers itself as a remote updater in ProjectModel, so all the update commands are executed
+/// against the Firestore
 extension ProjectModelFirestoreSync: ProjectModelRemoteUpdater {
+    /// Runs given commands in firestore transaction.
+    /// It is assumed that *all* the commands support applying in Firestore transaction by implementing the `FirestoreCommand`
+    /// protocol. If that's not the case this method will crash.
     func runCommands(_ commands: [Command], writer _: ProjectModelWriter) async throws {
         try await firestore.runTransaction { transaction, errorPointer -> Any? in
             for command in commands {
@@ -192,27 +194,5 @@ extension ProjectModelFirestoreSync: ProjectModelRemoteUpdater {
             // don't return nil, it's supposed to work but it crashes
             return true
         }
-    }
-}
-
-extension ProjectModelFirestoreSync {
-    /// Runs given closure on the writeQueue in the writeRealm transaction as an async function
-    func _asyncWrite(_ closure: @escaping (Realm) throws -> Void) async throws {
-        try await withUnsafeThrowingContinuation { continuation in
-            self.syncQueue.async { [self] in
-                do {
-                    if syncRealm == nil {
-                        syncRealm = try Realm(configuration: model.realmConfig, queue: syncQueue)
-                    }
-                    // at this point writeRealm is set or it threw an error
-                    try syncRealm!.write {
-                        try closure(syncRealm!)
-                    }
-                    continuation.resume()
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-        } as Void
     }
 }

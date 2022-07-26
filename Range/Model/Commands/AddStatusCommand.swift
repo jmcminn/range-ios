@@ -1,6 +1,7 @@
 import Foundation
 import RealmSwift
 
+/// Add or update the `Status`.
 struct AddStatusCommand: Command, Equatable {
     let statusId: String
     var name: String

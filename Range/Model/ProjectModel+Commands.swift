@@ -9,28 +9,73 @@ func generateRealmId() -> String {
     UUID().uuidString.lowercased()
 }
 
+/// the key / path for the upload in given project
+func uploadKey(projectId: String, uploadId: String) -> String {
+    "projects/\(projectId)/uploads/\(uploadId)"
+}
+
+// MARK: - run commands
+
 /// ProjectModel extension for running commands
 extension ProjectModel {
-    /// Returns commands for:
+    func runCommands(_ commands: [Command]) async throws {
+        // try to apply remotely
+        if let remoteUpdater = remoteUpdater {
+            try await remoteUpdater.runCommands(commands, writer: self)
+        } else {
+            // if remote not supported then try locally
+            try await write { realm in
+                try commands.forEach { try $0.apply(inRealm: realm) }
+            }
+        }
+    }
+
+    // TODO: 90 not needed?
+//    func runActionCommand(_ command: ActionCommand) async throws {
+//        if let remoteUpdater = remoteUpdater {
+//            try await remoteUpdater.runActionCommand(command, writer: self)
+//        } else {
+//            try await write { realm in
+//                try command.applyLocally(inRealm: realm)
+//            }
+//        }
+//    }
+}
+
+// MARK: - commands
+
+/// Implementation of higher level commands (composed of multiple `Command`s)
+extension ProjectModel {
+    /// Stores the imageData locally (in a cache) and returns commands for
     /// - creating the feature If geometry with given id has no feature
     /// - creating a collaboration If the feature has no collaboration
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
     /// Throws error if geometry with given id not found.
+    ///
+    /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
+    /// The write operation will be executed on a `writeRealm` so not on the main thread
     ///
     /// - Parameters:
     ///     - imageData: the data for the image
     ///     - tags: array of tags, existing or new ones
     ///     - description: upload description
     ///     - geometryId: 'photoMarker' to add the upload to (to it's first feature/first collaboration)
+    @MainActor
     func addPhoto(
         _ imageData: Data,
         tags: [TagViewModel],
         description: String,
         toCollaborationForGeometryId geometryId: String
-    ) throws -> [Command] {
+    ) async throws -> [Command] {
         guard let geometry = mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
             throw ModelError.geometryNotFound
         }
+
+        let uploadId = generateRealmId()
+        try await pendingUploadsModel.addPendingUpload(
+            imageData,
+            key: uploadKey(projectId: projectId, uploadId: uploadId)
+        )
 
         var commands: [Command] = []
 
@@ -64,15 +109,18 @@ extension ProjectModel {
             ))
         }
 
-        commands.append(contentsOf: _addPhoto(imageData, tags: tags, description: description,
-                                              toCollaboration: collaborationId))
+        commands.append(contentsOf: _addUpload(uploadId: uploadId, tags: tags, description: description,
+                                               toCollaboration: collaborationId))
         return commands
     }
 
-    /// Returns commands for
+    /// Stores the imageData locally (in a cache) and returns commands for
     /// - creating a new geometry of photoMarker type and adding it to given canvas.
     /// - creating a feature attached to this geometry and the collaboration attached to the feature.
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
+    ///
+    /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
+    /// The write operation will be executed on a `writeRealm` so not on the main thread
     ///
     /// - Parameters:
     ///     - imageData: the data for the image
@@ -81,6 +129,7 @@ extension ProjectModel {
     ///     - coordinates: the coordinates for the photo marker
     ///     - canvas: should be from the `mainRealm`
     ///     - geometryId: this id will be used for the newly created geometry
+    @MainActor
     func addPhoto(
         _ imageData: Data,
         tags: [TagViewModel],
@@ -88,7 +137,13 @@ extension ProjectModel {
         at coordinates: CLLocationCoordinate2D,
         in canvas: PDFCanvas,
         geometryId: String
-    ) -> [Command] {
+    ) async throws -> [Command] {
+        let uploadId = generateRealmId()
+        try await pendingUploadsModel.addPendingUpload(
+            imageData,
+            key: uploadKey(projectId: projectId, uploadId: uploadId)
+        )
+
         let addGeometryCmd = AddGeometryCommand(
             geometryId: geometryId,
             canvasId: canvas.id,
@@ -110,8 +165,8 @@ extension ProjectModel {
             tagIds: []
         )
         var commands: [Command] = [addGeometryCmd, addFeatureCmd, addCollaborationCmd]
-        commands.append(contentsOf: _addPhoto(
-            imageData,
+        commands.append(contentsOf: _addUpload(
+            uploadId: uploadId,
             tags: tags,
             description: description,
             toCollaboration: addCollaborationCmd.collaborationId
@@ -119,16 +174,16 @@ extension ProjectModel {
         return commands
     }
 
-    /// Returns commands for adding new photo with given tags (some of them may require creation) to collaboration with given id
-    /// Stores the upload data in the disk cache, creates and upload object and adds it to a collaboration
-    func _addPhoto(_: Data,
-                   tags: [TagViewModel],
-                   description: String,
-                   toCollaboration collaborationId: String) -> [Command]
+    /// Returns commands for adding new upload with given tags (some of them may require creation) to collaboration with given id
+    ///
+    /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
+    /// The write operation will be executed on a `writeRealm` so not on the main thread
+    @MainActor
+    func _addUpload(uploadId: String,
+                    tags: [TagViewModel],
+                    description: String,
+                    toCollaboration collaborationId: String) -> [Command]
     {
-        // TODO: 90 do something with Data
-//        let localUploadURL = try await _asyncStoreImage(data, key: uploadId)
-
         var commands: [Command] = []
 
         // add all new tags
@@ -136,7 +191,6 @@ extension ProjectModel {
             .filter(\.newTag)
             .map { AddTagCommand(tagId: $0.id, name: $0.name) })
 
-        let uploadId = generateRealmId()
         let addUploadCmd = AddUploadCommand(
             uploadId: uploadId,
             correlationId: uploadId,
@@ -152,70 +206,5 @@ extension ProjectModel {
         commands.append(addUploadCmd)
 
         return commands
-    }
-}
-
-// MARK: - run commands
-
-extension ProjectModel {
-    func runCommands(_ commands: [Command]) async throws {
-        // try to apply remotely
-        if let remoteUpdater = remoteUpdater {
-            try await remoteUpdater.runCommands(commands, writer: self)
-        } else {
-            // if remote not supported then try locally
-            try await write { realm in
-                try commands.forEach { try $0.apply(inRealm: realm) }
-            }
-        }
-    }
-
-    // TODO: 90 not needed?
-//    func runActionCommand(_ command: ActionCommand) async throws {
-//        if let remoteUpdater = remoteUpdater {
-//            try await remoteUpdater.runActionCommand(command, writer: self)
-//        } else {
-//            try await write { realm in
-//                try command.applyLocally(inRealm: realm)
-//            }
-//        }
-//    }
-}
-
-// MARK: - utils
-
-extension ProjectModel: ProjectModelWriter {
-    /// Runs given closure on the writeQueue in the writeRealm transaction as an async function
-    func write(_ closure: @escaping (Realm) throws -> Void) async throws {
-        try await withUnsafeThrowingContinuation { continuation in
-            self.writeQueue.async { [self] in
-                do {
-                    if writeRealm == nil {
-                        writeRealm = try Realm(configuration: realmConfig, queue: writeQueue)
-                    }
-                    // at this point writeRealm is set or it threw an error
-                    try writeRealm!.write {
-                        try closure(writeRealm!)
-                    }
-                    continuation.resume()
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-        } as Void
-    }
-
-    /// Stores the data in the local photos cache and returns the file URL
-    func _asyncStoreImage(_ data: Data, key: String) async throws -> URL {
-        try await withUnsafeThrowingContinuation { continuation in
-            localPhotosCache.storeToDisk(data, forKey: key) { result in
-                if case let .failure(error) = result.diskCacheResult {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(returning:
-                        URL(fileURLWithPath: self.localPhotosCache.cachePath(forKey: key)))
-                }
-            }
-        } as URL
     }
 }

@@ -1,7 +1,8 @@
 import Foundation
 import RealmSwift
 
-struct AddPDFCanvasCommand: Command {
+/// Add or update the `PDFCanvas`.
+struct AddPDFCanvasCommand: Command, Equatable {
     let canvasId: String
     var url: String
     var pageNumber: Int

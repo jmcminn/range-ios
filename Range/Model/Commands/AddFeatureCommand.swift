@@ -1,6 +1,7 @@
 import Foundation
 import RealmSwift
 
+/// Add or update the `Feature`.
 struct AddFeatureCommand: Command, Equatable {
     let featureId: String
     var geometryId: String

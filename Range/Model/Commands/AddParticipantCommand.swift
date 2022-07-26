@@ -1,7 +1,8 @@
 import Foundation
 import RealmSwift
 
-struct AddParticipantCommand: Command {
+/// Add or update the `Participant`.
+struct AddParticipantCommand: Command, Equatable {
     let participantId: String
     var firstName: String
     var lastName: String
