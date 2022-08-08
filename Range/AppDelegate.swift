@@ -35,7 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             options.storageBucket = "development-18fcf.appspot.com"
             FirebaseApp.configure(options: options)
             Auth.auth().useEmulator(withHost: "localhost", port: 9099)
-            Database.database().useEmulator(withHost: "localhost", port: 9000)
             Storage.storage().useEmulator(withHost: "localhost", port: 9199)
             let settings = Firestore.firestore().settings
             settings.host = "localhost:9001"
