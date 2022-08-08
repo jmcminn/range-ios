@@ -161,8 +161,6 @@
 		0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75728621782005ACFD7 /* Result+Throws.swift */; };
 		0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75928624204005ACFD7 /* Authentication.swift */; };
 		0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75C28644D99005ACFD7 /* TagsViewModelTest.swift */; };
-		0AD9B762286773C8005ACFD7 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B761286773C8005ACFD7 /* Action.swift */; };
-		0AD9B7642869DDFE005ACFD7 /* ActionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B7632869DDFE005ACFD7 /* ActionCommand.swift */; };
 		0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */; };
 		0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B7672869E55E005ACFD7 /* Command.swift */; };
 		0AD9B76B286A1726005ACFD7 /* AddUploadCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */; };
@@ -346,8 +344,6 @@
 		0AD9B75728621782005ACFD7 /* Result+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Throws.swift"; sourceTree = "<group>"; };
 		0AD9B75928624204005ACFD7 /* Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		0AD9B75C28644D99005ACFD7 /* TagsViewModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModelTest.swift; sourceTree = "<group>"; };
-		0AD9B761286773C8005ACFD7 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
-		0AD9B7632869DDFE005ACFD7 /* ActionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCommand.swift; sourceTree = "<group>"; };
 		0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadCommand.swift; sourceTree = "<group>"; };
 		0AD9B7672869E55E005ACFD7 /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddUploadCommand+Firestore.swift"; sourceTree = "<group>"; };
@@ -822,8 +818,6 @@
 		0AD9B75E28677145005ACFD7 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
-				0AD9B761286773C8005ACFD7 /* Action.swift */,
-				0AD9B7632869DDFE005ACFD7 /* ActionCommand.swift */,
 				0AD9B7672869E55E005ACFD7 /* Command.swift */,
 				0A724F4428887A7D00708C6B /* AddProjectSummaryCommand.swift */,
 				0A724F4628887B7200708C6B /* AddStatusCommand.swift */,
@@ -1022,7 +1016,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
-				0AD9B762286773C8005ACFD7 /* Action.swift in Sources */,
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
@@ -1088,7 +1081,6 @@
 				0A724F4D28887E4C00708C6B /* AddPDFCanvasCommand.swift in Sources */,
 				0A724F3B288840AD00708C6B /* AddGeometryCommand+Firestore.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
-				0AD9B7642869DDFE005ACFD7 /* ActionCommand.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,

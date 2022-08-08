@@ -29,17 +29,6 @@ extension ProjectModel {
             }
         }
     }
-
-    // TODO: 90 not needed?
-//    func runActionCommand(_ command: ActionCommand) async throws {
-//        if let remoteUpdater = remoteUpdater {
-//            try await remoteUpdater.runActionCommand(command, writer: self)
-//        } else {
-//            try await write { realm in
-//                try command.applyLocally(inRealm: realm)
-//            }
-//        }
-//    }
 }
 
 // MARK: - commands
