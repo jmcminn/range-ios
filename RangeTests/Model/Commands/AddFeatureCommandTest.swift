@@ -10,7 +10,7 @@ class AddFeatureCommandTest: XCTestCase {
     var realm: Realm!
 
     override func setUpWithError() throws {
-        pendingUploadsModel = try PendingUploadsModel(inMemory: true)
+        pendingUploadsModel = TestPendingUploadsModel()
         // create a different Realm in each test by using a new UUID
         model = try ProjectModel(
             userId: "user1",

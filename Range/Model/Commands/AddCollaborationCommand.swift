@@ -6,7 +6,7 @@ struct AddCollaborationCommand: Command, Equatable {
     let collaborationId: String
     var featureId: String
     var name: String
-    var collaborationDescription: String
+    var collaborationDescription: String?
     var statusId: String?
     var tagIds: [String]
 

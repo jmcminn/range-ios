@@ -132,7 +132,7 @@
 		0A724F5E288980F800708C6B /* AddCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5D288980F800708C6B /* AddCommentCommandTest.swift */; };
 		0A724F6028898B9400708C6B /* AddUploadCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5F28898B9400708C6B /* AddUploadCommandTest.swift */; };
 		0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F62288AAFFD00708C6B /* PendingUpload.swift */; };
-		0A724F65288AF07800708C6B /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F64288AF07800708C6B /* PendingUploadsModel.swift */; };
+		0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F64288AF07800708C6B /* FirebasePendingUploadsModel.swift */; };
 		0A724F67288B0C8C00708C6B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0A724F66288B0C8C00708C6B /* FirebaseStorage */; };
 		0A724F69288B0C8C00708C6B /* FirebaseStorageSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0A724F68288B0C8C00708C6B /* FirebaseStorageSwift-Beta */; };
 		0A724F6B288B12F800708C6B /* Rectangle 515.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* Rectangle 515.jpg */; };
@@ -149,6 +149,8 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
+		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
+		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */; };
 		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -315,7 +317,7 @@
 		0A724F5D288980F800708C6B /* AddCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A724F5F28898B9400708C6B /* AddUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadCommandTest.swift; sourceTree = "<group>"; };
 		0A724F62288AAFFD00708C6B /* PendingUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUpload.swift; sourceTree = "<group>"; };
-		0A724F64288AF07800708C6B /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
+		0A724F64288AF07800708C6B /* FirebasePendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebasePendingUploadsModel.swift; sourceTree = "<group>"; };
 		0A724F6A288B12F800708C6B /* Rectangle 515.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Rectangle 515.jpg"; sourceTree = "<group>"; };
 		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
@@ -330,6 +332,8 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
+		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderView.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -716,6 +720,7 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
+				0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */,
 				0A4995BB2857697F00E571FB /* HeaderExpand */,
 				0A4DC76627EDCCFB00712518 /* Math */,
 				0A07D7592810377400B6F9A2 /* Model */,
@@ -770,7 +775,8 @@
 		0A724F61288AAFCF00708C6B /* ModelUploads */ = {
 			isa = PBXGroup;
 			children = (
-				0A724F64288AF07800708C6B /* PendingUploadsModel.swift */,
+				0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */,
+				0A724F64288AF07800708C6B /* FirebasePendingUploadsModel.swift */,
 				0A724F62288AAFFD00708C6B /* PendingUpload.swift */,
 			);
 			path = ModelUploads;
@@ -1078,6 +1084,7 @@
 				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A4995B52854C28200E571FB /* TextView.swift in Sources */,
+				0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
@@ -1109,7 +1116,7 @@
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
-				0A724F65288AF07800708C6B /* PendingUploadsModel.swift in Sources */,
+				0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
@@ -1151,6 +1158,7 @@
 				0A724F5A28897B8A00708C6B /* AddFeatureCommandTest.swift in Sources */,
 				0A724F582889780000708C6B /* AddGeometryCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */,
+				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */,
 				0A724F562889763800708C6B /* AddStatusCommandTest.swift in Sources */,
 				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,

@@ -26,7 +26,7 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
     var featureId: String
     var statusId: String?
     var name: String
-    var collaborationDescription: String
+    var collaborationDescription: String?
     var tagIds: [String]
 
     /// Default initializer with all properties
@@ -34,7 +34,7 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
         featureId: String,
         statusId: String?,
         name: String,
-        description: String,
+        description: String?,
         tagIds: [String]
     ) {
         self.featureId = featureId

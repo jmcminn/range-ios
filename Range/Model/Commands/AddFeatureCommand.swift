@@ -6,7 +6,7 @@ struct AddFeatureCommand: Command, Equatable {
     let featureId: String
     var geometryId: String
     var name: String
-    var featureDescription: String
+    var featureDescription: String?
 
     func apply(inRealm realm: Realm) throws {
         let geometry = realm.objectOrPlaceholder(ofType: Geometry.self, forPrimaryKey: geometryId)

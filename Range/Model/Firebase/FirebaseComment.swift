@@ -26,7 +26,7 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
     var parentId: String
     var parentType: String
     var authorId: String
-    var timestamp: Int
+    var timestamp: Int // milliseconds
     var text: String
     var isCompleted: Bool?
 
@@ -39,7 +39,7 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
             parentType: parentType,
             parentId: parentId,
             authorId: authorId,
-            timestamp: TimeInterval(timestamp),
+            timestamp: TimeInterval(timestamp) / 1000.0,
             text: text,
             isCompleted: isCompleted
         )

@@ -13,7 +13,7 @@ class Collaboration: Object, WithPlaceholder {
     /// name
     @Persisted var name: String
     /// description (can't really use the description name for it as it's already used)
-    @Persisted var collaborationDescription: String
+    @Persisted var collaborationDescription: String?
     /// comments, the order doesn't matter so it's a set (the order is controlled by the comment timestamp when displaying in the UI)
     @Persisted var comments: MutableSet<Comment>
     /// uploads, the order doesn't matter so it's a set (the order is controlled by the upload timestamp when displaying in the UI)
@@ -29,7 +29,7 @@ class Collaboration: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, description: String, placeholder: Bool = false) {
+    init(id: String, name: String, description: String?, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.name = name
@@ -42,7 +42,7 @@ class Collaboration: Object, WithPlaceholder {
         self.init(
             id: id,
             name: "",
-            description: "",
+            description: nil,
             placeholder: true
         )
     }

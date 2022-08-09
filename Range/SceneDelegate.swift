@@ -8,7 +8,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var projectModel: ProjectModel?
-    var pendingUploadsModel: PendingUploadsModel?
+    var pendingUploadsModel: FirebasePendingUploadsModel?
     var projectModelFirestoreSync: ProjectModelFirestoreSync?
 
     var projectFC: ProjectFlowController?
@@ -103,7 +103,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///     - projectId: id of the project
     /// - Returns: loaded ProjectModel
     private func createProjectModel(userId: String, projectId: String) async throws {
-        let _pendingUploadsModel = try PendingUploadsModel()
+        let _pendingUploadsModel = try FirebasePendingUploadsModel()
         try await _pendingUploadsModel.start()
 
         let _projectModel = try ProjectModel(

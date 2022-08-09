@@ -143,13 +143,13 @@ extension ProjectModel {
             featureId: generateRealmId(),
             geometryId: addGeometryCmd.geometryId,
             name: "",
-            featureDescription: ""
+            featureDescription: nil
         )
         let addCollaborationCmd = AddCollaborationCommand(
             collaborationId: generateRealmId(),
             featureId: addFeatureCmd.featureId,
             name: "",
-            collaborationDescription: "",
+            collaborationDescription: nil,
             statusId: nil,
             tagIds: []
         )

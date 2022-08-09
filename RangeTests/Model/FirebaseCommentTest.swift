@@ -8,7 +8,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: 1,
+            timestamp: 1000,
             text: "comment 1",
             isCompleted: nil
         )

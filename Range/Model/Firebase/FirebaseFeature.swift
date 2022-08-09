@@ -22,10 +22,10 @@ struct FirebaseFeature: Codable, FirestoreToRealmSyncable {
 
     var geometryId: String
     var name: String
-    var featureDescription: String
+    var featureDescription: String?
 
     /// For constructing with all properties
-    init(geometryId: String, name: String, description: String) {
+    init(geometryId: String, name: String, description: String?) {
         self.geometryId = geometryId
         self.name = name
         featureDescription = description

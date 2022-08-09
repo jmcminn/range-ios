@@ -30,11 +30,12 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     var parentId: String
     var parentType: String
     var authorId: String
-    var timestamp: Int
+    var timestamp: Int // milliseconds
     var name: String?
     var uploadDescription: String?
     var urlString: String?
-    var correlationId: String
+    // TODO: 193 not optional
+    var correlationId: String?
     var tagIds: [String]
 
     func upsertCommand(id: String) throws -> Command {
@@ -49,11 +50,11 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
         }
         return AddUploadCommand(
             uploadId: id,
-            correlationId: correlationId,
+            correlationId: correlationId ?? id,
             parentType: parentType,
             parentId: parentId,
             authorId: authorId,
-            timestamp: TimeInterval(timestamp),
+            timestamp: TimeInterval(timestamp) / 1000.0, // TimeInterval is in seconds
             name: name,
             uploadDescription: uploadDescription,
             url: url,

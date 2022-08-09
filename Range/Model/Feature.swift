@@ -8,7 +8,7 @@ class Feature: Object, WithPlaceholder {
     /// name
     @Persisted var name: String
     /// description (can't really use the description name for it as it's already used)
-    @Persisted var featureDescription: String
+    @Persisted var featureDescription: String?
     /// Backlink to the Geometry. This is automatically updated whenever this feature is added to or removed from a geometry
     @Persisted(originProperty: "features") var geometry: LinkingObjects<Geometry>
     /// collaborations for this feature, the order doesn't matter so it's a set
@@ -29,7 +29,7 @@ class Feature: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, description: String, placeholder: Bool = false) {
+    init(id: String, name: String, description: String?, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.name = name
@@ -42,7 +42,7 @@ class Feature: Object, WithPlaceholder {
         self.init(
             id: id,
             name: "",
-            description: "",
+            description: nil,
             placeholder: true
         )
     }
