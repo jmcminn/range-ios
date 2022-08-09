@@ -307,13 +307,10 @@ extension AddPhotoPinsHandler {
         }
         let selected = geometry.id == selectedPin?.id
         var pin = PointAnnotation(id: geometry.id, point: point)
-        pin.iconImage = "largepin"
+//        marker.selected.1
+        pin.iconImage = numberedImageName("marker.selected.", geometry.uploadsCount)
         pin.iconAnchor = .bottom
         pin.iconOffset = [0, 4]
-        pin.textField = String(geometry.uploadsCount)
-        pin.textSize = 17
-        pin.textOffset = [0, -2.35]
-        pin.textColor = StyleColor(.Neutral_01)
         setPin(&pin, selected: selected)
         return pin
     }
@@ -331,9 +328,30 @@ extension AddPhotoPinsHandler {
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPin(_ pin: inout PointAnnotation, selected: Bool) {
         pin.iconOpacity = selected ? 1 : 0.4
-        pin.textOpacity = selected ? 1 : 0.4
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
+    }
+
+    /// given base name and number produces full name <base><number> for numbers 0..8 and <base>9+ for numbers >= 9
+    private func numberedImageName(_ base: String, _ number: Int) -> String {
+        base + (number < 9 ? String(number) : "9+")
+    }
+
+    private func addImageToStyle(_ imageName: String) {
+        if let image = UIImage(named: imageName) {
+            do {
+                try canvasContainer.annotationsMapView.mapboxMap.style.addImage(
+                    image,
+                    id: imageName,
+                    stretchX: [],
+                    stretchY: []
+                )
+            } catch {
+                Logger.mapbox.error("addImage to style failed: \(error.localizedDescription, privacy: .public)")
+            }
+        } else {
+            Logger.assets.error("Couldn't load the \(imageName) image from assets")
+        }
     }
 
     /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins
@@ -343,27 +361,16 @@ extension AddPhotoPinsHandler {
         {
             return annotationManager
         } else {
-            // add image for pin to style
-            // TODO: content
-            if let largepinImage = UIImage(named: "largepin") {
-                do {
-                    try canvasContainer.annotationsMapView.mapboxMap.style.addImage(
-                        largepinImage,
-                        id: "largepin",
-                        stretchX: [],
-                        stretchY: []
-                    )
-                } catch {
-                    Logger.mapbox.error("addImage to style failed: \(error.localizedDescription, privacy: .public)")
-                }
-            } else {
-                Logger.assets.error("Couldn't load the largepin image from assets")
-            }
+            // add images for pin to style
+            Array(0 ... 9)
+                .map { numberedImageName("marker.selected.", $0) }
+                .forEach(addImageToStyle)
 
             // create annotation manager
             let annotationManager = canvasContainer.annotationsMapView.annotations
                 .makePointAnnotationManager(id: "pins")
-            annotationManager.textFont = ["SF Pro Text Semibold"]
+            // the text is embedded in the image
+//            annotationManager.textFont = ["SF Pro Text Semibold"]
             annotationManager.iconAllowOverlap = true
             annotationManager.iconIgnorePlacement = true
             return annotationManager
