@@ -151,7 +151,8 @@ class ProjectModelFirestoreSync {
                     } catch let DecodingError.dataCorrupted(context),
                                 let DecodingError.keyNotFound(_, context),
                                 let DecodingError.valueNotFound(_, context),
-                                let DecodingError.typeMismatch(_, context) {
+                                let DecodingError.typeMismatch(_, context)
+                    {
                         Logger.firestore.error(
                             "\(loggingKey) decode failed [\(document.documentID, privacy: .public)]: \(context.debugDescription, privacy: .public)"
                         )

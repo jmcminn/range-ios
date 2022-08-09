@@ -126,7 +126,8 @@ class CameraService: ObservableObject {
             setupResult = .success
         } catch let ConfigurationError.videoUnavailable(message),
                     let ConfigurationError.couldntAddVideo(message),
-                    let ConfigurationError.couldntAddOutput(message) {
+                    let ConfigurationError.couldntAddOutput(message)
+        {
             Logger.camera.error("device configuration failed: \(message, privacy: .public)")
             setupResult = .configurationFailed
         } catch {
