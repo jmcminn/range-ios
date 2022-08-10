@@ -139,23 +139,6 @@ extension PinsHandler {
         base + (number < 9 ? String(number) : "9+")
     }
 
-    private func addImageToStyle(_ imageName: String) {
-        if let image = UIImage(named: imageName) {
-            do {
-                try canvasContainer.annotationsMapView.mapboxMap.style.addImage(
-                    image,
-                    id: imageName,
-                    stretchX: [],
-                    stretchY: []
-                )
-            } catch {
-                Logger.mapbox.error("addImage to style failed: \(error.localizedDescription, privacy: .public)")
-            }
-        } else {
-            Logger.assets.error("Couldn't load the \(imageName) image from assets")
-        }
-    }
-
     /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins
     private var pinsAnnotationManager: PointAnnotationManager {
         if let annotationManager = canvasContainer.annotationsMapView.annotations
@@ -163,6 +146,7 @@ extension PinsHandler {
         {
             return annotationManager
         } else {
+            let addImage = canvasContainer.annotationsMapView.mapboxMap.style.addImage(named:)
             // add images for pin to style
             Array(0 ... 9)
                 .flatMap { [
@@ -170,9 +154,9 @@ extension PinsHandler {
                     numberedImageName("marker.selected.", $0),
                     numberedImageName("marker.selected.badge.", $0),
                 ] }
-                .forEach(addImageToStyle)
+                .forEach(addImage)
 
-            ["marker.note", "marker.selected.note"].forEach(addImageToStyle)
+            ["marker.note", "marker.selected.note"].forEach(addImage)
 
             // create annotation manager
             let annotationManager = canvasContainer.annotationsMapView.annotations
