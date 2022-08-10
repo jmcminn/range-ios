@@ -19,6 +19,7 @@
 		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
 		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
 		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
+		0A0D31CB28A2BC10007A8D49 /* PinsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CA28A2BC10007A8D49 /* PinsHandler.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
@@ -204,6 +205,7 @@
 		0A07D7622810562600B6F9A2 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		0A07D7652812960500B6F9A2 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
 		0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowController.swift; sourceTree = "<group>"; };
+		0A0D31CA28A2BC10007A8D49 /* PinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinsHandler.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
@@ -559,6 +561,7 @@
 			children = (
 				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
 				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
+				0A0D31CA28A2BC10007A8D49 /* PinsHandler.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -1108,6 +1111,7 @@
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
 				0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
+				0A0D31CB28A2BC10007A8D49 /* PinsHandler.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
 				0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */,
 				0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */,

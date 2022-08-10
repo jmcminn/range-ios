@@ -70,6 +70,9 @@ class AddPhotoPinsHandler {
     /// id of registered delegate
     private var canvasDelegateId: UUID?
 
+    /// id used for annotations manager, layer, etc...
+    private let annotationsId = "addPhotoPins"
+
     /// - Parameters:
     ///   - model:              model to read the pins from
     ///   - canvasContainer:    handler will add pins to this canvas
@@ -83,7 +86,7 @@ class AddPhotoPinsHandler {
 
     deinit {
         // remove the pins annotations
-        canvasContainer.annotationsMapView.annotations.removeAnnotationManager(withId: "pins")
+        canvasContainer.annotationsMapView.annotations.removeAnnotationManager(withId: annotationsId)
     }
 
     func start() {
@@ -102,7 +105,7 @@ class AddPhotoPinsHandler {
         geometriesNotificationToken?.invalidate()
         photoPinView?.removeFromSuperview()
         hideTooltip()
-        canvasContainer.annotationsMapView.annotations.removeAnnotationManager(withId: "pins")
+        canvasContainer.annotationsMapView.annotations.removeAnnotationManager(withId: annotationsId)
     }
 
     /// Checks if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.
@@ -307,7 +310,6 @@ extension AddPhotoPinsHandler {
         }
         let selected = geometry.id == selectedPin?.id
         var pin = PointAnnotation(id: geometry.id, point: point)
-//        marker.selected.1
         pin.iconImage = numberedImageName("marker.selected.", geometry.uploadsCount)
         pin.iconAnchor = .bottom
         pin.iconOffset = [0, 4]
@@ -327,7 +329,7 @@ extension AddPhotoPinsHandler {
 
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPin(_ pin: inout PointAnnotation, selected: Bool) {
-        pin.iconOpacity = selected ? 1 : 0.4
+        pin.iconOpacity = selected ? 1 : 0.5
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
     }
@@ -357,7 +359,7 @@ extension AddPhotoPinsHandler {
     /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins
     private var pinsAnnotationManager: PointAnnotationManager {
         if let annotationManager = canvasContainer.annotationsMapView.annotations
-            .annotationManagersById["pins"] as? PointAnnotationManager
+            .annotationManagersById[annotationsId] as? PointAnnotationManager
         {
             return annotationManager
         } else {
@@ -368,7 +370,7 @@ extension AddPhotoPinsHandler {
 
             // create annotation manager
             let annotationManager = canvasContainer.annotationsMapView.annotations
-                .makePointAnnotationManager(id: "pins")
+                .makePointAnnotationManager(id: annotationsId)
             // the text is embedded in the image
 //            annotationManager.textFont = ["SF Pro Text Semibold"]
             annotationManager.iconAllowOverlap = true
@@ -388,14 +390,14 @@ extension AddPhotoPinsHandler {
 
         canvasContainer.annotationsMapView.mapboxMap.queryRenderedFeatures(
             in: pinsSearchRect,
-            options: RenderedQueryOptions(layerIds: ["pins"], filter: nil)
+            options: RenderedQueryOptions(layerIds: [annotationsId], filter: nil)
         ) { result in
             guard case let .success(queriedFeatures) = result else {
                 completion(nil)
                 return
             }
             let closestPin = queriedFeatures
-                .filter { $0.source == "pins" }
+                .filter { $0.source == self.annotationsId }
                 .compactMap { SelectedPin(fromFeature: $0.feature) }
                 .filter {
                     // only points in the search rectangle
@@ -422,7 +424,7 @@ extension AddPhotoPinsHandler {
     private func findPin(at point: CGPoint, completion: @escaping (SelectedPin?) -> Void) {
         canvasContainer.annotationsMapView.mapboxMap.queryRenderedFeatures(
             at: point,
-            options: RenderedQueryOptions(layerIds: ["pins"], filter: nil)
+            options: RenderedQueryOptions(layerIds: [annotationsId], filter: nil)
         ) { result in
             // take any of the selected features with "pins" source
             guard case let .success(queriedFeatures) = result else { return }

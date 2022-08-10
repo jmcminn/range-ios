@@ -9,8 +9,9 @@ final class ProjectFlowController: UIViewController {
     let canvasContainer: CanvasContainerViewController
     var onSignOut: (() -> Void)?
 
-    lazy var actionCardVC = installActionCardVC()
     lazy var bottomBlurView = setupBottomBlur()
+    lazy var actionCardVC = installActionCardVC()
+    lazy var pinsHandler = PinsHandler(model: model, canvasContainer: canvasContainer)
 
     var addPhotoFlow: AddPhotoFlowController?
 
@@ -31,7 +32,8 @@ final class ProjectFlowController: UIViewController {
             make.edges.equalToSuperview()
         }
         showDebugSettingsButton()
-        showActionCard()
+        bottomBlurView.isHidden = false
+        showDefaultCanvasUI(animated: false)
     }
 
     func stop() {
@@ -39,9 +41,16 @@ final class ProjectFlowController: UIViewController {
         remove(childController: canvasContainer)
     }
 
-    fileprivate func showActionCard() {
-        actionCardVC.showCard(animated: false)
-        bottomBlurView.isHidden = false
+    /// Show the default UI elements when viewing the canvas
+    fileprivate func showDefaultCanvasUI(animated: Bool = true) {
+        actionCardVC.showCard(animated: animated)
+        pinsHandler.start()
+    }
+
+    /// Hide the default UI elements when viewing the canvas
+    fileprivate func hideDefaultCanvasUI(animated: Bool = true) {
+        actionCardVC.hideCard(animated: animated)
+        pinsHandler.stop()
     }
 
     // TODO: this should be hidden in the production version
@@ -106,13 +115,13 @@ final class ProjectFlowController: UIViewController {
     fileprivate func startAddPhotoFlow() {
         addPhotoFlow = AddPhotoFlowController(model: model, canvasContainer: canvasContainer)
         addPhotoFlow?.onStop = { [weak self] in
-            self?.actionCardVC.showCard(animated: true)
+            self?.showDefaultCanvasUI()
             self?.addPhotoFlow = nil
         }
         addPhotoFlow?.start { [weak self] started in
             // hide cards if photo flow started
             if started {
-                self?.actionCardVC.hideCard(animated: true)
+                self?.hideDefaultCanvasUI()
             } else {
                 self?.addPhotoFlow = nil
             }

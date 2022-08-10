@@ -23,6 +23,11 @@ class Feature: Object, WithPlaceholder {
         }
     }
 
+    /// If any collaboration has uncompleted comments
+    var hasUncompletedComments: Bool {
+        collaborations.contains { $0.hasUncompletedComments }
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()
