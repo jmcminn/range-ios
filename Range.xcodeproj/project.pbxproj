@@ -20,6 +20,8 @@
 		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
 		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
 		0A0D31CB28A2BC10007A8D49 /* PinsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CA28A2BC10007A8D49 /* PinsHandler.swift */; };
+		0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CC28A3E735007A8D49 /* Realm.swift */; };
+		0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
@@ -206,6 +208,8 @@
 		0A07D7652812960500B6F9A2 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
 		0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowController.swift; sourceTree = "<group>"; };
 		0A0D31CA28A2BC10007A8D49 /* PinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinsHandler.swift; sourceTree = "<group>"; };
+		0A0D31CC28A3E735007A8D49 /* Realm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Realm.swift; sourceTree = "<group>"; };
+		0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapbox.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
@@ -615,18 +619,20 @@
 			isa = PBXGroup;
 			children = (
 				0A724F6C28900D4400708C6B /* Async.swift */,
+				0A720C6228007011003D6B13 /* Image+Resize.swift */,
+				0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */,
+				0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */,
 				0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */,
+				0A0D31CC28A3E735007A8D49 /* Realm.swift */,
 				0AD9B75728621782005ACFD7 /* Result+Throws.swift */,
 				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
 				0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */,
 				0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */,
 				0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */,
-				0A720C6228007011003D6B13 /* Image+Resize.swift */,
 				0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */,
 				0A1812742834CFBB00A8515B /* UITableView+Borders.swift */,
 				0A18126E28339EC800A8515B /* UIView+Shadow.swift */,
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
-				0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1094,12 +1100,14 @@
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderView.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
+				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A724F5128894A8500708C6B /* AddTagCommand+Firestore.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
+				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
 				0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */,
 				0A34C1892845FE9C00BEDC7C /* FirebaseComment.swift in Sources */,
 				0A724F4F28887ED400708C6B /* AddCommentCommand.swift in Sources */,
