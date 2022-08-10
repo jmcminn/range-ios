@@ -259,7 +259,8 @@ extension AddPhotoPinsHandler {
                 case let .update(geometries, deletions, insertions, modifications):
                     self.pinsAnnotationManager.annotations = updateArray(
                         self.pinsAnnotationManager.annotations,
-                        from: geometries, deletions: deletions,
+                        from: geometries,
+                        deletions: deletions,
                         insertions: insertions,
                         modifications: modifications,
                         convert: self.convertGeometryToPin
@@ -300,11 +301,6 @@ extension AddPhotoPinsHandler {
         pin.iconOpacity = selected ? 1 : 0.5
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
-    }
-
-    /// given base name and number produces full name <base><number> for numbers 0..8 and <base>9+ for numbers >= 9
-    private func numberedImageName(_ base: String, _ number: Int) -> String {
-        base + (number < 9 ? String(number) : "9+")
     }
 
     /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins

@@ -22,6 +22,7 @@
 		0A0D31CB28A2BC10007A8D49 /* PinsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CA28A2BC10007A8D49 /* PinsHandler.swift */; };
 		0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CC28A3E735007A8D49 /* Realm.swift */; };
 		0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */; };
+		0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31D228A3F21E007A8D49 /* Resources.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
@@ -210,6 +211,7 @@
 		0A0D31CA28A2BC10007A8D49 /* PinsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinsHandler.swift; sourceTree = "<group>"; };
 		0A0D31CC28A3E735007A8D49 /* Realm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Realm.swift; sourceTree = "<group>"; };
 		0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapbox.swift; sourceTree = "<group>"; };
+		0A0D31D228A3F21E007A8D49 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
@@ -556,6 +558,7 @@
 				0A4DC77B27F45DB600712518 /* Colors.xcassets */,
 				0A4DC79727F5B06200712518 /* Colors.swift */,
 				0A07D7622810562600B6F9A2 /* fonts */,
+				0A0D31D228A3F21E007A8D49 /* Resources.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1072,6 +1075,7 @@
 				0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */,
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
+				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
 				0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */,
