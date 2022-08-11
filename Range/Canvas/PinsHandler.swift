@@ -128,6 +128,7 @@ extension PinsHandler {
             pin.symbolSortKey = 1
             pin.iconImage = hasUncompletedComments ? "marker.note" : numberedImageName("marker.", uploadsCount)
             pin.iconAnchor = .center
+            pin.iconOffset = [0, 0]
             let nothingSelected = selectedPinId == nil
             // only reduce opacity if some pin is selected but not this one, if nothing is selected
             // then all pins are fully opaque
