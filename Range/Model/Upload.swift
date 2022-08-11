@@ -8,6 +8,8 @@ class Upload: Object, WithPlaceholder {
     // the author, needs to be optional because of how Realm
     // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
     @Persisted var author: Participant?
+    /// Backlink to the Collaboration. This is automatically updated whenever this upload is added to or removed from the parent
+    @Persisted(originProperty: "uploads") var collaboration: LinkingObjects<Collaboration>
     // timestamp (since 1970)
     @Persisted var timestamp: TimeInterval
     // url

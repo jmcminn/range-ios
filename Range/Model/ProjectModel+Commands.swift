@@ -9,11 +9,6 @@ func generateRealmId() -> String {
     UUID().uuidString.lowercased()
 }
 
-/// the key / path for the upload in given project
-func uploadKey(projectId: String, uploadId: String) -> String {
-    "projects/\(projectId)/uploads/\(uploadId)"
-}
-
 // MARK: - run commands
 
 /// ProjectModel extension for running commands

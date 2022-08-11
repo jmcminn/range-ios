@@ -1,3 +1,4 @@
+import OSLog
 import SnapKit
 import SwiftUI
 import UIKit
@@ -6,6 +7,7 @@ import UIKit
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
     unowned let model: ProjectModel
+    unowned let images: Images
     let canvasContainer: CanvasContainerViewController
     var onSignOut: (() -> Void)?
 
@@ -15,7 +17,10 @@ final class ProjectFlowController: UIViewController {
 
     var addPhotoFlow: AddPhotoFlowController?
 
-    init(model: ProjectModel) throws {
+    var collaborationVC: CollaborationViewController?
+
+    init(images: Images, model: ProjectModel) throws {
+        self.images = images
         self.model = model
         canvasContainer = try CanvasContainerViewController(model: model)
         super.init(nibName: nil, bundle: nil)
@@ -27,6 +32,13 @@ final class ProjectFlowController: UIViewController {
     }
 
     func start() {
+        pinsHandler.onSelectedPinChange = { [weak self] geometryId in
+            if let geometryId = geometryId {
+                self?.showCollaborationWindow(forGeometry: geometryId, animated: true)
+            } else {
+                self?.hideCollaborationWindow(animated: true)
+            }
+        }
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -39,6 +51,7 @@ final class ProjectFlowController: UIViewController {
     func stop() {
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)
+        pinsHandler.stop()
     }
 
     /// Show the default UI elements when viewing the canvas
@@ -125,6 +138,56 @@ final class ProjectFlowController: UIViewController {
             } else {
                 self?.addPhotoFlow = nil
             }
+        }
+    }
+
+    // TODO: 184 uploads for given geometry id to be used from AddPhotoPinsHandler selection
+//    let uploads: Results<Upload> = self.model.mainRealm.objects(Upload.self)
+//        .where { $0.placeholder == false &&
+//            $0.collaboration.feature.geometry.id.equals(pin.id)
+//        }
+
+    /// Finds the first collaboration for this geometry and show its window
+    fileprivate func showCollaborationWindow(forGeometry geometryId: String, animated: Bool) {
+        if let geometry = model.mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId),
+           let feature = geometry.features.first,
+           let collaboration = feature.collaborations.first
+        {
+            let collaborationVC = CollaborationViewController(images: images, collaboration: collaboration)
+            collaborationVC.onClose = { [weak self] in
+                // unselect pin, this will result also in hiding the collaboration window
+                self?.pinsHandler.setSelectedPinId(nil)
+            }
+
+            canvasContainer.installCard(
+                cardViewController: collaborationVC,
+                inView: canvasContainer.controls,
+                cardConfig: CardConfiguration(initialCardPosition: .medium)
+            )
+
+            // check if already showing, if so then ignore animated and replace instantly
+            if self.collaborationVC != nil {
+                hideCollaborationWindow(animated: false)
+                collaborationVC.showCard(animated: false)
+            } else {
+                collaborationVC.showCard(animated: animated)
+            }
+            self.collaborationVC = collaborationVC
+        } else {
+            Logger.model.warning("""
+                Trying to present collaboration window for geometry
+                \(geometryId, privacy: .public) with no collaboration
+            """)
+        }
+    }
+
+    /// Hide the currently shown collaboration window
+    fileprivate func hideCollaborationWindow(animated: Bool) {
+        if let collaborationVC = collaborationVC {
+            collaborationVC.hideCard(animated: animated) {
+                self.canvasContainer.removeCard(cardViewController: collaborationVC)
+            }
+            self.collaborationVC = nil
         }
     }
 }

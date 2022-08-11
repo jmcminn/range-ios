@@ -24,6 +24,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// maximum backoff for retrying actions (in seconds)
     private let maxBackoff: TimeInterval = 64
 
+    unowned let images: Images
+
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
     /// Main thread Realm
@@ -34,19 +36,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// Realm operating on `writeQueue`, initialized on first use
     var writeRealm: Realm!
 
-    /// Firebase storage for uploading photos
-    let storage = Storage.storage()
-
     /// Background serial queue to perform firebase storage upload operations
     let uploadQueue = DispatchQueue(label: "pending-uploads-upload-queue")
-
-    // TODO: 184 revisit the disk cache storage - how does it play with using cache later for
-    // downloaded images???
-    /// Using Kingfisher image cache for local images store (configured disk cache to never expire)
-    let localPhotosCache = ImageCache(name: "local-photos")
-
-    /// The default cache for the images. Should be created outside of this class when it's actually used for displaying uploads...
-    let downloadsCache = ImageCache.default
 
     /// for monitoring network access
     let networkMonitor = NWPathMonitor()
@@ -58,7 +49,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// - Parameters:
     ///     - inMemory:      optional parameter to create the Realm in memory (for tests), but default `false`
     /// - Warning: to be called on the Main thread
-    init(inMemory: Bool = false) throws {
+    init(images: Images, inMemory: Bool = false) throws {
         var config = Realm.Configuration.defaultConfiguration
         // TODO: [db-migration] for now we just remove the Realm and resync if migration needed...
         config.deleteRealmIfMigrationNeeded = true
@@ -73,7 +64,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         config.objectTypes = [PendingUpload.self]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
-        localPhotosCache.diskStorage.config.expiration = .never
+        self.images = images
     }
 
     /// Starts synchronization - observes all relevant paths and updates the db.
@@ -104,7 +95,14 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// to Firebase storage
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     func addPendingUpload(_ imageData: Data, key: String) async throws {
-        try await localPhotosCache._asyncStoreToDisk(imageData, forKey: key)
+        // store in local photos cache that never expires, so we don't loose the photo before it's
+        // uploaded (it'll be removed from the cache once uploaded)
+        try await images.localPhotosCache._asyncStoreToDisk(imageData, forKey: key)
+        // store the thumbnail0, so it doesn;t have to be fetched and is ready in offline mode
+        if let thumbnail0Data = resizeImage(imageData: imageData, maxResolution: 200) {
+            let thumbnail0Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 0)
+            try await images.localPhotosCache._asyncStoreToDisk(thumbnail0Data, forKey: thumbnail0Key)
+        }
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
             let pendingUpload = PendingUpload(key)
             realm.add(pendingUpload)
@@ -114,14 +112,12 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         }
     }
 
-    /// After the image is uploaded it has to be removed from the `localPhotosCache` (as it is not expiring) and can
-    /// be put into the `downloadsCache` so it doesn't have to be redownloaded from the storage when requested for viewing.
+    /// After the image is uploaded it has to be removed from the `localPhotosCache` (as it is not expiring)
+    /// It is moved to downloads cache so it's immediatelly available without downloading.
     private func _moveImageFromLocalPhotosCache(forKey key: String) async throws {
-        let cachePath = localPhotosCache.cachePath(forKey: key)
-        let data = try Data(contentsOf: URL(fileURLWithPath: cachePath))
-        try await downloadsCache._asyncStoreToDisk(data, forKey: key)
-        // removeImage doesn't throw, so let's fire and forget
-        localPhotosCache.removeImage(forKey: key)
+        try await images.moveDataFromLocalPhotosToDownloadsCache(forKey: key)
+        try await images.moveDataFromLocalPhotosToDownloadsCache(forKey:
+            thumbnailKey(forUploadKey: key, thumbnailNumber: 0))
     }
 
     /// Return true if connected and the connection is not "expensive" (in terms of NWPath, which means it's not cellular)
@@ -210,10 +206,12 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         let storagePath = try await _asyncOnQueue(queue: writeQueue) {
             upload.storagePath
         }
-        let uploadRef = storage.reference(withPath: storagePath)
-        let cacheFileURL = URL(fileURLWithPath: localPhotosCache.cachePath(forKey: storagePath))
+        let uploadRef = images.storage.reference(withPath: storagePath)
+        let cacheFileURL = URL(fileURLWithPath: images.localPhotosCache.cachePath(forKey: storagePath))
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
+        // never expires = 1 year as advised by the standard: https://stackoverflow.com/a/25201898
+        metadata.cacheControl = "public, max-age=31536000"
 
         do {
             // upload the file

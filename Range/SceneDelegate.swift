@@ -7,6 +7,7 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var images: Images?
     var projectModel: ProjectModel?
     var pendingUploadsModel: FirebasePendingUploadsModel?
     var projectModelFirestoreSync: ProjectModelFirestoreSync?
@@ -64,9 +65,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         Task {
             do {
                 try await createProjectModel(userId: userId, projectId: projectId)
-                if let model = projectModel {
-                    try self.showProject(model: model)
-                }
+                try self.showProject()
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
                 signOut()
@@ -103,7 +102,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///     - projectId: id of the project
     /// - Returns: loaded ProjectModel
     private func createProjectModel(userId: String, projectId: String) async throws {
-        let _pendingUploadsModel = try FirebasePendingUploadsModel()
+        let _images = Images(projectId: projectId)
+        let _pendingUploadsModel = try FirebasePendingUploadsModel(images: _images)
         try await _pendingUploadsModel.start()
 
         let _projectModel = try ProjectModel(
@@ -117,14 +117,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         try _projectModel.loadProject()
 
+        images = _images
         pendingUploadsModel = _pendingUploadsModel
         projectModel = _projectModel
         projectModelFirestoreSync = _projectModelFirestoreSync
     }
 
-    /// Shows a project for given ProjectModel (the model should be loaded)
-    private func showProject(model: ProjectModel) throws {
-        let projectFC = try ProjectFlowController(model: model)
+    /// Shows a project for current model
+    private func showProject() throws {
+        let projectFC = try ProjectFlowController(images: images!, model: projectModel!)
         projectFC.onSignOut = { [weak self] in
             self?.signOut()
         }
@@ -142,6 +143,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         pendingUploadsModel = nil
         projectModel = nil
         projectModelFirestoreSync = nil
+        images = nil
         do {
             try Auth.auth().signOut()
         } catch {

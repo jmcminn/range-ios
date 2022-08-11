@@ -15,7 +15,10 @@ class PinsHandler {
     private var geometriesNotificationToken: NotificationToken?
 
     /// selected pin id or nil if nothing is selected
-    var selectedPinId: String?
+    private var selectedPinId: String?
+
+    /// Notifies about change in selected pin. provides the geometry id
+    var onSelectedPinChange: ((String?) -> Void)?
 
     /// id of registered delegate
     private var canvasDelegateId: UUID?
@@ -99,6 +102,13 @@ extension PinsHandler {
         ]
         setPinSelection(&pin)
         return pin
+    }
+
+    /// set selected pin, update the pins and notify about the change
+    func setSelectedPinId(_ geometryId: String?) {
+        selectedPinId = geometryId
+        onSelectedPinChange?(geometryId)
+        updatePinSelection()
     }
 
     /// Updates the visuals of currently presented pins based on `self.selectedPinId`
@@ -197,7 +207,7 @@ extension PinsHandler: CanvasViewControllerDelegate {
             if let pin = pin {
                 // check if a pin different that currently selectedPin was tapped
                 if pin.id != self.selectedPinId {
-                    self.selectedPinId = pin.id
+                    self.setSelectedPinId(pin.id)
                     self.updatePinSelection()
                     self.canvasContainer.pdfCanvasViewController.animatePanAndZoom(
                         cameraCenter: pin.point.coordinates,
@@ -206,8 +216,7 @@ extension PinsHandler: CanvasViewControllerDelegate {
                 }
             } else {
                 // unselect if tapped outside of the pin
-                self.selectedPinId = nil
-                self.updatePinSelection()
+                self.setSelectedPinId(nil)
             }
         }
     }
