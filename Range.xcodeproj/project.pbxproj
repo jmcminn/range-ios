@@ -1698,8 +1698,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.4.0;
+				kind = upToNextMinorVersion;
+				minimumVersion = 10.5.0;
 			};
 		};
 		0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */ = {

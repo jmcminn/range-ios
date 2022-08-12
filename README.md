@@ -92,6 +92,15 @@ The script required a `jq` tool, so a custom container was added to Gitlab iOS p
 
 ## Mapbox
 
+### 🔴*IMPORTANT*
+
+The dependency to mapbox is set to "up to next minor version 10.5.0" which means it won't allow to upgrade past 10.5.x.
+
+The reason is we observed a substantially bigger lag of pins when panning the pdf in 10.6.1 comparing to 10.5.1. (the experience is that pins our out of sync from PDF and they're behind. It was also observed previously, but the change to 10.6.1 is not acceptable)
+
+🔴**ACHTUNG:** Before updating Mapbox to any version newer than 10.5.1 compare visually the sync between Mapbox and PDF.
+
+
 ### Fonts
 
 The style used for canvas annotations is using local fonts. This is achieved by providing a glyphs path in the style pointing to the `fonts` app path.
