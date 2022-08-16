@@ -24,6 +24,8 @@ final class DebugSettings: ObservableObject {
         }
     }
 
+    let appVersion: String
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
 
@@ -32,6 +34,9 @@ final class DebugSettings: ObservableObject {
             Keys.hapticFeedbackOnPinTapSelection: true,
         ])
 
+        let releaseVersionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+        let buildVersionNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
+        appVersion = releaseVersionNumber + " (" + buildVersionNumber + ")"
         _centerCanvasOnPinSnap = .init(initialValue: defaults.bool(forKey: Keys.centerCanvasOnPinSnap))
         _hapticFeedbackOnPinTapSelection = .init(initialValue: defaults
             .bool(forKey: Keys.hapticFeedbackOnPinTapSelection))
