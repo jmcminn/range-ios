@@ -89,7 +89,10 @@ class CameraService: ObservableObject {
 
     // Try to select a camera by asking AVCapture if it can use various cameras on the device
     private func _selectACaptureDevice() throws -> AVCaptureDevice {
-        if let d = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) { return d }
+        // TODO: ignore triple camera for now, we don't really present the full screen photo preview
+        // the zoom is not handled properly (the device still reports 1.0 min zoom level but it should
+        // be labeled as 0.5 in this case
+//        if let d = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) { return d }
         if let d = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) { return d }
         if let d = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) { return d }
         if let d = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) { return d }
