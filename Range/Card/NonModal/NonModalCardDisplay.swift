@@ -35,7 +35,9 @@ extension UIViewController {
             config: cardConfig
         )
         cardViewController.cardHandler = cardHandler
-        cardHandler.install()
+        if cardConfig.interactive {
+            cardHandler.install()
+        }
     }
 
     func removeCard(cardViewController: CardPresentable & NonModalCardCoordinating) {

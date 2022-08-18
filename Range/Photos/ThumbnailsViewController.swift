@@ -36,7 +36,7 @@ class ThumbnailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .clear
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -44,6 +44,7 @@ class ThumbnailsViewController: UIViewController {
         layout.minimumLineSpacing = 8
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.prefetchDataSource = self

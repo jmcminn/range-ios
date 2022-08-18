@@ -116,7 +116,8 @@ extension CardHandler {
             height = cardHeight(forPosition: self.position)
         }
         presentedViewController.cardWillChangePosition(self.position)
-        setCardHeight(height, animated: animated, withVelocity: velocity) {
+        setCardHeight(height, animated: animated, withVelocity: velocity) { [weak self] in
+            guard let self = self else { return }
             self.presentedViewController.cardDidChangePosition(self.position)
             completion?()
         }

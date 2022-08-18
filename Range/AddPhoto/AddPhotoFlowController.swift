@@ -6,12 +6,14 @@ import UIKit
 /// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
 class AddPhotoFlowController {
     unowned let model: ProjectModel
+    unowned let images: Images
     unowned let canvasContainer: CanvasContainerViewController
 
     var onStop: (() -> Void)?
     var pinsHandler: AddPhotoPinsHandler?
     var topViewController: AddPhotoTopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
+    var photosPreviewCardVC: PhotosPreviewViewController?
     var panAndZoomIndicatorView: PanAndZoomIndicatorView?
 
     /// id of registered delegate
@@ -30,10 +32,12 @@ class AddPhotoFlowController {
 
     ///
     /// - Parameters:
-    ///     - canvas: - the flow will operate on this canvas
     ///     - model: - the project model
-    init(model: ProjectModel, canvasContainer: CanvasContainerViewController) {
+    ///     - images: - access to images
+    ///     - canvas: - the flow will operate on this canvas
+    init(model: ProjectModel, images: Images, canvasContainer: CanvasContainerViewController) {
         self.model = model
+        self.images = images
         self.canvasContainer = canvasContainer
     }
 
@@ -228,6 +232,11 @@ extension AddPhotoFlowController {
         if let canvasDelegateId = canvasDelegateId {
             canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
         }
+        if let photosPreviewCardVC = photosPreviewCardVC {
+            photosPreviewCardVC.hideCard(animated: true) {
+                self.canvasContainer.removeCard(cardViewController: photosPreviewCardVC)
+            }
+        }
         if let confirmationCardVC = confirmationCardVC {
             confirmationCardVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
@@ -276,6 +285,13 @@ extension AddPhotoFlowController {
         pinsHandler = AddPhotoPinsHandler(model: model,
                                           canvasContainer: canvasContainer,
                                           image: image)
+        pinsHandler?.onSelectedPinChange = { [weak self] geometryId in
+            if let geometryId = geometryId {
+                self?.showPhotosPreview(forGeometry: geometryId, animated: true)
+            } else {
+                self?.hidePhotosPreview(animated: true)
+            }
+        }
         pinsHandler?.start()
     }
 
@@ -291,7 +307,7 @@ extension AddPhotoFlowController {
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,
             inView: canvasContainer.controls,
-            cardConfig: CardConfiguration(showSafeAreaBlur: true)
+            cardConfig: CardConfiguration(interactive: false, showSafeAreaBlur: true)
         )
         confirmationCardVC!.showCard(animated: true)
     }
@@ -302,6 +318,61 @@ extension AddPhotoFlowController {
         panAndZoomIndicatorView!.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(12)
             make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
+        }
+    }
+
+    /// shows the photos for given geometryId
+    private func showPhotosPreview(forGeometry geometryId: String, animated: Bool) {
+        guard let confirmationCardVC = confirmationCardVC else { return }
+        let photosPreviewVC = PhotosPreviewViewController(
+            model: model,
+            images: images,
+            geometryId: geometryId,
+            confirmationVC: confirmationCardVC
+        )
+        canvasContainer.installCard(
+            cardViewController: photosPreviewVC,
+            inView: canvasContainer.controls,
+            cardConfig: CardConfiguration(initialCardPosition: .medium, interactive: false)
+        )
+        // move photos preview below confirmation
+        canvasContainer.controls.insertSubview(photosPreviewVC.view, belowSubview: confirmationCardVC.view)
+
+        // check if already showing, if so then ignore animated and replace instantly
+        if photosPreviewCardVC != nil {
+            hidePhotosPreview(animated: false)
+            photosPreviewVC.showCard(animated: false)
+        } else {
+            photosPreviewVC.showCard(animated: animated)
+        }
+        photosPreviewCardVC = photosPreviewVC
+        confirmationCardVC.showDarkBorder = true
+        if let panAndZoomIndicatorView = panAndZoomIndicatorView {
+            // anchor to photos preview
+            panAndZoomIndicatorView.snp.remakeConstraints { make in
+                make.leading.equalToSuperview().offset(12)
+                make.bottom.equalTo(photosPreviewVC.view.snp.top).offset(-12)
+            }
+        }
+    }
+
+    /// Hide the currently shown collaboration window
+    private func hidePhotosPreview(animated: Bool) {
+        if let panAndZoomIndicatorView = panAndZoomIndicatorView,
+           let confirmationCardVC = confirmationCardVC
+        {
+            // anchor back to confirmation
+            panAndZoomIndicatorView.snp.remakeConstraints { make in
+                make.leading.equalToSuperview().offset(12)
+                make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
+            }
+        }
+        confirmationCardVC?.showDarkBorder = false
+        if let photosPreviewCardVC = photosPreviewCardVC {
+            photosPreviewCardVC.hideCard(animated: animated) {
+                self.canvasContainer.removeCard(cardViewController: photosPreviewCardVC)
+            }
+            self.photosPreviewCardVC = nil
         }
     }
 }

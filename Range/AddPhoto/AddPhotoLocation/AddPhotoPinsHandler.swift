@@ -59,6 +59,9 @@ class AddPhotoPinsHandler {
     /// selected pin or nil if nothing is selected and we're showing the `photoPin`
     var selectedPin: SelectedPin?
 
+    /// Notifies about change in selected pin. provides the geometry id
+    var onSelectedPinChange: ((String?) -> Void)?
+
     /// the pin displaying a photo thumb - used for selecting a new location for the image
     private var photoPinView: UIView?
 
@@ -114,7 +117,7 @@ class AddPhotoPinsHandler {
         if let lastPhotoPin = SelectedPin(
             fromPointAnnotation: pinsAnnotationManager.annotations.first(where: { $0.id == lastPhotoPinId })
         ) {
-            selectedPin = lastPhotoPin
+            setSelectedPin(lastPhotoPin)
             canvasContainer.pdfCanvasViewController.animatePanAndZoom(
                 cameraCenter: lastPhotoPin.point.coordinates,
                 mapboxZoom: canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom
@@ -127,6 +130,15 @@ class AddPhotoPinsHandler {
         } else {
             showPhotoPinTooltip()
         }
+    }
+
+    /// set selected pin, update the pins and notify about the change
+    func setSelectedPin(_ pin: SelectedPin?) {
+        selectedPin = pin
+        onSelectedPinChange?(pin?.id)
+        updatePinSelection()
+        updatePinSelection()
+        updatePhotoPinVisibility()
     }
 }
 
@@ -394,9 +406,7 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
                 if self.selectedPin?.id != pin?.id {
                     self.feedbackGenerator.impactOccurred()
                     self.feedbackGenerator.prepare()
-                    self.selectedPin = pin
-                    self.updatePinSelection()
-                    self.updatePhotoPinVisibility()
+                    self.setSelectedPin(pin)
                 }
             }
         } else if reason == .panEnd {
@@ -426,9 +436,7 @@ extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
                 self.feedbackGenerator.prepare()
             }
             self.hideTooltip()
-            self.selectedPin = pin
-            self.updatePinSelection()
-            self.updatePhotoPinVisibility()
+            self.setSelectedPin(pin)
             self.canvasContainer.pdfCanvasViewController.animatePanAndZoom(
                 cameraCenter: pin.point.coordinates,
                 mapboxZoom: self.canvasContainer.annotationsMapView.mapboxMap.cameraState.zoom

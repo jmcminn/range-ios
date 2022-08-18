@@ -21,6 +21,12 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         roundedShadowView.containerView
     }
 
+    var showDarkBorder: Bool = false {
+        didSet {
+            self.updateColors()
+        }
+    }
+
     override func loadView() {
         view = RoundShadowView(cornerRadius: 24)
     }
@@ -67,8 +73,10 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         } else {
             view.setShadowWithFigmaValues(y: -3, blur: 6, opacity: 0.05)
         }
-        // stroke not visible in dark mode (same color as background)
-        roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
+        // stroke visibility in dark mode depends on showDarkBorder (if false same color as background)
+        roundedShadowView.topStrokeColor = darkMode
+            ? (showDarkBorder ? .Neutral_07 : .Neutral_10)
+            : .Neutral_04
     }
 }
 

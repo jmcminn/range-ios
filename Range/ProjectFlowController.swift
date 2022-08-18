@@ -126,7 +126,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     fileprivate func startAddPhotoFlow() {
-        addPhotoFlow = AddPhotoFlowController(model: model, canvasContainer: canvasContainer)
+        addPhotoFlow = AddPhotoFlowController(model: model, images: images, canvasContainer: canvasContainer)
         addPhotoFlow?.onStop = { [weak self] in
             self?.showDefaultCanvasUI()
             self?.addPhotoFlow = nil
@@ -140,12 +140,6 @@ final class ProjectFlowController: UIViewController {
             }
         }
     }
-
-    // TODO: 184 uploads for given geometry id to be used from AddPhotoPinsHandler selection
-//    let uploads: Results<Upload> = self.model.mainRealm.objects(Upload.self)
-//        .where { $0.placeholder == false &&
-//            $0.collaboration.feature.geometry.id.equals(pin.id)
-//        }
 
     /// Finds the first collaboration for this geometry and show its window
     fileprivate func showCollaborationWindow(forGeometry geometryId: String, animated: Bool) {

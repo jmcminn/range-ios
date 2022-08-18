@@ -31,6 +31,7 @@
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
 		0A2E04D328AC0F6D00E10503 /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D228AC0F6D00E10503 /* Images.swift */; };
 		0A2E04D528ACFA9900E10503 /* FirebaseStorageImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D428ACFA9900E10503 /* FirebaseStorageImageProvider.swift */; };
+		0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */; };
 		0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F02836CA0500D04A1C /* ProjectModel.swift */; };
 		0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */; };
 		0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 0A2F32F52837BF2F00D04A1C /* Realm */; };
@@ -226,6 +227,7 @@
 		0A2E04D228AC0F6D00E10503 /* Images.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
 		0A2E04D428ACFA9900E10503 /* FirebaseStorageImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageImageProvider.swift; sourceTree = "<group>"; };
 		0A2E04D628AE399700E10503 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosPreviewViewController.swift; sourceTree = "<group>"; };
 		0A2F32F02836CA0500D04A1C /* ProjectModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModel.swift; sourceTree = "<group>"; };
 		0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectSummary.swift; sourceTree = "<group>"; };
 		0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseProjectSummary.swift; sourceTree = "<group>"; };
@@ -443,6 +445,7 @@
 				0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */,
 				0A48ACE0281C1ADD0044E06E /* AddPhotoPinsHandler.swift */,
 				0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */,
+				0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */,
 			);
 			path = AddPhotoLocation;
 			sourceTree = "<group>";
@@ -1195,6 +1198,7 @@
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 				0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */,
+				0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */,
 				0A724F39288835A600708C6B /* Placeholder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
