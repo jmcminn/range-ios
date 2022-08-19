@@ -8,15 +8,15 @@ extension UIButton.Configuration {
             .applying(UIImage.SymbolConfiguration(weight: .regular))
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(
-            top: 15,
-            leading: 28,
-            bottom: 15,
-            trailing: 28
+            top: 14,
+            leading: 0,
+            bottom: 14,
+            trailing: 0
         )
         config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         config.background.cornerRadius = 12
-        config.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
+        config.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig
         config.imagePlacement = .leading
         config.imagePadding = 5
@@ -24,22 +24,23 @@ extension UIButton.Configuration {
     }
 
     /// Configuration used for the "next" button in the bottom navigation
-    static func bottomNextButton() -> UIButton.Configuration {
+    static func bottomNextButton(imagePlacement: NSDirectionalRectEdge = .trailing) -> UIButton.Configuration {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)
             .applying(UIImage.SymbolConfiguration(weight: .regular))
         var config = UIButton.Configuration.filled()
 
         config.contentInsets = NSDirectionalEdgeInsets(
-            top: 15,
-            leading: 28,
-            bottom: 15,
-            trailing: 28
+            top: 14,
+            leading: 0,
+            bottom: 14,
+            trailing: 0
         )
         config.baseBackgroundColor = .Primary_Blue_04
         config.baseForegroundColor = .Neutral_01
         config.background.cornerRadius = 12
+        config.background.strokeColor = .dynamicColor(light: .Primary_Blue_04, dark: .Primary_Blue_06)
         config.preferredSymbolConfigurationForImage = imageConfig
-        config.imagePlacement = .trailing
+        config.imagePlacement = imagePlacement
         config.imagePadding = 5
         return config
     }

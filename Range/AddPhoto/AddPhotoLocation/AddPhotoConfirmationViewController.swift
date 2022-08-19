@@ -9,9 +9,12 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
     static let bottomPadding = 16.0
 
     var onCancel: (() -> Void)?
-    var onConfirm: (() -> Void)?
+    var onDone: (() -> Void)?
+    var onContinue: (() -> Void)?
 
-    var confirmButton: UIButton!
+    var backButton: UIButton!
+    var doneButton: UIButton!
+    var continueButton: UIButton!
 
     var roundedShadowView: RoundShadowView {
         view as! RoundShadowView
@@ -23,7 +26,21 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
 
     var showDarkBorder: Bool = false {
         didSet {
-            self.updateColors()
+            updateColors()
+        }
+    }
+
+    func setInactiveWithActivityIndicator(on button: UIButton) {
+        button.configuration?.showsActivityIndicator = true
+        for button in [backButton, doneButton, continueButton] {
+            button?.isUserInteractionEnabled = false
+        }
+    }
+
+    func setActive() {
+        for button in [backButton, doneButton, continueButton] {
+            button?.isUserInteractionEnabled = true
+            button?.configuration?.showsActivityIndicator = false
         }
     }
 
@@ -36,25 +53,40 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         updateColors()
 
-        let backButton = UIButton(
+        backButton = UIButton(
             configuration: UIButton.Configuration.bottomBackButton(),
-            primaryAction: UIAction(title: "Back") { [weak self] _ in self?.onCancel?() }
+            primaryAction: UIAction(image: UIImage(systemName: "arrow.backward")) { [weak self] _ in self?.onCancel?() }
         )
-        confirmButton = UIButton(
-            configuration: UIButton.Configuration.bottomNextButton(),
-            primaryAction: UIAction(title: "Confirm") { [weak self] _ in self?.onConfirm?() }
+        doneButton = UIButton(
+            configuration: UIButton.Configuration.bottomNextButton(imagePlacement: .leading),
+            primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
+                self?.onDone?()
+            }
+        )
+        continueButton = UIButton(
+            configuration: UIButton.Configuration.bottomNextButton(imagePlacement: .leading),
+            primaryAction: UIAction(title: "Continue", image: UIImage(systemName: "camera")) { [weak self] _ in
+                self?.onContinue?()
+            }
         )
         containerView.addSubview(backButton)
-        containerView.addSubview(confirmButton)
-        backButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        confirmButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        containerView.addSubview(doneButton)
+        containerView.addSubview(continueButton)
+        backButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         backButton.snp.makeConstraints { make in
             make.leading.equalTo(16)
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
-            make.trailing.equalTo(confirmButton.snp.leading).offset(-16)
-            make.width.equalTo(confirmButton.snp.width)
+            make.trailing.equalTo(doneButton.snp.leading).offset(-16)
+            make.width.equalTo(48)
+            make.height.equalTo(continueButton.snp.height)
         }
-        confirmButton.snp.makeConstraints { make in
+        doneButton.snp.makeConstraints { make in
+            make.leading.equalTo(backButton.snp.trailing).offset(16)
+            make.trailing.equalTo(continueButton.snp.leading).offset(-16)
+            make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
+            make.width.equalTo(continueButton.snp.width)
+        }
+        continueButton.snp.makeConstraints { make in
             make.trailing.equalTo(-16)
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
         }
@@ -94,7 +126,7 @@ extension AddPhotoConfirmationViewController: CardPresentable {
 
         return
             AddPhotoConfirmationViewController.topPadding +
-            confirmButton.systemLayoutSizeFitting(
+            continueButton.systemLayoutSizeFitting(
                 fittingSize,
                 withHorizontalFittingPriority: .required,
                 verticalFittingPriority: .defaultLow

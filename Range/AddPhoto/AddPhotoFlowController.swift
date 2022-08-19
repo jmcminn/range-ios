@@ -55,6 +55,18 @@ class AddPhotoFlowController {
         onStop?()
     }
 
+    /// Restart the flow from the camera screen, cleaning all the collected data
+    private func restart() {
+        // clear the gathered data
+        image = nil
+        imageData = nil
+        tags = []
+        photoDescription = ""
+        geometryId = nil
+
+        showCamera()
+    }
+
     /// Returns `true` if camera was shown.
     private func checkPermissionsAndShowCamera() async -> Bool {
         let cameraPermissions = await checkForCameraPermissions()
@@ -154,8 +166,12 @@ class AddPhotoFlowController {
         canvasContainer.present(navC, animated: true)
     }
 
-    /// Store the photo location, save all the data and stop the flow
-    private func onPhotoLocationSelected() {
+    /// Store the photo location, save all the data and stop the flow (andContinue == false) or restart with the camera screen
+    private func addPhoto(andContinue restartFlow: Bool) {
+        guard let confirmationCardVC = confirmationCardVC else {
+            return
+        }
+
         // show activity view (a spinner) that covers the screen disabling any user interactions
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.2)
@@ -164,6 +180,10 @@ class AddPhotoFlowController {
             make.edges.equalToSuperview()
         }
         activityView.startAnimating()
+        confirmationCardVC
+            .setInactiveWithActivityIndicator(on: restartFlow
+                ? confirmationCardVC.continueButton
+                : confirmationCardVC.doneButton)
 
         geometryId = pinsHandler?.selectedPin?.id
         Task {
@@ -172,12 +192,13 @@ class AddPhotoFlowController {
                 defer {
                     DispatchQueue.main.async {
                         activityView.removeFromSuperview()
+                        confirmationCardVC.setActive()
                     }
                 }
                 try await _storeData()
                 DispatchQueue.main.async {
                     self.dismissPhotoLocationSelectionUI()
-                    self.stop()
+                    restartFlow ? self.restart() : self.stop()
                 }
             } catch {
                 Logger.model.error("photo location data store error: \(error.localizedDescription, privacy: .public)")
@@ -301,8 +322,11 @@ extension AddPhotoFlowController {
         confirmationCardVC!.onCancel = { [weak self] in
             self?.onPhotoLocationBack()
         }
-        confirmationCardVC!.onConfirm = { [weak self] in
-            self?.onPhotoLocationSelected()
+        confirmationCardVC!.onDone = { [weak self] in
+            self?.addPhoto(andContinue: false)
+        }
+        confirmationCardVC!.onContinue = { [weak self] in
+            self?.addPhoto(andContinue: true)
         }
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,
