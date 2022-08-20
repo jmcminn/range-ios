@@ -32,6 +32,7 @@
 		0A2E04D328AC0F6D00E10503 /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D228AC0F6D00E10503 /* Images.swift */; };
 		0A2E04D528ACFA9900E10503 /* FirebaseStorageImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D428ACFA9900E10503 /* FirebaseStorageImageProvider.swift */; };
 		0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */; };
+		0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D928B145BA00E10503 /* CameraViewModel.swift */; };
 		0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F02836CA0500D04A1C /* ProjectModel.swift */; };
 		0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */; };
 		0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 0A2F32F52837BF2F00D04A1C /* Realm */; };
@@ -228,6 +229,7 @@
 		0A2E04D428ACFA9900E10503 /* FirebaseStorageImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageImageProvider.swift; sourceTree = "<group>"; };
 		0A2E04D628AE399700E10503 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosPreviewViewController.swift; sourceTree = "<group>"; };
+		0A2E04D928B145BA00E10503 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		0A2F32F02836CA0500D04A1C /* ProjectModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModel.swift; sourceTree = "<group>"; };
 		0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectSummary.swift; sourceTree = "<group>"; };
 		0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseProjectSummary.swift; sourceTree = "<group>"; };
@@ -843,6 +845,7 @@
 			children = (
 				0A97232827FC7D9D00D744F4 /* CameraViewController.swift */,
 				0A97233127FDCFAF00D744F4 /* CameraService.swift */,
+				0A2E04D928B145BA00E10503 /* CameraViewModel.swift */,
 				0A97232627FC782B00D744F4 /* CameraView.swift */,
 				0A97232427FC777600D744F4 /* CameraPreview.swift */,
 				0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */,
@@ -1107,6 +1110,7 @@
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
 				0A724F4528887A7D00708C6B /* AddProjectSummaryCommand.swift in Sources */,
+				0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */,
 				0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A724F4728887B7200708C6B /* AddStatusCommand.swift in Sources */,

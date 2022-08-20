@@ -2,35 +2,6 @@ import AVFoundation
 import Combine
 import SwiftUI
 
-// Helper to convert a CameraService's currentZoomFactor to a string for display on top of the photo preview
-class CameraViewModel: ObservableObject {
-    let service: CameraService
-
-    // translate the CameraService.currentZoomFactor to a string to be displayed in the view
-    @Published var zoomString = ""
-
-    private var subscriptions = Set<AnyCancellable>()
-
-    init(service: CameraService) {
-        self.service = service
-
-        // update zoomString when the @Published CameraService.$currentZoomFactor changes
-        let updateZoomString: (Double) -> Void = { [weak self] zoom in
-            guard let self = self else { return }
-            let zoomInt = Int(zoom)
-            let zoomDecimal: Int = .init(10 * (zoom - Double(zoomInt)))
-            if zoomDecimal == 0 {
-                self.zoomString = "\(zoomInt)x"
-            } else {
-                self.zoomString = "\(zoomInt),\(zoomDecimal)x"
-            }
-        }
-
-        // add a listener for changes to service.$currentZoomFactor and hold a strong reference to it
-        service.$currentZoomFactor.sink(receiveValue: updateZoomString).store(in: &subscriptions)
-    }
-}
-
 /// # CameraView
 ///
 /// The main camera view with a pinch-zoomable photo preview and buttons to take a photo or cancel
@@ -38,28 +9,21 @@ struct CameraView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
-    @ObservedObject var cameraService: CameraService
+    /// the angle to use  for UI elements rotation when the device orientation changes
+    @State private var uiAngle: Angle = .degrees(0)
+
     @ObservedObject var model: CameraViewModel
-    var closeAction: () -> Void
-    var takePhotoAction: () -> Void
+    @ObservedObject var camera: CameraService
 
     /// The CameraService state (canCapturePhoto, willCapturePhoto, isProcessingPhoto) directly
     /// affects the view and the CameraService.session is used for the photo preview. In the other
     /// direction, zooming in the CameraView set the zoom of the CameraService
     ///
     /// - Parameters:
-    ///   - cameraService: manages the current state of the photo capture
-    ///   - closeAction: the user pushed the close button
-    ///   - takePhotoAction: the user pushed the takePhoto button
-    init(
-        cameraService: CameraService,
-        closeAction: @escaping () -> Void,
-        takePhotoAction: @escaping () -> Void
-    ) {
-        self.cameraService = cameraService
-        self.closeAction = closeAction
-        self.takePhotoAction = takePhotoAction
-        model = CameraViewModel(service: cameraService)
+    ///   - model: manages the state of the camera and callbacks for view controller
+    init(model: CameraViewModel) {
+        self.model = model
+        camera = model.camera
     }
 
     // the current scale not affected by the MagnificationGesture in progress
@@ -68,15 +32,80 @@ struct CameraView: View {
     @State var progressingScale: CGFloat = 1.0
 
     var closeButton: some View {
-        Button(action: closeAction) {
+        Button(action: model.closeAction ?? {}) {
             Circle()
-                .strokeBorder(Color.Red_04, lineWidth: 2)
-                .background(Circle().fill(Color.Red_03))
+                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 40, height: 40)
+                .overlay(Image(systemName: "xmark").font(.title3.bold()).foregroundColor(.Red_03))
+        }.buttonStyle(.plain)
+    }
+
+    var flashButton: some View {
+        Button(action: {}) {
+            Circle()
+                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 40, height: 40)
+                .overlay(Image(systemName: "bolt.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+        }.buttonStyle(.plain)
+            .disabled(true)
+    }
+
+    var cameraRollButton: some View {
+        Button(action: {}) {
+            Circle()
+                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 40, height: 40)
+                .overlay(Image(systemName: "photo.on.rectangle.angled").font(.body.bold())
+                    .foregroundColor(.Neutral_04))
+        }.buttonStyle(.plain)
+            .disabled(true)
+    }
+
+    var settingsButton: some View {
+        Button(action: {}) {
+            Circle()
+                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 40, height: 40)
+                .overlay(Image(systemName: "gearshape").font(.body.bold())
+                    .foregroundColor(.Neutral_04))
+        }.buttonStyle(.plain)
+            .disabled(true)
+    }
+
+    var toggleAnnotationsButton: some View {
+        Button(action: { model.toggleAnnotations() }) {
+            Circle()
+                .strokeBorder(model.annotationsEnabled ? Color.Pink_04 : Color.Neutral_07, lineWidth: 2)
+                .background(Circle().fill(model.annotationsEnabled ? Color.Pink_03 : Color.Neutral_09))
                 .frame(width: 50, height: 50)
-                .overlay(
-                    Image(systemName: "xmark")
-                        .foregroundColor(Color.Neutral_01)
-                )
+                .overlay(Image(systemName: "tag").font(.callout.bold())
+                    .foregroundColor(model.multiPhotoEnabled ? .Neutral_01 : .Neutral_04))
+        }.buttonStyle(.plain)
+    }
+
+    var toggleMultiPhotoButton: some View {
+        Button(action: model.toggleMultiPhoto) {
+            Circle()
+                .strokeBorder(model.multiPhotoEnabled ? Color.Pink_04 : Color.Neutral_07, lineWidth: 2)
+                .background(Circle().fill(model.multiPhotoEnabled ? Color.Pink_03 : Color.Neutral_09))
+                .frame(width: 50, height: 50)
+                .overlay(Image(systemName: "photo.on.rectangle").font(.callout.bold())
+                    .foregroundColor(model.multiPhotoEnabled ? .Neutral_01 : .Neutral_04))
+        }.buttonStyle(.plain)
+    }
+
+    var nextButton: some View {
+        Button(action: {}) {
+            Circle()
+                .strokeBorder(Color.Primary_Blue_06, lineWidth: 2)
+                .background(Circle().fill(Color.Primary_Blue_04))
+                .frame(width: 50, height: 50)
+                .overlay(Image(systemName: "arrow.forward").font(.title3.bold())
+                    .foregroundColor(.Neutral_01))
         }.buttonStyle(.plain)
     }
 
@@ -96,12 +125,12 @@ struct CameraView: View {
                 .strokeBorder(Color.Neutral_01, lineWidth: 4)
                 .foregroundColor(.clear)
                 .frame(width: 66, height: 66, alignment: .center)
-            Button(action: takePhotoAction) {
+            Button(action: model.takePhotoAction ?? {}) {
                 Circle()
                     .frame(width: 54, height: 54, alignment: .center)
             }
             .buttonStyle(TakePhotoButtonStyle())
-            .disabled(!cameraService.canCapturePhoto)
+            .disabled(!camera.canCapturePhoto)
         }
     }
 
@@ -137,18 +166,39 @@ struct CameraView: View {
         }
     }
 
+    /// Banner showing the current model bannerText
+    var bannerView: some View {
+        Label(model.bannerText!, systemImage: model.bannerIcon!)
+            .font(.subheadline.bold())
+            .foregroundColor(.Neutral_01)
+            .padding(9)
+            .background(ZStack {
+                RoundedRectangle(cornerRadius: 10).fill(Color.Pink_03)
+                RoundedRectangle(cornerRadius: 10).stroke(Color.Pink_04, lineWidth: 1)
+            })
+            .onTapGesture {
+                model.cleanBanner()
+            }
+            .rotationEffect(uiAngle)
+            .animation(
+                .easeInOut(duration: 0.3),
+                value: model.bannerText
+            )
+            .animation(.default, value: uiAngle)
+    }
+
     // Photo preview from the CameraService
     private func cameraView(reader: GeometryProxy) -> some View {
-        CameraPreview(session: cameraService.session)
+        CameraPreview(session: camera.session)
             .frame(height: reader.size.width * 4.0 / 3.0)
             .gesture(
                 MagnificationGesture()
                     .onChanged {
                         progressingScale = $0
-                        cameraService.set(zoom: cameraScale * progressingScale)
+                        camera.set(zoom: cameraScale * progressingScale)
                     }
                     .onEnded { _ in
-                        cameraScale = cameraService.currentZoomFactor
+                        cameraScale = camera.currentZoomFactor
                         progressingScale = 1
                     }
             )
@@ -157,22 +207,57 @@ struct CameraView: View {
             )
             .overlay(
                 Group {
-                    if cameraService.willCapturePhoto {
+                    if camera.willCapturePhoto {
                         Color.black
                     }
                 }
                 .animation(
                     .easeInOut(duration: 0.1),
-                    value: cameraService.willCapturePhoto
+                    value: camera.willCapturePhoto
                 )
             )
             .overlay {
-                if cameraService.isProcessingPhoto {
+                if camera.isProcessingPhoto {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: Color
                                 .Neutral_01))
                 }
             }
+            .overlay {
+                if model.bannerText != nil {
+                    bannerView
+                }
+            }
+    }
+
+    private func topButtonsHStack() -> some View {
+        HStack(spacing: 12) {
+            closeButton.rotationEffect(uiAngle)
+            flashButton.rotationEffect(uiAngle)
+            cameraRollButton.rotationEffect(uiAngle)
+            settingsButton.rotationEffect(uiAngle)
+            Spacer()
+        }
+        .animation(.default, value: uiAngle)
+        .padding(16)
+    }
+
+    private func bottomButtonsZStack() -> some View {
+        ZStack {
+            HStack(spacing: 19) {
+                toggleAnnotationsButton.rotationEffect(uiAngle)
+                toggleMultiPhotoButton.rotationEffect(uiAngle)
+                Spacer()
+                if model.multiPhotoEnabled {
+                    nextButton.rotationEffect(uiAngle)
+                }
+            }
+            .animation(.default, value: uiAngle)
+            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            HStack {
+                takePhotoButton.padding(6)
+            }
+        }
     }
 
     // main view
@@ -180,61 +265,81 @@ struct CameraView: View {
         GeometryReader { reader in
             if horizontalSizeClass == .regular, verticalSizeClass == .regular {
                 // "iPad" draft layout (present controls on top of the camera view)
-                ZStack {
-                    Color.Neutral_10.edgesIgnoringSafeArea(.all)
+                Color.Neutral_10.edgesIgnoringSafeArea(.all)
+                VStack {
                     Spacer()
-                    ZStack(alignment: .bottom) {
-                        cameraView(reader: reader)
-                        VStack {
-                            zoomView
-                            ZStack {
-                                HStack {
-                                    closeButton
-                                        .padding(20)
-                                    Spacer()
-                                }
-                                HStack {
-                                    takePhotoButton
-                                        .padding(16)
-                                }
-                            }
-                        }.padding(.bottom, 22)
-                    }
+                    cameraView(reader: reader)
+                        .overlay(topButtonsHStack(), alignment: .top)
+                        .overlay(
+                            VStack {
+                                zoomView.rotationEffect(uiAngle)
+                                    .animation(.default, value: uiAngle)
+                                bottomButtonsZStack()
+                            }.padding(.bottom, 22),
+                            alignment: .bottom
+                        )
                     Spacer()
                 }
-
             } else {
                 ZStack {
                     Color.Neutral_10.edgesIgnoringSafeArea(.all)
-                    VStack {
-                        Spacer()
+                    VStack(spacing: 0) {
+                        Spacer(minLength: 0)
+                        topButtonsHStack()
                         ZStack(alignment: .bottom) {
                             cameraView(reader: reader)
-                            zoomView.padding(.bottom, 22)
+                            zoomView.rotationEffect(uiAngle)
+                                .animation(.default, value: uiAngle)
+                                .padding(.bottom, 22)
                         }
-                        Spacer()
-                        ZStack {
-                            HStack {
-                                closeButton
-                                    .padding(20)
-                                Spacer()
-                            }
-                            HStack {
-                                takePhotoButton
-                                    .padding(16)
-                            }
-                        }
+                        Spacer(minLength: 0)
+                        bottomButtonsZStack()
+                        Spacer(minLength: 0)
                     }
                 }
             }
         }
+        .navigationBarHidden(true)
+        .onRotate { newOrientation in
+            // calculate new angle for ui elements when the device is rotated
+            switch newOrientation {
+            case .portraitUpsideDown:
+                uiAngle = .degrees(180)
+            case .landscapeLeft:
+                uiAngle = .degrees(90)
+            case .landscapeRight:
+                uiAngle = .degrees(-90)
+            default:
+                uiAngle = .degrees(0)
+            }
+        }
+    }
+}
+
+/// Custom view modifier to track rotation and call given action
+struct DeviceRotationViewModifier: ViewModifier {
+    let action: (UIDeviceOrientation) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear()
+            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+                action(UIDevice.current.orientation)
+            }
+    }
+}
+
+/// A View wrapper to make the `DeviceRotationViewModifier` easier to use
+extension View {
+    func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
+        modifier(DeviceRotationViewModifier(action: action))
     }
 }
 
 struct CameraView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            CameraView(cameraService: CameraService(), closeAction: {}, takePhotoAction: {})
+            CameraView(model: CameraViewModel(cameraService: CameraService()))
         }
     }
 }

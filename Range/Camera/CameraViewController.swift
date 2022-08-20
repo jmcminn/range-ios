@@ -14,20 +14,18 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
     var onPhotoTaken: ((Data, UIImage) -> Void)?
     var modalCardDisplayController: ModalCardDisplayController?
     private let cameraService = CameraService()
+    private let cameraViewModel: CameraViewModel
 
     init() {
-        super
-            .init(rootView: CameraView(cameraService: cameraService, closeAction: {},
-                                       takePhotoAction: {}))
+        cameraViewModel = CameraViewModel(cameraService: cameraService)
+        super.init(rootView: CameraView(model: cameraViewModel))
 
-        rootView = CameraView(
-            cameraService: cameraService,
-            closeAction: { [weak self] in
-                self?.onClose?()
-            }, takePhotoAction: { [weak self] in
-                self?.takePhotoAction()
-            }
-        )
+        cameraViewModel.closeAction = { [weak self] in
+            self?.onClose?()
+        }
+        cameraViewModel.takePhotoAction = { [weak self] in
+            self?.takePhotoAction()
+        }
     }
 
     private func takePhotoAction() {
@@ -76,6 +74,7 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
     // configure the CameraService when the view loads
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = true
         cameraService.configure { [weak self] sessionSetupResult in
             if sessionSetupResult == .configurationFailed {
                 self?.showCameraConfigurationErrorAlert()
