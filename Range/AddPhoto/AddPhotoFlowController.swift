@@ -1,7 +1,22 @@
 import AVFoundation
+import Kingfisher
 import OSLog
 import Turf
 import UIKit
+
+/// Information about the photo to add
+struct PhotoToAdd {
+    /// UUID
+    var uploadId: String
+    /// when the photo was taken
+    var timestamp: TimeInterval
+    /// key for images.cameraCache, matches the storage keys, so composed of projectId and uploadId
+    var cacheKey: String
+    /// small 100x100 image (with proper aspect ratio)
+    var thumbnail: UIImage
+    /// to layout before fetching from cache
+    var height2Width: Double
+}
 
 /// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
 class AddPhotoFlowController {
@@ -19,10 +34,12 @@ class AddPhotoFlowController {
     /// id of registered delegate
     var canvasDelegateId: UUID?
 
+    /// selected photos to add
+    var photosToAdd: [PhotoToAdd] = []
     /// photo from the camera step
-    var image: UIImage!
+//    var image: UIImage!
     /// source data for the `image`
-    var imageData: Data!
+//    var imageData: Data!
     /// tags from the details step
     var tags: [TagViewModel] = []
     /// description from the details step
@@ -51,20 +68,32 @@ class AddPhotoFlowController {
         }
     }
 
-    func stop() {
+    func stop(removeCurrentPhotosToAddFromCache: Bool) {
+        clearPhotosToAdd(removeFromCache: removeCurrentPhotosToAddFromCache)
         onStop?()
     }
 
     /// Restart the flow from the camera screen, cleaning all the collected data
-    private func restart() {
+    private func restart(removeCurrentPhotosToAddFromCache: Bool) {
         // clear the gathered data
-        image = nil
-        imageData = nil
+        clearPhotosToAdd(removeFromCache: removeCurrentPhotosToAddFromCache)
         tags = []
         photoDescription = ""
         geometryId = nil
 
         showCamera()
+    }
+
+    /// Cleanup the current photosToAdd
+    /// If the photos were used for uploads they should remain in cache, otherwise should be removed
+    private func clearPhotosToAdd(removeFromCache: Bool) {
+        // remove the photos from local cache if we don't need them
+        if removeFromCache {
+            photosToAdd.forEach {
+                images.localPhotosCache.removeImage(forKey: $0.cacheKey)
+            }
+        }
+        photosToAdd = []
     }
 
     /// Returns `true` if camera was shown.
@@ -98,21 +127,68 @@ class AddPhotoFlowController {
     /// Creates the `CameraViewController` and installs the flow callbacks
     private func createCameraViewController() -> CameraViewController {
         let vc = CameraViewController()
+        vc.updateWithPhotosToAdd(photosToAdd)
         vc.onClose = { [weak self, weak vc] in
             vc?.dismiss(animated: true)
-            self?.stop()
+            self?.stop(removeCurrentPhotosToAddFromCache: true)
         }
-        vc.onPhotoTaken = { [weak self] data, image in
-            self?.onPhotoTaken(data: data, image: image)
+        vc.onPhotoTaken = { [weak self, weak vc] data, image, completion in
+            self?.onPhotoTaken(cameraVC: vc, data: data, image: image, completion: completion)
+        }
+        vc.onNext = { [weak self] in
+            self?.nextStepAfterCamera()
         }
         return vc
     }
 
     /// Store the image and proceed to the photo details selection step
-    private func onPhotoTaken(data: Data, image: UIImage) {
-        imageData = data
-        self.image = image
-        selectPhotoDetails()
+    private func onPhotoTaken(
+        cameraVC: CameraViewController?,
+        data: Data,
+        image: UIImage,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        let uploadId = generateRealmId()
+        let cacheKey = uploadKey(projectId: model.projectId, uploadId: uploadId)
+
+        let photoToAdd = PhotoToAdd(
+            uploadId: uploadId,
+            timestamp: Date.now.timeIntervalSince1970,
+            cacheKey: cacheKey,
+            thumbnail: image.imageResized(toFill: 100),
+            height2Width: image.size.height / image.size.width
+        )
+
+        // store the image in local cache
+        images.localPhotosCache.storeToDisk(data, forKey: cacheKey, callbackQueue: .mainAsync) { [weak self] result in
+            guard let self = self else { return }
+            if case let .failure(error) = result.diskCacheResult {
+                completion(.failure(error))
+                return
+            }
+
+            if UserDefaults.multiPhotoSessionEnabled {
+                self.photosToAdd.append(photoToAdd)
+            } else {
+                self.clearPhotosToAdd(removeFromCache: true)
+                self.photosToAdd = [photoToAdd]
+            }
+            cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
+            if !UserDefaults.multiPhotoSessionEnabled {
+                self.nextStepAfterCamera()
+            }
+            completion(.success(()))
+        }
+    }
+
+    private func nextStepAfterCamera() {
+        if UserDefaults.annotationEnabled {
+            selectPhotoDetails()
+        } else {
+            // go straight to photo location
+            canvasContainer.dismiss(animated: true)
+            selectPhotoLocation()
+        }
     }
 
     /// push photo details view controller onto the navigation controller for the camera screen
@@ -125,7 +201,8 @@ class AddPhotoFlowController {
     private func createPhotoDetailsViewController() -> PhotoDetailsViewController {
         let detailsVC = PhotoDetailsViewController(
             model: model,
-            image: image,
+            images: images,
+            photosToAdd: photosToAdd,
             initialSelectedTags: tags,
             initialDescription: photoDescription
         )
@@ -161,7 +238,11 @@ class AddPhotoFlowController {
         // setup a navigation controller with camera and photo details, so user can go back
         // from the details to camera screen
         let navC = UINavigationController()
-        navC.viewControllers = [createCameraViewController(), createPhotoDetailsViewController()]
+        if UserDefaults.annotationEnabled {
+            navC.viewControllers = [createCameraViewController(), createPhotoDetailsViewController()]
+        } else {
+            navC.viewControllers = [createCameraViewController()]
+        }
         navC.modalPresentationStyle = .fullScreen
         canvasContainer.present(navC, animated: true)
     }
@@ -198,7 +279,9 @@ class AddPhotoFlowController {
                 try await _storeData()
                 DispatchQueue.main.async {
                     self.dismissPhotoLocationSelectionUI()
-                    restartFlow ? self.restart() : self.stop()
+                    restartFlow
+                        ? self.restart(removeCurrentPhotosToAddFromCache: false)
+                        : self.stop(removeCurrentPhotosToAddFromCache: false)
                 }
             } catch {
                 Logger.model.error("photo location data store error: \(error.localizedDescription, privacy: .public)")
@@ -219,28 +302,28 @@ class AddPhotoFlowController {
         canvasContainer.present(alertController, animated: true)
     }
 
-    /// Async function to store the new photo data in the realm DB
+    /// Async function to store the new photo(s) data in the realm DB
     @MainActor
     private func _storeData() async throws {
         if let geometryId = geometryId {
-            try await model.runCommands(model.addPhoto(
-                imageData,
+            try await model.runCommands(model.addPhotos(
+                photosToAdd,
                 tags: tags,
                 description: photoDescription,
                 toCollaborationForGeometryId: geometryId
             ))
-            lastPhotoPinId = geometryId
+            UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
-            try await model.runCommands(model.addPhoto(
-                imageData,
+            try await model.runCommands(model.addPhotos(
+                photosToAdd,
                 tags: tags,
                 description: photoDescription,
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: canvasContainer.pdfCanvasViewController.pdfCanvas,
                 geometryId: geometryId
             ))
-            lastPhotoPinId = geometryId
+            UserDefaults.lastPhotoPinId = geometryId
         }
     }
 }
@@ -305,7 +388,7 @@ extension AddPhotoFlowController {
     private func showPins() {
         pinsHandler = AddPhotoPinsHandler(model: model,
                                           canvasContainer: canvasContainer,
-                                          image: image)
+                                          image: photosToAdd.first!.thumbnail)
         pinsHandler?.onSelectedPinChange = { [weak self] geometryId in
             if let geometryId = geometryId {
                 self?.showPhotosPreview(forGeometry: geometryId, animated: true)

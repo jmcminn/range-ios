@@ -115,7 +115,8 @@ class AddPhotoPinsHandler {
     /// Otherwise show photo pin in the center of the screen
     private func selectInitialPin() {
         if let lastPhotoPin = SelectedPin(
-            fromPointAnnotation: pinsAnnotationManager.annotations.first(where: { $0.id == lastPhotoPinId })
+            fromPointAnnotation: pinsAnnotationManager.annotations
+                .first(where: { $0.id == UserDefaults.lastPhotoPinId })
         ) {
             setSelectedPin(lastPhotoPin)
             canvasContainer.pdfCanvasViewController.animatePanAndZoom(
@@ -166,7 +167,7 @@ extension AddPhotoPinsHandler {
         guard let pin = selectedPin else { return }
 
         let tooltip = MapTooltipView(text:
-            pin.id == lastPhotoPinId ? "Use last location" : "Use this location")
+            pin.id == UserDefaults.lastPhotoPinId ? "Use last location" : "Use this location")
         let fittingSize = CGSize(
             width: canvasContainer.annotationsMapView.frame.size.width,
             height: UIView.layoutFittingExpandedSize.height

@@ -44,16 +44,23 @@ class Images {
 
     init(projectId: String) {
         self.projectId = projectId
+
         localPhotosCache.diskStorage.config.expiration = .never
     }
 
+    /// Returns image data provider for localphoto.
+    /// Returns an instance of LocalPhotosImageDataProvider
+    func imageProvider(forLocalPhotoWithCacheKey cacheKey: String) -> ImageDataProvider {
+        LocalPhotosImageDataProvider(localPhotosCache: localPhotosCache, cacheKey: cacheKey)
+    }
+
     /// Returns image data provider for upload.
-    /// Returns an instance of FirebaseStoreImageProvider which allows Kingfisher images cache to load the image from Firebase.
+    /// Returns an instance of FirebaseStoreImageDataProvider which allows Kingfisher images cache to load the image from Firebase.
     /// if thumbnailNumber is provided it returns the key for thumbnail
     func imageProvider(forUpload upload: Upload, thumbnailNumber: Int? = nil) -> ImageDataProvider {
         let uploadKey = uploadKey(projectId: projectId, uploadId: upload.id, thumbnailNumber: thumbnailNumber)
         let ref = Storage.storage().reference(withPath: uploadKey)
-        return FirebaseStorageImageProvider(localPhotosCache: localPhotosCache, ref: ref)
+        return FirebaseStorageImageDataProvider(localPhotosCache: localPhotosCache, ref: ref)
     }
 
     /// Move the image data from localPhotosCache to downloadsCache

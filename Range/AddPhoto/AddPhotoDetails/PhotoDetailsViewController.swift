@@ -14,7 +14,8 @@ import UIKit
 /// there is always 1 expander controlling the current header(s) height(s).
 class PhotoDetailsViewController: UIViewController {
     /// The photo
-    let image: UIImage
+    unowned let images: Images
+    let photosToAdd: [PhotoToAdd]
     let tagsViewModel: TagsViewModel
     let initialDescription: String
 
@@ -72,15 +73,18 @@ class PhotoDetailsViewController: UIViewController {
 
     /// - Parameters:
     ///   - model:                 model
-    ///   - image:                 photo to tag, ...
+    ///   - images:                access to images
+    ///   - photosToAdd:           array of images to show
     ///   - initialSelectedTags:   preselected tags
     ///   - initialDescription:    initial contents of the description text view
     init(model: ProjectModel,
-         image: UIImage,
+         images: Images,
+         photosToAdd: [PhotoToAdd],
          initialSelectedTags: [TagViewModel],
          initialDescription: String)
     {
-        self.image = image
+        self.images = images
+        self.photosToAdd = photosToAdd
         tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialSelectedTags)
         self.initialDescription = initialDescription
         super.init(nibName: nil, bundle: nil)
@@ -264,7 +268,7 @@ extension PhotoDetailsViewController {
 
     private func maxHeaderPhotoHeight() -> CGFloat {
         // show the photo in correct aspect ratio, but no more than 0.6 height of the view for the header
-        let imageHeight2WidthRatio = image.size.height / image.size.width
+        let imageHeight2WidthRatio = photosToAdd.map(\.height2Width).max() ?? 4.0 / 3.0
         // 16 is the margins
         let imageHeight = (view.frame.width - 2 * 16.0) * imageHeight2WidthRatio
         return min(0.5 * view.frame.height, imageHeight)
@@ -357,7 +361,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildHeaderView() {
-        headerView = PhotoDetailsHeaderView(image: image)
+        headerView = PhotoDetailsHeaderView(images: images, photosToAdd: photosToAdd)
         headerView.onTagsSelected = { [weak self] in
             self?.mode = .tags
         }

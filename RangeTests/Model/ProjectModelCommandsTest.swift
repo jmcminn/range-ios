@@ -20,6 +20,7 @@ class ProjectModelCommandsTest: XCTestCase {
         model = try ProjectModel(
             userId: "user1",
             projectId: UUID().uuidString,
+            images: Images(projectId: ""),
             pendingUploadsModel: pendingUploadsModel,
             inMemory: true
         )
@@ -83,6 +84,7 @@ class ProjectModelCommandsTest: XCTestCase {
         let newTagViewModel = TagViewModel(newTagWithName: "tag 2")
         let commands =
             model._addUpload(uploadId: "upload1",
+                             timestamp: 1234,
                              tags: [
                                  TagViewModel(
                                      id: tag1.id,
@@ -103,7 +105,7 @@ class ProjectModelCommandsTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: model.userId,
-            timestamp: addUploadCmd.timestamp, // don't test, just take from the result
+            timestamp: 1234,
             name: nil,
             uploadDescription: "upload description",
             url: nil,
@@ -112,16 +114,19 @@ class ProjectModelCommandsTest: XCTestCase {
     }
 
     // test commands created for adding a photo at a given location
-    // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
+    // no detailed asserts for AddUploadCommand as it is tested by `testAddUpload`
     @MainActor
     func testAddPhoto_atLocation() async throws {
         let geometryId = generateRealmId()
-        let commands = try await model.addPhoto(Data(),
-                                                tags: [],
-                                                description: "",
-                                                at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-                                                in: canvas,
-                                                geometryId: geometryId)
+        let commands = try await model.addPhotos(
+            [PhotoToAdd(uploadId: "upload1", timestamp: 1234, cacheKey: "cacheKey", thumbnail: UIImage(),
+                        height2Width: 1)],
+            tags: [],
+            description: "",
+            at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
+            in: canvas,
+            geometryId: geometryId
+        )
         XCTAssertEqual(commands.count, 4)
         let addGeometryCmd = try XCTUnwrap(commands[0] as? AddGeometryCommand)
         XCTAssertEqual(addGeometryCmd, AddGeometryCommand(
@@ -152,14 +157,22 @@ class ProjectModelCommandsTest: XCTestCase {
 
         let addUploadCmd = try XCTUnwrap(commands[3] as? AddUploadCommand)
         XCTAssertEqual(addUploadCmd.parentId, addCollaborationCmd.collaborationId)
+        XCTAssertEqual(addUploadCmd.uploadId, "upload1")
+        XCTAssertEqual(addUploadCmd.timestamp, 1234)
     }
 
     // test commands created for adding a photo for given geometry
-    // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
+    // no detailed asserts for AddUploadCommand as it is tested by `testAddUpload`
     @MainActor
     func testAddPhoto_forGeometry_geometryNotFound() async throws {
         do {
-            _ = try await model.addPhoto(Data(), tags: [], description: "", toCollaborationForGeometryId: "geometry1")
+            _ = try await model.addPhotos(
+                [PhotoToAdd(uploadId: "upload1", timestamp: 1234, cacheKey: "cacheKey", thumbnail: UIImage(),
+                            height2Width: 1)],
+                tags: [],
+                description: "",
+                toCollaborationForGeometryId: "geometry1"
+            )
             XCTFail("should throw error")
         } catch {
             guard
@@ -172,7 +185,7 @@ class ProjectModelCommandsTest: XCTestCase {
     }
 
     // test commands created for adding a photo for given geometry
-    // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
+    // no detailed asserts for AddUploadCommand as it is tested by `testAddUpload`
     @MainActor
     func testAddPhoto_forGeometry_noFeature() async throws {
         try realm.write {
@@ -182,8 +195,9 @@ class ProjectModelCommandsTest: XCTestCase {
                 geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
             ))
         }
-        let commands = try await model.addPhoto(
-            Data(),
+        let commands = try await model.addPhotos(
+            [PhotoToAdd(uploadId: "upload1", timestamp: 1234, cacheKey: "cacheKey", thumbnail: UIImage(),
+                        height2Width: 1)],
             tags: [],
             description: "",
             toCollaborationForGeometryId: "geometry1"
@@ -195,7 +209,7 @@ class ProjectModelCommandsTest: XCTestCase {
     }
 
     // test commands created for adding a photo for given geometry
-    // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
+    // no detailed asserts for AddUploadCommand as it is tested by `testAddUpload`
     @MainActor
     func testAddPhoto_forGeometry_noCollaboration() async throws {
         // the geometry and feature is there
@@ -209,8 +223,9 @@ class ProjectModelCommandsTest: XCTestCase {
             realm.add([feature, geometry])
             geometry.features.insert(feature)
         }
-        let commands = try await model.addPhoto(
-            Data(),
+        let commands = try await model.addPhotos(
+            [PhotoToAdd(uploadId: "upload1", timestamp: 1234, cacheKey: "cacheKey", thumbnail: UIImage(),
+                        height2Width: 1)],
             tags: [],
             description: "",
             toCollaborationForGeometryId: "geometry1"
@@ -221,7 +236,6 @@ class ProjectModelCommandsTest: XCTestCase {
     }
 
     // test commands created for adding a photo for given geometry
-    // no detailed asserts for AddUploadCommand as it is tested by `testAddPhoto_forCollaboration`
     @MainActor
     func testAddPhoto_forGeometry() async throws {
         // the geometry, feature and collaboration are there
@@ -237,8 +251,9 @@ class ProjectModelCommandsTest: XCTestCase {
             geometry.features.insert(feature)
             feature.collaborations.insert(collaboration)
         }
-        let commands = try await model.addPhoto(
-            Data(),
+        let commands = try await model.addPhotos(
+            [PhotoToAdd(uploadId: "upload1", timestamp: 1234, cacheKey: "cacheKey", thumbnail: UIImage(),
+                        height2Width: 1)],
             tags: [],
             description: "",
             toCollaborationForGeometryId: "geometry1"
@@ -246,5 +261,49 @@ class ProjectModelCommandsTest: XCTestCase {
         XCTAssertEqual(commands.count, 1)
         let addUploadCmd = try XCTUnwrap(commands[0] as? AddUploadCommand)
         XCTAssertEqual(addUploadCmd.parentId, "collaboration1")
+        XCTAssertEqual(addUploadCmd.uploadId, "upload1")
+        XCTAssertEqual(addUploadCmd.timestamp, 1234)
+    }
+
+    // test commands created for adding multiple photos for given geometry
+    @MainActor
+    func testAddPhotos_forGeometry() async throws {
+        // the geometry, feature and collaboration are there
+        try realm.write {
+            let geometry = Geometry(
+                id: "geometry1",
+                annotationType: .photoMarker,
+                geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+            )
+            let feature = Feature(id: "feature1", name: "", description: "")
+            let collaboration = Collaboration(id: "collaboration1", name: "", description: "")
+            realm.add([feature, geometry, collaboration])
+            geometry.features.insert(feature)
+            feature.collaborations.insert(collaboration)
+        }
+        let commands = try await model.addPhotos(
+            [PhotoToAdd(uploadId: "upload1", timestamp: 1234, cacheKey: "cacheKey1", thumbnail: UIImage(),
+                        height2Width: 1),
+             PhotoToAdd(uploadId: "upload2", timestamp: 1235, cacheKey: "cacheKey2", thumbnail: UIImage(),
+                        height2Width: 1),
+             PhotoToAdd(uploadId: "upload3", timestamp: 1236, cacheKey: "cacheKey3", thumbnail: UIImage(),
+                        height2Width: 1)],
+            tags: [],
+            description: "",
+            toCollaborationForGeometryId: "geometry1"
+        )
+        XCTAssertEqual(commands.count, 3)
+        let addUploadCmd1 = try XCTUnwrap(commands[0] as? AddUploadCommand)
+        XCTAssertEqual(addUploadCmd1.parentId, "collaboration1")
+        XCTAssertEqual(addUploadCmd1.uploadId, "upload1")
+        XCTAssertEqual(addUploadCmd1.timestamp, 1234)
+        let addUploadCmd2 = try XCTUnwrap(commands[1] as? AddUploadCommand)
+        XCTAssertEqual(addUploadCmd2.parentId, "collaboration1")
+        XCTAssertEqual(addUploadCmd2.uploadId, "upload2")
+        XCTAssertEqual(addUploadCmd2.timestamp, 1235)
+        let addUploadCmd3 = try XCTUnwrap(commands[2] as? AddUploadCommand)
+        XCTAssertEqual(addUploadCmd3.parentId, "collaboration1")
+        XCTAssertEqual(addUploadCmd3.uploadId, "upload3")
+        XCTAssertEqual(addUploadCmd3.timestamp, 1236)
     }
 }

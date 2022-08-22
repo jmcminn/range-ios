@@ -109,6 +109,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let _projectModel = try ProjectModel(
             userId: userId,
             projectId: projectId,
+            images: _images,
             pendingUploadsModel: _pendingUploadsModel
         )
 

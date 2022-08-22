@@ -8,10 +8,14 @@ class CameraViewModel: ObservableObject {
     /// Access to the camera properties
     let camera: CameraService
 
+    /// How many photos taken in this session
+    @Published var numberOfPhotos: Int = 0
+    /// The thumbnail to present for this photo session
+    @Published var photoThumbnail: UIImage?
     /// Whether to show the tags/description screen after taking photo(s)
-    @Published var annotationsEnabled = false
+    @Published var annotationsEnabled = UserDefaults.annotationEnabled
     /// Whether to take multiple photos or 1 photo and annotate and place on the canvas
-    @Published var multiPhotoEnabled = false
+    @Published var multiPhotoEnabled = UserDefaults.multiPhotoSessionEnabled
     /// The text to display temporarily over camera screen
     @Published var bannerText: String? = nil
     /// The icon to display temporarily over camera screen
@@ -22,6 +26,7 @@ class CameraViewModel: ObservableObject {
     /// Callbacks for the controller
     var closeAction: (() -> Void)?
     var takePhotoAction: (() -> Void)?
+    var nextAction: (() -> Void)?
 
     /// translate the CameraService.currentZoomFactor to a string to be displayed in the view
     @Published var zoomString = ""
@@ -50,6 +55,7 @@ class CameraViewModel: ObservableObject {
     /// Toggles the `annotationsEnabled` flag and sets the `bannerText`/`bannerIcon`
     func toggleAnnotations() {
         annotationsEnabled = !annotationsEnabled
+        UserDefaults.annotationEnabled = annotationsEnabled
         setBanner(
             text: "Annotation " + (annotationsEnabled ? "enabled" : "disabled"),
             icon: "tag"
@@ -59,6 +65,7 @@ class CameraViewModel: ObservableObject {
     /// Toggles the `multiPhotoEnabled` flag and sets the `bannerText`/`bannerIcon`
     func toggleMultiPhoto() {
         multiPhotoEnabled = !multiPhotoEnabled
+        UserDefaults.multiPhotoSessionEnabled = multiPhotoEnabled
         setBanner(
             text: "Multi-photo session " + (multiPhotoEnabled ? "enabled" : "disabled"),
             icon: "photo.on.rectangle"

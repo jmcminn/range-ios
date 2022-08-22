@@ -91,13 +91,13 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         networkMonitor.cancel()
     }
 
-    /// Stores the image data in the disk cache with given key and creates a `PendingUpload` to upload this image
+    /// Assumes the image is already in the Images.localPhotosCache
+    /// Stores the thumb data in the disk cache with given key and creates a `PendingUpload` to upload this image
     /// to Firebase storage
     /// The write operation will be executed on a `writeRealm` so not on the main thread
-    func addPendingUpload(_ imageData: Data, key: String) async throws {
-        // store in local photos cache that never expires, so we don't loose the photo before it's
-        // uploaded (it'll be removed from the cache once uploaded)
-        try await images.localPhotosCache._asyncStoreToDisk(imageData, forKey: key)
+    func addPendingUpload(key: String) async throws {
+        let cachePath = images.localPhotosCache.cachePath(forKey: key)
+        let imageData = try Data(contentsOf: URL(fileURLWithPath: cachePath))
         // store the thumbnail0, so it doesn;t have to be fetched and is ready in offline mode
         if let thumbnail0Data = resizeImage(imageData: imageData, maxResolution: 200) {
             let thumbnail0Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 0)

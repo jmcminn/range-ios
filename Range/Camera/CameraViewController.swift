@@ -1,3 +1,4 @@
+import OSLog
 import SwiftUI
 import UIKit
 
@@ -11,10 +12,12 @@ import UIKit
 /// It also owns and manages a CameraService and uses it to actually take photos
 class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
     var onClose: (() -> Void)?
-    var onPhotoTaken: ((Data, UIImage) -> Void)?
+    /// callback with photo data/UIImage and a completion that will resolve after the photo is stored locally
+    var onPhotoTaken: ((Data, UIImage, @escaping (Result<Void, Error>) -> Void) -> Void)?
+    var onNext: (() -> Void)?
     var modalCardDisplayController: ModalCardDisplayController?
     private let cameraService = CameraService()
-    private let cameraViewModel: CameraViewModel
+    let cameraViewModel: CameraViewModel
 
     init() {
         cameraViewModel = CameraViewModel(cameraService: cameraService)
@@ -26,15 +29,30 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
         cameraViewModel.takePhotoAction = { [weak self] in
             self?.takePhotoAction()
         }
+        cameraViewModel.nextAction = { [weak self] in
+            self?.onNext?()
+        }
+    }
+
+    func updateWithPhotosToAdd(_ photosToAdd: [PhotoToAdd]) {
+        cameraViewModel.numberOfPhotos = photosToAdd.count
+        cameraViewModel.photoThumbnail = photosToAdd.first?.thumbnail
     }
 
     private func takePhotoAction() {
         guard let onPhotoTaken = onPhotoTaken else { return }
         cameraService.capturePhoto { [weak self] data in
+            guard let self = self else { return }
             if let data = data, let image = UIImage(data: data) {
-                onPhotoTaken(data, image)
+                onPhotoTaken(data, image) { result in
+                    if case let .failure(error) = result {
+                        Logger.camera
+                            .error("Error while saving the photo: \(error.localizedDescription, privacy: .public)")
+                        self.showCapturePhotoErrorAlert(taking: false)
+                    }
+                }
             } else {
-                self?.showCapturePhotoErrorAlert()
+                self.showCapturePhotoErrorAlert()
             }
         }
     }
@@ -61,10 +79,12 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
         present(alertController, animated: true)
     }
 
-    private func showCapturePhotoErrorAlert() {
+    /// show error while taking (true) or saving (false) the photo
+    private func showCapturePhotoErrorAlert(taking: Bool = true) {
         let alertController = UIAlertController(
             title: "Camera Error",
-            message: "Error while taking the photo, please try again.",
+            message: taking ? "Error while taking the photo, please try again." :
+                "Error while saving the photo, please try again.",
             preferredStyle: .alert
         )
         alertController.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))

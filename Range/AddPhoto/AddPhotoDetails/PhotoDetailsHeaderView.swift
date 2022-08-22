@@ -1,10 +1,12 @@
+import Kingfisher
 import UIKit
 
 /// Header view with the photo and tags/description switch
 /// The layout supports collapsing the photo view
 class PhotoDetailsHeaderView: UIView {
+    private unowned let images: Images
     /// The photo
-    private let image: UIImage
+    private let photosToAdd: [PhotoToAdd]
 
     var photoView: UIImageView!
     var tagsDescriptionSegmentedControl: SegmentedControl!
@@ -12,8 +14,9 @@ class PhotoDetailsHeaderView: UIView {
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
 
-    init(image: UIImage) {
-        self.image = image
+    init(images: Images, photosToAdd: [PhotoToAdd]) {
+        self.images = images
+        self.photosToAdd = photosToAdd
         super.init(frame: .zero)
 
         backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
@@ -47,10 +50,12 @@ class PhotoDetailsHeaderView: UIView {
             height: SegmentedControl.height
         )
 
+        let photo = photosToAdd[0]
+
         // let's make it at least 30pt high, for smaller headers it'll disappear because of the
         // alpha control (see PhotoDetailsViewController)
         let photoViewHeight = max(30, tagsDescriptionSegmentedControl.frame.minY - margin)
-        let photoViewWidth = min(width - 32, image.size.width / image.size.height * photoViewHeight)
+        let photoViewWidth = min(width - 32, photoViewHeight / photo.height2Width)
         photoView.frame = CGRect(
             x: (width - photoViewWidth) / 2,
             y: tagsDescriptionSegmentedControl.frame.minY - margin - photoViewHeight,
@@ -70,9 +75,13 @@ class PhotoDetailsHeaderView: UIView {
     }
 
     private func buildPhotoView() {
-        photoView = UIImageView(image: image)
+        photoView = UIImageView()
         photoView.clipsToBounds = true
         photoView.contentMode = .scaleAspectFit
+        photoView.kf.indicatorType = .activity
+        photoView.kf.setImage(
+            with: .provider(images.imageProvider(forLocalPhotoWithCacheKey: photosToAdd[0].cacheKey))
+        )
     }
 
     private func buildTagsDescriptionSegmentedControl() {

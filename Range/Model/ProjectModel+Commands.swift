@@ -30,7 +30,7 @@ extension ProjectModel {
 
 /// Implementation of higher level commands (composed of multiple `Command`s)
 extension ProjectModel {
-    /// Stores the imageData locally (in a cache) and returns commands for
+    /// Adds given photos to pending uploads and returns commands for:
     /// - creating the feature If geometry with given id has no feature
     /// - creating a collaboration If the feature has no collaboration
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
@@ -40,13 +40,13 @@ extension ProjectModel {
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     ///
     /// - Parameters:
-    ///     - imageData: the data for the image
+    ///     - photosToAdd: the data for the images to add
     ///     - tags: array of tags, existing or new ones
     ///     - description: upload description
     ///     - geometryId: 'photoMarker' to add the upload to (to it's first feature/first collaboration)
     @MainActor
-    func addPhoto(
-        _ imageData: Data,
+    func addPhotos(
+        _ photosToAdd: [PhotoToAdd],
         tags: [TagViewModel],
         description: String,
         toCollaborationForGeometryId geometryId: String
@@ -55,11 +55,9 @@ extension ProjectModel {
             throw ModelError.geometryNotFound
         }
 
-        let uploadId = generateRealmId()
-        try await pendingUploadsModel.addPendingUpload(
-            imageData,
-            key: uploadKey(projectId: projectId, uploadId: uploadId)
-        )
+        for photoToAdd in photosToAdd {
+            try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
+        }
 
         var commands: [Command] = []
 
@@ -93,12 +91,15 @@ extension ProjectModel {
             ))
         }
 
-        commands.append(contentsOf: _addUpload(uploadId: uploadId, tags: tags, description: description,
-                                               toCollaboration: collaborationId))
+        photosToAdd.forEach {
+            commands.append(contentsOf: _addUpload(uploadId: $0.uploadId, timestamp: $0.timestamp,
+                                                   tags: tags, description: description,
+                                                   toCollaboration: collaborationId))
+        }
         return commands
     }
 
-    /// Stores the imageData locally (in a cache) and returns commands for
+    /// Adds given photos to pending uploads and returns commands for:
     /// - creating a new geometry of photoMarker type and adding it to given canvas.
     /// - creating a feature attached to this geometry and the collaboration attached to the feature.
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
@@ -107,26 +108,24 @@ extension ProjectModel {
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     ///
     /// - Parameters:
-    ///     - imageData: the data for the image
+    ///     - photosToAdd: the data for the images to add
     ///     - tags: array of tags, existing or new ones
     ///     - description: upload description
     ///     - coordinates: the coordinates for the photo marker
     ///     - canvas: should be from the `mainRealm`
     ///     - geometryId: this id will be used for the newly created geometry
     @MainActor
-    func addPhoto(
-        _ imageData: Data,
+    func addPhotos(
+        _ photosToAdd: [PhotoToAdd],
         tags: [TagViewModel],
         description: String,
         at coordinates: CLLocationCoordinate2D,
         in canvas: PDFCanvas,
         geometryId: String
     ) async throws -> [Command] {
-        let uploadId = generateRealmId()
-        try await pendingUploadsModel.addPendingUpload(
-            imageData,
-            key: uploadKey(projectId: projectId, uploadId: uploadId)
-        )
+        for photoToAdd in photosToAdd {
+            try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
+        }
 
         let addGeometryCmd = AddGeometryCommand(
             geometryId: geometryId,
@@ -149,12 +148,11 @@ extension ProjectModel {
             tagIds: []
         )
         var commands: [Command] = [addGeometryCmd, addFeatureCmd, addCollaborationCmd]
-        commands.append(contentsOf: _addUpload(
-            uploadId: uploadId,
-            tags: tags,
-            description: description,
-            toCollaboration: addCollaborationCmd.collaborationId
-        ))
+        photosToAdd.forEach {
+            commands.append(contentsOf: _addUpload(uploadId: $0.uploadId, timestamp: $0.timestamp,
+                                                   tags: tags, description: description,
+                                                   toCollaboration: addCollaborationCmd.collaborationId))
+        }
         return commands
     }
 
@@ -164,6 +162,7 @@ extension ProjectModel {
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     @MainActor
     func _addUpload(uploadId: String,
+                    timestamp: TimeInterval,
                     tags: [TagViewModel],
                     description: String,
                     toCollaboration collaborationId: String) -> [Command]
@@ -181,7 +180,7 @@ extension ProjectModel {
             parentType: "Collaboration",
             parentId: collaborationId,
             authorId: userId,
-            timestamp: Date.now.timeIntervalSince1970,
+            timestamp: timestamp,
             name: nil,
             uploadDescription: description,
             url: nil,

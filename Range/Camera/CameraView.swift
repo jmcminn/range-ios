@@ -41,16 +41,16 @@ struct CameraView: View {
         }.buttonStyle(.plain)
     }
 
-    var flashButton: some View {
-        Button(action: {}) {
-            Circle()
-                .strokeBorder(Color.Neutral_07, lineWidth: 1)
-                .background(Circle().fill(Color.Neutral_09))
-                .frame(width: 40, height: 40)
-                .overlay(Image(systemName: "bolt.fill").font(.body.bold()).foregroundColor(.Neutral_04))
-        }.buttonStyle(.plain)
-            .disabled(true)
-    }
+//    var flashButton: some View {
+//        Button(action: {}) {
+//            Circle()
+//                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+//                .background(Circle().fill(Color.Neutral_09))
+//                .frame(width: 40, height: 40)
+//                .overlay(Image(systemName: "bolt.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+//        }.buttonStyle(.plain)
+//            .disabled(true)
+//    }
 
     var cameraRollButton: some View {
         Button(action: {}) {
@@ -64,20 +64,34 @@ struct CameraView: View {
             .disabled(true)
     }
 
-    var settingsButton: some View {
+//    var settingsButton: some View {
+//        Button(action: {}) {
+//            Circle()
+//                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+//                .background(Circle().fill(Color.Neutral_09))
+//                .frame(width: 40, height: 40)
+//                .overlay(Image(systemName: "gearshape").font(.body.bold())
+//                    .foregroundColor(.Neutral_04))
+//        }.buttonStyle(.plain)
+//            .disabled(true)
+//    }
+
+    var imageButton: some View {
         Button(action: {}) {
-            Circle()
-                .strokeBorder(Color.Neutral_07, lineWidth: 1)
-                .background(Circle().fill(Color.Neutral_09))
+            Image(uiImage: model.photoThumbnail ?? UIImage())
                 .frame(width: 40, height: 40)
-                .overlay(Image(systemName: "gearshape").font(.body.bold())
-                    .foregroundColor(.Neutral_04))
+                .scaledToFill()
+                .clipped()
+                .cornerRadius(10)
+                .overlay(RoundedRectangle(cornerRadius: 10).fill(Color.Neutral_10).opacity(0.2))
+                .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.Neutral_07, lineWidth: 1))
+                .overlay(Text(String(model.numberOfPhotos)).foregroundColor(Color.Neutral_01)
+                    .font(.system(size: 16).bold()))
         }.buttonStyle(.plain)
-            .disabled(true)
     }
 
     var toggleAnnotationsButton: some View {
-        Button(action: { model.toggleAnnotations() }) {
+        Button(action: model.toggleAnnotations) {
             Circle()
                 .strokeBorder(model.annotationsEnabled ? Color.Pink_04 : Color.Neutral_07, lineWidth: 2)
                 .background(Circle().fill(model.annotationsEnabled ? Color.Pink_03 : Color.Neutral_09))
@@ -99,7 +113,7 @@ struct CameraView: View {
     }
 
     var nextButton: some View {
-        Button(action: {}) {
+        Button(action: model.nextAction ?? {}) {
             Circle()
                 .strokeBorder(Color.Primary_Blue_06, lineWidth: 2)
                 .background(Circle().fill(Color.Primary_Blue_04))
@@ -107,6 +121,7 @@ struct CameraView: View {
                 .overlay(Image(systemName: "arrow.forward").font(.title3.bold())
                     .foregroundColor(.Neutral_01))
         }.buttonStyle(.plain)
+            .disabled(model.numberOfPhotos == 0)
     }
 
     struct TakePhotoButtonStyle: ButtonStyle {
@@ -233,10 +248,13 @@ struct CameraView: View {
     private func topButtonsHStack() -> some View {
         HStack(spacing: 12) {
             closeButton.rotationEffect(uiAngle)
-            flashButton.rotationEffect(uiAngle)
+//            flashButton.rotationEffect(uiAngle)
             cameraRollButton.rotationEffect(uiAngle)
-            settingsButton.rotationEffect(uiAngle)
+//            settingsButton.rotationEffect(uiAngle)
             Spacer()
+            if model.multiPhotoEnabled, model.numberOfPhotos > 0 {
+                imageButton.rotationEffect(uiAngle)
+            }
         }
         .animation(.default, value: uiAngle)
         .padding(16)

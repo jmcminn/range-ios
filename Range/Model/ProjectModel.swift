@@ -62,6 +62,8 @@ class ProjectModel {
     let userId: String
     /// The UUID for the project
     let projectId: String
+    /// images...
+    unowned let images: Images
     /// global pending uploads
     unowned let pendingUploadsModel: PendingUploadsModel
     /// Configuration for creating realms to access this project objects
@@ -85,12 +87,20 @@ class ProjectModel {
     /// - Parameters:
     ///     - userId:           Range id of the logged in user
     ///     - projectId:        id of the project, will be used for the realm identifier
+    ///     - images:          access to images caches
     ///     - pendingUploadsModel:       keep unowned reference to the global pending uploads
     ///     - inMemory:      optional parameter to create the Realm in memory (for tests), but default `false`
     /// - Warning: to be called on the Main thread
-    init(userId: String, projectId: String, pendingUploadsModel: PendingUploadsModel, inMemory: Bool = false) throws {
+    init(
+        userId: String,
+        projectId: String,
+        images: Images,
+        pendingUploadsModel: PendingUploadsModel,
+        inMemory: Bool = false
+    ) throws {
         self.userId = userId
         self.projectId = projectId.lowercased()
+        self.images = images
         self.pendingUploadsModel = pendingUploadsModel
         var config = Realm.Configuration.defaultConfiguration
         // TODO: [db-migration] for now we just remove the Realm and resync if migration needed...
