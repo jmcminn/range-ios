@@ -118,6 +118,7 @@
 		0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */; };
 		0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */; };
 		0A6FAC3228B552440057995B /* LocalPhotosImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */; };
+		0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */; };
 		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
 		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
@@ -147,7 +148,7 @@
 		0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F64288AF07800708C6B /* FirebasePendingUploadsModel.swift */; };
 		0A724F67288B0C8C00708C6B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0A724F66288B0C8C00708C6B /* FirebaseStorage */; };
 		0A724F69288B0C8C00708C6B /* FirebaseStorageSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0A724F68288B0C8C00708C6B /* FirebaseStorageSwift-Beta */; };
-		0A724F6B288B12F800708C6B /* Rectangle 515.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* Rectangle 515.jpg */; };
+		0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */; };
 		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
 		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
 		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
@@ -316,6 +317,7 @@
 		0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "5451 VANDERBILT AVE-A1.1A.pdf"; sourceTree = "<group>"; };
 		0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFCanvasViewController.swift; sourceTree = "<group>"; };
 		0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPhotosImageDataProvider.swift; sourceTree = "<group>"; };
+		0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_landscape.jpg; sourceTree = "<group>"; };
 		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
@@ -343,7 +345,7 @@
 		0A724F5F28898B9400708C6B /* AddUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadCommandTest.swift; sourceTree = "<group>"; };
 		0A724F62288AAFFD00708C6B /* PendingUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUpload.swift; sourceTree = "<group>"; };
 		0A724F64288AF07800708C6B /* FirebasePendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebasePendingUploadsModel.swift; sourceTree = "<group>"; };
-		0A724F6A288B12F800708C6B /* Rectangle 515.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Rectangle 515.jpg"; sourceTree = "<group>"; };
+		0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_portrait.jpg; sourceTree = "<group>"; };
 		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
@@ -814,7 +816,8 @@
 			isa = PBXGroup;
 			children = (
 				0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */,
-				0A724F6A288B12F800708C6B /* Rectangle 515.jpg */,
+				0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */,
+				0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */,
 			);
 			path = DemoResources;
 			sourceTree = "<group>";
@@ -1047,7 +1050,8 @@
 				0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */,
 				0A07D7632810562700B6F9A2 /* fonts in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
-				0A724F6B288B12F800708C6B /* Rectangle 515.jpg in Resources */,
+				0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */,
+				0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */,
 				0A07D51E28089DDD00B6F9A2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

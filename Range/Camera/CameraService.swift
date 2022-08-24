@@ -225,7 +225,8 @@ class CameraService: ObservableObject {
         // hardcoded photo for simulator
         DispatchQueue.main.async {
             guard let sampleImageURL = Bundle.main.url(
-                forResource: "Rectangle 515",
+                forResource: UIDevice.current.orientation
+                    .isPortrait ? "sample_photo_portrait" : "sample_photo_landscape",
                 withExtension: "jpg"
             ) else { return }
 
