@@ -188,8 +188,9 @@ struct CameraView: View {
             .foregroundColor(.Neutral_01)
             .padding(9)
             .background(ZStack {
-                RoundedRectangle(cornerRadius: 10).fill(Color.Pink_03)
-                RoundedRectangle(cornerRadius: 10).stroke(Color.Pink_04, lineWidth: 1)
+                RoundedRectangle(cornerRadius: 10).fill(model.bannerForEnabled ? Color.Pink_03 : Color.Neutral_09)
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(model.bannerForEnabled ? Color.Pink_04 : Color.Neutral_07, lineWidth: 1)
             })
             .onTapGesture {
                 model.cleanBanner()

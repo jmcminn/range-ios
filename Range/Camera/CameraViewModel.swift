@@ -20,6 +20,8 @@ class CameraViewModel: ObservableObject {
     @Published var bannerText: String? = nil
     /// The icon to display temporarily over camera screen
     @Published var bannerIcon: String? = nil
+    /// Whether the banner is for enabled or disabled state
+    @Published var bannerForEnabled: Bool = false
     /// Currently scheduled banner cleanup
     private var cleanWorkItem: DispatchWorkItem?
 
@@ -58,7 +60,8 @@ class CameraViewModel: ObservableObject {
         UserDefaults.annotationEnabled = annotationsEnabled
         setBanner(
             text: "Annotation " + (annotationsEnabled ? "enabled" : "disabled"),
-            icon: "tag"
+            icon: "tag",
+            forEnabled: annotationsEnabled
         )
     }
 
@@ -68,14 +71,16 @@ class CameraViewModel: ObservableObject {
         UserDefaults.multiPhotoSessionEnabled = multiPhotoEnabled
         setBanner(
             text: "Multi-photo session " + (multiPhotoEnabled ? "enabled" : "disabled"),
-            icon: "photo.on.rectangle"
+            icon: "photo.on.rectangle",
+            forEnabled: multiPhotoEnabled
         )
     }
 
     /// Sets given banner and schedule it's cleanup in the future (cancel any already scheduled cleanup)
-    func setBanner(text: String, icon: String) {
+    func setBanner(text: String, icon: String, forEnabled: Bool) {
         bannerIcon = icon
         bannerText = text
+        bannerForEnabled = forEnabled
         // cancel the current cleanWorkItem to prolong banner showing
         if let cleanWorkItem = cleanWorkItem {
             cleanWorkItem.cancel()
