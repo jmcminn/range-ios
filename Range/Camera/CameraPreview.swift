@@ -24,8 +24,7 @@ struct CameraPreview: UIViewRepresentable {
     func makeUIView(context _: Context) -> VideoPreviewView {
         let view = VideoPreviewView()
         view.videoPreviewLayer.session = session
-        // TODO: camera layout
-//        view.videoPreviewLayer.cornerRadius = 32
+        view.videoPreviewLayer.cornerRadius = 32
         view.videoPreviewLayer.connection?.videoOrientation = .portrait
 
         return view

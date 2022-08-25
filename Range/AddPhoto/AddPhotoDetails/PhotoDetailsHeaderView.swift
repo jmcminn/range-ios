@@ -76,6 +76,7 @@ class PhotoDetailsHeaderView: UIView {
 
     private func buildPhotoView() {
         photoView = UIImageView()
+        photoView.layer.cornerRadius = 13
         photoView.clipsToBounds = true
         photoView.contentMode = .scaleAspectFit
         photoView.kf.indicatorType = .activity
