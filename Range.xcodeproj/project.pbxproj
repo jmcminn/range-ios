@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A07D5112807147500B6F9A2 /* NonModalCardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D5102807147500B6F9A2 /* NonModalCardHandler.swift */; };
+		0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */; };
 		0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */; };
 		0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */; };
 		0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */; };
@@ -86,7 +86,7 @@
 		0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CF285B647600E571FB /* TagsViewModel.swift */; };
 		0A4995D5286099D800E571FB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995D4286099D800E571FB /* Algorithms */; };
 		0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995DA2861DBE600E571FB /* Kingfisher */; };
-		0A4D0D352805B618007A249F /* CardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardHandler.swift */; };
+		0A4D0D352805B618007A249F /* CardDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardDragging.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
 		0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */; };
@@ -206,7 +206,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0A07D5102807147500B6F9A2 /* NonModalCardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardHandler.swift; sourceTree = "<group>"; };
+		0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDragging.swift; sourceTree = "<group>"; };
 		0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Slider.swift"; sourceTree = "<group>"; };
 		0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoConfirmationViewController.swift; sourceTree = "<group>"; };
 		0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassthroughView.swift; sourceTree = "<group>"; };
@@ -283,7 +283,7 @@
 		0A4995CD285B264C00E571FB /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
 		0A4995CF285B647600E571FB /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
 		0A4995D1285C9D1E00E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		0A4D0D342805B618007A249F /* CardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardHandler.swift; sourceTree = "<group>"; };
+		0A4D0D342805B618007A249F /* CardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDragging.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
 		0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageSize.swift; sourceTree = "<group>"; };
@@ -438,7 +438,7 @@
 			isa = PBXGroup;
 			children = (
 				0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */,
-				0A07D5102807147500B6F9A2 /* NonModalCardHandler.swift */,
+				0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */,
 			);
 			path = NonModal;
 			sourceTree = "<group>";
@@ -693,7 +693,7 @@
 			children = (
 				0A07D50D2807095400B6F9A2 /* Modal */,
 				0A07D50E2807096400B6F9A2 /* NonModal */,
-				0A4D0D342805B618007A249F /* CardHandler.swift */,
+				0A4D0D342805B618007A249F /* CardDragging.swift */,
 				0A97232A27FC839400D744F4 /* CardConfiguration.swift */,
 				0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */,
 				0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */,
@@ -1094,7 +1094,7 @@
 				0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
-				0A07D5112807147500B6F9A2 /* NonModalCardHandler.swift in Sources */,
+				0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */,
 				0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
 				0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */,
@@ -1151,7 +1151,7 @@
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
-				0A4D0D352805B618007A249F /* CardHandler.swift in Sources */,
+				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
 				0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A4995B52854C28200E571FB /* TextView.swift in Sources */,

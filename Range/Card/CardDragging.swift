@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 /// Helper class for installing the gesture recognizers on the card-presented view controller's view and managing the card dragging.
-class CardHandler: NSObject {
+class CardDragging: NSObject {
     unowned let presentedViewController: UIViewController & CardPresentable
     unowned let containerView: UIView
     let config: CardConfiguration
@@ -47,7 +47,7 @@ class CardHandler: NSObject {
 }
 
 /// Card height related properties
-extension CardHandler {
+extension CardDragging {
     // we don't want to cover the top safe area
     var maxAllowedCardHeight: CGFloat {
         containerView.bounds.height - containerView.safeAreaInsets.top
@@ -83,7 +83,7 @@ extension CardHandler {
 }
 
 /// Animation
-extension CardHandler {
+extension CardDragging {
     func setCardHeight(_ height: CGFloat, animated: Bool = false, withVelocity velocity: CGFloat = 0,
                        completion: (() -> Void)? = nil)
     {
@@ -149,7 +149,7 @@ extension CardHandler {
 }
 
 /// Card drag handling
-private extension CardHandler {
+private extension CardDragging {
     func setupCardDragRecogniser() {
         guard dragGestureRecognizer == nil else { return }
         let panGesture = UIPanGestureRecognizer(target: self,
@@ -217,7 +217,7 @@ private extension CardHandler {
      */
     func targetPosition(withVelocity velocity: CGFloat) -> CardPosition {
         let currentHeight = cardHeight
-        let targetHeight = currentHeight + CardHandler
+        let targetHeight = currentHeight + CardDragging
             .minimumDragExpectedDuration * (topDown ? 1 : -1) * velocity
 
         var heightsForPositions: [CardPosition: CGFloat] = [:]
@@ -236,7 +236,7 @@ private extension CardHandler {
                 return distance0 < distance1
             }
         }
-        if abs(velocity) > CardHandler.minimumDragVelocityToChangeCardPosition {
+        if abs(velocity) > CardDragging.minimumDragVelocityToChangeCardPosition {
             let takeMax = topDown ? velocity > 0 : velocity < 0
             let firstPositionBigger = closestPositions[0].rawValue > closestPositions[1].rawValue
             if takeMax {
@@ -251,7 +251,7 @@ private extension CardHandler {
 }
 
 /// Scroll view handling
-extension CardHandler: UIScrollViewDelegate {
+extension CardDragging: UIScrollViewDelegate {
     enum CardTranslationPosition {
         case top
         case bottom

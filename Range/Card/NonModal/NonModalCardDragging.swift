@@ -1,7 +1,7 @@
 import UIKit
 
 /// Since non modal cards can be shown and hidden multiple times we need to track the card hidden state.
-class NonModalCardHandler: CardHandler {
+class NonModalCardDragging: CardDragging {
     /// Hide the read/write variable, so it's only controlled by `showCard` and `hideCard`
     fileprivate var cardHidden = true
 

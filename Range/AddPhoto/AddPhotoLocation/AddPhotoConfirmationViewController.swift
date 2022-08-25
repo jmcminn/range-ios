@@ -3,7 +3,7 @@ import UIKit
 
 /// View to accept ("Confirm Location") or cancel ("Back") your in-progress photo placement
 class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordinating {
-    var cardHandler: NonModalCardHandler?
+    var cardDragging: NonModalCardDragging?
 
     static let topPadding = 21.0
     static let bottomPadding = 16.0

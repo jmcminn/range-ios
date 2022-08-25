@@ -3,7 +3,7 @@ import SnapKit
 import UIKit
 
 class CollaborationViewController: UIViewController, NonModalCardCoordinating {
-    var cardHandler: NonModalCardHandler?
+    var cardDragging: NonModalCardDragging?
 
     unowned let imageCaches: ImageCaches
     let collaboration: Collaboration

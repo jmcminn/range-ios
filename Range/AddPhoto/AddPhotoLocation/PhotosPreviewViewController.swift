@@ -7,7 +7,7 @@ import UIKit
 
 /// Shows the preview of photos when selecting a pin on the map for new photo
 class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
-    var cardHandler: NonModalCardHandler?
+    var cardDragging: NonModalCardDragging?
 
     unowned let model: ProjectModel
     unowned let imageCaches: ImageCaches

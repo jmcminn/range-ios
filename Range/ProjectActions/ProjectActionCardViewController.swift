@@ -4,7 +4,7 @@ import UIKit
 class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
     let actions: [ProjectAction]
 
-    var cardHandler: NonModalCardHandler?
+    var cardDragging: NonModalCardDragging?
 
     var onCamera: (() -> Void)?
 

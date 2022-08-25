@@ -15,7 +15,7 @@ import UIKit
  */
 class ModalCardPresentationController: UIPresentationController {
     let cardConfig: CardConfiguration
-    var cardHandler: CardHandler?
+    var cardDragging: CardDragging?
     var presentationContainerView: PresentationContainerView!
     var blurView: UIView?
     var sliderView: UIView?
@@ -34,12 +34,12 @@ class ModalCardPresentationController: UIPresentationController {
         setupPresentationContainerView()
         presentedViewController.loadViewIfNeeded()
         if let containerView = containerView {
-            cardHandler = CardHandler(
+            cardDragging = CardDragging(
                 presentedViewController: presentedViewController as! CardPresentable,
                 containerView: containerView,
                 config: cardConfig
             )
-            cardHandler?.install()
+            cardDragging?.install()
         } else {
             Logger.ui.fault("containerView is nil, cannot install the card handler")
         }
@@ -54,17 +54,17 @@ class ModalCardPresentationController: UIPresentationController {
 
     override func dismissalTransitionDidEnd(_: Bool) {
         removePresentationContainerView()
-        cardHandler?.remove()
+        cardDragging?.remove()
         removeSafeAreaBlur()
         removeSliderView()
     }
 
     override var frameOfPresentedViewInContainerView: CGRect {
-        guard let cardHandler = cardHandler else { return .zero }
-        let targetHeight = cardHandler.cardHeight(forPosition: cardHandler.position)
-        var frame = cardHandler.containerView.bounds
+        guard let cardDragging = cardDragging else { return .zero }
+        let targetHeight = cardDragging.cardHeight(forPosition: cardDragging.position)
+        var frame = cardDragging.containerView.bounds
         frame.origin.y = frame.size.height - targetHeight
-        frame.size.height = cardHandler.maxAllowedCardHeight
+        frame.size.height = cardDragging.maxAllowedCardHeight
         return frame
     }
 
