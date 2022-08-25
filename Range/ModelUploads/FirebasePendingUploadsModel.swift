@@ -24,7 +24,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// maximum backoff for retrying actions (in seconds)
     private let maxBackoff: TimeInterval = 64
 
-    unowned let images: Images
+    unowned let imageCaches: ImageCaches
 
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
@@ -49,7 +49,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// - Parameters:
     ///     - inMemory:      optional parameter to create the Realm in memory (for tests), but default `false`
     /// - Warning: to be called on the Main thread
-    init(images: Images, inMemory: Bool = false) throws {
+    init(imageCaches: ImageCaches, inMemory: Bool = false) throws {
         var config = Realm.Configuration.defaultConfiguration
         // TODO: [db-migration] for now we just remove the Realm and resync if migration needed...
         config.deleteRealmIfMigrationNeeded = true
@@ -64,7 +64,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         config.objectTypes = [PendingUpload.self]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
-        self.images = images
+        self.imageCaches = imageCaches
     }
 
     /// Starts synchronization - observes all relevant paths and updates the db.
@@ -96,12 +96,12 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// to Firebase storage
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     func addPendingUpload(key: String) async throws {
-        let cachePath = images.localPhotosCache.cachePath(forKey: key)
+        let cachePath = imageCaches.localPhotosCache.cachePath(forKey: key)
         let imageData = try Data(contentsOf: URL(fileURLWithPath: cachePath))
         // store the thumbnail0, so it doesn;t have to be fetched and is ready in offline mode
         if let thumbnail0Data = resizeImage(imageData: imageData, maxResolution: 200) {
             let thumbnail0Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 0)
-            try await images.localPhotosCache._asyncStoreToDisk(thumbnail0Data, forKey: thumbnail0Key)
+            try await imageCaches.localPhotosCache._asyncStoreToDisk(thumbnail0Data, forKey: thumbnail0Key)
         }
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
             let pendingUpload = PendingUpload(key)
@@ -115,8 +115,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// After the image is uploaded it has to be removed from the `localPhotosCache` (as it is not expiring)
     /// It is moved to downloads cache so it's immediatelly available without downloading.
     private func _moveImageFromLocalPhotosCache(forKey key: String) async throws {
-        try await images.moveDataFromLocalPhotosToDownloadsCache(forKey: key)
-        try await images.moveDataFromLocalPhotosToDownloadsCache(forKey:
+        try await imageCaches.moveDataFromLocalPhotosToDownloadsCache(forKey: key)
+        try await imageCaches.moveDataFromLocalPhotosToDownloadsCache(forKey:
             thumbnailKey(forUploadKey: key, thumbnailNumber: 0))
     }
 
@@ -206,8 +206,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         let storagePath = try await _asyncOnQueue(queue: writeQueue) {
             upload.storagePath
         }
-        let uploadRef = images.storage.reference(withPath: storagePath)
-        let cacheFileURL = URL(fileURLWithPath: images.localPhotosCache.cachePath(forKey: storagePath))
+        let uploadRef = imageCaches.storage.reference(withPath: storagePath)
+        let cacheFileURL = URL(fileURLWithPath: imageCaches.localPhotosCache.cachePath(forKey: storagePath))
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
         // never expires = 1 year as advised by the standard: https://stackoverflow.com/a/25201898

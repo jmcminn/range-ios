@@ -10,7 +10,7 @@ import UIKit
 /// The view is "live" meaning it observes the Uploads and reloads the collection view accordingly.
 /// It uses `Images` for getting image provider for Upload and implements UICollectionViewDataSourcePrefetching for prefetching images.
 class ThumbnailsViewController: UIViewController {
-    unowned let images: Images
+    unowned let imageCaches: ImageCaches
     let uploads: Results<Upload>
     var prefetcher: ImagePrefetcher?
 
@@ -22,8 +22,8 @@ class ThumbnailsViewController: UIViewController {
     /// cache calculated cell widths, if not cache then invalidating the layout and recalculating causes flickering in the UI
     var cellWidths: [Double?] = []
 
-    init(images: Images, uploads: Results<Upload>) {
-        self.images = images
+    init(imageCaches: ImageCaches, uploads: Results<Upload>) {
+        self.imageCaches = imageCaches
         self.uploads = uploads
         super.init(nibName: nil, bundle: nil)
     }
@@ -103,7 +103,7 @@ class ThumbnailsViewController: UIViewController {
     /// Returns image data provider for given cell.
     private func imageProvider(forItemAt indexPath: IndexPath) -> ImageDataProvider {
         let upload = uploads[indexPath.item]
-        return images.imageProvider(forUpload: upload, thumbnailNumber: 0)
+        return imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 0)
     }
 }
 

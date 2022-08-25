@@ -13,7 +13,7 @@ class TagsViewModelTest: XCTestCase {
         model = try ProjectModel(
             userId: "user1",
             projectId: UUID().uuidString,
-            images: Images(projectId: ""),
+            imageCaches: ImageCaches(projectId: ""),
             pendingUploadsModel: pendingUploadsModel,
             inMemory: true
         )

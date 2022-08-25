@@ -10,7 +10,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     var cardHandler: NonModalCardHandler?
 
     unowned let model: ProjectModel
-    unowned let images: Images
+    unowned let imageCaches: ImageCaches
     unowned let confirmationVC: AddPhotoConfirmationViewController
     let uploads: Results<Upload>
 
@@ -31,14 +31,14 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
 
     /// - Parameters:
     ///    - model: for accessing project data
-    ///    - images: for handling photos
+    ///    - imageCaches: for handling photos
     ///    - geometryId: display all uploads for collaborations for features for given geometry id
     ///    - confirmationVC: this view controller displays behing the `AddPhotoConfirmationViewController` and needs to know its height
-    init(model: ProjectModel, images: Images, geometryId: String,
+    init(model: ProjectModel, imageCaches: ImageCaches, geometryId: String,
          confirmationVC: AddPhotoConfirmationViewController)
     {
         self.model = model
-        self.images = images
+        self.imageCaches = imageCaches
         self.confirmationVC = confirmationVC
         // find all uploads for geometry id
         uploads = model.mainRealm.objects(Upload.self)
@@ -140,7 +140,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     }
 
     private func buildThumbnailsView() {
-        thumbnailsVC = ThumbnailsViewController(images: images, uploads: uploads)
+        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, uploads: uploads)
     }
 }
 

@@ -7,7 +7,7 @@ import UIKit
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
     unowned let model: ProjectModel
-    unowned let images: Images
+    unowned let imageCaches: ImageCaches
     let canvasContainer: CanvasContainerViewController
     var onSignOut: (() -> Void)?
 
@@ -19,8 +19,8 @@ final class ProjectFlowController: UIViewController {
 
     var collaborationVC: CollaborationViewController?
 
-    init(images: Images, model: ProjectModel) throws {
-        self.images = images
+    init(imageCaches: ImageCaches, model: ProjectModel) throws {
+        self.imageCaches = imageCaches
         self.model = model
         canvasContainer = try CanvasContainerViewController(model: model)
         super.init(nibName: nil, bundle: nil)
@@ -126,7 +126,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     fileprivate func startAddPhotoFlow() {
-        addPhotoFlow = AddPhotoFlowController(model: model, images: images, canvasContainer: canvasContainer)
+        addPhotoFlow = AddPhotoFlowController(model: model, imageCaches: imageCaches, canvasContainer: canvasContainer)
         addPhotoFlow?.onStop = { [weak self] in
             self?.showDefaultCanvasUI()
             self?.addPhotoFlow = nil
@@ -147,7 +147,7 @@ final class ProjectFlowController: UIViewController {
            let feature = geometry.features.first,
            let collaboration = feature.collaborations.first
         {
-            let collaborationVC = CollaborationViewController(images: images, collaboration: collaboration)
+            let collaborationVC = CollaborationViewController(imageCaches: imageCaches, collaboration: collaboration)
             collaborationVC.onClose = { [weak self] in
                 // unselect pin, this will result also in hiding the collaboration window
                 self?.pinsHandler.setSelectedPinId(nil)

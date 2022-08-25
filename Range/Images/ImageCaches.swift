@@ -27,7 +27,7 @@ func thumbnailKey(forUploadKey key: String, thumbnailNumber: Int = 0) -> String 
 /// for more details
 ///
 /// For now iOS uses only thumbnail0
-class Images {
+class ImageCaches {
     /// The UUID for the project
     let projectId: String
 

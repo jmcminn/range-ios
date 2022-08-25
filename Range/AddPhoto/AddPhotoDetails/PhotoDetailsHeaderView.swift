@@ -4,7 +4,7 @@ import UIKit
 /// Header view with the photo and tags/description switch
 /// The layout supports collapsing the photo view
 class PhotoDetailsHeaderView: UIView {
-    private unowned let images: Images
+    private unowned let imageCaches: ImageCaches
     /// The photo
     private let photosToAdd: [PhotoToAdd]
 
@@ -14,8 +14,8 @@ class PhotoDetailsHeaderView: UIView {
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
 
-    init(images: Images, photosToAdd: [PhotoToAdd]) {
-        self.images = images
+    init(imageCaches: ImageCaches, photosToAdd: [PhotoToAdd]) {
+        self.imageCaches = imageCaches
         self.photosToAdd = photosToAdd
         super.init(frame: .zero)
 
@@ -80,7 +80,7 @@ class PhotoDetailsHeaderView: UIView {
         photoView.contentMode = .scaleAspectFit
         photoView.kf.indicatorType = .activity
         photoView.kf.setImage(
-            with: .provider(images.imageProvider(forLocalPhotoWithCacheKey: photosToAdd[0].cacheKey))
+            with: .provider(imageCaches.imageProvider(forLocalPhotoWithCacheKey: photosToAdd[0].cacheKey))
         )
     }
 

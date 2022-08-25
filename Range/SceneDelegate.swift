@@ -7,7 +7,7 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    var images: Images?
+    var imageCaches: ImageCaches?
     var projectModel: ProjectModel?
     var pendingUploadsModel: FirebasePendingUploadsModel?
     var projectModelFirestoreSync: ProjectModelFirestoreSync?
@@ -102,14 +102,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///     - projectId: id of the project
     /// - Returns: loaded ProjectModel
     private func createProjectModel(userId: String, projectId: String) async throws {
-        let _images = Images(projectId: projectId)
-        let _pendingUploadsModel = try FirebasePendingUploadsModel(images: _images)
+        let _imageCaches = ImageCaches(projectId: projectId)
+        let _pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: _imageCaches)
         try await _pendingUploadsModel.start()
 
         let _projectModel = try ProjectModel(
             userId: userId,
             projectId: projectId,
-            images: _images,
+            imageCaches: _imageCaches,
             pendingUploadsModel: _pendingUploadsModel
         )
 
@@ -118,7 +118,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         try _projectModel.loadProject()
 
-        images = _images
+        imageCaches = _imageCaches
         pendingUploadsModel = _pendingUploadsModel
         projectModel = _projectModel
         projectModelFirestoreSync = _projectModelFirestoreSync
@@ -126,7 +126,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Shows a project for current model
     private func showProject() throws {
-        let projectFC = try ProjectFlowController(images: images!, model: projectModel!)
+        let projectFC = try ProjectFlowController(imageCaches: imageCaches!, model: projectModel!)
         projectFC.onSignOut = { [weak self] in
             self?.signOut()
         }
@@ -144,7 +144,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         pendingUploadsModel = nil
         projectModel = nil
         projectModelFirestoreSync = nil
-        images = nil
+        imageCaches = nil
         do {
             try Auth.auth().signOut()
         } catch {

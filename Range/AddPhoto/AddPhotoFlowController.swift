@@ -21,7 +21,7 @@ struct PhotoToAdd {
 /// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
 class AddPhotoFlowController {
     unowned let model: ProjectModel
-    unowned let images: Images
+    unowned let imageCaches: ImageCaches
     unowned let canvasContainer: CanvasContainerViewController
 
     var onStop: (() -> Void)?
@@ -52,9 +52,9 @@ class AddPhotoFlowController {
     ///     - model: - the project model
     ///     - images: - access to images
     ///     - canvas: - the flow will operate on this canvas
-    init(model: ProjectModel, images: Images, canvasContainer: CanvasContainerViewController) {
+    init(model: ProjectModel, imageCaches: ImageCaches, canvasContainer: CanvasContainerViewController) {
         self.model = model
-        self.images = images
+        self.imageCaches = imageCaches
         self.canvasContainer = canvasContainer
     }
 
@@ -90,7 +90,7 @@ class AddPhotoFlowController {
         // remove the photos from local cache if we don't need them
         if removeFromCache {
             photosToAdd.forEach {
-                images.localPhotosCache.removeImage(forKey: $0.cacheKey)
+                imageCaches.localPhotosCache.removeImage(forKey: $0.cacheKey)
             }
         }
         photosToAdd = []
@@ -160,25 +160,26 @@ class AddPhotoFlowController {
         )
 
         // store the image in local cache
-        images.localPhotosCache.storeToDisk(data, forKey: cacheKey, callbackQueue: .mainAsync) { [weak self] result in
-            guard let self = self else { return }
-            if case let .failure(error) = result.diskCacheResult {
-                completion(.failure(error))
-                return
-            }
+        imageCaches.localPhotosCache
+            .storeToDisk(data, forKey: cacheKey, callbackQueue: .mainAsync) { [weak self] result in
+                guard let self = self else { return }
+                if case let .failure(error) = result.diskCacheResult {
+                    completion(.failure(error))
+                    return
+                }
 
-            if UserDefaults.multiPhotoSessionEnabled {
-                self.photosToAdd.append(photoToAdd)
-            } else {
-                self.clearPhotosToAdd(removeFromCache: true)
-                self.photosToAdd = [photoToAdd]
+                if UserDefaults.multiPhotoSessionEnabled {
+                    self.photosToAdd.append(photoToAdd)
+                } else {
+                    self.clearPhotosToAdd(removeFromCache: true)
+                    self.photosToAdd = [photoToAdd]
+                }
+                cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
+                if !UserDefaults.multiPhotoSessionEnabled {
+                    self.nextStepAfterCamera()
+                }
+                completion(.success(()))
             }
-            cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
-            if !UserDefaults.multiPhotoSessionEnabled {
-                self.nextStepAfterCamera()
-            }
-            completion(.success(()))
-        }
     }
 
     private func nextStepAfterCamera() {
@@ -201,7 +202,7 @@ class AddPhotoFlowController {
     private func createPhotoDetailsViewController() -> PhotoDetailsViewController {
         let detailsVC = PhotoDetailsViewController(
             model: model,
-            images: images,
+            imageCaches: imageCaches,
             photosToAdd: photosToAdd,
             initialSelectedTags: tags,
             initialDescription: photoDescription
@@ -433,7 +434,7 @@ extension AddPhotoFlowController {
         guard let confirmationCardVC = confirmationCardVC else { return }
         let photosPreviewVC = PhotosPreviewViewController(
             model: model,
-            images: images,
+            imageCaches: imageCaches,
             geometryId: geometryId,
             confirmationVC: confirmationCardVC
         )

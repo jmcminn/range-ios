@@ -5,7 +5,7 @@ import UIKit
 class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var cardHandler: NonModalCardHandler?
 
-    unowned let images: Images
+    unowned let imageCaches: ImageCaches
     let collaboration: Collaboration
     var thumbnailsVC: ThumbnailsViewController!
     var onClose: (() -> Void)?
@@ -19,8 +19,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     }
 
     /// - Parameters:
-    init(images: Images, collaboration: Collaboration) {
-        self.images = images
+    init(imageCaches: ImageCaches, collaboration: Collaboration) {
+        self.imageCaches = imageCaches
         self.collaboration = collaboration
         super.init(nibName: nil, bundle: nil)
     }
@@ -71,7 +71,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     private func buildThumbnailsView() {
         let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
-        thumbnailsVC = ThumbnailsViewController(images: images, uploads: uploads)
+        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, uploads: uploads)
     }
 }
 
