@@ -13,7 +13,7 @@ final class ProjectFlowController: UIViewController {
 
     lazy var bottomBlurView = setupBottomBlur()
     lazy var actionCardVC = installActionCardVC()
-    lazy var pinsHandler = PinsHandler(model: model, canvasContainer: canvasContainer)
+    lazy var pinsDisplay = PinsDisplay(model: model, canvasContainer: canvasContainer)
 
     var addPhotoFlow: AddPhotoFlowController?
 
@@ -32,7 +32,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     func start() {
-        pinsHandler.onSelectedPinChange = { [weak self] geometryId in
+        pinsDisplay.onSelectedPinChange = { [weak self] geometryId in
             if let geometryId = geometryId {
                 self?.showCollaborationWindow(forGeometry: geometryId, animated: true)
             } else {
@@ -51,19 +51,19 @@ final class ProjectFlowController: UIViewController {
     func stop() {
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)
-        pinsHandler.stop()
+        pinsDisplay.stop()
     }
 
     /// Show the default UI elements when viewing the canvas
     fileprivate func showDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.showCard(animated: animated)
-        pinsHandler.start()
+        pinsDisplay.start()
     }
 
     /// Hide the default UI elements when viewing the canvas
     fileprivate func hideDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.hideCard(animated: animated)
-        pinsHandler.stop()
+        pinsDisplay.stop()
     }
 
     // TODO: this should be hidden in the production version
@@ -150,7 +150,7 @@ final class ProjectFlowController: UIViewController {
             let collaborationVC = CollaborationViewController(imageCaches: imageCaches, collaboration: collaboration)
             collaborationVC.onClose = { [weak self] in
                 // unselect pin, this will result also in hiding the collaboration window
-                self?.pinsHandler.setSelectedPinId(nil)
+                self?.pinsDisplay.setSelectedPinId(nil)
             }
 
             canvasContainer.installCard(

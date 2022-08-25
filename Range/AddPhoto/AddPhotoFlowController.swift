@@ -25,7 +25,7 @@ class AddPhotoFlowController {
     unowned let canvasContainer: CanvasContainerViewController
 
     var onStop: (() -> Void)?
-    var pinsHandler: AddPhotoPinsHandler?
+    var pinsDisplay: AddPhotoPinsDisplay?
     var topViewController: AddPhotoTopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
     var photosPreviewCardVC: PhotosPreviewViewController?
@@ -267,7 +267,7 @@ class AddPhotoFlowController {
                 ? confirmationCardVC.continueButton
                 : confirmationCardVC.doneButton)
 
-        geometryId = pinsHandler?.selectedPin?.id
+        geometryId = pinsDisplay?.selectedPin?.id
         Task {
             do {
                 // hide the spinner when data store call is finished
@@ -348,9 +348,9 @@ extension AddPhotoFlowController {
             }
         }
         hideTopViewController()
-        pinsHandler?.stop()
+        pinsDisplay?.stop()
         panAndZoomIndicatorView?.removeFromSuperview()
-        pinsHandler = nil
+        pinsDisplay = nil
     }
 
     /// shows the view controller covering the top of of the screen
@@ -387,17 +387,17 @@ extension AddPhotoFlowController {
 
     /// Starts the pin handler that adds the pins to the canvas and allows for the selection
     private func showPins() {
-        pinsHandler = AddPhotoPinsHandler(model: model,
+        pinsDisplay = AddPhotoPinsDisplay(model: model,
                                           canvasContainer: canvasContainer,
                                           image: photosToAdd.first!.thumbnail)
-        pinsHandler?.onSelectedPinChange = { [weak self] geometryId in
+        pinsDisplay?.onSelectedPinChange = { [weak self] geometryId in
             if let geometryId = geometryId {
                 self?.showPhotosPreview(forGeometry: geometryId, animated: true)
             } else {
                 self?.hidePhotosPreview(animated: true)
             }
         }
-        pinsHandler?.start()
+        pinsDisplay?.start()
     }
 
     /// Presents a card with cancel/confirm and registers callbacks for user actions

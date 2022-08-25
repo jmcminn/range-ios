@@ -31,7 +31,7 @@ struct SelectedPin {
 }
 
 /// Handles the pins when adding a photo annotation
-class AddPhotoPinsHandler {
+class AddPhotoPinsDisplay {
     unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
     let image: UIImage
@@ -148,7 +148,7 @@ class AddPhotoPinsHandler {
 /// 1. tooltip for mapbox pink pins that are displayed as view annotations (https://docs.mapbox.com/ios/maps/guides/annotations/view-annotations/)
 ///      They are added as mapbox view annotations because they need to follow the pins when the canvas is panned.
 /// 2. tooltip for photo pin - added as a native view because it needs to stay center over the photo pin view
-extension AddPhotoPinsHandler {
+extension AddPhotoPinsDisplay {
     /// Hide tooltip if any presented (either feature or photo tooltip)
     private func hideTooltip() {
         if let tooltip = selectedPinTooltip {
@@ -210,7 +210,7 @@ extension AddPhotoPinsHandler {
 
 /// Handling of photo pin which is a special pin that is displayed as a native view in the center of the screen.
 /// It acts a pointer for selecting a new pin coordinates by panning and zooming the canvas)
-extension AddPhotoPinsHandler {
+extension AddPhotoPinsDisplay {
     /// This creates photo pin view (if not created yet) and adds to canvas content.
     private func installPhotoPinView() {
         guard photoPinView == nil else { return }
@@ -251,7 +251,7 @@ extension AddPhotoPinsHandler {
 ///
 /// #Reference
 /// [Mapbox annotations](https://docs.mapbox.com/ios/maps/guides/annotations/annotations/)
-extension AddPhotoPinsHandler {
+extension AddPhotoPinsDisplay {
     /// observe the geometries and reload pins when the change is observed
     ///  - Parameters:
     ///         - onInitialLoad: callback called only once when the pins are initially loaded
@@ -343,7 +343,7 @@ extension AddPhotoPinsHandler {
 }
 
 /// Pin search methods
-extension AddPhotoPinsHandler {
+extension AddPhotoPinsDisplay {
     /// Returns the pin closest to the center of the map view. The pin must be within ``pinsSearchRect``
     /// - Parameters:
     ///     -  completion: callback to be called with the result
@@ -397,7 +397,7 @@ extension AddPhotoPinsHandler {
 }
 
 /// Canvas user interactions handling
-extension AddPhotoPinsHandler: CanvasViewControllerDelegate {
+extension AddPhotoPinsDisplay: CanvasViewControllerDelegate {
     /// Reset selected pin if user panned the map
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
         if reason == .pan || reason == .zoom {

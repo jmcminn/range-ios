@@ -7,7 +7,7 @@ import Turf
 import UIKit
 
 /// Handles display of photo marker pins in the main view.
-class PinsHandler {
+class PinsDisplay {
     unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
@@ -60,7 +60,7 @@ class PinsHandler {
 ///
 /// #Reference
 /// [Mapbox annotations](https://docs.mapbox.com/ios/maps/guides/annotations/annotations/)
-extension PinsHandler {
+extension PinsDisplay {
     /// observe the geometries and reload pins when the change is observed
     private func loadAndDisplayPins() {
         geometriesNotificationToken = canvasContainer.pdfCanvasViewController.pdfCanvas.geometries
@@ -178,7 +178,7 @@ extension PinsHandler {
 }
 
 /// Pin search methods
-extension PinsHandler {
+extension PinsDisplay {
     /// Searches for pin at given map view coordinates and selects *any* found one
     /// - Parameters:
     ///     - point: search for pin at given map view coordinates
@@ -197,7 +197,7 @@ extension PinsHandler {
 }
 
 /// Canvas user interactions handling
-extension PinsHandler: CanvasViewControllerDelegate {
+extension PinsDisplay: CanvasViewControllerDelegate {
     func canvasCameraChanged(reason _: CanvasCameraChangeReason) {}
 
     /// Searches for pin at given map view coordinates and selects *any* found one
