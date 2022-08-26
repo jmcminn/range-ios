@@ -2,11 +2,13 @@ import Foundation
 import Kingfisher
 
 /// Implements Kingfisher ImageDataProvider that allows Kingfisher cache to get images from localPhotos cache given a cache key.
-class LocalPhotosImageDataProvider: ImageDataProvider {
+class LocalPhotosImageDataProvider: RangeImageDataProvider {
     var cacheKey: String
+    var cache: ImageCache
     private let localFileImageDataProvider: LocalFileImageDataProvider
 
     init(localPhotosCache: ImageCache, cacheKey: String) {
+        cache = localPhotosCache
         self.cacheKey = cacheKey
         localFileImageDataProvider = LocalFileImageDataProvider(
             fileURL: URL(fileURLWithPath: localPhotosCache.cachePath(forKey: cacheKey)),

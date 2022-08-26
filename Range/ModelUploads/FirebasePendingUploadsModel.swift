@@ -227,7 +227,6 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             // move the image from local photos cache to the downloads cache
             try await _moveImageFromLocalPhotosCache(forKey: storagePath)
         } catch {
-            print("error: ", error)
             Logger.storage.error("Error uploading file: \(error.localizedDescription)")
             // store the error for pending upload
             try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { _ in

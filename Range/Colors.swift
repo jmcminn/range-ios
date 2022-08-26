@@ -36,15 +36,15 @@ extension UIColor {
     static let Neutral_09 = UIColor(named: "Neutral_09")!
     /// black
     static let Neutral_10 = UIColor(named: "Neutral_10")!
-    static let Pink_03 = UIColor(named: "Pink_03")
-    static let Pink_04 = UIColor(named: "Pink_04")
+    static let Pink_03 = UIColor(named: "Pink_03")!
+    static let Pink_04 = UIColor(named: "Pink_04")!
     static let Primary_Blue_02 = UIColor(named: "Primary_Blue_02")!
     static let Primary_Blue_04 = UIColor(named: "Primary_Blue_04")!
     static let Primary_Blue_06 = UIColor(named: "Primary_Blue_06")!
     static let Red_03 = UIColor(named: "Red_03")!
     static let Red_04 = UIColor(named: "Red_04")!
-    static let Secondary_02 = UIColor(named: "Secondary_02")
-    static let Secondary_03 = UIColor(named: "Secondary_03")
+    static let Secondary_02 = UIColor(named: "Secondary_02")!
+    static let Secondary_03 = UIColor(named: "Secondary_03")!
 }
 
 extension UIColor {

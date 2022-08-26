@@ -6,12 +6,14 @@ import OSLog
 
 /// Implements Kingfisher ImageDataProvider that allows Kingfisher cache to get images from Firebase storage. As a fallback when
 /// the images is not in the cache or couldn't be downloaded it checks for the local images (not uploaded yet) - which is also a cache.
-class FirebaseStorageImageDataProvider: ImageDataProvider {
+class FirebaseStorageImageDataProvider: RangeImageDataProvider {
     private let ref: StorageReference
     var cacheKey: String
+    var cache: ImageCache
     let localPhotosImageDataProvider: LocalPhotosImageDataProvider
 
     init(localPhotosCache: ImageCache, ref: StorageReference) {
+        cache = ImageCache.default
         self.ref = ref
         cacheKey = ref.fullPath
         localPhotosImageDataProvider = LocalPhotosImageDataProvider(

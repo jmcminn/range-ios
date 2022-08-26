@@ -50,14 +50,14 @@ class ImageCaches {
 
     /// Returns image data provider for localphoto.
     /// Returns an instance of LocalPhotosImageDataProvider
-    func imageProvider(forLocalPhotoWithCacheKey cacheKey: String) -> ImageDataProvider {
+    func imageProvider(forLocalPhotoWithCacheKey cacheKey: String) -> RangeImageDataProvider {
         LocalPhotosImageDataProvider(localPhotosCache: localPhotosCache, cacheKey: cacheKey)
     }
 
     /// Returns image data provider for upload.
     /// Returns an instance of FirebaseStoreImageDataProvider which allows Kingfisher images cache to load the image from Firebase.
     /// if thumbnailNumber is provided it returns the key for thumbnail
-    func imageProvider(forUpload upload: Upload, thumbnailNumber: Int? = nil) -> ImageDataProvider {
+    func imageProvider(forUpload upload: Upload, thumbnailNumber: Int? = nil) -> RangeImageDataProvider {
         let uploadKey = uploadKey(projectId: projectId, uploadId: upload.id, thumbnailNumber: thumbnailNumber)
         let ref = Storage.storage().reference(withPath: uploadKey)
         return FirebaseStorageImageDataProvider(localPhotosCache: localPhotosCache, ref: ref)

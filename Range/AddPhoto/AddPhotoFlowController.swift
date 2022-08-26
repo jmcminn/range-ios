@@ -92,6 +92,7 @@ class AddPhotoFlowController {
             photosToAdd.forEach {
                 imageCaches.localPhotosCache.removeImage(forKey: $0.cacheKey)
             }
+            imageCaches.localPhotosCache.clearMemoryCache()
         }
         photosToAdd = []
     }

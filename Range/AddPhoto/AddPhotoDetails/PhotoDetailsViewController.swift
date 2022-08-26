@@ -50,7 +50,8 @@ class PhotoDetailsViewController: UIViewController {
     let contentView = UIView()
 
     /// header views and their updatable constraints
-    var headerView: PhotoDetailsHeaderView!
+    var headerVC: PhotoDetailsHeaderViewController!
+    var headerViewTopConstraint: Constraint?
     var headerViewHeightConstraint: Constraint?
     var tagsHeaderVC: PhotoDetailsTagsHeaderViewController!
     var tagsHeaderViewHeightConstraint: Constraint?
@@ -67,7 +68,7 @@ class PhotoDetailsViewController: UIViewController {
     /// description expander - activated when mode == .description
     var descriptionHeaderExpander: HeaderExpander!
     /// a convenience getter for the current expander based on the mode
-    var headerExpander: HeaderExpander {
+    var headerExpander: HeaderExpander! {
         mode == .tags ? tagsHeaderExpander : descriptionHeaderExpander
     }
 
@@ -168,7 +169,6 @@ class PhotoDetailsViewController: UIViewController {
 
     /// update colors that don't adapt automatically to appearance change
     private func updateColors() {
-        headerView?.updateColors()
         descriptionView?.updateColors()
     }
 
@@ -220,20 +220,20 @@ extension PhotoDetailsViewController {
     private func installHorizontalSwipeRecognizers() {
         let leftSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(onHorizontalSwipe(_:)))
         leftSwipeRecognizer.direction = .left
-        view.addGestureRecognizer(leftSwipeRecognizer)
+        tagsVC.view.addGestureRecognizer(leftSwipeRecognizer)
         let rightSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(onHorizontalSwipe(_:)))
         rightSwipeRecognizer.direction = .right
-        view.addGestureRecognizer(rightSwipeRecognizer)
+        descriptionView.addGestureRecognizer(rightSwipeRecognizer)
     }
 
     @objc private func onHorizontalSwipe(_ sender: UISwipeGestureRecognizer) {
         if sender.direction == .left {
             mode = .description
-            headerView.tagsDescriptionSegmentedControl.setSelectedSegmentIndex(1, animated: true)
+            headerVC.tagsDescriptionSegmentedControl.setSelectedSegmentIndex(1, animated: true)
         }
         if sender.direction == .right {
             mode = .tags
-            headerView.tagsDescriptionSegmentedControl.setSelectedSegmentIndex(0, animated: true)
+            headerVC.tagsDescriptionSegmentedControl.setSelectedSegmentIndex(0, animated: true)
         }
     }
 }
@@ -241,17 +241,19 @@ extension PhotoDetailsViewController {
 // MARK: - header scrolling
 
 extension PhotoDetailsViewController {
-    /// Updates the alpha of the header photo based on its height (to hide it when collapsing)
+    /// Updates the alpha of the header photo based on the header height (to hide it when collapsing)
     /// This needs to be done here and not in the `PhotoDetailsHeaderView` as it is based on the max header photo height
     /// which is dependent on this view height
     private func updateHeaderPhotoAlpha() {
+        guard headerExpander != nil else { return }
         // header photo alpha is 1 for the expanded header state and then drops to 0 when
-        // photo is 50pt high
-        let maxPhotoViewHeight = maxHeaderPhotoHeight()
-        let alpha = headerView.photoView.frame.height >= maxPhotoViewHeight
+        // header is 100pt high
+        let maxHeight = headerInputMetrics().expandedHeight
+        let currentHeight = headerExpander.headersState.heights[0]
+        let alpha = currentHeight >= maxHeight
             ? 1.0
-            : max((headerView.photoView.frame.height - 50) / (maxPhotoViewHeight - 50), 0)
-        headerView.photoView.alpha = alpha
+            : max((currentHeight - 100) / (maxHeight - 100), 0)
+        headerVC.galleryVC.view.alpha = alpha
     }
 
     private func headerInputMetrics() -> HeaderInputMetrics {
@@ -260,7 +262,7 @@ extension PhotoDetailsViewController {
         let expandedHeight = maxHeaderPhotoHeight() + spaceBetweenViews / 2.0 + collapsedHeight
 
         return HeaderInputMetrics(
-            initialHeight: headerView.frame.height,
+            initialHeight: headerVC.view.frame.height,
             collapsedHeight: collapsedHeight,
             expandedHeight: expandedHeight
         )
@@ -269,8 +271,8 @@ extension PhotoDetailsViewController {
     private func maxHeaderPhotoHeight() -> CGFloat {
         // show the photo in correct aspect ratio, but no more than 0.6 height of the view for the header
         let imageHeight2WidthRatio = photosToAdd.map(\.height2Width).max() ?? 4.0 / 3.0
-        // 16 is the margins
-        let imageHeight = (view.frame.width - 2 * 16.0) * imageHeight2WidthRatio
+        // 44 is the margins in the gallery view
+        let imageHeight = (view.frame.width - 2 * 44.0) * imageHeight2WidthRatio
         return min(0.5 * view.frame.height, imageHeight)
     }
 
@@ -289,7 +291,12 @@ extension PhotoDetailsViewController {
 
     func updateHeaders(state: HeadersState, animationDuration: TimeInterval) {
         let heights = state.heights
-        headerViewHeightConstraint?.update(offset: heights[0])
+        // make header at least as high as it's expandedHeight
+        let headerHeight = max(heights[0], headerInputMetrics().expandedHeight)
+        // if it's shorter then just hide it by adjusting the top
+        let headerTop = heights[0] - headerHeight
+        headerViewTopConstraint?.update(offset: headerTop)
+        headerViewHeightConstraint?.update(offset: headerHeight)
         if heights.count > 1 {
             tagsHeaderViewHeightConstraint?.update(offset: heights[1])
         }
@@ -320,12 +327,12 @@ extension PhotoDetailsViewController {
         buildBottomBar()
 
         view.addSubview(contentView)
-        contentView.addSubview(headerView)
+        add(childController: headerVC, toView: contentView)
         add(childController: tagsHeaderVC)
-        contentView.insertSubview(tagsHeaderVC.view, belowSubview: headerView)
+        contentView.insertSubview(tagsHeaderVC.view, belowSubview: headerVC.view)
         add(childController: tagsVC)
         contentView.insertSubview(tagsVC.view, belowSubview: tagsHeaderVC.view)
-        contentView.insertSubview(descriptionView, belowSubview: headerView)
+        contentView.insertSubview(descriptionView, belowSubview: headerVC.view)
 
         view.addSubview(bottomBar)
 
@@ -334,12 +341,13 @@ extension PhotoDetailsViewController {
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(bottomBar.snp.top).priority(.low)
         }
-        headerView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+        headerVC.view.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            self.headerViewTopConstraint = make.top.equalToSuperview().constraint
             self.headerViewHeightConstraint = make.height.equalTo(headerInputMetrics().expandedHeight).constraint
         }
         tagsHeaderVC.view.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
+            make.top.equalTo(headerVC.view.snp.bottom)
             make.leading.trailing.equalToSuperview()
             self.tagsHeaderViewHeightConstraint = make.height.equalTo(tagsHeaderInputMetrics().expandedHeight)
                 .constraint
@@ -350,7 +358,7 @@ extension PhotoDetailsViewController {
             make.bottom.equalTo(bottomBar.snp.top)
         }
         descriptionView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
+            make.top.equalTo(headerVC.view.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
             self.descriptionViewBottomConstraint = make.bottom.equalToSuperview().inset(16).constraint
         }
@@ -361,11 +369,11 @@ extension PhotoDetailsViewController {
     }
 
     private func buildHeaderView() {
-        headerView = PhotoDetailsHeaderView(imageCaches: imageCaches, photosToAdd: photosToAdd)
-        headerView.onTagsSelected = { [weak self] in
+        headerVC = PhotoDetailsHeaderViewController(imageCaches: imageCaches, photosToAdd: photosToAdd)
+        headerVC.onTagsSelected = { [weak self] in
             self?.mode = .tags
         }
-        headerView.onDescriptionSelected = { [weak self] in
+        headerVC.onDescriptionSelected = { [weak self] in
             self?.mode = .description
         }
     }
