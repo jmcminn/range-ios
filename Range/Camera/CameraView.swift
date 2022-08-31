@@ -53,7 +53,7 @@ struct CameraView: View {
 //    }
 
     var cameraRollButton: some View {
-        Button(action: {}) {
+        Button(action: model.cameraRollSelectAction ?? {}) {
             Circle()
                 .strokeBorder(Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
@@ -61,7 +61,6 @@ struct CameraView: View {
                 .overlay(Image(systemName: "photo.on.rectangle.angled").font(.body.bold())
                     .foregroundColor(.Neutral_04))
         }.buttonStyle(.plain)
-            .disabled(true)
     }
 
 //    var settingsButton: some View {
@@ -250,7 +249,9 @@ struct CameraView: View {
         HStack(spacing: 12) {
             closeButton.rotationEffect(uiAngle)
 //            flashButton.rotationEffect(uiAngle)
-            cameraRollButton.rotationEffect(uiAngle)
+            if model.cameraRollSelectAction != nil {
+                cameraRollButton.rotationEffect(uiAngle)
+            }
 //            settingsButton.rotationEffect(uiAngle)
             Spacer()
             if model.multiPhotoEnabled, model.numberOfPhotos > 0 {

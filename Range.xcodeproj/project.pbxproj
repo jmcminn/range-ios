@@ -165,6 +165,7 @@
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
 		0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */; };
+		0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
@@ -365,6 +366,7 @@
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 		0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeImageDataProvider.swift; sourceTree = "<group>"; };
+		0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Async.swift"; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
@@ -682,6 +684,7 @@
 				0A720C6228007011003D6B13 /* Image+Resize.swift */,
 				0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */,
 				0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */,
+				0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */,
 				0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */,
 				0A0D31CC28A3E735007A8D49 /* Realm.swift */,
 				0AD9B75728621782005ACFD7 /* Result+Throws.swift */,
@@ -1094,6 +1097,7 @@
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
 				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
 				0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */,
+				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,

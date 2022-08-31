@@ -1,6 +1,7 @@
 import AVFoundation
 import Kingfisher
 import OSLog
+import PhotosUI
 import Turf
 import UIKit
 
@@ -25,6 +26,7 @@ class AddPhotoFlowController {
     unowned let canvasContainer: CanvasContainerViewController
 
     var onStop: (() -> Void)?
+    var cameraVC: CameraViewController?
     var pinsDisplay: AddPhotoPinsDisplay?
     var topViewController: AddPhotoTopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
@@ -133,18 +135,22 @@ class AddPhotoFlowController {
             vc?.dismiss(animated: true)
             self?.stop(removeCurrentPhotosToAddFromCache: true)
         }
-        vc.onPhotoTaken = { [weak self, weak vc] data, image, completion in
-            self?.onPhotoTaken(cameraVC: vc, data: data, image: image, completion: completion)
+        vc.onPhotoTaken = { [weak self] data, image, completion in
+            self?.onPhotoTaken(data: data, image: image, completion: completion)
         }
         vc.onNext = { [weak self] in
             self?.nextStepAfterCamera()
         }
+        vc.onCameraRollSelect = { [weak self, weak vc] in
+            guard let self = self, let vc = vc else { return }
+            self.selectPhotosFromCameraRoll(fromVC: vc)
+        }
+        cameraVC = vc
         return vc
     }
 
     /// Store the image and proceed to the photo details selection step
     private func onPhotoTaken(
-        cameraVC: CameraViewController?,
         data: Data,
         image: UIImage,
         completion: @escaping (Result<Void, Error>) -> Void
@@ -175,12 +181,21 @@ class AddPhotoFlowController {
                     self.clearPhotosToAdd(removeFromCache: true)
                     self.photosToAdd = [photoToAdd]
                 }
-                cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
+                self.cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
                 if !UserDefaults.multiPhotoSessionEnabled {
                     self.nextStepAfterCamera()
                 }
                 completion(.success(()))
             }
+    }
+
+    private func selectPhotosFromCameraRoll(fromVC vc: UIViewController) {
+        var pickerConfiguration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+        pickerConfiguration.selectionLimit = UserDefaults.multiPhotoSessionEnabled ? 0 : 1
+        pickerConfiguration.filter = .images
+        let picker = PHPickerViewController(configuration: pickerConfiguration)
+        picker.delegate = self
+        vc.present(picker, animated: true)
     }
 
     private func nextStepAfterCamera() {
@@ -288,20 +303,20 @@ class AddPhotoFlowController {
             } catch {
                 Logger.model.error("photo location data store error: \(error.localizedDescription, privacy: .public)")
                 DispatchQueue.main.async {
-                    self.showError(withMessage: error.localizedDescription)
+                    self.showError(withMessage: error.localizedDescription, in: self.canvasContainer)
                 }
             }
         }
     }
 
-    private func showError(withMessage message: String) {
+    private func showError(withMessage message: String, in vc: UIViewController) {
         let alertController = UIAlertController(
             title: "Add photo error",
             message: message,
             preferredStyle: .alert
         )
         alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-        canvasContainer.present(alertController, animated: true)
+        vc.present(alertController, animated: true)
     }
 
     /// Async function to store the new photo(s) data in the realm DB
@@ -544,5 +559,99 @@ private extension AddPhotoFlowController {
             })
         }
         return alertController
+    }
+}
+
+/// Delegate for selecting photos from the camera roll
+extension AddPhotoFlowController: PHPickerViewControllerDelegate {
+    /// Errors for camera roll photos processing
+    enum CameraRollError: Error, Equatable {
+        case unsupportedType
+        case thumbnailGenerationFailed
+    }
+
+    /// Get image data for given photo picker result and return PhotoToAdd
+    /// Implementation based on: https://itnext.io/the-right-way-to-use-phpicker-and-retrieve-exif-data-without-requesting-library-permissions-in-336c13f87e3f
+    private func getPhotoToAdd(forPickerResult result: PHPickerResult) async throws -> PhotoToAdd {
+        let itemProvider: NSItemProvider = result.itemProvider
+        guard itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) else {
+            throw CameraRollError.unsupportedType
+        }
+        let data = try await itemProvider._asyncLoadDataRepresentation(forTypeIdentifier: UTType.image.identifier)
+        guard let resizedData = resizeImage(imageData: data, maxResolution: 100),
+              let thumbnail = UIImage(data: resizedData)
+        else {
+            throw CameraRollError.thumbnailGenerationFailed
+        }
+        let uploadId = generateRealmId()
+        let cacheKey = uploadKey(projectId: model.projectId, uploadId: uploadId)
+
+        try await imageCaches.localPhotosCache._asyncStoreToDisk(data, forKey: cacheKey)
+
+        return PhotoToAdd(
+            uploadId: uploadId,
+            timestamp: Date.now.timeIntervalSince1970,
+            cacheKey: cacheKey,
+            thumbnail: thumbnail,
+            height2Width: thumbnail.size.height / thumbnail.size.width
+        )
+    }
+
+    /// Converts picker results to PhotoToAdd using getPhotoToAdd(forPickerResult:).
+    /// In case of errors collects them in a separate array and returns.
+    private func getPhotosToAdd(forPickerResults results: [PHPickerResult]) async -> ([PhotoToAdd], [Error]) {
+        var photos: [PhotoToAdd] = []
+        var errors: [Error] = []
+        for result in results {
+            do {
+                photos.append(try await getPhotoToAdd(forPickerResult: result))
+            } catch {
+                Logger.camera.error("getPhotoToAdd error: \(error.localizedDescription, privacy: .public)")
+                errors.append(error)
+            }
+        }
+        return (photos, errors)
+    }
+
+    /// Handling of photos picked from camera roll
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        // show activity view (a spinner) that covers the screen disabling any user interactions
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .black.withAlphaComponent(0.2)
+        picker.view.addSubview(activityView)
+        activityView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        activityView.startAnimating()
+
+        Task {
+            let (pickedPhotosToAdd, errors) = await getPhotosToAdd(forPickerResults: results)
+            DispatchQueue.main.async {
+                activityView.removeFromSuperview()
+                picker.dismiss(animated: true)
+                if errors.count > 0, let cameraVC = self.cameraVC {
+                    let errorMessage: String
+                    if results.count == 1 {
+                        errorMessage = "The photo couldn't be added. " + (errors.first?.localizedDescription ?? "")
+                    } else {
+                        errorMessage = "Some of the photos couldn't be added. " + (errors.first?
+                            .localizedDescription ?? "")
+                    }
+                    self.showError(withMessage: errorMessage, in: cameraVC)
+                }
+                if pickedPhotosToAdd.count > 0 {
+                    if UserDefaults.multiPhotoSessionEnabled {
+                        self.photosToAdd.append(contentsOf: pickedPhotosToAdd)
+                    } else {
+                        self.clearPhotosToAdd(removeFromCache: true)
+                        self.photosToAdd = pickedPhotosToAdd
+                    }
+                    self.cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
+                    if !UserDefaults.multiPhotoSessionEnabled {
+                        self.nextStepAfterCamera()
+                    }
+                }
+            }
+        }
     }
 }
