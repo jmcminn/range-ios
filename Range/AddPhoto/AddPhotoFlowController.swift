@@ -9,6 +9,8 @@ import UIKit
 struct PhotoToAdd {
     /// UUID
     var uploadId: String
+    /// Identifier of the asset selected from the camera roll (only present if the photo was selected using photo picker)
+    var assetIdentifier: String?
     /// when the photo was taken
     var timestamp: TimeInterval
     /// key for images.cameraCache, matches the storage keys, so composed of projectId and uploadId
@@ -191,6 +193,10 @@ class AddPhotoFlowController {
 
     private func selectPhotosFromCameraRoll(fromVC vc: UIViewController) {
         var pickerConfiguration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+        // in multi-photo session preselect the photos that were already picked (in this session)
+        pickerConfiguration.preselectedAssetIdentifiers = UserDefaults.multiPhotoSessionEnabled
+            ? photosToAdd.compactMap(\.assetIdentifier)
+            : []
         pickerConfiguration.selectionLimit = UserDefaults.multiPhotoSessionEnabled ? 0 : 1
         pickerConfiguration.filter = .images
         let picker = PHPickerViewController(configuration: pickerConfiguration)
@@ -591,6 +597,7 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
 
         return PhotoToAdd(
             uploadId: uploadId,
+            assetIdentifier: result.assetIdentifier,
             timestamp: Date.now.timeIntervalSince1970,
             cacheKey: cacheKey,
             thumbnail: thumbnail,
@@ -598,20 +605,43 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
         )
     }
 
-    /// Converts picker results to PhotoToAdd using getPhotoToAdd(forPickerResult:).
-    /// In case of errors collects them in a separate array and returns.
-    private func getPhotosToAdd(forPickerResults results: [PHPickerResult]) async -> ([PhotoToAdd], [Error]) {
-        var photos: [PhotoToAdd] = []
-        var errors: [Error] = []
+    /// Updates `photosToAdd` with given photo picker results.
+    /// Converts picker results to PhotoToAdd using getPhotoToAdd(forPickerResult:)
+    /// Uses `PhotoToAdd.assetIdentifier` to match current photos to picker results and add new ones + remove the ones
+    /// that were unselected in this session.
+    /// In case of errors returns the first of them but still updates the photos (if 1 of n photos fails to convert then the rest is still added)
+    private func updatePhotosToAdd(withPickerResults results: [PHPickerResult]) async -> Error? {
+        // clear the photos for single-session, we're replacing not adding
+        if !UserDefaults.multiPhotoSessionEnabled {
+            clearPhotosToAdd(removeFromCache: true)
+            photosToAdd = []
+        }
+
+        /// for fast lookup if new picked photo is already in the photosToAdd
+        let assetIdsInPhotosToAdd: Set<String> = Set(photosToAdd.compactMap(\.assetIdentifier))
+        /// for fast lookup in picker results by assetIdentifier
+        let assetIdsInPickerResults: Set<String> = Set(results.compactMap(\.assetIdentifier))
+
+        // keep only non camera roll photos and the ones from the camera roll that are still selected
+        photosToAdd = photosToAdd.filter {
+            $0.assetIdentifier == nil || assetIdsInPickerResults.contains($0.assetIdentifier!)
+        }
+        var resultError: Error?
         for result in results {
+            if let assetId = result.assetIdentifier, assetIdsInPhotosToAdd.contains(assetId) {
+                // already added, skip
+                continue
+            }
             do {
-                photos.append(try await getPhotoToAdd(forPickerResult: result))
+                photosToAdd.append(try await getPhotoToAdd(forPickerResult: result))
             } catch {
                 Logger.camera.error("getPhotoToAdd error: \(error.localizedDescription, privacy: .public)")
-                errors.append(error)
+                if resultError == nil {
+                    resultError = error
+                }
             }
         }
-        return (photos, errors)
+        return resultError
     }
 
     /// Handling of photos picked from camera roll
@@ -626,31 +656,22 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
         activityView.startAnimating()
 
         Task {
-            let (pickedPhotosToAdd, errors) = await getPhotosToAdd(forPickerResults: results)
+            let updatePhotosError = await updatePhotosToAdd(withPickerResults: results)
             DispatchQueue.main.async {
+                self.cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
                 activityView.removeFromSuperview()
                 picker.dismiss(animated: true)
-                if errors.count > 0, let cameraVC = self.cameraVC {
+                if let updatePhotosError = updatePhotosError, let cameraVC = self.cameraVC {
                     let errorMessage: String
                     if results.count == 1 {
-                        errorMessage = "The photo couldn't be added. " + (errors.first?.localizedDescription ?? "")
+                        errorMessage = "The photo couldn't be added. " + updatePhotosError.localizedDescription
                     } else {
-                        errorMessage = "Some of the photos couldn't be added. " + (errors.first?
-                            .localizedDescription ?? "")
+                        errorMessage = "Some of the photos couldn't be added. " + updatePhotosError.localizedDescription
                     }
                     self.showError(withMessage: errorMessage, in: cameraVC)
                 }
-                if pickedPhotosToAdd.count > 0 {
-                    if UserDefaults.multiPhotoSessionEnabled {
-                        self.photosToAdd.append(contentsOf: pickedPhotosToAdd)
-                    } else {
-                        self.clearPhotosToAdd(removeFromCache: true)
-                        self.photosToAdd = pickedPhotosToAdd
-                    }
-                    self.cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
-                    if !UserDefaults.multiPhotoSessionEnabled {
-                        self.nextStepAfterCamera()
-                    }
+                if updatePhotosError == nil, !UserDefaults.multiPhotoSessionEnabled {
+                    self.nextStepAfterCamera()
                 }
             }
         }
