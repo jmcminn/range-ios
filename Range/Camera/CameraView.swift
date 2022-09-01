@@ -76,7 +76,7 @@ struct CameraView: View {
 //    }
 
     var imageButton: some View {
-        Button(action: {}) {
+        Button(action: model.photoThumbnailAction ?? {}) {
             Image(uiImage: model.photoThumbnail ?? UIImage())
                 .frame(width: 40, height: 40)
                 .scaledToFill()

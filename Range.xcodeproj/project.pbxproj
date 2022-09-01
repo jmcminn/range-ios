@@ -43,7 +43,7 @@
 		0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */; };
 		0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3308283CE1B200D04A1C /* DebugSettings.swift */; };
 		0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */; };
-		0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330D283CE8C800D04A1C /* RoundButton.swift */; };
+		0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F330D283CE8C800D04A1C /* RoundShadowButton.swift */; };
 		0A30E8B02847AFAB00A50D54 /* PhotoDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */; };
 		0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */; };
 		0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */; };
@@ -166,6 +166,8 @@
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
 		0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */; };
 		0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */; };
+		0A99BF1B28C0BC5400DB3F96 /* ZoomableImageGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1A28C0BC5400DB3F96 /* ZoomableImageGalleryViewController.swift */; };
+		0A99BF1F28C1DC3700DB3F96 /* ZoomableImageGalleryPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1E28C1DC3700DB3F96 /* ZoomableImageGalleryPageView.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
@@ -245,7 +247,7 @@
 		0A2F3306283CB5A500D04A1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A2F3308283CE1B200D04A1C /* DebugSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettings.swift; sourceTree = "<group>"; };
 		0A2F330A283CE64600D04A1C /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
-		0A2F330D283CE8C800D04A1C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
+		0A2F330D283CE8C800D04A1C /* RoundShadowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowButton.swift; sourceTree = "<group>"; };
 		0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsViewController.swift; sourceTree = "<group>"; };
 		0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControl.swift; sourceTree = "<group>"; };
 		0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Padding.swift"; sourceTree = "<group>"; };
@@ -367,6 +369,8 @@
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 		0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeImageDataProvider.swift; sourceTree = "<group>"; };
 		0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Async.swift"; sourceTree = "<group>"; };
+		0A99BF1A28C0BC5400DB3F96 /* ZoomableImageGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableImageGalleryViewController.swift; sourceTree = "<group>"; };
+		0A99BF1E28C1DC3700DB3F96 /* ZoomableImageGalleryPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableImageGalleryPageView.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
@@ -522,6 +526,8 @@
 				0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */,
 				0A0D31D628A41AC6007A8D49 /* ThumbnailsViewController.swift */,
 				0A47830128A53FE50063040F /* ThumbnailCollectionViewCell.swift */,
+				0A99BF1A28C0BC5400DB3F96 /* ZoomableImageGalleryViewController.swift */,
+				0A99BF1E28C1DC3700DB3F96 /* ZoomableImageGalleryPageView.swift */,
 			);
 			path = Photos;
 			sourceTree = "<group>";
@@ -729,7 +735,7 @@
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
-				0A2F330D283CE8C800D04A1C /* RoundButton.swift */,
+				0A2F330D283CE8C800D04A1C /* RoundShadowButton.swift */,
 				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
 				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
 				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
@@ -1136,7 +1142,7 @@
 				0A724F4728887B7200708C6B /* AddStatusCommand.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* TagCollectionViewCell.swift in Sources */,
-				0A2F330E283CE8C800D04A1C /* RoundButton.swift in Sources */,
+				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */,
 				0AD9B773286B0F56005ACFD7 /* Command+Firestore.swift in Sources */,
@@ -1144,6 +1150,7 @@
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */,
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
+				0A99BF1B28C0BC5400DB3F96 /* ZoomableImageGalleryViewController.swift in Sources */,
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
@@ -1194,6 +1201,7 @@
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0A724F3D2888483600708C6B /* AddFeatureCommand.swift in Sources */,
+				0A99BF1F28C1DC3700DB3F96 /* ZoomableImageGalleryPageView.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
 				0A6FAC3228B552440057995B /* LocalPhotosImageDataProvider.swift in Sources */,
 				0AD9B76B286A1726005ACFD7 /* AddUploadCommand+Firestore.swift in Sources */,

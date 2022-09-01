@@ -2,7 +2,7 @@ import SnapKit
 import UIKit
 
 /// Round button with an image that changes its shadow when pressed
-class RoundButton: UIControl {
+class RoundShadowButton: UIControl {
     init(image: UIImage, size: CGFloat = 48) {
         super.init(frame: .zero)
 

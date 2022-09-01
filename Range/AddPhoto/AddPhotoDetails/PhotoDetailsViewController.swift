@@ -36,6 +36,8 @@ class PhotoDetailsViewController: UIViewController {
         }
     }
 
+    /// Photo with given index selected
+    var onPhotoSelected: ((Int) -> Void)?
     /// Callbacks exposed for the flow control
     var onBack: (() -> Void)?
     /// provides list of selected tags and the descripton
@@ -71,6 +73,9 @@ class PhotoDetailsViewController: UIViewController {
     var headerExpander: HeaderExpander! {
         mode == .tags ? tagsHeaderExpander : descriptionHeaderExpander
     }
+
+    /// if the views were already built so we don't build 2 times
+    var viewsBuilt: Bool = false
 
     /// - Parameters:
     ///   - model:                 model
@@ -108,28 +113,32 @@ class PhotoDetailsViewController: UIViewController {
     /// build all the views when view will appear as we need to layout views for headers measurements
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        buildViews()
-        updateColors()
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
 
-        tagsHeaderExpander = HeaderExpander(
-            drivingScrollView: tagsVC.tableView,
-            contentView: contentView,
-            headersUpdateCallback: { [weak self] in
-                self?.updateHeaders(state: $0, animationDuration: $1)
-            }
-        )
-        descriptionHeaderExpander = HeaderExpander(
-            drivingScrollView: descriptionView.textView,
-            contentView: contentView,
-            headersUpdateCallback: { [weak self] in
-                self?.updateHeaders(state: $0, animationDuration: $1)
-            }
-        )
-        // run the mode change related code initially
-        newModeWillSet(.tags)
-        newModeDidSet()
+        if !viewsBuilt {
+            buildViews()
+            updateColors()
+            view.setNeedsLayout()
+            view.layoutIfNeeded()
+
+            tagsHeaderExpander = HeaderExpander(
+                drivingScrollView: tagsVC.tableView,
+                contentView: contentView,
+                headersUpdateCallback: { [weak self] in
+                    self?.updateHeaders(state: $0, animationDuration: $1)
+                }
+            )
+            descriptionHeaderExpander = HeaderExpander(
+                drivingScrollView: descriptionView.textView,
+                contentView: contentView,
+                headersUpdateCallback: { [weak self] in
+                    self?.updateHeaders(state: $0, animationDuration: $1)
+                }
+            )
+            // run the mode change related code initially
+            newModeWillSet(.tags)
+            newModeDidSet()
+        }
+        viewsBuilt = true
 
         // install keyboard observers
         NotificationCenter.default.addObserver(
@@ -374,6 +383,9 @@ extension PhotoDetailsViewController {
 
     private func buildHeaderView() {
         headerVC = PhotoDetailsHeaderViewController(imageCaches: imageCaches, photosToAdd: photosToAdd)
+        headerVC.onPhotoSelected = { [weak self] index in
+            self?.onPhotoSelected?(index)
+        }
         headerVC.onTagsSelected = { [weak self] in
             self?.mode = .tags
         }

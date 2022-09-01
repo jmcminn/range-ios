@@ -44,4 +44,19 @@ extension UIButton.Configuration {
         config.imagePadding = 5
         return config
     }
+
+    static func iconButton(backgroundColor: UIColor, strokeColor: UIColor, cornerRadius: CGFloat = 24) -> UIButton
+        .Configuration
+    {
+        let imageConfig = UIImage.SymbolConfiguration(textStyle: .caption1)
+            .applying(UIImage.SymbolConfiguration(weight: .bold))
+        var config = UIButton.Configuration.filled()
+
+        config.baseBackgroundColor = backgroundColor
+        config.baseForegroundColor = .Neutral_01
+        config.background.cornerRadius = cornerRadius
+        config.background.strokeColor = strokeColor
+        config.preferredSymbolConfigurationForImage = imageConfig
+        return config
+    }
 }

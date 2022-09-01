@@ -3,11 +3,18 @@ import Kingfisher
 import UIKit
 
 /// Image gallery presenting photos with given PhotoKey (template).
-/// The class don't care what PhotoKey is, it just requires imageDataProviderFactory that accepts the PhotoKey and returns
+/// It present the photos as a horizontal gallery with the center item bigger than other photos visible to the left and right (only 1 additional
+/// photo per side is visible).
+/// It doesn't support zooming in on the photos.
+/// The class is generic over PhotoKey, it just requires imageDataProviderFactory that accepts the PhotoKey and returns
 /// Kingfisher ImageDataProvider which is used to display images from cache (which cache is also internal detail of imageDataProviderFactory).
 class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelegate {
     let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
     let photoKeys: [PhotoKey]
+
+    /// Photo with given index selected
+    var onPhotoSelected: ((Int) -> Void)?
+
     // this defines the page size
     let pageHeight2Width: Double
 
@@ -22,8 +29,10 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         }
     }
 
+    /// last page for which `loadImages` was called
     var imagesLastLoadedForPage: Int?
 
+    /// last size for which it calculated the layout, and only recalculate if it has changed
     var previousSize: CGSize = .zero
 
     /// - Parameters
@@ -50,6 +59,8 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
         view.backgroundColor = .Neutral_10
         view.clipsToBounds = true
+        view.isUserInteractionEnabled = true
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
 
         scrollView.delegate = self
         scrollView.isPagingEnabled = true
@@ -98,6 +109,11 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
             updatePageImageInsets()
         }
         previousSize = pageSize
+    }
+
+    // Handle tapping on the view
+    @objc func viewTapped() {
+        onPhotoSelected?(currentPage)
     }
 
     /// recalculate page size, etc. based on the current frame size page size ratio

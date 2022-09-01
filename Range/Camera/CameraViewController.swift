@@ -15,6 +15,7 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
     /// callback with photo data/UIImage and a completion that will resolve after the photo is stored locally
     var onPhotoTaken: ((Data, UIImage, @escaping (Result<Void, Error>) -> Void) -> Void)?
     var onCameraRollSelect: (() -> Void)?
+    var onPhotoThumbnail: (() -> Void)?
     var onNext: (() -> Void)?
     var modalCardDisplayController: ModalCardDisplayController?
     private let cameraService = CameraService()
@@ -35,6 +36,9 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
         }
         cameraViewModel.cameraRollSelectAction = { [weak self] in
             self?.onCameraRollSelect?()
+        }
+        cameraViewModel.photoThumbnailAction = { [weak self] in
+            self?.onPhotoThumbnail?()
         }
     }
 

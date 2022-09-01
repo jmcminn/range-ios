@@ -147,6 +147,9 @@ class AddPhotoFlowController {
             guard let self = self, let vc = vc else { return }
             self.selectPhotosFromCameraRoll(fromVC: vc)
         }
+        vc.onPhotoThumbnail = { [weak self] in
+            self?.showImageGalleryFromCameraScreen()
+        }
         cameraVC = vc
         return vc
     }
@@ -205,6 +208,30 @@ class AddPhotoFlowController {
         vc.present(picker, animated: true)
     }
 
+    private func showImageGalleryFromCameraScreen() {
+        guard let cameraVC = cameraVC else {
+            return
+        }
+        let galleryVC = createImageGalleryViewController()
+        cameraVC.present(galleryVC, animated: true)
+    }
+
+    private func showImageGalleryFromDetailsScreen(photoIndex: Int, detailsVC: PhotoDetailsViewController) {
+        let galleryVC = createImageGalleryViewController()
+        galleryVC.currentPage = photoIndex
+        detailsVC.present(galleryVC, animated: true)
+    }
+
+    private func createImageGalleryViewController() -> ZoomableImageGalleryViewController {
+        let vc = ZoomableImageGalleryViewController(imageCaches: imageCaches, photos: photosToAdd)
+        vc.onDone = { [weak vc] in
+            guard let vc = vc else { return }
+            vc.dismiss(animated: true)
+        }
+        vc.modalPresentationStyle = .fullScreen
+        return vc
+    }
+
     private func nextStepAfterCamera() {
         if UserDefaults.annotationEnabled {
             selectPhotoDetails()
@@ -230,6 +257,12 @@ class AddPhotoFlowController {
             initialSelectedTags: tags,
             initialDescription: photoDescription
         )
+        detailsVC.onPhotoSelected = { [weak self, weak detailsVC] photoIndex in
+            guard let self = self, let detailsVC = detailsVC else {
+                return
+            }
+            self.showImageGalleryFromDetailsScreen(photoIndex: photoIndex, detailsVC: detailsVC)
+        }
         detailsVC.onBack = { [weak detailsVC] in
             detailsVC?.navigationController?.popViewController(animated: true)
         }

@@ -1,0 +1,263 @@
+import Foundation
+import Kingfisher
+import UIKit
+
+// TODO: 227
+//   - inset between pages when scrolling
+//   - delete: callbacks for photo removed to update the camera view
+//      - remove on flow controller and reassign photos?
+//      - if last removed then flow controller should close it
+//   - transitions
+//     - change details.gallery page on exit...
+//   - interactive dismiss??
+
+// implementation based on https://github.com/zvonicek/ImageSlideshow
+
+/// Image gallery presenting the photos as a horizontal scroll with only 1 image visible at a time and taking the full width.
+/// It supports zooming in on the photos.
+/// It uses `pageSeparator` overlayed on top of the page views to create a moving border between photos that is giving the impression
+/// that the pages are changing width (see the iPhone Photos app for how it works). In fact the pages are layed out next to each other
+/// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
+/// just like in the Photos app)
+class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate {
+    unowned let imageCaches: ImageCaches
+    let photos: [PhotoToAdd]
+
+    var onDone: (() -> Void)?
+
+    /// views representing pages for images
+    private let pages: [ZoomableImageGalleryPageView]
+    /// a black stripe overlayed on top of pages that adds a separation between 2 visible pages
+    private let pageSeparator = UIView()
+    private let scrollView = UIScrollView()
+    private let currentPageLabel = UILabel()
+    private var deleteButton: UIButton!
+    private var confirmButton: UIButton!
+
+    var currentPage: Int = 0 {
+        didSet {
+            if currentPage != oldValue {
+                updateCurrentPageLabel(currentPage: currentPage)
+                loadImages(currentPage: currentPage)
+            }
+        }
+    }
+
+    /// last page for which `loadImages` was called
+    private var imagesLastLoadedForPage: Int?
+
+    /// previous view size stored to only layout views if the size has changed
+    private var previousSize: CGSize = .zero
+
+    /// - Parameters
+    ///   - imageCaches   for getting the image provider
+    ///   - photos:             photos to display
+    init(imageCaches: ImageCaches, photos: [PhotoToAdd]) {
+        self.imageCaches = imageCaches
+        self.photos = photos
+        pages = photos.map { _ in ZoomableImageGalleryPageView() }
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .Neutral_10
+        view.clipsToBounds = true
+
+        pageSeparator.backgroundColor = view.backgroundColor
+
+        setupScrollView()
+        setupButtons()
+        setupCurrentPageLabel()
+
+        view.addSubview(scrollView)
+        pages.forEach(scrollView.addSubview)
+        scrollView.addSubview(pageSeparator)
+
+        view.addSubview(currentPageLabel)
+        view.addSubview(deleteButton)
+        view.addSubview(confirmButton)
+
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        deleteButton.snp.makeConstraints { make in
+            make.width.height.equalTo(48)
+            make.right.equalTo(self.view.snp.centerX).offset(-8)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+        }
+        confirmButton.snp.makeConstraints { make in
+            make.width.height.equalTo(48)
+            make.left.equalTo(self.view.snp.centerX).offset(8)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+        }
+        currentPageLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(12)
+        }
+
+        updateCurrentPageLabel(currentPage: currentPage)
+        loadImages(currentPage: currentPage)
+    }
+
+    private func setupScrollView() {
+        scrollView.isPagingEnabled = true
+        scrollView.alwaysBounceHorizontal = true
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.delegate = self
+    }
+
+    private func setupButtons() {
+        deleteButton = UIButton(
+            configuration: UIButton.Configuration.iconButton(
+                backgroundColor: .Red_03, strokeColor: .Red_04
+            ),
+            primaryAction: UIAction(image: UIImage(systemName: "trash")) { _ in }
+        )
+        confirmButton = UIButton(
+            configuration: UIButton.Configuration.iconButton(
+                backgroundColor: .Green_03, strokeColor: .Green_04
+            ),
+            primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
+                self?.onDone?()
+            }
+        )
+    }
+
+    private func setupCurrentPageLabel() {
+        let font = UIFont.preferredFont(forTextStyle: .body)
+        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
+        currentPageLabel.textColor = .Neutral_04
+        currentPageLabel.font = boldFont
+        currentPageLabel.adjustsFontForContentSizeCategory = true
+    }
+
+    override func viewDidLayoutSubviews() {
+        let viewSize = view.frame.size
+        if viewSize != previousSize {
+            scrollView.contentSize = CGSize(
+                width: viewSize.width * CGFloat(photos.count),
+                height: viewSize.height
+            )
+
+            // adjust content offset to keep the scroll view centered on the primary visible page
+            // (if the user is not interacting with the scroll view, which means we're updating the frame)
+            if !scrollView.isDragging, !scrollView.isDecelerating {
+                scrollView.contentOffset.x = CGFloat(currentPage) * viewSize.width
+            }
+
+            updatePageFrames()
+            updatePageSeparatorFrame()
+        }
+        previousSize = viewSize
+    }
+
+    override dynamic var preferredStatusBarStyle: UIStatusBarStyle {
+        UIStatusBarStyle.lightContent
+    }
+
+    /// The page closest to the x offset
+    private var primaryVisiblePage: Int {
+        var page = scrollView.frame.width > 0
+            ? (Int(scrollView.contentOffset.x + scrollView.frame.width / 2)
+                / Int(scrollView.frame.width))
+            : 0
+        // limit page in case user scrolls to far to reach -1 or photos.count
+        page = min(max(0, page), photos.count - 1)
+        return page
+    }
+
+    /// The progress of horizontal scrolling through pages.
+    /// If it's on page 0 it's 0, then half way to 1 is 0.5, at page 1 it's 1, etc...
+    private var pageOffsetFraction: Double {
+        scrollView.frame.width > 0 ? scrollView.contentOffset.x / scrollView.frame.width : 0
+    }
+
+    /// set page frames based on current page size and pageOffsetFraction
+    private func updatePageFrames() {
+        let pageSize = view.frame.size
+        pages.enumerated().forEach { index, view in
+            view.frame = CGRect(
+                origin: CGPoint(x: CGFloat(index) * pageSize.width, y: 0),
+                size: pageSize
+            )
+        }
+    }
+
+    /// Calculate frame for page separator visible between pages.
+    /// It covers partially the pages to give effect similar like in Photos apps.
+    /// There are at most 2 pages visible at a time, so there's only 1 page separator needed.
+    /// If the page takes the whole screen the separator is not visible at all
+    private func updatePageSeparatorFrame() {
+        let separatorWidth = 30.0
+        let pageSize = view.frame.size
+        let size = CGSize(width: separatorWidth, height: scrollView.frame.height)
+        let page = primaryVisiblePage
+        // if the current page is shifted right (negative values) or left (positive)
+        let currentPageOffsetFraction = pageOffsetFraction - Double(page)
+
+        let x = currentPageOffsetFraction >= 0
+            // current page is offset left, so show the separator on the right side and start
+            // overlapping the page as the offset gets bigger, so next page is being revealed
+            ? Double(page + 1) * pageSize.width - currentPageOffsetFraction * separatorWidth
+            // current page is offset right, so show the separator on the left side and start
+            // overlapping the page as the offset gets smaller, so previous page is being revealed
+            : Double(page) * pageSize.width - separatorWidth - currentPageOffsetFraction * separatorWidth
+
+        pageSeparator.frame = CGRect(origin: CGPoint(x: x, y: 0), size: size)
+    }
+
+    private func updateCurrentPageLabel(currentPage: Int) {
+        currentPageLabel.text = "\(currentPage + 1)/\(photos.count)"
+    }
+
+    /// Load images so we always have 2 images loaded before the current and 2 after, so 5 in total
+    private func loadImages(currentPage: Int) {
+        if currentPage != imagesLastLoadedForPage {
+            pages.enumerated().forEach { index, page in
+                if index < currentPage - 2 || index > currentPage + 2 {
+                    page.imageView.kf.cancelDownloadTask()
+                    page.imageView.image = nil
+                } else {
+                    let rangeImageDataProvider = imageCaches
+                        .imageProvider(forLocalPhotoWithCacheKey: photos[index].cacheKey)
+                    page.imageView.kf.setImage(
+                        with: rangeImageDataProvider,
+                        placeholder: nil, options: [.targetCache(rangeImageDataProvider.cache)], progressBlock: nil,
+                        completionHandler: { _ in
+                            page.imageUpdated()
+                        }
+                    )
+                }
+            }
+        }
+        imagesLastLoadedForPage = currentPage
+    }
+
+    func scrollViewDidScroll(_: UIScrollView) {
+        updatePageSeparatorFrame()
+        // update images while scrolling, user might be scrolling with no breaks between pages
+        // so we can't wait for currentPage update
+        loadImages(currentPage: primaryVisiblePage)
+        updateCurrentPageLabel(currentPage: primaryVisiblePage)
+    }
+
+    func scrollViewDidEndDecelerating(_: UIScrollView) {
+        // only set currentPage when stationary, so it's not updated when the frame changes
+        currentPage = primaryVisiblePage
+        // reset non current pages zoom
+        pages.enumerated().forEach { index, page in
+            if index != currentPage {
+                page.resetZoom()
+            }
+        }
+    }
+}

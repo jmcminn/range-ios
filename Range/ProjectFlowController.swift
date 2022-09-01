@@ -69,7 +69,7 @@ final class ProjectFlowController: UIViewController {
     // TODO: this should be hidden in the production version
     /// Shows a button that shows the debug settings view
     fileprivate func showDebugSettingsButton() {
-        let button = RoundButton(image: UIImage(systemName: "gearshape") ?? UIImage())
+        let button = RoundShadowButton(image: UIImage(systemName: "gearshape") ?? UIImage())
         canvasContainer.controls.addSubview(button)
         button.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-10)

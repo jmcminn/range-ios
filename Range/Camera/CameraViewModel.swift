@@ -30,6 +30,7 @@ class CameraViewModel: ObservableObject {
     var takePhotoAction: (() -> Void)?
     var nextAction: (() -> Void)?
     var cameraRollSelectAction: (() -> Void)?
+    var photoThumbnailAction: (() -> Void)?
 
     /// translate the CameraService.currentZoomFactor to a string to be displayed in the view
     @Published var zoomString = ""
