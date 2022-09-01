@@ -257,12 +257,16 @@ extension PhotoDetailsViewController {
     }
 
     private func headerInputMetrics() -> HeaderInputMetrics {
+        // initial height is the visible height of the header, which is not really a frame height
+        // as the header get's negative top origin and keeps it's height, so the visible height
+        // needs to account for that
+        let initialHeight = headerVC.view.frame.origin.y + headerVC.view.frame.height
         let collapsedHeight = spaceBetweenViews / 2.0 /* = some space over the segmented control */ +
             SegmentedControl.height + spaceBetweenViews
         let expandedHeight = maxHeaderPhotoHeight() + spaceBetweenViews / 2.0 + collapsedHeight
 
         return HeaderInputMetrics(
-            initialHeight: headerVC.view.frame.height,
+            initialHeight: initialHeight,
             collapsedHeight: collapsedHeight,
             expandedHeight: expandedHeight
         )
