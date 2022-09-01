@@ -194,6 +194,7 @@ class AddPhotoFlowController {
         pickerConfiguration.selectionLimit = UserDefaults.multiPhotoSessionEnabled ? 0 : 1
         pickerConfiguration.filter = .images
         let picker = PHPickerViewController(configuration: pickerConfiguration)
+        picker.overrideUserInterfaceStyle = .dark
         picker.delegate = self
         vc.present(picker, animated: true)
     }
