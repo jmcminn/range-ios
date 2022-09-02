@@ -58,7 +58,7 @@ struct CameraView: View {
                 .strokeBorder(Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
                 .frame(width: 40, height: 40)
-                .overlay(Image(systemName: "photo.on.rectangle.angled").font(.body.bold())
+                .overlay(Image(systemName: "photo").font(.body.bold())
                     .foregroundColor(.Neutral_04))
         }.buttonStyle(.plain)
     }
