@@ -15,9 +15,14 @@ import UIKit
 class PhotoDetailsViewController: UIViewController {
     /// The photo
     unowned let imageCaches: ImageCaches
-    let photosToAdd: [PhotoToAdd]
-    let tagsViewModel: TagsViewModel
-    let initialDescription: String
+    private let photosViewModel: PhotosToAddViewModel
+    private let tagsViewModel: TagsViewModel
+    private let initialDescription: String
+
+    /// The description provided by the user
+    var photoDescription: String {
+        descriptionView.textView.text
+    }
 
     /// The mode of the PhotoDetailsViewController
     private enum Mode {
@@ -40,8 +45,7 @@ class PhotoDetailsViewController: UIViewController {
     var onPhotoSelected: ((Int) -> Void)?
     /// Callbacks exposed for the flow control
     var onBack: (() -> Void)?
-    /// provides list of selected tags and the descripton
-    var onNext: (([TagViewModel], String) -> Void)?
+    var onNext: (() -> Void)?
 
     /// vertical space between the views
     private let spaceBetweenViews = 16.0
@@ -78,20 +82,18 @@ class PhotoDetailsViewController: UIViewController {
     var viewsBuilt: Bool = false
 
     /// - Parameters:
-    ///   - model:                 model
     ///   - images:                access to images
     ///   - photosToAdd:           array of images to show
     ///   - initialSelectedTags:   preselected tags
     ///   - initialDescription:    initial contents of the description text view
-    init(model: ProjectModel,
-         imageCaches: ImageCaches,
-         photosToAdd: [PhotoToAdd],
-         initialSelectedTags: [TagViewModel],
+    init(imageCaches: ImageCaches,
+         photosViewModel: PhotosToAddViewModel,
+         tagsViewModel: TagsViewModel,
          initialDescription: String)
     {
         self.imageCaches = imageCaches
-        self.photosToAdd = photosToAdd
-        tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialSelectedTags)
+        self.photosViewModel = photosViewModel
+        self.tagsViewModel = tagsViewModel
         self.initialDescription = initialDescription
         super.init(nibName: nil, bundle: nil)
 
@@ -179,11 +181,6 @@ class PhotoDetailsViewController: UIViewController {
     /// update colors that don't adapt automatically to appearance change
     private func updateColors() {
         descriptionView?.updateColors()
-    }
-
-    /// invoked on 'next' action
-    private func onNextAction() {
-        onNext?(tagsViewModel.selectedTags, descriptionView.textView.text)
     }
 }
 
@@ -283,7 +280,7 @@ extension PhotoDetailsViewController {
 
     private func maxHeaderPhotoHeight() -> CGFloat {
         // show the photo in correct aspect ratio, but no more than 0.6 height of the view for the header
-        let imageHeight2WidthRatio = photosToAdd.map(\.height2Width).max() ?? 4.0 / 3.0
+        let imageHeight2WidthRatio = photosViewModel.photos.map(\.height2Width).max() ?? 4.0 / 3.0
         // 44 is the margins in the gallery view
         let imageHeight = (view.frame.width - 2 * 44.0) * imageHeight2WidthRatio
         return min(0.5 * view.frame.height, imageHeight)
@@ -382,7 +379,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildHeaderView() {
-        headerVC = PhotoDetailsHeaderViewController(imageCaches: imageCaches, photosToAdd: photosToAdd)
+        headerVC = PhotoDetailsHeaderViewController(imageCaches: imageCaches, photosViewModel: photosViewModel)
         headerVC.onPhotoSelected = { [weak self] index in
             self?.onPhotoSelected?(index)
         }
@@ -424,7 +421,7 @@ extension PhotoDetailsViewController {
             primaryAction: UIAction(
                 title: String(localized: "Next"),
                 image: UIImage(systemName: "arrow.forward")
-            ) { [weak self] _ in self?.onNextAction() }
+            ) { [weak self] _ in self?.onNext?() }
         )
         bottomBar.addSubview(backButton)
         bottomBar.addSubview(nextButton)

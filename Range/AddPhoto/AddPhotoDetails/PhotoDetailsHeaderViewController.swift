@@ -6,7 +6,7 @@ import UIKit
 class PhotoDetailsHeaderViewController: UIViewController {
     private unowned let imageCaches: ImageCaches
     /// The photo
-    private let photosToAdd: [PhotoToAdd]
+    private let photosViewModel: PhotosToAddViewModel
 
     var galleryVC: ImageGalleryViewController<String>!
     var tagsDescriptionSegmentedControl: SegmentedControl!
@@ -16,10 +16,11 @@ class PhotoDetailsHeaderViewController: UIViewController {
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
 
-    init(imageCaches: ImageCaches, photosToAdd: [PhotoToAdd]) {
+    init(imageCaches: ImageCaches, photosViewModel: PhotosToAddViewModel) {
         self.imageCaches = imageCaches
-        self.photosToAdd = photosToAdd
+        self.photosViewModel = photosViewModel
         super.init(nibName: nil, bundle: nil)
+        photosViewModel.addDelegate(self)
     }
 
     override func viewDidLoad() {
@@ -74,8 +75,8 @@ class PhotoDetailsHeaderViewController: UIViewController {
             imageDataProviderFactory: { [imageCaches] in
                 imageCaches.imageProvider(forLocalPhotoWithCacheKey: $0)
             },
-            photoKeys: photosToAdd.map(\.cacheKey),
-            pageHeight2Width: photosToAdd.map(\.height2Width).max() ?? 4.0 / 3.0
+            photoKeys: photosViewModel.photos.map(\.cacheKey),
+            pageHeight2Width: photosViewModel.photos.map(\.height2Width).max() ?? 4.0 / 3.0
         )
         galleryVC.onPhotoSelected = { [weak self] index in
             self?.onPhotoSelected?(index)
@@ -95,5 +96,12 @@ class PhotoDetailsHeaderViewController: UIViewController {
                 handler: { [weak self] _ in self?.onDescriptionSelected?() }
             ),
         ])
+    }
+}
+
+/// Delegate for photos view model to react for photo removal (photo adding cannot really happen when displaying the details)
+extension PhotoDetailsHeaderViewController: PhotosToAddViewModelDelegate {
+    func photoRemoved(atIndex index: Int) {
+        galleryVC.photoRemoved(atIndex: index)
     }
 }

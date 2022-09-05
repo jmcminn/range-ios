@@ -10,7 +10,7 @@ import UIKit
 /// Kingfisher ImageDataProvider which is used to display images from cache (which cache is also internal detail of imageDataProviderFactory).
 class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelegate {
     let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
-    let photoKeys: [PhotoKey]
+    private var photoKeys: [PhotoKey]
 
     /// Photo with given index selected
     var onPhotoSelected: ((Int) -> Void)?
@@ -18,10 +18,10 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     // this defines the page size
     let pageHeight2Width: Double
 
-    let scrollView = UIScrollView()
-    let pages: [ImageGalleryPageView]
-    var pageSize: CGSize = .zero
-    var currentPage: Int = 0 {
+    private let scrollView = UIScrollView()
+    private var pages: [ImageGalleryPageView]
+    private var pageSize: CGSize = .zero
+    private(set) var currentPage: Int = 0 {
         didSet {
             if currentPage != oldValue {
                 loadImages(currentPage: currentPage)
@@ -52,6 +52,27 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    /// callback for photo removed at index, removes the photo key, page and recalculates layout and images
+    func photoRemoved(atIndex index: Int) {
+        photoKeys.remove(at: index)
+        let removedPage = pages.remove(at: index)
+        removedPage.imageView.image = nil
+        removedPage.removeFromSuperview()
+        // force the view layout
+        previousSize = .zero
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        // and reloading of images
+        currentPage = primaryVisiblePage
+        loadImages(currentPage: currentPage, force: true)
+    }
+
+    /// Sets the current page by updating the offset
+    func setCurrentPage(_ page: Int, animated: Bool = false) {
+        scrollView.setContentOffset(CGPoint(x: CGFloat(page) * pageSize.width, y: 0), animated: animated)
+        currentPage = page
     }
 
     override func viewDidLoad() {
@@ -174,8 +195,11 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     }
 
     /// Load images so we always have 2 images loaded before the current and 2 after, so 5 in total
-    private func loadImages(currentPage: Int) {
-        if currentPage != imagesLastLoadedForPage {
+    /// - Parameters
+    ///   - current page
+    ///   - force - if true then the check for not loading again if given page was already loaded is bypassed, needed for removing pages as their indices change
+    private func loadImages(currentPage: Int, force: Bool = false) {
+        if currentPage != imagesLastLoadedForPage || force == true {
             pages.enumerated().forEach { index, page in
                 if index < currentPage - 2 || index > currentPage + 2 {
                     page.imageView.kf.cancelDownloadTask()

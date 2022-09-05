@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 
-/// View displayed in the ZoomableImageGalleryViewController for 1 image.
-class ZoomableImageGalleryPageView: UIView {
+/// View displayed in the PhotosReviewViewController for 1 image.
+class PhotosReviewPageView: UIView {
     /// scroll view for zooming image
     let scrollView = UIScrollView()
     /// image view presenting the image
@@ -140,7 +140,7 @@ class ZoomableImageGalleryPageView: UIView {
 }
 
 /// UIScrollViewDelegate
-extension ZoomableImageGalleryPageView: UIScrollViewDelegate {
+extension PhotosReviewPageView: UIScrollViewDelegate {
     func viewForZooming(in _: UIScrollView) -> UIView? {
         imageView
     }

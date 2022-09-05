@@ -3,30 +3,27 @@ import Kingfisher
 import UIKit
 
 // TODO: 227
-//   - inset between pages when scrolling
-//   - delete: callbacks for photo removed to update the camera view
-//      - remove on flow controller and reassign photos?
-//      - if last removed then flow controller should close it
 //   - transitions
 //     - change details.gallery page on exit...
 //   - interactive dismiss??
 
-// implementation based on https://github.com/zvonicek/ImageSlideshow
+// implementation loosely based on https://github.com/zvonicek/ImageSlideshow
 
 /// Image gallery presenting the photos as a horizontal scroll with only 1 image visible at a time and taking the full width.
+/// It allows for removing photos.
 /// It supports zooming in on the photos.
 /// It uses `pageSeparator` overlayed on top of the page views to create a moving border between photos that is giving the impression
 /// that the pages are changing width (see the iPhone Photos app for how it works). In fact the pages are layed out next to each other
 /// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
 /// just like in the Photos app)
-class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate {
+class PhotosReviewViewController: UIViewController {
     unowned let imageCaches: ImageCaches
-    let photos: [PhotoToAdd]
+    let photosViewModel: PhotosToAddViewModel
 
     var onDone: (() -> Void)?
 
     /// views representing pages for images
-    private let pages: [ZoomableImageGalleryPageView]
+    private var pages: [PhotosReviewPageView]
     /// a black stripe overlayed on top of pages that adds a separation between 2 visible pages
     private let pageSeparator = UIView()
     private let scrollView = UIScrollView()
@@ -52,10 +49,10 @@ class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate
     /// - Parameters
     ///   - imageCaches   for getting the image provider
     ///   - photos:             photos to display
-    init(imageCaches: ImageCaches, photos: [PhotoToAdd]) {
+    init(imageCaches: ImageCaches, photosViewModel: PhotosToAddViewModel) {
         self.imageCaches = imageCaches
-        self.photos = photos
-        pages = photos.map { _ in ZoomableImageGalleryPageView() }
+        self.photosViewModel = photosViewModel
+        pages = photosViewModel.photos.map { _ in PhotosReviewPageView() }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -120,7 +117,9 @@ class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate
             configuration: UIButton.Configuration.iconButton(
                 backgroundColor: .Red_03, strokeColor: .Red_04
             ),
-            primaryAction: UIAction(image: UIImage(systemName: "trash")) { _ in }
+            primaryAction: UIAction(image: UIImage(systemName: "trash")) { [weak self] _ in
+                self?.removePhoto()
+            }
         )
         confirmButton = UIButton(
             configuration: UIButton.Configuration.iconButton(
@@ -143,10 +142,7 @@ class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate
     override func viewDidLayoutSubviews() {
         let viewSize = view.frame.size
         if viewSize != previousSize {
-            scrollView.contentSize = CGSize(
-                width: viewSize.width * CGFloat(photos.count),
-                height: viewSize.height
-            )
+            updateContentSize()
 
             // adjust content offset to keep the scroll view centered on the primary visible page
             // (if the user is not interacting with the scroll view, which means we're updating the frame)
@@ -171,7 +167,7 @@ class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate
                 / Int(scrollView.frame.width))
             : 0
         // limit page in case user scrolls to far to reach -1 or photos.count
-        page = min(max(0, page), photos.count - 1)
+        page = min(max(0, page), photosViewModel.photos.count - 1)
         return page
     }
 
@@ -179,6 +175,14 @@ class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate
     /// If it's on page 0 it's 0, then half way to 1 is 0.5, at page 1 it's 1, etc...
     private var pageOffsetFraction: Double {
         scrollView.frame.width > 0 ? scrollView.contentOffset.x / scrollView.frame.width : 0
+    }
+
+    /// Update scroll view content size based on number of pages
+    private func updateContentSize() {
+        scrollView.contentSize = CGSize(
+            width: view.frame.width * CGFloat(photosViewModel.photos.count),
+            height: view.frame.height
+        )
     }
 
     /// set page frames based on current page size and pageOffsetFraction
@@ -216,19 +220,22 @@ class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate
     }
 
     private func updateCurrentPageLabel(currentPage: Int) {
-        currentPageLabel.text = "\(currentPage + 1)/\(photos.count)"
+        currentPageLabel.text = "\(currentPage + 1)/\(photosViewModel.photos.count)"
     }
 
     /// Load images so we always have 2 images loaded before the current and 2 after, so 5 in total
-    private func loadImages(currentPage: Int) {
-        if currentPage != imagesLastLoadedForPage {
+    /// - Parameters
+    ///   - current page
+    ///   - force - if true then the check for not loading again if given page was already loaded is bypassed, needed for removing pages as their indices change
+    private func loadImages(currentPage: Int, force: Bool = false) {
+        if currentPage != imagesLastLoadedForPage || force == true {
             pages.enumerated().forEach { index, page in
                 if index < currentPage - 2 || index > currentPage + 2 {
                     page.imageView.kf.cancelDownloadTask()
                     page.imageView.image = nil
                 } else {
                     let rangeImageDataProvider = imageCaches
-                        .imageProvider(forLocalPhotoWithCacheKey: photos[index].cacheKey)
+                        .imageProvider(forLocalPhotoWithCacheKey: photosViewModel.photos[index].cacheKey)
                     page.imageView.kf.setImage(
                         with: rangeImageDataProvider,
                         placeholder: nil, options: [.targetCache(rangeImageDataProvider.cache)], progressBlock: nil,
@@ -242,6 +249,32 @@ class ZoomableImageGalleryViewController: UIViewController, UIScrollViewDelegate
         imagesLastLoadedForPage = currentPage
     }
 
+    /// Removes the currently showing photo from view model and adjusts the layout
+    private func removePhoto() {
+        guard !photosViewModel.photos.isEmpty else { return }
+        let photoIndexToRemove = primaryVisiblePage
+        photosViewModel.remove(photoAtIndex: photoIndexToRemove)
+        let removedPage = pages.remove(at: photoIndexToRemove)
+        // animate changes
+        UIView.animate(withDuration: 0.2) {
+            // the removed page fades out
+            removedPage.alpha = 0
+            // update the scroll metrics
+            self.updateContentSize()
+            self.updatePageFrames()
+            self.currentPage = self.primaryVisiblePage
+            self.updateCurrentPageLabel(currentPage: self.currentPage)
+            // force reload the images, as the indices of pages after removed page have changed
+            self.loadImages(currentPage: self.currentPage, force: true)
+        } completion: { _ in
+            // remove the removedPage from view hierarchy
+            removedPage.imageView.image = nil
+            removedPage.removeFromSuperview()
+        }
+    }
+}
+
+extension PhotosReviewViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_: UIScrollView) {
         updatePageSeparatorFrame()
         // update images while scrolling, user might be scrolling with no breaks between pages

@@ -88,6 +88,11 @@ class PDFCanvasViewController: UIViewController {
         guard let pdfCanvas = model.mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId) else {
             throw PDFCanvasViewControllerError.canvasNotFound
         }
+        try model.mainRealm.write {
+            // TODO: pageNumber and url hardcoded
+            pdfCanvas.pageNumber = 0
+            pdfCanvas.url = "5451 VANDERBILT AVE-A1.1A.pdf"
+        }
         self.model = model
         self.pdfCanvas = pdfCanvas
         pdfPage = try PDFCanvasViewController.loadPDFPage(pdfCanvas: pdfCanvas)

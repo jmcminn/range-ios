@@ -5,22 +5,6 @@ import PhotosUI
 import Turf
 import UIKit
 
-/// Information about the photo to add
-struct PhotoToAdd {
-    /// UUID
-    var uploadId: String
-    /// Identifier of the asset selected from the camera roll (only present if the photo was selected using photo picker)
-    var assetIdentifier: String?
-    /// when the photo was taken
-    var timestamp: TimeInterval
-    /// key for images.cameraCache, matches the storage keys, so composed of projectId and uploadId
-    var cacheKey: String
-    /// small 100x100 image (with proper aspect ratio)
-    var thumbnail: UIImage
-    /// to layout before fetching from cache
-    var height2Width: Double
-}
-
 /// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
 class AddPhotoFlowController {
     unowned let model: ProjectModel
@@ -29,6 +13,7 @@ class AddPhotoFlowController {
 
     var onStop: (() -> Void)?
     var cameraVC: CameraViewController?
+    var detailsVC: PhotoDetailsViewController?
     var pinsDisplay: AddPhotoPinsDisplay?
     var topViewController: AddPhotoTopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
@@ -39,13 +24,9 @@ class AddPhotoFlowController {
     var canvasDelegateId: UUID?
 
     /// selected photos to add
-    var photosToAdd: [PhotoToAdd] = []
-    /// photo from the camera step
-//    var image: UIImage!
-    /// source data for the `image`
-//    var imageData: Data!
+    let photosToAddViewModel: PhotosToAddViewModel
     /// tags from the details step
-    var tags: [TagViewModel] = []
+    var tagsViewModel: TagsViewModel
     /// description from the details step
     var photoDescription: String = ""
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
@@ -60,6 +41,9 @@ class AddPhotoFlowController {
         self.model = model
         self.imageCaches = imageCaches
         self.canvasContainer = canvasContainer
+        photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, imageCaches: imageCaches)
+        tagsViewModel = TagsViewModel(model: model)
+        photosToAddViewModel.addDelegate(self)
     }
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
@@ -73,32 +57,19 @@ class AddPhotoFlowController {
     }
 
     func stop(removeCurrentPhotosToAddFromCache: Bool) {
-        clearPhotosToAdd(removeFromCache: removeCurrentPhotosToAddFromCache)
+        photosToAddViewModel.clear(removeFromCache: removeCurrentPhotosToAddFromCache)
         onStop?()
     }
 
     /// Restart the flow from the camera screen, cleaning all the collected data
     private func restart(removeCurrentPhotosToAddFromCache: Bool) {
         // clear the gathered data
-        clearPhotosToAdd(removeFromCache: removeCurrentPhotosToAddFromCache)
-        tags = []
+        photosToAddViewModel.clear(removeFromCache: removeCurrentPhotosToAddFromCache)
+        tagsViewModel = TagsViewModel(model: model)
         photoDescription = ""
         geometryId = nil
 
         showCamera()
-    }
-
-    /// Cleanup the current photosToAdd
-    /// If the photos were used for uploads they should remain in cache, otherwise should be removed
-    private func clearPhotosToAdd(removeFromCache: Bool) {
-        // remove the photos from local cache if we don't need them
-        if removeFromCache {
-            photosToAdd.forEach {
-                imageCaches.localPhotosCache.removeImage(forKey: $0.cacheKey)
-            }
-            imageCaches.localPhotosCache.clearMemoryCache()
-        }
-        photosToAdd = []
     }
 
     /// Returns `true` if camera was shown.
@@ -131,8 +102,7 @@ class AddPhotoFlowController {
 
     /// Creates the `CameraViewController` and installs the flow callbacks
     private func createCameraViewController() -> CameraViewController {
-        let vc = CameraViewController()
-        vc.updateWithPhotosToAdd(photosToAdd)
+        let vc = CameraViewController(photosViewModel: photosToAddViewModel)
         vc.onClose = { [weak self, weak vc] in
             vc?.dismiss(animated: true)
             self?.stop(removeCurrentPhotosToAddFromCache: true)
@@ -148,7 +118,7 @@ class AddPhotoFlowController {
             self.selectPhotosFromCameraRoll(fromVC: vc)
         }
         vc.onPhotoThumbnail = { [weak self] in
-            self?.showImageGalleryFromCameraScreen()
+            self?.showPhotosReviewFromCameraScreen()
         }
         cameraVC = vc
         return vc
@@ -180,13 +150,12 @@ class AddPhotoFlowController {
                     return
                 }
 
-                if UserDefaults.multiPhotoSessionEnabled {
-                    self.photosToAdd.append(photoToAdd)
-                } else {
-                    self.clearPhotosToAdd(removeFromCache: true)
-                    self.photosToAdd = [photoToAdd]
+                if !UserDefaults.multiPhotoSessionEnabled {
+                    // clear when not multi-photo session
+                    self.photosToAddViewModel.clear(removeFromCache: true)
                 }
-                self.cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
+                self.photosToAddViewModel.add(photoToAdd)
+
                 if !UserDefaults.multiPhotoSessionEnabled {
                     self.nextStepAfterCamera()
                 }
@@ -198,7 +167,7 @@ class AddPhotoFlowController {
         var pickerConfiguration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
         // in multi-photo session preselect the photos that were already picked (in this session)
         pickerConfiguration.preselectedAssetIdentifiers = UserDefaults.multiPhotoSessionEnabled
-            ? photosToAdd.compactMap(\.assetIdentifier)
+            ? photosToAddViewModel.photos.compactMap(\.assetIdentifier)
             : []
         pickerConfiguration.selectionLimit = UserDefaults.multiPhotoSessionEnabled ? 0 : 1
         pickerConfiguration.filter = .images
@@ -208,28 +177,32 @@ class AddPhotoFlowController {
         vc.present(picker, animated: true)
     }
 
-    private func showImageGalleryFromCameraScreen() {
-        guard let cameraVC = cameraVC else {
-            return
-        }
-        let galleryVC = createImageGalleryViewController()
-        cameraVC.present(galleryVC, animated: true)
-    }
-
-    private func showImageGalleryFromDetailsScreen(photoIndex: Int, detailsVC: PhotoDetailsViewController) {
-        let galleryVC = createImageGalleryViewController()
-        galleryVC.currentPage = photoIndex
-        detailsVC.present(galleryVC, animated: true)
-    }
-
-    private func createImageGalleryViewController() -> ZoomableImageGalleryViewController {
-        let vc = ZoomableImageGalleryViewController(imageCaches: imageCaches, photos: photosToAdd)
+    private func showPhotosReviewFromCameraScreen() {
+        guard let cameraVC = cameraVC else { return }
+        let vc = PhotosReviewViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
         vc.onDone = { [weak vc] in
             guard let vc = vc else { return }
             vc.dismiss(animated: true)
         }
         vc.modalPresentationStyle = .fullScreen
-        return vc
+        cameraVC.present(vc, animated: true)
+    }
+
+    private func showPhotosReviewFromDetailsScreen(photoIndex: Int) {
+        guard let detailsVC = detailsVC else { return }
+        let vc = PhotosReviewViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
+        vc.onDone = { [weak self, weak vc] in
+            guard let self = self, let vc = vc else { return }
+            if let detailsVC = self.detailsVC {
+                // when hiding the photos review make sure that image gallery in details screen
+                // shows the same page as the last viewed on photos review
+                detailsVC.headerVC.galleryVC.setCurrentPage(vc.currentPage)
+            }
+            vc.dismiss(animated: true)
+        }
+        vc.currentPage = photoIndex
+        vc.modalPresentationStyle = .fullScreen
+        detailsVC.present(vc, animated: true)
     }
 
     private func nextStepAfterCamera() {
@@ -250,34 +223,29 @@ class AddPhotoFlowController {
 
     /// Creates the `PhotoDetailsViewController` and installs the flow callbacks
     private func createPhotoDetailsViewController() -> PhotoDetailsViewController {
-        let detailsVC = PhotoDetailsViewController(
-            model: model,
+        let vc = PhotoDetailsViewController(
             imageCaches: imageCaches,
-            photosToAdd: photosToAdd,
-            initialSelectedTags: tags,
+            photosViewModel: photosToAddViewModel,
+            tagsViewModel: tagsViewModel,
             initialDescription: photoDescription
         )
-        detailsVC.onPhotoSelected = { [weak self, weak detailsVC] photoIndex in
-            guard let self = self, let detailsVC = detailsVC else {
-                return
-            }
-            self.showImageGalleryFromDetailsScreen(photoIndex: photoIndex, detailsVC: detailsVC)
+        vc.onPhotoSelected = { [weak self] photoIndex in
+            guard let self = self else { return }
+            self.showPhotosReviewFromDetailsScreen(photoIndex: photoIndex)
         }
-        detailsVC.onBack = { [weak detailsVC] in
-            detailsVC?.navigationController?.popViewController(animated: true)
+        vc.onBack = { [weak self] in
+            guard let self = self, let detailsVC = self.detailsVC else { return }
+            self.photoDescription = detailsVC.photoDescription
+            detailsVC.navigationController?.popViewController(animated: true)
         }
-        detailsVC.onNext = { [weak self] tags, photoDescription in
-            self?.onPhotoDetailsSelected(tags: tags, photoDescription: photoDescription)
+        vc.onNext = { [weak self] in
+            guard let self = self, let detailsVC = self.detailsVC else { return }
+            self.photoDescription = detailsVC.photoDescription
+            self.canvasContainer.dismiss(animated: true)
+            self.selectPhotoLocation()
         }
-        return detailsVC
-    }
-
-    /// Store the photo details and proceed to the location selection step
-    private func onPhotoDetailsSelected(tags: [TagViewModel], photoDescription: String) {
-        self.tags = tags
-        self.photoDescription = photoDescription
-        canvasContainer.dismiss(animated: true)
-        selectPhotoLocation()
+        detailsVC = vc
+        return vc
     }
 
     /// Adapt the UI for the location selection
@@ -364,8 +332,8 @@ class AddPhotoFlowController {
     private func _storeData() async throws {
         if let geometryId = geometryId {
             try await model.runCommands(model.addPhotos(
-                photosToAdd,
-                tags: tags,
+                photosToAddViewModel.photos,
+                tags: tagsViewModel.selectedTags,
                 description: photoDescription,
                 toCollaborationForGeometryId: geometryId
             ))
@@ -373,8 +341,8 @@ class AddPhotoFlowController {
         } else {
             let geometryId = generateRealmId()
             try await model.runCommands(model.addPhotos(
-                photosToAdd,
-                tags: tags,
+                photosToAddViewModel.photos,
+                tags: tagsViewModel.selectedTags,
                 description: photoDescription,
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: canvasContainer.pdfCanvasViewController.pdfCanvas,
@@ -445,7 +413,7 @@ extension AddPhotoFlowController {
     private func showPins() {
         pinsDisplay = AddPhotoPinsDisplay(model: model,
                                           canvasContainer: canvasContainer,
-                                          image: photosToAdd.first!.thumbnail)
+                                          image: photosToAddViewModel.photos.first!.thumbnail)
         pinsDisplay?.onSelectedPinChange = { [weak self] geometryId in
             if let geometryId = geometryId {
                 self?.showPhotosPreview(forGeometry: geometryId, animated: true)
@@ -604,79 +572,6 @@ private extension AddPhotoFlowController {
 
 /// Delegate for selecting photos from the camera roll
 extension AddPhotoFlowController: PHPickerViewControllerDelegate {
-    /// Errors for camera roll photos processing
-    enum CameraRollError: Error, Equatable {
-        case unsupportedType
-        case thumbnailGenerationFailed
-    }
-
-    /// Get image data for given photo picker result and return PhotoToAdd
-    /// Implementation based on: https://itnext.io/the-right-way-to-use-phpicker-and-retrieve-exif-data-without-requesting-library-permissions-in-336c13f87e3f
-    private func getPhotoToAdd(forPickerResult result: PHPickerResult) async throws -> PhotoToAdd {
-        let itemProvider: NSItemProvider = result.itemProvider
-        guard itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) else {
-            throw CameraRollError.unsupportedType
-        }
-        let data = try await itemProvider._asyncLoadDataRepresentation(forTypeIdentifier: UTType.image.identifier)
-        guard let resizedData = resizeImage(imageData: data, maxResolution: 100),
-              let thumbnail = UIImage(data: resizedData)
-        else {
-            throw CameraRollError.thumbnailGenerationFailed
-        }
-        let uploadId = generateRealmId()
-        let cacheKey = uploadKey(projectId: model.projectId, uploadId: uploadId)
-
-        try await imageCaches.localPhotosCache._asyncStoreToDisk(data, forKey: cacheKey)
-
-        return PhotoToAdd(
-            uploadId: uploadId,
-            assetIdentifier: result.assetIdentifier,
-            timestamp: Date.now.timeIntervalSince1970,
-            cacheKey: cacheKey,
-            thumbnail: thumbnail,
-            height2Width: thumbnail.size.height / thumbnail.size.width
-        )
-    }
-
-    /// Updates `photosToAdd` with given photo picker results.
-    /// Converts picker results to PhotoToAdd using getPhotoToAdd(forPickerResult:)
-    /// Uses `PhotoToAdd.assetIdentifier` to match current photos to picker results and add new ones + remove the ones
-    /// that were unselected in this session.
-    /// In case of errors returns the first of them but still updates the photos (if 1 of n photos fails to convert then the rest is still added)
-    private func updatePhotosToAdd(withPickerResults results: [PHPickerResult]) async -> Error? {
-        // clear the photos for single-session, we're replacing not adding
-        if !UserDefaults.multiPhotoSessionEnabled {
-            clearPhotosToAdd(removeFromCache: true)
-            photosToAdd = []
-        }
-
-        /// for fast lookup if new picked photo is already in the photosToAdd
-        let assetIdsInPhotosToAdd: Set<String> = Set(photosToAdd.compactMap(\.assetIdentifier))
-        /// for fast lookup in picker results by assetIdentifier
-        let assetIdsInPickerResults: Set<String> = Set(results.compactMap(\.assetIdentifier))
-
-        // keep only non camera roll photos and the ones from the camera roll that are still selected
-        photosToAdd = photosToAdd.filter {
-            $0.assetIdentifier == nil || assetIdsInPickerResults.contains($0.assetIdentifier!)
-        }
-        var resultError: Error?
-        for result in results {
-            if let assetId = result.assetIdentifier, assetIdsInPhotosToAdd.contains(assetId) {
-                // already added, skip
-                continue
-            }
-            do {
-                photosToAdd.append(try await getPhotoToAdd(forPickerResult: result))
-            } catch {
-                Logger.camera.error("getPhotoToAdd error: \(error.localizedDescription, privacy: .public)")
-                if resultError == nil {
-                    resultError = error
-                }
-            }
-        }
-        return resultError
-    }
-
     /// Handling of photos picked from camera roll
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         // show activity view (a spinner) that covers the screen disabling any user interactions
@@ -689,9 +584,8 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
         activityView.startAnimating()
 
         Task {
-            let updatePhotosError = await updatePhotosToAdd(withPickerResults: results)
+            let updatePhotosError = await photosToAddViewModel.update(withPickerResults: results)
             DispatchQueue.main.async {
-                self.cameraVC?.updateWithPhotosToAdd(self.photosToAdd)
                 activityView.removeFromSuperview()
                 picker.dismiss(animated: true)
                 if let updatePhotosError = updatePhotosError, let cameraVC = self.cameraVC {
@@ -706,6 +600,20 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
                 if updatePhotosError == nil, !UserDefaults.multiPhotoSessionEnabled {
                     self.nextStepAfterCamera()
                 }
+            }
+        }
+    }
+}
+
+/// PhotosToAddViewModel delegate
+extension AddPhotoFlowController: PhotosToAddViewModelDelegate {
+    /// When the last photo is removed automatically hide the photos review screen and get back to camera screen (if in details)
+    func photoRemoved(atIndex _: Int) {
+        if photosToAddViewModel.photos.isEmpty, let cameraVC = cameraVC {
+            cameraVC.dismiss(animated: true)
+            if let detailsVC = detailsVC {
+                photoDescription = detailsVC.photoDescription
+                cameraVC.navigationController?.popToViewController(cameraVC, animated: true)
             }
         }
     }

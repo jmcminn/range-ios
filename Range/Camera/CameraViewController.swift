@@ -11,6 +11,7 @@ import UIKit
 /// A UIViewController whose view is a CameraView
 /// It also owns and manages a CameraService and uses it to actually take photos
 class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
+    unowned let photosViewModel: PhotosToAddViewModel
     var onClose: (() -> Void)?
     /// callback with photo data/UIImage and a completion that will resolve after the photo is stored locally
     var onPhotoTaken: ((Data, UIImage, @escaping (Result<Void, Error>) -> Void) -> Void)?
@@ -21,10 +22,12 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
     private let cameraService = CameraService()
     let cameraViewModel: CameraViewModel
 
-    init() {
+    init(photosViewModel: PhotosToAddViewModel) {
+        self.photosViewModel = photosViewModel
         cameraViewModel = CameraViewModel(cameraService: cameraService)
         super.init(rootView: CameraView(model: cameraViewModel))
 
+        photosViewModel.addDelegate(self)
         cameraViewModel.closeAction = { [weak self] in
             self?.onClose?()
         }
@@ -40,11 +43,6 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
         cameraViewModel.photoThumbnailAction = { [weak self] in
             self?.onPhotoThumbnail?()
         }
-    }
-
-    func updateWithPhotosToAdd(_ photosToAdd: [PhotoToAdd]) {
-        cameraViewModel.numberOfPhotos = photosToAdd.count
-        cameraViewModel.photoThumbnail = photosToAdd.first?.thumbnail
     }
 
     private func takePhotoAction() {
@@ -124,6 +122,22 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
 
     override dynamic var preferredStatusBarStyle: UIStatusBarStyle {
         UIStatusBarStyle.lightContent
+    }
+}
+
+// Delegate for photos view model
+extension CameraViewController: PhotosToAddViewModelDelegate {
+    func photoAdded(atIndex _: Int) {
+        updateCameraViewModelFromPhotosViewModel()
+    }
+
+    func photoRemoved(atIndex _: Int) {
+        updateCameraViewModelFromPhotosViewModel()
+    }
+
+    private func updateCameraViewModelFromPhotosViewModel() {
+        cameraViewModel.numberOfPhotos = photosViewModel.photos.count
+        cameraViewModel.photoThumbnail = photosViewModel.photos.first?.thumbnail
     }
 }
 
