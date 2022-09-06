@@ -1,11 +1,6 @@
 import Foundation
 import UIKit
 
-// TODO: 227 interactive dismissal
-//     install pan gesture recognizer in PhotosReviewViewController to dismiss
-//     galleryVC.setCurrentPage(vc.currentPage)
-//     set imageHeight2Width and then ask for current page frame...
-
 // Good set of articles on view controller transitions: https://danielgauthier.me/2020/02/19/indie-4.html
 // although this was still more based on: https://github.com/zvonicek/ImageSlideshow/blob/master/ImageSlideshow/Classes/Core/ZoomAnimatedTransitioning.swift
 
@@ -13,6 +8,7 @@ import UIKit
 class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     weak var galleryVC: ImageGalleryViewController<String>?
     weak var photosReviewVC: PhotosReviewViewController?
+    fileprivate var interactionController: UIPercentDrivenInteractiveTransition?
 
     /// Init the transitioning delegate to transition from ImageGalleryViewController
     /// - parameter galleryVC: gallery from which to transition
@@ -24,6 +20,49 @@ class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioning
         self.galleryVC = galleryVC
         self.photosReviewVC = photosReviewVC
         super.init()
+
+        let panGestureRecognizer = PanDirectionGestureRecognizer(
+            direction: .vertical,
+            target: self,
+            action: #selector(handlePanGesture(_:))
+        )
+        panGestureRecognizer.cancelsTouchesInView = false
+        photosReviewVC.scrollView.addGestureRecognizer(panGestureRecognizer)
+    }
+
+    /// when user drags the photo up initiate the interactionController and start photosReviewVC dismissal.
+    /// UIPercentDrivenInteractiveTransition will work together with `PhotosReviewDismissalAnimatedTransitioning` and
+    /// will set the animation progress to whatever is the calculated percentage of gesture (100% set to translation = 200 points - this
+    /// is arbitrary and may be in future calculated from the real distance between the full screen image and the target frame in details screen)
+    @objc
+    func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        guard let view = gesture.view else { return }
+        guard let photosReviewVC = photosReviewVC else { return }
+        guard let galleryVC = galleryVC else { return }
+
+        // up only
+        let percent = min(max(-gesture.translation(in: gesture.view!).y / 200.0, 0.0), 1.0)
+
+        if gesture.state == .began {
+            // before triggering dismissal let's first update the galleryVC page so it matches
+            // the photosReview one (otherwise we would possibly animate a photo onto a different photo)
+            galleryVC.setCurrentPage(photosReviewVC.currentPage)
+            interactionController = UIPercentDrivenInteractiveTransition()
+            photosReviewVC.dismiss(animated: true)
+        } else if gesture.state == .changed {
+            interactionController?.update(percent)
+        } else if gesture.state == .ended || gesture.state == .cancelled || gesture.state == .failed {
+            let velocity = gesture.velocity(in: view)
+            // up only
+            if velocity.y < -500 {
+                interactionController?.finish()
+            } else if percent > 0.5 {
+                interactionController?.finish()
+            } else {
+                interactionController?.cancel()
+            }
+            interactionController = nil
+        }
     }
 
     func animationController(
@@ -50,6 +89,12 @@ class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioning
             targetFrame: targetFrame,
             inView: targetView
         )
+    }
+
+    open func interactionControllerForDismissal(using _: UIViewControllerAnimatedTransitioning)
+        -> UIViewControllerInteractiveTransitioning?
+    {
+        interactionController
     }
 }
 
@@ -110,7 +155,6 @@ class PhotosReviewPresentationAnimatedTransitioning: NSObject, UIViewControllerA
         }
         animator.addCompletion { [weak self] _ in
             guard let self = self else { return }
-            fromVC.view.alpha = 1
             self.referenceImageView.alpha = 1
             photosReviewVC.scrollView.alpha = 1
             photosReviewVC.view.backgroundColor = photosReviewBackgroundColor
@@ -127,6 +171,8 @@ class PhotosReviewDismissalAnimatedTransitioning: NSObject, UIViewControllerAnim
     private let targetFrame: CGRect
     private let targetView: UIView
 
+    private var animatorForCurrentTransition: UIViewImplicitlyAnimating?
+
     /// - parameter referenceImageView the view that will be animated to target frame
     /// - parameter targetFrame target frame for the animated view
     /// - parameter targetView target view to transition to
@@ -140,13 +186,18 @@ class PhotosReviewDismissalAnimatedTransitioning: NSObject, UIViewControllerAnim
         0.5
     }
 
-    /// animate from a PhotosReviewViewController to a view controller with targetView and targetFrame for the image by animating fromVC.alpha to 0,
-    /// animating toVC to 1 and animating the size/position of a photo (for this we create a transition view with same image so the
-    /// original and target image/gallery stay untouched)
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    /// Reuse animator for subsequent calls to `animateTransition` otherwise the interactive transition doesn't work
+    func interruptibleAnimator(using transitionContext: UIViewControllerContextTransitioning)
+        -> UIViewImplicitlyAnimating
+    {
+        // as per documentation, the same object should be returned for the ongoing transition
+        if let animatorForCurrentSession = animatorForCurrentTransition {
+            return animatorForCurrentSession
+        }
+
         let containerView = transitionContext.containerView
         guard let photosReviewVC = transitionContext.viewController(forKey: .from) as? PhotosReviewViewController else {
-            return
+            fatalError("Transition not used with PhotosReviewViewController")
         }
         let toVC = transitionContext.viewController(forKey: .to)!
         let targetFrame = containerView.convert(targetFrame, from: targetView)
@@ -189,6 +240,16 @@ class PhotosReviewDismissalAnimatedTransitioning: NSObject, UIViewControllerAnim
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
-        animator.startAnimation()
+
+        animatorForCurrentTransition = animator
+
+        return animator
+    }
+
+    /// animate from a PhotosReviewViewController to a view controller with targetView and targetFrame for the image by animating fromVC.alpha to 0,
+    /// animating toVC to 1 and animating the size/position of a photo (for this we create a transition view with same image so the
+    /// original and target image/gallery stay untouched)
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        interruptibleAnimator(using: transitionContext).startAnimation()
     }
 }

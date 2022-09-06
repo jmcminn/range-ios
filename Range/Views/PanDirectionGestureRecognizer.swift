@@ -6,7 +6,6 @@ enum PanDirection {
     case horizontal
 }
 
-// TODO: 227 for interactive transitioning
 /// Subclass of UIPanGestureRecognizer that only recognizes pan in given direction (horizontal or vertical)
 class PanDirectionGestureRecognizer: UIPanGestureRecognizer {
     let direction: PanDirection
