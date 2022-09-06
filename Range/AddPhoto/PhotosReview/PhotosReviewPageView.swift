@@ -99,7 +99,8 @@ class PhotosReviewPageView: UIView {
         let minScale = min(scaleWidth, scaleHeight)
 
         scrollView.minimumZoomScale = minScale
-        scrollView.maximumZoomScale = 1
+        // if the photo is small and the min scale is above 1, then allow it to zoom over 1
+        scrollView.maximumZoomScale = minScale >= 1 ? 1.5 : 1
 
         scrollView.zoomScale = scrollView.minimumZoomScale
 

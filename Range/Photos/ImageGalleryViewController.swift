@@ -12,8 +12,8 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
     private var photoKeys: [PhotoKey]
 
-    /// Photo with given index selected
-    var onPhotoSelected: ((Int) -> Void)?
+    /// Photo selected, the index available in the `currentPage`
+    var onPhotoSelected: (() -> Void)?
 
     // this defines the page size
     let pageHeight2Width: Double
@@ -134,7 +134,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
     // Handle tapping on the view
     @objc func viewTapped() {
-        onPhotoSelected?(currentPage)
+        onPhotoSelected?()
     }
 
     /// recalculate page size, etc. based on the current frame size page size ratio
@@ -232,5 +232,19 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     func scrollViewDidEndDecelerating(_: UIScrollView) {
         // only set currentPage when stationary, so it's not updated when the frame changes
         currentPage = primaryVisiblePage
+    }
+}
+
+/// Transitioning
+extension ImageGalleryViewController {
+    /// Access to view for current page, needed for custom transition
+    var viewForCurrentPage: ImageGalleryPageView? {
+        guard currentPage >= 0, currentPage < pages.count else { return nil }
+        return pages[currentPage]
+    }
+
+    /// Access to image view for current page, needed for custom transition
+    var imageViewForCurrentPage: UIImageView? {
+        viewForCurrentPage?.imageView
     }
 }

@@ -2,11 +2,6 @@ import Foundation
 import Kingfisher
 import UIKit
 
-// TODO: 227
-//   - transitions
-//     - change details.gallery page on exit...
-//   - interactive dismiss??
-
 // implementation loosely based on https://github.com/zvonicek/ImageSlideshow
 
 /// Image gallery presenting the photos as a horizontal scroll with only 1 image visible at a time and taking the full width.
@@ -26,10 +21,13 @@ class PhotosReviewViewController: UIViewController {
     private var pages: [PhotosReviewPageView]
     /// a black stripe overlayed on top of pages that adds a separation between 2 visible pages
     private let pageSeparator = UIView()
-    private let scrollView = UIScrollView()
+    let scrollView = UIScrollView()
     private let currentPageLabel = UILabel()
     private var deleteButton: UIButton!
     private var confirmButton: UIButton!
+
+    /// Transitioning delegate to manage the transition to this controller
+    var photosReviewTransitioningDelegate: PhotosReviewTransitioningDelegate?
 
     var currentPage: Int = 0 {
         didSet {
@@ -38,6 +36,12 @@ class PhotosReviewViewController: UIViewController {
                 loadImages(currentPage: currentPage)
             }
         }
+    }
+
+    /// Access to image view for current page, needed for custom transition
+    var imageViewForCurrentPage: UIImageView? {
+        guard currentPage >= 0, currentPage < pages.count else { return nil }
+        return pages[currentPage].imageView
     }
 
     /// last page for which `loadImages` was called

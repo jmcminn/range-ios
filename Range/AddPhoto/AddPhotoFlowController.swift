@@ -188,7 +188,7 @@ class AddPhotoFlowController {
         cameraVC.present(vc, animated: true)
     }
 
-    private func showPhotosReviewFromDetailsScreen(photoIndex: Int) {
+    private func showPhotosReviewFromDetailsScreen() {
         guard let detailsVC = detailsVC else { return }
         let vc = PhotosReviewViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
         vc.onDone = { [weak self, weak vc] in
@@ -200,8 +200,16 @@ class AddPhotoFlowController {
             }
             vc.dismiss(animated: true)
         }
-        vc.currentPage = photoIndex
-        vc.modalPresentationStyle = .fullScreen
+
+        let galleryVC = detailsVC.headerVC.galleryVC!
+        vc.currentPage = galleryVC.currentPage
+        let transitioningDelegate = PhotosReviewTransitioningDelegate(
+            fromGallery: galleryVC,
+            toPhotosReview: vc
+        )
+        vc.photosReviewTransitioningDelegate = transitioningDelegate
+        vc.transitioningDelegate = transitioningDelegate
+        vc.modalPresentationStyle = .custom
         detailsVC.present(vc, animated: true)
     }
 
@@ -229,9 +237,9 @@ class AddPhotoFlowController {
             tagsViewModel: tagsViewModel,
             initialDescription: photoDescription
         )
-        vc.onPhotoSelected = { [weak self] photoIndex in
+        vc.onPhotoSelected = { [weak self] in
             guard let self = self else { return }
-            self.showPhotosReviewFromDetailsScreen(photoIndex: photoIndex)
+            self.showPhotosReviewFromDetailsScreen()
         }
         vc.onBack = { [weak self] in
             guard let self = self, let detailsVC = self.detailsVC else { return }

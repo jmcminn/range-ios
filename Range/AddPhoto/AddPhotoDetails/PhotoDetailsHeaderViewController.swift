@@ -10,8 +10,8 @@ class PhotoDetailsHeaderViewController: UIViewController {
 
     var galleryVC: ImageGalleryViewController<String>!
     var tagsDescriptionSegmentedControl: SegmentedControl!
-    /// Photo with given index selected
-    var onPhotoSelected: ((Int) -> Void)?
+    /// Current photo tapped
+    var onPhotoSelected: (() -> Void)?
     /// Callbacks for the tags/description switch
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
@@ -78,8 +78,8 @@ class PhotoDetailsHeaderViewController: UIViewController {
             photoKeys: photosViewModel.photos.map(\.cacheKey),
             pageHeight2Width: photosViewModel.photos.map(\.height2Width).max() ?? 4.0 / 3.0
         )
-        galleryVC.onPhotoSelected = { [weak self] index in
-            self?.onPhotoSelected?(index)
+        galleryVC.onPhotoSelected = { [weak self] in
+            self?.onPhotoSelected?()
         }
     }
 

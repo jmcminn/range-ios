@@ -37,12 +37,18 @@ class ImageGalleryPageView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        // default imageHeight2Width to 4/3, it should always be set, not necessarily with the final value
+        imageView.frame = imageViewFrame(
+            forImageHeight2Width: imageHeight2Width ?? 4.0 / 3.0, imageInset: imageInset
+        )
+    }
+
+    /// calculate image frame so it's aspect ratio is preserved and take all insets into account
+    func imageViewFrame(forImageHeight2Width height2Width: Double, imageInset: UIEdgeInsets = .zero) -> CGRect {
         // always add 8 points of horizontal margin, it gives spacing between pages
         let horizontalMargin = 8.0
 
         // layout image so it's aspect ratio is preserved and take all insets into account
-        let height2Width = imageHeight2Width ?? 4.0 /
-            3.0 // it should always be set, not necessarily with the final value
         let availableWidth = max(1, bounds.width - 2 * horizontalMargin)
         let availableHeight = bounds.height
         let availableHeight2Width = availableHeight / availableWidth
@@ -65,7 +71,7 @@ class ImageGalleryPageView: UIView {
             : (imageInset.left > 0
                 ? bounds.width - horizontalMargin - insetImageWidth
                 : (bounds.width - insetImageWidth) / 2.0)
-        imageView.frame = CGRect(
+        return CGRect(
             x: insetImageX,
             y: (bounds.height - insetImageHeight) / 2.0,
             width: insetImageWidth,

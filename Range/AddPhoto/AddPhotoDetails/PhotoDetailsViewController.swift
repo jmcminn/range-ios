@@ -41,8 +41,8 @@ class PhotoDetailsViewController: UIViewController {
         }
     }
 
-    /// Photo with given index selected
-    var onPhotoSelected: ((Int) -> Void)?
+    /// Current photo tapped
+    var onPhotoSelected: (() -> Void)?
     /// Callbacks exposed for the flow control
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
@@ -380,8 +380,8 @@ extension PhotoDetailsViewController {
 
     private func buildHeaderView() {
         headerVC = PhotoDetailsHeaderViewController(imageCaches: imageCaches, photosViewModel: photosViewModel)
-        headerVC.onPhotoSelected = { [weak self] index in
-            self?.onPhotoSelected?(index)
+        headerVC.onPhotoSelected = { [weak self] in
+            self?.onPhotoSelected?()
         }
         headerVC.onTagsSelected = { [weak self] in
             self?.mode = .tags

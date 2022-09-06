@@ -169,6 +169,8 @@
 		0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1A28C0BC5400DB3F96 /* PhotosReviewViewController.swift */; };
 		0A99BF1F28C1DC3700DB3F96 /* PhotosReviewPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1E28C1DC3700DB3F96 /* PhotosReviewPageView.swift */; };
 		0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */; };
+		0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2A28C62BC400DB3F96 /* PhotosReviewTransition.swift */; };
+		0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
@@ -373,6 +375,8 @@
 		0A99BF1A28C0BC5400DB3F96 /* PhotosReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosReviewViewController.swift; sourceTree = "<group>"; };
 		0A99BF1E28C1DC3700DB3F96 /* PhotosReviewPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosReviewPageView.swift; sourceTree = "<group>"; };
 		0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoViewModel.swift; sourceTree = "<group>"; };
+		0A99BF2A28C62BC400DB3F96 /* PhotosReviewTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosReviewTransition.swift; sourceTree = "<group>"; };
+		0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanDirectionGestureRecognizer.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
@@ -744,6 +748,7 @@
 				0A4995B42854C28200E571FB /* TextView.swift */,
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
+				0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -884,6 +889,7 @@
 			children = (
 				0A99BF1A28C0BC5400DB3F96 /* PhotosReviewViewController.swift */,
 				0A99BF1E28C1DC3700DB3F96 /* PhotosReviewPageView.swift */,
+				0A99BF2A28C62BC400DB3F96 /* PhotosReviewTransition.swift */,
 			);
 			path = PhotosReview;
 			sourceTree = "<group>";
@@ -1118,6 +1124,7 @@
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
+				0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
 				0A724F4328884DF700708C6B /* AddCollaborationCommand+Firestore.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
@@ -1200,6 +1207,7 @@
 				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
+				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
 				0A724F5128894A8500708C6B /* AddTagCommand+Firestore.swift in Sources */,
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsViewController.swift in Sources */,
