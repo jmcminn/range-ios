@@ -236,6 +236,7 @@
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
+		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A2E04D228AC0F6D00E10503 /* ImageCaches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCaches.swift; sourceTree = "<group>"; };
 		0A2E04D428ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageImageDataProvider.swift; sourceTree = "<group>"; };
 		0A2E04D628AE399700E10503 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -536,6 +537,14 @@
 			path = Photos;
 			sourceTree = "<group>";
 		};
+		0A25D82B28C8B4EB00F132D4 /* ci_scripts */ = {
+			isa = PBXGroup;
+			children = (
+				0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */,
+			);
+			path = ci_scripts;
+			sourceTree = "<group>";
+		};
 		0A2E04D128AC0F5D00E10503 /* ImageCache */ = {
 			isa = PBXGroup;
 			children = (
@@ -756,6 +765,7 @@
 		0A632E9F27E49636001A019B = {
 			isa = PBXGroup;
 			children = (
+				0A25D82B28C8B4EB00F132D4 /* ci_scripts */,
 				0A632EAA27E49636001A019B /* Range */,
 				0A632EC127E49639001A019B /* RangeTests */,
 				0A632ECB27E49639001A019B /* RangeUITests */,
