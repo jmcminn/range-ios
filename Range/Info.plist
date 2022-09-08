@@ -4,6 +4,8 @@
 <dict>
 	<key>FirebaseProject</key>
 	<string>$(FIREBASE_PROJECT)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
