@@ -90,12 +90,14 @@ class PhotosReviewViewController: UIViewController {
         }
         deleteButton.snp.makeConstraints { make in
             make.width.height.equalTo(48)
-            make.right.equalTo(self.view.snp.centerX).offset(-8)
+            // center in the left half
+            make.centerX.equalTo(self.view.snp.centerX).dividedBy(2).offset(4)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
         }
         confirmButton.snp.makeConstraints { make in
             make.width.height.equalTo(48)
-            make.left.equalTo(self.view.snp.centerX).offset(8)
+            // center in the right half
+            make.centerX.equalTo(self.view.snp.centerX).multipliedBy(1.5).offset(-4)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
         }
         currentPageLabel.snp.makeConstraints { make in
