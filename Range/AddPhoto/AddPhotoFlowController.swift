@@ -618,10 +618,16 @@ extension AddPhotoFlowController: PhotosToAddViewModelDelegate {
     /// When the last photo is removed automatically hide the photos review screen and get back to camera screen (if in details)
     func photoRemoved(atIndex _: Int) {
         if photosToAddViewModel.photos.isEmpty, let cameraVC = cameraVC {
-            cameraVC.dismiss(animated: true)
             if let detailsVC = detailsVC {
-                photoDescription = detailsVC.photoDescription
-                cameraVC.navigationController?.popToViewController(cameraVC, animated: true)
+                /// Hack: animated presentation of photos review leaves the presenting vc with alpha = 0, restore here manually
+                /// as there won't be custom animated transitioning running for this case because there are no images to
+                /// transition between
+                cameraVC.navigationController?.view.alpha = 1.0
+                detailsVC.dismiss(animated: true) {
+                    cameraVC.navigationController?.popToViewController(cameraVC, animated: true)
+                }
+            } else {
+                cameraVC.dismiss(animated: true)
             }
         }
     }
