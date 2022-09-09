@@ -1,5 +1,15 @@
 import UIKit
 
+/// Delegate for `HeaderExpander` to receive notifications about state updates
+protocol HeaderExpanderDelegate: AnyObject {
+    /// Notifies that the gesture for header expansion is ending and the header expander will end expanding with given velocity
+    /// This event will be followed by `headerExpanderDidUpdateState`
+    func headerExpanderWillEndExpanding(_: HeaderExpander, withVelocity: CGFloat)
+    /// notifies that the expander updated the headers state and whether it should be applied in the animated manner
+    /// Invoked with the new state and the animation duration (0 = not animated)
+    func headerExpanderDidUpdateState(_: HeaderExpander, animationDuration: TimeInterval)
+}
+
 /// HeaderExpander controls the height of 1..n headers based on user interactions with the driving scroll views
 /// The layout is assumed to be:
 ///     - header 1
@@ -27,9 +37,9 @@ class HeaderExpander: NSObject {
     /// unowned references to content view and scroll view
     private unowned let scrollView: UIScrollView
     private unowned let contentView: UIView
-    /// callback to be called each time headers need to be updated
-    /// Invoked with the new state and the animation time (0 = not animated)
-    private let headersUpdateCallback: (HeadersState, TimeInterval) -> Void
+
+    /// the delegate for state updates
+    weak var delegate: HeaderExpanderDelegate?
 
     /// last translation (y gesture position) when dragging
     private var scrollViewTranslation: CGFloat = 0.0
@@ -57,17 +67,9 @@ class HeaderExpander: NSObject {
     ///     - scrollView:   the scroll view that drives the interaction
     ///     - contentView:     the view that contains the headers and the scroll view. It is assumed that headers and scroll take the
     ///     whole height of the contentView
-    ///     - headersUpdateCallback: callback that is run whenever the headers' heights need to be updated
-    init(
-        drivingScrollView scrollView: UIScrollView,
-        contentView: UIView,
-//        configuration: [HeaderExpandingBehavior],
-        headersUpdateCallback: @escaping (HeadersState, TimeInterval) -> Void
-    ) {
+    init(drivingScrollView scrollView: UIScrollView, contentView: UIView) {
         self.scrollView = scrollView
         self.contentView = contentView
-//        self.configuration = configuration
-        self.headersUpdateCallback = headersUpdateCallback
     }
 
     /// By default it is assumed that headers and scroll view take the whole height of the contentView, but this may be adjusted using
@@ -155,7 +157,7 @@ class HeaderExpander: NSObject {
     /// To collapse all invoke with `headerNumber` = headers.count
     func setFirstExpandedHeader(_ headerNumber: Int, animated _: Bool) {
         headersState = calculator.headersState(forFirstExpandedHeader: headerNumber)
-        headersUpdateCallback(headersState, animationDuration)
+        delegate?.headerExpanderDidUpdateState(self, animationDuration: animationDuration)
     }
 }
 
@@ -231,7 +233,7 @@ extension HeaderExpander: UIScrollViewDelegate {
         }
         height = max(inputMetrics.totalCollapsedHeadersHeight, height)
         headersState = calculator.headersState(forTotalHeight: height)
-        headersUpdateCallback(headersState, 0.0)
+        delegate?.headerExpanderDidUpdateState(self, animationDuration: 0.0)
     }
 
     /// Calculate the target heades state based on the state when interaction started, current state and velocity
@@ -253,10 +255,12 @@ extension HeaderExpander: UIScrollViewDelegate {
         // if the user drags while the animation did not finish.
         scrollView.panGestureRecognizer.setTranslation(.zero, in: nil)
 
+        let velocity = -1000 * velocity.y
+        delegate?.headerExpanderWillEndExpanding(self, withVelocity: velocity)
+
         // if should drag then calculate the target headers state (so they're only in collapsed/
         // expanded state) and reset the targetContentOffset so there scroll view doesn't scroll
         if shouldDragHeaders() {
-            let velocity = -1000 * velocity.y
             if let targetHeadersState = calculator.targetHeadersState(
                 forInitialState: gestureInitialHeadersState,
                 currentState: headersState,
@@ -271,7 +275,7 @@ extension HeaderExpander: UIScrollViewDelegate {
                         : 0.0
                 )
                 headersState = targetHeadersState
-                headersUpdateCallback(headersState, animationDuration)
+                delegate?.headerExpanderDidUpdateState(self, animationDuration: animationDuration)
             }
             // if we drag headers we don't want the content offset change
             targetContentOffset.pointee.y = lastContentOffsetWhileScrolling.y

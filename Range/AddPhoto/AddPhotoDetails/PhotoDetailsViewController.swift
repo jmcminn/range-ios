@@ -41,8 +41,9 @@ class PhotoDetailsViewController: UIViewController {
         }
     }
 
-    /// Current photo tapped
-    var onPhotoSelected: (() -> Void)?
+    fileprivate var interactivePresentation: UIPercentDrivenInteractiveTransition?
+    /// Current photo tapped (when parameter is nil) or expanded with interactive transition if provided
+    var onPhotoSelected: ((UIPercentDrivenInteractiveTransition?) -> Void)?
     /// Callbacks exposed for the flow control
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
@@ -124,18 +125,14 @@ class PhotoDetailsViewController: UIViewController {
 
             tagsHeaderExpander = HeaderExpander(
                 drivingScrollView: tagsVC.tableView,
-                contentView: contentView,
-                headersUpdateCallback: { [weak self] in
-                    self?.updateHeaders(state: $0, animationDuration: $1)
-                }
+                contentView: contentView
             )
+            tagsHeaderExpander.delegate = self
             descriptionHeaderExpander = HeaderExpander(
                 drivingScrollView: descriptionView.textView,
-                contentView: contentView,
-                headersUpdateCallback: { [weak self] in
-                    self?.updateHeaders(state: $0, animationDuration: $1)
-                }
+                contentView: contentView
             )
+            descriptionHeaderExpander.delegate = self
             // run the mode change related code initially
             newModeWillSet(.tags)
             newModeDidSet()
@@ -246,7 +243,7 @@ extension PhotoDetailsViewController {
 
 // MARK: - header scrolling
 
-extension PhotoDetailsViewController {
+extension PhotoDetailsViewController: HeaderExpanderDelegate {
     /// Updates the alpha of the header photo based on the header height (to hide it when collapsing)
     /// This needs to be done here and not in the `PhotoDetailsHeaderView` as it is based on the max header photo height
     /// which is dependent on this view height
@@ -299,14 +296,33 @@ extension PhotoDetailsViewController {
                                   expandedHeight: 40 /* =search */ + 16 /* = padding*/ + collapsedHeight)
     }
 
-    func updateHeaders(state: HeadersState, animationDuration: TimeInterval) {
-        let heights = state.heights
-        // make header at least as high as it's expandedHeight
-        let headerHeight = max(heights[0], headerInputMetrics().expandedHeight)
-        // if it's shorter then just hide it by adjusting the top
-        let headerTop = heights[0] - headerHeight
+    /// Update headers heights when the expander notifies about change
+    /// It also triggers the interactive transition from details screen to photos review if user drags down = over expands the headers
+    func headerExpanderDidUpdateState(_ expander: HeaderExpander, animationDuration: TimeInterval) {
+        let heights = expander.headersState.heights
+        // the header height constant, we just update it's top to make it visually smaller and
+        // drag the content up
+        let expandedHeaderHeight = headerInputMetrics().expandedHeight
+        let headerTop = min(0, heights[0] - expandedHeaderHeight)
+        // start interactive photos expand if it's not in progress yet and user swiped down
+        // (expanded the first header)
+        if interactivePresentation == nil, heights[0] > expandedHeaderHeight {
+            interactivePresentation = UIPercentDrivenInteractiveTransition()
+            onPhotoSelected?(interactivePresentation)
+        }
+        // if interactive presentation is in progress, update it as the header expands
+        if let interactivePresentation = interactivePresentation {
+            if heights[0] < expandedHeaderHeight {
+                // cancel the interactive presentation if minimized
+                interactivePresentation.cancel()
+                self.interactivePresentation = nil
+            } else {
+                let percent = (heights[0] - expandedHeaderHeight) / 100.0
+                interactivePresentation.update(percent)
+            }
+        }
         headerViewTopConstraint?.update(offset: headerTop)
-        headerViewHeightConstraint?.update(offset: headerHeight)
+        headerViewHeightConstraint?.update(offset: expandedHeaderHeight)
         if heights.count > 1 {
             tagsHeaderViewHeightConstraint?.update(offset: heights[1])
         }
@@ -319,8 +335,21 @@ extension PhotoDetailsViewController {
             updateHeaderPhotoAlpha()
         }
         // if user expands the photo while editing the description let's end editing
-        if mode == .description, case .expanded = state.states[0] {
+        if mode == .description, case .expanded = expander.headersState.states[0] {
             view.endEditing(true)
+        }
+    }
+
+    /// Finish the interactive presentation if it's currently in progress
+    func headerExpanderWillEndExpanding(_ expander: HeaderExpander, withVelocity velocity: CGFloat) {
+        if let interactivePresentation = interactivePresentation {
+            let percent = (expander.headersState.heights[0] - headerInputMetrics().expandedHeight) / 100.0
+            if velocity > 500 || percent > 0.5 {
+                interactivePresentation.finish()
+            } else {
+                interactivePresentation.cancel()
+            }
+            self.interactivePresentation = nil
         }
     }
 }
@@ -381,7 +410,7 @@ extension PhotoDetailsViewController {
     private func buildHeaderView() {
         headerVC = PhotoDetailsHeaderViewController(imageCaches: imageCaches, photosViewModel: photosViewModel)
         headerVC.onPhotoSelected = { [weak self] in
-            self?.onPhotoSelected?()
+            self?.onPhotoSelected?(nil)
         }
         headerVC.onTagsSelected = { [weak self] in
             self?.mode = .tags

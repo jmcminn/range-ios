@@ -188,7 +188,7 @@ class AddPhotoFlowController {
         cameraVC.present(vc, animated: true)
     }
 
-    private func showPhotosReviewFromDetailsScreen() {
+    private func showPhotosReviewFromDetailsScreen(interactivePresentation: UIPercentDrivenInteractiveTransition?) {
         guard let detailsVC = detailsVC else { return }
         let vc = PhotosReviewViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
         vc.onDone = { [weak self, weak vc] in
@@ -205,7 +205,8 @@ class AddPhotoFlowController {
         vc.currentPage = galleryVC.currentPage
         let transitioningDelegate = PhotosReviewTransitioningDelegate(
             fromGallery: galleryVC,
-            toPhotosReview: vc
+            toPhotosReview: vc,
+            interactivePresentation: interactivePresentation
         )
         vc.photosReviewTransitioningDelegate = transitioningDelegate
         vc.transitioningDelegate = transitioningDelegate
@@ -237,9 +238,9 @@ class AddPhotoFlowController {
             tagsViewModel: tagsViewModel,
             initialDescription: photoDescription
         )
-        vc.onPhotoSelected = { [weak self] in
+        vc.onPhotoSelected = { [weak self] interactivePresentation in
             guard let self = self else { return }
-            self.showPhotosReviewFromDetailsScreen()
+            self.showPhotosReviewFromDetailsScreen(interactivePresentation: interactivePresentation)
         }
         vc.onBack = { [weak self] in
             guard let self = self, let detailsVC = self.detailsVC else { return }
