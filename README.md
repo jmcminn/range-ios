@@ -32,61 +32,7 @@ To switch to Firebase emulator use the `Range firebase emulator` scheme instead 
 
 ## CI/CD
 
-The builds are running on [Bitrise](https://app.bitrise.io/app/09db566fe608fa7b#/builds)
-
-They can be either triggered manually on Bitrise or scheduled using Gitlab pipelines.
-
-We have 2 workflows defined on Bitrise:
-
-1. `test` 
-  - running `swiftformat` linter, building the project and running the tests
-  - triggered from Gitlab on each push to `develop` branch
-2. `deploy-to-firebse`
-  - updates the build number (not commited to the repo, just sync with current bitrise build number)
-  - builds the app for ad-hoc distribution
-  - uploads to Firebase distribution
-  - triggered from Gitlab on each push to `master` branch
-
-  
-### CI/CD configuration
-
-#### Bitrise access to Gitlab
-
-- a token added by Bitrise in [`Gitlab iOS project repository settings`](https://gitlab.com/range.io/ios/-/settings/repository)/`Deploy keys`
-- configured in [`Bitrise iOS app settings`](https://app.bitrise.io/app/09db566fe608fa7b#/settings)/`SSH Settings`
-
-#### Trigger Bitrise from Gitlab
-
-This is done via [gitrise script](https://github.com/azohra/gitrise.sh) (see [article](https://medium.com/tumiya/building-ci-cd-pipelines-for-ios-projects-using-gitlab-and-bitrise-b4f895e0375e) for more details)
-
-- the script is commited in the iOS repo
-- The script is configured to run in the Gitlab pipeline using `.gitlab-ci.yml`
-- the script required some Bitrise keys, etc., configured in [`Gitlab iOS project CI/CD settings`](https://gitlab.com/range.io/ios/-/settings/ci_cd)/`Variables`
-
-The script required a `jq` tool, so a custom container was added to Gitlab iOS project
-  
-  - [container source](https://gitlab.com/gitlab-ci-utils/curl-jq)
-  - to build and add it to Gitlab:
-    - clone the source on your local machine
-    - `docker login registry.gitlab.com`
-    - `docker build -t registry.gitlab.com/range.io/ios/curl-jq .`
-    - `docker push registry.gitlab.com/range.io/ios/curl-jq`
-
-#### Allow Bitrise to sign Range iOS apps
-
-- A key for Bitrise was added in the [`App Store Connect API keys`](https://appstoreconnect.apple.com/access/api)
-- The key is configured in Bitrise in [`User profile/Apple Service Connection`](https://app.bitrise.io/me/profile#/apple_developer_account)
-- Then it's selected for Bitrise project in [`Project/Team`](https://app.bitrise.io/app/09db566fe608fa7b#/team)/`Apple Service Connection`
-
-- Development and distribution code signing certificates were manually created on [`Range developer account`](https://developer.apple.com/account/resources/certificates/list) and added to [`Bitrise codesigning configuration`](https://app.bitrise.io/app/09db566fe608fa7b/workflow_editor#!/code_signing)
-
-
-#### Allow Bitrise to push apps to Firebase distribution
-
-- Firebase app id and token are stored in [`Bitrise app workflow secrets`](https://app.bitrise.io/app/09db566fe608fa7b/workflow_editor#!/secrets)
-- For instructions to obtain the token see [`Bitrise iOS recipes`](https://devcenter.bitrise.io/en/steps-and-workflows/workflow-recipes-for-ios-apps/-ios--deploy-to-firebase-app-distribution.html#ot-lst-cnt)
-
-
+The builds are running on [Xcode Cloud](https://appstoreconnect.apple.com/teams/92067bb5-d614-4ce2-9dc8-dc6f07912892/apps/1643881765/ci/groups) and are configured to build a dev configuration (run tests and push to TestFlight).
 
 
 
