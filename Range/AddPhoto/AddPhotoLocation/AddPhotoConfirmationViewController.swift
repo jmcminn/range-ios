@@ -54,17 +54,17 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         updateColors()
 
         backButton = UIButton(
-            configuration: UIButton.Configuration.bottomBackButton(),
+            configuration: UIButton.Configuration.grayButton(),
             primaryAction: UIAction(image: UIImage(systemName: "arrow.backward")) { [weak self] _ in self?.onCancel?() }
         )
         doneButton = UIButton(
-            configuration: UIButton.Configuration.bottomNextButton(imagePlacement: .leading),
+            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
             primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
                 self?.onDone?()
             }
         )
         continueButton = UIButton(
-            configuration: UIButton.Configuration.bottomNextButton(imagePlacement: .leading),
+            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
             primaryAction: UIAction(title: "Continue", image: UIImage(systemName: "camera")) { [weak self] _ in
                 self?.onContinue?()
             }

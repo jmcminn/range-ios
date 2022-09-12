@@ -439,14 +439,14 @@ extension PhotoDetailsViewController {
         }
 
         let backButton = UIButton(
-            configuration: UIButton.Configuration.bottomBackButton(),
+            configuration: UIButton.Configuration.grayButton(),
             primaryAction: UIAction(
                 title: String(localized: "Back"),
                 image: UIImage(systemName: "arrow.backward")
             ) { [weak self] _ in self?.onBack?() }
         )
         let nextButton = UIButton(
-            configuration: UIButton.Configuration.bottomNextButton(),
+            configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(
                 title: String(localized: "Next"),
                 image: UIImage(systemName: "arrow.forward")

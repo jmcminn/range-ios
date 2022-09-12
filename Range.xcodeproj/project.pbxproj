@@ -158,6 +158,8 @@
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
 		0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */; };
 		0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */; };
+		0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */; };
+		0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */; };
 		0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232427FC777600D744F4 /* CameraPreview.swift */; };
 		0A97232727FC782B00D744F4 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232627FC782B00D744F4 /* CameraView.swift */; };
 		0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraViewController.swift */; };
@@ -366,6 +368,8 @@
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
 		0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusName.swift; sourceTree = "<group>"; };
+		0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeView.swift; sourceTree = "<group>"; };
+		0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A97232427FC777600D744F4 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0A97232627FC782B00D744F4 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		0A97232827FC7D9D00D744F4 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
@@ -615,6 +619,7 @@
 			isa = PBXGroup;
 			children = (
 				0A4782FF28A516AA0063040F /* CollaborationViewController.swift */,
+				0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */,
 			);
 			path = Collaboration;
 			sourceTree = "<group>";
@@ -747,8 +752,10 @@
 		0A4DC7A227F7615700712518 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */,
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
+				0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */,
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
 				0A2F330D283CE8C800D04A1C /* RoundShadowButton.swift */,
@@ -758,7 +765,6 @@
 				0A4995B42854C28200E571FB /* TextView.swift */,
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
-				0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1219,6 +1225,8 @@
 				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
+				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,
+				0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */,
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
 				0A724F5128894A8500708C6B /* AddTagCommand+Firestore.swift in Sources */,
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
@@ -1679,7 +1687,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_CFBundleDisplayName = "Range emulator";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1810,7 +1818,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1947,7 +1955,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

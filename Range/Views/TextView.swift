@@ -67,7 +67,7 @@ class TextView: UIView {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 80))
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         let doneButton = UIButton(
-            configuration: UIButton.Configuration.bottomNextButton(),
+            configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(
                 title: String(localized: "Done")
             ) { [weak self] _ in self?.onDone?() }
