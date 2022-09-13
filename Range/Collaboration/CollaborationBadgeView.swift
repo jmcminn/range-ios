@@ -18,6 +18,8 @@ class CollaborationBadgeView: UIView {
         self.collaboration = collaboration
         super.init(frame: .zero)
 
+        setContentHuggingPriority(.required, for: .horizontal)
+
         setupView()
 
         collaborationNotificationToken = collaboration.observe { [weak self] _ in

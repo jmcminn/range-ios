@@ -11,10 +11,12 @@ struct FirebaseProjectSummary: Decodable, FirestoreToRealmSyncable {
 
     /// center
     var center: CLLocationCoordinate2D
+    /// name
+    var name: String
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case center
+        case center, name
     }
 
     /// Custom implementation of decoding that checks for proper type and translates the `coordinates` array into `position`.
@@ -24,6 +26,7 @@ struct FirebaseProjectSummary: Decodable, FirestoreToRealmSyncable {
         let longitude = try coordinatesContainer.decode(Double.self)
         let latitude = try coordinatesContainer.decode(Double.self)
         center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        name = try container.decode(String.self, forKey: .name)
     }
 
 //    func encode(to encoder: Encoder) throws {
@@ -35,6 +38,6 @@ struct FirebaseProjectSummary: Decodable, FirestoreToRealmSyncable {
 //    }
 
     func upsertCommand(id: String) throws -> Command {
-        AddProjectSummaryCommand(projectId: id, center: center)
+        AddProjectSummaryCommand(projectId: id, name: name, center: center)
     }
 }

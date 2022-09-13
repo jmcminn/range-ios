@@ -10,26 +10,19 @@ enum CardPosition: Int, CaseIterable {
 
 /// To be implemented by view controllers that need to be shown as modal or non modal cards
 protocol CardPresentable: UIViewController {
-    // MARK: - Input for CardPresentationController
-
-    /// The height at which the drawer must be presented for given position. If negative then position is not supported (only works for medium)
-    func height(forWidth width: CGFloat, cardPosition: CardPosition) -> CGFloat
+    /// The height at which the card must be presented for given position.
+    /// If negative then position is not supported (only works for medium)
+    /// Passing container view allows to calculate the card height based on container width, height or safe areas...
+    ///
+    /// - parameters: containerView - container view in which the card is presented
+    /// - parameters: cardPosition - position for which to return height
+    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat
 
     /// If provided the scroll view will be used to drive the card view panning
     func drivingScrollView() -> UIScrollView?
-
-    // MARK: - Output for CardPresentable
-
-    /// Notifies the delegate about position change starting
-    func cardWillChangePosition(_ position: CardPosition)
-
-    /// Notifies the delegate about position change
-    func cardDidChangePosition(_ position: CardPosition)
 }
 
 /// Default implementations for optional CardPresentable functions
 extension CardPresentable {
     func drivingScrollView() -> UIScrollView? { nil }
-    func cardWillChangePosition(_: CardPosition) {}
-    func cardDidChangePosition(_: CardPosition) {}
 }

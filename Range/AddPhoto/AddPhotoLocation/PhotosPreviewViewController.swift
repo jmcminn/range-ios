@@ -145,12 +145,13 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
 }
 
 extension PhotosPreviewViewController: CardPresentable {
-    func height(forWidth width: CGFloat, cardPosition: CardPosition) -> CGFloat {
+    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .medium {
             return -1 // not supported
         }
 
         let thumbnailsHeight: CGFloat = uploads.isEmpty ? 0 : 95
-        return confirmationVC.height(forWidth: width, cardPosition: cardPosition) + thumbnailsHeight
+        return confirmationVC.height(forContainer: containerView, cardPosition: cardPosition)
+            + thumbnailsHeight
     }
 }

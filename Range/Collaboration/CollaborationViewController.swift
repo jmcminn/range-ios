@@ -11,6 +11,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     private var collaborationNotificationToken: NotificationToken?
 
+    /// a view below content to cover the space visible when dragging up past the max height
+    var bottomView = UIView()
     var closeButton: UIButton!
     var nameField: UITextField!
     var namePencilView: UIImageView!
@@ -47,6 +49,17 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         containerView.installSliderView()
+
+        bottomView.backgroundColor = containerView.backgroundColor
+        // added to view (rounded view) as the containerView has a layer mask
+        // and bottom view is added outside of its bounds
+        view.addSubview(bottomView)
+        bottomView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.snp.bottom)
+            // magic number, just enough so the user won't drag higher than that (beyond the max height)
+            make.height.equalTo(500)
+        }
 
         let badgeView = CollaborationBadgeView(collaboration)
         containerView.addSubview(badgeView)
@@ -86,7 +99,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         }
 
         setupThumbnailsView()
-        add(childController: thumbnailsVC)
+        add(childController: thumbnailsVC, toView: containerView)
 
         thumbnailsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -227,27 +240,27 @@ extension CollaborationViewController {
 // MARK: Card presentable
 
 extension CollaborationViewController: CardPresentable {
-    func height(forWidth _: CGFloat, cardPosition: CardPosition) -> CGFloat {
+    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat {
+        let heightIncludingCTAs = 147.0
         if cardPosition == .min {
             return 0 // will be hidden when minimized
+        } else if cardPosition == .medium {
+            var height = heightIncludingCTAs + 16
+            if !collaboration.uploads.isEmpty {
+                height += 54 + 16
+            }
+            return height
+        } else { // .max
+            // the card display controller adds handling for bottom safe area so
+            // we need to subtract it
+            let fullHeight = containerView.bounds.height - containerView.safeAreaInsets.bottom
+            // the height of the collaboration view header that we want to hide
+            // behing the header cover
+            let headerHeight = heightIncludingCTAs
+            // 50 is the height of headerCover content
+            let headerCoverHeight = containerView.safeAreaInsets.top + 50
+            // add enough so the "header" hides behind the headerCover
+            return fullHeight - headerCoverHeight + headerHeight
         }
-        if cardPosition == .medium {
-            return -1 // not supported
-        }
-
-        var height = 163.0
-        if !collaboration.uploads.isEmpty {
-            height += 54 + 16
-        }
-        return height
     }
-
-    func cardDidChangePosition(_ position: CardPosition) {
-        if position == .min {
-            onClose?()
-        }
-    }
-
-//    func drivingScrollView() -> UIScrollView? {
-//    }
 }

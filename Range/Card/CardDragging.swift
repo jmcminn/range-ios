@@ -1,11 +1,33 @@
 import Foundation
 import UIKit
 
+/// Delegate for `CardDragging` to receive notifications about state updates
+protocol CardDraggingDelegate: AnyObject {
+    /// Notifies the delegate about position change starting
+    func cardWillChangePosition(_ position: CardPosition)
+
+    /// Notifies the delegate about position change
+    func cardDidChangePosition(_ position: CardPosition)
+
+    /// Notifies the delegate when the height is updated when dragging
+    func cardHeightUpdated(_ height: CGFloat)
+}
+
+/// Default implementations for optional CardDraggingDelegate functions
+extension CardDraggingDelegate {
+    func cardWillChangePosition(_: CardPosition) {}
+    func cardDidChangePosition(_: CardPosition) {}
+    func cardHeightUpdated(_: CGFloat) {}
+}
+
 /// Helper class for installing the gesture recognizers on the card-presented view controller's view and managing the card dragging.
 class CardDragging: NSObject {
     unowned let presentedViewController: UIViewController & CardPresentable
     unowned let containerView: UIView
     let config: CardConfiguration
+
+    /// the delegate for state updates
+    weak var delegate: CardDraggingDelegate?
 
     let topDown = false
     var position: CardPosition
@@ -59,6 +81,7 @@ extension CardDragging {
         }
         set {
             presentedViewController.view.frame.origin.y = containerView.bounds.height - newValue
+            delegate?.cardHeightUpdated(newValue)
         }
     }
 
@@ -70,7 +93,7 @@ extension CardDragging {
 
     func cardHeight(forPosition cardPosition: CardPosition) -> CGFloat {
         var height = presentedViewController.height(
-            forWidth: containerView.bounds.width,
+            forContainer: containerView,
             cardPosition: cardPosition
         )
         // add the bottom safearea insets when presented from bottom (but only if > 0.
@@ -78,7 +101,12 @@ extension CardDragging {
         if !topDown, height > 0 {
             height += containerView.safeAreaInsets.bottom
         }
-        return min(height, maxAllowedCardHeight)
+        if config.allowsFullScreen {
+            return height
+        } else {
+            // full screen not allowed, limit by maxAllowedCardHeight
+            return min(height, maxAllowedCardHeight)
+        }
     }
 }
 
@@ -115,10 +143,10 @@ extension CardDragging {
             self.position = .max
             height = cardHeight(forPosition: self.position)
         }
-        presentedViewController.cardWillChangePosition(self.position)
+        delegate?.cardWillChangePosition(self.position)
         setCardHeight(height, animated: animated, withVelocity: velocity) { [weak self] in
             guard let self = self else { return }
-            self.presentedViewController.cardDidChangePosition(self.position)
+            self.delegate?.cardDidChangePosition(self.position)
             completion?()
         }
     }

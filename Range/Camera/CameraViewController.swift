@@ -4,13 +4,10 @@ import UIKit
 
 // A UIHostingController defines a UIViewController (from UIKit as opposed to SwiftUI) that nonetheless manages a
 // SwiftUI view hierarchy
-//
-// ModalCardCoordinating allows the CameraView to be presented as a modal, nominally in minimum, partly-raised
-// or full-screen sizes, but in fact CameraViewController overrides this behavior to allow only full-screen
 
 /// A UIViewController whose view is a CameraView
 /// It also owns and manages a CameraService and uses it to actually take photos
-class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinating {
+class CameraViewController: UIHostingController<CameraView> {
     unowned let photosViewModel: PhotosToAddViewModel
     var onClose: (() -> Void)?
     /// callback with photo data/UIImage and a completion that will resolve after the photo is stored locally
@@ -18,7 +15,6 @@ class CameraViewController: UIHostingController<CameraView>, ModalCardCoordinati
     var onCameraRollSelect: (() -> Void)?
     var onPhotoThumbnail: (() -> Void)?
     var onNext: (() -> Void)?
-    var modalCardDisplayController: ModalCardDisplayController?
     private let cameraService = CameraService()
     let cameraViewModel: CameraViewModel
 
@@ -138,25 +134,5 @@ extension CameraViewController: PhotosToAddViewModelDelegate {
     private func updateCameraViewModelFromPhotosViewModel() {
         cameraViewModel.numberOfPhotos = photosViewModel.photos.count
         cameraViewModel.photoThumbnail = photosViewModel.photos.first?.thumbnail
-    }
-}
-
-// CardPresentable would normally allow a view to appear as a minimum, partly-raised, or full-screen window,
-// but in this case really only allows full-screen and dismisses the view in the minimum position
-extension CameraViewController: CardPresentable {
-    func height(forWidth _: CGFloat, cardPosition: CardPosition) -> CGFloat {
-        if cardPosition == .min {
-            return 0
-        } else if cardPosition == .medium {
-            return -1 // not supported
-        } else {
-            return CGFloat.greatestFiniteMagnitude
-        }
-    }
-
-    func cardDidChangePosition(_ position: CardPosition) {
-        if position == .min {
-            dismiss(animated: false)
-        }
     }
 }

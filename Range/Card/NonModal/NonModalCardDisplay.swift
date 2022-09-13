@@ -29,9 +29,10 @@ extension UIViewController {
         cardConfig: CardConfiguration = CardConfiguration()
     ) {
         add(childController: cardViewController, toView: inView)
+        let containerView: UIView = inView ?? view
         let cardDragging = NonModalCardDragging(
             presentedViewController: cardViewController,
-            containerView: view,
+            containerView: containerView,
             config: cardConfig
         )
         cardViewController.cardDragging = cardDragging

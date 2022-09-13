@@ -119,13 +119,13 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 }
 
 extension ProjectActionCardViewController: CardPresentable {
-    func height(forWidth width: CGFloat, cardPosition: CardPosition) -> CGFloat {
+    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .medium {
             return -1 // not supported
         }
 
         let fittingSize = CGSize(
-            width: width,
+            width: containerView.bounds.width,
             height: UIView.layoutFittingCompressedSize.height
         )
 

@@ -29,6 +29,9 @@
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
 		0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
+		0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */; };
+		0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */; };
+		0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */; };
 		0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D228AC0F6D00E10503 /* ImageCaches.swift */; };
 		0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D428ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift */; };
 		0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */; };
@@ -238,6 +241,9 @@
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
+		0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationHeaderCoverViewController.swift; sourceTree = "<group>"; };
+		0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTopViewController.swift; sourceTree = "<group>"; };
+		0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFlowController.swift; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A2E04D228AC0F6D00E10503 /* ImageCaches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCaches.swift; sourceTree = "<group>"; };
 		0A2E04D428ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageImageDataProvider.swift; sourceTree = "<group>"; };
@@ -618,8 +624,10 @@
 		0A4782FE28A5169A0063040F /* Collaboration */ = {
 			isa = PBXGroup;
 			children = (
+				0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */,
 				0A4782FF28A516AA0063040F /* CollaborationViewController.swift */,
 				0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */,
+				0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */,
 			);
 			path = Collaboration;
 			sourceTree = "<group>";
@@ -645,16 +653,6 @@
 				0A0D31D228A3F21E007A8D49 /* Resources.swift */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		0A48ACDD281C115C0044E06E /* Canvas */ = {
-			isa = PBXGroup;
-			children = (
-				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
-				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
-				0A0D31CA28A2BC10007A8D49 /* PinsDisplay.swift */,
-			);
-			path = Canvas;
 			sourceTree = "<group>";
 		};
 		0A4995BB2857697F00E571FB /* HeaderExpand */ = {
@@ -740,13 +738,18 @@
 			path = Card;
 			sourceTree = "<group>";
 		};
-		0A4DC79427F5728500712518 /* ProjectActions */ = {
+		0A4DC79427F5728500712518 /* Project */ = {
 			isa = PBXGroup;
 			children = (
+				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
+				0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
 				0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */,
+				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
+				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
+				0A0D31CA28A2BC10007A8D49 /* PinsDisplay.swift */,
 			);
-			path = ProjectActions;
+			path = Project;
 			sourceTree = "<group>";
 		};
 		0A4DC7A227F7615700712518 /* Views */ = {
@@ -799,7 +802,6 @@
 				0A4995D62860C6A900E571FB /* AddPhoto */,
 				0A07D764281295B500B6F9A2 /* Auth */,
 				0A97232327FC507200D744F4 /* Camera */,
-				0A48ACDD281C115C0044E06E /* Canvas */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
@@ -811,14 +813,13 @@
 				0A724F61288AAFCF00708C6B /* ModelUploads */,
 				0A632EDB27E4DA38001A019B /* PDF */,
 				0A0D31D428A41A94007A8D49 /* Photos */,
-				0A4DC79427F5728500712518 /* ProjectActions */,
+				0A4DC79427F5728500712518 /* Project */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A30E8BA284A090000A50D54 /* Tags */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
-				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
 			);
 			path = Range;
 			sourceTree = "<group>";
@@ -1134,6 +1135,7 @@
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */,
+				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
 				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
@@ -1260,6 +1262,8 @@
 				0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
+				0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */,
+				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,

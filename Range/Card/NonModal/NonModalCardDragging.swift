@@ -17,7 +17,11 @@ class NonModalCardDragging: CardDragging {
     fileprivate func setInitialCardFrame() {
         var cardFrame = containerView.bounds
         cardFrame.origin.y = containerView.bounds.height
-        cardFrame.size.height = maxAllowedCardHeight
+        if config.allowsFullScreen {
+            cardFrame.size.height = containerView.bounds.height
+        } else {
+            cardFrame.size.height = maxAllowedCardHeight
+        }
         presentedViewController.view.frame = cardFrame
     }
 

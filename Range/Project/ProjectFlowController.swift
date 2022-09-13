@@ -9,21 +9,31 @@ final class ProjectFlowController: UIViewController {
     unowned let model: ProjectModel
     unowned let imageCaches: ImageCaches
     let canvasContainer: CanvasContainerViewController
+    let collaborationFlow: CollaborationFlowController
     var onSignOut: (() -> Void)?
 
+    var topViewController: ProjectTopViewController?
     lazy var bottomBlurView = setupBottomBlur()
     lazy var actionCardVC = installActionCardVC()
     lazy var pinsDisplay = PinsDisplay(model: model, canvasContainer: canvasContainer)
 
     var addPhotoFlow: AddPhotoFlowController?
 
-    var collaborationVC: CollaborationViewController?
-
     init(imageCaches: ImageCaches, model: ProjectModel) throws {
         self.imageCaches = imageCaches
         self.model = model
         canvasContainer = try CanvasContainerViewController(model: model)
+        collaborationFlow = CollaborationFlowController(
+            model: model,
+            imageCaches: imageCaches,
+            canvasContainer: canvasContainer
+        )
         super.init(nibName: nil, bundle: nil)
+
+        collaborationFlow.onCollaborationClose = { [weak self] in
+            // unselect pin, this will result also in hiding the collaboration window
+            self?.pinsDisplay.setSelectedPinId(nil)
+        }
     }
 
     @available(*, unavailable)
@@ -34,16 +44,19 @@ final class ProjectFlowController: UIViewController {
     func start() {
         pinsDisplay.onSelectedPinChange = { [weak self] geometryId in
             if let geometryId = geometryId {
-                self?.showCollaborationWindow(forGeometry: geometryId, animated: true)
+                self?.collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
             } else {
-                self?.hideCollaborationWindow(animated: true)
+                self?.collaborationFlow.hideCollaborationWindow(animated: true)
             }
         }
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        canvasContainer.view.setNeedsLayout()
+        canvasContainer.view.layoutIfNeeded()
         showDebugSettingsButton()
+        showTopViewController(animated: false)
         bottomBlurView.isHidden = false
         showDefaultCanvasUI(animated: false)
     }
@@ -52,6 +65,46 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)
         pinsDisplay.stop()
+    }
+
+    /// shows the view controller covering the top of of the screen
+    private func showTopViewController(animated: Bool) {
+        let topViewController = ProjectTopViewController(projectSummary: model.projectSummary)
+        canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
+        if animated {
+            topViewController.view.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.bottom.equalTo(canvasContainer.controls.snp.top)
+            }
+            canvasContainer.controls.layoutIfNeeded()
+            UIView.animate(withDuration: 0.2) {
+                topViewController.view.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.top.equalToSuperview()
+                }
+                self.canvasContainer.controls.layoutIfNeeded()
+            }
+        } else {
+            topViewController.view.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.top.equalToSuperview()
+            }
+            canvasContainer.controls.layoutIfNeeded()
+        }
+        self.topViewController = topViewController
+    }
+
+    /// hides the top view controller
+    private func hideTopViewController() {
+        if let topViewController = topViewController {
+            UIView.animate(withDuration: 0.2) {
+                topViewController.view.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.canvasContainer.controls.snp.top)
+                }
+                self.canvasContainer.controls.layoutIfNeeded()
+            }
+        }
     }
 
     /// Show the default UI elements when viewing the canvas
@@ -138,50 +191,6 @@ final class ProjectFlowController: UIViewController {
             } else {
                 self?.addPhotoFlow = nil
             }
-        }
-    }
-
-    /// Finds the first collaboration for this geometry and show its window
-    fileprivate func showCollaborationWindow(forGeometry geometryId: String, animated: Bool) {
-        if let geometry = model.mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId),
-           let feature = geometry.features.first,
-           let collaboration = feature.collaborations.first
-        {
-            let collaborationVC = CollaborationViewController(imageCaches: imageCaches, collaboration: collaboration)
-            collaborationVC.onClose = { [weak self] in
-                // unselect pin, this will result also in hiding the collaboration window
-                self?.pinsDisplay.setSelectedPinId(nil)
-            }
-
-            canvasContainer.installCard(
-                cardViewController: collaborationVC,
-                inView: canvasContainer.controls,
-                cardConfig: CardConfiguration(initialCardPosition: .medium)
-            )
-
-            // check if already showing, if so then ignore animated and replace instantly
-            if self.collaborationVC != nil {
-                hideCollaborationWindow(animated: false)
-                collaborationVC.showCard(animated: false)
-            } else {
-                collaborationVC.showCard(animated: animated)
-            }
-            self.collaborationVC = collaborationVC
-        } else {
-            Logger.model.warning("""
-                Trying to present collaboration window for geometry
-                \(geometryId, privacy: .public) with no collaboration
-            """)
-        }
-    }
-
-    /// Hide the currently shown collaboration window
-    fileprivate func hideCollaborationWindow(animated: Bool) {
-        if let collaborationVC = collaborationVC {
-            collaborationVC.hideCard(animated: animated) {
-                self.canvasContainer.removeCard(cardViewController: collaborationVC)
-            }
-            self.collaborationVC = nil
         }
     }
 }
