@@ -59,12 +59,14 @@ final class ProjectFlowController: UIViewController {
         showTopViewController(animated: false)
         bottomBlurView.isHidden = false
         showDefaultCanvasUI(animated: false)
+        collaborationFlow.start()
     }
 
     func stop() {
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)
         pinsDisplay.stop()
+        collaborationFlow.stop()
     }
 
     /// shows the view controller covering the top of of the screen
