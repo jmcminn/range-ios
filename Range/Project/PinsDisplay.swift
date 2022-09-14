@@ -34,11 +34,6 @@ class PinsDisplay {
         self.canvasContainer = canvasContainer
     }
 
-    deinit {
-        // remove the pins annotations
-        canvasContainer.annotationsMapView.annotations.removeAnnotationManager(withId: annotationsId)
-    }
-
     func start() {
         loadAndDisplayPins()
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
