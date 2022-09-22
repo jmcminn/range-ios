@@ -3,6 +3,12 @@ import UIKit
 
 /// Realm object for `project/details/uploads/<id>`.
 class Upload: Object, WithPlaceholder {
+    /// Supported file types, all others are ignored by Range iOS app
+    enum FileType: String, PersistableEnum {
+        case image
+        case pdf
+    }
+
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     // the author, needs to be optional because of how Realm
@@ -24,6 +30,11 @@ class Upload: Object, WithPlaceholder {
     @Persisted var placeholder: Bool = false
     /// Versions of a photo has the same correlationId (the id of the first version)
     @Persisted var correlationId: String
+    /// Image aspect ratio. Stored locally when the image is downloaded from the Storage
+    /// Not synchronized with backend
+    @Persisted var imageHeightToWidth: Double?
+    /// File type
+    @Persisted var fileType: FileType
 
     /// Default initializer required by Realm.
     override init() {
@@ -38,6 +49,7 @@ class Upload: Object, WithPlaceholder {
         name: String?,
         description: String?,
         correlationId: String,
+        fileType: FileType,
         placeholder _: Bool = false
     ) {
         super.init()
@@ -46,6 +58,7 @@ class Upload: Object, WithPlaceholder {
         self.url = url
         self.name = name
         self.correlationId = correlationId
+        self.fileType = fileType
         uploadDescription = description
     }
 
@@ -58,6 +71,7 @@ class Upload: Object, WithPlaceholder {
             name: "",
             description: nil,
             correlationId: id,
+            fileType: .image,
             placeholder: true
         )
     }

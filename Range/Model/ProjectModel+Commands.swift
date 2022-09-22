@@ -183,6 +183,7 @@ extension ProjectModel {
         let addUploadCmd = AddUploadCommand(
             uploadId: uploadId,
             correlationId: uploadId,
+            fileType: .image,
             parentType: "Collaboration",
             parentId: collaborationId,
             authorId: userId,

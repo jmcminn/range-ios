@@ -102,6 +102,7 @@ class ProjectModelCommandsTest: XCTestCase {
         XCTAssertEqual(addUploadCmd, AddUploadCommand(
             uploadId: "upload1",
             correlationId: "upload1",
+            fileType: .image,
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: model.userId,

@@ -13,7 +13,8 @@ extension AddUploadCommand: FirestoreCommand {
             uploadDescription: uploadDescription,
             urlString: url?.absoluteString,
             correlationId: correlationId,
-            tagIds: tagIds
+            tagIds: tagIds,
+            fileTypeString: fileType.rawValue
         )
         try transaction.setData(
             from: firestoreObject,

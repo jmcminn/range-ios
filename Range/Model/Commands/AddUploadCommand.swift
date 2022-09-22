@@ -5,6 +5,7 @@ import RealmSwift
 struct AddUploadCommand: Command, Equatable {
     let uploadId: String
     var correlationId: String
+    var fileType: Upload.FileType
     var parentType: String
     var parentId: String
     var authorId: String
@@ -35,8 +36,13 @@ struct AddUploadCommand: Command, Equatable {
             url: url,
             name: name,
             description: uploadDescription,
-            correlationId: correlationId
+            correlationId: correlationId,
+            fileType: fileType
         )
+        // if the upload has local height2Width then keep it
+        if let existingUpload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
+            upload.imageHeightToWidth = existingUpload.imageHeightToWidth
+        }
         upload.author = author
         realm.add(upload, update: .modified)
         let tags = tagIds.compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }

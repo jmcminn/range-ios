@@ -15,6 +15,7 @@ enum ModelError: Error, Equatable {
     case collaborationNotFound
     case statusNotFound
     case malformedUrl(_ url: String)
+    case fileTypeNotSupported(_ type: String)
 }
 
 // model error extension to provide localized descriptions of errors
@@ -37,6 +38,8 @@ extension ModelError: LocalizedError {
             return "Status not found"
         case let .malformedUrl(url):
             return "Malformed URL: \(url)"
+        case let .fileTypeNotSupported(type):
+            return "\(type) fileType not supported"
         }
     }
 }

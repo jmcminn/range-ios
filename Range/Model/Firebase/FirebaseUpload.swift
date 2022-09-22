@@ -24,7 +24,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     private enum CodingKeys: String, CodingKey {
         case parentId = "parent", parentType, authorId = "author", timestamp, name,
              uploadDescription = "description", urlString = "url",
-             correlationId = "correlation", tagIds = "tags"
+             correlationId = "correlation", tagIds = "tags", fileTypeString = "fileType"
     }
 
     var parentId: String
@@ -37,8 +37,16 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     // TODO: 193 not optional
     var correlationId: String?
     var tagIds: [String]
+    var fileTypeString: String?
 
     func upsertCommand(id: String) throws -> Command {
+        let fileType: Upload.FileType
+        if let fileTypeString = fileTypeString {
+            fileType = try Upload.FileType.allCases.first { $0.rawValue == fileTypeString }
+                .or(error: ModelError.fileTypeNotSupported(fileTypeString))
+        } else {
+            fileType = .image
+        }
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
@@ -51,6 +59,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
         return AddUploadCommand(
             uploadId: id,
             correlationId: correlationId ?? id,
+            fileType: fileType,
             parentType: parentType,
             parentId: parentId,
             authorId: authorId,

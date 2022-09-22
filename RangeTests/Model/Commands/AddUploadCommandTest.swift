@@ -28,6 +28,7 @@ class AddUploadCommandTest: XCTestCase {
         let cmd = AddUploadCommand(
             uploadId: "upload1",
             correlationId: "upload1",
+            fileType: .image,
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user2",
@@ -73,6 +74,7 @@ class AddUploadCommandTest: XCTestCase {
         var cmd1 = AddUploadCommand(
             uploadId: "upload1",
             correlationId: "upload1",
+            fileType: .image,
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
@@ -107,6 +109,7 @@ class AddUploadCommandTest: XCTestCase {
         let cmd2 = AddUploadCommand(
             uploadId: "upload2",
             correlationId: "upload1",
+            fileType: .image,
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
@@ -147,6 +150,7 @@ class AddUploadCommandTest: XCTestCase {
         var cmd = AddUploadCommand(
             uploadId: "upload1",
             correlationId: "upload1",
+            fileType: .image,
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
