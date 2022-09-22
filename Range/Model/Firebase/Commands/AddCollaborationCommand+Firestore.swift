@@ -6,9 +6,11 @@ extension AddCollaborationCommand: FirestoreCommand {
     func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreObject = FirebaseCollaboration(
             featureId: featureId,
+            authorId: authorId,
+            timestamp: timestamp != nil ? Int(timestamp! * 1000) : nil,
             statusId: statusId,
             name: name,
-            description: collaborationDescription,
+            collaborationDescription: collaborationDescription,
             tagIds: tagIds
         )
         try transaction.setData(

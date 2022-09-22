@@ -6,9 +6,11 @@ class FirebaseCollaborationTest: XCTestCase {
     func testUpsertCommand() throws {
         let firebaseCollaboration = FirebaseCollaboration(
             featureId: "feature1",
+            authorId: "user1",
+            timestamp: 1000,
             statusId: "status1",
             name: "Collaboration1",
-            description: "",
+            collaborationDescription: "",
             tagIds: []
         )
         XCTAssertEqual(
@@ -16,6 +18,8 @@ class FirebaseCollaborationTest: XCTestCase {
             AddCollaborationCommand(
                 collaborationId: "collaboration1",
                 featureId: "feature1",
+                authorId: "user1",
+                timestamp: 1.0,
                 name: "Collaboration1",
                 collaborationDescription: "",
                 statusId: "status1",

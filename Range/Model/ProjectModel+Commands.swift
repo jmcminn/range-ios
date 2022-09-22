@@ -81,9 +81,12 @@ extension ProjectModel {
             collaborationId = collaboration.id
         } else {
             collaborationId = generateRealmId()
+            let timestamp = photosToAdd.first?.timestamp ?? Date.now.timeIntervalSince1970
             commands.append(AddCollaborationCommand(
                 collaborationId: collaborationId,
                 featureId: featureId,
+                authorId: userId,
+                timestamp: timestamp,
                 name: "",
                 collaborationDescription: "",
                 statusId: nil,
@@ -139,9 +142,12 @@ extension ProjectModel {
             name: "",
             featureDescription: nil
         )
+        let timestamp = photosToAdd.first?.timestamp ?? Date.now.timeIntervalSince1970
         let addCollaborationCmd = AddCollaborationCommand(
             collaborationId: generateRealmId(),
             featureId: addFeatureCmd.featureId,
+            authorId: userId,
+            timestamp: timestamp,
             name: "",
             collaborationDescription: nil,
             statusId: nil,

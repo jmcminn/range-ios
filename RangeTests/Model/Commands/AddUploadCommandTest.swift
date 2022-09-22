@@ -61,8 +61,8 @@ class AddUploadCommandTest: XCTestCase {
             avatarUrl: nil,
             email: "first@last.com"
         )
-        let collaboration1 = Collaboration(id: "collaboration1", name: "Collaboration1", description: "")
-        let collaboration2 = Collaboration(id: "collaboration2", name: "Collaboration2", description: "")
+        let collaboration1 = Collaboration(id: "collaboration1", timestamp: 1, name: "Collaboration1", description: "")
+        let collaboration2 = Collaboration(id: "collaboration2", timestamp: 1, name: "Collaboration2", description: "")
         try realm.write {
             realm.add([user1, collaboration1, collaboration2])
         }

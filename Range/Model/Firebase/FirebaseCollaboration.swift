@@ -19,49 +19,45 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case featureId = "feature", statusId = "statusName", name,
+        case featureId = "feature", authorId = "author", timestamp, statusId = "statusName", name,
              collaborationDescription = "description", tagIds = "tags"
     }
 
     var featureId: String
+    var authorId: String?
+    var timestamp: Int? // milliseconds
     var statusId: String?
     var name: String
     var collaborationDescription: String?
     var tagIds: [String]
 
     /// Default initializer with all properties
-    init(
-        featureId: String,
-        statusId: String?,
-        name: String,
-        description: String?,
-        tagIds: [String]
-    ) {
-        self.featureId = featureId
-        self.statusId = statusId
-        self.name = name
-        collaborationDescription = description
-        self.tagIds = tagIds
-    }
-
-    /// For constructing from `Collaboration`.
-    /// featureId is passed here and not taken from the Collaboration as it is kind of optional in the Collaboration and it is required here
-    init(featureId: String, collaboration: Collaboration) {
-        let statusId = collaboration.status?.id
-        let tagIds = Array(collaboration.tags.map(\.id))
-        self.init(
-            featureId: featureId,
-            statusId: statusId,
-            name: collaboration.name,
-            description: collaboration.collaborationDescription,
-            tagIds: tagIds
-        )
-    }
-
+//    init(
+//        featureId: String,
+//        statusId: String?,
+//        name: String,
+//        description: String?,
+//        tagIds: [String]
+//    ) {
+//        self.featureId = featureId
+//        self.statusId = statusId
+//        self.name = name
+//        collaborationDescription = description
+//        self.tagIds = tagIds
+//    }
+//
     func upsertCommand(id: String) throws -> Command {
-        AddCollaborationCommand(
+        let timestampTimeInterval: TimeInterval?
+        if let timestamp = timestamp {
+            timestampTimeInterval = TimeInterval(timestamp) / 1000.0
+        } else {
+            timestampTimeInterval = nil
+        }
+        return AddCollaborationCommand(
             collaborationId: id,
             featureId: featureId,
+            authorId: authorId,
+            timestamp: timestampTimeInterval,
             name: name,
             collaborationDescription: collaborationDescription,
             statusId: statusId,

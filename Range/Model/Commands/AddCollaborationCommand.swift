@@ -5,6 +5,8 @@ import RealmSwift
 struct AddCollaborationCommand: Command, Equatable {
     let collaborationId: String
     var featureId: String
+    var authorId: String?
+    var timestamp: TimeInterval?
     var name: String
     var collaborationDescription: String?
     var statusId: String?
@@ -24,7 +26,15 @@ struct AddCollaborationCommand: Command, Equatable {
         }
 
         let feature = realm.objectOrPlaceholder(ofType: Feature.self, forPrimaryKey: featureId)
-        let collaboration = Collaboration(id: collaborationId, name: name, description: collaborationDescription)
+        let collaboration = Collaboration(
+            id: collaborationId,
+            timestamp: timestamp,
+            name: name,
+            description: collaborationDescription
+        )
+        if let authorId = authorId {
+            collaboration.author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
+        }
         if let statusId = statusId {
             collaboration.status = realm.objectOrPlaceholder(ofType: Status.self, forPrimaryKey: statusId)
         }

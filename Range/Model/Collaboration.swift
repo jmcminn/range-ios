@@ -10,6 +10,11 @@ class Collaboration: Object, WithPlaceholder {
     // collaboration status, needs to be optional because of how Realm
     // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
     @Persisted var status: Status?
+    // the author, needs to be optional because of how Realm
+    // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
+    @Persisted var author: Participant?
+    // timestamp (since 1970)
+    @Persisted var timestamp: TimeInterval?
     /// name
     @Persisted var name: String
     /// description (can't really use the description name for it as it's already used)
@@ -34,9 +39,10 @@ class Collaboration: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, description: String?, placeholder: Bool = false) {
+    init(id: String, timestamp: TimeInterval?, name: String, description: String?, placeholder: Bool = false) {
         super.init()
         self.id = id
+        self.timestamp = timestamp
         self.name = name
         collaborationDescription = description
         self.placeholder = placeholder
@@ -46,6 +52,7 @@ class Collaboration: Object, WithPlaceholder {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
+            timestamp: 0,
             name: "",
             description: nil,
             placeholder: true
