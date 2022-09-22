@@ -5,6 +5,11 @@ struct DebugSettingsView: View {
 
     var body: some View {
         Form {
+            Section(header: Text("Collaboration window")) {
+                Toggle(isOn: $debugSettings.dynamicImageHeightInCollabFeed) {
+                    Text("Dynamic image height in the feed")
+                }
+            }
             Section(header: Text("Photo pin selection"), footer: Text("App version: \(debugSettings.appVersion)")) {
                 Toggle(isOn: $debugSettings.centerCanvasOnPinSnap) {
                     Text("Center canvas on pin snap:")

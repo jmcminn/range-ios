@@ -8,6 +8,9 @@ final class DebugSettings: ObservableObject {
         static let centerCanvasOnPinSnap = "centerCanvasOnPinSnap"
         /// should the haptic feedback occur when user manually selected pink pin by tapping on it
         static let hapticFeedbackOnPinTapSelection = "hapticFeedbackOnPinTapSelection"
+        /// when set to `true` the photos in the collaboration feed are sized based on their aspect ratio to cover the whole width
+        /// when `false` the space for photos is always 4:3 (width:height) and the photo is fitted in
+        static let dynamicImageHeightInCollabFeed = "dynamicImageHeightInCollabFeed"
     }
 
     private let defaults: UserDefaults
@@ -24,6 +27,12 @@ final class DebugSettings: ObservableObject {
         }
     }
 
+    @Published var dynamicImageHeightInCollabFeed: Bool {
+        didSet {
+            defaults.set(dynamicImageHeightInCollabFeed, forKey: Keys.dynamicImageHeightInCollabFeed)
+        }
+    }
+
     let appVersion: String
 
     init(defaults: UserDefaults = .standard) {
@@ -32,6 +41,7 @@ final class DebugSettings: ObservableObject {
         defaults.register(defaults: [
             Keys.centerCanvasOnPinSnap: true,
             Keys.hapticFeedbackOnPinTapSelection: true,
+            Keys.dynamicImageHeightInCollabFeed: true,
         ])
 
         let releaseVersionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
@@ -40,5 +50,7 @@ final class DebugSettings: ObservableObject {
         _centerCanvasOnPinSnap = .init(initialValue: defaults.bool(forKey: Keys.centerCanvasOnPinSnap))
         _hapticFeedbackOnPinTapSelection = .init(initialValue: defaults
             .bool(forKey: Keys.hapticFeedbackOnPinTapSelection))
+        _dynamicImageHeightInCollabFeed = .init(initialValue: defaults
+            .bool(forKey: Keys.dynamicImageHeightInCollabFeed))
     }
 }
