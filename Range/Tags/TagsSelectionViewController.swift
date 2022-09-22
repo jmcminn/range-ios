@@ -1,7 +1,8 @@
 import UIKit
 
 /// A table view with 3 sections: recent, popular and all project tags
-class TagsViewController: UIViewController {
+/// Allows for selecting/deselecting tags for given TagsViewModel
+class TagsSelectionViewController: UIViewController {
     /// Sections for not filtered view
     private enum Section {
         case recent
@@ -34,7 +35,7 @@ class TagsViewController: UIViewController {
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
         tableView = UITableView(frame: .zero, style: .grouped) // grouped so the section headers don't float
-        notFilteredSections = TagsViewController.getNotFilteredSections(viewModel: viewModel)
+        notFilteredSections = TagsSelectionViewController.getNotFilteredSections(viewModel: viewModel)
         super.init(nibName: nil, bundle: nil)
 
         viewModel.addDelegate(self)
@@ -63,7 +64,7 @@ class TagsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.register(TagTableViewCell.self, forCellReuseIdentifier: "TagCell")
+        tableView.register(TagSelectionTableViewCell.self, forCellReuseIdentifier: "TagCell")
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ShowMoreCell")
         view.addSubview(tableView)
 
@@ -87,7 +88,7 @@ class TagsViewController: UIViewController {
 
 // MARK: - TagsViewModel
 
-extension TagsViewController: TagsViewModelDelegate {
+extension TagsSelectionViewController: TagsViewModelDelegate {
     /// reload table view when view model filtered - either show the filtered tags or all tags if filter is empty
     func tagsViewModelFiltered(_: TagsViewModel) {
         tableView.reloadData()
@@ -100,7 +101,7 @@ extension TagsViewController: TagsViewModelDelegate {
 
 // MARK: - UITableView delegate and data source
 
-extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
+extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSource {
     /// for filtered tags the last row is the "create tag" row
     func isCreateTagRow(_ indexPath: IndexPath) -> Bool {
         showFilteredTags && indexPath.row == viewModel.filteredTags.count
@@ -179,7 +180,10 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if isCreateTagRow(indexPath) {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "TagCell",
+                for: indexPath
+            ) as! TagSelectionTableViewCell
             cell.displayCreateNewTag(viewModel.filterStringTrimmed)
             return cell
         } else if isShowMoreRow(indexPath) {
@@ -193,7 +197,10 @@ extension TagsViewController: UITableViewDelegate, UITableViewDataSource {
             cell.textLabel?.font = boldFont
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath) as! TagTableViewCell
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "TagCell",
+                for: indexPath
+            ) as! TagSelectionTableViewCell
             cell.tagViewModel = tag(for: indexPath)
             return cell
         }

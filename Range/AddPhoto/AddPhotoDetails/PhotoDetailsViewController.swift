@@ -66,7 +66,7 @@ class PhotoDetailsViewController: UIViewController {
     var bottomBar: UIView!
 
     /// the content and constraints
-    var tagsVC: TagsViewController!
+    var tagsVC: TagsSelectionViewController!
     var descriptionView: TextView!
     var descriptionViewBottomConstraint: Constraint?
 
@@ -470,7 +470,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildTagsView() {
-        tagsVC = TagsViewController(viewModel: tagsViewModel)
+        tagsVC = TagsSelectionViewController(viewModel: tagsViewModel)
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)
     }

@@ -27,7 +27,7 @@ class SelectedTagsViewController: UIViewController {
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
-        collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "SelectedTagCell")
+        collectionView.register(SelectedTagCollectionViewCell.self, forCellWithReuseIdentifier: "SelectedTagCell")
 
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
@@ -71,7 +71,7 @@ extension SelectedTagsViewController: UICollectionViewDataSource, UICollectionVi
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: "SelectedTagCell",
             for: indexPath
-        ) as! TagCollectionViewCell
+        ) as! SelectedTagCollectionViewCell
         let tag = viewModel.selectedTags[indexPath.item]
         cell.tagViewModel = tag
         cell.onDeselect = { [weak self, weak tag] in
@@ -90,7 +90,7 @@ extension SelectedTagsViewController: UICollectionViewDataSource, UICollectionVi
             NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2),
         ])
         return CGSize(
-            width: nameSize.width + TagCollectionViewCell.leadingLabelInset + TagCollectionViewCell
+            width: nameSize.width + SelectedTagCollectionViewCell.leadingLabelInset + SelectedTagCollectionViewCell
                 .trailingLabelInset + 1.0, // +1 to handle any rounding issues
             height: 48 // higher than in design as we want to respond to bigger tap area
         )

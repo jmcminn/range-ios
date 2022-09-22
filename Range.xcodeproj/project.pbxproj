@@ -28,6 +28,8 @@
 		0A130EA728D7409800FF1368 /* TimeInterval+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */; };
 		0A130EAE28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */; };
 		0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */; };
+		0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EB128DB1AB000FF1368 /* TagsView.swift */; };
+		0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
@@ -56,7 +58,7 @@
 		0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */; };
 		0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */; };
 		0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B82849E06F00A50D54 /* SearchView.swift */; };
-		0A30E8BC284A0EAB00A50D54 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8BB284A0EAB00A50D54 /* TagsViewController.swift */; };
+		0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */; };
 		0A34C181284552AC00BEDC7C /* FirebaseFeatureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */; };
@@ -88,8 +90,8 @@
 		0A4995C12858D05D00E571FB /* FirebaseTagName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C02858D05D00E571FB /* FirebaseTagName.swift */; };
 		0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */; };
 		0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */; };
-		0A4995CA285A26BB00E571FB /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */; };
-		0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CD285B264C00E571FB /* TagTableViewCell.swift */; };
+		0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */; };
+		0A4995CE285B264C00E571FB /* TagSelectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */; };
 		0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CF285B647600E571FB /* TagsViewModel.swift */; };
 		0A4995D5286099D800E571FB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995D4286099D800E571FB /* Algorithms */; };
 		0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995DA2861DBE600E571FB /* Kingfisher */; };
@@ -273,7 +275,7 @@
 		0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Padding.swift"; sourceTree = "<group>"; };
 		0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		0A30E8B82849E06F00A50D54 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
-		0A30E8BB284A0EAB00A50D54 /* TagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
+		0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSelectionViewController.swift; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusNameTest.swift; sourceTree = "<group>"; };
 		0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFeatureTest.swift; sourceTree = "<group>"; };
@@ -305,8 +307,8 @@
 		0A4995C02858D05D00E571FB /* FirebaseTagName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTagName.swift; sourceTree = "<group>"; };
 		0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTagNameTest.swift; sourceTree = "<group>"; };
 		0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagsViewController.swift; sourceTree = "<group>"; };
-		0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
-		0A4995CD285B264C00E571FB /* TagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTableViewCell.swift; sourceTree = "<group>"; };
+		0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagSelectionTableViewCell.swift; sourceTree = "<group>"; };
 		0A4995CF285B647600E571FB /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
 		0A4995D1285C9D1E00E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A4B043B28CA21AE006E8630 /* Range.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Range.entitlements; sourceTree = "<group>"; };
@@ -629,10 +631,12 @@
 			children = (
 				0A4995D1285C9D1E00E571FB /* README.md */,
 				0A4995CF285B647600E571FB /* TagsViewModel.swift */,
-				0A30E8BB284A0EAB00A50D54 /* TagsViewController.swift */,
-				0A4995CD285B264C00E571FB /* TagTableViewCell.swift */,
 				0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */,
-				0A4995C9285A26BB00E571FB /* TagCollectionViewCell.swift */,
+				0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */,
+				0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */,
+				0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */,
+				0A130EB128DB1AB000FF1368 /* TagsView.swift */,
+				0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */,
 			);
 			path = Tags;
 			sourceTree = "<group>";
@@ -1199,8 +1203,9 @@
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A724F4728887B7200708C6B /* AddStatusCommand.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
-				0A4995CA285A26BB00E571FB /* TagCollectionViewCell.swift in Sources */,
+				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
+				0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */,
 				0AD9B773286B0F56005ACFD7 /* Command+Firestore.swift in Sources */,
@@ -1253,7 +1258,7 @@
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
 				0A724F5128894A8500708C6B /* AddTagCommand+Firestore.swift in Sources */,
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
-				0A30E8BC284A0EAB00A50D54 /* TagsViewController.swift in Sources */,
+				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
 				0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */,
@@ -1269,7 +1274,7 @@
 				0A6FAC3228B552440057995B /* LocalPhotosImageDataProvider.swift in Sources */,
 				0AD9B76B286A1726005ACFD7 /* AddUploadCommand+Firestore.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
-				0A4995CE285B264C00E571FB /* TagTableViewCell.swift in Sources */,
+				0A4995CE285B264C00E571FB /* TagSelectionTableViewCell.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
 				0A0D31CB28A2BC10007A8D49 /* PinsDisplay.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
@@ -1297,6 +1302,7 @@
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirebaseProjectSummary.swift in Sources */,
 				0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */,
+				0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,

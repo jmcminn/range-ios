@@ -1,7 +1,7 @@
 import UIKit
 
 /// Cell used to display TagViewModel items
-class TagTableViewCell: UITableViewCell {
+class TagSelectionTableViewCell: UITableViewCell {
     private var selectedObservation: NSKeyValueObservation?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
