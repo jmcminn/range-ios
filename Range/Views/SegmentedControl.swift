@@ -69,7 +69,7 @@ class SegmentedControl: UIView {
         super.layoutSubviews()
 
         // update as the view bounds might have changed
-        buttonWidth = calcualteButtonWidth()
+        buttonWidth = calculateButtonWidth()
 
         updateButtonsFrames()
         updateSeparatorsFrames()
@@ -143,7 +143,7 @@ class SegmentedControl: UIView {
     }
 
     /// Calculates the button width based on current view width and buttonsSpacing
-    private func calcualteButtonWidth() -> CGFloat {
+    private func calculateButtonWidth() -> CGFloat {
         let spaceForButtons: CGFloat = bounds.width -
             SegmentedControl.buttonsSpacing * Double(buttons.count - 1)
             - 2 * SegmentedControl.contentPadding
