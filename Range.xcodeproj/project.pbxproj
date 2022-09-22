@@ -24,6 +24,8 @@
 		0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */; };
 		0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31D228A3F21E007A8D49 /* Resources.swift */; };
 		0A0D31D728A41AC6007A8D49 /* ThumbnailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31D628A41AC6007A8D49 /* ThumbnailsViewController.swift */; };
+		0A130EA728D7409800FF1368 /* TimeInterval+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */; };
+		0A130EAE28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
@@ -236,6 +238,8 @@
 		0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapbox.swift; sourceTree = "<group>"; };
 		0A0D31D228A3F21E007A8D49 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 		0A0D31D628A41AC6007A8D49 /* ThumbnailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailsViewController.swift; sourceTree = "<group>"; };
+		0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Formatting.swift"; sourceTree = "<group>"; };
+		0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalFormattingTest.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
@@ -548,6 +552,14 @@
 			path = Photos;
 			sourceTree = "<group>";
 		};
+		0A130EAC28D8A2BC00FF1368 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		0A25D82B28C8B4EB00F132D4 /* ci_scripts */ = {
 			isa = PBXGroup;
 			children = (
@@ -714,6 +726,7 @@
 				0A0D31CC28A3E735007A8D49 /* Realm.swift */,
 				0AD9B75728621782005ACFD7 /* Result+Throws.swift */,
 				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
+				0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */,
 				0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */,
 				0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */,
 				0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */,
@@ -827,12 +840,13 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
-				0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */,
+				0A130EAC28D8A2BC00FF1368 /* Extensions */,
 				0A4995BB2857697F00E571FB /* HeaderExpand */,
 				0A4DC76627EDCCFB00712518 /* Math */,
 				0A07D7592810377400B6F9A2 /* Model */,
 				0A4DC77027EE111400712518 /* Resources */,
 				0AD9B75B28644D85005ACFD7 /* Tags */,
+				0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */,
 			);
 			path = RangeTests;
 			sourceTree = "<group>";
@@ -1220,6 +1234,7 @@
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */,
+				0A130EA728D7409800FF1368 /* TimeInterval+Formatting.swift in Sources */,
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
@@ -1287,6 +1302,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A130EAE28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift in Sources */,
 				0A34C18D2846030800BEDC7C /* FirebaseCommentTest.swift in Sources */,
 				0A724F5C28897DE500708C6B /* AddCollaborationCommandTest.swift in Sources */,
 				0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */,
