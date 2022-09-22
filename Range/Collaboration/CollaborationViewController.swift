@@ -18,8 +18,21 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var nameField: UITextField!
     var namePencilView: UIImageView!
     var ctas: UIStackView!
+    var feedVC: CollaborationFeedViewController!
     var thumbnailsVC: ThumbnailsViewController!
+    var updatesToggle: SegmentedControl!
     var onClose: (() -> Void)?
+
+    private enum Constants {
+        // height of thumbnails view
+        static let thumbnailsHeight = 54.0
+        // height for top and bottom thumbnails view padding
+        static let thumbnailsVerticalPaddings = 16.0
+        // height of the toggle to switch updates level of detail
+        static let updatesToggleHeight = 32.0
+        // the insets is used just as a container for top/left/bottom/right paddings around the toggle
+        static let updatesTogglePaddings = UIEdgeInsets(top: 16, left: 16, bottom: 12, right: 16)
+    }
 
     var roundedShadowView: RoundShadowView {
         view as! RoundShadowView
@@ -52,7 +65,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
         containerView.installSliderView()
 
-        bottomView.backgroundColor = containerView.backgroundColor
+        bottomView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         // added to view (rounded view) as the containerView has a layer mask
         // and bottom view is added outside of its bounds
         view.addSubview(bottomView)
@@ -100,14 +113,14 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.height.equalTo(40)
         }
 
-        setupThumbnailsView()
-        add(childController: thumbnailsVC, toView: containerView)
-
-        thumbnailsVC.view.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(ctas.snp.bottom).offset(16)
-            make.height.equalTo(54) // make this view higher than in the design to have bigger buttons
+        setupFeedVC()
+        add(childController: feedVC, toView: containerView)
+        feedVC.view.snp.makeConstraints { make in
+            make.top.equalTo(ctas.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
         }
+
+        setupFeedHeader()
 
         updateColors()
     }
@@ -143,6 +156,19 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     }
 }
 
+// MARK: actions
+
+extension CollaborationViewController {
+    private func onThumbnailSelected(forUpload upload: Upload) {
+        if let cardDragging = cardDragging {
+            if cardDragging.position != .max {
+                cardDragging.setPosition(.max, withVelocity: 0, animated: true)
+            }
+        }
+        feedVC.scroll(toUpload: upload)
+    }
+}
+
 // MARK: Collaboration update
 
 extension CollaborationViewController {
@@ -153,12 +179,27 @@ extension CollaborationViewController {
 
         let hideThumbnails = collaboration.uploads.isEmpty
         if hideThumbnails != thumbnailsVC.view.isHidden {
-            thumbnailsVC.view.isHidden = hideThumbnails
+            updateThumbnailsVisibility()
             // update the height
             if let cardDragging = cardDragging {
                 cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
             }
         }
+    }
+
+    /// show/hide the thumbnails and update the feed header height accordingly
+    private func updateThumbnailsVisibility() {
+        let hidden = collaboration.uploads.isEmpty
+        thumbnailsVC.view.isHidden = hidden
+
+        let totalUpdatesToggleHeight = Constants.updatesTogglePaddings.top +
+            Constants.updatesToggleHeight + Constants.updatesTogglePaddings.bottom
+
+        feedVC.tableView.beginUpdates()
+        feedVC.tableView.tableHeaderView?.frame.size.height = hidden
+            ? Constants.thumbnailsVerticalPaddings + totalUpdatesToggleHeight
+            : Constants.thumbnailsHeight + 2 * Constants.thumbnailsVerticalPaddings + totalUpdatesToggleHeight
+        feedVC.tableView.endUpdates()
     }
 }
 
@@ -233,9 +274,71 @@ extension CollaborationViewController {
         namePencilView.setContentHuggingPriority(.required, for: .horizontal)
     }
 
-    private func setupThumbnailsView() {
+    private func setupFeedVC() {
+        feedVC = CollaborationFeedViewController(
+            imageCaches: imageCaches,
+            projectModel: projectModel,
+            collaboration: collaboration
+        )
+    }
+
+    /// the thumbnails and major/minor updates toggle belong to the feed header so they scroll with table view
+    private func setupFeedHeader() {
         let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
         thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: projectModel, uploads: uploads)
+        thumbnailsVC.onUploadSelected = { [weak self] upload in
+            self?.onThumbnailSelected(forUpload: upload)
+        }
+
+        // the size doesn't matter here. Width will be adapted to tableView width and height
+        // is set/updated in `updateThumbnailsVisibility`
+        let header = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
+        header.backgroundColor = containerView.backgroundColor
+
+        feedVC.add(childController: thumbnailsVC, toView: header)
+        thumbnailsVC.view.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(Constants.thumbnailsVerticalPaddings)
+            make.height.equalTo(Constants.thumbnailsHeight)
+        }
+
+        let updatesToggleBackground = UIView()
+        updatesToggleBackground.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        header.addSubview(updatesToggleBackground)
+        updatesToggleBackground.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight
+                + Constants.updatesTogglePaddings.bottom)
+        }
+
+        let updatesToggleSeparator = UIView()
+        updatesToggleSeparator.backgroundColor = .dynamicColor(
+            light: .Neutral_01, // in light mode the same color as background as we don't want the stroke
+            dark: .Neutral_07
+        )
+        updatesToggleBackground.addSubview(updatesToggleSeparator)
+        updatesToggleSeparator.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.height.equalTo(1)
+        }
+
+        updatesToggle = SegmentedControl(items: [
+            UIAction(title: String(localized: "More updates"), handler: { _ in }),
+            UIAction(title: String(localized: "Less updates"), handler: { _ in }),
+        ])
+        updatesToggle.backgroundColor = containerView.backgroundColor
+        // remove the border
+        updatesToggle.layer.borderWidth = 0
+        header.addSubview(updatesToggle)
+        updatesToggle.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(Constants.updatesTogglePaddings.left)
+            make.trailing.equalToSuperview().inset(Constants.updatesTogglePaddings.right)
+            make.height.equalTo(Constants.updatesToggleHeight)
+            make.bottom.equalToSuperview().inset(Constants.updatesTogglePaddings.bottom)
+        }
+
+        feedVC.tableView.tableHeaderView = header
+        updateThumbnailsVisibility()
     }
 }
 
@@ -247,9 +350,12 @@ extension CollaborationViewController: CardPresentable {
         if cardPosition == .min {
             return 0 // will be hidden when minimized
         } else if cardPosition == .medium {
-            var height = heightIncludingCTAs + 16
+            var height = heightIncludingCTAs + Constants.thumbnailsVerticalPaddings
+            // include half of the updatesToggle
+            height += Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight / 2.0
             if !collaboration.uploads.isEmpty {
-                height += 54 + 16
+                height += Constants.thumbnailsHeight
+                    + Constants.thumbnailsVerticalPaddings
             }
             return height
         } else { // .max
@@ -264,5 +370,9 @@ extension CollaborationViewController: CardPresentable {
             // add enough so the "header" hides behind the headerCover
             return fullHeight - headerCoverHeight + headerHeight
         }
+    }
+
+    func drivingScrollView() -> UIScrollView? {
+        feedVC.tableView
     }
 }
