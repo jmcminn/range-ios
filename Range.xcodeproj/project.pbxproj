@@ -27,6 +27,7 @@
 		0A130EA328D4E44D00FF1368 /* UIFont+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA228D4E44D00FF1368 /* UIFont+Extensions.swift */; };
 		0A130EA728D7409800FF1368 /* TimeInterval+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */; };
 		0A130EAE28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */; };
+		0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
@@ -242,6 +243,7 @@
 		0A130EA228D4E44D00FF1368 /* UIFont+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Extensions.swift"; sourceTree = "<group>"; };
 		0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Formatting.swift"; sourceTree = "<group>"; };
 		0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalFormattingTest.swift; sourceTree = "<group>"; };
+		0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelWithTextInsets.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
@@ -773,6 +775,7 @@
 			children = (
 				0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */,
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
+				0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */,
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
 				0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */,
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
@@ -1286,6 +1289,7 @@
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
+				0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */,
 				0A34C1912846190A00BEDC7C /* FirebaseUpload.swift in Sources */,
 				0A130EA328D4E44D00FF1368 /* UIFont+Extensions.swift in Sources */,
 				0A30E8B02847AFAB00A50D54 /* PhotoDetailsViewController.swift in Sources */,
