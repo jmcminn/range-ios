@@ -16,6 +16,14 @@ class Participant: Object, WithPlaceholder {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
+    /// The value to display in the UI
+    var displayName: String {
+        var components: [String] = []
+        if !firstName.isEmpty { components.append(firstName) }
+        if !lastName.isEmpty { components.append(lastName) }
+        return components.joined(separator: " ")
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()
