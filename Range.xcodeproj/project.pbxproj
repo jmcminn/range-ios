@@ -28,6 +28,7 @@
 		0A130EA128D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA028D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift */; };
 		0A130EA328D4E44D00FF1368 /* UIFont+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA228D4E44D00FF1368 /* UIFont+Extensions.swift */; };
 		0A130EA728D7409800FF1368 /* TimeInterval+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */; };
+		0A130EA928D74F3300FF1368 /* ImageUploadFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EA828D74F3300FF1368 /* ImageUploadFeedItemCell.swift */; };
 		0A130EAE28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */; };
 		0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */; };
 		0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EB128DB1AB000FF1368 /* TagsView.swift */; };
@@ -248,6 +249,7 @@
 		0A130EA028D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationCreatedFeedItemCell.swift; sourceTree = "<group>"; };
 		0A130EA228D4E44D00FF1368 /* UIFont+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Extensions.swift"; sourceTree = "<group>"; };
 		0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Formatting.swift"; sourceTree = "<group>"; };
+		0A130EA828D74F3300FF1368 /* ImageUploadFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploadFeedItemCell.swift; sourceTree = "<group>"; };
 		0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalFormattingTest.swift; sourceTree = "<group>"; };
 		0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelWithTextInsets.swift; sourceTree = "<group>"; };
 		0A130EB128DB1AB000FF1368 /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
@@ -569,6 +571,7 @@
 			children = (
 				0A130E9D28D4A8F700FF1368 /* CollaborationFeedViewController.swift */,
 				0A130EA028D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift */,
+				0A130EA828D74F3300FF1368 /* ImageUploadFeedItemCell.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1301,6 +1304,7 @@
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
+				0A130EA928D74F3300FF1368 /* ImageUploadFeedItemCell.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
 				0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */,

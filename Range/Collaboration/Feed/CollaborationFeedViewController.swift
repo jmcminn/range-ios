@@ -28,6 +28,9 @@ class CollaborationFeedViewController: UIViewController {
     let tableView: UITableView
     var dataSource: UITableViewDiffableDataSource<Int, FeedItem>!
 
+    private var uploads: Results<Upload>!
+    private var uploadsNotificationToken: NotificationToken?
+
     init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
         self.imageCaches = imageCaches
         self.projectModel = projectModel
@@ -54,10 +57,15 @@ class CollaborationFeedViewController: UIViewController {
             make.edges.equalToSuperview()
         }
 
+        observeUploads()
         dataSource.apply(prepareSnapshot(), animatingDifferences: false)
     }
 
-    func scroll(toUpload _: Upload) {}
+    func scroll(toUpload upload: Upload) {
+        if let indexPath = dataSource.indexPath(for: FeedItem(id: upload.id, item: upload)) {
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        }
+    }
 
     private func setupTableView() {
         tableView.backgroundColor = view.backgroundColor
@@ -66,6 +74,7 @@ class CollaborationFeedViewController: UIViewController {
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.register(CollaborationCreatedFeedItemCell.self, forCellReuseIdentifier: "CollaborationCreated")
+        tableView.register(ImageUploadFeedItemCell.self, forCellReuseIdentifier: "ImageUpload")
 
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
@@ -78,11 +87,23 @@ class CollaborationFeedViewController: UIViewController {
         )
     }
 
+    private func observeUploads() {
+        uploads = collaboration.uploads
+            .where { $0.placeholder == false && $0.fileType == .image
+            }
+            .sorted(by: \Upload.timestamp, ascending: false)
+        uploadsNotificationToken = uploads.observe { [weak self] _ in
+            guard let self = self else { return }
+            self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+        }
+    }
+
     /// Prepare new snapshot for the diffable data source
     /// Add all items sorted by timestamp and include Collaboration for 'collaboration created'
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, FeedItem> {
         var snapshot = NSDiffableDataSourceSnapshot<Int, FeedItem>()
         snapshot.appendSections([1])
+        snapshot.appendItems(uploads.map { FeedItem(id: $0.id, item: $0) })
         if collaboration.timestamp != nil, collaboration.author != nil {
             snapshot.appendItems([FeedItem(id: collaboration.id, item: collaboration)])
         }
@@ -107,6 +128,14 @@ extension CollaborationFeedViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCreated",
                                                      for: indexPath) as! CollaborationCreatedFeedItemCell
             cell.collaboration = collaboration
+            return cell
+        } else if let upload = feedItem.item as? Upload, upload.fileType == .image {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
+                                                     for: indexPath) as! ImageUploadFeedItemCell
+            cell.imageCaches = imageCaches
+            cell.projectModel = projectModel
+            cell.tableView = tableView
+            cell.upload = upload
             return cell
         }
         return nil
