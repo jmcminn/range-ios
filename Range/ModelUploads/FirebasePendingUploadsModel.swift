@@ -103,6 +103,10 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             let thumbnail0Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 0)
             try await imageCaches.localPhotosCache._asyncStoreToDisk(thumbnail0Data, forKey: thumbnail0Key)
         }
+        if let thumbnail1Data = resizeImage(imageData: imageData, maxResolution: 500) {
+            let thumbnail1Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 1)
+            try await imageCaches.localPhotosCache._asyncStoreToDisk(thumbnail1Data, forKey: thumbnail1Key)
+        }
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
             let pendingUpload = PendingUpload(key)
             realm.add(pendingUpload)
@@ -118,6 +122,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         try await imageCaches.moveDataFromLocalPhotosToDownloadsCache(forKey: key)
         try await imageCaches.moveDataFromLocalPhotosToDownloadsCache(forKey:
             thumbnailKey(forUploadKey: key, thumbnailNumber: 0))
+        try await imageCaches.moveDataFromLocalPhotosToDownloadsCache(forKey:
+            thumbnailKey(forUploadKey: key, thumbnailNumber: 1))
     }
 
     /// Return true if connected and the connection is not "expensive" (in terms of NWPath, which means it's not cellular)
