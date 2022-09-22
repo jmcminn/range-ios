@@ -18,7 +18,7 @@ class NonModalCardDragging: CardDragging {
         var cardFrame = containerView.bounds
         cardFrame.origin.y = containerView.bounds.height
         if config.allowsFullScreen {
-            cardFrame.size.height = containerView.bounds.height
+            cardFrame.size.height = presentedViewController.height(forContainer: containerView, cardPosition: .max)
         } else {
             cardFrame.size.height = maxAllowedCardHeight
         }
