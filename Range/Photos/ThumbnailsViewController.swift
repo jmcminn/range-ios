@@ -10,20 +10,33 @@ import UIKit
 /// The view is "live" meaning it observes the Uploads and reloads the collection view accordingly.
 /// It uses `Images` for getting image provider for Upload and implements UICollectionViewDataSourcePrefetching for prefetching images.
 class ThumbnailsViewController: UIViewController {
+    /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source
+    /// will need hash when computing the diff and the Upload may already be gone (if some upload was removed)
+    struct CollectionItem: Hashable {
+        var id: String
+        var upload: Upload
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+    }
+
     unowned let imageCaches: ImageCaches
+    unowned let projectModel: ProjectModel
     let uploads: Results<Upload>
     var prefetcher: ImagePrefetcher?
+
+    /// given upload was selected
+    var onUploadSelected: ((Upload) -> Void)?
 
     /// Token for observing changes in uploads
     private var notificationToken: NotificationToken?
 
     var collectionView: UICollectionView!
+    var dataSource: UICollectionViewDiffableDataSource<Int, CollectionItem>!
 
-    /// cache calculated cell widths, if not cache then invalidating the layout and recalculating causes flickering in the UI
-    var cellWidths: [Double?] = []
-
-    init(imageCaches: ImageCaches, uploads: Results<Upload>) {
+    init(imageCaches: ImageCaches, projectModel: ProjectModel, uploads: Results<Upload>) {
         self.imageCaches = imageCaches
+        self.projectModel = projectModel
         self.uploads = uploads
         super.init(nibName: nil, bundle: nil)
     }
@@ -45,12 +58,26 @@ class ThumbnailsViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
-        collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(ThumbnailCollectionViewCell.self, forCellWithReuseIdentifier: "ThumbnailCell")
+
+        dataSource = UICollectionViewDiffableDataSource<Int, CollectionItem>(
+            collectionView: collectionView
+        ) { [weak self] collectionView, indexPath, collectionItem -> UICollectionViewCell? in
+            guard let self = self else { return nil }
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "ThumbnailCell",
+                for: indexPath
+            ) as! ThumbnailCollectionViewCell
+            cell.collectionView = collectionView
+            cell.imageCaches = self.imageCaches
+            cell.projectModel = self.projectModel
+            cell.upload = collectionItem.upload
+            return cell
+        }
 
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
@@ -72,32 +99,23 @@ class ThumbnailsViewController: UIViewController {
     private func observeUploads() {
         notificationToken = uploads.observe { [weak self] (changes: RealmCollectionChange) in
             guard let self = self else { return }
-            guard let collectionView = self.collectionView else { return }
             switch changes {
             case .initial:
-                // reset widths to defaults
-                self.cellWidths = [Double?].init(repeating: nil, count: self.uploads.count)
-                collectionView.reloadData()
-            case let .update(_, deletions, insertions, modifications):
-                // reset the cell widths for updated items
-                for deletionIndex in deletions.sorted(by: >) {
-                    self.cellWidths.remove(at: deletionIndex)
-                }
-                for insertionIndex in insertions {
-                    self.cellWidths.insert(nil, at: insertionIndex)
-                }
-                for modificationIndex in modifications {
-                    self.cellWidths[modificationIndex] = nil
-                }
-                collectionView.performBatchUpdates {
-                    collectionView.deleteItems(at: deletions.map { IndexPath(item: $0, section: 0) })
-                    collectionView.insertItems(at: insertions.map { IndexPath(item: $0, section: 0) })
-                    collectionView.reloadItems(at: modifications.map { IndexPath(item: $0, section: 0) })
-                }
+                self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
+            case .update:
+                self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
             case let .error(error):
                 Logger.model.error("observing uploads failed: \(error.localizedDescription, privacy: .public)")
             }
         }
+    }
+
+    /// Prepare new snapshot for the diffable data source - just include all Uploads as CollectionItems
+    private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, CollectionItem> {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, CollectionItem>()
+        snapshot.appendSections([1])
+        snapshot.appendItems(uploads.map { CollectionItem(id: $0.id, upload: $0) })
+        return snapshot
     }
 
     /// Returns image data provider for given cell.
@@ -109,63 +127,35 @@ class ThumbnailsViewController: UIViewController {
 
 // MARK: - UICollectionView data source & delegate
 
-extension ThumbnailsViewController: UICollectionViewDataSource, UICollectionViewDelegate,
-    UICollectionViewDelegateFlowLayout
-{
-    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
-        uploads.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "ThumbnailCell",
-            for: indexPath
-        ) as! ThumbnailCollectionViewCell
-        cell.imageView.kf.indicatorType = .activity
-        cell.imageView.kf.setImage(
-            with: imageProvider(forItemAt: indexPath),
-            placeholder: nil, options: nil, progressBlock: nil, completionHandler: { _ in
-                // invalidate layout to recalculate aspect ratio after the image is loaded
-                self.collectionView.collectionViewLayout.invalidateLayout()
-            }
-        )
-        return cell
-    }
-
+extension ThumbnailsViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     /// Adapt cell border color when the user interface style changes
     func collectionView(_: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt _: IndexPath) {
         cell.contentView.layer.borderColor = chooseColor(light: .Neutral_03, dark: .Neutral_07).cgColor
     }
 
     /// size the items based on the image aspect ratio. Cache the results in `cellWidths`.
-    func collectionView(_ collectionView: UICollectionView, layout _: UICollectionViewLayout,
+    func collectionView(_: UICollectionView, layout _: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize
     {
         // variable width depending on the aspect ratio of the photo
         let height = 54.0
 
-        guard cellWidths.count > indexPath.item else {
-            // we don't have the cellWidths extended yet
+        guard uploads.count > indexPath.item,
+              let imageHeight2Width = uploads[indexPath.item].imageHeightToWidth,
+              imageHeight2Width > 0
+        else {
+            // we don't have the aspect ratio for this upload yet
             return CGSize(width: 72.0, height: height)
         }
 
-        if let width = cellWidths[indexPath.item] {
-            // already calculated
-            return CGSize(width: width, height: height)
+        let width = height / imageHeight2Width
+        return CGSize(width: width, height: height)
+    }
+
+    func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.item < uploads.count {
+            onUploadSelected?(uploads[indexPath.item])
         }
-        if let cell = collectionView.cellForItem(at: indexPath) as? ThumbnailCollectionViewCell {
-            if let image = cell.imageView.image {
-                cellWidths[indexPath.item] = image.size.width / image.size.height * height
-            }
-        }
-        // calculated now?
-        if let width = cellWidths[indexPath.item] {
-            return CGSize(width: width, height: height)
-        }
-        // by default just horizontal 4:3
-        return CGSize(width: 72.0, height: height)
     }
 }
 

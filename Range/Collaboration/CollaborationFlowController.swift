@@ -53,7 +53,11 @@ class CollaborationFlowController {
            let collaboration = feature.collaborations.first
         {
             self.collaboration = collaboration
-            let collaborationVC = CollaborationViewController(imageCaches: imageCaches, collaboration: collaboration)
+            let collaborationVC = CollaborationViewController(
+                imageCaches: imageCaches,
+                projectModel: model,
+                collaboration: collaboration
+            )
             collaborationVC.onClose = { [weak self] in
                 self?.onCollaborationClose?()
             }
@@ -129,7 +133,6 @@ class CollaborationFlowController {
         self.collaborationHeaderCoverVC = nil
     }
 
-    // TODO: 287: show FABs (floating action button)
     /// hides/shows the view controller covering the top of of the screen
     private func setCollaborationHeaderCoverHidden(_ hidden: Bool, animated: Bool) {
         let alpha = hidden ? 0.0 : 1.0

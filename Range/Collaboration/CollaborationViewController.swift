@@ -7,6 +7,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
 
     unowned let imageCaches: ImageCaches
+    unowned let projectModel: ProjectModel
     let collaboration: Collaboration
 
     private var collaborationNotificationToken: NotificationToken?
@@ -29,8 +30,9 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     }
 
     /// - Parameters:
-    init(imageCaches: ImageCaches, collaboration: Collaboration) {
+    init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
         self.imageCaches = imageCaches
+        self.projectModel = projectModel
         self.collaboration = collaboration
         super.init(nibName: nil, bundle: nil)
     }
@@ -233,7 +235,7 @@ extension CollaborationViewController {
 
     private func setupThumbnailsView() {
         let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
-        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, uploads: uploads)
+        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: projectModel, uploads: uploads)
     }
 }
 

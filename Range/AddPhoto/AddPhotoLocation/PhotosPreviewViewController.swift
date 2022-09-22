@@ -140,7 +140,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     }
 
     private func buildThumbnailsView() {
-        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, uploads: uploads)
+        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: model, uploads: uploads)
     }
 }
 
