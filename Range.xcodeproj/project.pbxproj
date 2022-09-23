@@ -175,6 +175,7 @@
 		0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */; };
 		0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9928DDE5BD00E50284 /* Array+Utils.swift */; };
 		0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */; };
+		0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9D28DDEAF100E50284 /* CommentFeedItemCell.swift */; };
 		0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232427FC777600D744F4 /* CameraPreview.swift */; };
 		0A97232727FC782B00D744F4 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232627FC782B00D744F4 /* CameraView.swift */; };
 		0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraViewController.swift */; };
@@ -400,6 +401,7 @@
 		0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoadingIndicator.swift; sourceTree = "<group>"; };
 		0A966F9928DDE5BD00E50284 /* Array+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Utils.swift"; sourceTree = "<group>"; };
 		0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayUtilsTest.swift; sourceTree = "<group>"; };
+		0A966F9D28DDEAF100E50284 /* CommentFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFeedItemCell.swift; sourceTree = "<group>"; };
 		0A97232427FC777600D744F4 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0A97232627FC782B00D744F4 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		0A97232827FC7D9D00D744F4 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
@@ -577,6 +579,7 @@
 			children = (
 				0A130E9D28D4A8F700FF1368 /* CollaborationFeedViewController.swift */,
 				0A130EA028D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift */,
+				0A966F9D28DDEAF100E50284 /* CommentFeedItemCell.swift */,
 				0A130EA828D74F3300FF1368 /* ImageUploadFeedItemCell.swift */,
 			);
 			path = Feed;
@@ -1222,6 +1225,7 @@
 				0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */,
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
+				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,

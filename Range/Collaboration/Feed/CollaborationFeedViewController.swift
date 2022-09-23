@@ -7,8 +7,9 @@ import UIKit
 class CollaborationFeedViewController: UIViewController {
     /// Conform to hashable by checking id only, we don't want the objects being accessed for hashing as the diffable data source
     /// will need hash when computing the diff and the object may already be gone (if some upload was removed for example)
-    struct FeedItem: Hashable {
+    struct FeedItem: Hashable, Comparable {
         var id: String
+        var timestamp: TimeInterval
         var item: AnyObject
         func hash(into hasher: inout Hasher) {
             hasher.combine(id)
@@ -18,6 +19,13 @@ class CollaborationFeedViewController: UIViewController {
                         rhs: CollaborationFeedViewController.FeedItem) -> Bool
         {
             lhs.id == rhs.id
+        }
+
+        /// Comparable by timestamp so FeedItems can be sorted by timestamp
+        static func < (lhs: CollaborationFeedViewController.FeedItem,
+                       rhs: CollaborationFeedViewController.FeedItem) -> Bool
+        {
+            lhs.timestamp < rhs.timestamp
         }
     }
 
@@ -30,6 +38,9 @@ class CollaborationFeedViewController: UIViewController {
 
     private var uploads: Results<Upload>!
     private var uploadsNotificationToken: NotificationToken?
+
+    private var comments: Results<Comment>!
+    private var commentsNotificationToken: NotificationToken?
 
     init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
         self.imageCaches = imageCaches
@@ -45,6 +56,11 @@ class CollaborationFeedViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        uploadsNotificationToken?.invalidate()
+        commentsNotificationToken?.invalidate()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -58,11 +74,14 @@ class CollaborationFeedViewController: UIViewController {
         }
 
         observeUploads()
+        observeComments()
         dataSource.apply(prepareSnapshot(), animatingDifferences: false)
     }
 
     func scroll(toUpload upload: Upload) {
-        if let indexPath = dataSource.indexPath(for: FeedItem(id: upload.id, item: upload)) {
+        if let indexPath = dataSource
+            .indexPath(for: FeedItem(id: upload.id, timestamp: upload.timestamp, item: upload))
+        {
             tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
     }
@@ -75,6 +94,7 @@ class CollaborationFeedViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.register(CollaborationCreatedFeedItemCell.self, forCellReuseIdentifier: "CollaborationCreated")
         tableView.register(ImageUploadFeedItemCell.self, forCellReuseIdentifier: "ImageUpload")
+        tableView.register(CommentFeedItemCell.self, forCellReuseIdentifier: "Comment")
 
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
@@ -98,14 +118,27 @@ class CollaborationFeedViewController: UIViewController {
         }
     }
 
+    private func observeComments() {
+        comments = collaboration.comments
+            .where { $0.placeholder == false }
+            .sorted(by: \Comment.timestamp, ascending: false)
+        commentsNotificationToken = comments.observe { [weak self] _ in
+            guard let self = self else { return }
+            self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+        }
+    }
+
     /// Prepare new snapshot for the diffable data source
     /// Add all items sorted by timestamp and include Collaboration for 'collaboration created'
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, FeedItem> {
         var snapshot = NSDiffableDataSourceSnapshot<Int, FeedItem>()
         snapshot.appendSections([1])
-        snapshot.appendItems(uploads.map { FeedItem(id: $0.id, item: $0) })
-        if collaboration.timestamp != nil, collaboration.author != nil {
-            snapshot.appendItems([FeedItem(id: collaboration.id, item: collaboration)])
+        let commentFeedItems = [FeedItem](comments.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
+        let uploadFeedItems = [FeedItem](uploads.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
+        let items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: false)
+        snapshot.appendItems(items)
+        if let timestamp = collaboration.timestamp, collaboration.author != nil {
+            snapshot.appendItems([FeedItem(id: collaboration.id, timestamp: timestamp, item: collaboration)])
         }
         return snapshot
     }
@@ -136,6 +169,12 @@ extension CollaborationFeedViewController {
             cell.projectModel = projectModel
             cell.tableView = tableView
             cell.upload = upload
+            return cell
+        } else if let comment = feedItem.item as? Comment {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Comment",
+                                                     for: indexPath) as! CommentFeedItemCell
+            cell.tableView = tableView
+            cell.comment = comment
             return cell
         }
         return nil
