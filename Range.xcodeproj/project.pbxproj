@@ -173,6 +173,8 @@
 		0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */; };
 		0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */; };
 		0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */; };
+		0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9928DDE5BD00E50284 /* Array+Utils.swift */; };
+		0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */; };
 		0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232427FC777600D744F4 /* CameraPreview.swift */; };
 		0A97232727FC782B00D744F4 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232627FC782B00D744F4 /* CameraView.swift */; };
 		0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232827FC7D9D00D744F4 /* CameraViewController.swift */; };
@@ -396,6 +398,8 @@
 		0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeView.swift; sourceTree = "<group>"; };
 		0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoadingIndicator.swift; sourceTree = "<group>"; };
+		0A966F9928DDE5BD00E50284 /* Array+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Utils.swift"; sourceTree = "<group>"; };
+		0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayUtilsTest.swift; sourceTree = "<group>"; };
 		0A97232427FC777600D744F4 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		0A97232627FC782B00D744F4 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		0A97232827FC7D9D00D744F4 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
@@ -581,6 +585,7 @@
 		0A130EAC28D8A2BC00FF1368 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */,
 				0A130EAD28D8A2FC00FF1368 /* TimeIntervalFormattingTest.swift */,
 			);
 			path = Extensions;
@@ -746,6 +751,7 @@
 		0A4DC77F27F48FBA00712518 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				0A966F9928DDE5BD00E50284 /* Array+Utils.swift */,
 				0A724F6C28900D4400708C6B /* Async.swift */,
 				0A720C6228007011003D6B13 /* Image+Resize.swift */,
 				0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */,
@@ -1185,6 +1191,7 @@
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
 				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
+				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
 				0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
@@ -1355,6 +1362,7 @@
 				0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */,
 				0A724F6028898B9400708C6B /* AddUploadCommandTest.swift in Sources */,
 				0A34C1832845F89700BEDC7C /* FirebaseCollaborationTest.swift in Sources */,
+				0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 				0A724F5E288980F800708C6B /* AddCommentCommandTest.swift in Sources */,
 				0A724F5A28897B8A00708C6B /* AddFeatureCommandTest.swift in Sources */,
