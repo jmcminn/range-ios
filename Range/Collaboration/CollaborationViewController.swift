@@ -312,10 +312,7 @@ extension CollaborationViewController {
         }
 
         let updatesToggleSeparator = UIView()
-        updatesToggleSeparator.backgroundColor = .dynamicColor(
-            light: .Neutral_01, // in light mode the same color as background as we don't want the stroke
-            dark: .Neutral_07
-        )
+        updatesToggleSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         updatesToggleBackground.addSubview(updatesToggleSeparator)
         updatesToggleSeparator.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()

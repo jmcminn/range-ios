@@ -38,10 +38,10 @@ extension UIButton.Configuration {
             bottom: 14,
             trailing: 0
         )
-        config.baseBackgroundColor = .Neutral_09
-        config.baseForegroundColor = .Neutral_04
+        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         config.background.cornerRadius = cornerRadius
-        config.background.strokeColor = .dynamicColor(light: .Neutral_08, dark: .Neutral_07)
+        config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig
         config.imagePlacement = imagePlacement
         config.imagePadding = 5

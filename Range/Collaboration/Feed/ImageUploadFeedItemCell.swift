@@ -116,17 +116,18 @@ class ImageUploadFeedItemCell: UITableViewCell {
         avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
 
         authorLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
-        authorLabel.font = UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
 
         timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
-        timestampLabel.font = .preferredFont(forTextStyle: .caption2)
+        timestampLabel.font = .preferredFont(forTextStyle: .footnote)
 
-        imageAndDescriptionView.backgroundColor = backgroundColor
+        imageAndDescriptionView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         imageAndDescriptionView.layer.borderWidth = 1
         imageAndDescriptionView.layer.cornerRadius = 16
         imageAndDescriptionView.clipsToBounds = true
 
         uploadImageView.contentMode = .scaleAspectFit
+        uploadImageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())
 
         descriptionLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
         descriptionLabel.font = .preferredFont(forTextStyle: .subheadline)
@@ -164,7 +165,6 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         if let upload = upload {
             timestampLabel.text = TimeInterval.format1(upload.timestamp)
-            uploadImageView.kf.indicatorType = .activity
             let needsAspectRatioUpdateAfterImageLoad = possiblyUpdateUploadImageViewConstraints(upload: upload)
             guard let imageCaches = imageCaches else { return }
             uploadImageView.kf.setImage(

@@ -130,7 +130,7 @@ class ThumbnailsViewController: UIViewController {
 extension ThumbnailsViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     /// Adapt cell border color when the user interface style changes
     func collectionView(_: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt _: IndexPath) {
-        cell.contentView.layer.borderColor = chooseColor(light: .Neutral_03, dark: .Neutral_07).cgColor
+        cell.contentView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     /// size the items based on the image aspect ratio. Cache the results in `cellWidths`.

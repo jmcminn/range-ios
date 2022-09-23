@@ -137,7 +137,7 @@ extension PinsDisplay {
             let nothingSelected = selectedPinId == nil
             // only reduce opacity if some pin is selected but not this one, if nothing is selected
             // then all pins are fully opaque
-            pin.iconOpacity = nothingSelected ? 1 : 0.5
+            pin.iconOpacity = nothingSelected ? 1 : 0.4
         }
     }
 

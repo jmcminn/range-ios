@@ -52,8 +52,10 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
         contentView.layer.borderWidth = 1
 
         contentView.addSubview(imageView)
+        imageView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         imageView.layer.cornerRadius = contentView.layer.cornerRadius
         imageView.clipsToBounds = true
+        imageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -66,7 +68,6 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
 
     private func reloadImage() {
         if let upload = upload, let imageCaches = imageCaches {
-            imageView.kf.indicatorType = .activity
             imageView.kf.cancelDownloadTask()
             imageView.kf.setImage(
                 with: imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 0),

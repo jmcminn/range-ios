@@ -25,7 +25,8 @@ class ImageGalleryPageView: UIView {
         imageView.layer.cornerRadius = 13
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFit
-        imageView.kf.indicatorType = .activity
+        imageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())
+
         addSubview(imageView)
     }
 

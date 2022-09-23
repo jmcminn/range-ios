@@ -311,7 +311,7 @@ extension AddPhotoPinsDisplay {
 
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPin(_ pin: inout PointAnnotation, selected: Bool) {
-        pin.iconOpacity = selected ? 1 : 0.5
+        pin.iconOpacity = selected ? 1 : 0.4
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
     }

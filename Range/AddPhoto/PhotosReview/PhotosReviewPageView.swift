@@ -67,7 +67,8 @@ class PhotosReviewPageView: UIView {
 
     private func setupImageView() {
         imageView.contentMode = .scaleAspectFit
-        imageView.kf.indicatorType = .activity
+        imageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())
+
         imageView.isUserInteractionEnabled = true
 
         // double tap to zoom gesture recognizer
