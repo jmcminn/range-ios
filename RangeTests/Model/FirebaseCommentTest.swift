@@ -2,15 +2,14 @@
 import XCTest
 
 class FirebaseCommentRealmSyncTest: XCTestCase {
-    // Tests if firebase object creates a proper upsert command
-    func testUpsertCommand() throws {
+    // Tests if firebase object creates a proper upsert command and fills in the defaults for optionals
+    func testUpsertCommand_defaultValues() throws {
         let firebaseComment = FirebaseComment(
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
             timestamp: 1000,
-            text: "comment 1",
-            isCompleted: nil
+            text: "comment 1"
         )
         XCTAssertEqual(
             try firebaseComment.upsertCommand(id: "comment1") as? AddCommentCommand,
@@ -21,7 +20,40 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
                 authorId: "user1",
                 timestamp: 1,
                 text: "comment 1",
-                isCompleted: nil
+                textIsEdited: false,
+                isNote: false,
+                completedById: nil,
+                completedTimestamp: nil
+            )
+        )
+    }
+
+    // Tests if firebase object creates a proper upsert command
+    func testUpsertCommand() throws {
+        let firebaseComment = FirebaseComment(
+            parentId: "collaboration1",
+            parentType: "Collaboration",
+            authorId: "user1",
+            timestamp: 1000,
+            text: "comment 1",
+            textIsEdited: true,
+            isNote: true,
+            completedById: "user2",
+            completedTimestamp: 2000
+        )
+        XCTAssertEqual(
+            try firebaseComment.upsertCommand(id: "comment1") as? AddCommentCommand,
+            AddCommentCommand(
+                commentId: "comment1",
+                parentType: "Collaboration",
+                parentId: "collaboration1",
+                authorId: "user1",
+                timestamp: 1,
+                text: "comment 1",
+                textIsEdited: true,
+                isNote: true,
+                completedById: "user2",
+                completedTimestamp: 2
             )
         )
     }

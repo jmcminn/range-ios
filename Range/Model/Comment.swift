@@ -12,8 +12,14 @@ class Comment: Object, WithPlaceholder {
     @Persisted var timestamp: TimeInterval
     // text
     @Persisted var text: String
-    // optional because it might be not marked as "to complete"
-    @Persisted var isCompleted: Bool?
+    // whether the text was ever edited
+    @Persisted var textIsEdited: Bool
+    // whether it is a note (true) or a regular comment (false)
+    @Persisted var isNote: Bool
+    // who completed the note
+    @Persisted var completedBy: Participant?
+    // when it was completed (or uncompleted if nil)
+    @Persisted var completedTimestamp: TimeInterval?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -23,12 +29,22 @@ class Comment: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, timestamp: TimeInterval, text: String, isCompleted: Bool?, placeholder: Bool = false) {
+    init(
+        id: String,
+        timestamp: TimeInterval,
+        text: String,
+        textIsEdited: Bool,
+        isNote: Bool,
+        completedTimestamp: TimeInterval?,
+        placeholder: Bool = false
+    ) {
         super.init()
         self.id = id
         self.timestamp = timestamp
         self.text = text
-        self.isCompleted = isCompleted
+        self.textIsEdited = textIsEdited
+        self.isNote = isNote
+        self.completedTimestamp = completedTimestamp
         self.placeholder = placeholder
     }
 
@@ -38,7 +54,9 @@ class Comment: Object, WithPlaceholder {
             id: id,
             timestamp: 0,
             text: "",
-            isCompleted: nil,
+            textIsEdited: false,
+            isNote: false,
+            completedTimestamp: nil,
             placeholder: true
         )
     }

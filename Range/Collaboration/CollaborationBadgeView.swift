@@ -57,7 +57,7 @@ class CollaborationBadgeView: UIView {
         let uploadsCount = collaboration.uploads.count
         label.text = uploadsCount < 9 ? String(uploadsCount) : "9⁺"
 
-        if collaboration.hasUncompletedComments {
+        if collaboration.hasUncompletedNotes {
             if let noteView = noteView {
                 noteView.isHidden = false
             } else {

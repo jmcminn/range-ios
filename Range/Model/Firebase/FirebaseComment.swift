@@ -20,7 +20,8 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case parentId = "parent", parentType, authorId = "author", timestamp, text, isCompleted
+        case parentId = "parent", parentType, authorId = "author", timestamp, text, textIsEdited,
+             isNote, completedById = "completedBy", completedTimestamp
     }
 
     var parentId: String
@@ -29,6 +30,10 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
     var timestamp: Int // milliseconds
     var text: String
     var isCompleted: Bool?
+    var textIsEdited: Bool? // if missing will default to false
+    var isNote: Bool? // if missing will default to false
+    var completedById: String? // participant id
+    var completedTimestamp: Int? // milliseconds
 
     func upsertCommand(id: String) throws -> Command {
         guard parentType == "Collaboration" else {
@@ -41,7 +46,10 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
             authorId: authorId,
             timestamp: TimeInterval(timestamp) / 1000.0,
             text: text,
-            isCompleted: isCompleted
+            textIsEdited: textIsEdited ?? false,
+            isNote: isNote ?? false,
+            completedById: completedById,
+            completedTimestamp: completedTimestamp != nil ? TimeInterval(completedTimestamp!) / 1000.0 : nil
         )
     }
 }

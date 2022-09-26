@@ -28,9 +28,9 @@ class Collaboration: Object, WithPlaceholder {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
-    /// If it has uncompleted comments
-    var hasUncompletedComments: Bool {
-        comments.contains { $0.isCompleted == false }
+    /// If it has uncompleted notes
+    var hasUncompletedNotes: Bool {
+        comments.contains { $0.isNote == true && $0.completedTimestamp == nil }
     }
 
     /// Default initializer required by Realm.

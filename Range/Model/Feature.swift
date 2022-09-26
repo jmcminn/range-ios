@@ -23,9 +23,9 @@ class Feature: Object, WithPlaceholder {
         }
     }
 
-    /// If any collaboration has uncompleted comments
-    var hasUncompletedComments: Bool {
-        collaborations.contains { $0.hasUncompletedComments }
+    /// If any collaboration has uncompleted notes
+    var hasUncompletedNotes: Bool {
+        collaborations.contains { $0.hasUncompletedNotes }
     }
 
     /// Default initializer required by Realm.

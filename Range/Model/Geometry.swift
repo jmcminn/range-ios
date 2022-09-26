@@ -31,9 +31,9 @@ class Geometry: Object, WithId, WithPlaceholder {
         }
     }
 
-    /// If any feature has uncompleted comments
-    var hasUncompletedComments: Bool {
-        features.contains { $0.hasUncompletedComments }
+    /// If any feature has uncompleted notes
+    var hasUncompletedNotes: Bool {
+        features.contains { $0.hasUncompletedNotes }
     }
 
     /// Default initializer required by Realm.

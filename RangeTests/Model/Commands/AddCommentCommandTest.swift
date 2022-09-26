@@ -32,7 +32,7 @@ class AddCommentCommandTest: XCTestCase {
             authorId: "user2",
             timestamp: 1,
             text: "",
-            isCompleted: nil
+            textIsEdited: false, isNote: false
         )
         try realm.write {
             try cmd.apply(inRealm: realm)
@@ -74,7 +74,8 @@ class AddCommentCommandTest: XCTestCase {
             authorId: "user1",
             timestamp: 1,
             text: "comment 1",
-            isCompleted: nil
+            textIsEdited: false,
+            isNote: false
         )
         try realm.write {
             try cmd1.apply(inRealm: realm)
@@ -106,7 +107,8 @@ class AddCommentCommandTest: XCTestCase {
             authorId: "user1",
             timestamp: 2,
             text: "comment 2",
-            isCompleted: nil
+            textIsEdited: false,
+            isNote: false
         )
         try realm.write {
             try cmd2.apply(inRealm: realm)
@@ -125,5 +127,57 @@ class AddCommentCommandTest: XCTestCase {
         XCTAssertEqual(collaboration1.comments.count, 1)
         XCTAssertEqual(collaboration2.comments.count, 0)
         XCTAssertEqual(collaboration1.comments.first, comment1)
+    }
+
+    func testApplyInRealm_completedNote() throws {
+        // 1. create 2 collaborations and a user
+        let user1 = Participant(
+            id: "user1",
+            firstName: "First",
+            lastName: "Last",
+            avatarUrl: nil,
+            email: "first@last.com"
+        )
+        let user2 = Participant(
+            id: "user2",
+            firstName: "First",
+            lastName: "Last2",
+            avatarUrl: nil,
+            email: "first@last2.com"
+        )
+        let collaboration1 = Collaboration(id: "collaboration1", timestamp: 1, name: "Collaboration1", description: "")
+        try realm.write {
+            realm.add([user1, user2, collaboration1])
+        }
+        XCTAssertEqual(collaboration1.comments.count, 0)
+
+        // 2. add note to collaboration1
+        var cmd1 = AddCommentCommand(
+            commentId: "comment1",
+            parentType: "Collaboration",
+            parentId: "collaboration1",
+            authorId: "user1",
+            timestamp: 1,
+            text: "comment 1",
+            textIsEdited: true,
+            isNote: true,
+            completedById: "user2",
+            completedTimestamp: 2
+        )
+        try realm.write {
+            try cmd1.apply(inRealm: realm)
+        }
+        XCTAssertEqual(collaboration1.comments.count, 1)
+        let comment1 = try XCTUnwrap(
+            realm.object(ofType: Comment.self, forPrimaryKey: "comment1"),
+            "comment1 not found"
+        )
+        XCTAssertEqual(comment1.text, "comment 1")
+        XCTAssertEqual(comment1.author, user1)
+        XCTAssertEqual(comment1.timestamp, 1)
+        XCTAssertTrue(comment1.isNote)
+        XCTAssertTrue(comment1.textIsEdited)
+        XCTAssertEqual(comment1.completedBy, user2)
+        XCTAssertEqual(comment1.completedTimestamp, 2)
     }
 }

@@ -92,7 +92,7 @@ extension PinsDisplay {
         }
         var pin = PointAnnotation(id: geometry.id, point: point)
         pin.userInfo = [
-            "hasUncompletedComments": geometry.hasUncompletedComments,
+            "hasUncompletedNotes": geometry.hasUncompletedNotes,
             "uploadsCount": geometry.uploadsCount,
         ]
         setPinSelection(&pin)
@@ -118,12 +118,12 @@ extension PinsDisplay {
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPinSelection(_ pin: inout PointAnnotation) {
         guard let uploadsCount = pin.userInfo?["uploadsCount"] as? Int else { return }
-        guard let hasUncompletedComments = pin.userInfo?["hasUncompletedComments"] as? Bool else { return }
+        guard let hasUncompletedNotes = pin.userInfo?["hasUncompletedNotes"] as? Bool else { return }
         if pin.id == selectedPinId {
             // show selected above non selected
             pin.symbolSortKey = 2
             // TODO: marker.selected.badge when we support request for upload update
-            pin.iconImage = hasUncompletedComments
+            pin.iconImage = hasUncompletedNotes
                 ? "marker.selected.note"
                 : numberedImageName("marker.selected.", uploadsCount)
             pin.iconAnchor = .bottom
@@ -131,7 +131,7 @@ extension PinsDisplay {
             pin.iconOpacity = 1
         } else {
             pin.symbolSortKey = 1
-            pin.iconImage = hasUncompletedComments ? "marker.note" : numberedImageName("marker.", uploadsCount)
+            pin.iconImage = hasUncompletedNotes ? "marker.note" : numberedImageName("marker.", uploadsCount)
             pin.iconAnchor = .center
             pin.iconOffset = [0, 0]
             let nothingSelected = selectedPinId == nil
