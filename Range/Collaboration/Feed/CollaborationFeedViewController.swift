@@ -5,6 +5,8 @@ import UIKit
 
 /// Feed for the collaboration. Most recent items are to the top. Collaboration created item is the last one.
 class CollaborationFeedViewController: UIViewController {
+    static let distanceBetweenRows = 32.0
+
     /// Conform to hashable by checking id only, we don't want the objects being accessed for hashing as the diffable data source
     /// will need hash when computing the diff and the object may already be gone (if some upload was removed for example)
     struct FeedItem: Hashable, Comparable {

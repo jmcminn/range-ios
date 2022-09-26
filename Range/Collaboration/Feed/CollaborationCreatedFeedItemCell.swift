@@ -41,8 +41,8 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
         avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         contentView.addSubview(avatarView)
         avatarView.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualToSuperview().inset(12)
-            make.bottom.lessThanOrEqualToSuperview().inset(12)
+            make.top.greaterThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
+            make.bottom.lessThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)

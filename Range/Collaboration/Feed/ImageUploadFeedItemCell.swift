@@ -67,7 +67,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
             .forEach(imageAndDescriptionView.addSubview)
 
         avatarView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(12)
+            make.top.equalToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)
         }
@@ -98,11 +98,11 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.left.right.bottom.equalToSuperview()
         }
         // tagsView will use the top and bottom 6 points of margin (for bigger tap area), so it's enough
-        // to give 6 top/bottom offset
+        // to give 6 top offset and also make lower bottom margin
         tagsView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(imageAndDescriptionView.snp.bottom).offset(6)
-            make.bottom.equalToSuperview().inset(6)
+            make.bottom.equalToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2 - 6)
         }
     }
 
