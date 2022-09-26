@@ -24,8 +24,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
     unowned var upload: Upload? {
         didSet {
-            updateColors()
             updateContent()
+            updateColors()
             if let upload = upload {
                 // not observe again if already observing (also helps for the crash mentioned below)
                 if let previousUpload = oldValue, previousUpload.id == upload.id {
@@ -138,6 +138,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
         descriptionSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
 
         tagsView.collectionView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+    }
+
+    override func traitCollectionDidChange(_: UITraitCollection?) {
+        updateColors()
     }
 
     /// Update colors that doesn't automatically adapt to appearance change

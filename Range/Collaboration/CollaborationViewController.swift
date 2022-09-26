@@ -329,7 +329,7 @@ extension CollaborationViewController {
         header.addSubview(updatesToggle)
         updatesToggle.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(Constants.updatesTogglePaddings.left)
-            make.trailing.equalToSuperview().inset(Constants.updatesTogglePaddings.right)
+            make.trailing.equalToSuperview().inset(Constants.updatesTogglePaddings.right).priority(.high)
             make.height.equalTo(Constants.updatesToggleHeight)
             make.bottom.equalToSuperview().inset(Constants.updatesTogglePaddings.bottom)
         }
