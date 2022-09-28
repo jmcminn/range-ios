@@ -44,6 +44,9 @@ class CollaborationFeedViewController: UIViewController {
     private var comments: Results<Comment>!
     private var commentsNotificationToken: NotificationToken?
 
+    private var updates: Results<Update>!
+    private var updatesNotificationToken: NotificationToken?
+
     init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
         self.imageCaches = imageCaches
         self.projectModel = projectModel
@@ -61,6 +64,7 @@ class CollaborationFeedViewController: UIViewController {
     deinit {
         uploadsNotificationToken?.invalidate()
         commentsNotificationToken?.invalidate()
+        updatesNotificationToken?.invalidate()
     }
 
     override func viewDidLoad() {
@@ -77,6 +81,7 @@ class CollaborationFeedViewController: UIViewController {
 
         observeUploads()
         observeComments()
+        observeUpdates()
         dataSource.apply(prepareSnapshot(), animatingDifferences: false)
     }
 
@@ -97,6 +102,7 @@ class CollaborationFeedViewController: UIViewController {
         tableView.register(CollaborationCreatedFeedItemCell.self, forCellReuseIdentifier: "CollaborationCreated")
         tableView.register(ImageUploadFeedItemCell.self, forCellReuseIdentifier: "ImageUpload")
         tableView.register(CommentFeedItemCell.self, forCellReuseIdentifier: "Comment")
+        tableView.register(NameUpdateFeedItemCell.self, forCellReuseIdentifier: "NameUpdate")
 
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
@@ -130,6 +136,16 @@ class CollaborationFeedViewController: UIViewController {
         }
     }
 
+    private func observeUpdates() {
+        updates = collaboration.updates
+            .where { $0.placeholder == false && $0.field == .name }
+            .sorted(by: \Update.timestamp, ascending: false)
+        updatesNotificationToken = updates.observe { [weak self] _ in
+            guard let self = self else { return }
+            self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+        }
+    }
+
     /// Prepare new snapshot for the diffable data source
     /// Add all items sorted by timestamp and include Collaboration for 'collaboration created'
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, FeedItem> {
@@ -137,7 +153,13 @@ class CollaborationFeedViewController: UIViewController {
         snapshot.appendSections([1])
         let commentFeedItems = [FeedItem](comments.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
         let uploadFeedItems = [FeedItem](uploads.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
-        let items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: false)
+        let updatesFeedItems = [FeedItem](updates.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
+        let items = _mergeSortedArrays(
+            FeedItem.self,
+            _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: false),
+            updatesFeedItems,
+            ascending: false
+        )
         snapshot.appendItems(items)
         if let timestamp = collaboration.timestamp, collaboration.author != nil {
             snapshot.appendItems([FeedItem(id: collaboration.id, timestamp: timestamp, item: collaboration)])
@@ -177,6 +199,12 @@ extension CollaborationFeedViewController {
                                                      for: indexPath) as! CommentFeedItemCell
             cell.tableView = tableView
             cell.comment = comment
+            return cell
+        } else if let update = feedItem.item as? Update, update.field == .name {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "NameUpdate",
+                                                     for: indexPath) as! NameUpdateFeedItemCell
+            cell.tableView = tableView
+            cell.update = update
             return cell
         }
         return nil
