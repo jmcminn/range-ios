@@ -36,7 +36,16 @@ class CollaborationFeedViewController: UIViewController {
     let collaboration: Collaboration
 
     let tableView: UITableView
-    var dataSource: UITableViewDiffableDataSource<Int, FeedItem>!
+    var dataSource: UITableViewDiffableDataSource<Int, FeedItem>?
+
+    var showMoreUpdates = true {
+        didSet {
+            if showMoreUpdates != oldValue {
+                /// change the level of detail for feed items, reload the snapshot
+                dataSource?.apply(prepareSnapshot(), animatingDifferences: true)
+            }
+        }
+    }
 
     private var uploads: Results<Upload>!
     private var uploadsNotificationToken: NotificationToken?
@@ -82,11 +91,11 @@ class CollaborationFeedViewController: UIViewController {
         observeUploads()
         observeComments()
         observeUpdates()
-        dataSource.apply(prepareSnapshot(), animatingDifferences: false)
+        dataSource?.apply(prepareSnapshot(), animatingDifferences: false)
     }
 
     func scroll(toUpload upload: Upload) {
-        if let indexPath = dataSource
+        if let indexPath = dataSource?
             .indexPath(for: FeedItem(id: upload.id, timestamp: upload.timestamp, item: upload))
         {
             tableView.scrollToRow(at: indexPath, at: .top, animated: true)
@@ -122,7 +131,7 @@ class CollaborationFeedViewController: UIViewController {
             .sorted(by: \Upload.timestamp, ascending: false)
         uploadsNotificationToken = uploads.observe { [weak self] _ in
             guard let self = self else { return }
-            self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+            self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
         }
     }
 
@@ -132,7 +141,7 @@ class CollaborationFeedViewController: UIViewController {
             .sorted(by: \Comment.timestamp, ascending: false)
         commentsNotificationToken = comments.observe { [weak self] _ in
             guard let self = self else { return }
-            self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+            self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
         }
     }
 
@@ -142,7 +151,7 @@ class CollaborationFeedViewController: UIViewController {
             .sorted(by: \Update.timestamp, ascending: false)
         updatesNotificationToken = updates.observe { [weak self] _ in
             guard let self = self else { return }
-            self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+            self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
         }
     }
 
@@ -153,13 +162,11 @@ class CollaborationFeedViewController: UIViewController {
         snapshot.appendSections([1])
         let commentFeedItems = [FeedItem](comments.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
         let uploadFeedItems = [FeedItem](uploads.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
-        let updatesFeedItems = [FeedItem](updates.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
-        let items = _mergeSortedArrays(
-            FeedItem.self,
-            _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: false),
-            updatesFeedItems,
-            ascending: false
-        )
+        var items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: false)
+        if showMoreUpdates {
+            let updatesFeedItems = [FeedItem](updates.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
+            items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: false)
+        }
         snapshot.appendItems(items)
         if let timestamp = collaboration.timestamp, collaboration.author != nil {
             snapshot.appendItems([FeedItem(id: collaboration.id, timestamp: timestamp, item: collaboration)])

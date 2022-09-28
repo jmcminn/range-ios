@@ -280,6 +280,7 @@ extension CollaborationViewController {
             projectModel: projectModel,
             collaboration: collaboration
         )
+        feedVC.showMoreUpdates = UserDefaults.moreUpdatesInTheFeed
     }
 
     /// the thumbnails and major/minor updates toggle belong to the feed header so they scroll with table view
@@ -320,9 +321,24 @@ extension CollaborationViewController {
         }
 
         updatesToggle = SegmentedControl(items: [
-            UIAction(title: String(localized: "More updates"), handler: { _ in }),
-            UIAction(title: String(localized: "Less updates"), handler: { _ in }),
+            UIAction(
+                title: String(localized: "More updates"),
+                handler: { [weak self] _ in
+                    UserDefaults.moreUpdatesInTheFeed = true
+                    self?.feedVC.showMoreUpdates = true
+                }
+            ),
+            UIAction(
+                title: String(localized: "Less updates"),
+                handler: { [weak self] _ in
+                    UserDefaults.moreUpdatesInTheFeed = false
+                    self?.feedVC.showMoreUpdates = false
+                }
+            ),
         ])
+        if UserDefaults.moreUpdatesInTheFeed == false {
+            updatesToggle.selectedSegmentIndex = 1
+        }
         updatesToggle.backgroundColor = containerView.backgroundColor
         // remove the border
         updatesToggle.layer.borderWidth = 0
