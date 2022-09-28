@@ -82,6 +82,7 @@
 		0A3831D928E44CA3001AF38A /* AddUpdateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D828E44CA3001AF38A /* AddUpdateCommandTest.swift */; };
 		0A3831DB28E44FF5001AF38A /* FirebaseUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */; };
 		0A3831DD28E467B2001AF38A /* NameUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */; };
+		0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
@@ -316,6 +317,7 @@
 		0A3831D828E44CA3001AF38A /* AddUpdateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUpdateCommandTest.swift; sourceTree = "<group>"; };
 		0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpdateTest.swift; sourceTree = "<group>"; };
 		0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameUpdateFeedItemCell.swift; sourceTree = "<group>"; };
+		0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSkeletonCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -588,6 +590,7 @@
 				0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */,
 				0A0D31D628A41AC6007A8D49 /* ThumbnailsViewController.swift */,
 				0A47830128A53FE50063040F /* ThumbnailCollectionViewCell.swift */,
+				0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */,
 			);
 			path = Photos;
 			sourceTree = "<group>";
@@ -1351,6 +1354,7 @@
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0A130EA928D74F3300FF1368 /* ImageUploadFeedItemCell.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
+				0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
 				0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,

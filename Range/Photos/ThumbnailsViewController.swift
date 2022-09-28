@@ -14,11 +14,16 @@ class ThumbnailsViewController: UIViewController {
     /// will need hash when computing the diff and the Upload may already be gone (if some upload was removed)
     struct CollectionItem: Hashable {
         var id: String
-        var upload: Upload
+        // upload is optional as the collection contains "skeleton" cells with no uploads to fill
+        // the whole collection width
+        var upload: Upload?
         func hash(into hasher: inout Hasher) {
             hasher.combine(id)
         }
     }
+
+    /// All thumbnails are rendered with this height and variable width depending on the image aspect ratio
+    static let thumbnailHeight = 54.0
 
     unowned let imageCaches: ImageCaches
     unowned let projectModel: ProjectModel
@@ -63,20 +68,13 @@ class ThumbnailsViewController: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(ThumbnailCollectionViewCell.self, forCellWithReuseIdentifier: "ThumbnailCell")
+        collectionView.register(ThumbnailSkeletonCollectionViewCell.self, forCellWithReuseIdentifier: "SkeletonCell")
 
         dataSource = UICollectionViewDiffableDataSource<Int, CollectionItem>(
             collectionView: collectionView
         ) { [weak self] collectionView, indexPath, collectionItem -> UICollectionViewCell? in
             guard let self = self else { return nil }
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "ThumbnailCell",
-                for: indexPath
-            ) as! ThumbnailCollectionViewCell
-            cell.collectionView = collectionView
-            cell.imageCaches = self.imageCaches
-            cell.projectModel = self.projectModel
-            cell.upload = collectionItem.upload
-            return cell
+            return self.cell(forCollectionView: collectionView, indexPath: indexPath, collectionItem: collectionItem)
         }
 
         view.addSubview(collectionView)
@@ -115,17 +113,37 @@ class ThumbnailsViewController: UIViewController {
         var snapshot = NSDiffableDataSourceSnapshot<Int, CollectionItem>()
         snapshot.appendSections([1])
         snapshot.appendItems(uploads.map { CollectionItem(id: $0.id, upload: $0) })
+
+        // add skeleton cells to fill the whole width (might more, just not less, thats why we assume
+        // the thumbnails are narrow if no ratio given)
+        let totalUploadsWidth =
+            16 + // left margin
+            uploads.map {
+                // assume the item is narrow (portrait) if no ratio
+                let imageHeightToWidth = $0.imageHeightToWidth ?? 0.75
+                return ThumbnailsViewController.thumbnailHeight / imageHeightToWidth + 8 // 8 for spacing
+            }
+            .reduce(0.0, +)
+        let emptySpace = view.bounds.width - totalUploadsWidth
+        let skeletonCellWidth = ThumbnailsViewController.thumbnailHeight * 4.0 / 3.0 + 8 // assume wide + 8 spacing
+        let skeletonCellsNumber = Int(ceil(emptySpace / skeletonCellWidth))
+        if skeletonCellsNumber > 0 {
+            let skeletonItems = Array(1 ... skeletonCellsNumber).map { CollectionItem(id: "skeleton \($0)") }
+            snapshot.appendItems(skeletonItems)
+        }
+
         return snapshot
     }
 
     /// Returns image data provider for given cell.
-    private func imageProvider(forItemAt indexPath: IndexPath) -> ImageDataProvider {
+    private func imageProvider(forItemAt indexPath: IndexPath) -> ImageDataProvider? {
+        guard indexPath.item < uploads.count else { return nil }
         let upload = uploads[indexPath.item]
         return imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 0)
     }
 }
 
-// MARK: - UICollectionView data source & delegate
+// MARK: - UICollectionView delegate
 
 extension ThumbnailsViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     /// Adapt cell border color when the user interface style changes
@@ -137,19 +155,16 @@ extension ThumbnailsViewController: UICollectionViewDelegate, UICollectionViewDe
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize
     {
-        // variable width depending on the aspect ratio of the photo
-        let height = 54.0
-
         guard uploads.count > indexPath.item,
               let imageHeight2Width = uploads[indexPath.item].imageHeightToWidth,
               imageHeight2Width > 0
         else {
             // we don't have the aspect ratio for this upload yet
-            return CGSize(width: 72.0, height: height)
+            return CGSize(width: 72.0, height: ThumbnailsViewController.thumbnailHeight)
         }
 
-        let width = height / imageHeight2Width
-        return CGSize(width: width, height: height)
+        let width = ThumbnailsViewController.thumbnailHeight / imageHeight2Width
+        return CGSize(width: width, height: ThumbnailsViewController.thumbnailHeight)
     }
 
     func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -159,11 +174,34 @@ extension ThumbnailsViewController: UICollectionViewDelegate, UICollectionViewDe
     }
 }
 
+// MARK: diffable data source
+
+extension ThumbnailsViewController {
+    func cell(forCollectionView collectionView: UICollectionView, indexPath: IndexPath,
+              collectionItem: CollectionItem) -> UICollectionViewCell?
+    {
+        if let upload = collectionItem.upload {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "ThumbnailCell",
+                for: indexPath
+            ) as! ThumbnailCollectionViewCell
+            cell.collectionView = collectionView
+            cell.imageCaches = imageCaches
+            cell.projectModel = projectModel
+            cell.upload = upload
+            return cell
+        } else {
+            // skeleton
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "SkeletonCell", for: indexPath)
+        }
+    }
+}
+
 /// Images prefetching
 extension ThumbnailsViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         let sources = indexPaths
-            .map { imageProvider(forItemAt: $0) }
+            .compactMap { imageProvider(forItemAt: $0) }
             .map { Source.provider($0) }
         ImagePrefetcher(sources: sources).start()
     }
