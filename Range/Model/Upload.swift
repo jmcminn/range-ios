@@ -50,7 +50,7 @@ class Upload: Object, WithPlaceholder {
         description: String?,
         correlationId: String,
         fileType: FileType,
-        placeholder _: Bool = false
+        placeholder: Bool = false
     ) {
         super.init()
         self.id = id
@@ -60,6 +60,7 @@ class Upload: Object, WithPlaceholder {
         self.correlationId = correlationId
         self.fileType = fileType
         uploadDescription = description
+        self.placeholder = placeholder
     }
 
     /// Convenience initializer for placeholder object

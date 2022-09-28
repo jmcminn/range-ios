@@ -23,6 +23,8 @@ class Collaboration: Object, WithPlaceholder {
     @Persisted var comments: MutableSet<Comment>
     /// uploads, the order doesn't matter so it's a set (the order is controlled by the upload timestamp when displaying in the UI)
     @Persisted var uploads: MutableSet<Upload>
+    /// updates, the order doesn't matter so it's a set (the order is controlled by the upload timestamp when displaying in the UI)
+    @Persisted var updates: MutableSet<Update>
     /// tags attached to the upload, ordered
     @Persisted var tags: List<Tag>
     /// Whether this object is just a placeholder for a real object

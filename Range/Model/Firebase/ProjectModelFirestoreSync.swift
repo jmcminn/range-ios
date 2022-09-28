@@ -26,6 +26,7 @@ class ProjectModelFirestoreContext {
     lazy var participantsRef = projectRef.collection("participants")
     lazy var statusNamesRef = projectRef.collection("statusNames")
     lazy var tagNamesRef = projectRef.collection("tagNames")
+    lazy var updatesRef = projectRef.collection("updates")
     lazy var uploadsRef = projectRef.collection("uploads")
 
     init(firestore: Firestore, projectId: String) {
@@ -76,6 +77,7 @@ class ProjectModelFirestoreSync {
         syncDetails(ctx.featuresRef, as: FirebaseFeature.self)
         syncDetails(ctx.collaborationsRef, as: FirebaseCollaboration.self)
         syncDetails(ctx.commentsRef, as: FirebaseComment.self)
+        syncDetails(ctx.updatesRef, as: FirebaseUpdate.self)
         syncDetails(ctx.uploadsRef, as: FirebaseUpload.self)
 
         // register itself as a remote updates for the model

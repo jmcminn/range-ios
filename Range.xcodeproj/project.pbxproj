@@ -75,6 +75,12 @@
 		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
 		0A34C1912846190A00BEDC7C /* FirebaseUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirebaseUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */; };
+		0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */; };
+		0A3831D328E42D3D001AF38A /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D228E42D3D001AF38A /* Update.swift */; };
+		0A3831D528E44404001AF38A /* IntOrString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* IntOrString.swift */; };
+		0A3831D728E44550001AF38A /* AddUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D628E44550001AF38A /* AddUpdateCommand.swift */; };
+		0A3831D928E44CA3001AF38A /* AddUpdateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D828E44CA3001AF38A /* AddUpdateCommandTest.swift */; };
+		0A3831DB28E44FF5001AF38A /* FirebaseUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
@@ -302,6 +308,12 @@
 		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		0A34C1902846190900BEDC7C /* FirebaseUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUploadTest.swift; sourceTree = "<group>"; };
+		0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpdate.swift; sourceTree = "<group>"; };
+		0A3831D228E42D3D001AF38A /* Update.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
+		0A3831D428E44404001AF38A /* IntOrString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntOrString.swift; sourceTree = "<group>"; };
+		0A3831D628E44550001AF38A /* AddUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUpdateCommand.swift; sourceTree = "<group>"; };
+		0A3831D828E44CA3001AF38A /* AddUpdateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUpdateCommandTest.swift; sourceTree = "<group>"; };
+		0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpdateTest.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -531,6 +543,7 @@
 				0AFAF1B5283FC9EB002F216A /* Feature.swift */,
 				0A7FC4122844E05A0097888A /* Collaboration.swift */,
 				0A34C18A2845FF1700BEDC7C /* Comment.swift */,
+				0A3831D228E42D3D001AF38A /* Update.swift */,
 				0A34C18E2846134000BEDC7C /* Upload.swift */,
 				0AD9B75E28677145005ACFD7 /* Commands */,
 				0A2F32FD2837E85E00D04A1C /* Firebase */,
@@ -550,6 +563,7 @@
 				0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */,
 				0A34C1822845F89700BEDC7C /* FirebaseCollaborationTest.swift */,
 				0A34C18C2846030800BEDC7C /* FirebaseCommentTest.swift */,
+				0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */,
 				0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */,
 			);
 			path = Model;
@@ -630,6 +644,7 @@
 				0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */,
 				0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */,
 				0A34C1882845FE9C00BEDC7C /* FirebaseComment.swift */,
+				0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */,
 				0A34C1902846190900BEDC7C /* FirebaseUpload.swift */,
 				0AD9B769286A1710005ACFD7 /* Commands */,
 			);
@@ -933,6 +948,7 @@
 				0A724F5928897B8A00708C6B /* AddFeatureCommandTest.swift */,
 				0A724F5B28897DE500708C6B /* AddCollaborationCommandTest.swift */,
 				0A724F5D288980F800708C6B /* AddCommentCommandTest.swift */,
+				0A3831D828E44CA3001AF38A /* AddUpdateCommandTest.swift */,
 				0A724F5F28898B9400708C6B /* AddUploadCommandTest.swift */,
 			);
 			path = Commands;
@@ -1003,7 +1019,9 @@
 				0A724F3C2888483600708C6B /* AddFeatureCommand.swift */,
 				0A724F3E28884A9100708C6B /* AddCollaborationCommand.swift */,
 				0A724F4E28887ED300708C6B /* AddCommentCommand.swift */,
+				0A3831D628E44550001AF38A /* AddUpdateCommand.swift */,
 				0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */,
+				0A3831D428E44404001AF38A /* IntOrString.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -1198,6 +1216,7 @@
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
 				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
+				0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */,
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
@@ -1253,8 +1272,10 @@
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
 				0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */,
 				0A130E9E28D4A8F700FF1368 /* CollaborationFeedViewController.swift in Sources */,
+				0A3831D728E44550001AF38A /* AddUpdateCommand.swift in Sources */,
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
+				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
 				0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */,
@@ -1291,6 +1312,7 @@
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,
+				0A3831D528E44404001AF38A /* IntOrString.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,
@@ -1365,12 +1387,14 @@
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
 				0A724F542889733000708C6B /* AddTagCommandTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
+				0A3831D928E44CA3001AF38A /* AddUpdateCommandTest.swift in Sources */,
 				0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */,
 				0A34C181284552AC00BEDC7C /* FirebaseFeatureTest.swift in Sources */,
 				0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */,
 				0A724F6028898B9400708C6B /* AddUploadCommandTest.swift in Sources */,
 				0A34C1832845F89700BEDC7C /* FirebaseCollaborationTest.swift in Sources */,
 				0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */,
+				0A3831DB28E44FF5001AF38A /* FirebaseUpdateTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 				0A724F5E288980F800708C6B /* AddCommentCommandTest.swift in Sources */,
 				0A724F5A28897B8A00708C6B /* AddFeatureCommandTest.swift in Sources */,

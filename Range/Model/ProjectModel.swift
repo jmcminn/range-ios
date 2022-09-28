@@ -16,6 +16,7 @@ enum ModelError: Error, Equatable {
     case statusNotFound
     case malformedUrl(_ url: String)
     case fileTypeNotSupported(_ type: String)
+    case fieldNotSupported(_ field: String)
 }
 
 // model error extension to provide localized descriptions of errors
@@ -40,6 +41,8 @@ extension ModelError: LocalizedError {
             return "Malformed URL: \(url)"
         case let .fileTypeNotSupported(type):
             return "\(type) fileType not supported"
+        case let .fieldNotSupported(field):
+            return "\(field) field not supported"
         }
     }
 }
@@ -118,7 +121,7 @@ class ProjectModel {
         }
         config.objectTypes = [
             ProjectSummary.self, Status.self, Tag.self, Participant.self, PDFCanvas.self,
-            Geometry.self, Feature.self, Collaboration.self, Comment.self, Upload.self,
+            Geometry.self, Feature.self, Collaboration.self, Comment.self, Update.self, Upload.self,
             Location.self,
         ]
         realmConfig = config
