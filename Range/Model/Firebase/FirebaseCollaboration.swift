@@ -31,21 +31,6 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
     var collaborationDescription: String?
     var tagIds: [String]
 
-    /// Default initializer with all properties
-//    init(
-//        featureId: String,
-//        statusId: String?,
-//        name: String,
-//        description: String?,
-//        tagIds: [String]
-//    ) {
-//        self.featureId = featureId
-//        self.statusId = statusId
-//        self.name = name
-//        collaborationDescription = description
-//        self.tagIds = tagIds
-//    }
-//
     func upsertCommand(id: String) throws -> Command {
         let timestampTimeInterval: TimeInterval?
         if let timestamp = timestamp {

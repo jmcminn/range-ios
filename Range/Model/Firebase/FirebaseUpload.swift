@@ -35,8 +35,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     var name: String?
     var uploadDescription: String?
     var urlString: String?
-    // TODO: 193 not optional
-    var correlationId: String?
+    var correlationId: String
     var tagIds: [String]
     var fileTypeString: String?
     var imageHeightToWidth: Double?
@@ -60,7 +59,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
         }
         return AddUploadCommand(
             uploadId: id,
-            correlationId: correlationId ?? id,
+            correlationId: correlationId,
             fileType: fileType,
             parentType: parentType,
             parentId: parentId,

@@ -29,7 +29,6 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
     var authorId: String
     var timestamp: Int // milliseconds
     var text: String
-    var isCompleted: Bool?
     var textIsEdited: Bool? // if missing will default to false
     var isNote: Bool? // if missing will default to false
     var completedById: String? // participant id

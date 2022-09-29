@@ -64,8 +64,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             parentType: "Feature",
             authorId: "user1",
             timestamp: 1,
-            text: "comment 1",
-            isCompleted: nil
+            text: "comment 1"
         )
         XCTAssertThrowsError(
             try firebaseComment.upsertCommand(id: "comment1")
