@@ -95,9 +95,14 @@ extension ProjectModel {
         }
 
         photosToAdd.forEach {
-            commands.append(contentsOf: _addUpload(uploadId: $0.uploadId, timestamp: $0.timestamp,
-                                                   tags: tags, description: description,
-                                                   toCollaboration: collaborationId))
+            commands.append(contentsOf: _addUpload(
+                uploadId: $0.uploadId,
+                timestamp: $0.timestamp,
+                tags: tags,
+                description: description,
+                toCollaboration: collaborationId,
+                imageHeightToWidth: $0.height2Width
+            ))
         }
         return commands
     }
@@ -155,9 +160,14 @@ extension ProjectModel {
         )
         var commands: [Command] = [addGeometryCmd, addFeatureCmd, addCollaborationCmd]
         photosToAdd.forEach {
-            commands.append(contentsOf: _addUpload(uploadId: $0.uploadId, timestamp: $0.timestamp,
-                                                   tags: tags, description: description,
-                                                   toCollaboration: addCollaborationCmd.collaborationId))
+            commands.append(contentsOf: _addUpload(
+                uploadId: $0.uploadId,
+                timestamp: $0.timestamp,
+                tags: tags,
+                description: description,
+                toCollaboration: addCollaborationCmd.collaborationId,
+                imageHeightToWidth: $0.height2Width
+            ))
         }
         return commands
     }
@@ -171,7 +181,8 @@ extension ProjectModel {
                     timestamp: TimeInterval,
                     tags: [TagViewModel],
                     description: String,
-                    toCollaboration collaborationId: String) -> [Command]
+                    toCollaboration collaborationId: String,
+                    imageHeightToWidth: Double) -> [Command]
     {
         var commands: [Command] = []
 
@@ -191,7 +202,8 @@ extension ProjectModel {
             name: nil,
             uploadDescription: description,
             url: nil,
-            tagIds: tags.map(\.id)
+            tagIds: tags.map(\.id),
+            imageHeightToWidth: imageHeightToWidth
         )
         commands.append(addUploadCmd)
 

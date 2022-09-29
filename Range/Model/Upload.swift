@@ -30,8 +30,7 @@ class Upload: Object, WithPlaceholder {
     @Persisted var placeholder: Bool = false
     /// Versions of a photo has the same correlationId (the id of the first version)
     @Persisted var correlationId: String
-    /// Image aspect ratio. Stored locally when the image is downloaded from the Storage
-    /// Not synchronized with backend
+    /// Image aspect ratio. Temporary optional until the model is migrated
     @Persisted var imageHeightToWidth: Double?
     /// File type
     @Persisted var fileType: FileType
@@ -50,6 +49,7 @@ class Upload: Object, WithPlaceholder {
         description: String?,
         correlationId: String,
         fileType: FileType,
+        imageHeightToWidth: Double?,
         placeholder: Bool = false
     ) {
         super.init()
@@ -57,9 +57,10 @@ class Upload: Object, WithPlaceholder {
         self.timestamp = timestamp
         self.url = url
         self.name = name
+        uploadDescription = description
         self.correlationId = correlationId
         self.fileType = fileType
-        uploadDescription = description
+        self.imageHeightToWidth = imageHeightToWidth
         self.placeholder = placeholder
     }
 
@@ -73,6 +74,7 @@ class Upload: Object, WithPlaceholder {
             description: nil,
             correlationId: id,
             fileType: .image,
+            imageHeightToWidth: nil,
             placeholder: true
         )
     }

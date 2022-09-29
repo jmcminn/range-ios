@@ -95,7 +95,8 @@ class ProjectModelCommandsTest: XCTestCase {
                                  newTagViewModel,
                              ],
                              description: "upload description",
-                             toCollaboration: "collaboration1")
+                             toCollaboration: "collaboration1",
+                             imageHeightToWidth: 1)
         XCTAssertEqual(commands.count, 2)
         XCTAssertEqual(commands[0] as? AddTagCommand, AddTagCommand(tagId: newTagViewModel.id, name: "tag 2"))
         let addUploadCmd = try XCTUnwrap(commands[1] as? AddUploadCommand)
@@ -110,7 +111,8 @@ class ProjectModelCommandsTest: XCTestCase {
             name: nil,
             uploadDescription: "upload description",
             url: nil,
-            tagIds: ["tag1", newTagViewModel.id]
+            tagIds: ["tag1", newTagViewModel.id],
+            imageHeightToWidth: 1
         ))
     }
 

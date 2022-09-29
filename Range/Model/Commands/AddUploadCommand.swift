@@ -14,6 +14,7 @@ struct AddUploadCommand: Command, Equatable {
     var uploadDescription: String?
     var url: URL?
     var tagIds: [String]
+    var imageHeightToWidth: Double?
 
     func apply(inRealm realm: Realm) throws {
         // remove the upload from the tags it was attached to and is not anymore
@@ -37,9 +38,10 @@ struct AddUploadCommand: Command, Equatable {
             name: name,
             description: uploadDescription,
             correlationId: correlationId,
-            fileType: fileType
+            fileType: fileType,
+            imageHeightToWidth: imageHeightToWidth
         )
-        // if the upload has local height2Width then keep it
+        // if the upload has local imageHeightToWidth then keep it
         if let existingUpload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
             upload.imageHeightToWidth = existingUpload.imageHeightToWidth
         }
