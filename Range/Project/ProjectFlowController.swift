@@ -1,3 +1,4 @@
+import Combine
 import OSLog
 import SnapKit
 import SwiftUI
@@ -13,10 +14,14 @@ final class ProjectFlowController: UIViewController {
     var onSignOut: (() -> Void)?
 
     let debugSettings = DebugSettings()
+    /// for storing the debugSettings observer(s)
+    private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
+
     var topViewController: ProjectTopViewController?
     lazy var bottomBlurView = setupBottomBlur()
     lazy var actionCardVC = installActionCardVC()
-    lazy var pinsDisplay = PinsDisplay(model: model, canvasContainer: canvasContainer)
+    var pinsDisplay: GeometriesPinsDisplay?
+//    lazy var pinsDisplay = PinsDisplay(canvasViewController: canvasContainer.pdfCanvasViewController)
     var debugSettingsButton: RoundShadowButton!
 
     var addPhotoFlow: AddPhotoFlowController?
@@ -34,7 +39,7 @@ final class ProjectFlowController: UIViewController {
 
         collaborationFlow.onCollaborationClose = { [weak self] in
             // unselect pin, this will result also in hiding the collaboration window
-            self?.pinsDisplay.setSelectedPinId(nil)
+            self?.pinsDisplay?.setSelectedPin(nil)
         }
     }
 
@@ -44,13 +49,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     func start() {
-        pinsDisplay.onSelectedPinChange = { [weak self] geometryId in
-            if let geometryId = geometryId {
-                self?.collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
-            } else {
-                self?.collaborationFlow.hideCollaborationWindow(animated: true)
-            }
-        }
+        createGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins)
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -61,13 +60,48 @@ final class ProjectFlowController: UIViewController {
         bottomBlurView.isHidden = false
         showDefaultCanvasUI(animated: false)
         collaborationFlow.start()
+        observeDebugSettings()
+    }
+
+    private func observeDebugSettings() {
+        debugSettingsNativeViewsForPinsSubscriber = debugSettings.$nativeViewsForPins
+            .sink { [weak self] useNativeViews in
+                guard let self = self else { return }
+                self.canvasContainer.pdfCanvasViewController.pdfDrivesInteractions = !useNativeViews
+                self.pinsDisplay?.stop()
+                self.createGeometriesPinsDisplay(useNativeViews: useNativeViews)
+                self.pinsDisplay?.start(onInitialLoad: nil)
+            }
+    }
+
+    private func createGeometriesPinsDisplay(useNativeViews: Bool) {
+        pinsDisplay = useNativeViews
+            ? GeometriesViewAnnotationPinsDisplay(
+                canvasViewController: canvasContainer.pdfCanvasViewController,
+                deselectOnCanvasTap: true,
+                geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
+            )
+            : GeometriesAnnotationPinsDisplay(canvasViewController:
+                canvasContainer.pdfCanvasViewController,
+                deselectOnCanvasTap: true,
+                geometryPinDisplayOptionsProvider: PinDisplayOptions
+                    .regularPinDisplayOptionsProvider)
+        pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
+            if let geometryId = pinPoint?.id {
+                self?.collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
+            } else {
+                self?.collaborationFlow.hideCollaborationWindow(animated: true)
+            }
+        }
     }
 
     func stop() {
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)
-        pinsDisplay.stop()
+        pinsDisplay?.stop()
         collaborationFlow.stop()
+        debugSettingsNativeViewsForPinsSubscriber?.cancel()
+        debugSettingsNativeViewsForPinsSubscriber = nil
     }
 
     /// shows the view controller covering the top of of the screen
@@ -114,14 +148,14 @@ final class ProjectFlowController: UIViewController {
     fileprivate func showDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.showCard(animated: animated)
         showDebugSettingsButton()
-        pinsDisplay.start()
+        pinsDisplay?.start(onInitialLoad: nil)
     }
 
     /// Hide the default UI elements when viewing the canvas
     fileprivate func hideDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.hideCard(animated: animated)
         hideDebugSettingsButton()
-        pinsDisplay.stop()
+        pinsDisplay?.stop()
     }
 
     // TODO: this should be hidden in the production version

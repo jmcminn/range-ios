@@ -420,11 +420,12 @@ extension AddPhotoFlowController {
 
     /// Starts the pin handler that adds the pins to the canvas and allows for the selection
     private func showPins() {
-        pinsDisplay = AddPhotoPinsDisplay(model: model,
-                                          canvasContainer: canvasContainer,
-                                          image: photosToAddViewModel.photos.first!.thumbnail)
-        pinsDisplay?.onSelectedPinChange = { [weak self] geometryId in
-            if let geometryId = geometryId {
+        pinsDisplay = AddPhotoPinsDisplay(
+            canvasContainer: canvasContainer,
+            image: photosToAddViewModel.photos.first!.thumbnail
+        )
+        pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
+            if let geometryId = pinPoint?.id {
                 self?.showPhotosPreview(forGeometry: geometryId, animated: true)
             } else {
                 self?.hidePhotosPreview(animated: true)

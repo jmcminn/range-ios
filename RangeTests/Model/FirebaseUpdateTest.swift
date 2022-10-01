@@ -19,7 +19,6 @@ class FirebaseUpdateRealmSyncTest: XCTestCase {
         XCTAssertThrowsError(
             try JSONDecoder().decode(FirebaseUpdate.self, from: inputData)
         ) { error in
-            print("xxx, ", error)
             guard let error = error as? IntOrString.IntOrStringError, case .missingValue = error else {
                 XCTFail("unexpected error: \(error)"); return
             }

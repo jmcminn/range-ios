@@ -19,7 +19,6 @@
 		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
 		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
 		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
-		0A0D31CB28A2BC10007A8D49 /* PinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CA28A2BC10007A8D49 /* PinsDisplay.swift */; };
 		0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CC28A3E735007A8D49 /* Realm.swift */; };
 		0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */; };
 		0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31D228A3F21E007A8D49 /* Resources.swift */; };
@@ -138,6 +137,11 @@
 		0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */; };
 		0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */; };
 		0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */; };
+		0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */; };
+		0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */; };
+		0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9428E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift */; };
+		0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */; };
+		0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9828E9CE5500F78B34 /* PinPoint.swift */; };
 		0A6FAC3228B552440057995B /* LocalPhotosImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */; };
 		0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */; };
 		0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */; };
@@ -174,6 +178,7 @@
 		0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */; };
 		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
 		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
+		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
 		0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4122844E05A0097888A /* Collaboration.swift */; };
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
@@ -253,7 +258,6 @@
 		0A07D7622810562600B6F9A2 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		0A07D7652812960500B6F9A2 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
 		0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowController.swift; sourceTree = "<group>"; };
-		0A0D31CA28A2BC10007A8D49 /* PinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinsDisplay.swift; sourceTree = "<group>"; };
 		0A0D31CC28A3E735007A8D49 /* Realm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Realm.swift; sourceTree = "<group>"; };
 		0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapbox.swift; sourceTree = "<group>"; };
 		0A0D31D228A3F21E007A8D49 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
@@ -375,6 +379,11 @@
 		0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageViewController.swift; sourceTree = "<group>"; };
 		0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "5451 VANDERBILT AVE-A1.1A.pdf"; sourceTree = "<group>"; };
 		0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFCanvasViewController.swift; sourceTree = "<group>"; };
+		0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesViewAnnotationPinsDisplay.swift; sourceTree = "<group>"; };
+		0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesPinsDisplay.swift; sourceTree = "<group>"; };
+		0A671F9428E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesAnnotationPinsDisplay.swift; sourceTree = "<group>"; };
+		0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDisplayOptions.swift; sourceTree = "<group>"; };
+		0A671F9828E9CE5500F78B34 /* PinPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinPoint.swift; sourceTree = "<group>"; };
 		0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPhotosImageDataProvider.swift; sourceTree = "<group>"; };
 		0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_landscape.jpg; sourceTree = "<group>"; };
 		0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryViewController.swift; sourceTree = "<group>"; };
@@ -409,6 +418,7 @@
 		0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_portrait.jpg; sourceTree = "<group>"; };
 		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
+		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
 		0A7FC4122844E05A0097888A /* Collaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collaboration.swift; sourceTree = "<group>"; };
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
@@ -823,7 +833,6 @@
 				0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */,
 				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
 				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
-				0A0D31CA28A2BC10007A8D49 /* PinsDisplay.swift */,
 			);
 			path = Project;
 			sourceTree = "<group>";
@@ -891,6 +900,7 @@
 				0A724F61288AAFCF00708C6B /* ModelUploads */,
 				0A632EDB27E4DA38001A019B /* PDF */,
 				0A0D31D428A41A94007A8D49 /* Photos */,
+				0A671F8F28E98D9500F78B34 /* Pins */,
 				0A4DC79427F5728500712518 /* Project */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A30E8BA284A090000A50D54 /* Tags */,
@@ -943,6 +953,19 @@
 				0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */,
 			);
 			path = DemoResources;
+			sourceTree = "<group>";
+		};
+		0A671F8F28E98D9500F78B34 /* Pins */ = {
+			isa = PBXGroup;
+			children = (
+				0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */,
+				0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */,
+				0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */,
+				0A671F9428E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift */,
+				0A7C8D5128E7592100AD28A4 /* PinView.swift */,
+				0A671F9828E9CE5500F78B34 /* PinPoint.swift */,
+			);
+			path = Pins;
 			sourceTree = "<group>";
 		};
 		0A724F522889730300708C6B /* Commands */ = {
@@ -1228,6 +1251,7 @@
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
+				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
@@ -1236,6 +1260,7 @@
 				0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
+				0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */,
 				0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */,
 				0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
@@ -1249,6 +1274,7 @@
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,
 				0A724F4128884D7A00708C6B /* AddFeatureCommand+Firestore.swift in Sources */,
 				0A724F3F28884A9100708C6B /* AddCollaborationCommand.swift in Sources */,
+				0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
@@ -1276,6 +1302,7 @@
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A130EA128D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift in Sources */,
 				0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */,
+				0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */,
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
 				0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */,
 				0A130E9E28D4A8F700FF1368 /* CollaborationFeedViewController.swift in Sources */,
@@ -1297,6 +1324,7 @@
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A4995BF2858D00100E571FB /* Tag.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
+				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
 				0A724F4D28887E4C00708C6B /* AddPDFCanvasCommand.swift in Sources */,
 				0A724F3B288840AD00708C6B /* AddGeometryCommand+Firestore.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
@@ -1313,6 +1341,7 @@
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */,
+				0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */,
 				0A130EA728D7409800FF1368 /* TimeInterval+Formatting.swift in Sources */,
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
@@ -1345,7 +1374,6 @@
 				0A456238283E792200BA8D21 /* FirebaseGeometry.swift in Sources */,
 				0A4995CE285B264C00E571FB /* TagSelectionTableViewCell.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
-				0A0D31CB28A2BC10007A8D49 /* PinsDisplay.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
 				0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */,
 				0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */,

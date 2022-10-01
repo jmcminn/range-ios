@@ -62,7 +62,18 @@ extension PDFCanvasViewControllerError: LocalizedError {
  */
 class PDFCanvasViewController: UIViewController {
     let maxMapboxZoom = 25.5
-    let pdfDrivesInteractions = true
+    // When using native views we want the mapbox to drive interactions (so we can easily
+    // detect tapping on view annotations), because only the view that drives interaction is "interactive".
+    // When using non-native views (so mapbox layers), the pdf can drive the interactions
+    // as the taps are detected by looking for features "under the finger" so it doesn't
+    // matter that much who drives the interactions and currently this mechanism is
+    // implemented for the case when pdf drives the interactions.
+    var pdfDrivesInteractions = !DebugSettings().nativeViewsForPins {
+        didSet {
+            updateInteractionsDriver()
+        }
+    }
+
     /// observers for pdf/mapbox views. They're being activated/deactivated when switching who drives the interactions
     var canvasTapGestureRecognizer: UITapGestureRecognizer?
     var mapboxCameraChangedObserver: Cancelable?
