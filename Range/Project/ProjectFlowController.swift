@@ -12,10 +12,12 @@ final class ProjectFlowController: UIViewController {
     let collaborationFlow: CollaborationFlowController
     var onSignOut: (() -> Void)?
 
+    let debugSettings = DebugSettings()
     var topViewController: ProjectTopViewController?
     lazy var bottomBlurView = setupBottomBlur()
     lazy var actionCardVC = installActionCardVC()
     lazy var pinsDisplay = PinsDisplay(model: model, canvasContainer: canvasContainer)
+    var debugSettingsButton: RoundShadowButton!
 
     var addPhotoFlow: AddPhotoFlowController?
 
@@ -55,7 +57,6 @@ final class ProjectFlowController: UIViewController {
         }
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
-        showDebugSettingsButton()
         showTopViewController(animated: false)
         bottomBlurView.isHidden = false
         showDefaultCanvasUI(animated: false)
@@ -112,31 +113,40 @@ final class ProjectFlowController: UIViewController {
     /// Show the default UI elements when viewing the canvas
     fileprivate func showDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.showCard(animated: animated)
+        showDebugSettingsButton()
         pinsDisplay.start()
     }
 
     /// Hide the default UI elements when viewing the canvas
     fileprivate func hideDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.hideCard(animated: animated)
+        hideDebugSettingsButton()
         pinsDisplay.stop()
     }
 
     // TODO: this should be hidden in the production version
     /// Shows a button that shows the debug settings view
     fileprivate func showDebugSettingsButton() {
-        let button = RoundShadowButton(image: UIImage(systemName: "gearshape") ?? UIImage())
-        canvasContainer.controls.addSubview(button)
-        button.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-10)
-            make.centerY.equalToSuperview()
+        if debugSettingsButton == nil {
+            debugSettingsButton = RoundShadowButton(image: UIImage(systemName: "gearshape") ?? UIImage())
+            canvasContainer.controls.addSubview(debugSettingsButton)
+            debugSettingsButton.snp.makeConstraints { make in
+                make.trailing.equalToSuperview().offset(-10)
+                make.centerY.equalToSuperview()
+            }
+            debugSettingsButton.addTarget(self, action: #selector(showDebugSettingsAction), for: .touchUpInside)
         }
-        button.addTarget(self, action: #selector(showDebugSettingsAction), for: .touchUpInside)
+        debugSettingsButton.isHidden = false
+    }
+
+    fileprivate func hideDebugSettingsButton() {
+        debugSettingsButton.isHidden = true
     }
 
     /// Shows view controller for debug settings
     @objc func showDebugSettingsAction() {
         let debugSettingsVC = UIHostingController(
-            rootView: DebugSettingsView().environmentObject(DebugSettings())
+            rootView: DebugSettingsView().environmentObject(debugSettings)
         )
         present(debugSettingsVC, animated: true)
     }

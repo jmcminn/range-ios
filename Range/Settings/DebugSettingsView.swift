@@ -5,6 +5,11 @@ struct DebugSettingsView: View {
 
     var body: some View {
         Form {
+            Section(header: Text("Canvas")) {
+                Toggle(isOn: $debugSettings.nativeViewsForPins) {
+                    Text("Use native views for pins")
+                }
+            }
             Section(header: Text("Collaboration window")) {
                 Toggle(isOn: $debugSettings.dynamicImageHeightInCollabFeed) {
                     Text("Dynamic image height in the feed")

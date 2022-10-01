@@ -4,6 +4,8 @@ import Foundation
 /// Storage for hidden debug settings for prototyping new features, etc.
 final class DebugSettings: ObservableObject {
     private enum Keys {
+        /// should the pins use the mapbox view annotations (native views) or annotations (mapbox layer views)
+        static let nativeViewsForPins = "nativeViewsForPins"
         /// should the canvas animate to center on the pin when photo pin snapped to pink pin by user pan gesture
         static let centerCanvasOnPinSnap = "centerCanvasOnPinSnap"
         /// should the haptic feedback occur when user manually selected pink pin by tapping on it
@@ -14,6 +16,12 @@ final class DebugSettings: ObservableObject {
     }
 
     private let defaults: UserDefaults
+
+    @Published var nativeViewsForPins: Bool {
+        didSet {
+            defaults.set(nativeViewsForPins, forKey: Keys.nativeViewsForPins)
+        }
+    }
 
     @Published var centerCanvasOnPinSnap: Bool {
         didSet {
@@ -39,6 +47,7 @@ final class DebugSettings: ObservableObject {
         self.defaults = defaults
 
         defaults.register(defaults: [
+            Keys.nativeViewsForPins: true,
             Keys.centerCanvasOnPinSnap: true,
             Keys.hapticFeedbackOnPinTapSelection: true,
             Keys.dynamicImageHeightInCollabFeed: true,
@@ -47,6 +56,7 @@ final class DebugSettings: ObservableObject {
         let releaseVersionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
         let buildVersionNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
         appVersion = releaseVersionNumber + " (" + buildVersionNumber + ")"
+        _nativeViewsForPins = .init(initialValue: defaults.bool(forKey: Keys.nativeViewsForPins))
         _centerCanvasOnPinSnap = .init(initialValue: defaults.bool(forKey: Keys.centerCanvasOnPinSnap))
         _hapticFeedbackOnPinTapSelection = .init(initialValue: defaults
             .bool(forKey: Keys.hapticFeedbackOnPinTapSelection))
