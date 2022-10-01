@@ -10,8 +10,24 @@ enum CanvasCameraChangeReason {
     case programmatic // the change was not directly caused by user gesture but rather by some action that resulted in camera programmatic animation
     case pan // user panned the map interactively
     case zoom // user zoomed the map interactively
+    case tap // user tapped (no camera change)
     case panEnd // the pan interaction has ended (together with the decelleration)
     case zoomEnd // the zoom interaction has ended
+    case tapEnd // the tap has ended
+
+    /// Construct from Mapbox gesture
+    ///   - parameters: gesture - mapbox gesture
+    ///   - parameters: end - `true` if this is then end of the gesture
+    init(fromGesture gesture: MapboxMaps.GestureType, end: Bool = false) {
+        switch gesture {
+        case .singleTap:
+            self = end ? .tapEnd : .tap
+        case .pan:
+            self = end ? .panEnd : .pan
+        default:
+            self = end ? .zoomEnd : .zoom
+        }
+    }
 }
 
 /// Defines the notifications to be received by the currently registered canvas delegate.
@@ -47,6 +63,13 @@ extension PDFCanvasViewControllerError: LocalizedError {
 class PDFCanvasViewController: UIViewController {
     let maxMapboxZoom = 25.5
     let pdfDrivesInteractions = true
+    /// observers for pdf/mapbox views. They're being activated/deactivated when switching who drives the interactions
+    var canvasTapGestureRecognizer: UITapGestureRecognizer?
+    var mapboxCameraChangedObserver: Cancelable?
+
+    /// For case when mapbox drives the interactions we need to store the current gesture (for example 'pan') to continuously
+    /// report panning when the camera changes. (the mapbox gestures delegate only reports start/end of gesture)
+    var currentCameraChangeReason: CanvasCameraChangeReason?
 
     unowned let model: ProjectModel
     let pdfCanvas: PDFCanvas
@@ -142,13 +165,41 @@ class PDFCanvasViewController: UIViewController {
 
         setupMapView()
 
-        if pdfDrivesInteractions {
-            syncCameraStateWithPDFView()
-        } else {
-            syncPDFViewWithCameraState()
-        }
+        updateInteractionsDriver()
 
         setupDebugViews()
+    }
+
+    private func updateInteractionsDriver() {
+        if pdfDrivesInteractions {
+            pdfScrollView.pdfPageScrollViewDelegate = self
+            if let canvasTapGestureRecognizer = canvasTapGestureRecognizer {
+                mapView.removeGestureRecognizer(canvasTapGestureRecognizer)
+            }
+            canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
+            pdfScrollView.addGestureRecognizer(canvasTapGestureRecognizer!)
+            mapView.isUserInteractionEnabled = false
+            mapView.gestures.delegate = nil
+            mapboxCameraChangedObserver?.cancel()
+            syncCameraStateWithPDFView()
+        } else {
+            pdfScrollView.pdfPageScrollViewDelegate = nil
+            if let canvasTapGestureRecognizer = canvasTapGestureRecognizer {
+                pdfScrollView.removeGestureRecognizer(canvasTapGestureRecognizer)
+            }
+            canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
+            mapView.addGestureRecognizer(canvasTapGestureRecognizer!)
+            mapView.isUserInteractionEnabled = true
+            mapView.gestures.delegate = self
+            mapboxCameraChangedObserver = mapView.mapboxMap.onEvery(.cameraChanged, handler: { [weak self] _ in
+                guard let self = self else { return }
+                self.syncPDFViewWithCameraState()
+                if let currentCameraChangeReason = self.currentCameraChangeReason {
+                    self.delegates.values.forEach { $0.canvasCameraChanged(reason: currentCameraChangeReason) }
+                }
+            })
+            syncPDFViewWithCameraState()
+        }
     }
 
     private func setupPDFScrollView() {
@@ -158,19 +209,6 @@ class PDFCanvasViewController: UIViewController {
         pdfScrollView.showsVerticalScrollIndicator = false
         pdfScrollView.showsHorizontalScrollIndicator = false
         pdfScrollView.bouncesZoom = false
-        pdfScrollView.pdfPageScrollViewDelegate = self
-        pdfScrollView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
-        )
-    }
-
-    /// Recognize taps in the pdf view, translate to mapbox view and handle pin taps.
-    @objc func didTapView(_ sender: UITapGestureRecognizer) {
-        let point = sender.location(in: sender.view)
-        guard let pointInMapView = sender.view?.convert(point, to: mapView) else { return }
-        delegates.values.forEach {
-            $0.canvasTapRecognized(at: pointInMapView)
-        }
     }
 
     /// Calculates initial mapbox zoom so the PDFPage fits the screen
@@ -235,17 +273,9 @@ class PDFCanvasViewController: UIViewController {
 
         mapView.ornaments.options.attributionButton.visibility = .hidden
         mapView.ornaments.options.scaleBar.visibility = .hidden
+        mapView.gestures.options.pinchRotateEnabled = false
+        mapView.gestures.options.pitchEnabled = false
 
-        if pdfDrivesInteractions {
-            mapView.isUserInteractionEnabled = false
-        } else {
-            mapView.gestures.options.pinchRotateEnabled = false
-            mapView.gestures.options.pitchEnabled = false
-            mapView.mapboxMap.onEvery(.cameraChanged, handler: { [weak self] _ in
-                guard let self = self else { return }
-                self.syncPDFViewWithCameraState()
-            })
-        }
         view.addSubview(mapView)
     }
 
@@ -269,18 +299,31 @@ class PDFCanvasViewController: UIViewController {
 
     /// Animate to given cameraCenter and mapboxZoom.
     func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {
-        let endContentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
-            cameraCenter: cameraCenter,
-            scrollView: pdfScrollView,
-            initialCenter: model.projectSummary.center,
-            initialMetersPerPoint: initialMetersPerPoint
-        )
-        let endZoomScale = initialMetersPerPoint / zoomConverter.getMetersPerPoint(forZoom: mapboxZoom)
-        animatePanAndZoom(contentOffset: endContentOffset, zoomScale: endZoomScale)
+        if pdfDrivesInteractions {
+            let endContentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
+                cameraCenter: cameraCenter,
+                scrollView: pdfScrollView,
+                initialCenter: model.projectSummary.center,
+                initialMetersPerPoint: initialMetersPerPoint
+            )
+            let endZoomScale = initialMetersPerPoint / zoomConverter.getMetersPerPoint(forZoom: mapboxZoom)
+            animatePanAndZoom(contentOffset: endContentOffset, zoomScale: endZoomScale)
+        } else {
+            // HACK: dispatch async on main queue is a hack, otherwise the mapbox was not reacting
+            // when invoking this method on callback from gesture manager delegate
+            DispatchQueue.main.async {
+                let animator = self.mapView.camera.makeAnimator(duration: 0.2, curve: .easeOut) { transition in
+                    transition.zoom.toValue = mapboxZoom
+                    transition.center.toValue = cameraCenter
+                }
+                animator.startAnimation()
+            }
+        }
     }
 
     /// Animate to given pdf content offset  and zoom.
     /// To sync PDF and Mapbox we need to "manually" animate the scrollView contentOffset and zoom, so mapbox is synced along the way
+    /// This is only needed when pdf drives interactions
     private func animatePanAndZoom(contentOffset endContentOffset: CGPoint, zoomScale endZoomScale: Double) {
         let duration = 0.2
 
@@ -391,6 +434,56 @@ class PDFCanvasViewController: UIViewController {
     }
 }
 
+/// Delegate for Mapbox driving gestures
+extension PDFCanvasViewController: GestureManagerDelegate {
+    func gestureManager(_: MapboxMaps.GestureManager, didBegin gesture: MapboxMaps.GestureType) {
+        guard gesture != .singleTap else {
+            // taps are not handled as camera changes, but rather forwarded to delegates via canvasTapRecognized
+            return
+        }
+        let canvasCameraChangeReason = programmaticAnimationInProgress
+            ? .programmatic
+            : CanvasCameraChangeReason(fromGesture: gesture)
+        delegates.values.forEach { $0.canvasCameraChanged(reason: canvasCameraChangeReason) }
+        currentCameraChangeReason = canvasCameraChangeReason
+    }
+
+    func gestureManager(_: MapboxMaps.GestureManager, didEnd gesture: MapboxMaps.GestureType, willAnimate: Bool) {
+        guard gesture != .singleTap else {
+            // taps are not handled as camera changes, but rather forwarded to delegates via canvasTapRecognized
+            return
+        }
+        if !willAnimate {
+            let canvasCameraChangeReason = programmaticAnimationInProgress
+                ? .programmatic
+                : CanvasCameraChangeReason(fromGesture: gesture, end: true)
+            delegates.values.forEach { $0.canvasCameraChanged(reason: canvasCameraChangeReason) }
+            currentCameraChangeReason = nil
+        }
+    }
+
+    func gestureManager(_: MapboxMaps.GestureManager, didEndAnimatingFor gesture: MapboxMaps.GestureType) {
+        let canvasCameraChangeReason = programmaticAnimationInProgress
+            ? .programmatic
+            : CanvasCameraChangeReason(fromGesture: gesture, end: true)
+        delegates.values.forEach { $0.canvasCameraChanged(reason: canvasCameraChangeReason) }
+        currentCameraChangeReason = nil
+    }
+}
+
+/// Delegate for canvas taps
+extension PDFCanvasViewController {
+    /// Recognize taps in the pdf view or mapView, translate to mapbox view and forward to delegates using canvasTapRecognized.
+    @objc func didTapCanvasView(_ sender: UITapGestureRecognizer) {
+        let point = sender.location(in: sender.view)
+        guard let pointInMapView = sender.view?.convert(point, to: mapView) else { return }
+        delegates.values.forEach {
+            $0.canvasTapRecognized(at: pointInMapView)
+        }
+    }
+}
+
+/// Delegate for PDF driving scroll view
 extension PDFCanvasViewController: PDFPageScrollViewDelegate {
     func scrollViewDidScroll(_: PDFPageScrollView) {
         // controlled animation syncs the state itself
