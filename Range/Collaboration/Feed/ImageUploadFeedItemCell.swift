@@ -137,6 +137,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         descriptionBackground.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
         descriptionSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
 
+        tagsView.showAddTagCell = true
         tagsView.collectionView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
     }
 

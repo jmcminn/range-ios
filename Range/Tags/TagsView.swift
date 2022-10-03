@@ -5,14 +5,18 @@ import UIKit
 
 /// Displays a horizontally scrollable collection of `Tag`s
 class TagsView: UIView {
-    /// Collection item needs id and name to uniquely identify the tag. Do not store tag here as it's managed by Realm and may\
+    /// Collection item needs id and name to uniquely identify the tag. Do not store tag here as it's managed by Realm and may
     /// be removed and no longer accessible when diffable data source needs to compute the diff
     /// By storing the name directly and using it for hash, the item will be updated if the name changes
+    /// There's one special collection item - when `addTag` is `true` it show an "add" tag cell
     struct CollectionItem: Hashable {
         var id: String
         var name: String
+        var addTag: Bool = false
     }
 
+    /// Should it always show a special cell saying "add" at the end of tags (even if tags results are empty)
+    var showAddTagCell: Bool = false
     var tags: Results<Tag>? {
         didSet {
             if let tags = tags {
@@ -57,16 +61,12 @@ class TagsView: UIView {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "TagCell")
+        collectionView.register(TagAddCollectionViewCell.self, forCellWithReuseIdentifier: "TagAddCell")
 
         dataSource = UICollectionViewDiffableDataSource<Int, CollectionItem>(
             collectionView: collectionView
-        ) { collectionView, indexPath, collectionItem -> UICollectionViewCell? in
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "TagCell",
-                for: indexPath
-            ) as! TagCollectionViewCell
-            cell.tagName = collectionItem.name
-            return cell
+        ) { [weak self] collectionView, indexPath, collectionItem -> UICollectionViewCell? in
+            self?.cell(forCollectionView: collectionView, indexPath: indexPath, collectionItem: collectionItem)
         }
 
         addSubview(collectionView)
@@ -77,7 +77,10 @@ class TagsView: UIView {
 
     /// if there's not tags the intrinsic height is 0
     override var intrinsicContentSize: CGSize {
-        if let tags = tags, tags.count > 0 {
+        if showAddTagCell {
+            // no matter how many tags always show something
+            return CGSize(width: UIView.noIntrinsicMetric, height: 44)
+        } else if let tags = tags, tags.count > 0 {
             return CGSize(width: UIView.noIntrinsicMetric, height: 44)
         } else {
             return CGSize(width: UIView.noIntrinsicMetric, height: 0)
@@ -111,6 +114,9 @@ class TagsView: UIView {
         if let tags = tags {
             snapshot.appendItems(tags.map { CollectionItem(id: $0.id, name: $0.name) })
         }
+        if showAddTagCell {
+            snapshot.appendItems([CollectionItem(id: "add", name: TagAddCollectionViewCell.labelText, addTag: true)])
+        }
         return snapshot
     }
 }
@@ -122,16 +128,50 @@ extension TagsView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize
     {
-        guard let tags = tags, indexPath.item < tags.count else { return .zero }
-        let name = tags[indexPath.item].name
-        let nameSize = name.size(withAttributes: [
-            NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2),
-        ])
+        guard let tags = tags else { return .zero }
+        if showAddTagCell {
+            guard indexPath.item <= tags.count else { return .zero }
+        } else {
+            guard indexPath.item < tags.count else { return .zero }
+        }
+
+        let contentWidth: CGFloat
+        if indexPath.item == tags.count {
+            // this is the last special "add" tag
+            let name = TagAddCollectionViewCell.labelText
+            let nameWidth = name.size(withAttributes: [
+                NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1),
+            ]).width
+            let imageWidth = TagAddCollectionViewCell.tagImage?.size.width ?? 0
+            contentWidth = imageWidth + TagAddCollectionViewCell.imageToLabelDistance + nameWidth
+        } else {
+            let name = tags[indexPath.item].name
+            contentWidth = name.size(withAttributes: [
+                NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2),
+            ]).width
+        }
         return CGSize(
-            width: max(nameSize.width, TagCollectionViewCell.minLabelWidth) +
+            width: max(contentWidth, TagCollectionViewCell.minLabelWidth) +
                 TagCollectionViewCell.leadingLabelInset +
                 TagCollectionViewCell.trailingLabelInset + 1.0, // +1 to handle any rounding issues
             height: 44 // higher than in design as we want to respond to bigger tap area
         )
+    }
+}
+
+// MARK: diffable data source
+
+extension TagsView {
+    func cell(forCollectionView collectionView: UICollectionView, indexPath: IndexPath,
+              collectionItem: CollectionItem) -> UICollectionViewCell?
+    {
+        if collectionItem.addTag {
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "TagAddCell", for: indexPath)
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell",
+                                                          for: indexPath) as! TagCollectionViewCell
+            cell.tagName = collectionItem.name
+            return cell
+        }
     }
 }

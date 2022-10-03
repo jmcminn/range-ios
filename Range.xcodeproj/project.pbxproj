@@ -205,6 +205,7 @@
 		0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
+		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -445,6 +446,7 @@
 		0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanDirectionGestureRecognizer.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
+		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -698,6 +700,7 @@
 				0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */,
 				0A130EB128DB1AB000FF1368 /* TagsView.swift */,
 				0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */,
+				0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */,
 			);
 			path = Tags;
 			sourceTree = "<group>";
@@ -1358,6 +1361,7 @@
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
+				0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
 				0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */,
 				0A34C1892845FE9C00BEDC7C /* FirebaseComment.swift in Sources */,
