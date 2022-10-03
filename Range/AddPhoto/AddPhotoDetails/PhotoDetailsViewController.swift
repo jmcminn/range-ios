@@ -19,6 +19,11 @@ class PhotoDetailsViewController: UIViewController {
     private let tagsViewModel: TagsViewModel
     private let initialDescription: String
 
+    ///  exposed for customising by the add photo flow controller
+    var nextButton: UIButton!
+    var nextButtonLabel: String = .init(localized: "Next")
+    var nextButtonImage: UIImage? = UIImage(systemName: "arrow.forward")
+
     /// The description provided by the user
     var photoDescription: String {
         descriptionView.textView.text
@@ -445,11 +450,11 @@ extension PhotoDetailsViewController {
                 image: UIImage(systemName: "arrow.backward")
             ) { [weak self] _ in self?.onBack?() }
         )
-        let nextButton = UIButton(
+        nextButton = UIButton(
             configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(
-                title: String(localized: "Next"),
-                image: UIImage(systemName: "arrow.forward")
+                title: nextButtonLabel,
+                image: nextButtonImage
             ) { [weak self] _ in self?.onNext?() }
         )
         bottomBar.addSubview(backButton)

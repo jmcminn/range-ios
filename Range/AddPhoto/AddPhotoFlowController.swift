@@ -32,6 +32,9 @@ class AddPhotoFlowController {
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
     var geometryId: String?
 
+    /// When set to `true` the photo flow will exclude photo placement on the canvas and will use the provided geometryId
+    var skipPhotoLocationSelection: Bool = false
+
     ///
     /// - Parameters:
     ///     - model: - the project model
@@ -217,6 +220,9 @@ class AddPhotoFlowController {
     private func nextStepAfterCamera() {
         if UserDefaults.annotationEnabled {
             selectPhotoDetails()
+        } else if skipPhotoLocationSelection {
+            // if we skip photo location and annotations then finalize the flow now
+            finalizeFromCameraScreen()
         } else {
             // go straight to photo location
             canvasContainer.dismiss(animated: true)
@@ -238,6 +244,10 @@ class AddPhotoFlowController {
             tagsViewModel: tagsViewModel,
             initialDescription: photoDescription
         )
+        if skipPhotoLocationSelection {
+            vc.nextButtonLabel = String(localized: "Done")
+            vc.nextButtonImage = nil
+        }
         vc.onPhotoSelected = { [weak self] interactivePresentation in
             guard let self = self else { return }
             self.showPhotosReviewFromDetailsScreen(interactivePresentation: interactivePresentation)
@@ -250,8 +260,12 @@ class AddPhotoFlowController {
         vc.onNext = { [weak self] in
             guard let self = self, let detailsVC = self.detailsVC else { return }
             self.photoDescription = detailsVC.photoDescription
-            self.canvasContainer.dismiss(animated: true)
-            self.selectPhotoLocation()
+            if self.skipPhotoLocationSelection {
+                self.finalizeFromDetailsScreen()
+            } else {
+                self.canvasContainer.dismiss(animated: true)
+                self.selectPhotoLocation()
+            }
         }
         detailsVC = vc
         return vc
@@ -281,44 +295,99 @@ class AddPhotoFlowController {
         canvasContainer.present(navC, animated: true)
     }
 
-    /// Store the photo location, save all the data and stop the flow (andContinue == false) or restart with the camera screen
-    private func addPhoto(andContinue restartFlow: Bool) {
-        guard let confirmationCardVC = confirmationCardVC else {
-            return
-        }
+    /// Store the photo(s) and stop the flow
+    /// Invoked from the camera screen when `skipPhotoLocationSelection` is `true` and `annotationEnabled` is `false`
+    private func finalizeFromCameraScreen() {
+        guard let cameraVC = cameraVC else { return }
 
-        // show activity view (a spinner) that covers the screen disabling any user interactions
-        let activityView = UIActivityIndicatorView(style: .large)
-        activityView.backgroundColor = .black.withAlphaComponent(0.2)
-        canvasContainer.view.addSubview(activityView)
-        activityView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        activityView.startAnimating()
+        finalize(
+            withProgressInView: cameraVC.view,
+            cleanup: {},
+            onSuccess: {
+                self.canvasContainer.dismiss(animated: true)
+                self.stop(removeCurrentPhotosToAddFromCache: false)
+            }
+        )
+    }
+
+    /// Store the photo(s) and stop the flow
+    /// Invoked from the details screen when `skipPhotoLocationSelection` is `true`
+    private func finalizeFromDetailsScreen() {
+        guard let detailsVC = detailsVC else { return }
+
+        detailsVC.nextButton.configuration?.showsActivityIndicator = true
+
+        finalize(
+            withProgressInView: detailsVC.view,
+            cleanup: {
+                detailsVC.nextButton.configuration?.showsActivityIndicator = false
+            },
+            onSuccess: {
+                self.canvasContainer.dismiss(animated: true)
+                self.stop(removeCurrentPhotosToAddFromCache: false)
+            }
+        )
+    }
+
+    /// Store the photo location, save all the data and stop the flow (andContinue == false) or restart with the camera screen
+    /// Invoked from the confirmation card in the photo location selection
+    private func finalizeFromConfirmationCard(andContinue restartFlow: Bool) {
+        guard let confirmationCardVC = confirmationCardVC else { return }
+
         confirmationCardVC
             .setInactiveWithActivityIndicator(on: restartFlow
                 ? confirmationCardVC.continueButton
                 : confirmationCardVC.doneButton)
 
         geometryId = pinsDisplay?.selectedPin?.id
+
+        finalize(
+            withProgressInView: canvasContainer.view,
+            cleanup: {
+                confirmationCardVC.setActive()
+            },
+            onSuccess: {
+                self.dismissPhotoLocationSelectionUI()
+                restartFlow
+                    ? self.restart(removeCurrentPhotosToAddFromCache: false)
+                    : self.stop(removeCurrentPhotosToAddFromCache: false)
+            }
+        )
+    }
+
+    /// Add progress view to given `progressHostView` and stores the photo data.
+    /// Runs the `cleanup` callback once the photo storage completes (whether successfull or not)
+    /// Runs the `onSuccess` callback when storing data succeeded
+    /// Both callbacks are dispatched on the main queue
+    private func finalize(
+        withProgressInView progressHostView: UIView,
+        cleanup: @escaping () -> Void,
+        onSuccess: @escaping () -> Void
+    ) {
+        // show activity view (a spinner) that covers the screen disabling any user interactions
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .black.withAlphaComponent(0.2)
+        progressHostView.addSubview(activityView)
+        activityView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        activityView.startAnimating()
+
         Task {
             do {
                 // hide the spinner when data store call is finished
                 defer {
                     DispatchQueue.main.async {
                         activityView.removeFromSuperview()
-                        confirmationCardVC.setActive()
+                        cleanup()
                     }
                 }
                 try await _storeData()
                 DispatchQueue.main.async {
-                    self.dismissPhotoLocationSelectionUI()
-                    restartFlow
-                        ? self.restart(removeCurrentPhotosToAddFromCache: false)
-                        : self.stop(removeCurrentPhotosToAddFromCache: false)
+                    onSuccess()
                 }
             } catch {
-                Logger.model.error("photo location data store error: \(error.localizedDescription, privacy: .public)")
+                Logger.model.error("finalize error: \(error.localizedDescription, privacy: .public)")
                 DispatchQueue.main.async {
                     self.showError(withMessage: error.localizedDescription, in: self.canvasContainer)
                 }
@@ -441,10 +510,10 @@ extension AddPhotoFlowController {
             self?.onPhotoLocationBack()
         }
         confirmationCardVC!.onDone = { [weak self] in
-            self?.addPhoto(andContinue: false)
+            self?.finalizeFromConfirmationCard(andContinue: false)
         }
         confirmationCardVC!.onContinue = { [weak self] in
-            self?.addPhoto(andContinue: true)
+            self?.finalizeFromConfirmationCard(andContinue: true)
         }
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,

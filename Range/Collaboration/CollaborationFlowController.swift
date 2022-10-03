@@ -21,6 +21,9 @@ class CollaborationFlowController {
     /// FABs (floating action buttons)
     var actionButtons: [RoundShadowButton]!
 
+    /// When adding photos from collaboration window
+    var addPhotosFlow: AddPhotoFlowController?
+
     ///
     /// - Parameters:
     ///     - model: - the project model
@@ -46,6 +49,24 @@ class CollaborationFlowController {
         removeFABs()
     }
 
+    /// Create CollaborationViewController and setup the callbacks
+    private func createCollaborationViewController(forCollaboration collaboration: Collaboration)
+        -> CollaborationViewController
+    {
+        let collaborationVC = CollaborationViewController(
+            imageCaches: imageCaches,
+            projectModel: model,
+            collaboration: collaboration
+        )
+        collaborationVC.onClose = { [weak self] in
+            self?.onCollaborationClose?()
+        }
+        collaborationVC.onAddPhotos = { [weak self] in
+            self?.startAddPhotosFlow()
+        }
+        return collaborationVC
+    }
+
     /// Finds the first collaboration for this geometry and show its window
     func showCollaborationWindow(forGeometry geometryId: String, animated: Bool) {
         if let geometry = model.mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId),
@@ -53,14 +74,7 @@ class CollaborationFlowController {
            let collaboration = feature.collaborations.first
         {
             self.collaboration = collaboration
-            let collaborationVC = CollaborationViewController(
-                imageCaches: imageCaches,
-                projectModel: model,
-                collaboration: collaboration
-            )
-            collaborationVC.onClose = { [weak self] in
-                self?.onCollaborationClose?()
-            }
+            let collaborationVC = createCollaborationViewController(forCollaboration: collaboration)
 
             canvasContainer.installCard(
                 cardViewController: collaborationVC,
@@ -154,6 +168,7 @@ class CollaborationFlowController {
 extension CollaborationFlowController {
     private func setupFABs() {
         let addPhotosButton = RoundShadowButton(image: UIImage(systemName: "camera") ?? UIImage(), style: .blue)
+        addPhotosButton.addTarget(self, action: #selector(startAddPhotosFlow), for: .touchUpInside)
         canvasContainer.controls.addSubview(addPhotosButton)
         addPhotosButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
@@ -226,5 +241,28 @@ extension CollaborationFlowController: CardDraggingDelegate {
         // show buttons later than header
         let fabsAlpha = max(0, min(1, 1.0 - (fullHeight - realHeight) / 20))
         actionButtons.forEach { $0.alpha = fabsAlpha }
+    }
+}
+
+/// Add photos sub flow
+private extension CollaborationFlowController {
+    @objc func startAddPhotosFlow() {
+        guard let geometryId = collaboration?.feature.first?.geometry.first?.id else {
+            // the collaboration should be selected and have a geometry... (this shouldn't really happen)
+            return
+        }
+        addPhotosFlow = AddPhotoFlowController(model: model, imageCaches: imageCaches, canvasContainer: canvasContainer)
+        // preselect the geometryId as the add photos flow will not include pin placement
+        // (we are adding to the currently showing collaboration window)
+        addPhotosFlow?.geometryId = geometryId
+        addPhotosFlow?.skipPhotoLocationSelection = true
+        addPhotosFlow?.onStop = { [weak self] in
+            self?.addPhotosFlow = nil
+        }
+        addPhotosFlow?.start { [weak self] started in
+            if !started {
+                self?.addPhotosFlow = nil
+            }
+        }
     }
 }

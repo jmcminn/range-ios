@@ -21,7 +21,10 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var feedVC: CollaborationFeedViewController!
     var thumbnailsVC: ThumbnailsViewController!
     var updatesToggle: SegmentedControl!
+
+    /// callbacks for actions triggered from collaboration window
     var onClose: (() -> Void)?
+    var onAddPhotos: (() -> Void)?
 
     private enum Constants {
         // height of thumbnails view
@@ -258,7 +261,9 @@ extension CollaborationViewController {
         blueButtonConfig.attributedTitle = AttributedString("Add Photos", attributes: titleAttributes)
         let addPhotosButton = UIButton(
             configuration: blueButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "camera")) { _ in }
+            primaryAction: UIAction(image: UIImage(systemName: "camera")) { [weak self] _ in
+                self?.onAddPhotos?()
+            }
         )
         ctas = UIStackView(arrangedSubviews: [addCommentButton, addAttachmentButton, addPhotosButton])
         ctas.axis = .horizontal
