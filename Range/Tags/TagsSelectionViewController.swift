@@ -30,7 +30,7 @@ class TagsSelectionViewController: UIViewController {
     private var showingMore: [Section: Bool] = [:]
 
     /// By default show only up to this number of recent tags and add "show more" button if there's more
-    private let showLessTagsLimit = 4
+    private let showLessTagsLimit = 5
 
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
@@ -142,7 +142,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
     func isShowMoreRow(_ indexPath: IndexPath) -> Bool {
         !showFilteredTags
             && showMoreButtonForSection(sectionNumber: indexPath.section)
-            && indexPath.row == showLessTagsLimit
+            && indexPath.row == showLessTagsLimit - 1
     }
 
     /// Convenience method to get tag based on IndexPath
@@ -172,7 +172,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
                 : viewModel.filteredTags.count + 1
         }
         if showMoreButtonForSection(sectionNumber: section) {
-            return showLessTagsLimit + 1
+            return showLessTagsLimit
         } else {
             return tags(inNonFilteredSection: section).count
         }
@@ -255,7 +255,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
             tableView.reloadRows(at: [indexPath], with: .automatic)
             // insert remaining rows
             let indexPaths =
-                (showLessTagsLimit + 1 ..< tags(inNonFilteredSection: indexPath.section).count)
+                (showLessTagsLimit ..< tags(inNonFilteredSection: indexPath.section).count)
                     .map { IndexPath(row: $0, section: indexPath.section) }
             tableView.insertRows(at: indexPaths, with: .bottom)
             tableView.endUpdates()
