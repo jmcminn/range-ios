@@ -8,8 +8,8 @@ class TagsViewModel: NSObject {
     private(set) var allTags: [TagViewModel]
     /// For fast tag lookup by id
     private var allTagsIndex: [String: TagViewModel]
-    /// up to 10 recently applied tags for current project
-    private(set) var lastAppliedTags: [TagViewModel]
+    /// up to 10 recently applied tags for current project (this is the reversed UserDefaults.recentTagIds, as we want the most recent as first)
+    private(set) var recentTags: [TagViewModel]
     /// up to 10 most applied tags for current project
     private(set) var mostUsedTags: [TagViewModel]
     /// a subset of all tags storing selected tags in order they were being selected
@@ -33,20 +33,21 @@ class TagsViewModel: NSObject {
         let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
         allTags = model.mainRealm.objects(Tag.self)
             .where { $0.placeholder == false }
-            .map { TagViewModel(id: $0.id, name: $0.name, lastApplied: $0.lastApplied, usageCount: $0.usageCount) }
+            .map { TagViewModel(id: $0.id, name: $0.name, usageCount: $0.usageCount) }
             .sorted(using: nameSort)
-
-        lastAppliedTags = Array(allTags
-            .filter { $0.lastApplied != nil }
-            .sorted(by: { $0.lastApplied! > $1.lastApplied! })
-            .prefix(10))
 
         mostUsedTags = Array(allTags
             .filter { $0.usageCount > 0 }
             .sorted(by: { $0.usageCount >= $1.usageCount })
             .prefix(10))
 
-        allTagsIndex = Dictionary(uniqueKeysWithValues: zip(allTags.map(\.id), allTags))
+        let allTagsIndex = Dictionary(uniqueKeysWithValues: zip(allTags.map(\.id), allTags))
+
+        recentTags = UserDefaults.recentTagIds(forProjectId: model.projectId)
+            .compactMap { allTagsIndex[$0] }
+            .reversed()
+
+        self.allTagsIndex = allTagsIndex
 
         super.init()
 
@@ -141,7 +142,6 @@ class TagsViewModel: NSObject {
 class TagViewModel: NSObject, Codable {
     let id: String
     @objc let name: String
-    let lastApplied: TimeInterval?
     /// to how many object the tag is applied
     let usageCount: Int
     /// whether this is a new tag that should be created in the db
@@ -154,19 +154,16 @@ class TagViewModel: NSObject, Codable {
     /// - Parameters:
     ///   - id: id
     ///   - name: name of the tag
-    ///   - lastApplied: last applied timestamp
     ///   - usageCount: usage count
     ///   - newTag: whether this is a new tag to be created in the db
     init(
         id: String,
         name: String,
-        lastApplied: TimeInterval?,
         usageCount: Int,
         newTag: Bool = false
     ) {
         self.id = id
         self.name = name
-        self.lastApplied = lastApplied
         self.usageCount = usageCount
         self.newTag = newTag
         searchName = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
@@ -174,7 +171,7 @@ class TagViewModel: NSObject, Codable {
 
     /// Convenience initializer for new tags with auto generated id and given name
     convenience init(newTagWithName name: String) {
-        self.init(id: generateRealmId(), name: name, lastApplied: nil, usageCount: 0, newTag: true)
+        self.init(id: generateRealmId(), name: name, usageCount: 0, newTag: true)
     }
 
     /// equatable to check for id only

@@ -52,7 +52,7 @@ class AddCollaborationCommandTest: XCTestCase {
         let status1 = Status(id: "status1", name: "Status", hexColor: "#000000", isInitial: true, isCompleted: false)
         let feature1 = Feature(id: "feature1", name: "Feature1", description: "")
         let feature2 = Feature(id: "feature2", name: "Feature2", description: "")
-        let tag = Tag(id: "tag1", name: "tag 1", lastApplied: nil)
+        let tag = Tag(id: "tag1", name: "tag 1")
         try realm.write {
             realm.add([status1, feature1, feature2, tag])
         }

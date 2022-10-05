@@ -89,7 +89,6 @@ class ProjectModelCommandsTest: XCTestCase {
                                  TagViewModel(
                                      id: tag1.id,
                                      name: tag1.name,
-                                     lastApplied: tag1.lastApplied,
                                      usageCount: tag1.usageCount
                                  ),
                                  newTagViewModel,

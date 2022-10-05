@@ -43,7 +43,7 @@ class TagsSelectionViewController: UIViewController {
 
     private static func getNotFilteredSections(viewModel: TagsViewModel) -> [Section] {
         var sections: [Section] = []
-        if !viewModel.lastAppliedTags.isEmpty {
+        if !viewModel.recentTags.isEmpty {
             sections.append(.recent)
         }
         if !viewModel.mostUsedTags.isEmpty {
@@ -111,7 +111,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
     func tags(inNonFilteredSection section: Int) -> [TagViewModel] {
         switch notFilteredSections[section] {
         case .recent:
-            return viewModel.lastAppliedTags
+            return viewModel.recentTags
         case .popular:
             return viewModel.mostUsedTags
         case .all:

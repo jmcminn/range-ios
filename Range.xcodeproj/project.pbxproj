@@ -206,6 +206,8 @@
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
+		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
+		0ABFD8AE28EDB962008CDA74 /* UserDefaultsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -447,6 +449,7 @@
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
+		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -488,6 +491,7 @@
 				0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */,
 				0AD9B77E286E2925005ACFD7 /* FirebaseFirestoreSwift-Beta in Frameworks */,
 				0AD9B77C286E2925005ACFD7 /* FirebaseFirestore in Frameworks */,
+				0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */,
 				0A07D5242809506C00B6F9A2 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -923,6 +927,7 @@
 				0A4DC76627EDCCFB00712518 /* Math */,
 				0A07D7592810377400B6F9A2 /* Model */,
 				0A4DC77027EE111400712518 /* Resources */,
+				0ABFD8AC28EDB945008CDA74 /* Settings */,
 				0AD9B75B28644D85005ACFD7 /* Tags */,
 				0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */,
 			);
@@ -1019,6 +1024,14 @@
 			path = PhotosReview;
 			sourceTree = "<group>";
 		};
+		0ABFD8AC28EDB945008CDA74 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		0AD0254B284D1A1500106CA5 /* HeaderExpand */ = {
 			isa = PBXGroup;
 			children = (
@@ -1110,6 +1123,7 @@
 				0AD9B77D286E2925005ACFD7 /* FirebaseFirestoreSwift-Beta */,
 				0A724F66288B0C8C00708C6B /* FirebaseStorage */,
 				0A724F68288B0C8C00708C6B /* FirebaseStorageSwift-Beta */,
+				0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -1190,6 +1204,7 @@
 				0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */,
 				0A4995D3286099D800E571FB /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				0A4995D92861DBE600E571FB /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				0ABFD8A928ED98C3008CDA74 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -1429,6 +1444,7 @@
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
 				0A3831D928E44CA3001AF38A /* AddUpdateCommandTest.swift in Sources */,
 				0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */,
+				0ABFD8AE28EDB962008CDA74 /* UserDefaultsTest.swift in Sources */,
 				0A34C181284552AC00BEDC7C /* FirebaseFeatureTest.swift in Sources */,
 				0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */,
 				0A724F6028898B9400708C6B /* AddUploadCommandTest.swift in Sources */,
@@ -2258,6 +2274,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		0ABFD8A928ED98C3008CDA74 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2315,6 +2339,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A07D51F28089F8F00B6F9A2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageSwift-Beta";
+		};
+		0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ABFD8A928ED98C3008CDA74 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
 		};
 		0AD9B77B286E2925005ACFD7 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;

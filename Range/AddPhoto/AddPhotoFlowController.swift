@@ -428,6 +428,7 @@ class AddPhotoFlowController {
             ))
             UserDefaults.lastPhotoPinId = geometryId
         }
+        UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)
     }
 }
 

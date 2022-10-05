@@ -1,4 +1,5 @@
 import Foundation
+import OrderedCollections
 
 extension UserDefaults {
     enum UserDefaultsConstants: String {
@@ -9,6 +10,8 @@ extension UserDefaults {
         case multiPhotoSessionEnabled
         /// last user's choice if the feed has more or less update, `true` by default
         case moreUpdatesInTheFeed
+        /// the prefix to be used for storing recent tags for a project, will be followed by a project id
+        case recentTagsPrefix = "recentTags_"
     }
 
     /// stores the last select geometry id for a photo to use it as a default for the next photo
@@ -23,6 +26,33 @@ extension UserDefaults {
                 UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastPhotoPinId.rawValue)
             }
         }
+    }
+
+    /// construct key used for storing recent tags for given project, exposed for tests
+    static func recentTagsKey(forProjectId projectId: String) -> String {
+        UserDefaultsConstants.recentTagsPrefix.rawValue + projectId
+    }
+
+    /// return at most last 10 recent tags. The most recent tag is at the end of the array
+    static func recentTagIds(forProjectId projectId: String) -> [String] {
+        UserDefaults.standard.array(forKey: UserDefaults.recentTagsKey(forProjectId: projectId)) as? [String] ?? []
+    }
+
+    /// adds given tags to recent tags for given project (the order of input matters, the tags with higher indices are treated as more recent)
+    /// If tag exist in recent tags it will be reinserted at the end (so it's "more recent")
+    /// only 10 most recent tags are kept
+    static func addRecentTagIds(_ recentTagIds: [String], forProjectId projectId: String) {
+        var orderedTagIds = OrderedSet(UserDefaults.recentTagIds(forProjectId: projectId))
+        for recentTagId in recentTagIds {
+            orderedTagIds.remove(recentTagId) // remove first, so it gets added at the end
+            orderedTagIds.append(recentTagId)
+        }
+        // keep last 10 at most
+        if orderedTagIds.count > 10 {
+            orderedTagIds.removeFirst(orderedTagIds.count - 10)
+        }
+        // store in user defaults for given project key
+        UserDefaults.standard.set(orderedTagIds.elements, forKey: UserDefaults.recentTagsKey(forProjectId: projectId))
     }
 
     static var annotationEnabled: Bool {

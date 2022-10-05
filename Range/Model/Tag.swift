@@ -7,9 +7,6 @@ class Tag: Object, WithPlaceholder {
     @Persisted(primaryKey: true) var id: String
     // name
     @Persisted var name: String
-    /// timestamp (since 1970), for tracking recent tags used by a user on this device for this project.
-    /// Not synchronized with backend
-    @Persisted var lastApplied: TimeInterval?
     /// all the collaborations the tag is attached to
     @Persisted var collaborations: MutableSet<Collaboration>
     /// all the uploads the tag is attached to
@@ -29,16 +26,15 @@ class Tag: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, lastApplied: TimeInterval? = nil, placeholder: Bool = false) {
+    init(id: String, name: String, placeholder: Bool = false) {
         super.init()
         self.id = id
         self.name = name
-        self.lastApplied = lastApplied
         self.placeholder = placeholder
     }
 
     /// Convenience initializer for placeholder object
     required convenience init(placeholderId id: String) {
-        self.init(id: id, name: "", lastApplied: nil, placeholder: true)
+        self.init(id: id, name: "", placeholder: true)
     }
 }
