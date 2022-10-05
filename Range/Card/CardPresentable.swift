@@ -14,9 +14,9 @@ protocol CardPresentable: UIViewController {
     /// If negative then position is not supported (only works for medium)
     /// Passing container view allows to calculate the card height based on container width, height or safe areas...
     ///
-    /// - parameters: containerView - container view in which the card is presented
+    /// - parameters: cardContainerView - container view in which the card is presented
     /// - parameters: cardPosition - position for which to return height
-    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat
+    func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat
 
     /// If provided the scroll view will be used to drive the card view panning
     func drivingScrollView() -> UIScrollView?
