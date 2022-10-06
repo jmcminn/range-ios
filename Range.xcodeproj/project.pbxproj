@@ -208,8 +208,9 @@
 		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
 		0ABFD8AE28EDB962008CDA74 /* UserDefaultsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */; };
+		0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
-		0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */; };
+		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */; };
@@ -450,8 +451,9 @@
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
+		0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSearchView.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
-		0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsTagsHeaderViewController.swift; sourceTree = "<group>"; };
+		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Commands.swift"; sourceTree = "<group>"; };
@@ -688,7 +690,6 @@
 			children = (
 				0A30E8AF2847AFAB00A50D54 /* PhotoDetailsViewController.swift */,
 				0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */,
-				0AD02556284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift */,
 			);
 			path = AddPhotoDetails;
 			sourceTree = "<group>";
@@ -698,6 +699,8 @@
 			children = (
 				0A4995D1285C9D1E00E571FB /* README.md */,
 				0A4995CF285B647600E571FB /* TagsViewModel.swift */,
+				0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */,
+				0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */,
 				0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */,
 				0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */,
 				0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */,
@@ -1336,6 +1339,7 @@
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
+				0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
 				0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */,
 				0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */,
@@ -1395,7 +1399,7 @@
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
 				0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */,
-				0AD02557284E15A500106CA5 /* PhotoDetailsTagsHeaderViewController.swift in Sources */,
+				0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,

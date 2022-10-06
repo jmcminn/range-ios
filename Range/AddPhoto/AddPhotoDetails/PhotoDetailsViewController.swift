@@ -65,7 +65,7 @@ class PhotoDetailsViewController: UIViewController {
     var headerVC: PhotoDetailsHeaderViewController!
     var headerViewTopConstraint: Constraint?
     var headerViewHeightConstraint: Constraint?
-    var tagsHeaderVC: PhotoDetailsTagsHeaderViewController!
+    var tagsHeaderVC: SearchAndSelectTagsHeaderViewController!
     var tagsHeaderViewHeightConstraint: Constraint?
 
     var bottomBar: UIView!
@@ -426,7 +426,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildTagsHeaderView() {
-        tagsHeaderVC = PhotoDetailsTagsHeaderViewController(viewModel: tagsViewModel)
+        tagsHeaderVC = SearchAndSelectTagsHeaderViewController(viewModel: tagsViewModel)
         tagsHeaderVC.searchView.textField.returnKeyType = .done
         tagsHeaderVC.searchView.addDelegate(self)
     }
@@ -513,21 +513,6 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
     /// when the keyboard shows for the search tags collapse the main header, so the search field goes to the top
     func searchViewActivated(_: SearchView) {
         tagsHeaderExpander.setFirstExpandedHeader(1, animated: true)
-    }
-
-    func searchView(_: SearchView, textDidChange text: String) {
-        tagsViewModel.filter(by: text)
-    }
-
-    func searchViewReturnButtonTapped(_ searchView: SearchView) {
-        // if the filter is entered and the only option is to add new tag - add it
-        if !tagsViewModel.filterStringTrimmed.isEmpty, tagsViewModel.filteredTags.isEmpty {
-            let tag = TagViewModel(newTagWithName: tagsViewModel.filterStringTrimmed)
-            tagsViewModel.add(tag: tag)
-            tagsViewModel.set(tagWithId: tag.id, selected: true)
-            tagsViewModel.filter(by: "")
-        }
-        searchView.endEditing(true)
     }
 
     /// on tags scroll adjust the header bottom stroke visibility

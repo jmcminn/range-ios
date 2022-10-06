@@ -1,9 +1,9 @@
 import UIKit
 
-/// Header view for tags.
-/// Contains a search view and selected tags below.
+/// Header view for search and select tags view controller.
+/// Contains a search view (`TagsSearchView`) and selected tags (`SelectedTagsViewController`) below.
 /// The layout supports collapsing the search view.
-class PhotoDetailsTagsHeaderViewController: UIViewController {
+class SearchAndSelectTagsHeaderViewController: UIViewController {
     /// The header can show or hide the selected tags. But for layout purposes it is important to know about 2 more states:
     /// showing and hiding which are temporary states when animating between visible and hidden
     enum TagsState {
@@ -14,7 +14,7 @@ class PhotoDetailsTagsHeaderViewController: UIViewController {
     }
 
     unowned let viewModel: TagsViewModel
-    var searchView: SearchView!
+    var searchView: TagsSearchView!
     var selectedTagsVC: SelectedTagsViewController!
     private var bottomStroke: UIView!
 
@@ -145,7 +145,10 @@ class PhotoDetailsTagsHeaderViewController: UIViewController {
     }
 
     private func buildTagsSearchView() {
-        searchView = SearchView(placeholderText: String(localized: "Search for, or add a tag"))
+        searchView = TagsSearchView(
+            placeholderText: String(localized: "Search for, or add a tag"),
+            viewModel: viewModel
+        )
     }
 
     private func buildSelectedTagsView() {
