@@ -374,7 +374,7 @@ extension CollaborationFlowController: CollaborationFlowActions {
     {
         // show activity view (a spinner) that covers the screen disabling any user interactions
         let activityView = UIActivityIndicatorView(style: .large)
-        activityView.backgroundColor = .black.withAlphaComponent(0.2)
+        activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
         canvasContainer.overlays.addSubview(activityView)
         activityView.snp.makeConstraints { make in

@@ -366,7 +366,7 @@ class AddPhotoFlowController {
     ) {
         // show activity view (a spinner) that covers the screen disabling any user interactions
         let activityView = UIActivityIndicatorView(style: .large)
-        activityView.backgroundColor = .black.withAlphaComponent(0.2)
+        activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
         progressHostView.addSubview(activityView)
         activityView.snp.makeConstraints { make in
@@ -657,7 +657,7 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         // show activity view (a spinner) that covers the screen disabling any user interactions
         let activityView = UIActivityIndicatorView(style: .large)
-        activityView.backgroundColor = .black.withAlphaComponent(0.2)
+        activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
         picker.view.addSubview(activityView)
         activityView.snp.makeConstraints { make in
