@@ -175,6 +175,16 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
             } else {
                 view.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
             }
+            // make the shadow height = 10 points, so the top part of the shadow is not visible
+            // (the path covers bottom part of the view only)
+            // This only works if the view is actually higher than 10 points. But if it's lower
+            // then the shadow with no shadowPath would not be shown (for view that has 0 height)
+            // so we still need to "cover" this view from top with another view (in a view that's
+            // adding this view controller as a child)
+            view.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                              y: view.bounds.maxY - 10,
+                                                              width: view.bounds.width,
+                                                              height: 10)).cgPath
         } else {
             view.layer.shadowOpacity = 0
         }
