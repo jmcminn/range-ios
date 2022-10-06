@@ -2,8 +2,24 @@ import Foundation
 import OSLog
 import UIKit
 
+/// Custom UIEvent sent by views to trigger certain actions defined in `CollaborationFlowActions` and related to `Upload`
+final class UploadEvent: UIEvent {
+    let upload: Upload
+    init(_ upload: Upload) {
+        self.upload = upload
+    }
+}
+
+/// Protocol defining actions that collaboration flow can perform.
+/// Required by the views sending actions, so they can use selectors for these functions.
+@objc protocol CollaborationFlowActions: AnyObject {
+    /// Notifies the flow that tags were selected for `Upload` provided in the event. This will results in the flow triggering
+    /// tags editing
+    func tagsSelected(sender: Any?, event: UploadEvent)
+}
+
 /// Manages displaying collaboration window
-class CollaborationFlowController {
+class CollaborationFlowController: UIResponder {
     unowned let model: ProjectModel
     unowned let imageCaches: ImageCaches
     unowned let canvasContainer: CanvasContainerViewController
@@ -23,6 +39,9 @@ class CollaborationFlowController {
 
     /// When adding photos from collaboration window
     var addPhotosFlow: AddPhotoFlowController?
+
+    /// When editing tags for upload
+    var editTagsVC: SearchAndSelectTagsViewController?
 
     ///
     /// - Parameters:
@@ -58,6 +77,7 @@ class CollaborationFlowController {
             projectModel: model,
             collaboration: collaboration
         )
+        collaborationVC.customNextResponder = self
         collaborationVC.onClose = { [weak self] in
             self?.onCollaborationClose?()
         }
@@ -264,5 +284,27 @@ private extension CollaborationFlowController {
                 self?.addPhotosFlow = nil
             }
         }
+    }
+}
+
+/// Edit tags for upload sub flow
+extension CollaborationFlowController: CollaborationFlowActions {
+    func tagsSelected(sender _: Any?, event: UploadEvent) {
+        let upload = event.upload
+        let selectedTags = Array(upload.tags.map { TagViewModel(fromTag: $0) })
+        let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: selectedTags)
+        editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
+        editTagsVC!.onClose = { [weak self, weak editTagsVC] in
+            guard let editTagsVC = editTagsVC else { return }
+            editTagsVC.hideCard(animated: true) {
+                self?.canvasContainer.removeCard(cardViewController: editTagsVC)
+            }
+        }
+        canvasContainer.installCard(
+            cardViewController: editTagsVC!,
+            inView: canvasContainer.controls,
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
+        )
+        editTagsVC!.showCard(animated: true)
     }
 }

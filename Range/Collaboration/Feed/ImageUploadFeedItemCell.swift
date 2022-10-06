@@ -139,6 +139,18 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         tagsView.showAddTagCell = true
         tagsView.collectionView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
+    }
+
+    @objc private func tagsTapped() {
+        guard let upload = upload else { return }
+        // send action to the responder chain with custom UploadEvent
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.tagsSelected(sender:event:)),
+            to: nil,
+            from: self,
+            for: UploadEvent(upload)
+        )
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
