@@ -210,7 +210,8 @@ extension ProjectModel {
         return commands
     }
 
-    @MainActor
+    /// Create commands for updating given Upload tags.
+    /// The commands include creating new tags.
     func update(tags: [TagViewModel], forUpload upload: Upload) -> [Command] {
         var commands: [Command] = []
 

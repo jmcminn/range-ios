@@ -294,11 +294,9 @@ extension CollaborationFlowController: CollaborationFlowActions {
         let selectedTags = Array(upload.tags.map { TagViewModel(fromTag: $0) })
         let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: selectedTags)
         editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
-        editTagsVC!.onClose = { [weak self, weak editTagsVC] in
-            guard let editTagsVC = editTagsVC else { return }
-            editTagsVC.hideCard(animated: true) {
-                self?.canvasContainer.removeCard(cardViewController: editTagsVC)
-            }
+        editTagsVC!.onClose = { [weak self, weak upload] in
+            guard let self = self, let upload = upload else { return }
+            self.updateTagsIfChanged(forUpload: upload)
         }
         canvasContainer.installCard(
             cardViewController: editTagsVC!,
@@ -306,5 +304,85 @@ extension CollaborationFlowController: CollaborationFlowActions {
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         editTagsVC!.showCard(animated: true)
+    }
+
+    /// Update tags for given upload and close the editTagsVC. The tags are taken from the current editTagsVC
+    /// If tags haven't changed, just close the editTagsVC
+    /// If updating failed give user a choice to retry or abort (close the editTagsVC and not save changes)
+    private func updateTagsIfChanged(forUpload upload: Upload) {
+        guard let editTagsVC = editTagsVC else { return }
+
+        let newTags = editTagsVC.tagsViewModel.selectedTags
+        let newTagIdsSet = Set(newTags.map(\.id))
+        let existingTagIdsSet = Set(upload.tags.map(\.id))
+
+        let closeEditTagsVC = {
+            editTagsVC.hideCard(animated: true) {
+                self.canvasContainer.removeCard(cardViewController: editTagsVC)
+            }
+        }
+
+        // just close the editTagsVC if the same tags
+        guard newTagIdsSet != existingTagIdsSet else {
+            closeEditTagsVC()
+            return
+        }
+
+        runCommandsWithProgress(
+            commands: model.update(tags: newTags, forUpload: upload),
+            onSuccess: closeEditTagsVC,
+            onFailure: { error in
+                let alert = UIAlertController(
+                    title: "Updating tags error",
+                    message: error.localizedDescription,
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
+                    // try again
+                    self?.updateTagsIfChanged(forUpload: upload)
+                }))
+                alert.addAction(UIAlertAction(title: "Abort", style: .destructive, handler: { _ in
+                    closeEditTagsVC()
+                }))
+                editTagsVC.present(alert, animated: true)
+            }
+        )
+    }
+
+    /// Shows the activity indicator making the UI not interactive, runs provided commands and runs one of the provided blocks depending
+    /// on the success of the commands.
+    private func runCommandsWithProgress(commands: [Command],
+                                         onSuccess: @escaping () -> Void,
+                                         onFailure: @escaping (Error) -> Void)
+    {
+        // show activity view (a spinner) that covers the screen disabling any user interactions
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .black.withAlphaComponent(0.2)
+        activityView.color = .Pink_03
+        canvasContainer.overlays.addSubview(activityView)
+        activityView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        activityView.startAnimating()
+
+        Task {
+            do {
+                // hide the spinner when data store call is finished
+                defer {
+                    DispatchQueue.main.async {
+                        activityView.removeFromSuperview()
+                    }
+                }
+                try await model.runCommands(commands)
+                DispatchQueue.main.async {
+                    onSuccess()
+                }
+            } catch {
+                Logger.model.error("finalize error: \(error.localizedDescription, privacy: .public)")
+                DispatchQueue.main.async {
+                    onFailure(error)
+                }
+            }
+        }
     }
 }
