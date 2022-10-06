@@ -33,7 +33,7 @@ class TagsViewModel: NSObject {
         let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
         allTags = model.mainRealm.objects(Tag.self)
             .where { $0.placeholder == false }
-            .map { TagViewModel(id: $0.id, name: $0.name, usageCount: $0.usageCount) }
+            .map { TagViewModel(fromTag: $0) }
             .sorted(using: nameSort)
 
         mostUsedTags = Array(allTags
@@ -167,6 +167,11 @@ class TagViewModel: NSObject, Codable {
         self.usageCount = usageCount
         self.newTag = newTag
         searchName = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+    }
+
+    /// Convenience initializer from the model Tag
+    convenience init(fromTag tag: Tag) {
+        self.init(id: tag.id, name: tag.name, usageCount: tag.usageCount)
     }
 
     /// Convenience initializer for new tags with auto generated id and given name
