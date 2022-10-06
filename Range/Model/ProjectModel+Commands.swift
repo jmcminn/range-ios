@@ -209,4 +209,18 @@ extension ProjectModel {
 
         return commands
     }
+
+    @MainActor
+    func update(tags: [TagViewModel], forUpload upload: Upload) -> [Command] {
+        var commands: [Command] = []
+
+        // add all new tags
+        commands.append(contentsOf: tags
+            .filter(\.newTag)
+            .map { AddTagCommand(tagId: $0.id, name: $0.name) })
+
+        commands.append(UpdateUploadTagsCommand(uploadId: upload.id, tagIds: tags.map(\.id)))
+
+        return commands
+    }
 }

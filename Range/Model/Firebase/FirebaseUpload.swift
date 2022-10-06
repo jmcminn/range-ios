@@ -21,7 +21,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Upload
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case parentId = "parent", parentType, authorId = "author", timestamp, name,
              uploadDescription = "description", urlString = "url",
              correlationId = "correlation", tagIds = "tags", fileTypeString = "fileType",

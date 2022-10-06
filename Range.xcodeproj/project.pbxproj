@@ -210,6 +210,8 @@
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
 		0ABFD8AE28EDB962008CDA74 /* UserDefaultsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */; };
 		0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */; };
+		0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */; };
+		0ABFD8B428EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -454,6 +456,8 @@
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
 		0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSearchView.swift; sourceTree = "<group>"; };
+		0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadTagsCommand.swift; sourceTree = "<group>"; };
+		0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateUploadTagsCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -1072,6 +1076,7 @@
 				0A724F4E28887ED300708C6B /* AddCommentCommand.swift */,
 				0A3831D628E44550001AF38A /* AddUpdateCommand.swift */,
 				0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */,
+				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
 				0A3831D428E44404001AF38A /* IntOrString.swift */,
 			);
 			path = Commands;
@@ -1086,6 +1091,7 @@
 				0A724F4028884D7A00708C6B /* AddFeatureCommand+Firestore.swift */,
 				0A724F4228884DF700708C6B /* AddCollaborationCommand+Firestore.swift */,
 				0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */,
+				0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -1277,6 +1283,7 @@
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
+				0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
 				0A724F4328884DF700708C6B /* AddCollaborationCommand+Firestore.swift in Sources */,
@@ -1362,6 +1369,7 @@
 				0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A4995B52854C28200E571FB /* TextView.swift in Sources */,
+				0ABFD8B428EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift in Sources */,
 				0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
