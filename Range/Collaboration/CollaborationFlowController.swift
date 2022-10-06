@@ -312,8 +312,8 @@ extension CollaborationFlowController: CollaborationFlowActions {
     private func updateTagsIfChanged(forUpload upload: Upload) {
         guard let editTagsVC = editTagsVC else { return }
 
-        let newTags = editTagsVC.tagsViewModel.selectedTags
-        let newTagIdsSet = Set(newTags.map(\.id))
+        let selectedTags = editTagsVC.tagsViewModel.selectedTags
+        let selectedTagIdsSet = Set(selectedTags.map(\.id))
         let existingTagIdsSet = Set(upload.tags.map(\.id))
 
         let closeEditTagsVC = {
@@ -323,14 +323,18 @@ extension CollaborationFlowController: CollaborationFlowActions {
         }
 
         // just close the editTagsVC if the same tags
-        guard newTagIdsSet != existingTagIdsSet else {
+        guard selectedTagIdsSet != existingTagIdsSet else {
             closeEditTagsVC()
             return
         }
 
         runCommandsWithProgress(
-            commands: model.update(tags: newTags, forUpload: upload),
-            onSuccess: closeEditTagsVC,
+            commands: model.update(tags: selectedTags, forUpload: upload),
+            onSuccess: { [weak self] in
+                guard let self = self else { return }
+                UserDefaults.addRecentTagIds(selectedTags.map(\.id), forProjectId: self.model.projectId)
+                closeEditTagsVC()
+            },
             onFailure: { error in
                 let alert = UIAlertController(
                     title: "Updating tags error",
