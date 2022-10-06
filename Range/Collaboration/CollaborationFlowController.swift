@@ -13,9 +13,13 @@ final class UploadEvent: UIEvent {
 /// Protocol defining actions that collaboration flow can perform.
 /// Required by the views sending actions, so they can use selectors for these functions.
 @objc protocol CollaborationFlowActions: AnyObject {
+    /// When "Add photos" button in the Collaboration window header or CTA was tapped
+    func addPhotosAction()
+    /// When "Add comment" button in the Collaboration window header or CTA was tapped
+    func addCommentAction()
     /// Notifies the flow that tags were selected for `Upload` provided in the event. This will results in the flow triggering
     /// tags editing
-    func tagsSelected(sender: Any?, event: UploadEvent)
+    func tagsSelectedAction(sender: Any?, event: UploadEvent)
 }
 
 /// Manages displaying collaboration window
@@ -80,9 +84,6 @@ class CollaborationFlowController: UIResponder {
         collaborationVC.customNextResponder = self
         collaborationVC.onClose = { [weak self] in
             self?.onCollaborationClose?()
-        }
-        collaborationVC.onAddPhotos = { [weak self] in
-            self?.startAddPhotosFlow()
         }
         return collaborationVC
     }
@@ -188,7 +189,7 @@ class CollaborationFlowController: UIResponder {
 extension CollaborationFlowController {
     private func setupFABs() {
         let addPhotosButton = RoundShadowButton(image: UIImage(systemName: "camera") ?? UIImage(), style: .blue)
-        addPhotosButton.addTarget(self, action: #selector(startAddPhotosFlow), for: .touchUpInside)
+        addPhotosButton.addTarget(self, action: #selector(addPhotosAction), for: .touchUpInside)
         canvasContainer.controls.addSubview(addPhotosButton)
         addPhotosButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
@@ -203,6 +204,7 @@ extension CollaborationFlowController {
         }
 
         let addCommentButton = RoundShadowButton(image: UIImage(systemName: "bubble.right") ?? UIImage())
+        addCommentButton.addTarget(self, action: #selector(addCommentAction), for: .touchUpInside)
         canvasContainer.controls.addSubview(addCommentButton)
         addCommentButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
@@ -264,9 +266,10 @@ extension CollaborationFlowController: CardDraggingDelegate {
     }
 }
 
-/// Add photos sub flow
-private extension CollaborationFlowController {
-    @objc func startAddPhotosFlow() {
+// MARK: - add photos sub flow for current collaboration
+
+extension CollaborationFlowController {
+    func addPhotosAction() {
         guard let geometryId = collaboration?.feature.first?.geometry.first?.id else {
             // the collaboration should be selected and have a geometry... (this shouldn't really happen)
             return
@@ -287,9 +290,19 @@ private extension CollaborationFlowController {
     }
 }
 
-/// Edit tags for upload sub flow
+// MARK: - add comment/note to current collaboration
+
+extension CollaborationFlowController {
+    func addCommentAction() {
+        // TODO: 291
+        print("add comment action")
+    }
+}
+
+// MARK: - edit tags for upload
+
 extension CollaborationFlowController: CollaborationFlowActions {
-    func tagsSelected(sender _: Any?, event: UploadEvent) {
+    func tagsSelectedAction(sender _: Any?, event: UploadEvent) {
         let upload = event.upload
         let selectedTags = Array(upload.tags.map { TagViewModel(fromTag: $0) })
         let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: selectedTags)

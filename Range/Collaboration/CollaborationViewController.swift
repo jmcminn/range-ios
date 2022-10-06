@@ -24,7 +24,6 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     /// callbacks for actions triggered from collaboration window
     var onClose: (() -> Void)?
-    var onAddPhotos: (() -> Void)?
 
     private enum Constants {
         // height of thumbnails view
@@ -253,7 +252,10 @@ extension CollaborationViewController {
         blackButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
         let addCommentButton = UIButton(
             configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { _ in }
+            primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { [weak self] _ in
+                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addCommentAction),
+                                                to: nil, from: self, for: nil)
+            }
         )
         let addAttachmentButton = UIButton(
             configuration: blackButtonConfig,
@@ -271,7 +273,8 @@ extension CollaborationViewController {
         let addPhotosButton = UIButton(
             configuration: blueButtonConfig,
             primaryAction: UIAction(image: UIImage(systemName: "camera")) { [weak self] _ in
-                self?.onAddPhotos?()
+                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addPhotosAction),
+                                                to: nil, from: self, for: nil)
             }
         )
         ctas = UIStackView(arrangedSubviews: [addCommentButton, addAttachmentButton, addPhotosButton])

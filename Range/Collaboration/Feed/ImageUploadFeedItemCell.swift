@@ -146,7 +146,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         guard let upload = upload else { return }
         // send action to the responder chain with custom UploadEvent
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.tagsSelected(sender:event:)),
+            #selector(CollaborationFlowActions.tagsSelectedAction(sender:event:)),
             to: nil,
             from: self,
             for: UploadEvent(upload)
