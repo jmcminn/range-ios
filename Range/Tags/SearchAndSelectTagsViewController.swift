@@ -184,6 +184,7 @@ extension SearchAndSelectTagsViewController {
         tagsVC = TagsSelectionViewController(viewModel: tagsViewModel)
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)
+        tagsVC.tableView.keyboardDismissMode = .onDrag
     }
 }
 
@@ -239,7 +240,6 @@ extension SearchAndSelectTagsViewController: UIScrollViewDelegate {
     /// on tags scroll adjust the header bottom stroke visibility
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         tagsHeaderVC.bottomStrokeVisible = scrollView.contentOffset.y > 0
-        tagsHeaderVC.searchView.endEditing(true)
     }
 }
 

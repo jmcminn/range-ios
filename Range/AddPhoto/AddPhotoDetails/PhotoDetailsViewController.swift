@@ -478,6 +478,7 @@ extension PhotoDetailsViewController {
         tagsVC = TagsSelectionViewController(viewModel: tagsViewModel)
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)
+        tagsVC.tableView.keyboardDismissMode = .onDrag
     }
 
     private func buildDescriptionTextView() {
@@ -519,7 +520,6 @@ extension PhotoDetailsViewController: SearchViewDelegate, UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView === tagsVC.tableView {
             tagsHeaderVC.bottomStrokeVisible = scrollView.contentOffset.y > 0
-            tagsHeaderVC.searchView.endEditing(true)
         }
     }
 }
