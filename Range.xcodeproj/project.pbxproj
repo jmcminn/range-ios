@@ -212,6 +212,7 @@
 		0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */; };
 		0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */; };
 		0ABFD8B428EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */; };
+		0ABFD8B728F00A98008CDA74 /* AddCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -458,6 +459,7 @@
 		0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSearchView.swift; sourceTree = "<group>"; };
 		0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadTagsCommand.swift; sourceTree = "<group>"; };
 		0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateUploadTagsCommand+Firestore.swift"; sourceTree = "<group>"; };
+		0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentViewController.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -908,6 +910,7 @@
 				0A97232327FC507200D744F4 /* Camera */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
+				0ABFD8B528F00A46008CDA74 /* Comment */,
 				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0A2E04D128AC0F5D00E10503 /* ImageCache */,
@@ -1040,6 +1043,14 @@
 				0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		0ABFD8B528F00A46008CDA74 /* Comment */ = {
+			isa = PBXGroup;
+			children = (
+				0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */,
+			);
+			path = Comment;
 			sourceTree = "<group>";
 		};
 		0AD0254B284D1A1500106CA5 /* HeaderExpand */ = {
@@ -1415,6 +1426,7 @@
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
+				0ABFD8B728F00A98008CDA74 /* AddCommentViewController.swift in Sources */,
 				0A130EA928D74F3300FF1368 /* ImageUploadFeedItemCell.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */,

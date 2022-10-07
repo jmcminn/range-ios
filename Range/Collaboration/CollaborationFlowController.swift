@@ -294,8 +294,13 @@ extension CollaborationFlowController {
 
 extension CollaborationFlowController {
     func addCommentAction() {
-        // TODO: 291
-        print("add comment action")
+        let addCommentVC = AddCommentViewController()
+        canvasContainer.installCard(
+            cardViewController: addCommentVC,
+            inView: canvasContainer.controls,
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
+        )
+        addCommentVC.showCard(animated: true)
     }
 }
 

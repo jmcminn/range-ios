@@ -5,6 +5,10 @@ import UIKit
 class UITextViewWithPlaceholder: UITextView {
     private let placeholderLabel = UILabel()
 
+    var placeholderText: String? {
+        didSet { placeholderLabel.text = placeholderText }
+    }
+
     /// when text changes updates the placeholder visibility (called when setting text programmatically)
     override var text: String! {
         didSet {
@@ -24,8 +28,9 @@ class UITextViewWithPlaceholder: UITextView {
     }
 
     init(placeholderText: String) {
+        self.placeholderText = placeholderText
         super.init(frame: .zero, textContainer: nil)
-        setupPlaceholderLabel(placeholderText: placeholderText)
+        setupPlaceholderLabel()
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(textChanged),
@@ -49,7 +54,7 @@ class UITextViewWithPlaceholder: UITextView {
     }
 
     /// UITextView doesn't support placeholder, create a label for placeholder
-    private func setupPlaceholderLabel(placeholderText: String) {
+    private func setupPlaceholderLabel() {
         placeholderLabel.font = UIFont.preferredFont(forTextStyle: .body)
         placeholderLabel.textColor = .dynamicColor(light: .Neutral_05, dark: .Neutral_05)
         placeholderLabel.backgroundColor = .clear
@@ -59,8 +64,8 @@ class UITextViewWithPlaceholder: UITextView {
         addSubview(placeholderLabel)
         placeholderLabel.snp.makeConstraints { make in
             // 5 and 0.5 is derived experimentally
-            make.leading.equalToSuperview().inset(12 + 5)
-            make.top.equalToSuperview().offset(12 + 0.5)
+            make.leading.equalToSuperview().inset(textContainerInset.left + 5)
+            make.top.equalToSuperview().offset(textContainerInset.top + 0.5)
         }
     }
 }
