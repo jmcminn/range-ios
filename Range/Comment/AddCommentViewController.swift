@@ -3,7 +3,11 @@ import SnapKit
 import UIKit
 
 class AddCommentViewController: UIViewController, NonModalCardCoordinating {
-    var cardDragging: NonModalCardDragging?
+    var cardDragging: NonModalCardDragging? {
+        didSet { cardDragging?.delegate = self }
+    }
+
+    var onCancel: (() -> Void)?
 
     // top/left/bottom/right margins for views layout
     private static let margin = 16.0
@@ -29,19 +33,19 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
     private var textViewObservation: NSKeyValueObservation?
 
     /// text view height changes with its content size
-    var textViewHeightConstraint: Constraint?
+    private var textViewHeightConstraint: Constraint?
     /// textViewHeightConstraint does not expose the constant, so we need to keep it separately
-    var textViewHeight: CGFloat = 38.0 {
+    private var textViewHeight: CGFloat = 38.0 {
         didSet {
             textViewHeightConstraint?.update(offset: textViewHeight)
         }
     }
 
-    var roundedShadowView: RoundShadowView {
+    private var roundedShadowView: RoundShadowView {
         view as! RoundShadowView
     }
 
-    var containerView: UIView {
+    private var containerView: UIView {
         roundedShadowView.containerView
     }
 
@@ -199,6 +203,15 @@ extension AddCommentViewController {
         }
         commentButton.setNeedsUpdateConfiguration()
         updateCommentButtonEnabled()
+    }
+}
+
+// MARK: - Card dragging delegate
+
+extension AddCommentViewController: CardDraggingDelegate {
+    func cardOverlayTapped() {
+        textView.resignFirstResponder()
+        onCancel?()
     }
 }
 

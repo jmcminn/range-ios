@@ -21,6 +21,8 @@ class NonModalCardDragging: CardDragging {
             overlayView.isHidden = true
             containerView.insertSubview(overlayView, belowSubview: presentedViewController.view)
             overlayView.snp.makeConstraints { make in make.edges.equalToSuperview() }
+            overlayView.isUserInteractionEnabled = true
+            overlayView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(overlayTapped)))
             self.overlayView = overlayView
         }
     }
@@ -72,5 +74,10 @@ class NonModalCardDragging: CardDragging {
                                overlayView.isHidden = true
                            })
         }
+    }
+
+    /// When tapped on the overlay
+    @objc private func overlayTapped() {
+        delegate?.cardOverlayTapped()
     }
 }

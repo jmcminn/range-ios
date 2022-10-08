@@ -11,6 +11,10 @@ protocol CardDraggingDelegate: AnyObject {
 
     /// Notifies the delegate when the height is updated when dragging
     func cardHeightUpdated(_ height: CGFloat)
+
+    /// When to overlay shown when configured with `CardConfiguration.showOverlay` is tapped
+    /// - Warning: only for non-modal card presentation
+    func cardOverlayTapped()
 }
 
 /// Default implementations for optional CardDraggingDelegate functions
@@ -18,6 +22,7 @@ extension CardDraggingDelegate {
     func cardWillChangePosition(_: CardPosition) {}
     func cardDidChangePosition(_: CardPosition) {}
     func cardHeightUpdated(_: CGFloat) {}
+    func cardOverlayTapped() {}
 }
 
 /// Helper class for installing the gesture recognizers on the card-presented view controller's view and managing the card dragging.

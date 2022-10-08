@@ -295,6 +295,12 @@ extension CollaborationFlowController {
 extension CollaborationFlowController {
     func addCommentAction() {
         let addCommentVC = AddCommentViewController()
+        addCommentVC.onCancel = { [weak self, weak addCommentVC] in
+            guard let self = self, let addCommentVC = addCommentVC else { return }
+            addCommentVC.hideCard(animated: true) {
+                self.canvasContainer.removeCard(cardViewController: addCommentVC)
+            }
+        }
         canvasContainer.installCard(
             cardViewController: addCommentVC,
             inView: canvasContainer.controls,
