@@ -47,6 +47,10 @@ class CollaborationFlowController: UIResponder {
     /// When editing tags for upload
     var editTagsVC: SearchAndSelectTagsViewController?
 
+    /// Remember the text for the last comment that was cancelled, so when showing the next AddCommentViewController
+    /// for the same collaboration use this text. It's reset when the current collaboration changes
+    var lastCancelledCommentText: String! = ""
+
     ///
     /// - Parameters:
     ///     - model: - the project model
@@ -138,6 +142,7 @@ class CollaborationFlowController: UIResponder {
         setCollaborationHeaderCoverHidden(true, animated: animated)
         setFABsHidden(true, animated: animated)
         removeCollaborationHeaderCover()
+        lastCancelledCommentText = ""
     }
 
     /// Adds the top cover for collaboration window. Initially with alpha = 0
@@ -295,8 +300,10 @@ extension CollaborationFlowController {
 extension CollaborationFlowController {
     func addCommentAction() {
         let addCommentVC = AddCommentViewController()
+        addCommentVC.commentText = lastCancelledCommentText
         addCommentVC.onCancel = { [weak self, weak addCommentVC] in
             guard let self = self, let addCommentVC = addCommentVC else { return }
+            self.lastCancelledCommentText = addCommentVC.commentText
             addCommentVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: addCommentVC)
             }

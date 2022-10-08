@@ -6,7 +6,10 @@ class UITextViewWithPlaceholder: UITextView {
     private let placeholderLabel = UILabel()
 
     var placeholderText: String? {
-        didSet { placeholderLabel.text = placeholderText }
+        didSet {
+            placeholderLabel.text = placeholderText
+            placeholderLabel.sizeToFit()
+        }
     }
 
     /// when text changes updates the placeholder visibility (called when setting text programmatically)

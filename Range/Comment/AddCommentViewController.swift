@@ -18,11 +18,21 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
         didSet { isNoteDidSet() }
     }
 
+    /// get/set the comment text
+    var commentText: String! {
+        get {
+            textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        set {
+            textView.text = newValue
+        }
+    }
+
     private var placeholderText: String {
         isNote ? "Add an actionable note..." : "Add a comment..."
     }
 
-    private var textView: UITextViewWithPlaceholder!
+    private var textView = UITextViewWithPlaceholder(placeholderText: "")
     private var flagButton: ButtonWithTapAreaInsets!
     private var commentButton: ButtonWithTapAreaInsets!
 
@@ -112,7 +122,7 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
 
     /// The comment button is enabled when the text is not empty (or doesn't consist entirely of whitespace and new lines)
     private func updateCommentButtonEnabled() {
-        commentButton.isEnabled = !textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        commentButton.isEnabled = !commentText.isEmpty
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -148,7 +158,7 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
 
 extension AddCommentViewController {
     private func setupTextView() {
-        textView = UITextViewWithPlaceholder(placeholderText: placeholderText)
+        textView.placeholderText = placeholderText
         textView.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         textView.font = UIFont.preferredFont(forTextStyle: .body)
         textView.adjustsFontForContentSizeCategory = true
