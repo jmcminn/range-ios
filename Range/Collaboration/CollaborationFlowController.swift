@@ -308,12 +308,44 @@ extension CollaborationFlowController {
                 self.canvasContainer.removeCard(cardViewController: addCommentVC)
             }
         }
+        addCommentVC.onDone = { [weak self, weak addCommentVC] in
+            guard let self = self, let addCommentVC = addCommentVC else { return }
+            self.addComment(fromCommentVC: addCommentVC)
+        }
         canvasContainer.installCard(
             cardViewController: addCommentVC,
             inView: canvasContainer.controls,
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         addCommentVC.showCard(animated: true)
+    }
+
+    private func addComment(fromCommentVC addCommentVC: AddCommentViewController) {
+        guard let collaboration = collaboration else { return }
+
+        runCommandsWithProgress(
+            commands: model.addComment(
+                commentText: addCommentVC.commentText,
+                isNote: addCommentVC.isNote,
+                toCollaboration: collaboration.id
+            ),
+            onSuccess: { [weak self] in
+                guard let self = self else { return }
+                self.lastCancelledCommentText = ""
+                addCommentVC.hideCard(animated: true) {
+                    self.canvasContainer.removeCard(cardViewController: addCommentVC)
+                }
+            },
+            onFailure: { error in
+                let alert = UIAlertController(
+                    title: "Creating comment error",
+                    message: error.localizedDescription,
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                addCommentVC.present(alert, animated: true)
+            }
+        )
     }
 }
 
@@ -383,7 +415,11 @@ extension CollaborationFlowController: CollaborationFlowActions {
             }
         )
     }
+}
 
+// MARK: - running server side commands
+
+extension CollaborationFlowController {
     /// Shows the activity indicator making the UI not interactive, runs provided commands and runs one of the provided blocks depending
     /// on the success of the commands.
     private func runCommandsWithProgress(commands: [Command],

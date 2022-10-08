@@ -224,4 +224,20 @@ extension ProjectModel {
 
         return commands
     }
+
+    /// Create command for creating a new comment (or note if isNote = `true`) for given collaboration id.
+    func addComment(commentText: String, isNote: Bool, toCollaboration collaborationId: String) -> [Command] {
+        [
+            AddCommentCommand(
+                commentId: generateRealmId(),
+                parentType: "Collaboration",
+                parentId: collaborationId,
+                authorId: userId,
+                timestamp: Date.now.timeIntervalSince1970,
+                text: commentText,
+                textIsEdited: false,
+                isNote: isNote
+            ),
+        ]
+    }
 }

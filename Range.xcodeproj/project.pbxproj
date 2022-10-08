@@ -213,6 +213,7 @@
 		0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */; };
 		0ABFD8B428EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */; };
 		0ABFD8B728F00A98008CDA74 /* AddCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */; };
+		0ABFD8B928F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -460,6 +461,7 @@
 		0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadTagsCommand.swift; sourceTree = "<group>"; };
 		0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateUploadTagsCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentViewController.swift; sourceTree = "<group>"; };
+		0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddCommentCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -1101,6 +1103,7 @@
 				0A724F3A288840AD00708C6B /* AddGeometryCommand+Firestore.swift */,
 				0A724F4028884D7A00708C6B /* AddFeatureCommand+Firestore.swift */,
 				0A724F4228884DF700708C6B /* AddCollaborationCommand+Firestore.swift */,
+				0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */,
 				0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */,
 				0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */,
 			);
@@ -1337,6 +1340,7 @@
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
 				0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */,
+				0ABFD8B928F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */,
 				0AD9B773286B0F56005ACFD7 /* Command+Firestore.swift in Sources */,

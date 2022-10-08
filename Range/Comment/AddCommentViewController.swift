@@ -8,6 +8,7 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
     }
 
     var onCancel: (() -> Void)?
+    var onDone: (() -> Void)?
 
     // top/left/bottom/right margins for views layout
     private static let margin = 16.0
@@ -200,8 +201,7 @@ extension AddCommentViewController {
         commentButton = ButtonWithTapAreaInsets(
             configuration: commentConfig,
             primaryAction: UIAction(title: "Comment") { [weak self] _ in
-                // TODO: 291 here
-                self?.textView.resignFirstResponder()
+                self?.onDone?()
             }
         )
         // more vertical tap area as button is only 32 points high
