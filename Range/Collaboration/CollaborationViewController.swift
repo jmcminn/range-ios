@@ -22,6 +22,9 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var thumbnailsVC: ThumbnailsViewController!
     var updatesToggle: SegmentedControl!
 
+    /// how high is the currently visible part of the keyboard
+    private var keyboardHeightInWindow: CGFloat = 0
+
     /// callbacks for actions triggered from collaboration window
     var onClose: (() -> Void)?
 
@@ -133,18 +136,20 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             self?.onCollaborationUpdated()
         }
         onCollaborationUpdated()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // Fill info at viewDidAppear to make sure UIKit
-        // has configured this view's next responder.
-        originalNextResponder = super.next
+        // install keyboard observer
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillChangeFrame),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         collaborationNotificationToken?.invalidate()
+        // remove keyboard observers
+        NotificationCenter.default.removeObserver(self)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -239,8 +244,9 @@ extension CollaborationViewController {
         nameField.adjustsFontSizeToFitWidth = true
         nameField.setContentHuggingPriority(.defaultLow, for: .horizontal)
         nameField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        nameField.delegate = self
         // TODO: 294
-        nameField.isUserInteractionEnabled = false
+//        nameField.isUserInteractionEnabled = false
 //        nameField.delegate = self
 //        nameField.addTarget(self, action: #selector(textChangedAction), for: .editingChanged)
     }
@@ -287,6 +293,12 @@ extension CollaborationViewController {
         namePencilView = UIImageView(image: image)
         namePencilView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         namePencilView.setContentHuggingPriority(.required, for: .horizontal)
+        namePencilView.isUserInteractionEnabled = true
+        namePencilView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(namePencilTapped)))
+    }
+
+    @objc private func namePencilTapped() {
+        nameField.becomeFirstResponder()
     }
 
     private func setupFeedVC() {
@@ -373,28 +385,32 @@ extension CollaborationViewController {
 // MARK: Card presentable
 
 extension CollaborationViewController: CardPresentable {
-    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat {
+    func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
         let heightIncludingCTAs = 147.0
         if cardPosition == .min {
             return 0 // will be hidden when minimized
         } else if cardPosition == .medium {
-            var height = heightIncludingCTAs + Constants.thumbnailsVerticalPaddings
+            let height = heightIncludingCTAs + Constants.thumbnailsVerticalPaddings
+
             // include half of the updatesToggle
-            height += Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight / 2.0
+            var additionalContentHeight = Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight / 2.0
             if !collaboration.uploads.isEmpty {
-                height += Constants.thumbnailsHeight
-                    + Constants.thumbnailsVerticalPaddings
+                additionalContentHeight += Constants.thumbnailsHeight + Constants.thumbnailsVerticalPaddings
             }
-            return height
+
+            let extraSpaceForKeyboard = max(keyboardHeightInWindow - cardContainerView.safeAreaInsets.bottom, 0)
+
+            // show either keyboard or additional content
+            return height + max(additionalContentHeight, extraSpaceForKeyboard)
         } else { // .max
             // the card display controller adds handling for bottom safe area so
             // we need to subtract it
-            let fullHeight = containerView.bounds.height - containerView.safeAreaInsets.bottom
+            let fullHeight = cardContainerView.bounds.height - cardContainerView.safeAreaInsets.bottom
             // the height of the collaboration view header that we want to hide
             // behing the header cover
             let headerHeight = heightIncludingCTAs
             // 50 is the height of headerCover content
-            let headerCoverHeight = containerView.safeAreaInsets.top + 50
+            let headerCoverHeight = cardContainerView.safeAreaInsets.top + 50
             // add enough so the "header" hides behind the headerCover
             return fullHeight - headerCoverHeight + headerHeight
         }
@@ -402,5 +418,43 @@ extension CollaborationViewController: CardPresentable {
 
     func drivingScrollView() -> UIScrollView? {
         feedVC.tableView
+    }
+}
+
+// MARK: - keyboard handling
+
+extension CollaborationViewController: UITextFieldDelegate {
+    /// Recalculate the `keyboardHeightInWindow` on keyboard frame change and update the card height
+    @objc func keyboardWillChangeFrame(notification: NSNotification) {
+        // only update the layout if name is being edited (and not when some presented
+        // views, like 'add comment' present the keyboard)
+        guard nameField.isEditing else { return }
+        // Get required info out of the notification
+        if let window = view.window,
+           let cardDragging = cardDragging,
+           let userInfo = notification.userInfo,
+           let endRect = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? AnyObject)?.cgRectValue,
+           let durationValue = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey],
+           let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey]
+        {
+            // Calculate the height of the visible part of the keyboard
+            keyboardHeightInWindow = window.frame.height - endRect.origin.y
+
+            let duration = (durationValue as AnyObject).doubleValue
+            let options = UIView.AnimationOptions(rawValue: UInt((curveValue as AnyObject).integerValue << 16))
+            UIView.animate(withDuration: duration!, delay: 0, options: options, animations: {
+                // update the card height
+                cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: false)
+            }, completion: nil)
+        }
+    }
+
+    /// when text field did end editing update the keyboard height.
+    func textFieldDidEndEditing(_: UITextField, reason _: UITextField.DidEndEditingReason) {
+        // this is needed as user could switch to another field with keyboard still visible. In this
+        // case we want to update this card immediately (and not wait for the keyboard to be hidden)
+        keyboardHeightInWindow = 0
+        guard let cardDragging = cardDragging else { return }
+        cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
     }
 }

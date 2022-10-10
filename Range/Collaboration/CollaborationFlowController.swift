@@ -261,6 +261,11 @@ extension CollaborationFlowController {
 extension CollaborationFlowController: CardDraggingDelegate {
     // hide collaboration when the window is minimized
     func cardWillChangePosition(_ position: CardPosition) {
+        if position == .min || position == .max {
+            // if the keyboard is showing then hide it when the card is changing the position
+            // (this will happen when editing the collaboration name)
+            collaborationVC?.view.endEditing(true)
+        }
         if position == .min {
             onCollaborationClose?()
         }
