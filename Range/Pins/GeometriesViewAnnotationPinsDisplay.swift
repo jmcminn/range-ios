@@ -179,34 +179,38 @@ extension GeometriesViewAnnotationPinsDisplay {
         let selected = pinView.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
         let pinOptions = geometryPinDisplayOptionsProvider(geometry, selected, anythingSelected)
-        pinView.image = UIImage(named: pinOptions.imageName)
-        pinView.sizeToFit()
-        pinView.alpha = pinOptions.alpha
-        let options = ViewAnnotationOptions(
-            geometry: pinView.point,
-            width: pinView.bounds.width,
-            height: pinView.bounds.height,
-            allowOverlap: true,
-            anchor: pinOptions.anchor,
-            offsetY: pinOptions.offsetY,
-            selected: selected
-        )
-        do {
-            if update {
-                // HACK, mapbox is supposed to bring the `selected=true` views to the front
-                // but it doesn't look it's actually always doing it. So the currently selected
-                // view is readded to the annotations, so it's the last one and displayed on top
-                if selected {
-                    canvasVC.mapView.viewAnnotations.remove(pinView)
-                    try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
+        // The pinView doesn't animate the image properly when this code is run withing animation block, so disable
+        // animations for pinView updates.
+        UIView.performWithoutAnimation {
+            pinView.image = UIImage(named: pinOptions.imageName)
+            pinView.sizeToFit()
+            pinView.alpha = pinOptions.alpha
+            let options = ViewAnnotationOptions(
+                geometry: pinView.point,
+                width: pinView.bounds.width,
+                height: pinView.bounds.height,
+                allowOverlap: true,
+                anchor: pinOptions.anchor,
+                offsetY: pinOptions.offsetY,
+                selected: selected
+            )
+            do {
+                if update {
+                    // HACK, mapbox is supposed to bring the `selected=true` views to the front
+                    // but it doesn't look it's actually always doing it. So the currently selected
+                    // view is readded to the annotations, so it's the last one and displayed on top
+                    if selected {
+                        canvasVC.mapView.viewAnnotations.remove(pinView)
+                        try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
+                    } else {
+                        try canvasVC.mapView.viewAnnotations.update(pinView, options: options)
+                    }
                 } else {
-                    try canvasVC.mapView.viewAnnotations.update(pinView, options: options)
+                    try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
                 }
-            } else {
-                try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
+            } catch {
+                print("error \(update ? "updating" : "adding") view annotation: ", error)
             }
-        } catch {
-            print("error \(update ? "updating" : "adding") view annotation: ", error)
         }
     }
 
