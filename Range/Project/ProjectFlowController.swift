@@ -199,14 +199,14 @@ final class ProjectFlowController: UIViewController {
 
     fileprivate func installActionCardVC() -> ProjectActionCardViewController {
         let additionalCardActions = [
-            ProjectAction(
+            ActionItem(
                 title: "Sign Out",
                 imageName: "rectangle.portrait.and.arrow.right",
                 handler: { [weak self] in
                     self?.onSignOut?()
                 }
             ),
-            ProjectAction(
+            ActionItem(
                 title: "Toggle Light/Dark mode",
                 imageName: "lightbulb",
                 handler: { [weak self] in

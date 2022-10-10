@@ -2,43 +2,19 @@ import FirebaseCrashlytics
 import SnapKit
 import UIKit
 
-/// Helper class for definining actions displayed by ``ProjectActionSelectorViewController``
-class ProjectAction {
-    /// Short display title.
-    let title: String?
-    /// image systemName
-    let imageName: String?
-    /// action to be performed
-    let handler: (() -> Void)?
-    init(title: String? = nil, imageName: String? = nil, handler: (() -> Void)? = nil) {
-        self.title = title
-        self.imageName = imageName
-        self.handler = handler
-    }
-}
-
-class ProjectActionSelectorViewController: UIViewController {
+/// View controller presenting given array of `ActionItem` in a table view
+class ActionSelectorViewController: UIViewController {
     var tableView: UITableView!
-    let actions: [ProjectAction]
+    let actions: [ActionItem]
 
     private let imageConfig = UIImage.SymbolConfiguration(textStyle: .caption1)
         .applying(UIImage.SymbolConfiguration(weight: .medium))
 
-    /// Initiates with additional actions to show (besides the default ones)
+    /// Initiates with actions to show
     /// - Parameters:
     ///   - actions: array of actions
-    init(actions: [ProjectAction] = []) {
-        self.actions = actions + [
-            ProjectAction(title: "Activity Feed", imageName: "calendar.day.timeline.left", handler: {
-//                Crashlytics.crashlytics().log("I think I'm gonna crash now!")
-//                let numbers = [0]
-//                _ = numbers[1]
-            }),
-            ProjectAction(title: "All Media", imageName: "photo"),
-            ProjectAction(title: "Photo Collections", imageName: "photo.on.rectangle.angled"),
-            ProjectAction(title: "Collaborations", imageName: "mappin"),
-            ProjectAction(title: "Features", imageName: "mappin.and.ellipse"),
-        ]
+    init(actions: [ActionItem]) {
+        self.actions = actions
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -86,7 +62,7 @@ class ProjectActionSelectorViewController: UIViewController {
     }
 }
 
-extension ProjectActionSelectorViewController: UITableViewDelegate, UITableViewDataSource {
+extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         1
     }

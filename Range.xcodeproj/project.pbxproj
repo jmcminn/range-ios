@@ -121,7 +121,7 @@
 		0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78727F4955900712518 /* ModalCardPresentationController.swift */; };
 		0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */; };
 		0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */; };
-		0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */; };
+		0A4DC79627F572CF00712518 /* ActionSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79527F572CF00712518 /* ActionSelectorViewController.swift */; };
 		0A4DC79827F5B06200712518 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79727F5B06200712518 /* Colors.swift */; };
 		0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC79A27F61C8700712518 /* SnapKit */; };
 		0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */; };
@@ -216,6 +216,7 @@
 		0ABFD8B928F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */; };
 		0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */; };
 		0ABFD8BD28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */; };
+		0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -371,7 +372,7 @@
 		0A4DC78727F4955900712518 /* ModalCardPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardPresentationController.swift; sourceTree = "<group>"; };
 		0A4DC78927F4CDD500712518 /* PresentationContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationContainerView.swift; sourceTree = "<group>"; };
 		0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPresentable.swift; sourceTree = "<group>"; };
-		0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectActionSelectorViewController.swift; sourceTree = "<group>"; };
+		0A4DC79527F572CF00712518 /* ActionSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSelectorViewController.swift; sourceTree = "<group>"; };
 		0A4DC79727F5B06200712518 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Properties.swift"; sourceTree = "<group>"; };
 		0A4DC7A327F7618D00712518 /* RoundShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowView.swift; sourceTree = "<group>"; };
@@ -466,6 +467,7 @@
 		0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddCommentCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommand.swift; sourceTree = "<group>"; };
 		0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateCollaborationNameCommand+Firestore.swift"; sourceTree = "<group>"; };
+		0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItem.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -855,7 +857,6 @@
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
 				0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
-				0A4DC79527F572CF00712518 /* ProjectActionSelectorViewController.swift */,
 				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
 				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
 			);
@@ -911,6 +912,7 @@
 			children = (
 				0A4B043B28CA21AE006E8630 /* Range.entitlements */,
 				0A48ACDC281C0CBD0044E06E /* Supporting Files */,
+				0ABFD8BE28F48556008CDA74 /* ActionSelector */,
 				0A4995D62860C6A900E571FB /* AddPhoto */,
 				0A07D764281295B500B6F9A2 /* Auth */,
 				0A97232327FC507200D744F4 /* Camera */,
@@ -1057,6 +1059,15 @@
 				0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */,
 			);
 			path = Comment;
+			sourceTree = "<group>";
+		};
+		0ABFD8BE28F48556008CDA74 /* ActionSelector */ = {
+			isa = PBXGroup;
+			children = (
+				0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */,
+				0A4DC79527F572CF00712518 /* ActionSelectorViewController.swift */,
+			);
+			path = ActionSelector;
 			sourceTree = "<group>";
 		};
 		0AD0254B284D1A1500106CA5 /* HeaderExpand */ = {
@@ -1293,6 +1304,7 @@
 				0ABFD8BD28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
+				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
 				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
@@ -1401,7 +1413,7 @@
 				0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */,
 				0A130EA728D7409800FF1368 /* TimeInterval+Formatting.swift in Sources */,
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */,
-				0A4DC79627F572CF00712518 /* ProjectActionSelectorViewController.swift in Sources */,
+				0A4DC79627F572CF00712518 /* ActionSelectorViewController.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,

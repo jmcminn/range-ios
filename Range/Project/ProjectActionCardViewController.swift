@@ -2,7 +2,7 @@ import SnapKit
 import UIKit
 
 class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
-    let actions: [ProjectAction]
+    let actions: [ActionItem]
 
     var cardDragging: NonModalCardDragging?
 
@@ -13,7 +13,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
     var searchView: SearchView!
     var photoButton: UIButton!
-    var actionSelectorVC: ProjectActionSelectorViewController!
+    var actionSelectorVC: ActionSelectorViewController!
 
     var roundedShadowView: RoundShadowView {
         view as! RoundShadowView
@@ -26,7 +26,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     /// Initiates with additional actions to show in the action selector
     /// - Parameters:
     ///   - actions: array of actions
-    init(actions: [ProjectAction] = []) {
+    init(actions: [ActionItem] = []) {
         self.actions = actions
         super.init(nibName: nil, bundle: nil)
     }
@@ -87,7 +87,9 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             make.right.equalTo(photoButton.snp.left).offset(-16)
         }
 
-        actionSelectorVC = ProjectActionSelectorViewController(actions: actions)
+        actionSelectorVC = ActionSelectorViewController(actions: actions + [
+            ActionItem(title: "View All Media", imageName: "photo"),
+        ])
         add(childController: actionSelectorVC, toView: containerView)
         actionSelectorVC.view.snp.makeConstraints { make in
             make.top.equalTo(photoButton.snp.bottom)
