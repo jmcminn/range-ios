@@ -12,6 +12,7 @@ final class UploadEvent: UIEvent {
 
 /// Protocol defining actions that collaboration flow can perform.
 /// Required by the views sending actions, so they can use selectors for these functions.
+/// See https://swiftrocks.com/understanding-the-ios-responder-chain.html for more info
 @objc protocol CollaborationFlowActions: AnyObject {
     /// When "Add photos" button in the Collaboration window header or CTA was tapped
     func addPhotosAction()
@@ -23,7 +24,10 @@ final class UploadEvent: UIEvent {
 }
 
 /// Manages displaying collaboration window
-class CollaborationFlowController: UIResponder {
+/// This flow controller is a UIViewController to be part of the UI responder chain but its view is a passthrough view so
+/// it does not interfere with canvas interactions.
+/// All subviews and cards are added to this view controller view.
+class CollaborationFlowController: UIViewController {
     unowned let model: ProjectModel
     unowned let imageCaches: ImageCaches
     unowned let canvasContainer: CanvasContainerViewController
@@ -60,20 +64,37 @@ class CollaborationFlowController: UIResponder {
         self.model = model
         self.imageCaches = imageCaches
         self.canvasContainer = canvasContainer
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {
         stop()
     }
 
+    /// Override loadView to customise view to be a passthrough view.
+    override func loadView() {
+        view = PassthroughView()
+    }
+
     /// Prepare for showing collaboration windows
     func start() {
+        /// add self to canvasContainer
+        canvasContainer.add(childController: self, toView: canvasContainer.controls)
+        view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         setupFABs()
     }
 
     /// Cleanup after showing collaboration windows. The flow controller is not usable after a call to this function
     func stop() {
         removeFABs()
+        canvasContainer.remove(childController: self)
     }
 
     /// Create CollaborationViewController and setup the callbacks
@@ -85,7 +106,6 @@ class CollaborationFlowController: UIResponder {
             projectModel: model,
             collaboration: collaboration
         )
-        collaborationVC.customNextResponder = self
         collaborationVC.onClose = { [weak self] in
             self?.onCollaborationClose?()
         }
@@ -101,13 +121,12 @@ class CollaborationFlowController: UIResponder {
             self.collaboration = collaboration
             let collaborationVC = createCollaborationViewController(forCollaboration: collaboration)
 
-            canvasContainer.installCard(
+            installCard(
                 cardViewController: collaborationVC,
-                inView: canvasContainer.controls,
                 cardConfig: CardConfiguration(initialCardPosition: .medium, allowsFullScreen: true)
             )
             // move collaboration window behind fabs
-            canvasContainer.controls.insertSubview(collaborationVC.view, belowSubview: actionButtons[0])
+            view.insertSubview(collaborationVC.view, belowSubview: actionButtons[0])
             collaborationVC.cardDragging?.delegate = self
 
             // check if already showing, if so then ignore animated and replace instantly
@@ -135,7 +154,7 @@ class CollaborationFlowController: UIResponder {
         if let collaborationVC = collaborationVC {
             collaborationVC.cardDragging?.delegate = nil
             collaborationVC.hideCard(animated: animated) {
-                self.canvasContainer.removeCard(cardViewController: collaborationVC)
+                self.removeCard(cardViewController: collaborationVC)
             }
             self.collaborationVC = nil
         }
@@ -158,7 +177,7 @@ class CollaborationFlowController: UIResponder {
         collaborationHeaderCoverVC.onClose = { [weak self] in
             self?.onCollaborationClose?()
         }
-        canvasContainer.add(childController: collaborationHeaderCoverVC, toView: canvasContainer.controls)
+        add(childController: collaborationHeaderCoverVC)
         collaborationHeaderCoverVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview()
@@ -169,7 +188,7 @@ class CollaborationFlowController: UIResponder {
 
     private func removeCollaborationHeaderCover() {
         guard let collaborationHeaderCoverVC = collaborationHeaderCoverVC else { return }
-        canvasContainer.remove(childController: collaborationHeaderCoverVC)
+        remove(childController: collaborationHeaderCoverVC)
         self.collaborationHeaderCoverVC = nil
     }
 
@@ -195,14 +214,14 @@ extension CollaborationFlowController {
     private func setupFABs() {
         let addPhotosButton = RoundShadowButton(image: UIImage(systemName: "camera") ?? UIImage(), style: .blue)
         addPhotosButton.addTarget(self, action: #selector(addPhotosAction), for: .touchUpInside)
-        canvasContainer.controls.addSubview(addPhotosButton)
+        view.addSubview(addPhotosButton)
         addPhotosButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
-            make.bottom.equalTo(canvasContainer.controls.safeAreaLayoutGuide.snp.bottom).offset(-12)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-12)
         }
 
         let addAttachmentButton = RoundShadowButton(image: UIImage(systemName: "paperclip") ?? UIImage())
-        canvasContainer.controls.addSubview(addAttachmentButton)
+        view.addSubview(addAttachmentButton)
         addAttachmentButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
             make.bottom.equalTo(addPhotosButton.snp.top).offset(-12)
@@ -210,7 +229,7 @@ extension CollaborationFlowController {
 
         let addCommentButton = RoundShadowButton(image: UIImage(systemName: "bubble.right") ?? UIImage())
         addCommentButton.addTarget(self, action: #selector(addCommentAction), for: .touchUpInside)
-        canvasContainer.controls.addSubview(addCommentButton)
+        view.addSubview(addCommentButton)
         addCommentButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
             make.bottom.equalTo(addAttachmentButton.snp.top).offset(-12)
@@ -305,16 +324,15 @@ extension CollaborationFlowController {
             guard let self = self, let addCommentVC = addCommentVC else { return }
             self.lastCancelledCommentText = addCommentVC.commentText
             addCommentVC.hideCard(animated: true) {
-                self.canvasContainer.removeCard(cardViewController: addCommentVC)
+                self.removeCard(cardViewController: addCommentVC)
             }
         }
         addCommentVC.onDone = { [weak self, weak addCommentVC] in
             guard let self = self, let addCommentVC = addCommentVC else { return }
             self.addComment(fromCommentVC: addCommentVC)
         }
-        canvasContainer.installCard(
+        installCard(
             cardViewController: addCommentVC,
-            inView: canvasContainer.controls,
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         addCommentVC.showCard(animated: true)
@@ -333,7 +351,7 @@ extension CollaborationFlowController {
                 guard let self = self else { return }
                 self.lastCancelledCommentText = ""
                 addCommentVC.hideCard(animated: true) {
-                    self.canvasContainer.removeCard(cardViewController: addCommentVC)
+                    self.removeCard(cardViewController: addCommentVC)
                 }
             },
             onFailure: { error in
@@ -361,9 +379,8 @@ extension CollaborationFlowController: CollaborationFlowActions {
             guard let self = self, let upload = upload else { return }
             self.updateTagsIfChanged(forUpload: upload)
         }
-        canvasContainer.installCard(
+        installCard(
             cardViewController: editTagsVC!,
-            inView: canvasContainer.controls,
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         editTagsVC!.showCard(animated: true)
@@ -381,7 +398,7 @@ extension CollaborationFlowController: CollaborationFlowActions {
 
         let closeEditTagsVC = {
             editTagsVC.hideCard(animated: true) {
-                self.canvasContainer.removeCard(cardViewController: editTagsVC)
+                self.removeCard(cardViewController: editTagsVC)
             }
         }
 
@@ -430,7 +447,7 @@ extension CollaborationFlowController {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
-        canvasContainer.overlays.addSubview(activityView)
+        view.addSubview(activityView)
         activityView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }

@@ -57,15 +57,6 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         fatalError("init(coder:) has not been implemented")
     }
 
-    /// Way to customize UI responder chain and link the flow controller as a next responder, so the actions from this view controller
-    /// can be handled by the flow controller
-    /// See https://swiftrocks.com/understanding-the-ios-responder-chain.html for more info
-    weak var customNextResponder: UIResponder?
-
-    override var next: UIResponder? {
-        customNextResponder ?? super.next
-    }
-
     override func loadView() {
         view = RoundShadowView(cornerRadius: 24)
     }
@@ -142,6 +133,13 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             self?.onCollaborationUpdated()
         }
         onCollaborationUpdated()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Fill info at viewDidAppear to make sure UIKit
+        // has configured this view's next responder.
+        originalNextResponder = super.next
     }
 
     override func viewWillDisappear(_ animated: Bool) {
