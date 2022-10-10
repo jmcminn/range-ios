@@ -109,6 +109,9 @@ class CollaborationFlowController: UIViewController {
         collaborationVC.onClose = { [weak self] in
             self?.onCollaborationClose?()
         }
+        collaborationVC.onNameUpdated = { [weak self] newName in
+            self?.updateName(newName)
+        }
         return collaborationVC
     }
 
@@ -434,6 +437,30 @@ extension CollaborationFlowController: CollaborationFlowActions {
                     closeEditTagsVC()
                 }))
                 editTagsVC.present(alert, animated: true)
+            }
+        )
+    }
+}
+
+// MARK: - name update UI action
+
+extension CollaborationFlowController {
+    private func updateName(_ name: String) {
+        guard let collaboration = collaboration else { return }
+
+        runCommandsWithProgress(
+            commands: model.update(name: name, forCollaboration: collaboration.id),
+            onSuccess: { [weak self] in
+                self?.collaborationVC?.view.endEditing(true)
+            },
+            onFailure: { error in
+                let alert = UIAlertController(
+                    title: "Updating name error",
+                    message: error.localizedDescription,
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                self.present(alert, animated: true)
             }
         )
     }

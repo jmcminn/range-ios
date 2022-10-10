@@ -27,6 +27,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     /// callbacks for actions triggered from collaboration window
     var onClose: (() -> Void)?
+    var onNameUpdated: ((String) -> Void)?
 
     private enum Constants {
         // height of thumbnails view
@@ -244,11 +245,8 @@ extension CollaborationViewController {
         nameField.adjustsFontSizeToFitWidth = true
         nameField.setContentHuggingPriority(.defaultLow, for: .horizontal)
         nameField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        nameField.returnKeyType = .done
         nameField.delegate = self
-        // TODO: 294
-//        nameField.isUserInteractionEnabled = false
-//        nameField.delegate = self
-//        nameField.addTarget(self, action: #selector(textChangedAction), for: .editingChanged)
     }
 
     private func setupCTAs() {
@@ -423,7 +421,7 @@ extension CollaborationViewController: CardPresentable {
 
 // MARK: - keyboard handling
 
-extension CollaborationViewController: UITextFieldDelegate {
+extension CollaborationViewController {
     /// Recalculate the `keyboardHeightInWindow` on keyboard frame change and update the card height
     @objc func keyboardWillChangeFrame(notification: NSNotification) {
         // only update the layout if name is being edited (and not when some presented
@@ -448,7 +446,11 @@ extension CollaborationViewController: UITextFieldDelegate {
             }, completion: nil)
         }
     }
+}
 
+// MARK: - name text field delegate
+
+extension CollaborationViewController: UITextFieldDelegate {
     /// when text field did end editing update the keyboard height.
     func textFieldDidEndEditing(_: UITextField, reason _: UITextField.DidEndEditingReason) {
         // this is needed as user could switch to another field with keyboard still visible. In this
@@ -456,5 +458,11 @@ extension CollaborationViewController: UITextFieldDelegate {
         keyboardHeightInWindow = 0
         guard let cardDragging = cardDragging else { return }
         cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
+    }
+
+    /// Notify about name updated
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        onNameUpdated?((textField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+        return true
     }
 }
