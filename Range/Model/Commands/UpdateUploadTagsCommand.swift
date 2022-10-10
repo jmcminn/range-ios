@@ -10,7 +10,7 @@ struct UpdateUploadTagsCommand: Command, Equatable {
         // this command is not run locally, only applied to firestore. Below is the implementation
         // proposal in case we ever need it locally (if we have offline support for the model updates)
         // needs a test case if enabled
-        fatalError("apply UpdateUploadTagsCommand in Realm has not been implemented")
+        fatalError("UpdateUploadTagsCommand.apply(inRealm:) has not been implemented")
 //        guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
 //
 //        // remove the upload from the tags it was attached to and is not anymore

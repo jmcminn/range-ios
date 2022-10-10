@@ -240,4 +240,10 @@ extension ProjectModel {
             ),
         ]
     }
+
+    func update(name: String, forCollaboration collaborationId: String) -> [Command] {
+        [
+            UpdateCollaborationNameCommand(collaborationId: collaborationId, name: name),
+        ]
+    }
 }

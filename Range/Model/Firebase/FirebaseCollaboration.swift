@@ -18,7 +18,7 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Collaboration
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case featureId = "feature", authorId = "author", timestamp, statusId = "statusName", name,
              collaborationDescription = "description", tagIds = "tags"
     }
