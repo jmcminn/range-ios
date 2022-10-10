@@ -63,6 +63,8 @@ class NonModalCardDragging: CardDragging {
     func hideCard(animated: Bool, completion: (() -> Void)? = nil) {
         guard !cardHidden else { return }
         cardHidden = true
+        // ends editing when hiding the card - this will hide the keyboard
+        presentedViewController.view.endEditing(true)
         setCardHeight(0, animated: animated, completion: completion)
 
         // hide overlay if present
