@@ -72,10 +72,6 @@ class CollaborationFlowController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    deinit {
-        stop()
-    }
-
     /// Override loadView to customise view to be a passthrough view.
     override func loadView() {
         view = PassthroughView()

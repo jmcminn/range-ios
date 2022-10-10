@@ -96,10 +96,10 @@ final class ProjectFlowController: UIViewController {
     }
 
     func stop() {
+        collaborationFlow.stop()
+        pinsDisplay?.stop()
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)
-        pinsDisplay?.stop()
-        collaborationFlow.stop()
         debugSettingsNativeViewsForPinsSubscriber?.cancel()
         debugSettingsNativeViewsForPinsSubscriber = nil
     }
