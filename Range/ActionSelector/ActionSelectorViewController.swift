@@ -73,10 +73,14 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ActionCell", for: indexPath)
-        cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
-        cell.imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        cell.textLabel?.textColor = cell.imageView?.tintColor
         let action = actions[indexPath.row]
+
+        cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
+        let actionColor: UIColor = action.style == .destructive
+            ? .Red_03
+            : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        cell.imageView?.tintColor = actionColor
+        cell.textLabel?.textColor = actionColor
         cell.textLabel?.text = action.title
         if let imageName = action.imageName {
             cell.imageView?.image = UIImage(systemName: imageName, withConfiguration: imageConfig)
