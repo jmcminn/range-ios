@@ -215,6 +215,24 @@ final class ProjectFlowController: UIViewController {
                         .userInterfaceStyle == .dark ? .light : .dark
                 }
             ),
+            // TODO: 305 uncomment for testing
+//            ActionItem(title: "Test more menu", imageName: "list.dash.header.rectangle", handler: {
+//                let actionSelect = ActionSelectorCardViewController(
+//                    icon: UIImage(systemName: "ellipsis"),
+//                    title: "More Menu",
+//                    actions: [
+//                        ActionItem(title: "Delete", imageName: "trash", style: .destructive),
+//                        ActionItem(title: "Cancel", imageName: "xmark"),
+//                    ]
+//                )
+//                // TODO: 305 some helper method for presenting the action sheet with 1 line of code
+//                // (presets for cardConfig and install+show card as 1 call)
+//                // TODO: 305 cancel on overlay tap
+//                // TODO: 305 cancel ActionItem automatically closes and removes the card (?)
+//                self.canvasContainer.installCard(cardViewController: actionSelect,
+//                                            cardConfig: CardConfiguration(initialCardPosition: .max, showOverlay: true))
+//                actionSelect.showCard(animated: true)
+//            }),
         ]
         let vc = ProjectActionCardViewController(actions: additionalCardActions)
         vc.onCamera = { [weak self] in

@@ -79,6 +79,7 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
         let actionColor: UIColor = action.style == .destructive
             ? .Red_03
             : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        // TODO: 305 custom layout (distance between icon and text)
         cell.imageView?.tintColor = actionColor
         cell.textLabel?.textColor = actionColor
         cell.textLabel?.text = action.title
