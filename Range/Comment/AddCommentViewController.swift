@@ -36,6 +36,7 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
     private var textView = UITextViewWithPlaceholder(placeholderText: "")
     private var flagButton: ButtonWithTapAreaInsets!
     private var commentButton: ButtonWithTapAreaInsets!
+    private var cancelButton: ButtonWithTapAreaInsets!
 
     /// how high is the currently visible part of the keyboard
     private var keyboardHeightInWindow: CGFloat = 0
@@ -81,6 +82,15 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
             make.top.equalTo(textView.snp.bottom)
             make.trailing.equalToSuperview().offset(-AddCommentViewController.margin)
             make.height.equalTo(AddCommentViewController.commentButtonHeight).priority(.required)
+        }
+
+        setupCancelButton()
+        containerView.addSubview(cancelButton)
+        cancelButton.snp.makeConstraints { make in
+            make.top.equalTo(textView.snp.bottom)
+            make.trailing.equalTo(commentButton.snp.leading).offset(-8)
+            make.height.equalTo(AddCommentViewController.commentButtonHeight).priority(.required)
+            make.width.equalTo(commentButton.snp.width)
         }
 
         setupFlagButton()
@@ -186,6 +196,28 @@ extension AddCommentViewController {
             button.configuration = config
         }
         flagButton.setNeedsUpdateConfiguration()
+    }
+
+    private func setupCancelButton() {
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_07)
+        config.background.cornerRadius = 8
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
+            return outgoing
+        }
+        cancelButton = ButtonWithTapAreaInsets(
+            configuration: config,
+            primaryAction: UIAction(title: "Cancel") { [weak self] _ in
+                self?.onCancel?()
+            }
+        )
+        // more vertical tap area as button is only 32 points high
+        cancelButton.tapAreaInsets = UIEdgeInsets(top: -16, left: 0, bottom: -16, right: 0)
     }
 
     private func setupCommentButton() {
