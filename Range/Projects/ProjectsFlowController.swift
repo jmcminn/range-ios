@@ -7,6 +7,8 @@ import UIKit
 class ProjectsFlowController: UINavigationController {
     private let userId: String
 
+    private let projects = [DemoProject.vanderbilt, DemoProject.preserve]
+
     var onSignedOut: (() -> Void)?
 
     var projectFC: ProjectFlowController?
@@ -22,13 +24,32 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func start() {
-        setViewControllers([buildProjectsViewController()], animated: false)
-
-        // TODO: 372 automatically push Project Flow for last project...
+        // reopen last project
+        if let lastOpenProjectId = UserDefaults.lastOpenProjectId,
+           let lastOpenProject = projects.first(where: { $0.id == lastOpenProjectId })
+        {
+            // try load the last open project
+            Task {
+                do {
+                    self.projectFC = try await buildProjectFlowController(lastOpenProject)
+                    setViewControllers([buildProjectsViewController(), self.projectFC!], animated: false)
+                    self.setNavigationBarHidden(true, animated: false)
+                    UserDefaults.lastOpenProjectId = lastOpenProjectId
+                } catch {
+                    Logger.model
+                        .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
+                    // fallback to projects list only
+                    setViewControllers([buildProjectsViewController()], animated: false)
+                    UserDefaults.lastOpenProjectId = nil
+                }
+            }
+        } else {
+            setViewControllers([buildProjectsViewController()], animated: false)
+        }
     }
 
     private func buildProjectsViewController() -> ActionSelectorViewController {
-        let projectActions = [DemoProject.vanderbilt, DemoProject.preserve].map { project in
+        let projectActions = projects.map { project in
             ActionItem(title: project.name) { [weak self] in
                 self?.loadAndPushProjectFlowController(project)
             }
@@ -57,14 +78,7 @@ class ProjectsFlowController: UINavigationController {
                         activityView.removeFromSuperview()
                     }
                 }
-                self.projectFC = try await ProjectFlowController.buildProjectFlowController(
-                    userId: userId,
-                    demoProject: demoProject
-                )
-                projectFC!.onBack = { [weak self] in
-                    _ = self?.popViewController(animated: true)
-                    self?.setNavigationBarHidden(false, animated: true)
-                }
+                self.projectFC = try await buildProjectFlowController(demoProject)
                 DispatchQueue.main.async {
                     self.pushViewController(self.projectFC!, animated: true)
                     // hide navigation bar when showing Project flow and show again on back.
@@ -72,6 +86,7 @@ class ProjectsFlowController: UINavigationController {
                     // some padding at the top ;) To be removed later as projects view will have
                     // a custom navigation bar anyway
                     self.setNavigationBarHidden(true, animated: true)
+                    UserDefaults.lastOpenProjectId = demoProject.id
                 }
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
@@ -80,6 +95,20 @@ class ProjectsFlowController: UINavigationController {
                 }
             }
         }
+    }
+
+    /// Build and configure project flow controller
+    private func buildProjectFlowController(_ demoProject: DemoProject) async throws -> ProjectFlowController {
+        let projectFC = try await ProjectFlowController.buildProjectFlowController(
+            userId: userId,
+            demoProject: demoProject
+        )
+        projectFC.onBack = { [weak self] in
+            _ = self?.popViewController(animated: true)
+            self?.setNavigationBarHidden(false, animated: true)
+            UserDefaults.lastOpenProjectId = nil
+        }
+        return projectFC
     }
 
     /// Present alert controller with project loading error message

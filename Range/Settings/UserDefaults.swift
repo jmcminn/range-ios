@@ -3,6 +3,9 @@ import OrderedCollections
 
 extension UserDefaults {
     enum UserDefaultsConstants: String {
+        /// last project open by the user (to automatically reopen when starting the app)
+        case lastOpenProjectId
+        /// last select geometry id for a photo to use it as a default for the next photo
         case lastPhotoPinId
         /// last user's choice if annotation (tags/description) is enabled in the photo flow, `false` by default
         case annotationEnabled
@@ -12,6 +15,19 @@ extension UserDefaults {
         case moreUpdatesInTheFeed
         /// the prefix to be used for storing recent tags for a project, will be followed by a project id
         case recentTagsPrefix = "recentTags_"
+    }
+
+    static var lastOpenProjectId: String? {
+        get {
+            UserDefaults.standard.string(forKey: UserDefaultsConstants.lastOpenProjectId.rawValue)
+        }
+        set {
+            if let id = newValue {
+                UserDefaults.standard.set(id, forKey: UserDefaultsConstants.lastOpenProjectId.rawValue)
+            } else {
+                UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastOpenProjectId.rawValue)
+            }
+        }
     }
 
     /// stores the last select geometry id for a photo to use it as a default for the next photo
