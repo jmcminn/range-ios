@@ -117,19 +117,15 @@ class PDFCanvasViewController: UIViewController {
     }
 
     init(model: ProjectModel) throws {
-        // TODO: canvasId hardcoded for now
-        let canvasId = "e5db7eb2-bd9f-44ba-9c90-e6e6e528b930"
-        guard let pdfCanvas = model.mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId) else {
+        guard let pdfCanvas = model.mainRealm.object(
+            ofType: PDFCanvas.self,
+            forPrimaryKey: model.demoCanvas.id
+        ) else {
             throw PDFCanvasViewControllerError.canvasNotFound
-        }
-        try model.mainRealm.write {
-            // TODO: pageNumber and url hardcoded
-            pdfCanvas.pageNumber = 0
-            pdfCanvas.url = "5451 VANDERBILT AVE-A1.1A.pdf"
         }
         self.model = model
         self.pdfCanvas = pdfCanvas
-        pdfPage = try PDFCanvasViewController.loadPDFPage(pdfCanvas: pdfCanvas)
+        pdfPage = try PDFCanvasViewController.loadPDFPage(pdfCanvas: model.demoCanvas)
 
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
@@ -137,10 +133,10 @@ class PDFCanvasViewController: UIViewController {
 
     // TODO: for now it is assumed that url is just a file name from the app bundle
     /// Loads pdf page for given canvas or throws if cannot load.
-    fileprivate static func loadPDFPage(pdfCanvas: PDFCanvas) throws -> PDFPage {
+    fileprivate static func loadPDFPage(pdfCanvas: DemoCanvas) throws -> PDFPage {
         guard
             let documentUrl = Bundle.main.url(
-                forResource: pdfCanvas.url,
+                forResource: pdfCanvas.localFileName,
                 withExtension: nil
             ),
             let document = PDFDocument(url: documentUrl),

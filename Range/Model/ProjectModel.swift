@@ -77,6 +77,9 @@ class ProjectModel {
     /// Main thread Realm
     let mainRealm: Realm
 
+    /// temporarily store the canvas to show (until canvas loading/selection is implemented)
+    var demoCanvas: DemoCanvas!
+
     /// Project summary, only available after `loadProject`
     private(set) var projectSummary: ProjectSummary!
     /// Participant object for current user (user with id = `userId`)

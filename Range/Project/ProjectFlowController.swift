@@ -21,7 +21,6 @@ final class ProjectFlowController: UIViewController {
     lazy var bottomBlurView = setupBottomBlur()
     lazy var actionCardVC = installActionCardVC()
     var pinsDisplay: GeometriesPinsDisplay?
-//    lazy var pinsDisplay = PinsDisplay(canvasViewController: canvasContainer.pdfCanvasViewController)
     var debugSettingsButton: RoundShadowButton!
 
     var addPhotoFlow: AddPhotoFlowController?

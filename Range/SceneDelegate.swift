@@ -59,12 +59,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window!.rootViewController = LaunchScreenViewController()
             window!.makeKeyAndVisible()
         }
-        // TODO: projectId hardcoded for now
-        let projectId = "474503d1-1adc-4268-88fe-2a797148f16d"
+        let demoProject = DemoProject.vanderbilt
 
         Task {
             do {
-                try await createProjectModel(userId: userId, projectId: projectId)
+                try await createProjectModel(userId: userId, projectId: demoProject.id)
+                projectModel?.demoCanvas = demoProject.canvas
                 try self.showProject()
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")

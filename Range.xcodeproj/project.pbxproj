@@ -218,6 +218,8 @@
 		0ABFD8BD28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */; };
 		0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */; };
 		0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */; };
+		0AC9E18828F5646D00C7185D /* The Preserve v01.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */; };
+		0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18A28F56C2800C7185D /* DemoProject.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -470,6 +472,8 @@
 		0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateCollaborationNameCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItem.swift; sourceTree = "<group>"; };
 		0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSelectorCardViewController.swift; sourceTree = "<group>"; };
+		0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "The Preserve v01.pdf"; sourceTree = "<group>"; };
+		0AC9E18A28F56C2800C7185D /* DemoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProject.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -932,6 +936,7 @@
 				0A0D31D428A41A94007A8D49 /* Photos */,
 				0A671F8F28E98D9500F78B34 /* Pins */,
 				0A4DC79427F5728500712518 /* Project */,
+				0AC9E18928F56C1600C7185D /* Projects */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A30E8BA284A090000A50D54 /* Tags */,
 				0A4DC7A227F7615700712518 /* Views */,
@@ -982,6 +987,7 @@
 				0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */,
 				0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */,
 				0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */,
+				0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */,
 			);
 			path = DemoResources;
 			sourceTree = "<group>";
@@ -1071,6 +1077,14 @@
 				0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */,
 			);
 			path = ActionSelector;
+			sourceTree = "<group>";
+		};
+		0AC9E18928F56C1600C7185D /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				0AC9E18A28F56C2800C7185D /* DemoProject.swift */,
+			);
+			path = Projects;
 			sourceTree = "<group>";
 		};
 		0AD0254B284D1A1500106CA5 /* HeaderExpand */ = {
@@ -1272,6 +1286,7 @@
 				0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */,
 				0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */,
 				0A07D7632810562700B6F9A2 /* fonts in Resources */,
+				0AC9E18828F5646D00C7185D /* The Preserve v01.pdf in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
 				0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */,
 				0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */,
@@ -1376,6 +1391,7 @@
 				0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */,
 				0A130E9E28D4A8F700FF1368 /* CollaborationFeedViewController.swift in Sources */,
 				0A3831D728E44550001AF38A /* AddUpdateCommand.swift in Sources */,
+				0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */,
 				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
