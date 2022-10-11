@@ -174,7 +174,7 @@ class PDFCanvasViewController: UIViewController {
 
         updateInteractionsDriver()
 
-        setupDebugViews()
+//        setupDebugViews()
     }
 
     private func updateInteractionsDriver() {
@@ -290,19 +290,19 @@ class PDFCanvasViewController: UIViewController {
         mapView.frame = view.bounds
     }
 
-    private func setupDebugViews() {
-        let resetButton = UIButton()
-        resetButton.setTitle("reset", for: .normal)
-        resetButton.addTarget(self, action: #selector(resetAction), for: .touchUpInside)
-        resetButton.sizeToFit()
-        resetButton.backgroundColor = .black.withAlphaComponent(0.5)
-        view.addSubview(resetButton)
-        resetButton.frame.origin = CGPoint(x: 10, y: 40)
-    }
-
-    @objc func resetAction() {
-        animatePanAndZoom(contentOffset: .zero, zoomScale: 1)
-    }
+//    private func setupDebugViews() {
+//        let resetButton = UIButton()
+//        resetButton.setTitle("reset", for: .normal)
+//        resetButton.addTarget(self, action: #selector(resetAction), for: .touchUpInside)
+//        resetButton.sizeToFit()
+//        resetButton.backgroundColor = .black.withAlphaComponent(0.5)
+//        view.addSubview(resetButton)
+//        resetButton.frame.origin = CGPoint(x: 10, y: 40)
+//    }
+//
+//    @objc func resetAction() {
+//        animatePanAndZoom(contentOffset: .zero, zoomScale: 1)
+//    }
 
     /// Animate to given cameraCenter and mapboxZoom.
     func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {

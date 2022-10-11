@@ -7,11 +7,13 @@ import UIKit
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
-    unowned let model: ProjectModel
-    unowned let imageCaches: ImageCaches
+    let imageCaches: ImageCaches
+    let model: ProjectModel
+    let modelFirestoreSync: ProjectModelFirestoreSync
+    let pendingUploadsModel: FirebasePendingUploadsModel
+
     let canvasContainer: CanvasContainerViewController
     let collaborationFlow: CollaborationFlowController
-    var onSignOut: (() -> Void)?
 
     let debugSettings = DebugSettings()
     /// for storing the debugSettings observer(s)
@@ -25,9 +27,57 @@ final class ProjectFlowController: UIViewController {
 
     var addPhotoFlow: AddPhotoFlowController?
 
-    init(imageCaches: ImageCaches, model: ProjectModel) throws {
+    var started = false
+    var onBack: (() -> Void)?
+
+    /// Builds ProjectFlowController
+    /// This can throw if project model cannot be loaded
+    ///
+    /// - Parameters:
+    ///     - userId: range id of the logged in user
+    ///     - projectId: id of the project
+    /// - Returns: loaded ProjectModel
+    static func buildProjectFlowController(userId: String,
+                                           demoProject: DemoProject) async throws -> ProjectFlowController
+    {
+        let projectId = demoProject.id
+        let imageCaches = ImageCaches(projectId: projectId)
+        let pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches)
+        try await pendingUploadsModel.start()
+
+        let projectModel = try ProjectModel(
+            userId: userId,
+            projectId: projectId,
+            imageCaches: imageCaches,
+            pendingUploadsModel: pendingUploadsModel
+        )
+        projectModel.demoCanvas = demoProject.canvas
+
+        let projectModelFirestoreSync = ProjectModelFirestoreSync(model: projectModel)
+        try await projectModelFirestoreSync.start()
+
+        try projectModel.loadProject()
+
+        return try ProjectFlowController(
+            imageCaches: imageCaches,
+            model: projectModel,
+            modelFirestoreSync: projectModelFirestoreSync,
+            pendingUploadsModel: pendingUploadsModel
+        )
+    }
+
+    fileprivate init(
+        imageCaches: ImageCaches,
+        model: ProjectModel,
+        modelFirestoreSync: ProjectModelFirestoreSync,
+        pendingUploadsModel: FirebasePendingUploadsModel
+
+    ) throws {
         self.imageCaches = imageCaches
         self.model = model
+        self.modelFirestoreSync = modelFirestoreSync
+        self.pendingUploadsModel = pendingUploadsModel
+
         canvasContainer = try CanvasContainerViewController(model: model)
         collaborationFlow = CollaborationFlowController(
             model: model,
@@ -47,7 +97,15 @@ final class ProjectFlowController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func start() {
+    /// Only start the flow controller (add all the subviews, etc.) when the layout has completed to properly calculate all the
+    /// views/cards sizes
+    override func viewDidLayoutSubviews() {
+        start()
+    }
+
+    private func start() {
+        guard started == false else { return }
+        started = true
         createGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins)
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
@@ -95,6 +153,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     func stop() {
+        pendingUploadsModel.stop()
         collaborationFlow.stop()
         pinsDisplay?.stop()
         canvasContainer.removeCard(cardViewController: actionCardVC)
@@ -106,6 +165,7 @@ final class ProjectFlowController: UIViewController {
     /// shows the view controller covering the top of of the screen
     private func showTopViewController(animated: Bool) {
         let topViewController = ProjectTopViewController(projectSummary: model.projectSummary)
+        topViewController.onBack = onBack
         canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
         if animated {
             topViewController.view.snp.makeConstraints { make in
@@ -198,13 +258,6 @@ final class ProjectFlowController: UIViewController {
 
     fileprivate func installActionCardVC() -> ProjectActionCardViewController {
         let additionalCardActions = [
-            ActionItem(
-                title: "Sign Out",
-                imageName: "rectangle.portrait.and.arrow.right",
-                handler: { [weak self] in
-                    self?.onSignOut?()
-                }
-            ),
             ActionItem(
                 title: "Toggle Light/Dark mode",
                 imageName: "lightbulb",

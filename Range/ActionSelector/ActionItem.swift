@@ -18,12 +18,12 @@ class ActionItem {
     init(
         title: String? = nil,
         imageName: String? = nil,
-        handler: (() -> Void)? = nil,
-        style: UIAlertAction.Style = .default
+        style: UIAlertAction.Style = .default,
+        handler: (() -> Void)? = nil
     ) {
         self.title = title
         self.imageName = imageName
-        self.handler = handler
         self.style = style
+        self.handler = handler
     }
 }
