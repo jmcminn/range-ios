@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "logo_side_by_side_light.svg",
+      "filename" : "logo_side_by_side_light.pdf",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "logo_side_by_side.svg",
+      "filename" : "logo_side_by_side.pdf",
       "idiom" : "universal"
     }
   ],
