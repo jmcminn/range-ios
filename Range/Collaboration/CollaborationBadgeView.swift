@@ -7,9 +7,10 @@ import UIKit
 class CollaborationBadgeView: UIView {
     private let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
+    private var commentsNotificationToken: NotificationToken?
     // the pink circle
     private var badgeView = UIView()
-    // label showing number of upload
+    // label showing number of uploads
     private var label = UILabel()
     // optional note view showing a flag if there are any uncompleted comments
     private var noteView: UIImageView?
@@ -25,11 +26,16 @@ class CollaborationBadgeView: UIView {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.updateBadge()
         }
+        // observe comments as the badge depends on whether there are any uncompleted comments
+        commentsNotificationToken = collaboration.comments.observe { [weak self] _ in
+            self?.updateBadge()
+        }
         updateBadge()
     }
 
     deinit {
         collaborationNotificationToken?.invalidate()
+        commentsNotificationToken?.invalidate()
     }
 
     private func setupView() {
