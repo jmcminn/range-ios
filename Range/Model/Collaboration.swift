@@ -39,6 +39,11 @@ class Collaboration: Object, WithPlaceholder {
         comments.contains { $0.isNote == true && $0.completedTimestamp == nil }
     }
 
+    /// Whether the due date passed already
+    var isOverdue: Bool {
+        dueDateTimestamp != nil && dueDateTimestamp! < Date.now.timeIntervalSince1970
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

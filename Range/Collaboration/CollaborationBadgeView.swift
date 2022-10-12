@@ -10,10 +10,12 @@ class CollaborationBadgeView: UIView {
     private var commentsNotificationToken: NotificationToken?
     // the pink circle
     private var badgeView = UIView()
-    // label showing number of uploads
-    private var label = UILabel()
-    // optional note view showing a flag if there are any uncompleted comments
-    private var noteView: UIImageView?
+    // optional label showing number of uploads, only for photo collabs (= no status)
+    private var numberOfUploadsLabel: UILabel?
+    // optional checkmark shown for collaborations having status (instead of the numberOfUploadsLabel)
+    private var checkmarkView: UIImageView?
+    // optional marker view showing a flag if there are any uncompleted comments or an overdue icon
+    private var markerView: UIImageView?
 
     init(_ collaboration: Collaboration) {
         self.collaboration = collaboration
@@ -43,48 +45,88 @@ class CollaborationBadgeView: UIView {
 
         badgeView.layer.cornerRadius = 16
         badgeView.layer.borderWidth = 1
-        badgeView.layer.borderColor = UIColor.Pink_04.cgColor
-        badgeView.backgroundColor = .Pink_03
+        badgeView.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
         addSubview(badgeView)
         badgeView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-
-        label.font = .systemFont(ofSize: 17, weight: .bold)
-        label.textColor = .Neutral_01
-        addSubview(label)
-        label.snp.makeConstraints { make in
-            make.center.equalToSuperview()
         }
     }
 
     /// Updates the number on the badge and shows/hides the flag
     private func updateBadge() {
         let uploadsCount = collaboration.uploads.count
-        label.text = uploadsCount < 9 ? String(uploadsCount) : "9⁺"
 
-        if collaboration.hasUncompletedNotes {
-            if let noteView = noteView {
-                noteView.isHidden = false
+        if let status = collaboration.status {
+            // display status
+            badgeView.backgroundColor = status.color
+            numberOfUploadsLabel?.isHidden = true
+            if let checkmarkView = checkmarkView {
+                checkmarkView.isHidden = false
             } else {
-                setupNoteView()
+                setupCheckmarkView()
             }
         } else {
-            noteView?.isHidden = true
+            // display number of photos
+            badgeView.backgroundColor = .Pink_03
+            if let label = numberOfUploadsLabel {
+                label.isHidden = false
+            } else {
+                setupNumberOfUploadsLabel()
+            }
+            numberOfUploadsLabel?.text = uploadsCount < 9 ? String(uploadsCount) : "9⁺"
+            checkmarkView?.isHidden = true
+        }
+
+        if collaboration.isOverdue || collaboration.hasUncompletedNotes {
+            if let markerView = markerView {
+                markerView.isHidden = false
+            } else {
+                setupMarkerView()
+            }
+            // overdue mark is higher priority than uncompleted notes
+            markerView?.image = UIImage(named: collaboration.isOverdue ? "badge.overdue" : "badge.note")
+        } else {
+            markerView?.isHidden = true
         }
     }
 
+    // TODO: 375 red_03 for overdue + "calendar"
+
     /// Creates the note flag image view
-    private func setupNoteView() {
-        let noteView = UIImageView(image: UIImage(named: "badge.note"))
-        addSubview(noteView)
-        noteView.snp.makeConstraints { make in
+    private func setupMarkerView() {
+        let marker = UIImageView(image: UIImage(named: "badge.note"))
+        addSubview(marker)
+        marker.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(18)
             make.bottom.equalToSuperview().offset(-19)
         }
-        noteView.setShadowWithFigmaValues(y: 4.62, blur: 7.69, opacity: 0.2)
+        marker.setShadowWithFigmaValues(y: 4.62, blur: 7.69, opacity: 0.2)
 
-        self.noteView = noteView
+        markerView = marker
+    }
+
+    /// Create a label to display number of photos
+    private func setupNumberOfUploadsLabel() {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.textColor = .Neutral_01
+        addSubview(label)
+        label.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        numberOfUploadsLabel = label
+    }
+
+    /// Setup image view showing checkmark for collaborations with status
+    private func setupCheckmarkView() {
+        let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
+        let checkmark = UIImageView(image: UIImage(systemName: "checkmark", withConfiguration: imageConfig))
+        checkmark.tintColor = .Neutral_01
+        addSubview(checkmark)
+        checkmark.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        checkmarkView = checkmark
     }
 
     @available(*, unavailable)
