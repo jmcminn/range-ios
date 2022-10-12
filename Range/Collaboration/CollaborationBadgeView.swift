@@ -90,8 +90,6 @@ class CollaborationBadgeView: UIView {
         }
     }
 
-    // TODO: 375 red_03 for overdue + "calendar"
-
     /// Creates the note flag image view
     private func setupMarkerView() {
         let marker = UIImageView(image: UIImage(named: "badge.note"))

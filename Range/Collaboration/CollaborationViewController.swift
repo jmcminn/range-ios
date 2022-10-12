@@ -14,6 +14,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     /// a view below content to cover the space visible when dragging up past the max height
     var bottomView = UIView()
+    var statusButton: CollaborationStatusButton!
     var closeButton: UIButton!
     var nameField: UITextField!
     var namePencilView: UIImageView!
@@ -87,6 +88,14 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         badgeView.snp.makeConstraints { make in
             make.leading.equalTo(16)
             make.top.equalTo(21)
+        }
+
+        statusButton = CollaborationStatusButton(collaboration)
+        containerView.addSubview(statusButton)
+        statusButton.snp.makeConstraints { make in
+            make.height.equalTo(32)
+            make.centerY.equalTo(badgeView)
+            make.leading.equalTo(badgeView.snp.trailing).offset(10)
         }
 
         setupCloseButton()
@@ -188,6 +197,8 @@ extension CollaborationViewController {
 
 extension CollaborationViewController {
     private func onCollaborationUpdated() {
+        statusButton.isHidden = collaboration.status == nil
+
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         nameField.text = name
         namePencilView.isHidden = name.isEmpty

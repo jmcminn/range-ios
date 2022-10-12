@@ -221,6 +221,7 @@
 		0AC9E18828F5646D00C7185D /* The Preserve v01.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */; };
 		0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18A28F56C2800C7185D /* DemoProject.swift */; };
 		0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */; };
+		0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -476,6 +477,7 @@
 		0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "The Preserve v01.pdf"; sourceTree = "<group>"; };
 		0AC9E18A28F56C2800C7185D /* DemoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProject.swift; sourceTree = "<group>"; };
 		0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsFlowController.swift; sourceTree = "<group>"; };
+		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -744,6 +746,7 @@
 				0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */,
 				0A4782FF28A516AA0063040F /* CollaborationViewController.swift */,
 				0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */,
+				0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */,
 				0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */,
 			);
 			path = Collaboration;
@@ -1332,6 +1335,7 @@
 				0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */,
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */,
+				0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
