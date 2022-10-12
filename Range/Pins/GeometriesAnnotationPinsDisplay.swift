@@ -161,13 +161,21 @@ extension GeometriesAnnotationPinsDisplay {
 
     /// Converts the geometry to a PointAnnotation for presenting the pin.
     private func convertGeometryToPin(geometry: Geometry) -> PointAnnotation? {
+        guard let collaboration = geometry.features.first?.collaborations.first else {
+            // no collaboration, ignore
+            return nil
+        }
+        guard collaboration.placeholder == false else {
+            // collaboration is a placeholder, ignore
+            return nil
+        }
         guard case let .point(point) = geometry.geometry else {
             // not a point geometry, ignore
             return nil
         }
         var pin = PointAnnotation(id: geometry.id, point: point)
         pin.userInfo = [
-            "geometry": geometry,
+            "collaboration": collaboration,
         ]
         setPointAnnotationSelection(&pin)
         return pin
@@ -184,10 +192,10 @@ extension GeometriesAnnotationPinsDisplay {
 
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPointAnnotationSelection(_ pin: inout PointAnnotation) {
-        guard let geometry = pin.userInfo?["geometry"] as? Geometry else { return }
+        guard let collaboration = pin.userInfo?["collaboration"] as? Collaboration else { return }
         let selected = pin.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
-        let pinOptions = geometryPinDisplayOptionsProvider(geometry, selected, anythingSelected)
+        let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
         // add the image to the style

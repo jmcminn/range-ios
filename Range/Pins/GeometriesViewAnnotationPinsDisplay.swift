@@ -175,10 +175,10 @@ extension GeometriesViewAnnotationPinsDisplay {
     /// Update the PinView for current selection state and add/update in mapbox view annotations
     private func displayPinView(pinView: PinView?, update: Bool = false) {
         guard let pinView = pinView else { return }
-        let geometry = pinView.geometry
+        let collaboration = pinView.collaboration
         let selected = pinView.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
-        let pinOptions = geometryPinDisplayOptionsProvider(geometry, selected, anythingSelected)
+        let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
         // The pinView doesn't animate the image properly when this code is run withing animation block, so disable
         // animations for pinView updates.
         UIView.performWithoutAnimation {

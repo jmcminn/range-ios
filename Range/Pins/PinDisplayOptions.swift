@@ -15,33 +15,33 @@ struct PinDisplayOptions {
     var offsetY: CGFloat
 }
 
-/// Type alias for function that given geometry and whether this pin is selected and any pin is selected returns the pin display options
+/// Type alias for function that given collaboration and whether this pin is selected and any pin is selected returns the pin display options
 typealias GeometryPinDisplayOptionsProvider = (
-    _ geometry: Geometry,
+    _ collaboration: Collaboration,
     _ selected: Bool,
     _ anythingSelected: Bool
 ) -> PinDisplayOptions
 
 extension PinDisplayOptions {
     /// pin display options provider for regular display of pins
-    static func regularPinDisplayOptionsProvider(geometry: Geometry, selected: Bool,
+    static func regularPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                  anythingSelected: Bool) -> PinDisplayOptions
     {
         if selected {
             return PinDisplayOptions(
                 // TODO: marker.selected.badge when we support request for upload update
-                imageName: geometry.hasUncompletedNotes
+                imageName: collaboration.hasUncompletedNotes
                     ? "marker.selected.note"
-                    : numberedImageName("marker.selected.", geometry.uploadsCount),
+                    : numberedImageName("marker.selected.", collaboration.uploads.count),
                 alpha: 1,
                 anchor: .bottom,
                 offsetY: -4
             )
         } else {
             return PinDisplayOptions(
-                imageName: geometry.hasUncompletedNotes
+                imageName: collaboration.hasUncompletedNotes
                     ? "marker.note"
-                    : numberedImageName("marker.", geometry.uploadsCount),
+                    : numberedImageName("marker.", collaboration.uploads.count),
                 alpha: anythingSelected ? 0.4 : 1,
                 anchor: .center,
                 offsetY: 0
@@ -50,11 +50,11 @@ extension PinDisplayOptions {
     }
 
     /// pin display options provider for displaing pins in photo location selection mode (only show number of photos)
-    static func addPhotoPinDisplayOptionsProvider(geometry: Geometry, selected: Bool,
+    static func addPhotoPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                   anythingSelected _: Bool) -> PinDisplayOptions
     {
         PinDisplayOptions(
-            imageName: numberedImageName("marker.selected.", geometry.uploadsCount),
+            imageName: numberedImageName("marker.selected.", collaboration.uploads.count),
             alpha: selected ? 1.0 : 0.4,
             anchor: .bottom,
             offsetY: -4
