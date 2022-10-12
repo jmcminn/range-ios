@@ -190,6 +190,8 @@ extension GeometriesAnnotationPinsDisplay {
         let pinOptions = geometryPinDisplayOptionsProvider(geometry, selected, anythingSelected)
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
+        // add the image to the style
+        canvasVC.mapView.mapboxMap.style.addImage(named: pinOptions.imageName)
         pin.iconImage = pinOptions.imageName
         pin.iconOffset = [0, -pinOptions.offsetY]
         pin.iconAnchor = pinOptions.anchor._asIconAnchor()
@@ -203,18 +205,6 @@ extension GeometriesAnnotationPinsDisplay {
         {
             return annotationManager
         } else {
-            let addImage = canvasVC.mapView.mapboxMap.style.addImage(named:)
-            // add images for pin to style
-            Array(0 ... 9)
-                .flatMap { [
-                    numberedImageName("marker.", $0),
-                    numberedImageName("marker.selected.", $0),
-                    numberedImageName("marker.selected.badge.", $0),
-                ] }
-                .forEach(addImage)
-
-            ["marker.note", "marker.selected.note"].forEach(addImage)
-
             // create annotation manager
             let annotationManager = canvasVC.mapView.annotations
                 .makePointAnnotationManager(id: annotationsId)
