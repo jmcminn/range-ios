@@ -196,11 +196,12 @@ extension GeometriesAnnotationPinsDisplay {
         let selected = pin.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
         let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
+        let pinImage = pinOptions.pinImage
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
         // add the image to the style
-        canvasVC.mapView.mapboxMap.style.addImage(named: pinOptions.imageName)
-        pin.iconImage = pinOptions.imageName
+        canvasVC.mapView.mapboxMap.style.addPinImage(pinImage)
+        pin.iconImage = pinImage.id
         pin.iconOffset = [0, -pinOptions.offsetY]
         pin.iconAnchor = pinOptions.anchor._asIconAnchor()
         pin.iconOpacity = pinOptions.alpha

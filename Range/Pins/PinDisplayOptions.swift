@@ -6,7 +6,7 @@ import MapboxMaps
 /// configure the pins using different set of flags (with same meaning, but not using same struct)
 struct PinDisplayOptions {
     /// the image to display for the pin
-    var imageName: String
+    var pinImage: PinImage
     /// the pin view alpha
     var alpha: CGFloat
     /// describes how to place the pin relatively to the point geometry
@@ -28,24 +28,49 @@ extension PinDisplayOptions {
                                                  anythingSelected: Bool) -> PinDisplayOptions
     {
         let uploadsCount = collaboration.uploads.count
+        let overdue = collaboration.isOverdue
         let hasUncompletedNotes = collaboration.hasUncompletedNotes
         if selected {
+            let pinImage: PinImage
+            // TODO: support request for upload update
+            if let status = collaboration.status {
+                if status.isCompleted {
+                    // completed status doesn't care about overdue or notes
+                    pinImage = .pinTask(color: status.color)
+                } else {
+                    pinImage = overdue
+                        ? .pinTaskWithOverdue(color: status.color)
+                        : (hasUncompletedNotes
+                            ? .pinTaskWithNote(color: status.color)
+                            : .pinTask(color: status.color))
+                }
+            } else {
+                pinImage = hasUncompletedNotes
+                    ? (uploadsCount == 0 ? .pinNote : .pinPhotoWithNote(count: uploadsCount))
+                    : .pinPhoto(count: uploadsCount)
+            }
             return PinDisplayOptions(
-                // TODO: support request for upload update
-                imageName: hasUncompletedNotes
-                    ? (uploadsCount == 0
-                        ? "marker.selected.note"
-                        : numberedImageName("marker.selected.badge.", uploadsCount))
-                    : numberedImageName("marker.selected.", uploadsCount),
+                pinImage: pinImage,
                 alpha: 1,
                 anchor: .bottom,
                 offsetY: -4
             )
         } else {
+            let pinImage: PinImage
+            if let status = collaboration.status, status.isCompleted {
+                // completed status doesn't care about overdue or notes
+                pinImage = .circleTask(color: status.color)
+            } else if overdue {
+                pinImage = .circleOverdue
+            } else if hasUncompletedNotes {
+                pinImage = .circleNote
+            } else if let status = collaboration.status {
+                pinImage = .circleTask(color: status.color)
+            } else {
+                pinImage = .circlePhoto(count: uploadsCount)
+            }
             return PinDisplayOptions(
-                imageName: hasUncompletedNotes
-                    ? "marker.note"
-                    : numberedImageName("marker.", uploadsCount),
+                pinImage: pinImage,
                 alpha: anythingSelected ? 0.4 : 1,
                 anchor: .center,
                 offsetY: 0
@@ -57,8 +82,14 @@ extension PinDisplayOptions {
     static func addPhotoPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                   anythingSelected _: Bool) -> PinDisplayOptions
     {
-        PinDisplayOptions(
-            imageName: numberedImageName("marker.selected.", collaboration.uploads.count),
+        let pinImage: PinImage
+        if let status = collaboration.status {
+            pinImage = .pinTask(color: status.color)
+        } else {
+            pinImage = .pinPhoto(count: collaboration.uploads.count)
+        }
+        return PinDisplayOptions(
+            pinImage: pinImage,
             alpha: selected ? 1.0 : 0.4,
             anchor: .bottom,
             offsetY: -4

@@ -182,7 +182,7 @@ extension GeometriesViewAnnotationPinsDisplay {
         // The pinView doesn't animate the image properly when this code is run withing animation block, so disable
         // animations for pinView updates.
         UIView.performWithoutAnimation {
-            pinView.image = UIImage(named: pinOptions.imageName)
+            pinView.image = pinOptions.pinImage.image
             pinView.sizeToFit()
             pinView.alpha = pinOptions.alpha
             let options = ViewAnnotationOptions(
