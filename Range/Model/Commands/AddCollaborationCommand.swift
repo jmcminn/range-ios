@@ -11,6 +11,8 @@ struct AddCollaborationCommand: Command, Equatable {
     var collaborationDescription: String?
     var statusId: String?
     var tagIds: [String]
+    var assigneeId: String?
+    var dueDateTimestamp: TimeInterval?
 
     func apply(inRealm realm: Realm) throws {
         // remove the collaboration from the tags it was attached to and is not anymore
@@ -30,13 +32,17 @@ struct AddCollaborationCommand: Command, Equatable {
             id: collaborationId,
             timestamp: timestamp,
             name: name,
-            description: collaborationDescription
+            description: collaborationDescription,
+            dueDateTimestamp: dueDateTimestamp
         )
         if let authorId = authorId {
             collaboration.author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
         }
         if let statusId = statusId {
             collaboration.status = realm.objectOrPlaceholder(ofType: Status.self, forPrimaryKey: statusId)
+        }
+        if let assigneeId = assigneeId {
+            collaboration.assignee = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: assigneeId)
         }
         collaboration.tags.removeAll()
         realm.add(collaboration, update: .modified)

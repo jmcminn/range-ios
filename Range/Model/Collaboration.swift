@@ -27,6 +27,10 @@ class Collaboration: Object, WithPlaceholder {
     @Persisted var updates: MutableSet<Update>
     /// tags attached to the upload, ordered
     @Persisted var tags: List<Tag>
+    /// optional assignee
+    @Persisted var assignee: Participant?
+    /// due date timestamp (since 1970)
+    @Persisted var dueDateTimestamp: TimeInterval?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -41,12 +45,20 @@ class Collaboration: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, timestamp: TimeInterval?, name: String, description: String?, placeholder: Bool = false) {
+    init(
+        id: String,
+        timestamp: TimeInterval?,
+        name: String,
+        description: String?,
+        placeholder: Bool = false,
+        dueDateTimestamp: TimeInterval? = nil
+    ) {
         super.init()
         self.id = id
         self.timestamp = timestamp
         self.name = name
         collaborationDescription = description
+        self.dueDateTimestamp = dueDateTimestamp
         self.placeholder = placeholder
     }
 

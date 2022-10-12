@@ -20,7 +20,8 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
     /// CodingKeys used by Codable as a keys in the encoded form
     enum CodingKeys: String, CodingKey {
         case featureId = "feature", authorId = "author", timestamp, statusId = "statusName", name,
-             collaborationDescription = "description", tagIds = "tags"
+             collaborationDescription = "description", tagIds = "tags", assigneeId = "assignee",
+             dueDateTimestamp
     }
 
     var featureId: String
@@ -30,23 +31,21 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
     var name: String
     var collaborationDescription: String?
     var tagIds: [String]
+    var assigneeId: String?
+    var dueDateTimestamp: Int? // milliseconds
 
     func upsertCommand(id: String) throws -> Command {
-        let timestampTimeInterval: TimeInterval?
-        if let timestamp = timestamp {
-            timestampTimeInterval = TimeInterval(timestamp) / 1000.0
-        } else {
-            timestampTimeInterval = nil
-        }
-        return AddCollaborationCommand(
+        AddCollaborationCommand(
             collaborationId: id,
             featureId: featureId,
             authorId: authorId,
-            timestamp: timestampTimeInterval,
+            timestamp: timestamp != nil ? TimeInterval(timestamp!) / 1000.0 : nil,
             name: name,
             collaborationDescription: collaborationDescription,
             statusId: statusId,
-            tagIds: tagIds
+            tagIds: tagIds,
+            assigneeId: assigneeId,
+            dueDateTimestamp: dueDateTimestamp != nil ? TimeInterval(dueDateTimestamp!) / 1000.0 : nil
         )
     }
 }

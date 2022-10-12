@@ -11,7 +11,9 @@ extension AddCollaborationCommand: FirestoreCommand {
             statusId: statusId,
             name: name,
             collaborationDescription: collaborationDescription,
-            tagIds: tagIds
+            tagIds: tagIds,
+            assigneeId: assigneeId,
+            dueDateTimestamp: dueDateTimestamp != nil ? Int(dueDateTimestamp! * 1000) : nil
         )
         try transaction.setData(
             from: firestoreObject,
