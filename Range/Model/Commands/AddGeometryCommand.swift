@@ -8,10 +8,16 @@ struct AddGeometryCommand: Command, Equatable {
     var canvasId: String
     var annotationType: Geometry.AnnotationType
     var geometry: Turf.Geometry
+    var archivedTimestamp: TimeInterval?
 
     func apply(inRealm realm: Realm) throws {
         let canvas = realm.objectOrPlaceholder(ofType: PDFCanvas.self, forPrimaryKey: canvasId)
-        let geometry = Geometry(id: geometryId, annotationType: annotationType, geometry: geometry)
+        let geometry = Geometry(
+            id: geometryId,
+            annotationType: annotationType,
+            geometry: geometry,
+            archivedTimestamp: archivedTimestamp
+        )
         realm.add(geometry, update: .modified)
         canvas.geometries.insert(geometry)
     }

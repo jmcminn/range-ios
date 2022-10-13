@@ -21,6 +21,8 @@ class Geometry: Object, WithId, WithPlaceholder {
     @Persisted var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
     /// features for this geometry, the order doesn't matter so it's a set
     @Persisted var features: MutableSet<Feature>
+    /// for archived geometries (timestamp since 1970)
+    @Persisted var archivedTimestamp: TimeInterval?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -42,11 +44,18 @@ class Geometry: Object, WithId, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, annotationType: AnnotationType, geometry: Turf.Geometry, placeholder: Bool = false) {
+    init(
+        id: String,
+        annotationType: AnnotationType,
+        geometry: Turf.Geometry,
+        archivedTimestamp: TimeInterval? = nil,
+        placeholder: Bool = false
+    ) {
         super.init()
         self.id = id
         self.annotationType = annotationType
         self.geometry = geometry
+        self.archivedTimestamp = archivedTimestamp
         self.placeholder = placeholder
     }
 

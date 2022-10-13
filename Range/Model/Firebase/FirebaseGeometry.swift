@@ -22,9 +22,7 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case canvas
-        case annotationType
-        case coordinates
+        case canvas, annotationType, coordinates, archivedTimestamp
     }
 
     /// UUID identifier of parent canvas
@@ -33,11 +31,13 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
     var annotationType: Geometry.AnnotationType = .photoMarker
     /// decodes into Turf Geometry
     var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
+    /// not nil if the geometry was archived
+    var archivedTimestamp: Int? // milliseconds
 
-    /// Initializer to init all the fields of object.
-    init(canvasId: String, geometry: Turf.Geometry) {
+    init(canvasId: String, geometry: Turf.Geometry, archivedTimestamp: Int? = nil) {
         self.canvasId = canvasId
         self.geometry = geometry
+        self.archivedTimestamp = archivedTimestamp
     }
 
     /// Custom implementation of decoding that handles different geometry types
@@ -62,6 +62,7 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
         let coordinates = CLLocationCoordinate2D(latitude: coordinatesArray[1], longitude: coordinatesArray[0])
 
         geometry = .point(Point(coordinates))
+        archivedTimestamp = try container.decodeIfPresent(Int.self, forKey: .archivedTimestamp)
     }
 
     /// Custom implementation of encoding that handles different geometry types
@@ -84,9 +85,16 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
                                                 debugDescription: "Unsupported geometry")
             throw EncodingError.invalidValue(self, context)
         }
+        try container.encodeIfPresent(archivedTimestamp, forKey: .archivedTimestamp)
     }
 
     func upsertCommand(id: String) throws -> Command {
-        AddGeometryCommand(geometryId: id, canvasId: canvasId, annotationType: annotationType, geometry: geometry)
+        AddGeometryCommand(
+            geometryId: id,
+            canvasId: canvasId,
+            annotationType: annotationType,
+            geometry: geometry,
+            archivedTimestamp: archivedTimestamp != nil ? TimeInterval(archivedTimestamp!) / 1000.0 : nil
+        )
     }
 }
