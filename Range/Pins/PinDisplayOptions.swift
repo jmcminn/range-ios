@@ -27,6 +27,7 @@ extension PinDisplayOptions {
     static func regularPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                  anythingSelected: Bool) -> PinDisplayOptions
     {
+        let archived = collaboration.feature.first?.geometry.first?.archivedTimestamp != nil
         let uploadsCount = collaboration.uploads.count
         let overdue = collaboration.isOverdue
         let hasUncompletedNotes = collaboration.hasUncompletedNotes
@@ -34,7 +35,10 @@ extension PinDisplayOptions {
             let pinImage: PinImage
             // TODO: support request for upload update
             if let status = collaboration.status {
-                if status.isCompleted {
+                if archived {
+                    // archived overrides any other rules
+                    pinImage = .pinArchivedTask
+                } else if status.isCompleted {
                     // completed status doesn't care about overdue or notes
                     pinImage = .pinTask(color: status.color)
                 } else {
@@ -45,6 +49,7 @@ extension PinDisplayOptions {
                             : .pinTask(color: status.color))
                 }
             } else {
+                // TODO: archived for photo collab
                 pinImage = hasUncompletedNotes
                     ? (uploadsCount == 0 ? .pinNote : .pinPhotoWithNote(count: uploadsCount))
                     : .pinPhoto(count: uploadsCount)
@@ -57,7 +62,11 @@ extension PinDisplayOptions {
             )
         } else {
             let pinImage: PinImage
-            if let status = collaboration.status, status.isCompleted {
+            // TODO: archived for photo collab
+            if collaboration.status != nil, archived {
+                // archived overrides any other rules
+                pinImage = .circleArchivedTask
+            } else if let status = collaboration.status, status.isCompleted {
                 // completed status doesn't care about overdue or notes
                 pinImage = .circleTask(color: status.color)
             } else if overdue {
@@ -82,10 +91,12 @@ extension PinDisplayOptions {
     static func addPhotoPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                   anythingSelected _: Bool) -> PinDisplayOptions
     {
+        let archived = collaboration.feature.first?.geometry.first?.archivedTimestamp != nil
         let pinImage: PinImage
         if let status = collaboration.status {
-            pinImage = .pinTask(color: status.color)
+            pinImage = archived ? .pinArchivedTask : .pinTask(color: status.color)
         } else {
+            // TODO: archived for photo collab
             pinImage = .pinPhoto(count: collaboration.uploads.count)
         }
         return PinDisplayOptions(
