@@ -27,21 +27,25 @@ extension PinDisplayOptions {
     static func regularPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                  anythingSelected: Bool) -> PinDisplayOptions
     {
+        let uploadsCount = collaboration.uploads.count
+        let hasUncompletedNotes = collaboration.hasUncompletedNotes
         if selected {
             return PinDisplayOptions(
-                // TODO: marker.selected.badge when we support request for upload update
-                imageName: collaboration.hasUncompletedNotes
-                    ? "marker.selected.note"
-                    : numberedImageName("marker.selected.", collaboration.uploads.count),
+                // TODO: support request for upload update
+                imageName: hasUncompletedNotes
+                    ? (uploadsCount == 0
+                        ? "marker.selected.note"
+                        : numberedImageName("marker.selected.badge.", uploadsCount))
+                    : numberedImageName("marker.selected.", uploadsCount),
                 alpha: 1,
                 anchor: .bottom,
                 offsetY: -4
             )
         } else {
             return PinDisplayOptions(
-                imageName: collaboration.hasUncompletedNotes
+                imageName: hasUncompletedNotes
                     ? "marker.note"
-                    : numberedImageName("marker.", collaboration.uploads.count),
+                    : numberedImageName("marker.", uploadsCount),
                 alpha: anythingSelected ? 0.4 : 1,
                 anchor: .center,
                 offsetY: 0
