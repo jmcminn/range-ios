@@ -24,6 +24,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var namePencilView: UIImageView!
     // only added when the collaboration is a task
     var assigneeButton: AssigneeButton!
+    // only added when the collaboration is a task
+    var dueDateButton: DueDateButton!
     var ctas: UIView!
     var feedVC: CollaborationFeedViewController!
     var thumbnailsVC: ThumbnailsViewController!
@@ -128,13 +130,21 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         }
 
         if isTaskWindow {
-            setupAssigneeButton()
+            assigneeButton = AssigneeButton()
             containerView.addSubview(assigneeButton)
             assigneeButton.snp.makeConstraints { make in
                 make.top.equalTo(nameField.snp.bottom).offset(16)
                 make.leading.equalTo(16)
                 make.height.equalTo(48)
                 make.width.equalToSuperview().multipliedBy(0.5).offset(-24)
+            }
+
+            dueDateButton = DueDateButton()
+            containerView.addSubview(dueDateButton)
+            dueDateButton.snp.makeConstraints { make in
+                make.top.height.width.equalTo(assigneeButton)
+                make.trailing.equalTo(-16)
+                make.height.equalTo(48)
             }
         }
 
@@ -227,6 +237,7 @@ extension CollaborationViewController {
         statusButton.isHidden = !isTaskWindow
         if isTaskWindow {
             assigneeButton.assignee = collaboration.assignee
+            dueDateButton.dueDate = collaboration.dueDateTimestamp
         }
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -286,10 +297,6 @@ extension CollaborationViewController {
         nameField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         nameField.returnKeyType = .done
         nameField.delegate = self
-    }
-
-    private func setupAssigneeButton() {
-        assigneeButton = AssigneeButton()
     }
 
     private func setupCTAs() {
