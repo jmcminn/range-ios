@@ -24,7 +24,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var namePencilView: UIImageView!
     // only added when the collaboration is a task
     var assigneeButton: AssigneeButton!
-    var ctas: UIStackView!
+    var ctas: UIView!
     var feedVC: CollaborationFeedViewController!
     var thumbnailsVC: ThumbnailsViewController!
     var updatesToggle: SegmentedControl!
@@ -322,10 +322,25 @@ extension CollaborationViewController {
                                                 to: nil, from: self, for: nil)
             }
         )
-        ctas = UIStackView(arrangedSubviews: [addCommentButton, addAttachmentButton, addPhotosButton])
-        ctas.axis = .horizontal
-        ctas.distribution = .fillProportionally
-        ctas.spacing = 16
+        let ctas = UIView()
+        [addCommentButton, addAttachmentButton, addPhotosButton].forEach(ctas.addSubview)
+        // layout buttons so addComment and addAttachment take 50% space and addPhotos another 50%
+        // (+ there's 16 points space between each button, the leading and trailing spacing is already
+        // include as the whole ctas view has margins)
+        addCommentButton.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview()
+            make.width.equalTo(addPhotosButton.snp.width).multipliedBy(0.5).offset(-8)
+        }
+        addAttachmentButton.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.equalTo(addCommentButton.snp.trailing).offset(16)
+            make.width.equalTo(addCommentButton.snp.width)
+        }
+        addPhotosButton.snp.makeConstraints { make in
+            make.trailing.top.bottom.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
+        }
+        self.ctas = ctas
     }
 
     private func setupNamePencilView() {
