@@ -12,6 +12,10 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     private var collaborationNotificationToken: NotificationToken?
 
+    /// whether this vc displays a task or a photo collaboration version of the view
+    /// For now it's a constant set in init, so no support for switching the type of view
+    private let isTaskWindow: Bool
+
     /// a view below content to cover the space visible when dragging up past the max height
     var bottomView = UIView()
     var statusButton: CollaborationStatusButton!
@@ -54,6 +58,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         self.imageCaches = imageCaches
         self.projectModel = projectModel
         self.collaboration = collaboration
+        isTaskWindow = collaboration.status != nil
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -196,14 +201,18 @@ extension CollaborationViewController {
 // MARK: Collaboration update
 
 extension CollaborationViewController {
+    /// Do not show thumbnails for task collaboration or when they are empty
+    private var hideThumbnails: Bool {
+        isTaskWindow || collaboration.uploads.isEmpty
+    }
+
     private func onCollaborationUpdated() {
-        statusButton.isHidden = collaboration.status == nil
+        statusButton.isHidden = !isTaskWindow
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         nameField.text = name
         namePencilView.isHidden = name.isEmpty
 
-        let hideThumbnails = collaboration.uploads.isEmpty
         if hideThumbnails != thumbnailsVC.view.isHidden {
             updateThumbnailsVisibility()
             // update the height
@@ -215,14 +224,13 @@ extension CollaborationViewController {
 
     /// show/hide the thumbnails and update the feed header height accordingly
     private func updateThumbnailsVisibility() {
-        let hidden = collaboration.uploads.isEmpty
-        thumbnailsVC.view.isHidden = hidden
+        thumbnailsVC.view.isHidden = hideThumbnails
 
         let totalUpdatesToggleHeight = Constants.updatesTogglePaddings.top +
             Constants.updatesToggleHeight + Constants.updatesTogglePaddings.bottom
 
         feedVC.tableView.beginUpdates()
-        feedVC.tableView.tableHeaderView?.frame.size.height = hidden
+        feedVC.tableView.tableHeaderView?.frame.size.height = hideThumbnails
             ? Constants.thumbnailsVerticalPaddings + totalUpdatesToggleHeight
             : Constants.thumbnailsHeight + 2 * Constants.thumbnailsVerticalPaddings + totalUpdatesToggleHeight
         feedVC.tableView.endUpdates()
@@ -403,7 +411,7 @@ extension CollaborationViewController: CardPresentable {
 
             // include half of the updatesToggle
             var additionalContentHeight = Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight / 2.0
-            if !collaboration.uploads.isEmpty {
+            if !hideThumbnails {
                 additionalContentHeight += Constants.thumbnailsHeight + Constants.thumbnailsVerticalPaddings
             }
 
