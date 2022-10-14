@@ -131,10 +131,16 @@ class CollaborationFlowController: UIViewController {
             // check if already showing, if so then ignore animated and replace instantly
             if self.collaborationVC != nil {
                 self.collaborationVC?.cardDragging?.delegate = nil
+                let previousCardHeight = self.collaborationVC?.cardDragging?.cardHeight
                 hideCollaborationWindow(animated: false)
                 setCollaborationHeaderCoverHidden(true, animated: false)
                 setFABsHidden(true, animated: false)
                 collaborationVC.showCard(animated: false)
+                if let previousCardHeight = previousCardHeight, let newCardDragging = collaborationVC.cardDragging {
+                    // animate the height from previous height, so there's no jump
+                    newCardDragging.setCardHeight(previousCardHeight)
+                    newCardDragging.setPosition(newCardDragging.position, withVelocity: 0, animated: true)
+                }
             } else {
                 collaborationVC.showCard(animated: animated)
             }
