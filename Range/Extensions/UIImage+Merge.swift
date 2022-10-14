@@ -14,4 +14,18 @@ extension UIImage {
             topImage.draw(in: drawRect)
         }
     }
+
+    /// Returns a new image by adding this image centered on top of a circle with given size, background and stroke color.
+    func addCircleBackground(bgSize: CGSize, bgColor: UIColor, strokeColor: UIColor) -> UIImage {
+        UIGraphicsImageRenderer(size: bgSize).image { _ in
+            let ovalPath = UIBezierPath(ovalIn: CGRect(origin: .zero, size: bgSize))
+            bgColor.setFill()
+            ovalPath.fill()
+            ovalPath.addClip()
+            draw(at: CGPoint(x: (bgSize.width - size.width) / 2, y: (bgSize.height - size.height) / 2))
+            strokeColor.setStroke()
+            ovalPath.lineWidth = 2 // not 1 as half of the width is clipped
+            ovalPath.stroke()
+        }
+    }
 }

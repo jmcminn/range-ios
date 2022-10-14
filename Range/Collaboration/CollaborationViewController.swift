@@ -22,6 +22,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var closeButton: UIButton!
     var nameField: UITextField!
     var namePencilView: UIImageView!
+    // only added when the collaboration is a task
+    var assigneeButton: AssigneeButton!
     var ctas: UIStackView!
     var feedVC: CollaborationFeedViewController!
     var thumbnailsVC: ThumbnailsViewController!
@@ -125,10 +127,25 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.trailing.equalToSuperview().offset(-16).priority(.required)
         }
 
+        if isTaskWindow {
+            setupAssigneeButton()
+            containerView.addSubview(assigneeButton)
+            assigneeButton.snp.makeConstraints { make in
+                make.top.equalTo(nameField.snp.bottom).offset(16)
+                make.leading.equalTo(16)
+                make.height.equalTo(48)
+                make.width.equalToSuperview().multipliedBy(0.5).offset(-24)
+            }
+        }
+
         setupCTAs()
         containerView.addSubview(ctas)
         ctas.snp.makeConstraints { make in
-            make.top.equalTo(nameField.snp.bottom).offset(16)
+            if isTaskWindow {
+                make.top.equalTo(assigneeButton.snp.bottom).offset(16)
+            } else {
+                make.top.equalTo(nameField.snp.bottom).offset(16)
+            }
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(40)
         }
@@ -208,6 +225,9 @@ extension CollaborationViewController {
 
     private func onCollaborationUpdated() {
         statusButton.isHidden = !isTaskWindow
+        if isTaskWindow {
+            assigneeButton.assignee = collaboration.assignee
+        }
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         nameField.text = name
@@ -266,6 +286,10 @@ extension CollaborationViewController {
         nameField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         nameField.returnKeyType = .done
         nameField.delegate = self
+    }
+
+    private func setupAssigneeButton() {
+        assigneeButton = AssigneeButton()
     }
 
     private func setupCTAs() {
@@ -403,7 +427,7 @@ extension CollaborationViewController {
 
 extension CollaborationViewController: CardPresentable {
     func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
-        let heightIncludingCTAs = 147.0
+        let heightIncludingCTAs = isTaskWindow ? 147 + 64 : 147.0
         if cardPosition == .min {
             return 0 // will be hidden when minimized
         } else if cardPosition == .medium {
