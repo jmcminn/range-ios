@@ -23,6 +23,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var nameField: UITextField!
     var namePencilView: UIImageView!
     // only added when the collaboration is a task
+    var tagsView: TagsView!
+    // only added when the collaboration is a task
     var assigneeButton: AssigneeButton!
     // only added when the collaboration is a task
     var dueDateButton: DueDateButton!
@@ -130,10 +132,20 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         }
 
         if isTaskWindow {
+            setupTagsView()
+            containerView.addSubview(tagsView)
+            // tagsView will use the top and bottom 6 points of margin (for bigger tap area), so it's enough
+            // to give 6 top offset and also make lower bottom margin
+            tagsView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.top.equalTo(nameField.snp.bottom).offset(16 - 6)
+                make.height.equalTo(44)
+            }
+
             assigneeButton = AssigneeButton()
             containerView.addSubview(assigneeButton)
             assigneeButton.snp.makeConstraints { make in
-                make.top.equalTo(nameField.snp.bottom).offset(16)
+                make.top.equalTo(tagsView.snp.bottom).offset(16 - 6)
                 make.leading.equalTo(16)
                 make.height.equalTo(48)
                 make.width.equalToSuperview().multipliedBy(0.5).offset(-24)
@@ -299,6 +311,12 @@ extension CollaborationViewController {
         nameField.delegate = self
     }
 
+    private func setupTagsView() {
+        tagsView = TagsView()
+        tagsView.showAddTagCell = true
+        tagsView.tags = collaboration.tags.where { $0.placeholder == false }
+    }
+
     private func setupCTAs() {
         var blackButtonConfig = UIButton.Configuration.blackButton(imageTextStyle: .caption1, cornerRadius: 8)
         blackButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
@@ -449,7 +467,9 @@ extension CollaborationViewController {
 
 extension CollaborationViewController: CardPresentable {
     func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
-        let heightIncludingCTAs = isTaskWindow ? 147 + 64 : 147.0
+        let tagsHeight: CGFloat = 32 + 16
+        let assigneeHeight: CGFloat = 48 + 16
+        let heightIncludingCTAs = isTaskWindow ? 147 + tagsHeight + assigneeHeight : 147.0
         if cardPosition == .min {
             return 0 // will be hidden when minimized
         } else if cardPosition == .medium {
