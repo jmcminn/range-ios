@@ -47,7 +47,7 @@ struct AddUploadCommand: Command, Equatable {
         }
         upload.author = author
         realm.add(upload, update: .modified)
-        let tags = tagIds.compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
+        let tags = tagIds.uniqued().compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
         upload.tags.append(objectsIn: tags)
         tags.forEach { $0.uploads.insert(upload) }
         collaboration.uploads.insert(upload)

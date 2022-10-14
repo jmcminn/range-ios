@@ -150,14 +150,14 @@ class AddCollaborationCommandTest: XCTestCase {
             realm.add([feature1, tag1, tag2, tag3])
         }
 
-        // given a collaboration with tag1 and tag2
+        // given a collaboration with tag1 and tag2 and a duplicate of tag1
         var cmd = AddCollaborationCommand(
             collaborationId: "collaboration1",
             featureId: "feature1",
             name: "",
             collaborationDescription: "",
             statusId: nil,
-            tagIds: ["tag1", "tag2"]
+            tagIds: ["tag1", "tag2", "tag1"]
         )
         try realm.write {
             try cmd.apply(inRealm: realm)

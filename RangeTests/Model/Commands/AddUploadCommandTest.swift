@@ -146,7 +146,7 @@ class AddUploadCommandTest: XCTestCase {
             realm.add([tag1, tag2, tag3])
         }
 
-        // given an upload with tag1 and tag2
+        // given an upload with tag1 and tag2 and a duplicate of tag1
         var cmd = AddUploadCommand(
             uploadId: "upload1",
             correlationId: "upload1",
@@ -158,7 +158,7 @@ class AddUploadCommandTest: XCTestCase {
             name: "upload 1",
             uploadDescription: "upload 1 description",
             url: URL(string: "https://range.io/image"),
-            tagIds: ["tag1", "tag2"]
+            tagIds: ["tag1", "tag2", "tag1"]
         )
         try realm.write {
             try cmd.apply(inRealm: realm)
