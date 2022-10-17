@@ -22,12 +22,13 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var closeButton: UIButton!
     var nameField: UITextField!
     var namePencilView: UIImageView!
-    // only added when the collaboration is a task
+
+    // -- BEGIN: only for task collaboration
     var tagsView: TagsView!
-    // only added when the collaboration is a task
     var assigneeButton: AssigneeButton!
-    // only added when the collaboration is a task
     var dueDateButton: DueDateButton!
+    // ---- END: only for task collaboration
+
     var ctas: UIView!
     var feedVC: CollaborationFeedViewController!
     var thumbnailsVC: ThumbnailsViewController!
@@ -41,10 +42,19 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var onNameUpdated: ((String) -> Void)?
 
     private enum Constants {
+        // distance between views
+        static let verticalSpacing = 16.0
+        // height from the top until bottom of the name text field
+        static let heightIncludingName = 91.0
+        // height of the tags, not really used in layout as this is the intrinsic tags height
+        // (but used in header/card height calculations)
+        static let tagsHeight = 32.0
+        // height of the assignee and duedate buttons
+        static let assigneeButtonHeight = 48.0
+        // height of the CTA buttons
+        static let ctasHeight = 40.0
         // height of thumbnails view
         static let thumbnailsHeight = 54.0
-        // height for top and bottom thumbnails view padding
-        static let thumbnailsVerticalPaddings = 16.0
         // height of the toggle to switch updates level of detail
         static let updatesToggleHeight = 32.0
         // the insets is used just as a container for top/left/bottom/right paddings around the toggle
@@ -124,7 +134,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         nameField.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
             make.trailing.equalTo(namePencilView.snp.leading).offset(-4)
-            make.top.equalTo(badgeView.snp.bottom).offset(16)
+            make.top.equalTo(badgeView.snp.bottom).offset(Constants.verticalSpacing)
         }
         namePencilView.snp.makeConstraints { make in
             make.centerY.equalTo(nameField.snp.centerY)
@@ -134,20 +144,17 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         if isTaskWindow {
             setupTagsView()
             containerView.addSubview(tagsView)
-            // tagsView will use the top and bottom 6 points of margin (for bigger tap area), so it's enough
-            // to give 6 top offset and also make lower bottom margin
             tagsView.snp.makeConstraints { make in
                 make.leading.trailing.equalToSuperview()
-                make.top.equalTo(nameField.snp.bottom).offset(16 - 6)
-                make.height.equalTo(44)
+                make.top.equalTo(nameField.snp.bottom).offset(Constants.verticalSpacing)
             }
 
             assigneeButton = AssigneeButton()
             containerView.addSubview(assigneeButton)
             assigneeButton.snp.makeConstraints { make in
-                make.top.equalTo(tagsView.snp.bottom).offset(16 - 6)
+                make.top.equalTo(tagsView.snp.bottom).offset(Constants.verticalSpacing)
                 make.leading.equalTo(16)
-                make.height.equalTo(48)
+                make.height.equalTo(Constants.assigneeButtonHeight)
                 make.width.equalToSuperview().multipliedBy(0.5).offset(-24)
             }
 
@@ -156,7 +163,6 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             dueDateButton.snp.makeConstraints { make in
                 make.top.height.width.equalTo(assigneeButton)
                 make.trailing.equalTo(-16)
-                make.height.equalTo(48)
             }
         }
 
@@ -164,12 +170,12 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         containerView.addSubview(ctas)
         ctas.snp.makeConstraints { make in
             if isTaskWindow {
-                make.top.equalTo(assigneeButton.snp.bottom).offset(16)
+                make.top.equalTo(assigneeButton.snp.bottom).offset(Constants.verticalSpacing)
             } else {
-                make.top.equalTo(nameField.snp.bottom).offset(16)
+                make.top.equalTo(nameField.snp.bottom).offset(Constants.verticalSpacing)
             }
             make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40)
+            make.height.equalTo(Constants.ctasHeight)
         }
 
         setupFeedVC()
@@ -274,8 +280,8 @@ extension CollaborationViewController {
 
         feedVC.tableView.beginUpdates()
         feedVC.tableView.tableHeaderView?.frame.size.height = hideThumbnails
-            ? Constants.thumbnailsVerticalPaddings + totalUpdatesToggleHeight
-            : Constants.thumbnailsHeight + 2 * Constants.thumbnailsVerticalPaddings + totalUpdatesToggleHeight
+            ? Constants.verticalSpacing + totalUpdatesToggleHeight
+            : Constants.thumbnailsHeight + 2 * Constants.verticalSpacing + totalUpdatesToggleHeight
         feedVC.tableView.endUpdates()
     }
 }
@@ -407,7 +413,7 @@ extension CollaborationViewController {
         feedVC.add(childController: thumbnailsVC, toView: header)
         thumbnailsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(Constants.thumbnailsVerticalPaddings)
+            make.top.equalTo(Constants.verticalSpacing)
             make.height.equalTo(Constants.thumbnailsHeight)
         }
 
@@ -467,31 +473,45 @@ extension CollaborationViewController {
 
 extension CollaborationViewController: CardPresentable {
     func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
-        let tagsHeight: CGFloat = 32 + 16
-        let assigneeHeight: CGFloat = 48 + 16
-        let heightIncludingCTAs = isTaskWindow ? 147 + tagsHeight + assigneeHeight : 147.0
         if cardPosition == .min {
             return 0 // will be hidden when minimized
         } else if cardPosition == .medium {
-            let height = heightIncludingCTAs + Constants.thumbnailsVerticalPaddings
+            // what's shown above the keyboard if keyboard visible
+            let baseHeight = Constants.heightIncludingName + Constants.verticalSpacing
 
-            // include half of the updatesToggle
-            var additionalContentHeight = Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight / 2.0
-            if !hideThumbnails {
-                additionalContentHeight += Constants.thumbnailsHeight + Constants.thumbnailsVerticalPaddings
+            // what's visible in the .medium card position but not when showing keyboard
+            var additionalContentHeight = 0.0
+            if isTaskWindow {
+                additionalContentHeight += Constants.tagsHeight + Constants.verticalSpacing +
+                    Constants.assigneeButtonHeight + Constants.verticalSpacing
             }
+            additionalContentHeight += Constants.ctasHeight + Constants.verticalSpacing
+            if !hideThumbnails {
+                additionalContentHeight += Constants.thumbnailsHeight + Constants.verticalSpacing
+            }
+            // include half of the updatesToggle
+            additionalContentHeight += Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight / 2.0
 
             let extraSpaceForKeyboard = max(keyboardHeightInWindow - cardContainerView.safeAreaInsets.bottom, 0)
 
             // show either keyboard or additional content
-            return height + max(additionalContentHeight, extraSpaceForKeyboard)
+            return baseHeight + max(additionalContentHeight, extraSpaceForKeyboard)
         } else { // .max
             // the card display controller adds handling for bottom safe area so
             // we need to subtract it
             let fullHeight = cardContainerView.bounds.height - cardContainerView.safeAreaInsets.bottom
             // the height of the collaboration view header that we want to hide
-            // behing the header cover
-            let headerHeight = heightIncludingCTAs
+            // behind the header cover
+            // TODO: 387 for task we only want to hide the name (everything else should be
+            // in the table header)
+            var headerHeight = Constants.heightIncludingName
+            if isTaskWindow {
+                headerHeight += Constants.verticalSpacing + Constants.tagsHeight +
+                    Constants.verticalSpacing + Constants.assigneeButtonHeight +
+                    Constants.verticalSpacing + Constants.ctasHeight
+            } else {
+                headerHeight += Constants.verticalSpacing + Constants.ctasHeight
+            }
             // 50 is the height of headerCover content
             let headerCoverHeight = cardContainerView.safeAreaInsets.top + 50
             // add enough so the "header" hides behind the headerCover

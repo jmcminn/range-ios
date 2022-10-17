@@ -34,6 +34,20 @@ class TagsView: UIView {
     /// Token for observing changes in tags
     private var notificationToken: NotificationToken?
 
+    /// insets for tap area, to make the tap area larger provide negative values
+    private var tapAreaInsets: UIEdgeInsets = .init(top: -6, left: 0, bottom: -6, right: 0)
+
+    /// This view is quite low (32), make it respond to touches above and below (see the tapAreaInsets)
+    override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
+        let newArea = CGRect(
+            x: bounds.origin.x + tapAreaInsets.left,
+            y: bounds.origin.y + tapAreaInsets.top,
+            width: bounds.size.width - tapAreaInsets.left - tapAreaInsets.right,
+            height: bounds.size.height - tapAreaInsets.top - tapAreaInsets.bottom
+        )
+        return newArea.contains(point)
+    }
+
     init() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         super.init(frame: .zero)
@@ -79,9 +93,9 @@ class TagsView: UIView {
     override var intrinsicContentSize: CGSize {
         if showAddTagCell {
             // no matter how many tags always show something
-            return CGSize(width: UIView.noIntrinsicMetric, height: 44)
+            return CGSize(width: UIView.noIntrinsicMetric, height: 32)
         } else if let tags = tags, tags.count > 0 {
-            return CGSize(width: UIView.noIntrinsicMetric, height: 44)
+            return CGSize(width: UIView.noIntrinsicMetric, height: 32)
         } else {
             return CGSize(width: UIView.noIntrinsicMetric, height: 0)
         }
@@ -154,7 +168,7 @@ extension TagsView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
             width: max(contentWidth, TagCollectionViewCell.minLabelWidth) +
                 TagCollectionViewCell.leadingLabelInset +
                 TagCollectionViewCell.trailingLabelInset + 1.0, // +1 to handle any rounding issues
-            height: 44 // higher than in design as we want to respond to bigger tap area
+            height: 32
         )
     }
 }
@@ -171,6 +185,7 @@ extension TagsView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell",
                                                           for: indexPath) as! TagCollectionViewCell
             cell.tagName = collectionItem.name
+            cell.tapAreaInsets = tapAreaInsets
             return cell
         }
     }

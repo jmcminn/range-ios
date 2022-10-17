@@ -7,6 +7,19 @@ class TagCollectionViewCell: UICollectionViewCell {
     static let trailingLabelInset = 10.0
     private let label = UILabel()
 
+    /// insets for tap area, to make the tap area larger provide negative values
+    var tapAreaInsets: UIEdgeInsets = .zero
+
+    override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
+        let newArea = CGRect(
+            x: bounds.origin.x + tapAreaInsets.left,
+            y: bounds.origin.y + tapAreaInsets.top,
+            width: bounds.size.width - tapAreaInsets.left - tapAreaInsets.right,
+            height: bounds.size.height - tapAreaInsets.top - tapAreaInsets.bottom
+        )
+        return newArea.contains(point)
+    }
+
     /// the name of the tag
     var tagName: String? {
         didSet {
@@ -24,7 +37,7 @@ class TagCollectionViewCell: UICollectionViewCell {
         backgroundView.backgroundColor = .Primary_Blue_01
         contentView.addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 6, left: 0, bottom: 6, right: 0)).priority(.high)
+            make.edges.equalToSuperview().priority(.high)
         }
 
         contentView.addSubview(label)
