@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-/// The table view cell to show the updated value of name
+/// The table view cell to show the updated value of name (or a description)
 class NameUpdateFeedItemCell: UITableViewCell {
     weak var tableView: UITableView?
     private let messageLabel = UILabel()

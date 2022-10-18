@@ -147,7 +147,7 @@ class CollaborationFeedViewController: UIViewController {
 
     private func observeUpdates() {
         updates = collaboration.updates
-            .where { $0.placeholder == false && $0.field == .name }
+            .where { $0.placeholder == false && ($0.field == .name || $0.field == .description) }
             .sorted(by: \Update.timestamp, ascending: false)
         updatesNotificationToken = updates.observe { [weak self] _ in
             guard let self = self else { return }
@@ -207,7 +207,7 @@ extension CollaborationFeedViewController {
             cell.tableView = tableView
             cell.comment = comment
             return cell
-        } else if let update = feedItem.item as? Update, update.field == .name {
+        } else if let update = feedItem.item as? Update, update.field == .name || update.field == .description {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NameUpdate",
                                                      for: indexPath) as! NameUpdateFeedItemCell
             cell.tableView = tableView
