@@ -207,6 +207,7 @@
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557328F9533900491E20 /* AssigneeButton.swift */; };
 		0AB8557628F98EB600491E20 /* DueDateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557528F98EB500491E20 /* DueDateButton.swift */; };
+		0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */; };
 		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
 		0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */; };
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
@@ -468,6 +469,7 @@
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AB8557328F9533900491E20 /* AssigneeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssigneeButton.swift; sourceTree = "<group>"; };
 		0AB8557528F98EB500491E20 /* DueDateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DueDateButton.swift; sourceTree = "<group>"; };
+		0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationDetailsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
@@ -753,6 +755,7 @@
 				0A130E9F28D4D55900FF1368 /* Feed */,
 				0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */,
 				0A4782FF28A516AA0063040F /* CollaborationViewController.swift */,
+				0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */,
 				0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */,
 				0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */,
 				0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */,
@@ -1339,6 +1342,7 @@
 				0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */,
 				0ABFD8BD28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
+				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,

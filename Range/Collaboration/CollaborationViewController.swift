@@ -3,6 +3,13 @@ import RealmSwift
 import SnapKit
 import UIKit
 
+/// Collaboration view
+/// Comprises of 3 parts:
+/// 1. the header - the badge, status button (for tasks), close button and name
+/// 2. the details - implemented in `CollaborationDetailsViewController` - description, tags, assignee, due date, CTAs, thumbnails, updates detail toggle
+/// 3. feed - implemented in `CollaborationFeedViewController`
+///
+/// The details are added as a header for feed table view, so they scroll together with the feed
 class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
 
@@ -14,7 +21,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     /// whether this vc displays a task or a photo collaboration version of the view
     /// For now it's a constant set in init, so no support for switching the type of view
-    private let isTaskWindow: Bool
+    let isTaskWindow: Bool
 
     /// a view below content to cover the space visible when dragging up past the max height
     var bottomView = UIView()
@@ -23,16 +30,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var nameField: UITextField!
     var namePencilView: UIImageView!
 
-    // -- BEGIN: only for task collaboration
-    var tagsView: TagsView!
-    var assigneeButton: AssigneeButton!
-    var dueDateButton: DueDateButton!
-    // ---- END: only for task collaboration
-
-    var ctas: UIView!
+    var detailsVC: CollaborationDetailsViewController!
     var feedVC: CollaborationFeedViewController!
-    var thumbnailsVC: ThumbnailsViewController!
-    var updatesToggle: SegmentedControl!
 
     /// how high is the currently visible part of the keyboard
     private var keyboardHeightInWindow: CGFloat = 0
@@ -46,19 +45,6 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         static let verticalSpacing = 16.0
         // height from the top until bottom of the name text field
         static let heightIncludingName = 91.0
-        // height of the tags, not really used in layout as this is the intrinsic tags height
-        // (but used in header/card height calculations)
-        static let tagsHeight = 32.0
-        // height of the assignee and duedate buttons
-        static let assigneeButtonHeight = 48.0
-        // height of the CTA buttons
-        static let ctasHeight = 40.0
-        // height of thumbnails view
-        static let thumbnailsHeight = 54.0
-        // height of the toggle to switch updates level of detail
-        static let updatesToggleHeight = 32.0
-        // the insets is used just as a container for top/left/bottom/right paddings around the toggle
-        static let updatesTogglePaddings = UIEdgeInsets(top: 16, left: 16, bottom: 12, right: 16)
     }
 
     var roundedShadowView: RoundShadowView {
@@ -76,6 +62,12 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         self.collaboration = collaboration
         isTaskWindow = collaboration.status != nil
         super.init(nibName: nil, bundle: nil)
+
+        feedVC = CollaborationFeedViewController(
+            imageCaches: imageCaches,
+            projectModel: projectModel,
+            collaboration: collaboration
+        )
     }
 
     @available(*, unavailable)
@@ -141,51 +133,14 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.trailing.equalToSuperview().offset(-16).priority(.required)
         }
 
-        if isTaskWindow {
-            setupTagsView()
-            containerView.addSubview(tagsView)
-            tagsView.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.top.equalTo(nameField.snp.bottom).offset(Constants.verticalSpacing)
-            }
-
-            assigneeButton = AssigneeButton()
-            containerView.addSubview(assigneeButton)
-            assigneeButton.snp.makeConstraints { make in
-                make.top.equalTo(tagsView.snp.bottom).offset(Constants.verticalSpacing)
-                make.leading.equalTo(16)
-                make.height.equalTo(Constants.assigneeButtonHeight)
-                make.width.equalToSuperview().multipliedBy(0.5).offset(-24)
-            }
-
-            dueDateButton = DueDateButton()
-            containerView.addSubview(dueDateButton)
-            dueDateButton.snp.makeConstraints { make in
-                make.top.height.width.equalTo(assigneeButton)
-                make.trailing.equalTo(-16)
-            }
-        }
-
-        setupCTAs()
-        containerView.addSubview(ctas)
-        ctas.snp.makeConstraints { make in
-            if isTaskWindow {
-                make.top.equalTo(assigneeButton.snp.bottom).offset(Constants.verticalSpacing)
-            } else {
-                make.top.equalTo(nameField.snp.bottom).offset(Constants.verticalSpacing)
-            }
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(Constants.ctasHeight)
-        }
-
         setupFeedVC()
         add(childController: feedVC, toView: containerView)
         feedVC.view.snp.makeConstraints { make in
-            make.top.equalTo(ctas.snp.bottom)
+            make.top.equalTo(nameField.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
-        setupFeedHeader()
+        setupDetailsVC()
 
         updateColors()
     }
@@ -246,43 +201,12 @@ extension CollaborationViewController {
 // MARK: Collaboration update
 
 extension CollaborationViewController {
-    /// Do not show thumbnails for task collaboration or when they are empty
-    private var hideThumbnails: Bool {
-        isTaskWindow || collaboration.uploads.isEmpty
-    }
-
     private func onCollaborationUpdated() {
         statusButton.isHidden = !isTaskWindow
-        if isTaskWindow {
-            assigneeButton.assignee = collaboration.assignee
-            dueDateButton.dueDate = collaboration.dueDateTimestamp
-        }
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         nameField.text = name
         namePencilView.isHidden = name.isEmpty
-
-        if hideThumbnails != thumbnailsVC.view.isHidden {
-            updateThumbnailsVisibility()
-            // update the height
-            if let cardDragging = cardDragging {
-                cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
-            }
-        }
-    }
-
-    /// show/hide the thumbnails and update the feed header height accordingly
-    private func updateThumbnailsVisibility() {
-        thumbnailsVC.view.isHidden = hideThumbnails
-
-        let totalUpdatesToggleHeight = Constants.updatesTogglePaddings.top +
-            Constants.updatesToggleHeight + Constants.updatesTogglePaddings.bottom
-
-        feedVC.tableView.beginUpdates()
-        feedVC.tableView.tableHeaderView?.frame.size.height = hideThumbnails
-            ? Constants.verticalSpacing + totalUpdatesToggleHeight
-            : Constants.thumbnailsHeight + 2 * Constants.verticalSpacing + totalUpdatesToggleHeight
-        feedVC.tableView.endUpdates()
     }
 }
 
@@ -317,63 +241,6 @@ extension CollaborationViewController {
         nameField.delegate = self
     }
 
-    private func setupTagsView() {
-        tagsView = TagsView()
-        tagsView.showAddTagCell = true
-        tagsView.tags = collaboration.tags.where { $0.placeholder == false }
-    }
-
-    private func setupCTAs() {
-        var blackButtonConfig = UIButton.Configuration.blackButton(imageTextStyle: .caption1, cornerRadius: 8)
-        blackButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
-        let addCommentButton = UIButton(
-            configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { [weak self] _ in
-                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addCommentAction),
-                                                to: nil, from: self, for: nil)
-            }
-        )
-        let addAttachmentButton = UIButton(
-            configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "paperclip")) { _ in }
-        )
-
-        var blueButtonConfig = UIButton.Configuration.blueButton(
-            imageTextStyle: .caption1,
-            imagePlacement: .leading,
-            cornerRadius: 8
-        )
-        var titleAttributes = AttributeContainer()
-        titleAttributes.font = UIFont.preferredFont(forTextStyle: .subheadline)
-        blueButtonConfig.attributedTitle = AttributedString("Add Photos", attributes: titleAttributes)
-        let addPhotosButton = UIButton(
-            configuration: blueButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "camera")) { [weak self] _ in
-                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addPhotosAction),
-                                                to: nil, from: self, for: nil)
-            }
-        )
-        let ctas = UIView()
-        [addCommentButton, addAttachmentButton, addPhotosButton].forEach(ctas.addSubview)
-        // layout buttons so addComment and addAttachment take 50% space and addPhotos another 50%
-        // (+ there's 16 points space between each button, the leading and trailing spacing is already
-        // include as the whole ctas view has margins)
-        addCommentButton.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
-            make.width.equalTo(addPhotosButton.snp.width).multipliedBy(0.5).offset(-8)
-        }
-        addAttachmentButton.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.equalTo(addCommentButton.snp.trailing).offset(16)
-            make.width.equalTo(addCommentButton.snp.width)
-        }
-        addPhotosButton.snp.makeConstraints { make in
-            make.trailing.top.bottom.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
-        }
-        self.ctas = ctas
-    }
-
     private func setupNamePencilView() {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .bold)
         let image = UIImage(systemName: "pencil", withConfiguration: imageConfig)
@@ -389,83 +256,46 @@ extension CollaborationViewController {
     }
 
     private func setupFeedVC() {
-        feedVC = CollaborationFeedViewController(
+        feedVC.showMoreUpdates = UserDefaults.moreUpdatesInTheFeed
+    }
+
+    private func setupDetailsVC() {
+        detailsVC = CollaborationDetailsViewController(
             imageCaches: imageCaches,
             projectModel: projectModel,
             collaboration: collaboration
         )
-        feedVC.showMoreUpdates = UserDefaults.moreUpdatesInTheFeed
-    }
-
-    /// the thumbnails and major/minor updates toggle belong to the feed header so they scroll with table view
-    private func setupFeedHeader() {
-        let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
-        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: projectModel, uploads: uploads)
-        thumbnailsVC.onUploadSelected = { [weak self] upload in
+        detailsVC.onHeightChanged = { [weak self] in
+            self?.updateFeedHeaderHeight()
+        }
+        detailsVC.onToggleMoreUpdates = { [weak self] showMore in
+            self?.feedVC.showMoreUpdates = showMore
+        }
+        detailsVC.onThumbnailSelected = { [weak self] upload in
             self?.onThumbnailSelected(forUpload: upload)
         }
 
         // the size doesn't matter here. Width will be adapted to tableView width and height
         // is set/updated in `updateThumbnailsVisibility`
-        let header = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
+        let header = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: detailsVC.height())))
         header.backgroundColor = containerView.backgroundColor
-
-        feedVC.add(childController: thumbnailsVC, toView: header)
-        thumbnailsVC.view.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(Constants.verticalSpacing)
-            make.height.equalTo(Constants.thumbnailsHeight)
+        feedVC.add(childController: detailsVC, toView: header)
+        detailsVC.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
-
-        let updatesToggleBackground = UIView()
-        updatesToggleBackground.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-        header.addSubview(updatesToggleBackground)
-        updatesToggleBackground.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight
-                + Constants.updatesTogglePaddings.bottom)
-        }
-
-        let updatesToggleSeparator = UIView()
-        updatesToggleSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
-        updatesToggleBackground.addSubview(updatesToggleSeparator)
-        updatesToggleSeparator.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview()
-            make.height.equalTo(1)
-        }
-
-        updatesToggle = SegmentedControl(items: [
-            UIAction(
-                title: String(localized: "More updates"),
-                handler: { [weak self] _ in
-                    UserDefaults.moreUpdatesInTheFeed = true
-                    self?.feedVC.showMoreUpdates = true
-                }
-            ),
-            UIAction(
-                title: String(localized: "Less updates"),
-                handler: { [weak self] _ in
-                    UserDefaults.moreUpdatesInTheFeed = false
-                    self?.feedVC.showMoreUpdates = false
-                }
-            ),
-        ])
-        if UserDefaults.moreUpdatesInTheFeed == false {
-            updatesToggle.selectedSegmentIndex = 1
-        }
-        updatesToggle.backgroundColor = containerView.backgroundColor
-        // remove the border
-        updatesToggle.layer.borderWidth = 0
-        header.addSubview(updatesToggle)
-        updatesToggle.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(Constants.updatesTogglePaddings.left)
-            make.trailing.equalToSuperview().inset(Constants.updatesTogglePaddings.right).priority(.high)
-            make.height.equalTo(Constants.updatesToggleHeight)
-            make.bottom.equalToSuperview().inset(Constants.updatesTogglePaddings.bottom)
-        }
-
         feedVC.tableView.tableHeaderView = header
-        updateThumbnailsVisibility()
+    }
+
+    /// update the feed header height based on the detailsVC height and animate the card height
+    private func updateFeedHeaderHeight() {
+        // update the height
+        if let cardDragging = cardDragging {
+            cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
+        }
+
+        feedVC.tableView.beginUpdates()
+        feedVC.tableView.tableHeaderView?.frame.size.height = detailsVC.height()
+        feedVC.tableView.endUpdates()
     }
 }
 
@@ -480,17 +310,8 @@ extension CollaborationViewController: CardPresentable {
             let baseHeight = Constants.heightIncludingName + Constants.verticalSpacing
 
             // what's visible in the .medium card position but not when showing keyboard
-            var additionalContentHeight = 0.0
-            if isTaskWindow {
-                additionalContentHeight += Constants.tagsHeight + Constants.verticalSpacing +
-                    Constants.assigneeButtonHeight + Constants.verticalSpacing
-            }
-            additionalContentHeight += Constants.ctasHeight + Constants.verticalSpacing
-            if !hideThumbnails {
-                additionalContentHeight += Constants.thumbnailsHeight + Constants.verticalSpacing
-            }
-            // include half of the updatesToggle
-            additionalContentHeight += Constants.updatesTogglePaddings.top + Constants.updatesToggleHeight / 2.0
+            let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true)
+                - Constants.verticalSpacing // the vertical spacing at the top of details already included in baseHeight
 
             let extraSpaceForKeyboard = max(keyboardHeightInWindow - cardContainerView.safeAreaInsets.bottom, 0)
 
@@ -502,15 +323,12 @@ extension CollaborationViewController: CardPresentable {
             let fullHeight = cardContainerView.bounds.height - cardContainerView.safeAreaInsets.bottom
             // the height of the collaboration view header that we want to hide
             // behind the header cover
-            // TODO: 387 for task we only want to hide the name (everything else should be
-            // in the table header)
             var headerHeight = Constants.heightIncludingName
             if isTaskWindow {
-                headerHeight += Constants.verticalSpacing + Constants.tagsHeight +
-                    Constants.verticalSpacing + Constants.assigneeButtonHeight +
-                    Constants.verticalSpacing + Constants.ctasHeight
+                // for task we present all the details
             } else {
-                headerHeight += Constants.verticalSpacing + Constants.ctasHeight
+                // photo collaboration hides the CTAs by default
+                headerHeight += detailsVC.heightUpToCTAs()
             }
             // 50 is the height of headerCover content
             let headerCoverHeight = cardContainerView.safeAreaInsets.top + 50

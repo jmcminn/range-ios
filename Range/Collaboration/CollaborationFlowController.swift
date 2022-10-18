@@ -108,6 +108,9 @@ class CollaborationFlowController: UIViewController {
         collaborationVC.onNameUpdated = { [weak self] newName in
             self?.updateName(newName)
         }
+        if let scrollView = collaborationVC.drivingScrollView() {
+            scrollView.forwardDelegateInvocations(to: self)
+        }
         return collaborationVC
     }
 
@@ -160,6 +163,9 @@ class CollaborationFlowController: UIViewController {
             collaborationVC.cardDragging?.delegate = nil
             collaborationVC.hideCard(animated: animated) {
                 self.removeCard(cardViewController: collaborationVC)
+            }
+            if let scrollView = collaborationVC.drivingScrollView() {
+                scrollView.cancelForwardingDelegateInvocations(to: self)
             }
             self.collaborationVC = nil
         }
@@ -261,6 +267,31 @@ extension CollaborationFlowController {
     }
 }
 
+// MARK: - listen to position of collaboration view CTAs
+
+extension CollaborationFlowController: UIScrollViewDelegate {
+    /// When the collaboration view content is scrolled we show/hide the FABs based on the current collaboration CTAs position against the header cover
+    func scrollViewDidScroll(_: UIScrollView) {
+        updateFABsAlpha()
+    }
+
+    /// show/hide FABs when the corresponding collaboration view CTAs hide behind the header cover/show again
+    private func updateFABsAlpha() {
+        guard let collaborationVC = collaborationVC,
+              let headerCoverVC = collaborationHeaderCoverVC else { return }
+
+        let ctas: UIView = collaborationVC.detailsVC.ctas
+
+        let headerCoverBottom = headerCoverVC.view.frame.maxY
+        let ctasTop = headerCoverVC.view.convert(ctas.frame, from: collaborationVC.detailsVC.view).minY
+
+        // once the collaboration view CTAs get behind the cover let's change the alpha to 1 on the
+        // distance equal to ctas height (so the fabs become fully opaque once the ctas are fully hidden)
+        let fabsAlpha = max(0, min(1, (headerCoverBottom - ctasTop) / ctas.frame.height))
+        actionButtons.forEach { $0.alpha = fabsAlpha }
+    }
+}
+
 // MARK: Card dragging delegate
 
 extension CollaborationFlowController: CardDraggingDelegate {
@@ -280,23 +311,19 @@ extension CollaborationFlowController: CardDraggingDelegate {
     }
 
     /// Animate the collaboration header cover and FABs alpha as user is dragging the collaboration window card
-    func cardHeightUpdated(_ height: CGFloat) {
-        // show/hide the header cover
+    func cardHeightUpdated(_: CGFloat) {
         guard let collaborationVC = collaborationVC,
-              let cardDragging = collaborationVC.cardDragging,
               let collaborationHeaderCoverVC = collaborationHeaderCoverVC else { return }
-        // HACK: the height reported by dragging includes the safeAreaInsets while the height
-        // requested by card presentable (collaborationVC) does not...
-        let realHeight = height - cardDragging.containerView.safeAreaInsets.bottom
-        let fullHeight = collaborationVC.height(forContainer: cardDragging.containerView, cardPosition: .max)
-        // alpha is 1 when full height - 100 and then drops to 0 on a distance of 20 points
-        // the 100 and 20 are arbitrary numbers selected to make the alpha transition fast (20)
-        // and to start it early (100 + 20 points before height reaches the full height)
-        let headerAlpha = max(0, min(1, 1.0 - (fullHeight - realHeight - 100) / 20))
-        collaborationHeaderCoverVC.view.alpha = headerAlpha
-        // show buttons later than header
-        let fabsAlpha = max(0, min(1, 1.0 - (fullHeight - realHeight) / 20))
-        actionButtons.forEach { $0.alpha = fabsAlpha }
+
+        let headerCoverBottom = collaborationHeaderCoverVC.view.frame.maxY
+        let collaborationViewTop = collaborationVC.view.frame.minY
+
+        // once the collaboration view gets behind the cover at least by 30 points (arbitrary, visually
+        // selected value) let's change the alpha to 1 on the distance of 20 points
+        let headerCoverAlpha = max(0, min(1, (headerCoverBottom - 30 - collaborationViewTop) / 20))
+        collaborationHeaderCoverVC.view.alpha = headerCoverAlpha
+
+        updateFABsAlpha()
     }
 }
 
