@@ -306,12 +306,14 @@ extension CollaborationViewController: CardPresentable {
         if cardPosition == .min {
             return 0 // will be hidden when minimized
         } else if cardPosition == .medium {
-            // what's shown above the keyboard if keyboard visible
-            let baseHeight = Constants.heightIncludingName + Constants.verticalSpacing
+            // what's shown above the keyboard if keyboard visible, "header" height + avaiable spacing in the details view (so no content is shown)
+            // The spacing available in details view is actually dependent on the type of collaboration and whether
+            // there's a description, but it's at least `descriptionTopSpacing`
+            let detailsTopSpace = CollaborationDetailsViewController.Constants.descriptionTopSpacing
+            let baseHeight = Constants.heightIncludingName + detailsTopSpace
 
             // what's visible in the .medium card position but not when showing keyboard
-            let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true)
-                - Constants.verticalSpacing // the vertical spacing at the top of details already included in baseHeight
+            let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true) - detailsTopSpace
 
             let extraSpaceForKeyboard = max(keyboardHeightInWindow - cardContainerView.safeAreaInsets.bottom, 0)
 

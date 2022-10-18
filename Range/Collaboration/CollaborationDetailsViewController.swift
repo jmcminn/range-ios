@@ -7,7 +7,11 @@ import UIKit
 /// This view has everything that is not feed or the header of CollaborationViewController (see its docs for more details)
 /// It's added as the header for CollaborationFeedViewController tableView, so it scrolls together with the feed.
 class CollaborationDetailsViewController: UIViewController {
-    private enum Constants {
+    enum Constants {
+        // distance from top to description view
+        static let descriptionTopSpacing = 10.0
+        // distance from description to next view (the total of tap and bottom = verticalSpacing, so if description is 0 height the next view has proper spacing to top)
+        static let descriptionBottomSpacing = 6.0
         // distance between views
         static let verticalSpacing = 16.0
         // height of the tags, not really used in layout as this is the intrinsic tags height
@@ -35,12 +39,23 @@ class CollaborationDetailsViewController: UIViewController {
     private let isTaskWindow: Bool
 
     var onHeightChanged: (() -> Void)?
-    // TODO: 387 refactor to action?
     var onThumbnailSelected: ((Upload) -> Void)?
     // Bool: `true` = toggle more, `false` = toggle less
     var onToggleMoreUpdates: ((Bool) -> Void)?
 
     // -- BEGIN: only for task collaboration
+    var descriptionTextView: UITextView!
+    /// handle for observing description text view content size
+    private var descriptionTextViewObservations = [NSKeyValueObservation]()
+    /// description text view height changes with its content size
+    private var descriptionTextViewHeightConstraint: Constraint?
+    /// descriptionTextViewHeightConstraint does not expose the constant, so we need to keep it separately
+    private var descriptionTextViewHeight: CGFloat = 0 {
+        didSet {
+            descriptionTextViewHeightConstraint?.update(offset: descriptionTextViewHeight)
+        }
+    }
+
     var tagsView: TagsView!
     var assigneeButton: AssigneeButton!
     var dueDateButton: DueDateButton!
@@ -68,11 +83,19 @@ class CollaborationDetailsViewController: UIViewController {
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         if isTaskWindow {
+            setupDescriptionTextView()
+            view.addSubview(descriptionTextView)
+            descriptionTextView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.top.equalToSuperview().offset(Constants.descriptionTopSpacing).priority(.high)
+                descriptionTextViewHeightConstraint = make.height.equalTo(0).constraint
+            }
+
             setupTagsView()
             view.addSubview(tagsView)
             tagsView.snp.makeConstraints { make in
                 make.leading.trailing.equalToSuperview()
-                make.top.equalToSuperview().offset(Constants.verticalSpacing)
+                make.top.equalTo(descriptionTextView.snp.bottom).offset(Constants.descriptionBottomSpacing)
             }
 
             assigneeButton = AssigneeButton()
@@ -120,11 +143,17 @@ class CollaborationDetailsViewController: UIViewController {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.onCollaborationUpdated()
         }
+        if isTaskWindow {
+            setupDescriptionTextViewObserver()
+        }
         onCollaborationUpdated()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if isTaskWindow {
+            removeDescriptionTextViewObserver()
+        }
         collaborationNotificationToken?.invalidate()
     }
 
@@ -135,6 +164,7 @@ class CollaborationDetailsViewController: UIViewController {
 
     private func onCollaborationUpdated() {
         if isTaskWindow {
+            descriptionTextView.text = collaboration.collaborationDescription
             assigneeButton.assignee = collaboration.assignee
             dueDateButton.dueDate = collaboration.dueDateTimestamp
         }
@@ -152,7 +182,8 @@ extension CollaborationDetailsViewController {
     /// Return the height of subviews up to and including CTAs
     func heightUpToCTAs() -> CGFloat {
         if isTaskWindow {
-            return Constants.verticalSpacing + Constants.tagsHeight +
+            return Constants.descriptionTopSpacing + descriptionTextViewHeight +
+                Constants.descriptionBottomSpacing + Constants.tagsHeight +
                 Constants.verticalSpacing + Constants.assigneeButtonHeight +
                 Constants.verticalSpacing + Constants.ctasHeight
         } else {
@@ -181,6 +212,17 @@ extension CollaborationDetailsViewController {
 // MARK: - views
 
 extension CollaborationDetailsViewController {
+    private func setupDescriptionTextView() {
+        descriptionTextView = UITextView()
+        descriptionTextView.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        descriptionTextView.font = .preferredFont(forTextStyle: .subheadline)
+        // left/right = 12 to achieve the visual 16 margin...
+        // bottom = 10 so when there's an actual text we have 16 points to next view, if not, we have total 16 point space to top (see Constants)
+        descriptionTextView.textContainerInset = UIEdgeInsets(top: 0, left: 12, bottom: 10, right: 12)
+        descriptionTextView.returnKeyType = .done
+        descriptionTextView.isEditable = false
+    }
+
     private func setupTagsView() {
         tagsView = TagsView()
         tagsView.showAddTagCell = true
@@ -293,5 +335,37 @@ extension CollaborationDetailsViewController {
             make.height.equalTo(Constants.updatesToggleHeight)
             make.bottom.equalToSuperview().inset(Constants.updatesTogglePaddings.bottom)
         }
+    }
+}
+
+// MARK: - text view sizing
+
+extension CollaborationDetailsViewController {
+    /// Observe the text view properties
+    private func setupDescriptionTextViewObserver() {
+        // observe text for case when it goes to empty (and content size does not change)
+        descriptionTextViewObservations.append(descriptionTextView.observe(\.text) { [weak self] _, _ in
+            self?.animateTextViewHeightIfChanged()
+        })
+        // observe content size - it can change without text changing (the layout did complete for example)
+        descriptionTextViewObservations.append(descriptionTextView.observe(\.contentSize) { [weak self] _, _ in
+            self?.animateTextViewHeightIfChanged()
+        })
+    }
+
+    private func removeDescriptionTextViewObserver() {
+        descriptionTextViewObservations.forEach { $0.invalidate() }
+        descriptionTextViewObservations.removeAll()
+    }
+
+    /// Update the size of the text view based on its content.
+    /// Notify about the height change if changed.
+    private func animateTextViewHeightIfChanged() {
+        let newDescriptionTextViewHeight = descriptionTextView.text.isEmpty
+            ? 0
+            : max(0, descriptionTextView.contentSize.height)
+        guard descriptionTextViewHeight != newDescriptionTextViewHeight else { return }
+        descriptionTextViewHeight = newDescriptionTextViewHeight
+        onHeightChanged?()
     }
 }
