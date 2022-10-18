@@ -13,7 +13,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
         }
     }
 
-    weak var update: Update? {
+    var update: Update? {
         didSet {
             updateMessage()
             if let update = update {
@@ -75,12 +75,12 @@ class NameUpdateFeedItemCell: UITableViewCell {
                     .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                 ]
             )
-            var messageText = " changed the \(update.field.rawValue) \(TimeInterval.format2(update.timestamp))."
+            let messageText = " changed the \(update.field.rawValue) \(TimeInterval.format2(update.timestamp))."
             messageString.append(NSAttributedString(string: messageText, attributes: [
                 .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
                 .font: UIFont.preferredFont(forTextStyle: .caption2),
             ]))
-            var togglePreviousText = showingPrevious ? " Hide previous" : " Show previous"
+            let togglePreviousText = showingPrevious ? " Hide previous" : " Show previous"
             messageString.append(NSAttributedString(string: togglePreviousText, attributes: [
                 .foregroundColor: UIColor.Primary_Blue_04,
                 .font: UIFont.preferredFont(forTextStyle: .caption2),
