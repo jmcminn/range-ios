@@ -24,6 +24,7 @@ class DueDateButton: UIButton {
 
     /// Update the content when due date change
     private func updateButton() {
+        updateImage()
         updateTitle()
     }
 
@@ -53,13 +54,13 @@ class DueDateButton: UIButton {
         layer.cornerRadius = 8
         layer.borderWidth = 1
 
-        setupImage()
         updateColors()
     }
 
     /// update colors
     override func traitCollectionDidChange(_: UITraitCollection?) {
         updateTitle()
+        updateImage()
         updateColors()
     }
 
@@ -98,7 +99,7 @@ class DueDateButton: UIButton {
     }
 
     /// setup the calendar image
-    private func setupImage() {
+    private func updateImage() {
         let image = UIImage(
             systemName: "calendar",
             withConfiguration: UIImage
