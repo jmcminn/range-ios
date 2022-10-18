@@ -13,6 +13,8 @@ final class DebugSettings: ObservableObject {
         /// when set to `true` the photos in the collaboration feed are sized based on their aspect ratio to cover the whole width
         /// when `false` the space for photos is always 4:3 (width:height) and the photo is fitted in
         static let dynamicImageHeightInCollabFeed = "dynamicImageHeightInCollabFeed"
+        /// whether the feed should be sorted ascending by timestamp (so newest items at the bottom) or descending (most recent items at the top)
+        static let feedSortedAscendingByTimestamp = "feedSortedAscendingByTimestamp"
     }
 
     private let defaults: UserDefaults
@@ -41,6 +43,12 @@ final class DebugSettings: ObservableObject {
         }
     }
 
+    @Published var feedSortedAscendingByTimestamp: Bool {
+        didSet {
+            defaults.set(feedSortedAscendingByTimestamp, forKey: Keys.feedSortedAscendingByTimestamp)
+        }
+    }
+
     let appVersion: String
 
     init(defaults: UserDefaults = .standard) {
@@ -51,6 +59,7 @@ final class DebugSettings: ObservableObject {
             Keys.centerCanvasOnPinSnap: true,
             Keys.hapticFeedbackOnPinTapSelection: true,
             Keys.dynamicImageHeightInCollabFeed: true,
+            Keys.feedSortedAscendingByTimestamp: true,
         ])
 
         let releaseVersionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
@@ -62,5 +71,7 @@ final class DebugSettings: ObservableObject {
             .bool(forKey: Keys.hapticFeedbackOnPinTapSelection))
         _dynamicImageHeightInCollabFeed = .init(initialValue: defaults
             .bool(forKey: Keys.dynamicImageHeightInCollabFeed))
+        _feedSortedAscendingByTimestamp = .init(initialValue: defaults
+            .bool(forKey: Keys.feedSortedAscendingByTimestamp))
     }
 }

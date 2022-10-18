@@ -128,7 +128,7 @@ class CollaborationFeedViewController: UIViewController {
         uploads = collaboration.uploads
             .where { $0.placeholder == false && $0.fileType == .image
             }
-            .sorted(by: \Upload.timestamp, ascending: false)
+            .sorted(by: \Upload.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
         uploadsNotificationToken = uploads.observe { [weak self] _ in
             guard let self = self else { return }
             self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
@@ -138,7 +138,7 @@ class CollaborationFeedViewController: UIViewController {
     private func observeComments() {
         comments = collaboration.comments
             .where { $0.placeholder == false }
-            .sorted(by: \Comment.timestamp, ascending: false)
+            .sorted(by: \Comment.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
         commentsNotificationToken = comments.observe { [weak self] _ in
             guard let self = self else { return }
             self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
@@ -148,7 +148,7 @@ class CollaborationFeedViewController: UIViewController {
     private func observeUpdates() {
         updates = collaboration.updates
             .where { $0.placeholder == false && ($0.field == .name || $0.field == .description) }
-            .sorted(by: \Update.timestamp, ascending: false)
+            .sorted(by: \Update.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
         updatesNotificationToken = updates.observe { [weak self] _ in
             guard let self = self else { return }
             self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
@@ -158,19 +158,25 @@ class CollaborationFeedViewController: UIViewController {
     /// Prepare new snapshot for the diffable data source
     /// Add all items sorted by timestamp and include Collaboration for 'collaboration created'
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, FeedItem> {
+        let ascending = DebugSettings().feedSortedAscendingByTimestamp
         var snapshot = NSDiffableDataSourceSnapshot<Int, FeedItem>()
         snapshot.appendSections([1])
         let commentFeedItems = [FeedItem](comments.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
         let uploadFeedItems = [FeedItem](uploads.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
-        var items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: false)
+        var items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: ascending)
         if showMoreUpdates {
             let updatesFeedItems = [FeedItem](updates.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
-            items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: false)
+            items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: ascending)
         }
-        snapshot.appendItems(items)
+
+        // not ascending then items first and created last
+        if !ascending { snapshot.appendItems(items) }
         if let timestamp = collaboration.timestamp, collaboration.author != nil {
             snapshot.appendItems([FeedItem(id: collaboration.id, timestamp: timestamp, item: collaboration)])
         }
+        // if ascending then 'created' first and items after
+        if ascending { snapshot.appendItems(items) }
+
         return snapshot
     }
 

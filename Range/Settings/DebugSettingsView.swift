@@ -11,6 +11,9 @@ struct DebugSettingsView: View {
                 }
             }
             Section(header: Text("Collaboration window")) {
+                Toggle(isOn: $debugSettings.feedSortedAscendingByTimestamp) {
+                    Text("Feed items sorted ascending by timestamp")
+                }
                 Toggle(isOn: $debugSettings.dynamicImageHeightInCollabFeed) {
                     Text("Dynamic image height in the feed")
                 }
