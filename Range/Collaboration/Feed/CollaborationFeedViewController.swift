@@ -112,6 +112,7 @@ class CollaborationFeedViewController: UIViewController {
         tableView.register(ImageUploadFeedItemCell.self, forCellReuseIdentifier: "ImageUpload")
         tableView.register(CommentFeedItemCell.self, forCellReuseIdentifier: "Comment")
         tableView.register(NameUpdateFeedItemCell.self, forCellReuseIdentifier: "NameUpdate")
+        tableView.register(StatusUpdateFeedItemCell.self, forCellReuseIdentifier: "StatusUpdate")
 
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
@@ -147,7 +148,9 @@ class CollaborationFeedViewController: UIViewController {
 
     private func observeUpdates() {
         updates = collaboration.updates
-            .where { $0.placeholder == false && ($0.field == .name || $0.field == .description) }
+            .where {
+                $0.placeholder == false && ($0.field == .name || $0.field == .description || $0.field == .statusName)
+            }
             .sorted(by: \Update.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
         updatesNotificationToken = updates.observe { [weak self] _ in
             guard let self = self else { return }
@@ -167,6 +170,8 @@ class CollaborationFeedViewController: UIViewController {
         if showMoreUpdates {
             let updatesFeedItems = [FeedItem](updates.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
             items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: ascending)
+        } else {
+            // TODO: 411 show the feed item for status update to completed...
         }
 
         // not ascending then items first and created last
@@ -218,6 +223,16 @@ extension CollaborationFeedViewController {
                                                      for: indexPath) as! NameUpdateFeedItemCell
             cell.tableView = tableView
             cell.update = update
+            return cell
+        } else if let update = feedItem.item as? Update, update.field == .statusName,
+                  let statusId = update.newValue.stringValue,
+                  let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId)
+        {
+            // TODO: 411 support for 2 types
+//            if status.isCompleted {} else {}
+            let cell = tableView.dequeueReusableCell(withIdentifier: "StatusUpdate",
+                                                     for: indexPath) as! StatusUpdateFeedItemCell
+            cell.set(update: update, status: status)
             return cell
         }
         return nil

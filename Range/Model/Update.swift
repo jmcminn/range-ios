@@ -5,7 +5,7 @@ import UIKit
 class Update: Object, WithPlaceholder {
     /// Supported updated fields
     enum Field: String, PersistableEnum {
-        case name, description, status, assignee, dueDateTimestamp
+        case name, description, statusName, assignee, dueDateTimestamp
     }
 
     /// Primary key, UUID

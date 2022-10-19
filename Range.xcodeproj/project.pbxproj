@@ -208,6 +208,9 @@
 		0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557328F9533900491E20 /* AssigneeButton.swift */; };
 		0AB8557628F98EB600491E20 /* DueDateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557528F98EB500491E20 /* DueDateButton.swift */; };
 		0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */; };
+		0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557A28FF276500491E20 /* UIView+AsImage.swift */; };
+		0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557C28FF2A0400491E20 /* StatusView.swift */; };
+		0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */; };
 		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
 		0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */; };
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
@@ -470,6 +473,9 @@
 		0AB8557328F9533900491E20 /* AssigneeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssigneeButton.swift; sourceTree = "<group>"; };
 		0AB8557528F98EB500491E20 /* DueDateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DueDateButton.swift; sourceTree = "<group>"; };
 		0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationDetailsViewController.swift; sourceTree = "<group>"; };
+		0AB8557A28FF276500491E20 /* UIView+AsImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+AsImage.swift"; sourceTree = "<group>"; };
+		0AB8557C28FF2A0400491E20 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
+		0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
@@ -657,6 +663,7 @@
 				0A966F9D28DDEAF100E50284 /* CommentFeedItemCell.swift */,
 				0A130EA828D74F3300FF1368 /* ImageUploadFeedItemCell.swift */,
 				0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */,
+				0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -761,6 +768,7 @@
 				0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */,
 				0AB8557328F9533900491E20 /* AssigneeButton.swift */,
 				0AB8557528F98EB500491E20 /* DueDateButton.swift */,
+				0AB8557C28FF2A0400491E20 /* StatusView.swift */,
 			);
 			path = Collaboration;
 			sourceTree = "<group>";
@@ -849,16 +857,17 @@
 				0AD9B75728621782005ACFD7 /* Result+Throws.swift */,
 				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
 				0A130EA628D7409800FF1368 /* TimeInterval+Formatting.swift */,
+				0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */,
 				0A30E8B42849057D00A50D54 /* UIButton+Padding.swift */,
 				0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */,
 				0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */,
 				0A130EA228D4E44D00FF1368 /* UIFont+Extensions.swift */,
+				0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */,
 				0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */,
 				0A1812742834CFBB00A8515B /* UITableView+Borders.swift */,
+				0AB8557A28FF276500491E20 /* UIView+AsImage.swift */,
 				0A18126E28339EC800A8515B /* UIView+Shadow.swift */,
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
-				0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */,
-				0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1347,6 +1356,7 @@
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
 				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
+				0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
 				0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */,
 				0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */,
@@ -1432,6 +1442,7 @@
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
+				0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */,
 				0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */,
 				0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */,
 				0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */,
@@ -1504,6 +1515,7 @@
 				0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
 				0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */,
+				0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */,
