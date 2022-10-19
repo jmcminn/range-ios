@@ -49,10 +49,13 @@ extension PinDisplayOptions {
                             : .pinTask(color: status.color))
                 }
             } else {
-                // TODO: archived for photo collab
-                pinImage = hasUncompletedNotes
-                    ? (uploadsCount == 0 ? .pinNote : .pinPhotoWithNote(count: uploadsCount))
-                    : .pinPhoto(count: uploadsCount)
+                if archived {
+                    pinImage = .pinArchivedPhoto(count: uploadsCount)
+                } else {
+                    pinImage = hasUncompletedNotes
+                        ? (uploadsCount == 0 ? .pinNote : .pinPhotoWithNote(count: uploadsCount))
+                        : .pinPhoto(count: uploadsCount)
+                }
             }
             return PinDisplayOptions(
                 pinImage: pinImage,
@@ -62,10 +65,13 @@ extension PinDisplayOptions {
             )
         } else {
             let pinImage: PinImage
-            // TODO: archived for photo collab
-            if collaboration.status != nil, archived {
+            if archived {
                 // archived overrides any other rules
-                pinImage = .circleArchivedTask
+                if collaboration.status != nil {
+                    pinImage = .circleArchivedTask
+                } else {
+                    pinImage = .circleArchivedPhoto(count: uploadsCount)
+                }
             } else if let status = collaboration.status, status.isCompleted {
                 // completed status doesn't care about overdue or notes
                 pinImage = .circleTask(color: status.color)
@@ -96,8 +102,8 @@ extension PinDisplayOptions {
         if let status = collaboration.status {
             pinImage = archived ? .pinArchivedTask : .pinTask(color: status.color)
         } else {
-            // TODO: archived for photo collab
-            pinImage = .pinPhoto(count: collaboration.uploads.count)
+            let uploadsCount = collaboration.uploads.count
+            pinImage = archived ? .pinArchivedPhoto(count: uploadsCount) : .pinPhoto(count: uploadsCount)
         }
         return PinDisplayOptions(
             pinImage: pinImage,

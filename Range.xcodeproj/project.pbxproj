@@ -231,7 +231,7 @@
 		0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18A28F56C2800C7185D /* DemoProject.swift */; };
 		0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */; };
 		0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */; };
-		0AC9E19128F8057B00C7185D /* PinImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19028F8057B00C7185D /* PinImages.swift */; };
+		0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19028F8057B00C7185D /* PinImage.swift */; };
 		0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
@@ -498,7 +498,7 @@
 		0AC9E18A28F56C2800C7185D /* DemoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProject.swift; sourceTree = "<group>"; };
 		0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsFlowController.swift; sourceTree = "<group>"; };
 		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
-		0AC9E19028F8057B00C7185D /* PinImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinImages.swift; sourceTree = "<group>"; };
+		0AC9E19028F8057B00C7185D /* PinImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinImage.swift; sourceTree = "<group>"; };
 		0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Merge.swift"; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
@@ -1032,7 +1032,7 @@
 		0A671F8F28E98D9500F78B34 /* Pins */ = {
 			isa = PBXGroup;
 			children = (
-				0AC9E19028F8057B00C7185D /* PinImages.swift */,
+				0AC9E19028F8057B00C7185D /* PinImage.swift */,
 				0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */,
 				0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */,
 				0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */,
@@ -1444,7 +1444,7 @@
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
 				0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */,
-				0AC9E19128F8057B00C7185D /* PinImages.swift in Sources */,
+				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
