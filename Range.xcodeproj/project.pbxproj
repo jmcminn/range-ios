@@ -211,6 +211,7 @@
 		0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557A28FF276500491E20 /* UIView+AsImage.swift */; };
 		0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557C28FF2A0400491E20 /* StatusView.swift */; };
 		0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */; };
+		0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */; };
 		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
 		0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */; };
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
@@ -476,6 +477,7 @@
 		0AB8557A28FF276500491E20 /* UIView+AsImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+AsImage.swift"; sourceTree = "<group>"; };
 		0AB8557C28FF2A0400491E20 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
+		0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedStatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 				0A130EA828D74F3300FF1368 /* ImageUploadFeedItemCell.swift */,
 				0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */,
 				0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */,
+				0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1403,6 +1406,7 @@
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
+				0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
 				0A724F4528887A7D00708C6B /* AddProjectSummaryCommand.swift in Sources */,
 				0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */,

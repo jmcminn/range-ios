@@ -22,7 +22,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
                 }
                 messageString.append(NSAttributedString(string: messageText, attributes: [
                     .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
-                    .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+                    .font: UIFont._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold),
                 ]))
                 messageLabel.attributedText = messageString
             } else {

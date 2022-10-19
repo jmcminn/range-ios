@@ -113,6 +113,7 @@ class CollaborationFeedViewController: UIViewController {
         tableView.register(CommentFeedItemCell.self, forCellReuseIdentifier: "Comment")
         tableView.register(NameUpdateFeedItemCell.self, forCellReuseIdentifier: "NameUpdate")
         tableView.register(StatusUpdateFeedItemCell.self, forCellReuseIdentifier: "StatusUpdate")
+        tableView.register(CompletedStatusUpdateFeedItemCell.self, forCellReuseIdentifier: "CompletedStatusUpdate")
 
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
@@ -171,7 +172,19 @@ class CollaborationFeedViewController: UIViewController {
             let updatesFeedItems = [FeedItem](updates.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
             items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: ascending)
         } else {
-            // TODO: 411 show the feed item for status update to completed...
+            // only show the feed item for status update to completed...
+            let updatesFeedItems = [FeedItem](updates
+                .filter {
+                    if $0.field == .statusName, let statusId = $0.newValue.stringValue,
+                       let status = self.projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId),
+                       status.isCompleted
+                    {
+                        return true
+                    }
+                    return false
+                }
+                .map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
+            items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: ascending)
         }
 
         // not ascending then items first and created last
@@ -228,12 +241,18 @@ extension CollaborationFeedViewController {
                   let statusId = update.newValue.stringValue,
                   let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId)
         {
-            // TODO: 411 support for 2 types
-//            if status.isCompleted {} else {}
-            let cell = tableView.dequeueReusableCell(withIdentifier: "StatusUpdate",
-                                                     for: indexPath) as! StatusUpdateFeedItemCell
-            cell.set(update: update, status: status)
-            return cell
+            if status.isCompleted {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "CompletedStatusUpdate",
+                                                         for: indexPath) as! CompletedStatusUpdateFeedItemCell
+                cell.set(update: update, status: status)
+                return cell
+
+            } else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "StatusUpdate",
+                                                         for: indexPath) as! StatusUpdateFeedItemCell
+                cell.set(update: update, status: status)
+                return cell
+            }
         }
         return nil
     }
