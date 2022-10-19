@@ -213,6 +213,7 @@
 		0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */; };
 		0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */; };
 		0AB855832900040700491E20 /* AssigneeUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */; };
+		0AB85585290009C600491E20 /* DueDateUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB85584290009C600491E20 /* DueDateUpdateFeedItemCell.swift */; };
 		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
 		0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */; };
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
@@ -480,6 +481,7 @@
 		0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedStatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssigneeUpdateFeedItemCell.swift; sourceTree = "<group>"; };
+		0AB85584290009C600491E20 /* DueDateUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DueDateUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
@@ -670,6 +672,7 @@
 				0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */,
 				0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */,
 				0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */,
+				0AB85584290009C600491E20 /* DueDateUpdateFeedItemCell.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1424,6 +1427,7 @@
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
 				0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */,
 				0AD9B773286B0F56005ACFD7 /* Command+Firestore.swift in Sources */,
+				0AB85585290009C600491E20 /* DueDateUpdateFeedItemCell.swift in Sources */,
 				0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A130EA128D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift in Sources */,

@@ -115,6 +115,7 @@ class CollaborationFeedViewController: UIViewController {
         tableView.register(StatusUpdateFeedItemCell.self, forCellReuseIdentifier: "StatusUpdate")
         tableView.register(CompletedStatusUpdateFeedItemCell.self, forCellReuseIdentifier: "CompletedStatusUpdate")
         tableView.register(AssigneeUpdateFeedItemCell.self, forCellReuseIdentifier: "AssigneeUpdate")
+        tableView.register(DueDateUpdateFeedItemCell.self, forCellReuseIdentifier: "DueDateUpdate")
 
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
@@ -153,7 +154,7 @@ class CollaborationFeedViewController: UIViewController {
             .where {
                 $0.placeholder == false &&
                     ($0.field == .name || $0.field == .description || $0.field == .statusName ||
-                        $0.field == .assignee)
+                        $0.field == .assignee || $0.field == .dueDateTimestamp)
             }
             .sorted(by: \Update.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
         updatesNotificationToken = updates.observe { [weak self] _ in
@@ -268,6 +269,11 @@ extension CollaborationFeedViewController {
                 forPrimaryKey: update.newValue.stringValue ?? ""
             )
             cell.set(update: update, oldAssignee: oldAssignee, newAssignee: newAssignee)
+            return cell
+        } else if let update = feedItem.item as? Update, update.field == .dueDateTimestamp {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DueDateUpdate",
+                                                     for: indexPath) as! DueDateUpdateFeedItemCell
+            cell.set(update: update)
             return cell
         }
         return nil
