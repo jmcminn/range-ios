@@ -212,6 +212,7 @@
 		0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557C28FF2A0400491E20 /* StatusView.swift */; };
 		0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */; };
 		0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */; };
+		0AB855832900040700491E20 /* AssigneeUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */; };
 		0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */; };
 		0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */; };
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
@@ -478,6 +479,7 @@
 		0AB8557C28FF2A0400491E20 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedStatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
+		0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssigneeUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0ABFD8A528EC85C9008CDA74 /* TagAddCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagAddCollectionViewCell.swift; sourceTree = "<group>"; };
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
@@ -667,6 +669,7 @@
 				0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */,
 				0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */,
 				0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */,
+				0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1538,6 +1541,7 @@
 				0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */,
 				0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
+				0AB855832900040700491E20 /* AssigneeUpdateFeedItemCell.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 				0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */,

@@ -114,6 +114,7 @@ class CollaborationFeedViewController: UIViewController {
         tableView.register(NameUpdateFeedItemCell.self, forCellReuseIdentifier: "NameUpdate")
         tableView.register(StatusUpdateFeedItemCell.self, forCellReuseIdentifier: "StatusUpdate")
         tableView.register(CompletedStatusUpdateFeedItemCell.self, forCellReuseIdentifier: "CompletedStatusUpdate")
+        tableView.register(AssigneeUpdateFeedItemCell.self, forCellReuseIdentifier: "AssigneeUpdate")
 
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
@@ -150,7 +151,9 @@ class CollaborationFeedViewController: UIViewController {
     private func observeUpdates() {
         updates = collaboration.updates
             .where {
-                $0.placeholder == false && ($0.field == .name || $0.field == .description || $0.field == .statusName)
+                $0.placeholder == false &&
+                    ($0.field == .name || $0.field == .description || $0.field == .statusName ||
+                        $0.field == .assignee)
             }
             .sorted(by: \Update.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
         updatesNotificationToken = updates.observe { [weak self] _ in
@@ -253,6 +256,19 @@ extension CollaborationFeedViewController {
                 cell.set(update: update, status: status)
                 return cell
             }
+        } else if let update = feedItem.item as? Update, update.field == .assignee {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "AssigneeUpdate",
+                                                     for: indexPath) as! AssigneeUpdateFeedItemCell
+            let oldAssignee = projectModel.mainRealm.object(
+                ofType: Participant.self,
+                forPrimaryKey: update.oldValue.stringValue ?? ""
+            )
+            let newAssignee = projectModel.mainRealm.object(
+                ofType: Participant.self,
+                forPrimaryKey: update.newValue.stringValue ?? ""
+            )
+            cell.set(update: update, oldAssignee: oldAssignee, newAssignee: newAssignee)
+            return cell
         }
         return nil
     }
