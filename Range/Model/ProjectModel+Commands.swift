@@ -241,9 +241,19 @@ extension ProjectModel {
         ]
     }
 
-    func update(name: String, forCollaboration collaborationId: String) -> [Command] {
+    func update(name: String, oldName: String, forCollaboration collaborationId: String) -> [Command] {
         [
             UpdateCollaborationNameCommand(collaborationId: collaborationId, name: name),
+            AddUpdateCommand(
+                updateId: generateRealmId(),
+                parentId: collaborationId,
+                parentType: "Collaboration",
+                timestamp: Date.now.timeIntervalSince1970,
+                userId: userId,
+                field: .name,
+                oldValue: .string(oldName),
+                newValue: .string(name)
+            ),
         ]
     }
 }

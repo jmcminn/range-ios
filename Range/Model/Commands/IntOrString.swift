@@ -7,6 +7,7 @@ enum IntOrString: Codable, Equatable {
 
     enum IntOrStringError: Error {
         case missingValue
+        case realmValueNotSupported
     }
 
     /// Return value as AnyRealmValue
@@ -16,6 +17,16 @@ enum IntOrString: Codable, Equatable {
             return .int(i)
         case let .string(s):
             return .string(s)
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case let .int(i):
+            try container.encode(i)
+        case let .string(s):
+            try container.encode(s)
         }
     }
 

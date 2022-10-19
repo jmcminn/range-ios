@@ -184,6 +184,7 @@
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
 		0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */; };
 		0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */; };
+		0A854E1C2900669E00666713 /* AddUpdateCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */; };
 		0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */; };
 		0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */; };
 		0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */; };
@@ -452,6 +453,7 @@
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
 		0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusName.swift; sourceTree = "<group>"; };
+		0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddUpdateCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeView.swift; sourceTree = "<group>"; };
 		0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoadingIndicator.swift; sourceTree = "<group>"; };
@@ -1176,6 +1178,7 @@
 				0A724F4028884D7A00708C6B /* AddFeatureCommand+Firestore.swift */,
 				0A724F4228884DF700708C6B /* AddCollaborationCommand+Firestore.swift */,
 				0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */,
+				0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */,
 				0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */,
 				0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */,
 				0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */,
@@ -1471,6 +1474,7 @@
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
+				0A854E1C2900669E00666713 /* AddUpdateCommand+Firestore.swift in Sources */,
 				0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A4995B52854C28200E571FB /* TextView.swift in Sources */,

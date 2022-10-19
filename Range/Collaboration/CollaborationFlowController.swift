@@ -476,9 +476,14 @@ extension CollaborationFlowController: CollaborationFlowActions {
 extension CollaborationFlowController {
     private func updateName(_ name: String) {
         guard let collaboration = collaboration else { return }
+        guard name != collaboration.name else {
+            // no change in name, just end editing
+            collaborationVC?.view.endEditing(true)
+            return
+        }
 
         runCommandsWithProgress(
-            commands: model.update(name: name, forCollaboration: collaboration.id),
+            commands: model.update(name: name, oldName: collaboration.name, forCollaboration: collaboration.id),
             onSuccess: { [weak self] in
                 self?.collaborationVC?.view.endEditing(true)
             },
