@@ -55,10 +55,11 @@ class CollaborationBadgeView: UIView {
     /// Updates the number on the badge and shows/hides the flag
     private func updateBadge() {
         let uploadsCount = collaboration.uploads.count
+        let isArchived = collaboration.feature.first?.geometry.first?.archivedTimestamp != nil
 
         if let status = collaboration.status {
             // display status
-            badgeView.backgroundColor = status.color
+            badgeView.backgroundColor = isArchived ? .Neutral_05 : status.color
             numberOfUploadsLabel?.isHidden = true
             if let checkmarkView = checkmarkView {
                 checkmarkView.isHidden = false
@@ -67,7 +68,7 @@ class CollaborationBadgeView: UIView {
             }
         } else {
             // display number of photos
-            badgeView.backgroundColor = .Pink_03
+            badgeView.backgroundColor = isArchived ? .Neutral_05 : .Pink_03
             if let label = numberOfUploadsLabel {
                 label.isHidden = false
             } else {
@@ -77,7 +78,7 @@ class CollaborationBadgeView: UIView {
             checkmarkView?.isHidden = true
         }
 
-        if collaboration.isOverdue || collaboration.hasUncompletedNotes {
+        if !isArchived, collaboration.isOverdue || collaboration.hasUncompletedNotes {
             if let markerView = markerView {
                 markerView.isHidden = false
             } else {
