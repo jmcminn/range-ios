@@ -56,7 +56,12 @@ class StatusUpdateFeedItemCell: UITableViewCell {
         )
         messageString.append(NSAttributedString(attachment: statusAttachment))
 
-        messageString.append(NSAttributedString(string: " \(TimeInterval.format2(update.timestamp)).",
+        // the space is needed at the end, otherwise the timestamp is always word wrapped together
+        // with the status attachment. If a space is added after timestamp it makes the label
+        // render the status at the end of the line and timestamp on new line... Adding it as a non
+        // braking space so it doesn't end up rendered as the only character in the new line.
+        let nonBrakingSpace = " "
+        messageString.append(NSAttributedString(string: " \(TimeInterval.format2(update.timestamp)).\(nonBrakingSpace)",
                                                 attributes: textAttributes))
         messageLabel.attributedText = messageString
     }
