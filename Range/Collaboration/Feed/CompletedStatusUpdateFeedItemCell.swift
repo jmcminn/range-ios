@@ -60,7 +60,7 @@ class CompletedStatusUpdateFeedItemCell: UITableViewCell {
             string: " completed this issue \(TimeInterval.format3(update.timestamp)).",
             attributes: [
                 .foregroundColor: status.color,
-                .font: UIFont.preferredFont(forTextStyle: .caption2),
+                .font: UIFont.preferredFont(forTextStyle: .footnote),
             ]
         ))
         messageLabel.attributedText = messageString

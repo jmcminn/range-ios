@@ -32,13 +32,13 @@ class StatusUpdateFeedItemCell: UITableViewCell {
         let messageString = NSMutableAttributedString(
             string: update.user?.displayName ?? "",
             attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
             ]
         )
         let textAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
-            .font: UIFont.preferredFont(forTextStyle: .caption2),
+            .font: UIFont.preferredFont(forTextStyle: .footnote),
         ]
         messageString.append(NSAttributedString(string: " changed the status to ",
                                                 attributes: textAttributes))

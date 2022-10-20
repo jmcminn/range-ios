@@ -71,19 +71,19 @@ class NameUpdateFeedItemCell: UITableViewCell {
             let messageString = NSMutableAttributedString(
                 string: update.user?.displayName ?? "",
                 attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
                     .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                 ]
             )
             let messageText = " changed the \(update.field.rawValue) \(TimeInterval.format2(update.timestamp))."
             messageString.append(NSAttributedString(string: messageText, attributes: [
                 .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
-                .font: UIFont.preferredFont(forTextStyle: .caption2),
+                .font: UIFont.preferredFont(forTextStyle: .footnote),
             ]))
             let togglePreviousText = showingPrevious ? " Hide previous" : " Show previous"
             messageString.append(NSAttributedString(string: togglePreviousText, attributes: [
                 .foregroundColor: UIColor.Primary_Blue_04,
-                .font: UIFont.preferredFont(forTextStyle: .caption2),
+                .font: UIFont.preferredFont(forTextStyle: .footnote),
             ]))
             messageLabel.attributedText = messageString
         } else {

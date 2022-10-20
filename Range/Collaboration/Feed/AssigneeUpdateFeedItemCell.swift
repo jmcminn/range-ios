@@ -32,7 +32,7 @@ class AssigneeUpdateFeedItemCell: UITableViewCell {
         let messageString = NSMutableAttributedString(
             string: update.user?.displayName ?? "",
             attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
             ]
         )
@@ -50,7 +50,7 @@ class AssigneeUpdateFeedItemCell: UITableViewCell {
             string: " \(message) \(TimeInterval.format2(update.timestamp)).",
             attributes: [
                 .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
-                .font: UIFont.preferredFont(forTextStyle: .caption2),
+                .font: UIFont.preferredFont(forTextStyle: .footnote),
             ]
         ))
         messageLabel.attributedText = messageString
