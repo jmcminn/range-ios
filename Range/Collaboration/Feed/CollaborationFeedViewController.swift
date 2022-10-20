@@ -5,7 +5,8 @@ import UIKit
 
 /// Feed for the collaboration. Most recent items are to the top. Collaboration created item is the last one.
 class CollaborationFeedViewController: UIViewController {
-    static let distanceBetweenRows = 32.0
+    private let distanceBetweenMajorRows = 24.0
+    private let distanceBetweenMinorRows = 16.0
 
     /// Conform to hashable by checking id only, we don't want the objects being accessed for hashing as the diffable data source
     /// will need hash when computing the diff and the object may already be gone (if some upload was removed for example)
@@ -13,6 +14,8 @@ class CollaborationFeedViewController: UIViewController {
         var id: String
         var timestamp: TimeInterval
         var item: AnyObject
+        // whether this is a major or minor feed item
+        var isMajor: Bool
         func hash(into hasher: inout Hasher) {
             hasher.combine(id)
         }
@@ -36,7 +39,8 @@ class CollaborationFeedViewController: UIViewController {
     let collaboration: Collaboration
 
     let tableView: UITableView
-    var dataSource: UITableViewDiffableDataSource<Int, FeedItem>?
+    var dataSource: UITableViewDiffableDataSource<String, FeedItem>?
+    var items: [FeedItem] = []
 
     var showMoreUpdates = true {
         didSet {
@@ -96,7 +100,7 @@ class CollaborationFeedViewController: UIViewController {
 
     func scroll(toUpload upload: Upload) {
         if let indexPath = dataSource?
-            .indexPath(for: FeedItem(id: upload.id, timestamp: upload.timestamp, item: upload))
+            .indexPath(for: FeedItem(id: upload.id, timestamp: upload.timestamp, item: upload, isMajor: true))
         {
             tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
@@ -117,7 +121,9 @@ class CollaborationFeedViewController: UIViewController {
         tableView.register(AssigneeUpdateFeedItemCell.self, forCellReuseIdentifier: "AssigneeUpdate")
         tableView.register(DueDateUpdateFeedItemCell.self, forCellReuseIdentifier: "DueDateUpdate")
 
-        tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 4)))
+        // since each section has it's top header, the last one is added as a table footer
+        tableView.tableFooterView =
+            UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: distanceBetweenMajorRows)))
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
 
         dataSource = UITableViewDiffableDataSource(
@@ -165,40 +171,59 @@ class CollaborationFeedViewController: UIViewController {
 
     /// Prepare new snapshot for the diffable data source
     /// Add all items sorted by timestamp and include Collaboration for 'collaboration created'
-    private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, FeedItem> {
+    private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<String, FeedItem> {
         let ascending = DebugSettings().feedSortedAscendingByTimestamp
-        var snapshot = NSDiffableDataSourceSnapshot<Int, FeedItem>()
-        snapshot.appendSections([1])
-        let commentFeedItems = [FeedItem](comments.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
-        let uploadFeedItems = [FeedItem](uploads.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
+        let commentFeedItems = [FeedItem](comments
+            .map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0, isMajor: true) })
+        let uploadFeedItems = [FeedItem](uploads
+            .map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0, isMajor: true) })
         var items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: ascending)
+        let updatesFeedItems = [FeedItem](updates.map { update in
+            let isMajor: Bool
+            if update.field == .statusName, let statusId = update.newValue.stringValue,
+               let status = self.projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId),
+               status.isCompleted
+            {
+                isMajor = true
+            } else {
+                isMajor = false
+            }
+            return FeedItem(id: update.id, timestamp: update.timestamp, item: update, isMajor: isMajor)
+        })
         if showMoreUpdates {
-            let updatesFeedItems = [FeedItem](updates.map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
+            // add all updatesFeedItems
             items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: ascending)
         } else {
-            // only show the feed item for status update to completed...
-            let updatesFeedItems = [FeedItem](updates
-                .filter {
-                    if $0.field == .statusName, let statusId = $0.newValue.stringValue,
-                       let status = self.projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId),
-                       status.isCompleted
-                    {
-                        return true
-                    }
-                    return false
-                }
-                .map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0) })
-            items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: ascending)
+            // add only major
+            let majorUpdates = updatesFeedItems.filter(\.isMajor)
+            items = _mergeSortedArrays(FeedItem.self, items, majorUpdates, ascending: ascending)
         }
 
-        // not ascending then items first and created last
-        if !ascending { snapshot.appendItems(items) }
+        /// Add 'collaboration created' feed item
         if let timestamp = collaboration.timestamp, collaboration.author != nil {
-            snapshot.appendItems([FeedItem(id: collaboration.id, timestamp: timestamp, item: collaboration)])
+            let createdFeedItem = FeedItem(
+                id: collaboration.id,
+                timestamp: timestamp,
+                item: collaboration,
+                isMajor: true
+            )
+            if ascending {
+                // if ascending then 'created' first and items after
+                items.insert(createdFeedItem, at: 0)
+            } else {
+                // descending - items first and created last
+                items.append(createdFeedItem)
+            }
         }
-        // if ascending then 'created' first and items after
-        if ascending { snapshot.appendItems(items) }
 
+        var snapshot = NSDiffableDataSourceSnapshot<String, FeedItem>()
+        // each feed item has its own section as it's easy to control cells spacing with section
+        // header and footer height
+        items.forEach { item in
+            snapshot.appendSections([item.id])
+            snapshot.appendItems([item], toSection: item.id)
+        }
+        self.items = items
         return snapshot
     }
 
@@ -210,7 +235,23 @@ class CollaborationFeedViewController: UIViewController {
 
 // MARK: table view delegate
 
-extension CollaborationFeedViewController: UITableViewDelegate {}
+extension CollaborationFeedViewController: UITableViewDelegate {
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            // there's already some padding at the top
+            return distanceBetweenMinorRows
+        }
+        // minor spacing is only between 2 minor cells. Any other combination gets major spacing
+        if section < items.count, !items[section].isMajor, !items[section - 1].isMajor {
+            return distanceBetweenMinorRows
+        }
+        return distanceBetweenMajorRows
+    }
+
+    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        UIView()
+    }
+}
 
 // MARK: table view diffable data source
 

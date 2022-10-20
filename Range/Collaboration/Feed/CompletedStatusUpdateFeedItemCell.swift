@@ -15,8 +15,8 @@ class CompletedStatusUpdateFeedItemCell: UITableViewCell {
         checkView.layer.cornerRadius = 16
         contentView.addSubview(checkView)
         checkView.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
-            make.bottom.lessThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
+            make.top.greaterThanOrEqualToSuperview()
+            make.bottom.lessThanOrEqualToSuperview()
             make.centerY.equalToSuperview()
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)
@@ -32,8 +32,8 @@ class CompletedStatusUpdateFeedItemCell: UITableViewCell {
         contentView.addSubview(messageLabel)
         messageLabel.snp.remakeConstraints { make in
 
-            make.top.greaterThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
-            make.bottom.lessThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
+            make.top.greaterThanOrEqualToSuperview()
+            make.bottom.lessThanOrEqualToSuperview()
             make.centerY.equalToSuperview()
             make.leading.equalTo(checkView.snp.trailing).offset(8)
             make.trailing.equalToSuperview().inset(16).priority(.required)

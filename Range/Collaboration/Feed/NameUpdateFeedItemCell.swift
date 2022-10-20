@@ -34,8 +34,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
         messageLabel.lineBreakMode = .byWordWrapping
         contentView.addSubview(messageLabel)
         messageLabel.snp.remakeConstraints { make in
-            make.top.equalToSuperview().offset(CollaborationFeedViewController.distanceBetweenRows / 2)
-                .priority(.required)
+            make.top.equalToSuperview().priority(.required)
             make.leading.trailing.equalToSuperview().inset(16)
         }
 
@@ -100,8 +99,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
             previousValueLabel.snp.remakeConstraints { make in
                 make.top.equalTo(messageLabel.snp.bottom).offset(8)
                 make.leading.trailing.equalToSuperview().inset(16)
-                make.bottom.lessThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
-                    .priority(.high)
+                make.bottom.lessThanOrEqualToSuperview().priority(.high)
             }
         } else {
             previousValueLabel.snp.remakeConstraints { make in
@@ -109,9 +107,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
                 make.leading.trailing.equalToSuperview().inset(16)
                 make.height.equalTo(0)
                 // there's already 8 points between the message and previous labels, so the bottom space needs -8
-                make.bottom.lessThanOrEqualToSuperview()
-                    .inset(CollaborationFeedViewController.distanceBetweenRows / 2 - 8)
-                    .priority(.high)
+                make.bottom.lessThanOrEqualToSuperview().inset(-8).priority(.high)
             }
         }
     }

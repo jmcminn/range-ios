@@ -15,9 +15,8 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
         messageLabel.lineBreakMode = .byWordWrapping
         contentView.addSubview(messageLabel)
         messageLabel.snp.remakeConstraints { make in
-            make.top.equalToSuperview().offset(CollaborationFeedViewController.distanceBetweenRows / 2)
-                .priority(.required)
-            make.bottom.lessThanOrEqualToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
+            make.top.equalToSuperview().priority(.required)
+            make.bottom.lessThanOrEqualToSuperview()
             make.leading.trailing.equalToSuperview().inset(16)
         }
     }

@@ -67,7 +67,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
             .forEach(imageAndDescriptionView.addSubview)
 
         avatarView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
+            make.top.equalToSuperview()
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)
         }
@@ -100,7 +100,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         tagsView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(imageAndDescriptionView.snp.bottom).offset(12)
-            make.bottom.equalToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
+            make.bottom.equalToSuperview()
         }
     }
 

@@ -63,7 +63,7 @@ class CommentFeedItemCell: UITableViewCell {
             .forEach(contentView.addSubview)
 
         avatarView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
+            make.top.equalToSuperview()
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)
         }
@@ -86,8 +86,7 @@ class CommentFeedItemCell: UITableViewCell {
         completedLabel.snp.makeConstraints { make in
             make.top.equalTo(commentTextLabel.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(CollaborationFeedViewController.distanceBetweenRows / 2)
-                .priority(.high)
+            make.bottom.equalToSuperview().priority(.high)
         }
     }
 
