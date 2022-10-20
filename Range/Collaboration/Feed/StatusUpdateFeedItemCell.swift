@@ -40,7 +40,8 @@ class StatusUpdateFeedItemCell: UITableViewCell {
             .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
             .font: UIFont.preferredFont(forTextStyle: .footnote),
         ]
-        messageString.append(NSAttributedString(string: " changed the status to ",
+        // There are 2 spaces between and after the status attachment - we want more distance there
+        messageString.append(NSAttributedString(string: " changed the status to  ",
                                                 attributes: textAttributes))
 
         // show the status bubble - it's a view converted to image, added as a text attachment
@@ -61,8 +62,9 @@ class StatusUpdateFeedItemCell: UITableViewCell {
         // render the status at the end of the line and timestamp on new line... Adding it as a non
         // braking space so it doesn't end up rendered as the only character in the new line.
         let nonBrakingSpace = " "
-        messageString.append(NSAttributedString(string: " \(TimeInterval.format2(update.timestamp)).\(nonBrakingSpace)",
-                                                attributes: textAttributes))
+        messageString
+            .append(NSAttributedString(string: "  \(TimeInterval.format2(update.timestamp)).\(nonBrakingSpace)",
+                                       attributes: textAttributes))
         messageLabel.attributedText = messageString
     }
 
