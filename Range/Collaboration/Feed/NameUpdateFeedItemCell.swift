@@ -63,6 +63,8 @@ class NameUpdateFeedItemCell: UITableViewCell {
 
     @objc private func toggleShowingPrevious() {
         showingPrevious = !showingPrevious
+        tableView?.beginUpdates()
+        tableView?.endUpdates()
     }
 
     /// Updates the text of the message. Changes when user toggles showing the previous value
@@ -112,8 +114,6 @@ class NameUpdateFeedItemCell: UITableViewCell {
                     .priority(.high)
             }
         }
-        tableView?.beginUpdates()
-        tableView?.endUpdates()
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
