@@ -19,10 +19,10 @@ class TagsView: UIView {
     var showAddTagCell: Bool = false
     var tags: Results<Tag>? {
         didSet {
+            applyNewSnapshot(animatingDifferences: false)
             if let tags = tags {
                 observeTags(tags: tags)
             } else {
-                applyNewSnapshot(animatingDifferences: false)
                 notificationToken?.invalidate()
             }
         }
