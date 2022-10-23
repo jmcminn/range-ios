@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "22907832079d808e82f1182b21af58ef3880666f",
-        "version" : "7.8.0"
+        "revision" : "68ea347bdb1a69e2d2ae2e25cd085b6ef92f64cb",
+        "version" : "7.9.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher.git",
       "state" : {
-        "revision" : "be1a1acb283a702b99b630f586877ba02234b4cb",
-        "version" : "7.3.2"
+        "revision" : "017f94ccfdacabb1ae7f45b75b4217b24c06e6ac",
+        "version" : "7.4.0"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-common-ios.git",
       "state" : {
-        "revision" : "59b81d4f6316a661c322e8c47bc3310f8a1bdd4a",
-        "version" : "21.3.0"
+        "revision" : "dbb2e33e29ba3bb75b9f63673504a5847c8c6e24",
+        "version" : "23.1.0"
       }
     },
     {
@@ -104,17 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-core-maps-ios.git",
       "state" : {
-        "revision" : "9984e5f6218ce3b5e5ad540218085e6743e133b2",
-        "version" : "10.5.1"
-      }
-    },
-    {
-      "identity" : "mapbox-events-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mapbox/mapbox-events-ios.git",
-      "state" : {
-        "revision" : "1b6c2a34086de40c26f2f97a716ac419f46eb630",
-        "version" : "1.0.7"
+        "revision" : "90d62869c8bde5c10dc5f4f6c1cff40d1b4b79b3",
+        "version" : "10.9.0"
       }
     },
     {
@@ -122,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-maps-ios.git",
       "state" : {
-        "revision" : "592aa782e7ac2a51c8d8a54231eaa13b4778674d",
-        "version" : "10.5.0"
+        "revision" : "b7487261707f45ab199928fe189f2aa646a5936b",
+        "version" : "10.9.0"
       }
     },
     {
@@ -149,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core",
       "state" : {
-        "revision" : "18abbb4e9dc268620fa499923a92921bf26db8c6",
-        "version" : "12.7.0"
+        "revision" : "b86d2107fec4246b55af24a3b11e00275575f808",
+        "version" : "12.9.0"
       }
     },
     {
@@ -158,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-swift.git",
       "state" : {
-        "revision" : "437fd367c4fcdaf7c532f1f40cb4ed5fab804e7c",
-        "version" : "10.30.0"
+        "revision" : "7055d820a133da4395742758bd48bab0841cc4bf",
+        "version" : "10.32.0"
       }
     },
     {

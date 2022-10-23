@@ -196,15 +196,7 @@ extension GeometriesViewAnnotationPinsDisplay {
             )
             do {
                 if update {
-                    // HACK, mapbox is supposed to bring the `selected=true` views to the front
-                    // but it doesn't look it's actually always doing it. So the currently selected
-                    // view is readded to the annotations, so it's the last one and displayed on top
-                    if selected {
-                        canvasVC.mapView.viewAnnotations.remove(pinView)
-                        try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
-                    } else {
-                        try canvasVC.mapView.viewAnnotations.update(pinView, options: options)
-                    }
+                    try canvasVC.mapView.viewAnnotations.update(pinView, options: options)
                 } else {
                     try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
                 }
