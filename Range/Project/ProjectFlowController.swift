@@ -124,9 +124,6 @@ final class ProjectFlowController: UIViewController {
         debugSettingsNativeViewsForPinsSubscriber = debugSettings.$nativeViewsForPins
             .sink { [weak self] useNativeViews in
                 guard let self = self else { return }
-                self.canvasContainer.pdfCanvasViewController.pdfMapSync = useNativeViews
-                    ? .mapAnnotations
-                    : .pdf
                 self.pinsDisplay?.stop()
                 self.createGeometriesPinsDisplay(useNativeViews: useNativeViews)
                 self.pinsDisplay?.start(onInitialLoad: nil)

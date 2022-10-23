@@ -78,12 +78,8 @@ class PDFCanvasViewController: UIViewController {
         case mapAnnotations
     }
 
-    // When using native views we want the mapbox to drive interactions (so we can easily
-    // detect tapping on view annotations), because only the view that drives interaction is "interactive".
-    // When using non-native views (so mapbox layers), the pdf can drive the interactions
-    // as the taps are detected by looking for features "under the finger" so it doesn't
-    // matter that much who drives the interactions and currently this mechanism is
-    // implemented for the case when pdf drives the interactions.
+    // Current pdf<->map sync mechanism. Currently set to .mapAnnotations.
+    // The other ways of sync are left only for reference and will not be used anymore.
     var pdfMapSync: PDFMapSync = .mapAnnotations {
         didSet { updatePDFMapSync() }
     }
