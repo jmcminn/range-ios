@@ -227,9 +227,10 @@ class CommentFeedItemCell: UITableViewCell {
                 completeButton.isHidden = false
                 noteBackground.statusView.backgroundColor = comment.completed ? .Green_03 : .Orange_03
             } else {
-                commentTextLabel.textInsets = .zero
-                noteBackground.isHidden = true
+                commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+                noteBackground.isHidden = false
                 completeButton.isHidden = true
+                noteBackground.statusView.backgroundColor = .clear
             }
         } else {
             commentTextLabel.attributedText = nil
