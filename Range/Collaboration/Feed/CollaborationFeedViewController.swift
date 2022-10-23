@@ -266,7 +266,6 @@ extension CollaborationFeedViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
                                                      for: indexPath) as! ImageUploadFeedItemCell
             cell.imageCaches = imageCaches
-            cell.projectModel = projectModel
             cell.tableView = tableView
             cell.upload = upload
             return cell

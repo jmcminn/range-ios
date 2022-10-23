@@ -10,10 +10,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
     /// listen to changes in upload and reload the image
     private var notificationToken: NotificationToken?
 
-    /// required to notify collectionView once the image is loaded so it can invalidate the layout (to use the image aspect ratio)
-    weak var collectionView: UICollectionView?
     weak var imageCaches: ImageCaches?
-    weak var projectModel: ProjectModel?
     weak var upload: Upload? {
         didSet {
             reloadImage()
@@ -70,21 +67,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
         if let upload = upload, let imageCaches = imageCaches {
             imageView.kf.cancelDownloadTask()
             imageView.kf.setImage(
-                with: imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 0),
-                placeholder: nil, options: nil, progressBlock: nil, completionHandler: { _ in
-                    // once the image is loaded update the Upload.imageHeight2Width if it's not there
-                    // yet, so the cell can have a proper height.
-                    if upload.imageHeightToWidth == nil,
-                       let image = self.imageView.image,
-                       let projectModel = self.projectModel
-                    {
-                        projectModel.mainRealm.writeAsync({
-                            upload.imageHeightToWidth = image.size.height / image.size.width
-                        }, onComplete: { _ in
-                            self.collectionView?.collectionViewLayout.invalidateLayout()
-                        })
-                    }
-                }
+                with: imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 0)
             )
         } else {
             imageView.image = nil

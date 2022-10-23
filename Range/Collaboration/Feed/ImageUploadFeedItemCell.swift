@@ -16,7 +16,6 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let tagsView = TagsView()
 
     weak var imageCaches: ImageCaches?
-    weak var projectModel: ProjectModel?
     weak var tableView: UITableView?
 
     /// listen to changes in upload and the content
@@ -180,30 +179,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         if let upload = upload {
             timestampLabel.text = TimeInterval.format1(upload.timestamp)
-            let needsAspectRatioUpdateAfterImageLoad = possiblyUpdateUploadImageViewConstraints(upload: upload)
+            possiblyUpdateUploadImageViewConstraints(upload: upload)
             guard let imageCaches = imageCaches else { return }
             uploadImageView.kf.setImage(
-                with: imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 1),
-                placeholder: nil, options: nil, progressBlock: nil, completionHandler: { [weak self] _ in
-                    guard needsAspectRatioUpdateAfterImageLoad else { return }
-                    guard let self else { return }
-                    // update the image aspect ratio
-                    // once the image is loaded update the Upload.imageHeight2Width if it's not there
-                    // yet, so the cell can have a proper height.
-                    if let image = self.uploadImageView.image, let projectModel = self.projectModel,
-                       image.size.width > 0
-                    {
-                        let imageHeight2Width = image.size.height / image.size.width
-                        projectModel.mainRealm.writeAsync({
-                            upload.imageHeightToWidth = imageHeight2Width
-                        }, onComplete: { _ in
-                            _ = self.possiblyUpdateUploadImageViewConstraints(upload: upload)
-                            guard let tableView = self.tableView else { return }
-                            tableView.beginUpdates()
-                            tableView.endUpdates()
-                        })
-                    }
-                }
+                with: imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 1)
             )
             tagsView.tags = upload.tags.where { $0.placeholder == false }
         } else {
@@ -215,14 +194,12 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
     /// Updates the constraints for uploadImageView based on the Upload.imageHeight2Width (if present)
     /// Do it only if dynamicImageHeightInCollabFeed is enabled in DebugSettings
-    /// - returns: `true` if this needs to be run again after image loaded...
-    private func possiblyUpdateUploadImageViewConstraints(upload: Upload) -> Bool {
+    private func possiblyUpdateUploadImageViewConstraints(upload: Upload) {
         // no dynamic height -> no need to update
-        guard DebugSettings().dynamicImageHeightInCollabFeed else { return false }
-        // no image height yet, need to update later
-        guard let imageHeight2Width = upload.imageHeightToWidth else { return true }
+        guard DebugSettings().dynamicImageHeightInCollabFeed else { return }
+        // no image height yet
+        guard let imageHeight2Width = upload.imageHeightToWidth else { return }
         updateUploadImageViewConstraints(imageHeight2Width: imageHeight2Width)
-        return false
     }
 
     /// Updates the uploadImageView constraints to base height on the width and the image aspect ratio

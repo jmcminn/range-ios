@@ -185,9 +185,7 @@ extension ThumbnailsViewController {
                 withReuseIdentifier: "ThumbnailCell",
                 for: indexPath
             ) as! ThumbnailCollectionViewCell
-            cell.collectionView = collectionView
             cell.imageCaches = imageCaches
-            cell.projectModel = projectModel
             cell.upload = upload
             return cell
         } else {
