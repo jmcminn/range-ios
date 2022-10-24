@@ -7,9 +7,6 @@ class ActionSelectorViewController: UIViewController {
     var tableView: UITableView!
     let actions: [ActionItem]
 
-    private let imageConfig = UIImage.SymbolConfiguration(textStyle: .caption1)
-        .applying(UIImage.SymbolConfiguration(weight: .medium))
-
     /// Initiates with actions to show
     /// - Parameters:
     ///   - actions: array of actions
@@ -47,7 +44,7 @@ class ActionSelectorViewController: UIViewController {
 //        tableView.separatorInset = .zero
 //        tableView.separatorInsetReference = .fromCellEdges
 //        tableView.separatorColor = UIColor.Neutral_08
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ActionCell")
+        tableView.register(ActionItemTableViewCell.self, forCellReuseIdentifier: "ActionItemCell")
 
         tableView.reloadData()
 //        tableView.invalidateIntrinsicContentSize()
@@ -72,20 +69,12 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ActionCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: "ActionItemCell",
+            for: indexPath
+        ) as! ActionItemTableViewCell
         let action = actions[indexPath.row]
-
-        cell.backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
-        let actionColor: UIColor = action.style == .destructive
-            ? .Red_03
-            : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        // TODO: 305 custom layout (distance between icon and text)
-        cell.imageView?.tintColor = actionColor
-        cell.textLabel?.textColor = actionColor
-        cell.textLabel?.text = action.title
-        if let imageName = action.imageName {
-            cell.imageView?.image = UIImage(systemName: imageName, withConfiguration: imageConfig)
-        }
+        cell.actionItem = action
         return cell
     }
 

@@ -50,8 +50,8 @@ extension UITableView {
         selectedBackgroundView.backgroundColor = .clear
         cell.selectedBackgroundView = selectedBackgroundView
 
-        cell.contentView.layoutMargins.left = horizontalPadding + 12 // cell needs 12 points padding inside
-        cell.contentView.layoutMargins.right = horizontalPadding + 12
+        cell.contentView.directionalLayoutMargins.leading = horizontalPadding
+        cell.contentView.directionalLayoutMargins.trailing = horizontalPadding
     }
 
     private func createRoundedLayer(

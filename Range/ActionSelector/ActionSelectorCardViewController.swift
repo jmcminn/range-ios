@@ -1,17 +1,23 @@
 import Foundation
 import UIKit
 
-/// Card view controller presenting a titled list of actions
+/// Card view controller presenting a titled list of actions.
+/// It presents the overlay over the presenting view controller.
+/// It can be dismissed by tapping the overlay, dragging down, tap on the close button or choosing the action with .cancel style.
 class ActionSelectorCardViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
+    /// This card presents itself in given vc
+    weak var presentingVC: UIViewController?
 
     private var closeButton: UIButton!
     private var titleIcon: UIImageView?
     private var titleLabel: UILabel?
+    private var subtitleLabel: UILabel?
     private var actionsVC: ActionSelectorViewController!
 
-    // TODO: 305 support for subtitle
-    init(icon: UIImage?, title: String?, subtitle _: String? = nil, actions: [ActionItem]) {
+    /// Initializer
+    /// The action with .cancel style automatically dismisses the card. Other actions need to dismiss the card manually.
+    init(icon: UIImage?, title: String?, subtitle: String? = nil, actions: [ActionItem]) {
         super.init(nibName: nil, bundle: nil)
 
         if let icon = icon {
@@ -19,6 +25,9 @@ class ActionSelectorCardViewController: UIViewController, NonModalCardCoordinati
         }
         if let title = title {
             setupTitleLabel(title: title)
+        }
+        if let subtitle = subtitle {
+            setupSubtitleLabel(subtitle: subtitle)
         }
         setupActions(actions: actions)
     }
@@ -72,11 +81,22 @@ class ActionSelectorCardViewController: UIViewController, NonModalCardCoordinati
                 }
             }
         }
+        if let subtitleLabel = subtitleLabel {
+            containerView.addSubview(subtitleLabel)
+            subtitleLabel.snp.makeConstraints { make in
+                make.top.equalToSuperview().offset(59)
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
+        }
 
         add(childController: actionsVC, toView: containerView)
         actionsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(closeButton.snp.bottom).offset(16)
+            if let subtitleLabel = subtitleLabel {
+                make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
+            } else {
+                make.top.equalTo(closeButton.snp.bottom).offset(16)
+            }
             make.bottom.equalToSuperview()
         }
 
@@ -119,41 +139,113 @@ extension ActionSelectorCardViewController {
         titleLabel!.adjustsFontForContentSizeCategory = true
     }
 
+    private func setupSubtitleLabel(subtitle: String) {
+        subtitleLabel = UILabel()
+        subtitleLabel!.text = subtitle
+        subtitleLabel!.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        subtitleLabel!.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        subtitleLabel!.numberOfLines = 0
+        subtitleLabel!.lineBreakMode = .byWordWrapping
+    }
+
     private func setupCloseButton() {
         closeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),
-            primaryAction: UIAction(image: UIImage(systemName: "xmark")) { _ in }
+            primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
+                self?.dismiss()
+            }
         )
-        // TODO: 305 handle close
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 
+    /// Setup ActionSelectorViewController for given actions. For action(s) with style == .cancel enhance the handler
+    /// to dismiss this card
     private func setupActions(actions: [ActionItem]) {
+        let actions = actions.map { action in
+            if action.style == .cancel {
+                return ActionItem(
+                    title: action.title,
+                    imageName: action.imageName,
+                    style: action.style,
+                    handler: { [weak self] in
+                        action.handler?()
+                        self?.dismiss()
+                    }
+                )
+            }
+            return action
+        }
         actionsVC = ActionSelectorViewController(actions: actions)
     }
 }
 
 extension ActionSelectorCardViewController: CardPresentable {
     func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat {
+        if cardPosition == .min {
+            return 0
+        }
         if cardPosition == .medium {
             return -1 // not supported
         }
 
-        let fittingSize = CGSize(
-            width: containerView.bounds.width,
-            height: UIView.layoutFittingCompressedSize.height
-        )
-
-        var height = 67.0
-
-        if cardPosition == .max {
-            height += (actionsVC.tableView.contentSize.height + 12.0)
+        let baseHeight: CGFloat
+        if let subtitleLabel = subtitleLabel {
+            let fittingSize = CGSize(
+                width: containerView.bounds.width,
+                height: UIView.layoutFittingCompressedSize.height
+            )
+            let subtitleHeight = subtitleLabel.systemLayoutSizeFitting(
+                fittingSize,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .defaultLow
+            ).height
+            baseHeight = 59.0 + subtitleHeight + 16.0
+        } else {
+            baseHeight = 67.0
         }
-
+        let height = baseHeight + actionsVC.tableView.contentSize.height + 12.0
         return height
     }
 
     func drivingScrollView() -> UIScrollView? {
         actionsVC.tableView
+    }
+}
+
+// MARK: - card presentation
+
+extension ActionSelectorCardViewController {
+    /// Convenience function for installing card in given `presentingVC` and showing the card
+    func show(in presentingVC: UIViewController) {
+        presentingVC.installCard(
+            cardViewController: self,
+            cardConfig: CardConfiguration(initialCardPosition: .max, showOverlay: true)
+        )
+        cardDragging?.delegate = self
+        showCard(animated: true)
+        self.presentingVC = presentingVC
+    }
+
+    /// Convenience function for hiding the card and removing the card from the presenting view controller
+    func dismiss() {
+        hideCard(animated: true) {
+            self.cardDragging?.delegate = nil
+            self.presentingVC?.removeCard(cardViewController: self)
+            self.presentingVC = nil
+        }
+    }
+}
+
+// MARK: - dragging delegate to automatically close on overlay tap or minimize
+
+extension ActionSelectorCardViewController: CardDraggingDelegate {
+    func cardOverlayTapped() {
+        dismiss()
+    }
+
+    func cardWillChangePosition(_ position: CardPosition) {
+        if position == .min {
+            dismiss()
+        }
     }
 }
