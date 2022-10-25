@@ -1,12 +1,16 @@
 import Foundation
 import OSLog
+import RealmSwift
 import UIKit
 
-/// Custom UIEvent sent by views to trigger certain actions defined in `CollaborationFlowActions` and related to `Upload`
-final class UploadEvent: UIEvent {
-    let upload: Upload
-    init(_ upload: Upload) {
-        self.upload = upload
+/// Custom UIEvent sent by views to trigger certain actions defined in `CollaborationFlowActions` and related to given `Object`
+/// The way responder chain works forces us to pass objects (Upload, Comment, etc.) as Object as there's no way to use generics
+/// to define the custom UIEvent (as they need to later match the signature of action functions which are Objective-C action(sender: Any?, event: UIEvent?)
+/// (See "Discussion" in https://developer.apple.com/documentation/uikit/uiapplication/1622946-sendaction)
+final class FlowEvent: UIEvent {
+    let object: Object
+    init(_ object: Object) {
+        self.object = object
     }
 }
 
@@ -20,7 +24,8 @@ final class UploadEvent: UIEvent {
     func addCommentAction()
     /// Notifies the flow that tags were selected for `Upload` provided in the event. This will results in the flow triggering
     /// tags editing
-    func tagsSelectedAction(sender: Any?, event: UploadEvent)
+    func tagsSelectedAction(sender: Any?, event: FlowEvent)
+    func moreAction(sender: Any?, event: FlowEvent)
 }
 
 /// Manages displaying collaboration window
@@ -407,8 +412,8 @@ extension CollaborationFlowController {
 // MARK: - edit tags for upload
 
 extension CollaborationFlowController: CollaborationFlowActions {
-    func tagsSelectedAction(sender _: Any?, event: UploadEvent) {
-        let upload = event.upload
+    func tagsSelectedAction(sender _: Any?, event: FlowEvent) {
+        guard let upload = event.object as? Upload else { return }
         let selectedTags = Array(upload.tags.map { TagViewModel(fromTag: $0) })
         let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: selectedTags)
         editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
@@ -497,6 +502,24 @@ extension CollaborationFlowController {
                 self.present(alert, animated: true)
             }
         )
+    }
+}
+
+// MARK: - more action
+
+extension CollaborationFlowController {
+    func moreAction(sender _: Any?, event: FlowEvent) {
+        if let comment = event.object as? Comment {
+            let commentOrNote = comment.isNote ? "Note" : "Comment"
+            ActionSelectorCardViewController(
+                icon: UIImage(systemName: "ellipsis"),
+                title: "More Menu",
+                actions: [
+                    ActionItem(title: "Edit \(commentOrNote)", imageName: "pencil"),
+                    ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive),
+                ]
+            ).show(in: canvasContainer)
+        }
     }
 }
 

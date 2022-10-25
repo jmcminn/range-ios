@@ -10,6 +10,7 @@ class CommentFeedItemCell: UITableViewCell {
     let avatarView = UIView()
     let authorLabel = UILabel()
     let timestampLabel = UILabel()
+    var moreButton: UIButton!
     let noteBackground = NoteBackgroundView()
     var completeButton: ButtonWithTapAreaInsets!
     let commentTextLabel = LabelWithTextInsets()
@@ -59,7 +60,7 @@ class CommentFeedItemCell: UITableViewCell {
 
         setupViews()
 
-        [avatarView, authorLabel, timestampLabel, noteBackground, commentTextLabel, completedLabel]
+        [avatarView, authorLabel, timestampLabel, moreButton, noteBackground, commentTextLabel, completedLabel]
             .forEach(contentView.addSubview)
 
         avatarView.snp.makeConstraints { make in
@@ -74,6 +75,11 @@ class CommentFeedItemCell: UITableViewCell {
         timestampLabel.snp.makeConstraints { make in
             make.leading.equalTo(avatarView.snp.trailing).offset(8)
             make.top.equalTo(avatarView.snp.centerY)
+        }
+        moreButton.snp.makeConstraints { make in
+            make.width.height.equalTo(40)
+            make.centerY.equalTo(avatarView)
+            make.trailing.equalToSuperview().inset(16)
         }
         commentTextLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
@@ -104,6 +110,10 @@ class CommentFeedItemCell: UITableViewCell {
 
         timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         timestampLabel.font = .preferredFont(forTextStyle: .footnote)
+
+        moreButton = FeedItemCells.createMoreButton(handler: { [weak self] _ in
+            self?.moreAction()
+        })
 
         noteBackground.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
 
@@ -236,6 +246,16 @@ class CommentFeedItemCell: UITableViewCell {
             commentTextLabel.attributedText = nil
         }
         updateCompletedLabel()
+    }
+
+    private func moreAction() {
+        guard let comment = comment else { return }
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.moreAction(sender:event:)),
+            to: nil,
+            from: self,
+            for: FlowEvent(comment)
+        )
     }
 }
 

@@ -266,18 +266,6 @@ final class ProjectFlowController: UIViewController {
                         .userInterfaceStyle == .dark ? .light : .dark
                 }
             ),
-            // TODO: 295 uncomment for testing
-//            ActionItem(title: "Test more menu", imageName: "list.dash.header.rectangle", handler: {
-//                ActionSelectorCardViewController(
-//                    icon: UIImage(systemName: "ellipsis"),
-//                    title: "More Menu",
-//                    subtitle: "Are you sure you want to test more menu and read this subtitle?",
-//                    actions: [
-//                        ActionItem(title: "Delete", imageName: "trash", style: .destructive),
-//                        ActionItem(title: "Cancel", imageName: "xmark", style: .cancel),
-//                    ]
-//                ).show(in: self.canvasContainer)
-//            }),
         ]
         let vc = ProjectActionCardViewController(actions: additionalCardActions)
         vc.onCamera = { [weak self] in

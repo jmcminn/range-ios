@@ -186,6 +186,7 @@
 		0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */; };
 		0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */; };
 		0A854E1C2900669E00666713 /* AddUpdateCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */; };
+		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */; };
 		0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */; };
 		0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */; };
@@ -456,6 +457,7 @@
 		0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusName.swift; sourceTree = "<group>"; };
 		0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddUpdateCommand+Firestore.swift"; sourceTree = "<group>"; };
+		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeView.swift; sourceTree = "<group>"; };
 		0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoadingIndicator.swift; sourceTree = "<group>"; };
@@ -677,6 +679,7 @@
 				0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */,
 				0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */,
 				0AB85584290009C600491E20 /* DueDateUpdateFeedItemCell.swift */,
+				0A8924A22907D02F008C0A42 /* FeedItemCells.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1383,6 +1386,7 @@
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
+				0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */,
 				0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,

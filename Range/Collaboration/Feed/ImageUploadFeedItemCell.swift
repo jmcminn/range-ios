@@ -146,7 +146,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
             #selector(CollaborationFlowActions.tagsSelectedAction(sender:event:)),
             to: nil,
             from: self,
-            for: UploadEvent(upload)
+            for: FlowEvent(upload)
         )
     }
 
