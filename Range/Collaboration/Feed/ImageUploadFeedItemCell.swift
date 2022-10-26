@@ -13,7 +13,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let descriptionLabel = LabelWithTextInsets()
     let descriptionBackground = UIView()
     let descriptionSeparator = UIView()
-    let tagsView = TagsView()
+    let tagsView = TagsView(leftInset: FeedItemCells.leadingContentLayoutMargin -
+        FeedItemCells.leadingVerticalLineMargin)
 
     weak var imageCaches: ImageCaches?
     weak var upload: Upload?
@@ -38,15 +39,16 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.leading.equalToSuperview().inset(16)
         }
         authorLabel.snp.makeConstraints { make in
-            make.leading.equalTo(avatarView.snp.trailing).offset(8)
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
             make.bottom.equalTo(avatarView.snp.centerY)
         }
         timestampLabel.snp.makeConstraints { make in
-            make.leading.equalTo(avatarView.snp.trailing).offset(8)
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
             make.top.equalTo(avatarView.snp.centerY)
         }
         imageAndDescriptionView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().inset(16)
             make.top.equalTo(avatarView.snp.bottom).offset(14)
         }
         updateUploadImageViewConstraints(imageHeight2Width: 0.75)
@@ -64,7 +66,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.left.right.bottom.equalToSuperview()
         }
         tagsView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingVerticalLineMargin)
+            make.trailing.equalToSuperview()
             make.top.equalTo(imageAndDescriptionView.snp.bottom).offset(12)
             make.bottom.equalToSuperview()
         }

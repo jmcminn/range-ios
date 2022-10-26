@@ -31,12 +31,11 @@ class CompletedStatusUpdateFeedItemCell: UITableViewCell {
         messageLabel.lineBreakMode = .byWordWrapping
         contentView.addSubview(messageLabel)
         messageLabel.snp.remakeConstraints { make in
-
+            make.leading.equalToSuperview().inset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().inset(16).priority(.required)
             make.top.greaterThanOrEqualToSuperview()
             make.bottom.lessThanOrEqualToSuperview()
             make.centerY.equalToSuperview()
-            make.leading.equalTo(checkView.snp.trailing).offset(8)
-            make.trailing.equalToSuperview().inset(16).priority(.required)
         }
     }
 

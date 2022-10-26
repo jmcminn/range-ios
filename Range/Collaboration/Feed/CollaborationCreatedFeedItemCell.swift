@@ -30,7 +30,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
             make.top.greaterThanOrEqualToSuperview()
             make.bottom.lessThanOrEqualToSuperview()
             make.centerY.equalToSuperview()
-            make.leading.equalTo(avatarView.snp.trailing).offset(8)
+            make.leading.equalToSuperview().inset(FeedItemCells.leadingContentLayoutMargin)
             make.trailing.equalToSuperview().inset(16)
         }
     }

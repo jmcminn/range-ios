@@ -15,9 +15,10 @@ class AssigneeUpdateFeedItemCell: UITableViewCell {
         messageLabel.lineBreakMode = .byWordWrapping
         contentView.addSubview(messageLabel)
         messageLabel.snp.remakeConstraints { make in
+            make.leading.equalToSuperview().inset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview()
             make.bottom.lessThanOrEqualToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
         }
     }
 

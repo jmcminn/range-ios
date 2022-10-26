@@ -48,10 +48,11 @@ class TagsView: UIView {
         return newArea.contains(point)
     }
 
-    init() {
+    init(leftInset: CGFloat = 16, rightInset: CGFloat = 16) {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         super.init(frame: .zero)
 
+        layout.sectionInset = UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: rightInset)
         setupView()
     }
 
@@ -70,7 +71,6 @@ class TagsView: UIView {
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 8
         layout.minimumLineSpacing = 8
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true

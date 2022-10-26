@@ -35,11 +35,11 @@ class CommentFeedItemCell: UITableViewCell {
             make.leading.equalToSuperview().inset(16)
         }
         authorLabel.snp.makeConstraints { make in
-            make.leading.equalTo(avatarView.snp.trailing).offset(8)
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
             make.bottom.equalTo(avatarView.snp.centerY)
         }
         timestampLabel.snp.makeConstraints { make in
-            make.leading.equalTo(avatarView.snp.trailing).offset(8)
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
             make.top.equalTo(avatarView.snp.centerY)
         }
         moreButton.snp.makeConstraints { make in
@@ -48,7 +48,8 @@ class CommentFeedItemCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(16)
         }
         commentTextLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().inset(16)
             make.top.equalTo(avatarView.snp.bottom).offset(12)
         }
         noteBackground.snp.makeConstraints { make in
@@ -57,7 +58,8 @@ class CommentFeedItemCell: UITableViewCell {
         }
         completedLabel.snp.makeConstraints { make in
             make.top.equalTo(commentTextLabel.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().priority(.high)
         }
     }
