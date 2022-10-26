@@ -6,20 +6,13 @@ class NameUpdateFeedItemCell: UITableViewCell {
     weak var tableView: UITableView?
     private let messageLabel = UILabel()
     private let previousValueLabel = LabelWithTextInsets()
+    /// the message changes when showing/hiding previous, this is the constant prefix with user name and the message
+    private var baseMessageString: NSAttributedString!
     /// whether the cell is showing the previous value
     private var showingPrevious = false {
         didSet {
-            updatePreviousValueVisibility()
-        }
-    }
-
-    var update: Update? {
-        didSet {
-            updateMessage()
-            if let update = update {
-                previousValueLabel.text = "\"\(update.oldValue.stringValue ?? "")\""
-            } else {
-                previousValueLabel.text = nil
+            if oldValue != showingPrevious {
+                updatePreviousValueVisibility()
             }
         }
     }
@@ -33,7 +26,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         contentView.addSubview(messageLabel)
-        messageLabel.snp.remakeConstraints { make in
+        messageLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().priority(.required)
             make.leading.trailing.equalToSuperview().inset(16)
         }
@@ -50,7 +43,14 @@ class NameUpdateFeedItemCell: UITableViewCell {
         contentView.addSubview(previousValueLabel)
 
         updateColors()
-        updatePreviousValueVisibility()
+//        updatePreviousValueVisibility()
+        previousValueLabel.snp.makeConstraints { make in
+            make.top.equalTo(messageLabel.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(0)
+            // there's already 8 points between the message and previous labels, so the bottom space needs -8
+            make.bottom.equalToSuperview().inset(-8)
+        }
 
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toggleShowingPrevious)))
     }
@@ -58,6 +58,24 @@ class NameUpdateFeedItemCell: UITableViewCell {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func set(update: Update) {
+        let messageString = NSMutableAttributedString(
+            string: update.user?.displayName ?? "",
+            attributes: [
+                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
+                .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+            ]
+        )
+        let messageText = " changed the \(update.field.rawValue) \(TimeInterval.format2(update.timestamp))."
+        messageString.append(NSAttributedString(string: messageText, attributes: [
+            .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+            .font: UIFont.preferredFont(forTextStyle: .footnote),
+        ]))
+        baseMessageString = messageString
+        updateMessage()
+        previousValueLabel.text = "\"\(update.oldValue.stringValue ?? "")\""
     }
 
     @objc private func toggleShowingPrevious() {
@@ -68,28 +86,13 @@ class NameUpdateFeedItemCell: UITableViewCell {
 
     /// Updates the text of the message. Changes when user toggles showing the previous value
     private func updateMessage() {
-        if let update = update {
-            let messageString = NSMutableAttributedString(
-                string: update.user?.displayName ?? "",
-                attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
-                    .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
-                ]
-            )
-            let messageText = " changed the \(update.field.rawValue) \(TimeInterval.format2(update.timestamp))."
-            messageString.append(NSAttributedString(string: messageText, attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
-                .font: UIFont.preferredFont(forTextStyle: .footnote),
-            ]))
-            let togglePreviousText = showingPrevious ? " Hide previous" : " Show previous"
-            messageString.append(NSAttributedString(string: togglePreviousText, attributes: [
-                .foregroundColor: UIColor.Primary_Blue_04,
-                .font: UIFont.preferredFont(forTextStyle: .footnote),
-            ]))
-            messageLabel.attributedText = messageString
-        } else {
-            messageLabel.attributedText = nil
-        }
+        let messageString = NSMutableAttributedString(attributedString: baseMessageString)
+        let togglePreviousText = showingPrevious ? " Hide previous" : " Show previous"
+        messageString.append(NSAttributedString(string: togglePreviousText, attributes: [
+            .foregroundColor: UIColor.Primary_Blue_04,
+            .font: UIFont.preferredFont(forTextStyle: .footnote),
+        ]))
+        messageLabel.attributedText = messageString
     }
 
     /// updates the constraints to show / hide the previous value label
@@ -122,7 +125,8 @@ class NameUpdateFeedItemCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
-        update = nil
+        messageLabel.attributedText = nil
+        previousValueLabel.text = nil
         showingPrevious = false
     }
 }

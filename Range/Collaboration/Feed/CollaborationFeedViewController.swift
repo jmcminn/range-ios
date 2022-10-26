@@ -16,6 +16,45 @@ class CollaborationFeedViewController: UIViewController {
         var item: AnyObject
         // whether this is a major or minor feed item
         var isMajor: Bool
+
+        init?(asCollaborationCreated collaboration: Collaboration) {
+            guard let timestamp = collaboration.timestamp, collaboration.author != nil else { return nil }
+            id = collaboration.id
+            self.timestamp = timestamp
+            item = collaboration
+            isMajor = true
+        }
+
+        init(_ item: Comment) {
+            id = item.id
+            timestamp = item.timestamp
+            self.item = item
+            isMajor = true
+        }
+
+        init(_ item: Upload) {
+            id = item.id
+            timestamp = item.timestamp
+            self.item = item
+            isMajor = true
+        }
+
+        /// This initializer needs project model to check the if the status is "isCompleted" if this is a status update (then it's a major update,
+        /// otherwise minor)
+        init(_ update: Update, projectModel: ProjectModel) {
+            id = update.id
+            timestamp = update.timestamp
+            item = update
+            if update.field == .statusName, let statusId = update.newValue.stringValue,
+               let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId),
+               status.isCompleted
+            {
+                isMajor = true
+            } else {
+                isMajor = false
+            }
+        }
+
         func hash(into hasher: inout Hasher) {
             hasher.combine(id)
         }
@@ -51,14 +90,14 @@ class CollaborationFeedViewController: UIViewController {
         }
     }
 
-    private var uploads: Results<Upload>!
     private var uploadsNotificationToken: NotificationToken?
+    private var uploadFeedItems = [FeedItem]()
 
-    private var comments: Results<Comment>!
     private var commentsNotificationToken: NotificationToken?
+    private var commentFeedItems = [FeedItem]()
 
-    private var updates: Results<Update>!
     private var updatesNotificationToken: NotificationToken?
+    private var updateFeedItems = [FeedItem]()
 
     init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
         self.imageCaches = imageCaches
@@ -95,13 +134,10 @@ class CollaborationFeedViewController: UIViewController {
         observeUploads()
         observeComments()
         observeUpdates()
-        dataSource?.apply(prepareSnapshot(), animatingDifferences: false)
     }
 
     func scroll(toUpload upload: Upload) {
-        if let indexPath = dataSource?
-            .indexPath(for: FeedItem(id: upload.id, timestamp: upload.timestamp, item: upload, isMajor: true))
-        {
+        if let indexPath = dataSource?.indexPath(for: FeedItem(upload)) {
             tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
     }
@@ -135,78 +171,112 @@ class CollaborationFeedViewController: UIViewController {
     }
 
     private func observeUploads() {
-        uploads = collaboration.uploads
-            .where { $0.placeholder == false && $0.fileType == .image
-            }
+        uploadsNotificationToken = collaboration.uploads
+            .where { $0.placeholder == false && $0.fileType == .image }
             .sorted(by: \Upload.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
-        uploadsNotificationToken = uploads.observe { [weak self] _ in
-            guard let self = self else { return }
-            self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
-        }
+            .observe { [weak self] change in
+                guard let self = self else { return }
+                switch change {
+                case let .initial(uploads):
+                    self.uploadFeedItems = [FeedItem](uploads.map { FeedItem($0) })
+                    self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: false)
+
+                case let .update(uploads, deletions: deletions, insertions: insertions, modifications: modifications):
+                    if !deletions.isEmpty || !insertions.isEmpty {
+                        // if there are some deletetions or insertions just apply the new snapshot
+                        self.uploadFeedItems = [FeedItem](uploads.map { FeedItem($0) })
+                        self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
+                    } else if !modifications.isEmpty {
+                        // for modifications only reconfigure the modified items (the cells don't listen
+                        // for updates).
+                        let modifiedFeedItems: [FeedItem] = modifications.compactMap { index in
+                            guard index < self.uploadFeedItems.count else { return nil }
+                            return self.uploadFeedItems[index]
+                        }
+                        var snapshot = self.dataSource!.snapshot()
+                        snapshot.reconfigureItems(modifiedFeedItems)
+                        self.uploadFeedItems = [FeedItem](uploads.map { FeedItem($0) })
+                        self.dataSource!.apply(snapshot, animatingDifferences: false)
+                    }
+                case .error: break
+                }
+            }
     }
 
     private func observeComments() {
-        comments = collaboration.comments
+        commentsNotificationToken = collaboration.comments
             .where { $0.placeholder == false }
             .sorted(by: \Comment.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
-        commentsNotificationToken = comments.observe { [weak self] _ in
-            guard let self = self else { return }
-            self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
-        }
+            .observe { [weak self] change in
+                guard let self = self else { return }
+                switch change {
+                case let .initial(comments):
+                    self.commentFeedItems = [FeedItem](comments.map { FeedItem($0) })
+                    self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: false)
+                case let .update(comments, deletions, insertions, modifications):
+                    if !deletions.isEmpty || !insertions.isEmpty {
+                        // if there are some deletetions or insertions just apply the new snapshot
+                        self.commentFeedItems = [FeedItem](comments.map { FeedItem($0) })
+                        self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
+                    } else if !modifications.isEmpty {
+                        // for modifications only reconfigure the modified items (the cells don't listen
+                        // for updates).
+                        let modifiedFeedItems: [FeedItem] = modifications.compactMap { index in
+                            guard index < self.commentFeedItems.count else { return nil }
+                            return self.commentFeedItems[index]
+                        }
+                        var snapshot = self.dataSource!.snapshot()
+                        snapshot.reconfigureItems(modifiedFeedItems)
+                        // no animations as the animation for comment update (showing/hiding the completed)
+                        // causes some weird effects
+                        self.commentFeedItems = [FeedItem](comments.map { FeedItem($0) })
+                        self.dataSource!.apply(snapshot, animatingDifferences: false)
+                    }
+                case .error: break
+                }
+            }
     }
 
     private func observeUpdates() {
-        updates = collaboration.updates
+        updatesNotificationToken = collaboration.updates
             .where {
                 $0.placeholder == false &&
                     ($0.field == .name || $0.field == .description || $0.field == .statusName ||
                         $0.field == .assignee || $0.field == .dueDateTimestamp)
             }
             .sorted(by: \Update.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
-        updatesNotificationToken = updates.observe { [weak self] _ in
-            guard let self = self else { return }
-            self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
-        }
+            .observe { [weak self] change in
+                guard let self = self else { return }
+                switch change {
+                case let .initial(updates):
+                    self.updateFeedItems = [FeedItem](updates.map { FeedItem($0, projectModel: self.projectModel) })
+                    self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: false)
+
+                case let .update(updates, deletions: _, insertions: _, modifications: _):
+                    self.updateFeedItems = [FeedItem](updates.map { FeedItem($0, projectModel: self.projectModel) })
+                    self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
+                case .error: break
+                }
+            }
     }
 
     /// Prepare new snapshot for the diffable data source
     /// Add all items sorted by timestamp and include Collaboration for 'collaboration created'
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<String, FeedItem> {
         let ascending = DebugSettings().feedSortedAscendingByTimestamp
-        let commentFeedItems = [FeedItem](comments
-            .map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0, isMajor: true) })
-        let uploadFeedItems = [FeedItem](uploads
-            .map { FeedItem(id: $0.id, timestamp: $0.timestamp, item: $0, isMajor: true) })
         var items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: ascending)
-        let updatesFeedItems = [FeedItem](updates.map { update in
-            let isMajor: Bool
-            if update.field == .statusName, let statusId = update.newValue.stringValue,
-               let status = self.projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId),
-               status.isCompleted
-            {
-                isMajor = true
-            } else {
-                isMajor = false
-            }
-            return FeedItem(id: update.id, timestamp: update.timestamp, item: update, isMajor: isMajor)
-        })
+
         if showMoreUpdates {
             // add all updatesFeedItems
-            items = _mergeSortedArrays(FeedItem.self, items, updatesFeedItems, ascending: ascending)
+            items = _mergeSortedArrays(FeedItem.self, items, updateFeedItems, ascending: ascending)
         } else {
             // add only major
-            let majorUpdates = updatesFeedItems.filter(\.isMajor)
-            items = _mergeSortedArrays(FeedItem.self, items, majorUpdates, ascending: ascending)
+            let majorUpdateFeedItems = updateFeedItems.filter(\.isMajor)
+            items = _mergeSortedArrays(FeedItem.self, items, majorUpdateFeedItems, ascending: ascending)
         }
 
         /// Add 'collaboration created' feed item
-        if let timestamp = collaboration.timestamp, collaboration.author != nil {
-            let createdFeedItem = FeedItem(
-                id: collaboration.id,
-                timestamp: timestamp,
-                item: collaboration,
-                isMajor: true
-            )
+        if let createdFeedItem = FeedItem(asCollaborationCreated: collaboration) {
             if ascending {
                 // if ascending then 'created' first and items after
                 items.insert(createdFeedItem, at: 0)
@@ -251,6 +321,11 @@ extension CollaborationFeedViewController: UITableViewDelegate {
     func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         UIView()
     }
+
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        cell.contentView.layer.borderWidth = 1
+//        cell.contentView.layer.borderColor = UIColor.Pink_04.cgColor
+//    }
 }
 
 // MARK: table view diffable data source
@@ -260,26 +335,24 @@ extension CollaborationFeedViewController {
         if let collaboration = feedItem.item as? Collaboration {
             let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCreated",
                                                      for: indexPath) as! CollaborationCreatedFeedItemCell
-            cell.collaboration = collaboration
+            cell.set(collaboration: collaboration)
             return cell
         } else if let upload = feedItem.item as? Upload, upload.fileType == .image {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
                                                      for: indexPath) as! ImageUploadFeedItemCell
             cell.imageCaches = imageCaches
-            cell.tableView = tableView
-            cell.upload = upload
+            cell.set(upload: upload)
             return cell
         } else if let comment = feedItem.item as? Comment {
             let cell = tableView.dequeueReusableCell(withIdentifier: "Comment",
                                                      for: indexPath) as! CommentFeedItemCell
-            cell.tableView = tableView
-            cell.comment = comment
+            cell.set(comment: comment)
             return cell
         } else if let update = feedItem.item as? Update, update.field == .name || update.field == .description {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NameUpdate",
                                                      for: indexPath) as! NameUpdateFeedItemCell
             cell.tableView = tableView
-            cell.update = update
+            cell.set(update: update)
             return cell
         } else if let update = feedItem.item as? Update, update.field == .statusName,
                   let statusId = update.newValue.stringValue,

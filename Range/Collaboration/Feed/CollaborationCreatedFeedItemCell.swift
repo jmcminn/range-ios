@@ -6,31 +6,6 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
     let avatarView = UIView()
     let messageLabel = UILabel()
 
-    unowned var collaboration: Collaboration? {
-        didSet {
-            if let collaboration = collaboration {
-                let messageString = NSMutableAttributedString(
-                    string: collaboration.author?.displayName ?? "",
-                    attributes: [
-                        .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
-                        .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
-                    ]
-                )
-                var messageText = " created this issue"
-                if let timestamp = collaboration.timestamp {
-                    messageText += " " + TimeInterval.format3(timestamp)
-                }
-                messageString.append(NSAttributedString(string: messageText, attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
-                    .font: UIFont.preferredFont(forTextStyle: .footnote),
-                ]))
-                messageLabel.attributedText = messageString
-            } else {
-                messageLabel.attributedText = nil
-            }
-        }
-    }
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
@@ -65,7 +40,26 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func set(collaboration: Collaboration) {
+        let messageString = NSMutableAttributedString(
+            string: collaboration.author?.displayName ?? "",
+            attributes: [
+                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
+                .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
+            ]
+        )
+        var messageText = " created this issue"
+        if let timestamp = collaboration.timestamp {
+            messageText += " " + TimeInterval.format3(timestamp)
+        }
+        messageString.append(NSAttributedString(string: messageText, attributes: [
+            .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+            .font: UIFont.preferredFont(forTextStyle: .footnote),
+        ]))
+        messageLabel.attributedText = messageString
+    }
+
     override func prepareForReuse() {
-        collaboration = nil
+        messageLabel.attributedText = nil
     }
 }

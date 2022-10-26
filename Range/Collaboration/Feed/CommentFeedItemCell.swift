@@ -16,41 +16,7 @@ class CommentFeedItemCell: UITableViewCell {
     let commentTextLabel = LabelWithTextInsets()
     let completedLabel = LabelWithTextInsets()
 
-    /// for animating cell height when the content changes
-    weak var tableView: UITableView?
-
-    /// listen to changes in upload and the content
-    private var notificationToken: NotificationToken?
-
-    unowned var comment: Comment? {
-        didSet {
-            updateContent()
-
-            if let comment = comment {
-                // not observe again if already observing
-                if let previousComment = oldValue, previousComment.id == comment.id {
-                    return
-                }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.notificationToken = comment.observe { [weak self] change in
-                        if case .deleted = change {
-                            self?.comment = nil
-                        } else {
-                            DispatchQueue.main.async { [weak self] in
-                                self?.updateContent()
-                                guard let tableView = self?.tableView else { return }
-                                tableView.beginUpdates()
-                                tableView.endUpdates()
-                            }
-                        }
-                    }
-                }
-            } else {
-                notificationToken?.invalidate()
-            }
-        }
-    }
+    private weak var comment: Comment?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -156,11 +122,49 @@ class CommentFeedItemCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        commentTextLabel.attributedText = nil
+        completedLabel.attributedText = nil
         comment = nil
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
         updateCompleteButton()
+    }
+
+    /// Updates all the fields
+    func set(comment: Comment) {
+        self.comment = comment
+        authorLabel.text = comment.author?.displayName
+        timestampLabel.text = TimeInterval.format1(comment.timestamp)
+
+        let textString = NSMutableAttributedString(
+            string: comment.text,
+            attributes: [
+                .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_04),
+                .font: UIFont.preferredFont(forTextStyle: .subheadline),
+            ]
+        )
+        if comment.textIsEdited {
+            textString.append(NSAttributedString(string: " (edited)", attributes: [
+                .foregroundColor: UIColor.Neutral_05,
+                .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitItalic),
+            ]))
+        }
+        commentTextLabel.attributedText = textString
+
+        if comment.isNote {
+            updateCompleteButton()
+            commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 14, bottom: 10, right: 50)
+            noteBackground.isHidden = false
+            completeButton.isHidden = false
+            noteBackground.statusView.backgroundColor = comment.completed ? .Green_03 : .Orange_03
+        } else {
+            commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+            noteBackground.isHidden = false
+            completeButton.isHidden = true
+            noteBackground.statusView.backgroundColor = .clear
+        }
+        updateCompletedLabel(comment: comment)
     }
 
     /// update complete button for the note completed state
@@ -176,21 +180,21 @@ class CommentFeedItemCell: UITableViewCell {
     }
 
     /// update the text and insets for completed label
-    private func updateCompletedLabel() {
-        let completed: Bool = comment?.completed ?? false
+    private func updateCompletedLabel(comment: Comment) {
+        let completed: Bool = comment.completed
 
         // distance from view above if it has text, collapse otherwise
         completedLabel.textInsets = completed ? UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0) : .zero
         if completed {
             let messageString = NSMutableAttributedString(
-                string: comment?.completedBy?.displayName ?? "",
+                string: comment.completedBy?.displayName ?? "",
                 attributes: [
                     .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
                     .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                 ]
             )
             var messageText = " completed this note"
-            if let timestamp = comment?.completedTimestamp {
+            if let timestamp = comment.completedTimestamp {
                 messageText += " " + TimeInterval.format3(timestamp)
             }
             messageString.append(NSAttributedString(string: messageText, attributes: [
@@ -204,48 +208,6 @@ class CommentFeedItemCell: UITableViewCell {
         }
     }
 
-    /// Called whenever a comment is set for the cell or updated
-    /// Updates all the fields
-    private func updateContent() {
-        authorLabel.text = comment?.author?.displayName
-        if let timestamp = comment?.timestamp {
-            timestampLabel.text = TimeInterval.format1(timestamp)
-        } else {
-            timestampLabel.text = nil
-        }
-
-        if let comment = comment {
-            let textString = NSMutableAttributedString(
-                string: comment.text,
-                attributes: [
-                    .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_04),
-                    .font: UIFont.preferredFont(forTextStyle: .subheadline),
-                ]
-            )
-            if comment.textIsEdited {
-                textString.append(NSAttributedString(string: " (edited)", attributes: [
-                    .foregroundColor: UIColor.Neutral_05,
-                    .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitItalic),
-                ]))
-            }
-            commentTextLabel.attributedText = textString
-
-            if comment.isNote {
-                updateCompleteButton()
-                commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 14, bottom: 10, right: 50)
-                noteBackground.isHidden = false
-                completeButton.isHidden = false
-                noteBackground.statusView.backgroundColor = comment.completed ? .Green_03 : .Orange_03
-            } else {
-                commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-                noteBackground.isHidden = false
-                completeButton.isHidden = true
-                noteBackground.statusView.backgroundColor = .clear
-            }
-        } else {
-            commentTextLabel.attributedText = nil
-        }
-        updateCompletedLabel()
     }
 
     private func moreAction() {

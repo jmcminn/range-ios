@@ -16,40 +16,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let tagsView = TagsView()
 
     weak var imageCaches: ImageCaches?
-    weak var tableView: UITableView?
-
-    /// listen to changes in upload and the content
-    private var notificationToken: NotificationToken?
-
-    unowned var upload: Upload? {
-        didSet {
-            updateContent()
-            updateColors()
-            if let upload = upload {
-                // not observe again if already observing (also helps for the crash mentioned below)
-                if let previousUpload = oldValue, previousUpload.id == upload.id {
-                    return
-                }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.notificationToken = upload.observe { [weak self] change in
-                        if case .deleted = change {
-                            self?.upload = nil
-                        } else {
-                            DispatchQueue.main.async { [weak self] in
-                                self?.updateContent()
-                                guard let tableView = self?.tableView else { return }
-                                tableView.beginUpdates()
-                                tableView.endUpdates()
-                            }
-                        }
-                    }
-                }
-            } else {
-                notificationToken?.invalidate()
-            }
-        }
-    }
+    weak var upload: Upload?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -161,6 +128,13 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
     override func prepareForReuse() {
         upload = nil
+        updateContent()
+    }
+
+    func set(upload: Upload) {
+        self.upload = upload
+        updateContent()
+        updateColors()
     }
 
     /// Called whenever an upload is set for the cell or updated
