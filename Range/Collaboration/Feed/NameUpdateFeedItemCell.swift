@@ -32,6 +32,13 @@ class NameUpdateFeedItemCell: UITableViewCell {
             make.top.equalToSuperview().priority(.required)
         }
 
+        let dotView = FeedItemCells.minorItemDotView()
+        contentView.addSubview(dotView)
+        dotView.snp.makeConstraints { make in
+            make.centerX.equalTo(contentView.snp.leading).offset(FeedItemCells.leadingVerticalLineMargin)
+            make.top.equalTo(messageLabel.snp.top).offset(4)
+        }
+
         previousValueLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         previousValueLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
         previousValueLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitItalic)

@@ -20,6 +20,13 @@ class AssigneeUpdateFeedItemCell: UITableViewCell {
             make.top.equalToSuperview()
             make.bottom.lessThanOrEqualToSuperview()
         }
+
+        let dotView = FeedItemCells.minorItemDotView()
+        contentView.addSubview(dotView)
+        dotView.snp.makeConstraints { make in
+            make.centerX.equalTo(contentView.snp.leading).offset(FeedItemCells.leadingVerticalLineMargin)
+            make.top.equalTo(messageLabel.snp.top).offset(4)
+        }
     }
 
     @available(*, unavailable)

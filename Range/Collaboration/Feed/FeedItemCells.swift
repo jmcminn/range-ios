@@ -20,4 +20,15 @@ class FeedItemCells {
             primaryAction: UIAction(image: UIImage(systemName: "ellipsis"), handler: handler)
         )
     }
+
+    /// Create a circle view rendered on the feed timeline dashed line for minor updates
+    static func minorItemDotView() -> UIView {
+        let view = UIView()
+        view.layer.cornerRadius = 4
+        view.backgroundColor = .dynamicColor(light: .Neutral_05, dark: .Neutral_06)
+        view.snp.makeConstraints { make in
+            make.width.height.equalTo(8)
+        }
+        return view
+    }
 }
