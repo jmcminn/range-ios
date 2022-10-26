@@ -8,7 +8,7 @@ class CompletedStatusUpdateFeedItemCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        backgroundColor = .clear
 
         selectionStyle = .none
 

@@ -23,7 +23,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        backgroundColor = .clear
 
         selectionStyle = .none
 
@@ -68,7 +68,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.left.right.bottom.equalToSuperview()
         }
         tagsView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(FeedItemCells.leadingVerticalLineMargin)
+            // +0.5 as this is the width of the vertical line, we don't want to colide with it
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingVerticalLineMargin + 0.5)
             make.trailing.equalToSuperview()
             make.top.equalTo(imageAndDescriptionView.snp.bottom).offset(12)
             make.bottom.equalToSuperview()

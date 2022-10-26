@@ -232,6 +232,7 @@
 		0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */; };
 		0AC89D7C2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7B2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift */; };
 		0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7D290980DD00D3CCA1 /* GradientView.swift */; };
+		0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */; };
 		0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */; };
 		0AC9E18828F5646D00C7185D /* The Preserve v01.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */; };
 		0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18A28F56C2800C7185D /* DemoProject.swift */; };
@@ -507,6 +508,7 @@
 		0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCommentTextCommand.swift; sourceTree = "<group>"; };
 		0AC89D7B2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateCommentTextCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0AC89D7D290980DD00D3CCA1 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
+		0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVerticalLine.swift; sourceTree = "<group>"; };
 		0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "The Preserve v01.pdf"; sourceTree = "<group>"; };
 		0AC9E18A28F56C2800C7185D /* DemoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProject.swift; sourceTree = "<group>"; };
@@ -681,6 +683,7 @@
 			isa = PBXGroup;
 			children = (
 				0A130E9D28D4A8F700FF1368 /* CollaborationFeedViewController.swift */,
+				0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */,
 				0A8924A22907D02F008C0A42 /* FeedItemCells.swift */,
 				0A130EA028D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift */,
 				0A966F9D28DDEAF100E50284 /* CommentFeedItemCell.swift */,
@@ -1540,6 +1543,7 @@
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
 				0A724F3D2888483600708C6B /* AddFeatureCommand.swift in Sources */,
 				0A99BF1F28C1DC3700DB3F96 /* PhotosReviewPageView.swift in Sources */,
+				0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
 				0A6FAC3228B552440057995B /* LocalPhotosImageDataProvider.swift in Sources */,
 				0AD9B76B286A1726005ACFD7 /* AddUploadCommand+Firestore.swift in Sources */,

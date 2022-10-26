@@ -81,6 +81,13 @@ class CollaborationFeedViewController: UIViewController {
     var dataSource: UITableViewDiffableDataSource<String, FeedItem>?
     var items: [FeedItem] = []
 
+    /// Vertical line shown along the items
+    private var verticalLine: FeedVerticalLine!
+    /// Observations installed to keep the vertical line y position and height in sync with cells
+    private var observationsForVerticalLine = [NSKeyValueObservation]()
+    /// Required for verticalLine to stop at the top of last row
+    private var lastRowHeight = 0.0
+
     var showMoreUpdates = true {
         didSet {
             if showMoreUpdates != oldValue {
@@ -127,6 +134,8 @@ class CollaborationFeedViewController: UIViewController {
         setupTableView()
         view.addSubview(tableView)
 
+        setupVerticalLine()
+
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -168,6 +177,76 @@ class CollaborationFeedViewController: UIViewController {
                 self?.cell(forTableView: tableView, indexPath: indexPath, feedItem: feedItem)
             }
         )
+    }
+
+    private func setupVerticalLine() {
+        verticalLine = FeedVerticalLine(frame: CGRect(
+            origin: CGPoint(x: FeedItemCells.leadingVerticalLineMargin - 0.5, y: 400),
+            size: CGSize(width: 1, height: 5000)
+        ))
+        verticalLine.layer.zPosition = -1
+        tableView.addSubview(verticalLine)
+    }
+
+    /// Update vertical line height based on content size and last row height
+    private func updateVerticalLineHeight() {
+        // - distanceBetweenMajorRows because it's included in the content size
+        // - lastRowHeight + 8 because for last row the vertical line should only reach the avatar/dot
+        verticalLine.frame.size.height = tableView.contentSize.height - distanceBetweenMajorRows
+            - lastRowHeight + 8 - verticalLine.frame.minY
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // observe header view size and table view content size to start the vertical line
+        // below header and extend until the end of the content (excluding last cell, as it should
+        // stop once it reaches the last cell's avatar/dot view)
+        if let headerView = tableView.tableHeaderView {
+            observationsForVerticalLine.append(
+                headerView.observe(\.frame, changeHandler: { [weak self] _, _ in
+                    guard let self = self else { return }
+                    let verticalLineY = headerView.frame
+                        .maxY + self.distanceBetweenMinorRows + 8 // +8 to start below the avatar or dot view
+                    self.verticalLine.frame.origin.y = verticalLineY
+                    self.updateVerticalLineHeight()
+                })
+            )
+        }
+        observationsForVerticalLine.append(
+            tableView.observe(\.contentSize, changeHandler: { [weak self] _, _ in
+                guard let self = self else { return }
+                // we need to keep track of last cell size when the contentSize changes (it might have been just removed)
+                // note: calling cellForRow is not actually allowed here as contentSize changes while table view
+                // does the layout... so doing dispatch async is a little hack to get rid of the warnings
+                DispatchQueue.main.async {
+                    if let lastCell = self.tableView.cellForRow(at: IndexPath(row: 0, section: self.items.count - 1)) {
+                        self.lastRowHeight = lastCell.frame.height
+                    }
+                    self.updateVerticalLineHeight()
+                }
+            })
+        )
+        observationsForVerticalLine.append(
+            tableView.observe(\.contentOffset, changeHandler: { [weak self] _, _ in
+                guard let self = self else { return }
+                // we need to keep track of last cell size when the contentOffset changes (so user scrolled to it without contentSize change)
+                // note: calling cellForRow is not actually allowed here as contentSize changes while table view
+                // does the layout... so doing dispatch async is a little hack to get rid of the warnings
+                DispatchQueue.main.async {
+                    if let lastCell = self.tableView.cellForRow(at: IndexPath(row: 0, section: self.items.count - 1)) {
+                        self.lastRowHeight = lastCell.frame.height
+                        self.updateVerticalLineHeight()
+                    }
+                }
+            })
+        )
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        observationsForVerticalLine.forEach { $0.invalidate() }
+        observationsForVerticalLine.removeAll()
     }
 
     private func observeUploads() {
@@ -321,11 +400,6 @@ extension CollaborationFeedViewController: UITableViewDelegate {
     func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         UIView()
     }
-
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        cell.contentView.layer.borderWidth = 1
-//        cell.contentView.layer.borderColor = UIColor.Pink_04.cgColor
-//    }
 }
 
 // MARK: table view diffable data source
