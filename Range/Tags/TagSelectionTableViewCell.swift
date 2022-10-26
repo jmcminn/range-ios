@@ -2,13 +2,29 @@ import UIKit
 
 /// Cell used to display TagViewModel items
 class TagSelectionTableViewCell: UITableViewCell {
+    private let iconView = UIImageView()
+    private let titleView = UILabel()
     private var selectedObservation: NSKeyValueObservation?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        textLabel?.textColor = imageView?.tintColor
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
+
+        iconView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleView.textColor = iconView.tintColor
+
+        contentView.addSubview(iconView)
+        contentView.addSubview(titleView)
+
+        iconView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.centerX.equalTo(contentView.snp.leadingMargin).offset(24)
+        }
+        titleView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(contentView.snp.leadingMargin).offset(44)
+            make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
+        }
     }
 
     @available(*, unavailable)
@@ -47,9 +63,9 @@ class TagSelectionTableViewCell: UITableViewCell {
                         range: nsRange
                     )
                 }
-                textLabel?.attributedText = attributedText
+                titleView.attributedText = attributedText
             } else {
-                textLabel?.text = ""
+                titleView.attributedText = nil
             }
         }
     }
@@ -68,19 +84,19 @@ class TagSelectionTableViewCell: UITableViewCell {
                 range: nsRange
             )
         }
-        textLabel?.attributedText = attributedText
-        imageView?.image = UIImage(named: "add_circle")
+        titleView.attributedText = attributedText
+        iconView.image = UIImage(named: "add_circle")
     }
 
     /// Update the image based on current tag selection state
     private func updateSelection() {
         if let tagViewModel = tagViewModel {
-            imageView?.image = nil
-            imageView?.image = UIImage(named: tagViewModel.selected
+            iconView.image = nil
+            iconView.image = UIImage(named: tagViewModel.selected
                 ? "checkmark_checked"
                 : "checkmark_unchecked")
         } else {
-            imageView?.image = nil
+            iconView.image = nil
         }
     }
 
