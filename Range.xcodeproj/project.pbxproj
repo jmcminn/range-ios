@@ -224,7 +224,7 @@
 		0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */; };
 		0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */; };
 		0ABFD8B428EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */; };
-		0ABFD8B728F00A98008CDA74 /* AddCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */; };
+		0ABFD8B728F00A98008CDA74 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B628F00A98008CDA74 /* CommentViewController.swift */; };
 		0ABFD8B928F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */; };
 		0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */; };
 		0ABFD8BD28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */; };
@@ -496,7 +496,7 @@
 		0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSearchView.swift; sourceTree = "<group>"; };
 		0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadTagsCommand.swift; sourceTree = "<group>"; };
 		0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateUploadTagsCommand+Firestore.swift"; sourceTree = "<group>"; };
-		0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentViewController.swift; sourceTree = "<group>"; };
+		0ABFD8B628F00A98008CDA74 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddCommentCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommand.swift; sourceTree = "<group>"; };
 		0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateCollaborationNameCommand+Firestore.swift"; sourceTree = "<group>"; };
@@ -1113,7 +1113,7 @@
 		0ABFD8B528F00A46008CDA74 /* Comment */ = {
 			isa = PBXGroup;
 			children = (
-				0ABFD8B628F00A98008CDA74 /* AddCommentViewController.swift */,
+				0ABFD8B628F00A98008CDA74 /* CommentViewController.swift */,
 			);
 			path = Comment;
 			sourceTree = "<group>";
@@ -1540,7 +1540,7 @@
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
-				0ABFD8B728F00A98008CDA74 /* AddCommentViewController.swift in Sources */,
+				0ABFD8B728F00A98008CDA74 /* CommentViewController.swift in Sources */,
 				0A130EA928D74F3300FF1368 /* ImageUploadFeedItemCell.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */,

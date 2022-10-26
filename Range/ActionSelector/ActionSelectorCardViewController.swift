@@ -3,7 +3,7 @@ import UIKit
 
 /// Card view controller presenting a titled list of actions.
 /// It presents the overlay over the presenting view controller.
-/// It can be dismissed by tapping the overlay, dragging down, tap on the close button or choosing the action with .cancel style.
+/// It can be dismissed by tapping the overlay, dragging down, tap on the close button or choosing any action.
 class ActionSelectorCardViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
     /// This card presents itself in given vc
@@ -158,22 +158,18 @@ extension ActionSelectorCardViewController {
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 
-    /// Setup ActionSelectorViewController for given actions. For action(s) with style == .cancel enhance the handler
-    /// to dismiss this card
+    /// Setup ActionSelectorViewController for given actions. Enhance the action handlers to dismiss this card
     private func setupActions(actions: [ActionItem]) {
         let actions = actions.map { action in
-            if action.style == .cancel {
-                return ActionItem(
-                    title: action.title,
-                    imageName: action.imageName,
-                    style: action.style,
-                    handler: { [weak self] in
-                        action.handler?()
-                        self?.dismiss()
-                    }
-                )
-            }
-            return action
+            ActionItem(
+                title: action.title,
+                imageName: action.imageName,
+                style: action.style,
+                handler: { [weak self] in
+                    action.handler?()
+                    self?.dismiss()
+                }
+            )
         }
         actionsVC = ActionSelectorViewController(actions: actions)
     }

@@ -363,7 +363,7 @@ extension CollaborationFlowController {
 
 extension CollaborationFlowController {
     func addCommentAction() {
-        let addCommentVC = AddCommentViewController()
+        let addCommentVC = CommentViewController(mode: .add)
         addCommentVC.commentText = lastCancelledCommentText
         addCommentVC.onCancel = { [weak self, weak addCommentVC] in
             guard let self = self, let addCommentVC = addCommentVC else { return }
@@ -383,7 +383,7 @@ extension CollaborationFlowController {
         addCommentVC.showCard(animated: true)
     }
 
-    private func addComment(fromCommentVC addCommentVC: AddCommentViewController) {
+    private func addComment(fromCommentVC addCommentVC: CommentViewController) {
         guard let collaboration = collaboration else { return }
 
         runCommandsWithProgress(
@@ -518,7 +518,9 @@ extension CollaborationFlowController {
                 icon: UIImage(systemName: "ellipsis"),
                 title: "More Menu",
                 actions: [
-                    ActionItem(title: "Edit \(commentOrNote)", imageName: "pencil"),
+                    ActionItem(title: "Edit \(commentOrNote)", imageName: "pencil", handler: {
+                        self.editComment(comment)
+                    }),
                     ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive),
                 ]
             ).show(in: canvasContainer)
@@ -534,6 +536,28 @@ extension CollaborationFlowController {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
             }
         }
+    }
+
+    func editComment(_ comment: Comment) {
+        let commentVC = CommentViewController(mode: .edit)
+        commentVC.commentText = comment.text
+        commentVC.isNote = comment.isNote
+        commentVC.onCancel = { [weak self, weak commentVC] in
+            guard let self = self, let commentVC = commentVC else { return }
+            commentVC.hideCard(animated: true) {
+                self.removeCard(cardViewController: commentVC)
+            }
+        }
+        commentVC.onDone = { [weak self, weak commentVC] in
+            guard let self = self, let commentVC = commentVC else { return }
+            // TODO: 295 here
+//            self.addComment(fromCommentVC: addCommentVC)
+        }
+        installCard(
+            cardViewController: commentVC,
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
+        )
+        commentVC.showCard(animated: true)
     }
 }
 

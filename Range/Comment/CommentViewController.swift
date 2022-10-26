@@ -2,10 +2,18 @@ import Foundation
 import SnapKit
 import UIKit
 
-class AddCommentViewController: UIViewController, NonModalCardCoordinating {
+/// Class for adding/editing comment/note
+class CommentViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging? {
         didSet { cardDragging?.delegate = self }
     }
+
+    /// The UI differs a little depending on whether it's for adding a new comment/note or editing the existing one
+    enum Mode {
+        case add, edit
+    }
+
+    let mode: Mode
 
     var onCancel: (() -> Void)?
     var onDone: (() -> Void)?
@@ -15,7 +23,7 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
     private static let commentButtonHeight = 32.0
 
     /// Whether user is creating a note or a comment
-    private(set) var isNote: Bool = false {
+    var isNote: Bool = false {
         didSet { isNoteDidSet() }
     }
 
@@ -65,6 +73,16 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
         view = RoundShadowView(cornerRadius: 24)
     }
 
+    init(mode: Mode) {
+        self.mode = mode
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
@@ -72,7 +90,7 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
         setupTextView()
         containerView.addSubview(textView)
         textView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(AddCommentViewController.margin)
+            make.top.leading.trailing.equalToSuperview().inset(CommentViewController.margin)
             textViewHeightConstraint = make.height.equalTo(textViewHeight).priority(.high).constraint
         }
 
@@ -80,26 +98,35 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
         containerView.addSubview(commentButton)
         commentButton.snp.makeConstraints { make in
             make.top.equalTo(textView.snp.bottom)
-            make.trailing.equalToSuperview().offset(-AddCommentViewController.margin)
-            make.height.equalTo(AddCommentViewController.commentButtonHeight).priority(.required)
+            make.trailing.equalToSuperview().offset(-CommentViewController.margin)
+            make.height.equalTo(CommentViewController.commentButtonHeight).priority(.required)
+            if mode == .edit {
+                make.width.equalToSuperview().multipliedBy(0.5).offset(-CommentViewController.margin - 6)
+            }
         }
 
         setupCancelButton()
         containerView.addSubview(cancelButton)
         cancelButton.snp.makeConstraints { make in
             make.top.equalTo(textView.snp.bottom)
-            make.trailing.equalTo(commentButton.snp.leading).offset(-8)
-            make.height.equalTo(AddCommentViewController.commentButtonHeight).priority(.required)
+            if mode == .add {
+                make.trailing.equalTo(commentButton.snp.leading).offset(-8)
+            } else {
+                make.leading.equalToSuperview().offset(CommentViewController.margin)
+            }
+            make.height.equalTo(CommentViewController.commentButtonHeight).priority(.required)
             make.width.equalTo(commentButton.snp.width)
         }
 
-        setupFlagButton()
-        containerView.addSubview(flagButton)
-        flagButton.snp.makeConstraints { make in
-            make.width.equalTo(56)
-            make.height.equalTo(40)
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(commentButton.snp.centerY)
+        if mode == .add {
+            setupFlagButton()
+            containerView.addSubview(flagButton)
+            flagButton.snp.makeConstraints { make in
+                make.width.equalTo(56)
+                make.height.equalTo(40)
+                make.leading.equalToSuperview()
+                make.centerY.equalTo(commentButton.snp.centerY)
+            }
         }
     }
 
@@ -121,12 +148,20 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
     }
 
     private func isNoteDidSet() {
-        if isNote {
-            flagButton.setImage(UIImage(systemName: "flag.fill"), for: .normal)
-        } else {
-            flagButton.setImage(UIImage(systemName: "flag"), for: .normal)
+        if mode == .add {
+            if flagButton == nil {
+                setupFlagButton()
+            }
+            if isNote {
+                flagButton.setImage(UIImage(systemName: "flag.fill"), for: .normal)
+            } else {
+                flagButton.setImage(UIImage(systemName: "flag"), for: .normal)
+            }
+            flagButton.setNeedsUpdateConfiguration()
         }
-        flagButton.setNeedsUpdateConfiguration()
+        if commentButton == nil {
+            setupCommentButton()
+        }
         commentButton.setNeedsUpdateConfiguration()
         textView.placeholderText = placeholderText
     }
@@ -167,7 +202,7 @@ class AddCommentViewController: UIViewController, NonModalCardCoordinating {
 
 // MARK: - views
 
-extension AddCommentViewController {
+extension CommentViewController {
     private func setupTextView() {
         textView.placeholderText = placeholderText
         textView.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
@@ -177,6 +212,7 @@ extension AddCommentViewController {
     }
 
     private func setupFlagButton() {
+        guard flagButton == nil else { return }
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .subheadline)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         var config = UIButton.Configuration.plain()
@@ -221,6 +257,7 @@ extension AddCommentViewController {
     }
 
     private func setupCommentButton() {
+        guard commentButton == nil else { return }
         var commentConfig = UIButton.Configuration.filled()
         commentConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         commentConfig.baseForegroundColor = .Neutral_01
@@ -232,7 +269,7 @@ extension AddCommentViewController {
         }
         commentButton = ButtonWithTapAreaInsets(
             configuration: commentConfig,
-            primaryAction: UIAction(title: "Comment") { [weak self] _ in
+            primaryAction: UIAction(title: mode == .add ? "Comment" : "Save") { [weak self] _ in
                 self?.onDone?()
             }
         )
@@ -250,7 +287,7 @@ extension AddCommentViewController {
 
 // MARK: - Card dragging delegate
 
-extension AddCommentViewController: CardDraggingDelegate {
+extension CommentViewController: CardDraggingDelegate {
     func cardOverlayTapped() {
         textView.resignFirstResponder()
         onCancel?()
@@ -259,7 +296,7 @@ extension AddCommentViewController: CardDraggingDelegate {
 
 // MARK: - Card presentable
 
-extension AddCommentViewController: CardPresentable {
+extension CommentViewController: CardPresentable {
     // subtract bottom safe area insets from keyboard as card dragging adds it to the card anyway
     func extraSpaceForKeyboard(cardContainer: UIView) -> CGFloat {
         max(keyboardHeightInWindow - cardContainer.safeAreaInsets.bottom, 0)
@@ -270,8 +307,8 @@ extension AddCommentViewController: CardPresentable {
             return -1 // not supported
         }
 
-        return AddCommentViewController.margin + textViewHeight +
-            AddCommentViewController.commentButtonHeight + AddCommentViewController.margin
+        return CommentViewController.margin + textViewHeight +
+            CommentViewController.commentButtonHeight + CommentViewController.margin
             + extraSpaceForKeyboard(cardContainer: cardContainer)
     }
 
@@ -282,7 +319,7 @@ extension AddCommentViewController: CardPresentable {
 
 // MARK: - keyboard handling
 
-extension AddCommentViewController {
+extension CommentViewController {
     /// Recalculate the `keyboardHeightInWindow` on keyboard frame change and update the card height (and possibly
     /// also the text view height)
     @objc func keyboardWillChangeFrame(notification: NSNotification) {
@@ -314,7 +351,7 @@ extension AddCommentViewController {
 
 // MARK: - text view expanding
 
-extension AddCommentViewController {
+extension CommentViewController {
     /// Observe the text view properties
     private func setupTextViewObservers() {
         textViewObservation = textView.observe(\.contentSize) { [weak self] _, _ in
@@ -351,7 +388,7 @@ extension AddCommentViewController {
         // it cannot grow above the screen height (also taking into account the keyboard height)
         let availableSpaceInContainer = cardContainer.frame.height - cardContainer.safeAreaInsets.top
             - cardContainer.safeAreaInsets.bottom
-        let contentHeight = 2 * AddCommentViewController.margin + AddCommentViewController.commentButtonHeight
+        let contentHeight = 2 * CommentViewController.margin + CommentViewController.commentButtonHeight
         let maxTextViewHeight = availableSpaceInContainer - contentHeight -
             extraSpaceForKeyboard(cardContainer: cardContainer)
 
@@ -365,7 +402,7 @@ extension AddCommentViewController {
 
 // MARK: - text view delegate
 
-extension AddCommentViewController: UITextViewDelegate {
+extension CommentViewController: UITextViewDelegate {
     func textViewDidChange(_: UITextView) {
         updateCommentButtonEnabled()
     }
