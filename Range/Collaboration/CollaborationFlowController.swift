@@ -25,7 +25,10 @@ final class FlowEvent: UIEvent {
     /// Notifies the flow that tags were selected for `Upload` provided in the event. This will results in the flow triggering
     /// tags editing
     func tagsSelectedAction(sender: Any?, event: FlowEvent)
+    /// Show more menu for FlowEvent.object
     func moreAction(sender: Any?, event: FlowEvent)
+    /// Toggle the complete state of the Note
+    func toggleCompleteAction(sender: Any?, event: FlowEvent)
 }
 
 /// Manages displaying collaboration window
@@ -505,7 +508,7 @@ extension CollaborationFlowController {
     }
 }
 
-// MARK: - more action
+// MARK: - comment/note actions
 
 extension CollaborationFlowController {
     func moreAction(sender _: Any?, event: FlowEvent) {
@@ -519,6 +522,17 @@ extension CollaborationFlowController {
                     ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive),
                 ]
             ).show(in: canvasContainer)
+        }
+    }
+
+    func toggleCompleteAction(sender _: Any?, event: FlowEvent) {
+        guard let comment = event.object as? Comment, comment.isNote else { return }
+        Task {
+            do {
+                try await model.runCommands(model.toggleNoteCompleted(note: comment))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+            }
         }
     }
 }

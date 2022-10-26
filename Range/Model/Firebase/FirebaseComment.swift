@@ -19,7 +19,7 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Comment
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case parentId = "parent", parentType, authorId = "author", timestamp, text, textIsEdited,
              isNote, completedById = "completedBy", completedTimestamp
     }

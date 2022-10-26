@@ -83,14 +83,14 @@ class CommentFeedItemCell: UITableViewCell {
 
         noteBackground.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
 
-        // TODO: completeButton has no action for now and user interaction is disabled
         completeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.iconButton(
                 backgroundColor: .Green_04, strokeColor: .Green_04, cornerRadius: 16
             ),
-            primaryAction: UIAction(image: UIImage(named: "tick.small")) { _ in }
+            primaryAction: UIAction(image: UIImage(named: "tick.small")) { [weak self] _ in
+                self?.toggleCompleteAction()
+            }
         )
-        completeButton.isUserInteractionEnabled = false
         completeButton.tapAreaInsets = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
         noteBackground.addSubview(completeButton)
         completeButton.snp.makeConstraints { make in
@@ -208,12 +208,20 @@ class CommentFeedItemCell: UITableViewCell {
         }
     }
 
-    }
-
     private func moreAction() {
         guard let comment = comment else { return }
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.moreAction(sender:event:)),
+            #selector(CollaborationFlowActions.moreAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(comment)
+        )
+    }
+
+    private func toggleCompleteAction() {
+        guard let comment = comment else { return }
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.toggleCompleteAction),
             to: nil,
             from: self,
             for: FlowEvent(comment)

@@ -255,6 +255,8 @@
 		0AD9B77C286E2925005ACFD7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0AD9B77B286E2925005ACFD7 /* FirebaseFirestore */; };
 		0AD9B77E286E2925005ACFD7 /* FirebaseFirestoreSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 0AD9B77D286E2925005ACFD7 /* FirebaseFirestoreSwift-Beta */; };
 		0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */; };
+		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
+		0AECB0B529083587004FABA4 /* UpdateNoteCompletedCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B429083587004FABA4 /* UpdateNoteCompletedCommand+Firestore.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirebaseFeature.swift */; };
@@ -523,6 +525,8 @@
 		0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Throws.swift"; sourceTree = "<group>"; };
 		0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelFirestoreSync.swift; sourceTree = "<group>"; };
 		0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
+		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
+		0AECB0B429083587004FABA4 /* UpdateNoteCompletedCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateNoteCompletedCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
@@ -1169,6 +1173,7 @@
 				0A3831D628E44550001AF38A /* AddUpdateCommand.swift */,
 				0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
+				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
 				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
 				0A3831D428E44404001AF38A /* IntOrString.swift */,
 			);
@@ -1187,6 +1192,7 @@
 				0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */,
 				0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */,
 				0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */,
+				0AECB0B429083587004FABA4 /* UpdateNoteCompletedCommand+Firestore.swift */,
 				0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */,
 			);
 			path = Commands;
@@ -1380,6 +1386,7 @@
 				0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */,
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */,
+				0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */,
 				0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
@@ -1481,6 +1488,7 @@
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
+				0AECB0B529083587004FABA4 /* UpdateNoteCompletedCommand+Firestore.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
 				0A854E1C2900669E00666713 /* AddUpdateCommand+Firestore.swift in Sources */,
 				0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */,

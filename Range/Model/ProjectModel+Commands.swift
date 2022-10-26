@@ -255,4 +255,13 @@ extension ProjectModel {
             ),
         ]
     }
+
+    func toggleNoteCompleted(note: Comment) -> [Command] {
+        let makeCompleted = !note.completed
+        return [UpdateNoteCompletedCommand(
+            noteId: note.id,
+            completedById: makeCompleted ? userId : nil,
+            completedTimestamp: makeCompleted ? Date.now.timeIntervalSince1970 : nil
+        )]
+    }
 }
