@@ -264,4 +264,10 @@ extension ProjectModel {
             completedTimestamp: makeCompleted ? Date.now.timeIntervalSince1970 : nil
         )]
     }
+
+    func update(text: String, forComment commentId: String) -> [Command] {
+        [
+            UpdateCommentTextCommand(commentId: commentId, text: text),
+        ]
+    }
 }

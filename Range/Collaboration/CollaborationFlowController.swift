@@ -550,8 +550,18 @@ extension CollaborationFlowController {
         }
         commentVC.onDone = { [weak self, weak commentVC] in
             guard let self = self, let commentVC = commentVC else { return }
-            // TODO: 295 here
-//            self.addComment(fromCommentVC: addCommentVC)
+            let text = commentVC.commentText
+            commentVC.hideCard(animated: true) {
+                self.removeCard(cardViewController: commentVC)
+            }
+            guard text != comment.text else { return }
+            Task {
+                do {
+                    try await self.model.runCommands(self.model.update(text: text!, forComment: comment.id))
+                } catch {
+                    Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                }
+            }
         }
         installCard(
             cardViewController: commentVC,

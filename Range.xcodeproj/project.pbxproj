@@ -229,6 +229,8 @@
 		0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */; };
 		0ABFD8BD28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */; };
 		0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */; };
+		0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */; };
+		0AC89D7C2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7B2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift */; };
 		0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */; };
 		0AC9E18828F5646D00C7185D /* The Preserve v01.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */; };
 		0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18A28F56C2800C7185D /* DemoProject.swift */; };
@@ -501,6 +503,8 @@
 		0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommand.swift; sourceTree = "<group>"; };
 		0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateCollaborationNameCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItem.swift; sourceTree = "<group>"; };
+		0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCommentTextCommand.swift; sourceTree = "<group>"; };
+		0AC89D7B2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateCommentTextCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "The Preserve v01.pdf"; sourceTree = "<group>"; };
 		0AC9E18A28F56C2800C7185D /* DemoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProject.swift; sourceTree = "<group>"; };
@@ -1173,6 +1177,7 @@
 				0A3831D628E44550001AF38A /* AddUpdateCommand.swift */,
 				0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
+				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
 				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
 				0A3831D428E44404001AF38A /* IntOrString.swift */,
@@ -1192,6 +1197,7 @@
 				0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */,
 				0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */,
 				0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */,
+				0AC89D7B2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift */,
 				0AECB0B429083587004FABA4 /* UpdateNoteCompletedCommand+Firestore.swift */,
 				0ABFD8B328EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift */,
 			);
@@ -1374,9 +1380,11 @@
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0AD9B7662869DE22005ACFD7 /* AddUploadCommand.swift in Sources */,
 				0ABFD8BD28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift in Sources */,
+				0AC89D7C2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
+				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0A724F4928887C6D00708C6B /* AddTagCommand.swift in Sources */,
 				0A724F4B28887CF400708C6B /* AddParticipantCommand.swift in Sources */,
