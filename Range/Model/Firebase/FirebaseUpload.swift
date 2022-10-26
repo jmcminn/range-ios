@@ -14,7 +14,6 @@ import RealmSwift
 ///         "timestamp": 1653982892906,
 ///         "name": "", j
 ///         "description": "",
-///         "url": "http....",
 ///         "correlation": "6ebe0ded-414b-4a5e-be09-5d079d5dd7dc"
 ///     }
 struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
@@ -23,9 +22,8 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     /// CodingKeys used by Codable as a keys in the encoded form
     enum CodingKeys: String, CodingKey {
         case parentId = "parent", parentType, authorId = "author", timestamp, name,
-             uploadDescription = "description", urlString = "url",
-             correlationId = "correlation", tagIds = "tags", fileTypeString = "fileType",
-             imageHeightToWidth
+             uploadDescription = "description", correlationId = "correlation", tagIds = "tags",
+             fileTypeString = "fileType", imageHeightToWidth
     }
 
     var parentId: String
@@ -34,7 +32,6 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     var timestamp: Int // milliseconds
     var name: String?
     var uploadDescription: String?
-    var urlString: String?
     var correlationId: String
     var tagIds: [String]
     var fileTypeString: String?
@@ -51,12 +48,6 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
-        let url: URL?
-        if let urlString = urlString {
-            url = try URL(string: urlString).or(error: ModelError.malformedUrl(urlString))
-        } else {
-            url = nil
-        }
         return AddUploadCommand(
             uploadId: id,
             correlationId: correlationId,
@@ -67,7 +58,6 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
             timestamp: TimeInterval(timestamp) / 1000.0, // TimeInterval is in seconds
             name: name,
             uploadDescription: uploadDescription,
-            url: url,
             tagIds: tagIds,
             imageHeightToWidth: imageHeightToWidth
         )

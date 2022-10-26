@@ -201,7 +201,6 @@ extension ProjectModel {
             timestamp: timestamp,
             name: nil,
             uploadDescription: description,
-            url: nil,
             tagIds: tags.map(\.id),
             imageHeightToWidth: imageHeightToWidth
         )

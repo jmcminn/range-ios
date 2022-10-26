@@ -11,7 +11,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             timestamp: 1000,
             name: "name",
             uploadDescription: "description",
-            urlString: "range.io",
             correlationId: "upload1",
             tagIds: ["tag1"]
         )
@@ -27,7 +26,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
                 timestamp: 1,
                 name: "name",
                 uploadDescription: "description",
-                url: URL(string: "range.io"),
                 tagIds: ["tag1"]
             )
         )
@@ -41,7 +39,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             timestamp: 1000,
             name: "name",
             uploadDescription: "description",
-            urlString: "range.io",
             correlationId: "upload1",
             tagIds: ["tag1"]
         )
@@ -49,25 +46,6 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             try firebaseUpload.upsertCommand(id: "upload1")
         ) { error in
             XCTAssertEqual(error.localizedDescription, "parentType not supported: Feature")
-        }
-    }
-
-    func testUpsertCommand_malformedUrl() throws {
-        let firebaseUpload = FirebaseUpload(
-            parentId: "collaboration1",
-            parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: 1,
-            name: "",
-            uploadDescription: "",
-            urlString: "https://range.io/image 2",
-            correlationId: "upload1",
-            tagIds: []
-        )
-        XCTAssertThrowsError(
-            try firebaseUpload.upsertCommand(id: "upload1")
-        ) { error in
-            XCTAssertEqual(error.localizedDescription, "Malformed URL: https://range.io/image 2")
         }
     }
 }

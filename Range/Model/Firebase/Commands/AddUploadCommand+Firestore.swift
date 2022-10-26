@@ -11,7 +11,6 @@ extension AddUploadCommand: FirestoreCommand {
             timestamp: Int(timestamp * 1000), // server-side is in milliseconds
             name: name,
             uploadDescription: uploadDescription,
-            urlString: url?.absoluteString,
             correlationId: correlationId,
             tagIds: tagIds,
             fileTypeString: fileType.rawValue,

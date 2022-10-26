@@ -18,8 +18,6 @@ class Upload: Object, WithPlaceholder {
     @Persisted(originProperty: "uploads") var collaboration: LinkingObjects<Collaboration>
     // timestamp (since 1970)
     @Persisted var timestamp: TimeInterval
-    // url
-    @Persisted var url: URL?
     // name
     @Persisted var name: String?
     // description
@@ -44,7 +42,6 @@ class Upload: Object, WithPlaceholder {
     init(
         id: String,
         timestamp: TimeInterval,
-        url: URL?,
         name: String?,
         description: String?,
         correlationId: String,
@@ -55,7 +52,6 @@ class Upload: Object, WithPlaceholder {
         super.init()
         self.id = id
         self.timestamp = timestamp
-        self.url = url
         self.name = name
         uploadDescription = description
         self.correlationId = correlationId
@@ -69,7 +65,6 @@ class Upload: Object, WithPlaceholder {
         self.init(
             id: id,
             timestamp: 0,
-            url: nil,
             name: "",
             description: nil,
             correlationId: id,

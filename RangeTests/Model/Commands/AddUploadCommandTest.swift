@@ -35,7 +35,6 @@ class AddUploadCommandTest: XCTestCase {
             timestamp: 1,
             name: nil,
             uploadDescription: nil,
-            url: nil,
             tagIds: []
         )
         try realm.write {
@@ -81,7 +80,6 @@ class AddUploadCommandTest: XCTestCase {
             timestamp: 1,
             name: "upload 1",
             uploadDescription: "upload 1 description",
-            url: URL(string: "https://range.io/image"),
             tagIds: []
         )
         try realm.write {
@@ -94,7 +92,6 @@ class AddUploadCommandTest: XCTestCase {
         XCTAssertEqual(upload1.name, "upload 1")
         XCTAssertEqual(upload1.uploadDescription, "upload 1 description")
         XCTAssertEqual(upload1.author, user1)
-        XCTAssertEqual(upload1.url?.absoluteString, "https://range.io/image")
 
         // 3. update upload1
         cmd1.name = "upload 1 ..."
@@ -116,7 +113,6 @@ class AddUploadCommandTest: XCTestCase {
             timestamp: 1,
             name: "upload 2",
             uploadDescription: "upload 2 description",
-            url: URL(string: "https://range.io/image"),
             tagIds: []
         )
         try realm.write {
@@ -157,7 +153,6 @@ class AddUploadCommandTest: XCTestCase {
             timestamp: 1,
             name: "upload 1",
             uploadDescription: "upload 1 description",
-            url: URL(string: "https://range.io/image"),
             tagIds: ["tag1", "tag2", "tag1"]
         )
         try realm.write {

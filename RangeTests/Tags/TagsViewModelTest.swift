@@ -120,7 +120,6 @@ class TagsViewModelTest: XCTestCase {
         let upload1 = Upload(
             id: "upload1",
             timestamp: 0,
-            url: URL(fileURLWithPath: "//test"),
             name: "",
             description: "",
             correlationId: "upload1",
@@ -130,7 +129,6 @@ class TagsViewModelTest: XCTestCase {
         let upload2 = Upload(
             id: "upload2",
             timestamp: 0,
-            url: URL(fileURLWithPath: "//test"),
             name: "",
             description: "",
             correlationId: "upload1",

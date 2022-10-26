@@ -109,7 +109,6 @@ class ProjectModelCommandsTest: XCTestCase {
             timestamp: 1234,
             name: nil,
             uploadDescription: "upload description",
-            url: nil,
             tagIds: ["tag1", newTagViewModel.id],
             imageHeightToWidth: 1
         ))

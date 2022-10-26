@@ -12,7 +12,6 @@ struct AddUploadCommand: Command, Equatable {
     var timestamp: TimeInterval
     var name: String?
     var uploadDescription: String?
-    var url: URL?
     var tagIds: [String]
     var imageHeightToWidth: Double?
 
@@ -34,7 +33,6 @@ struct AddUploadCommand: Command, Equatable {
         let upload = Upload(
             id: uploadId,
             timestamp: timestamp,
-            url: url,
             name: name,
             description: uploadDescription,
             correlationId: correlationId,
