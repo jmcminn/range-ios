@@ -125,11 +125,11 @@ class TagsView: UIView {
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, CollectionItem> {
         var snapshot = NSDiffableDataSourceSnapshot<Int, CollectionItem>()
         snapshot.appendSections([1])
-        if let tags = tags {
-            snapshot.appendItems(tags.map { CollectionItem(id: $0.id, name: $0.name) })
-        }
         if showAddTagCell {
             snapshot.appendItems([CollectionItem(id: "add", name: TagAddCollectionViewCell.labelText, addTag: true)])
+        }
+        if let tags = tags {
+            snapshot.appendItems(tags.map { CollectionItem(id: $0.id, name: $0.name) })
         }
         return snapshot
     }
@@ -142,25 +142,18 @@ extension TagsView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize
     {
-        guard let tags = tags else { return .zero }
-        if showAddTagCell {
-            guard indexPath.item <= tags.count else { return .zero }
-        } else {
-            guard indexPath.item < tags.count else { return .zero }
-        }
+        guard let collectionItem = dataSource.itemIdentifier(for: indexPath) else { return .zero }
 
         let contentWidth: CGFloat
-        if indexPath.item == tags.count {
+        if collectionItem.addTag {
             // this is the last special "add" tag
-            let name = TagAddCollectionViewCell.labelText
-            let nameWidth = name.size(withAttributes: [
+            let nameWidth = collectionItem.name.size(withAttributes: [
                 NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1),
             ]).width
             let imageWidth = TagAddCollectionViewCell.tagImage?.size.width ?? 0
             contentWidth = imageWidth + TagAddCollectionViewCell.imageToLabelDistance + nameWidth
         } else {
-            let name = tags[indexPath.item].name
-            contentWidth = name.size(withAttributes: [
+            contentWidth = collectionItem.name.size(withAttributes: [
                 NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2),
             ]).width
         }
