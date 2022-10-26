@@ -15,6 +15,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let descriptionSeparator = UIView()
     let tagsView = TagsView(leftInset: FeedItemCells.leadingContentLayoutMargin -
         FeedItemCells.leadingVerticalLineMargin)
+    let leftTagsViewGradient = GradientView()
+    let rightTagsViewGradient = GradientView()
 
     weak var imageCaches: ImageCaches?
     weak var upload: Upload?
@@ -71,6 +73,16 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.top.equalTo(imageAndDescriptionView.snp.bottom).offset(12)
             make.bottom.equalToSuperview()
         }
+        tagsView.addSubview(leftTagsViewGradient)
+        tagsView.addSubview(rightTagsViewGradient)
+        leftTagsViewGradient.snp.makeConstraints { make in
+            make.width.equalTo(24)
+            make.top.bottom.left.equalToSuperview()
+        }
+        rightTagsViewGradient.snp.makeConstraints { make in
+            make.width.equalTo(24)
+            make.top.bottom.right.equalToSuperview()
+        }
     }
 
     @available(*, unavailable)
@@ -107,6 +119,16 @@ class ImageUploadFeedItemCell: UITableViewCell {
         tagsView.showAddTagCell = true
         tagsView.collectionView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
+
+        leftTagsViewGradient.backgroundColor = .clear
+        // left to right gradient
+        leftTagsViewGradient.gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        leftTagsViewGradient.gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
+
+        rightTagsViewGradient.backgroundColor = .clear
+        // right to left gradient
+        rightTagsViewGradient.gradientLayer.startPoint = CGPoint(x: 1, y: 0.5)
+        rightTagsViewGradient.gradientLayer.endPoint = CGPoint(x: 0, y: 0.5)
     }
 
     @objc private func tagsTapped() {
@@ -127,6 +149,15 @@ class ImageUploadFeedItemCell: UITableViewCell {
     /// Update colors that doesn't automatically adapt to appearance change
     func updateColors() {
         imageAndDescriptionView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        let gradientColor = chooseColor(light: .Neutral_02, dark: .Neutral_09)
+        leftTagsViewGradient.gradientLayer.colors = [
+            gradientColor.cgColor,
+            gradientColor.withAlphaComponent(0).cgColor,
+        ]
+        rightTagsViewGradient.gradientLayer.colors = [
+            gradientColor.cgColor,
+            gradientColor.withAlphaComponent(0).cgColor,
+        ]
     }
 
     override func prepareForReuse() {
