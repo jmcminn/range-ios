@@ -227,6 +227,16 @@ extension CollaborationDetailsViewController {
         tagsView = TagsView()
         tagsView.showAddTagCell = true
         tagsView.tags = collaboration.tags.where { $0.placeholder == false }
+        tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
+    }
+
+    @objc private func tagsTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.tagsSelectedAction(sender:event:)),
+            to: nil,
+            from: self,
+            for: FlowEvent(collaboration)
+        )
     }
 
     private func setupThumbnails() {

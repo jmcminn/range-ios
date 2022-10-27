@@ -421,17 +421,24 @@ extension CollaborationFlowController {
     }
 }
 
-// MARK: - edit tags for upload
+// MARK: - edit tags for collaboration or upload
 
 extension CollaborationFlowController: CollaborationFlowActions {
     func tagsSelectedAction(sender _: Any?, event: FlowEvent) {
-        guard let upload = event.object as? Upload else { return }
-        let selectedTags = Array(upload.tags.map { TagViewModel(fromTag: $0) })
-        let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: selectedTags)
+        let object = event.object
+        let initialTags: [TagViewModel]
+        if let upload = object as? Upload {
+            initialTags = Array(upload.tags.map { TagViewModel(fromTag: $0) })
+        } else if let collaboration = object as? Collaboration {
+            initialTags = Array(collaboration.tags.map { TagViewModel(fromTag: $0) })
+        } else {
+            fatalError("tagsSelected action not implemented for \(event.object)")
+        }
+        let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialTags)
         editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
-        editTagsVC!.onClose = { [weak self, weak upload] in
-            guard let self = self, let upload = upload else { return }
-            self.updateTagsIfChanged(forUpload: upload)
+        editTagsVC!.onClose = { [weak self, weak object] in
+            guard let self = self, let object = object else { return }
+            self.updateTagsIfChanged(forObject: object)
         }
         installCard(
             cardViewController: editTagsVC!,
@@ -440,15 +447,26 @@ extension CollaborationFlowController: CollaborationFlowActions {
         editTagsVC!.showCard(animated: true)
     }
 
-    /// Update tags for given upload and close the editTagsVC. The tags are taken from the current editTagsVC
+    /// Update tags for given collaboration or upload and close the editTagsVC. The tags are taken from the current editTagsVC
     /// If tags haven't changed, just close the editTagsVC
     /// If updating failed give user a choice to retry or abort (close the editTagsVC and not save changes)
-    private func updateTagsIfChanged(forUpload upload: Upload) {
+    private func updateTagsIfChanged(forObject object: Object) {
         guard let editTagsVC = editTagsVC else { return }
 
         let selectedTags = editTagsVC.tagsViewModel.selectedTags
         let selectedTagIdsSet = Set(selectedTags.map(\.id))
-        let existingTagIdsSet = Set(upload.tags.map(\.id))
+        let existingTagIdsSet: Set<String>
+        let commands: [Command]
+
+        if let collaboration = object as? Collaboration {
+            existingTagIdsSet = Set(collaboration.tags.map(\.id))
+            commands = model.update(tags: selectedTags, forCollaboration: collaboration)
+        } else if let upload = object as? Upload {
+            existingTagIdsSet = Set(upload.tags.map(\.id))
+            commands = model.update(tags: selectedTags, forUpload: upload)
+        } else {
+            fatalError("updateTagsIfChanged not implemented for \(object)")
+        }
 
         let closeEditTagsVC = {
             editTagsVC.hideCard(animated: true) {
@@ -463,7 +481,7 @@ extension CollaborationFlowController: CollaborationFlowActions {
         }
 
         runCommandsWithProgress(
-            commands: model.update(tags: selectedTags, forUpload: upload),
+            commands: commands,
             onSuccess: { [weak self] in
                 guard let self = self else { return }
                 UserDefaults.addRecentTagIds(selectedTags.map(\.id), forProjectId: self.model.projectId)
@@ -477,7 +495,7 @@ extension CollaborationFlowController: CollaborationFlowActions {
                 )
                 alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
                     // try again
-                    self?.updateTagsIfChanged(forUpload: upload)
+                    self?.updateTagsIfChanged(forObject: object)
                 }))
                 alert.addAction(UIAlertAction(title: "Abort", style: .destructive, handler: { _ in
                     closeEditTagsVC()

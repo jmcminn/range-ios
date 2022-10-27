@@ -224,6 +224,21 @@ extension ProjectModel {
         return commands
     }
 
+    /// Create commands for updating given Collaboration tags.
+    /// The commands include creating new tags.
+    func update(tags: [TagViewModel], forCollaboration collaboration: Collaboration) -> [Command] {
+        var commands: [Command] = []
+
+        // add all new tags
+        commands.append(contentsOf: tags
+            .filter(\.newTag)
+            .map { AddTagCommand(tagId: $0.id, name: $0.name) })
+
+        commands.append(UpdateCollaborationTagsCommand(collaborationId: collaboration.id, tagIds: tags.map(\.id)))
+
+        return commands
+    }
+
     /// Create command for creating a new comment (or note if isNote = `true`) for given collaboration id.
     func addComment(commentText: String, isNote: Bool, toCollaboration collaborationId: String) -> [Command] {
         [
