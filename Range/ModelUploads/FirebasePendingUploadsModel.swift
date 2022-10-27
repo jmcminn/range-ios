@@ -103,7 +103,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             let thumbnail0Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 0)
             try await imageCaches.localPhotosCache._asyncStoreToDisk(thumbnail0Data, forKey: thumbnail0Key)
         }
-        if let thumbnail1Data = resizeImage(imageData: imageData, maxResolution: 500) {
+        if let thumbnail1Data = resizeImage(imageData: imageData, maxResolution: 650) {
             let thumbnail1Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 1)
             try await imageCaches.localPhotosCache._asyncStoreToDisk(thumbnail1Data, forKey: thumbnail1Key)
         }

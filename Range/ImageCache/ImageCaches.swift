@@ -21,8 +21,8 @@ func thumbnailKey(forUploadKey key: String, thumbnailNumber: Int = 0) -> String 
 /// Handling of images in app - caching, fetching from storage, etc.
 ///
 /// Thumbnails have numbers
-/// 0 - 300x200>
-/// 1 - 500x500>
+/// 0 - 200x200>
+/// 1 - 650x650>
 /// see the [generate thumbnails function repo](https://gitlab.com/range.io/range.io/-/blob/master/modules/firebase-functions-generate-thumbnails/src/generate-thumbnails-from-upload.js#L27)
 /// for more details
 ///
