@@ -180,9 +180,10 @@ class CollaborationFeedViewController: UIViewController {
     }
 
     private func setupVerticalLine() {
+        // the y and height don't matter, they'll get synced with the content anyway
         verticalLine = FeedVerticalLine(frame: CGRect(
-            origin: CGPoint(x: FeedItemCells.leadingVerticalLineMargin - 0.5, y: 400),
-            size: CGSize(width: 1, height: 5000)
+            origin: CGPoint(x: FeedItemCells.leadingVerticalLineMargin - 0.5, y: 0),
+            size: CGSize(width: 1, height: 1)
         ))
         verticalLine.layer.zPosition = -1
         tableView.addSubview(verticalLine)
@@ -190,7 +191,7 @@ class CollaborationFeedViewController: UIViewController {
 
     /// Update vertical line height based on content size and last row height
     private func updateVerticalLineHeight() {
-        // - distanceBetweenMajorRows because it's included in the content size
+        // - distanceBetweenMajorRows because it's a table footer view included in the content size
         // - lastRowHeight + 8 because for last row the vertical line should only reach the avatar/dot
         verticalLine.frame.size.height = tableView.contentSize.height - distanceBetweenMajorRows
             - lastRowHeight + 8 - verticalLine.frame.minY
