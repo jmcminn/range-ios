@@ -69,7 +69,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         thumbnailsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview().offset(29)
-            make.height.equalTo(54) // make this view higher than in the design to have bigger buttons
+            make.height.equalTo(ThumbnailsViewController.thumbnailHeight)
         }
 
         updateColors()
@@ -150,7 +150,7 @@ extension PhotosPreviewViewController: CardPresentable {
             return -1 // not supported
         }
 
-        let thumbnailsHeight: CGFloat = uploads.isEmpty ? 0 : 95
+        let thumbnailsHeight: CGFloat = uploads.isEmpty ? 0 : ThumbnailsViewController.thumbnailHeight + 41
         return confirmationVC.height(forContainer: containerView, cardPosition: cardPosition)
             + thumbnailsHeight
     }

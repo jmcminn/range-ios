@@ -22,7 +22,7 @@ class CollaborationDetailsViewController: UIViewController {
         // height of the CTA buttons
         static let ctasHeight = 40.0
         // height of thumbnails view
-        static let thumbnailsHeight = 54.0
+        static let thumbnailsHeight = ThumbnailsViewController.thumbnailHeight
         // height of the toggle to switch updates level of detail
         static let updatesToggleHeight = 32.0
         // the insets is used just as a container for top/left/bottom/right paddings around the toggle

@@ -23,7 +23,7 @@ class ThumbnailsViewController: UIViewController {
     }
 
     /// All thumbnails are rendered with this height and variable width depending on the image aspect ratio
-    static let thumbnailHeight = 54.0
+    static let thumbnailHeight = 72.0
 
     unowned let imageCaches: ImageCaches
     unowned let projectModel: ProjectModel
