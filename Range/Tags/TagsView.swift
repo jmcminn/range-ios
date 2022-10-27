@@ -125,11 +125,11 @@ class TagsView: UIView {
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<Int, CollectionItem> {
         var snapshot = NSDiffableDataSourceSnapshot<Int, CollectionItem>()
         snapshot.appendSections([1])
-        if showAddTagCell {
-            snapshot.appendItems([CollectionItem(id: "add", name: TagAddCollectionViewCell.labelText, addTag: true)])
-        }
         if let tags = tags {
             snapshot.appendItems(tags.map { CollectionItem(id: $0.id, name: $0.name) })
+        }
+        if showAddTagCell {
+            snapshot.appendItems([CollectionItem(id: "add", name: TagAddCollectionViewCell.labelText, addTag: true)])
         }
         return snapshot
     }
