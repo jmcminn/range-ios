@@ -115,7 +115,7 @@ class CollaborationDetailsViewController: UIViewController {
             }
         }
 
-        setupCTAs()
+        ctas = _createCollaborationCTAs()
         view.addSubview(ctas)
         ctas.snp.makeConstraints { make in
             if isTaskWindow {
@@ -229,57 +229,6 @@ extension CollaborationDetailsViewController {
         tagsView.tags = collaboration.tags.where { $0.placeholder == false }
     }
 
-    private func setupCTAs() {
-        var blackButtonConfig = UIButton.Configuration.blackButton(imageTextStyle: .caption1, cornerRadius: 8)
-        blackButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
-        let addCommentButton = UIButton(
-            configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { [weak self] _ in
-                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addCommentAction),
-                                                to: nil, from: self, for: nil)
-            }
-        )
-        let addAttachmentButton = UIButton(
-            configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "paperclip")) { _ in }
-        )
-
-        var blueButtonConfig = UIButton.Configuration.blueButton(
-            imageTextStyle: .caption1,
-            imagePlacement: .leading,
-            cornerRadius: 8
-        )
-        var titleAttributes = AttributeContainer()
-        titleAttributes.font = UIFont.preferredFont(forTextStyle: .subheadline)
-        blueButtonConfig.attributedTitle = AttributedString("Add Photos", attributes: titleAttributes)
-        let addPhotosButton = UIButton(
-            configuration: blueButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "camera")) { [weak self] _ in
-                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addPhotosAction),
-                                                to: nil, from: self, for: nil)
-            }
-        )
-        let ctas = UIView()
-        [addCommentButton, addAttachmentButton, addPhotosButton].forEach(ctas.addSubview)
-        // layout buttons so addComment and addAttachment take 50% space and addPhotos another 50%
-        // (+ there's 16 points space between each button, the leading and trailing spacing is already
-        // include as the whole ctas view has margins)
-        addCommentButton.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
-            make.width.equalTo(addPhotosButton.snp.width).multipliedBy(0.5).offset(-8)
-        }
-        addAttachmentButton.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.equalTo(addCommentButton.snp.trailing).offset(16)
-            make.width.equalTo(addCommentButton.snp.width)
-        }
-        addPhotosButton.snp.makeConstraints { make in
-            make.trailing.top.bottom.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
-        }
-        self.ctas = ctas
-    }
-
     private func setupThumbnails() {
         let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
         thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: projectModel, uploads: uploads)
@@ -335,6 +284,60 @@ extension CollaborationDetailsViewController {
             make.height.equalTo(Constants.updatesToggleHeight)
             make.bottom.equalToSuperview().inset(Constants.updatesTogglePaddings.bottom)
         }
+    }
+}
+
+extension UIViewController {
+    /// Creates a view containing CTA buttons, to be reused for the bottom collaboration card
+    func _createCollaborationCTAs() -> UIView {
+        var blackButtonConfig = UIButton.Configuration.blackButton(imageTextStyle: .caption1, cornerRadius: 8)
+        blackButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
+        let addCommentButton = UIButton(
+            configuration: blackButtonConfig,
+            primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { [weak self] _ in
+                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addCommentAction),
+                                                to: nil, from: self, for: nil)
+            }
+        )
+        let addAttachmentButton = UIButton(
+            configuration: blackButtonConfig,
+            primaryAction: UIAction(image: UIImage(systemName: "paperclip")) { _ in }
+        )
+
+        var blueButtonConfig = UIButton.Configuration.blueButton(
+            imageTextStyle: .caption1,
+            imagePlacement: .leading,
+            cornerRadius: 8
+        )
+        var titleAttributes = AttributeContainer()
+        titleAttributes.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        blueButtonConfig.attributedTitle = AttributedString("Add Photos", attributes: titleAttributes)
+        let addPhotosButton = UIButton(
+            configuration: blueButtonConfig,
+            primaryAction: UIAction(image: UIImage(systemName: "camera")) { [weak self] _ in
+                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addPhotosAction),
+                                                to: nil, from: self, for: nil)
+            }
+        )
+        let ctas = UIView()
+        [addCommentButton, addAttachmentButton, addPhotosButton].forEach(ctas.addSubview)
+        // layout buttons so addComment and addAttachment take 50% space and addPhotos another 50%
+        // (+ there's 16 points space between each button, the leading and trailing spacing is already
+        // include as the whole ctas view has margins)
+        addCommentButton.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview()
+            make.width.equalTo(addPhotosButton.snp.width).multipliedBy(0.5).offset(-8)
+        }
+        addAttachmentButton.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.equalTo(addCommentButton.snp.trailing).offset(16)
+            make.width.equalTo(addCommentButton.snp.width)
+        }
+        addPhotosButton.snp.makeConstraints { make in
+            make.trailing.top.bottom.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
+        }
+        return ctas
     }
 }
 

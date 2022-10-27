@@ -49,9 +49,10 @@ class CollaborationFlowController: UIViewController {
     var collaborationVC: CollaborationViewController?
     /// the view covering the collaboration window in full screen mode (when the collaboration window card is in max position)
     var collaborationHeaderCoverVC: CollaborationHeaderCoverViewController?
+    /// Bottom view with CTAs showing when user scrolls the collaboration view so it's CTAs hide behind the header cover
+    var collaborationBottomVC: CollaborationBottomViewController?
 
-    /// FABs (floating action buttons)
-    var actionButtons: [RoundShadowButton]!
+    private var collaborationScrollViewObserver: NSKeyValueObservation?
 
     /// When adding photos from collaboration window
     var addPhotosFlow: AddPhotoFlowController?
@@ -92,12 +93,11 @@ class CollaborationFlowController: UIViewController {
         view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        setupFABs()
     }
 
     /// Cleanup after showing collaboration windows. The flow controller is not usable after a call to this function
     func stop() {
-        removeFABs()
+        removeBottomCard()
         canvasContainer.remove(childController: self)
     }
 
@@ -118,6 +118,9 @@ class CollaborationFlowController: UIViewController {
         }
         if let scrollView = collaborationVC.drivingScrollView() {
             scrollView.forwardDelegateInvocations(to: self)
+            collaborationScrollViewObserver = scrollView.observe(\.contentSize) { [weak self] _, _ in
+                self?.collaborationScrollViewContentSizeChanged()
+            }
         }
         return collaborationVC
     }
@@ -135,8 +138,10 @@ class CollaborationFlowController: UIViewController {
                 cardViewController: collaborationVC,
                 cardConfig: CardConfiguration(initialCardPosition: .medium, allowsFullScreen: true)
             )
-            // move collaboration window behind fabs
-            view.insertSubview(collaborationVC.view, belowSubview: actionButtons[0])
+            // move collaboration window behind bottom card
+            if let collaborationBottomVC = collaborationBottomVC {
+                view.insertSubview(collaborationVC.view, belowSubview: collaborationBottomVC.view)
+            }
             collaborationVC.cardDragging?.delegate = self
 
             // check if already showing, if so then ignore animated and replace instantly
@@ -145,7 +150,7 @@ class CollaborationFlowController: UIViewController {
                 let previousCardHeight = self.collaborationVC?.cardDragging?.cardHeight
                 hideCollaborationWindow(animated: false)
                 setCollaborationHeaderCoverHidden(true, animated: false)
-                setFABsHidden(true, animated: false)
+                setBottomCardHidden(true, animated: false)
                 collaborationVC.showCard(animated: false)
                 if let previousCardHeight = previousCardHeight, let newCardDragging = collaborationVC.cardDragging {
                     // animate the height from previous height, so there's no jump
@@ -156,6 +161,7 @@ class CollaborationFlowController: UIViewController {
                 collaborationVC.showCard(animated: animated)
             }
             addCollaborationHeaderCover()
+            setupBottomCard()
             self.collaborationVC = collaborationVC
         } else {
             Logger.model.warning("""
@@ -175,10 +181,12 @@ class CollaborationFlowController: UIViewController {
             if let scrollView = collaborationVC.drivingScrollView() {
                 scrollView.cancelForwardingDelegateInvocations(to: self)
             }
+            collaborationScrollViewObserver?.invalidate()
+            collaborationScrollViewObserver = nil
             self.collaborationVC = nil
         }
         setCollaborationHeaderCoverHidden(true, animated: animated)
-        setFABsHidden(true, animated: animated)
+        setBottomCardHidden(true, animated: animated)
         removeCollaborationHeaderCover()
         lastCancelledCommentText = ""
     }
@@ -227,50 +235,44 @@ class CollaborationFlowController: UIViewController {
     }
 }
 
-// MARK: FABs (floating action buttons)
+// MARK: - bottom card
 
 extension CollaborationFlowController {
-    private func setupFABs() {
-        let addPhotosButton = RoundShadowButton(image: UIImage(systemName: "camera") ?? UIImage(), style: .blue)
-        addPhotosButton.addTarget(self, action: #selector(addPhotosAction), for: .touchUpInside)
-        view.addSubview(addPhotosButton)
-        addPhotosButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-12)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-12)
-        }
-
-        let addAttachmentButton = RoundShadowButton(image: UIImage(systemName: "paperclip") ?? UIImage())
-        view.addSubview(addAttachmentButton)
-        addAttachmentButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-12)
-            make.bottom.equalTo(addPhotosButton.snp.top).offset(-12)
-        }
-
-        let addCommentButton = RoundShadowButton(image: UIImage(systemName: "bubble.right") ?? UIImage())
-        addCommentButton.addTarget(self, action: #selector(addCommentAction), for: .touchUpInside)
-        view.addSubview(addCommentButton)
-        addCommentButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-12)
-            make.bottom.equalTo(addAttachmentButton.snp.top).offset(-12)
-        }
-
-        actionButtons = [addPhotosButton, addAttachmentButton, addCommentButton]
-
-        setFABsHidden(true, animated: false)
+    private func setupBottomCard() {
+        guard collaborationBottomVC == nil else { return }
+        collaborationBottomVC = CollaborationBottomViewController()
+        installCard(
+            cardViewController: collaborationBottomVC!,
+            cardConfig: CardConfiguration(initialCardPosition: .min,
+                                          interactive: false)
+        )
+        collaborationBottomVC!.showCard(animated: false)
     }
 
-    private func removeFABs() {
-        actionButtons.forEach { $0.removeFromSuperview() }
+    private func removeBottomCard() {
+        guard let collaborationBottomVC = collaborationBottomVC else { return }
+        removeCard(cardViewController: collaborationBottomVC)
+        self.collaborationBottomVC = nil
     }
 
-    private func setFABsHidden(_ hidden: Bool, animated: Bool) {
-        let alpha = hidden ? 0.0 : 1.0
-        if animated {
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                self?.actionButtons.forEach { $0.alpha = alpha }
-            }
-        } else {
-            actionButtons.forEach { $0.alpha = alpha }
+    private func setBottomCardHidden(_ hidden: Bool, animated: Bool) {
+        guard let cardDragging = collaborationBottomVC?.cardDragging else { return }
+        let newPosition: CardPosition = hidden ? .min : .medium
+        guard cardDragging.position != newPosition else { return }
+
+        cardDragging.setPosition(newPosition, withVelocity: 0, animated: animated) { [weak self] in
+            guard let self = self else { return }
+            // adjust the feed bottom content inset so user can still scroll to the bottom of the feed
+            // when the bottom card is overlapping the table view
+            // - safeAreaInsets.bottom = the feed is not covering the bottom safe area while the card height includes it
+            guard let scrollView = self.collaborationVC?.feedVC.tableView else { return }
+            scrollView.contentInset = UIEdgeInsets(
+                top: 0,
+                left: 0,
+                bottom: max(0, cardDragging.cardHeight - self.view.safeAreaInsets.bottom),
+                right: 0
+            )
+            scrollView.scrollIndicatorInsets = scrollView.contentInset
         }
     }
 }
@@ -280,11 +282,17 @@ extension CollaborationFlowController {
 extension CollaborationFlowController: UIScrollViewDelegate {
     /// When the collaboration view content is scrolled we show/hide the FABs based on the current collaboration CTAs position against the header cover
     func scrollViewDidScroll(_: UIScrollView) {
-        updateFABsAlpha()
+        updateBottomCardVisibility()
     }
 
-    /// show/hide FABs when the corresponding collaboration view CTAs hide behind the header cover/show again
-    private func updateFABsAlpha() {
+    /// Observing contentSize to update the bottom card visibility (switching to show "less updates" in the feed may result in short
+    /// content, so the CTAs in the collaboration view can be revealed, so we bottom card should be hidden)
+    private func collaborationScrollViewContentSizeChanged() {
+        updateBottomCardVisibility()
+    }
+
+    /// show/hide bottom card when the corresponding collaboration view CTAs hide behind the header cover/show again
+    private func updateBottomCardVisibility() {
         guard let collaborationVC = collaborationVC,
               let headerCoverVC = collaborationHeaderCoverVC else { return }
 
@@ -293,10 +301,12 @@ extension CollaborationFlowController: UIScrollViewDelegate {
         let headerCoverBottom = headerCoverVC.view.frame.maxY
         let ctasTop = headerCoverVC.view.convert(ctas.frame, from: collaborationVC.detailsVC.view).minY
 
-        // once the collaboration view CTAs get behind the cover let's change the alpha to 1 on the
-        // distance equal to ctas height (so the fabs become fully opaque once the ctas are fully hidden)
-        let fabsAlpha = max(0, min(1, (headerCoverBottom - ctasTop) / ctas.frame.height))
-        actionButtons.forEach { $0.alpha = fabsAlpha }
+        // once the collaboration view CTAs get behind the cover let's show the bottom card
+        if headerCoverBottom - ctasTop >= ctas.frame.height {
+            setBottomCardHidden(false, animated: true)
+        } else {
+            setBottomCardHidden(true, animated: true)
+        }
     }
 }
 
@@ -315,7 +325,6 @@ extension CollaborationFlowController: CardDraggingDelegate {
         }
         // only show the header cover and FABs in .max position
         setCollaborationHeaderCoverHidden(position != .max, animated: true)
-        setFABsHidden(position != .max, animated: true)
     }
 
     /// Animate the collaboration header cover and FABs alpha as user is dragging the collaboration window card
@@ -331,7 +340,7 @@ extension CollaborationFlowController: CardDraggingDelegate {
         let headerCoverAlpha = max(0, min(1, (headerCoverBottom - 30 - collaborationViewTop) / 20))
         collaborationHeaderCoverVC.view.alpha = headerCoverAlpha
 
-        updateFABsAlpha()
+        updateBottomCardVisibility()
     }
 }
 
