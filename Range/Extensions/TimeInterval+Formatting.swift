@@ -104,19 +104,25 @@ extension TimeInterval {
         }
     }
 
-    static func dueDateFormat(_ timestamp: TimeInterval) -> String {
+    static func dueDateFormat(_ timestamp: TimeInterval, timeZone: TimeZone?) -> String {
         let date = Date(timeIntervalSince1970: timestamp)
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
         dateFormatter.dateStyle = .medium
+        if let timeZone = timeZone {
+            dateFormatter.timeZone = timeZone
+        }
         return dateFormatter.string(from: date)
     }
 
-    static func dueDateFormat2(_ timestamp: TimeInterval) -> String {
+    static func dueDateFormat2(_ timestamp: TimeInterval, timeZone: TimeZone?) -> String {
         let date = Date(timeIntervalSince1970: timestamp)
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
         dateFormatter.dateStyle = .long
+        if let timeZone = timeZone {
+            dateFormatter.timeZone = timeZone
+        }
         return dateFormatter.string(from: date)
     }
 }

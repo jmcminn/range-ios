@@ -519,6 +519,7 @@ extension CollaborationFlowController {
             : nil
         DatePickerCardViewController(
             title: "Due Date",
+            timeZone: model.projectSummary.timeZone,
             initialSelectedDate: currentDueDate,
             onDatePicked: { newDueDate in
                 // TODO: 446 timezone handling and update the collaboration

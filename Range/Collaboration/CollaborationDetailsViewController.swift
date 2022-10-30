@@ -107,7 +107,7 @@ class CollaborationDetailsViewController: UIViewController {
                 make.width.equalToSuperview().multipliedBy(0.5).offset(-24).priority(.high)
             }
 
-            dueDateButton = DueDateButton()
+            dueDateButton = DueDateButton(timeZone: projectModel.projectSummary.timeZone)
             dueDateButton.addTarget(self, action: #selector(dueDateTapped), for: .touchUpInside)
             view.addSubview(dueDateButton)
             dueDateButton.snp.makeConstraints { make in

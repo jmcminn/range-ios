@@ -461,7 +461,7 @@ extension CollaborationFeedViewController {
         } else if let update = feedItem.item as? Update, update.field == .dueDateTimestamp {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DueDateUpdate",
                                                      for: indexPath) as! DueDateUpdateFeedItemCell
-            cell.set(update: update)
+            cell.set(update: update, timeZone: projectModel.projectSummary.timeZone)
             return cell
         }
         return nil

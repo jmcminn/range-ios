@@ -5,12 +5,17 @@ import UIKit
 // it can be refactored to some common button...
 /// Displays a due date
 class DueDateButton: UIButton {
+    private let timeZone: TimeZone
+
     /// The due date
     var dueDate: TimeInterval? {
         didSet { updateButton() }
     }
 
-    init() {
+    /// - Parameters:
+    ///     - timezone: the timezone in which to display the due date (it's project time zone, not current user timezone)
+    init(timeZone: TimeZone) {
+        self.timeZone = timeZone
         super.init(frame: .zero)
 
         setupButton()
@@ -81,10 +86,15 @@ class DueDateButton: UIButton {
                     .font: UIFont.preferredFont(forTextStyle: .caption2),
                 ]
             )
-            title.append(NSAttributedString(string: TimeInterval.dueDateFormat(dueDate), attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
-                .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
-            ]))
+            title
+                .append(NSAttributedString(string: TimeInterval.dueDateFormat(dueDate, timeZone: timeZone),
+                                           attributes: [
+                                               .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
+                                               .font: UIFont._preferredFont(
+                                                   forTextStyle: .subheadline,
+                                                   symbolicTraits: .traitBold
+                                               ),
+                                           ]))
             setAttributedTitle(title, for: .normal)
         } else {
             let title = NSMutableAttributedString(

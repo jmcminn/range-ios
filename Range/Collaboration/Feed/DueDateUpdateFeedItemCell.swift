@@ -35,7 +35,7 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
     }
 
     /// Updates the text of the message.
-    func set(update: Update) {
+    func set(update: Update, timeZone: TimeZone) {
         let messageString = NSMutableAttributedString(
             string: update.user?.displayName ?? "",
             attributes: [
@@ -46,7 +46,7 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
         let message: String
         if let newDueDateInt = update.newValue.intValue {
             let newDueDate = TimeInterval(newDueDateInt) / 1000
-            let newDueDateString = TimeInterval.dueDateFormat(newDueDate)
+            let newDueDateString = TimeInterval.dueDateFormat(newDueDate, timeZone: timeZone)
             if update.oldValue.intValue == nil {
                 message = "added a due date of \(newDueDateString)"
             } else {

@@ -9,8 +9,11 @@ class DatePickerCardViewController: SheetCardViewController {
     private let datePicker = UIDatePicker()
     private let selectedDateLabel = LabelWithTextInsets()
     private var clearSelectionButton: UIButton!
+    let timeZone: TimeZone
 
     var selectedDate: Date?
+    /// called when user selects a date. The date has the same time as the initial selected date (or "now" if the initial date was
+    /// not provided)
     var onDatePicked: ((Date?) -> Void)?
 
     /// Initializer
@@ -18,7 +21,8 @@ class DatePickerCardViewController: SheetCardViewController {
     /// - Parameters:
     ///     - title:                         title of the card
     ///     - initialSelectedDate: the date to select initially, or today if `nil`
-    init(title: String?, initialSelectedDate: Date? = nil, onDatePicked: ((Date?) -> Void)? = nil) {
+    init(title: String?, timeZone: TimeZone, initialSelectedDate: Date? = nil, onDatePicked: ((Date?) -> Void)? = nil) {
+        self.timeZone = timeZone
         super.init(icon: UIImage(systemName: "calendar"), title: title)
         selectedDate = initialSelectedDate
         self.onDatePicked = onDatePicked
@@ -75,7 +79,7 @@ class DatePickerCardViewController: SheetCardViewController {
     }
 
     @objc func handleDateSelection() {
-        selectedDateLabel.text = TimeInterval.dueDateFormat2(datePicker.date.timeIntervalSince1970)
+        selectedDateLabel.text = TimeInterval.dueDateFormat2(datePicker.date.timeIntervalSince1970, timeZone: timeZone)
         selectedDate = datePicker.date
     }
 }
@@ -88,6 +92,7 @@ extension DatePickerCardViewController {
         if let selectedDate = selectedDate {
             datePicker.date = selectedDate
         }
+        datePicker.timeZone = timeZone
         datePicker.preferredDatePickerStyle = .inline
         datePicker.tintColor = .Pink_03
         datePicker.layer.cornerRadius = 13
