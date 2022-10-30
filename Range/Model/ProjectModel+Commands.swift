@@ -285,4 +285,36 @@ extension ProjectModel {
             UpdateCommentTextCommand(commentId: commentId, text: text),
         ]
     }
+
+    /// Updates the due date for collaboration. If the provided due date is the same as the current one it returns no commands
+    func update(dueDate: Date?, forCollaboration collaboration: Collaboration) -> [Command] {
+        // the date has the selected day in project timezone, the time needs to be updated
+        // to 23:59:59 (in project timezone) - the time might be different because there was
+        // no due date and the current time was used, or the time was different in Firestore (which shouldn't happen?)
+        let dueDateTimestamp: TimeInterval? = dueDate?._endOfDay(in: projectSummary.timeZone)?
+            .timeIntervalSince1970
+        guard dueDateTimestamp != collaboration.dueDateTimestamp else {
+            return []
+        }
+        return [
+            UpdateCollaborationDueDateCommand(
+                collaborationId: collaboration.id,
+                dueDateTimestamp: dueDateTimestamp
+            ),
+            AddUpdateCommand(
+                updateId: generateRealmId(),
+                parentId: collaboration.id,
+                parentType: "Collaboration",
+                timestamp: Date.now.timeIntervalSince1970,
+                userId: userId,
+                field: .dueDateTimestamp,
+                oldValue: collaboration.dueDateTimestamp != nil
+                    ? .int(Int(collaboration.dueDateTimestamp! * 1000))
+                    : nil,
+                newValue: dueDateTimestamp != nil
+                    ? .int(Int(dueDateTimestamp! * 1000))
+                    : nil
+            ),
+        ]
+    }
 }

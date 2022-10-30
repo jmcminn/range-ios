@@ -513,7 +513,6 @@ extension CollaborationFlowController {
 extension CollaborationFlowController {
     func editDueDateAction() {
         guard let collaboration = collaboration else { return }
-        // TODO: 446 timezone handling
         let currentDueDate = collaboration.dueDateTimestamp != nil
             ? Date(timeIntervalSince1970: collaboration.dueDateTimestamp!)
             : nil
@@ -521,12 +520,24 @@ extension CollaborationFlowController {
             title: "Due Date",
             timeZone: model.projectSummary.timeZone,
             initialSelectedDate: currentDueDate,
-            onDatePicked: { newDueDate in
-                // TODO: 446 timezone handling and update the collaboration
-                print("new due date: ", newDueDate)
+            onDatePicked: { [weak self] newDueDate in
+                self?.updateDueDate(newDueDate)
             }
         )
         .installAndShowCard(in: self)
+    }
+
+    private func updateDueDate(_ dueDate: Date?) {
+        guard let collaboration = collaboration else { return }
+        let commands = model.update(dueDate: dueDate, forCollaboration: collaboration)
+        guard !commands.isEmpty else { return }
+        Task {
+            do {
+                try await model.runCommands(commands)
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+            }
+        }
     }
 }
 

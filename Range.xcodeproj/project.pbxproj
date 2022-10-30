@@ -151,6 +151,9 @@
 		0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */; };
 		0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */; };
 		0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */; };
+		0A7121B8290EE2DC0013E2F8 /* Date+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */; };
+		0A7121BA290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */; };
+		0A7121BC290EEB010013E2F8 /* UpdateCollaborationDueDateCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121BB290EEB010013E2F8 /* UpdateCollaborationDueDateCommand+Firestore.swift */; };
 		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
 		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
@@ -435,6 +438,9 @@
 		0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryPageView.swift; sourceTree = "<group>"; };
 		0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerCardViewController.swift; sourceTree = "<group>"; };
 		0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCardViewController.swift; sourceTree = "<group>"; };
+		0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Utils.swift"; sourceTree = "<group>"; };
+		0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDueDateCommand.swift; sourceTree = "<group>"; };
+		0A7121BB290EEB010013E2F8 /* UpdateCollaborationDueDateCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpdateCollaborationDueDateCommand+Firestore.swift"; sourceTree = "<group>"; };
 		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
@@ -888,6 +894,7 @@
 			children = (
 				0A966F9928DDE5BD00E50284 /* Array+Utils.swift */,
 				0A724F6C28900D4400708C6B /* Async.swift */,
+				0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */,
 				0A720C6228007011003D6B13 /* Image+Resize.swift */,
 				0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */,
 				0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */,
@@ -1203,6 +1210,7 @@
 				0A724F4E28887ED300708C6B /* AddCommentCommand.swift */,
 				0A3831D628E44550001AF38A /* AddUpdateCommand.swift */,
 				0AD9B7652869DE22005ACFD7 /* AddUploadCommand.swift */,
+				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
@@ -1224,6 +1232,7 @@
 				0ABFD8B828F1D1AB008CDA74 /* AddCommentCommand+Firestore.swift */,
 				0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */,
 				0AD9B76A286A1726005ACFD7 /* AddUploadCommand+Firestore.swift */,
+				0A7121BB290EEB010013E2F8 /* UpdateCollaborationDueDateCommand+Firestore.swift */,
 				0ABFD8BC28F440CA008CDA74 /* UpdateCollaborationNameCommand+Firestore.swift */,
 				0A28A1C1290AD89100465A84 /* UpdateCollaborationTagsCommand+Firestore.swift */,
 				0AC89D7B2909452C00D3CCA1 /* UpdateCommentTextCommand+Firestore.swift */,
@@ -1501,6 +1510,7 @@
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
+				0A7121BC290EEB010013E2F8 /* UpdateCollaborationDueDateCommand+Firestore.swift in Sources */,
 				0A724F372888302400708C6B /* AddGeometryCommand.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
@@ -1537,6 +1547,7 @@
 				0ABFD8B428EEE80E008CDA74 /* UpdateUploadTagsCommand+Firestore.swift in Sources */,
 				0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
+				0A7121B8290EE2DC0013E2F8 /* Date+Utils.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirebaseParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */,
@@ -1553,6 +1564,7 @@
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,
 				0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */,
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
+				0A7121BA290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift in Sources */,
 				0A724F5128894A8500708C6B /* AddTagCommand+Firestore.swift in Sources */,
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
