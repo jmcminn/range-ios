@@ -10,6 +10,10 @@ class ProjectSummary: Object {
     @Persisted var name: String
     /// Center geo location for the project
     @Persisted var center: CLLocationCoordinate2D
+    /// project time zone
+    // TODO: should be read from Firestore when it's implemented there
+    // to be based on TZ Database name column from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    var timeZone: TimeZone = .init(identifier: "America/Los_Angeles") ?? TimeZone.current
 
     /// Default initializer required by Realm.
     override init() {
