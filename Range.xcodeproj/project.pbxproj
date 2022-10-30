@@ -149,6 +149,7 @@
 		0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */; };
 		0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */; };
 		0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */; };
+		0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */; };
 		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
 		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
@@ -431,6 +432,7 @@
 		0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_landscape.jpg; sourceTree = "<group>"; };
 		0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryViewController.swift; sourceTree = "<group>"; };
 		0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryPageView.swift; sourceTree = "<group>"; };
+		0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCardViewController.swift; sourceTree = "<group>"; };
 		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
@@ -917,6 +919,7 @@
 				0A97232A27FC839400D744F4 /* CardConfiguration.swift */,
 				0A4DC78C27F4D1EE00712518 /* CardPresentable.swift */,
 				0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */,
+				0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -1584,6 +1587,7 @@
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
 				0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */,
+				0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */,
 				0A34C1912846190A00BEDC7C /* FirebaseUpload.swift in Sources */,
 				0A130EA328D4E44D00FF1368 /* UIFont+Extensions.swift in Sources */,
 				0A30E8B02847AFAB00A50D54 /* PhotoDetailsViewController.swift in Sources */,
