@@ -29,13 +29,15 @@ final class FlowEvent: UIEvent {
     func moreAction(sender: Any?, event: FlowEvent)
     /// Toggle the complete state of the Note
     func toggleCompleteAction(sender: Any?, event: FlowEvent)
+    /// Edit due date for collaboration
+    func editDueDateAction()
 }
 
 /// Manages displaying collaboration window
 /// This flow controller is a UIViewController to be part of the UI responder chain but its view is a passthrough view so
 /// it does not interfere with canvas interactions.
 /// All subviews and cards are added to this view controller view.
-class CollaborationFlowController: UIViewController {
+class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     unowned let model: ProjectModel
     unowned let imageCaches: ImageCaches
     unowned let canvasContainer: CanvasContainerViewController
@@ -423,7 +425,7 @@ extension CollaborationFlowController {
 
 // MARK: - edit tags for collaboration or upload
 
-extension CollaborationFlowController: CollaborationFlowActions {
+extension CollaborationFlowController {
     func tagsSelectedAction(sender _: Any?, event: FlowEvent) {
         let object = event.object
         let initialTags: [TagViewModel]
@@ -506,6 +508,27 @@ extension CollaborationFlowController: CollaborationFlowActions {
     }
 }
 
+// MARK: - edit due date
+
+extension CollaborationFlowController {
+    func editDueDateAction() {
+        guard let collaboration = collaboration else { return }
+        // TODO: 446 timezone handling
+        let currentDueDate = collaboration.dueDateTimestamp != nil
+            ? Date(timeIntervalSince1970: collaboration.dueDateTimestamp!)
+            : nil
+        DatePickerCardViewController(
+            title: "Due Date",
+            initialSelectedDate: currentDueDate,
+            onDatePicked: { newDueDate in
+                // TODO: 446 timezone handling and update the collaboration
+                print("new due date: ", newDueDate)
+            }
+        )
+        .installAndShowCard(in: self)
+    }
+}
+
 // MARK: - name update UI action
 
 extension CollaborationFlowController {
@@ -550,7 +573,7 @@ extension CollaborationFlowController {
                     }),
                     ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive),
                 ]
-            ).show(in: canvasContainer)
+            ).installAndShowCard(in: canvasContainer)
         }
     }
 

@@ -108,6 +108,7 @@ class CollaborationDetailsViewController: UIViewController {
             }
 
             dueDateButton = DueDateButton()
+            dueDateButton.addTarget(self, action: #selector(dueDateTapped), for: .touchUpInside)
             view.addSubview(dueDateButton)
             dueDateButton.snp.makeConstraints { make in
                 make.top.height.width.equalTo(assigneeButton)
@@ -209,6 +210,28 @@ extension CollaborationDetailsViewController {
     }
 }
 
+// MARK: - actions
+
+extension CollaborationDetailsViewController {
+    @objc private func tagsTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.tagsSelectedAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(collaboration)
+        )
+    }
+
+    @objc private func dueDateTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.editDueDateAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(collaboration)
+        )
+    }
+}
+
 // MARK: - views
 
 extension CollaborationDetailsViewController {
@@ -228,15 +251,6 @@ extension CollaborationDetailsViewController {
         tagsView.showAddTagCell = true
         tagsView.tags = collaboration.tags.where { $0.placeholder == false }
         tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
-    }
-
-    @objc private func tagsTapped() {
-        UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.tagsSelectedAction(sender:event:)),
-            to: nil,
-            from: self,
-            for: FlowEvent(collaboration)
-        )
     }
 
     private func setupThumbnails() {

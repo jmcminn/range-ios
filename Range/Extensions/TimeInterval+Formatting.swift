@@ -111,6 +111,14 @@ extension TimeInterval {
         dateFormatter.dateStyle = .medium
         return dateFormatter.string(from: date)
     }
+
+    static func dueDateFormat2(_ timestamp: TimeInterval) -> String {
+        let date = Date(timeIntervalSince1970: timestamp)
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .none
+        dateFormatter.dateStyle = .long
+        return dateFormatter.string(from: date)
+    }
 }
 
 extension Calendar {

@@ -149,6 +149,7 @@
 		0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */; };
 		0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */; };
 		0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */; };
+		0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */; };
 		0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */; };
 		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
 		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
@@ -432,6 +433,7 @@
 		0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_landscape.jpg; sourceTree = "<group>"; };
 		0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryViewController.swift; sourceTree = "<group>"; };
 		0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryPageView.swift; sourceTree = "<group>"; };
+		0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerCardViewController.swift; sourceTree = "<group>"; };
 		0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCardViewController.swift; sourceTree = "<group>"; };
 		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
@@ -993,6 +995,7 @@
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0ABFD8B528F00A46008CDA74 /* Comment */,
+				0A7121B0290BB8330013E2F8 /* DatePicker */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
 				0A2E04D128AC0F5D00E10503 /* ImageCache */,
@@ -1072,6 +1075,14 @@
 				0A671F9828E9CE5500F78B34 /* PinPoint.swift */,
 			);
 			path = Pins;
+			sourceTree = "<group>";
+		};
+		0A7121B0290BB8330013E2F8 /* DatePicker */ = {
+			isa = PBXGroup;
+			children = (
+				0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */,
+			);
+			path = DatePicker;
 			sourceTree = "<group>";
 		};
 		0A724F522889730300708C6B /* Commands */ = {
@@ -1459,6 +1470,7 @@
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
 				0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */,
+				0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
 				0A724F4528887A7D00708C6B /* AddProjectSummaryCommand.swift in Sources */,
 				0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */,
