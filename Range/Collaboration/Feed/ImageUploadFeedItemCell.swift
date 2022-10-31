@@ -148,7 +148,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     }
 
     /// Update colors that doesn't automatically adapt to appearance change
-    func updateColors() {
+    private func updateColors() {
         imageAndDescriptionView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
         let gradientColor = chooseColor(light: .Neutral_02, dark: .Neutral_09)
         leftTagsViewGradient.gradientLayer.colors = [

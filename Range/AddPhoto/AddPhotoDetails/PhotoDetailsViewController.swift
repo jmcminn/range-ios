@@ -124,7 +124,6 @@ class PhotoDetailsViewController: UIViewController {
 
         if !viewsBuilt {
             buildViews()
-            updateColors()
             view.setNeedsLayout()
             view.layoutIfNeeded()
 
@@ -172,17 +171,6 @@ class PhotoDetailsViewController: UIViewController {
 
         // photo alpha changes when header height changes
         updateHeaderPhotoAlpha()
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateColors()
-        }
-    }
-
-    /// update colors that don't adapt automatically to appearance change
-    private func updateColors() {
-        descriptionView?.updateColors()
     }
 }
 

@@ -299,8 +299,6 @@ extension CollaborationDetailsViewController {
             updatesToggle.selectedSegmentIndex = 1
         }
         updatesToggle.backgroundColor = view.backgroundColor
-        // remove the border
-        updatesToggle.layer.borderWidth = 0
         view.addSubview(updatesToggle)
         updatesToggle.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(Constants.updatesTogglePaddings.left)

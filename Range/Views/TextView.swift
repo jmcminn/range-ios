@@ -2,9 +2,6 @@ import SnapKit
 import UIKit
 
 /// A wrapper for UITextView that adds a rounded border
-///
-/// - Warning: some colors need to be manually updated on user interface style change (dark/light)
-///             as it's applied as CGColor - use `updateColors` function for this.
 class TextView: UIView {
     /// wrapped text view, exposed for adding delegate
     let textView: UITextViewWithPlaceholder
@@ -26,8 +23,14 @@ class TextView: UIView {
         updateColors()
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColors()
+        }
+    }
+
     /// Adapt CG colors to interface style change
-    public func updateColors() {
+    private func updateColors() {
         // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
         layer.borderColor = chooseColor(light: .Neutral_03, dark: .Neutral_08).cgColor
     }

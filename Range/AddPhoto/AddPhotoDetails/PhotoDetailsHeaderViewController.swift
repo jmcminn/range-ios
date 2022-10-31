@@ -63,13 +63,6 @@ class PhotoDetailsHeaderViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    /// update colors that don't adapt automatically to appearance change
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            tagsDescriptionSegmentedControl?.updateColors()
-        }
-    }
-
     private func buildGalleryView() {
         galleryVC = ImageGalleryViewController(
             imageDataProviderFactory: { [imageCaches] in

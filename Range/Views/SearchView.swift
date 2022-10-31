@@ -16,9 +16,6 @@ import UIKit
 }
 
 /// Search view is a styled search field wrapped in a view with a border and a search icon
-///
-/// - Warning: some colors need to be manually updated on user interface style change (dark/light)
-///             as it's applied as CGColor - use `updateColors` function for this.
 class SearchView: UIView {
     /// Force unwrapped - don't use before `setupIcon`
     private var iconView: UIImageView!
@@ -99,8 +96,14 @@ class SearchView: UIView {
         }
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColors()
+        }
+    }
+
     /// Adapt CG colors to interface style change
-    public func updateColors() {
+    private func updateColors() {
         // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
         layer.borderColor = chooseColor(light: .Neutral_03, dark: .Neutral_08).cgColor
     }

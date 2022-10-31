@@ -29,7 +29,7 @@ class TagAddCollectionViewCell: UICollectionViewCell {
 
         tagBackgroundView.layer.borderWidth = 1
         tagBackgroundView.layer.cornerRadius = 16
-        tagBackgroundView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
+        tagBackgroundView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_08)
         contentView.addSubview(tagBackgroundView)
         tagBackgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview().priority(.high)
@@ -69,6 +69,6 @@ class TagAddCollectionViewCell: UICollectionViewCell {
 
     /// Update colors that doesn't automatically adapt to appearance change
     private func updateColors() {
-        tagBackgroundView.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        tagBackgroundView.layer.borderColor = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_07).cgColor
     }
 }

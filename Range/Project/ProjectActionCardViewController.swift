@@ -116,7 +116,6 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         }
         // stroke not visible in dark mode (same color as background)
         roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
-        searchView.updateColors()
     }
 }
 

@@ -49,7 +49,7 @@ class RoundShadowButton: UIControl {
     }
 
     /// Update colors that do not automatically adjust when appearance changes
-    func updateColors() {
+    private func updateColors() {
         layer.borderColor = style == .black
             ? UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
             : UIColor.Primary_Blue_06.cgColor

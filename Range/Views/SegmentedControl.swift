@@ -15,16 +15,13 @@ class SegmentedControlButton: UIButton {
 /// - the iOS component doesn't support setting background
 /// - it adds the shadow for selected element in the light mode
 /// - it doesn't allow to display image+text for a segment
-///
-/// - Warning: some colors need to be manually updated on user interface style change (dark/light)
-///             as it's applied as CGColor - use `updateColors` function for this.
 class SegmentedControl: UIView {
     // hardcoded view height
     static let height = 32.0
     // horizontal spacing between buttons
     private static let buttonsSpacing = 5.0
     // space between buttons and view bounds
-    private static let contentPadding = 2.0
+    private static let contentPadding = 2.5
 
     /// The index number that identifies the selected segment that the user last touched.
     var selectedSegmentIndex: Int = 0
@@ -221,9 +218,16 @@ class SegmentedControl: UIView {
         insertSubview(selectedSegmentIndicator, at: 0)
     }
 
+    /// update colors that don't adapt automatically to appearance change
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColors()
+        }
+    }
+
     /// Adapt CG colors to interface style change
-    public func updateColors() {
+    private func updateColors() {
         // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
-        layer.borderColor = chooseColor(light: .Neutral_03, dark: .Neutral_08).cgColor
+        layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 }

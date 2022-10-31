@@ -140,7 +140,6 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
 
     /// update colors that don't adapt automatically to appearance change
     private func updateColors() {
-        searchView?.updateColors()
         updateShadow()
     }
 
