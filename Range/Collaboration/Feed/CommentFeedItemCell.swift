@@ -157,12 +157,12 @@ class CommentFeedItemCell: UITableViewCell {
         if comment.isNote {
             updateCompleteButton()
             commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 14, bottom: 10, right: 50)
-            noteBackground.isHidden = false
+            noteBackground.leftBorderRadius = 4
             completeButton.isHidden = false
             noteBackground.statusView.backgroundColor = comment.completed ? .Green_03 : .Orange_03
         } else {
             commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-            noteBackground.isHidden = false
+            noteBackground.leftBorderRadius = 16
             completeButton.isHidden = true
             noteBackground.statusView.backgroundColor = .clear
         }
@@ -237,6 +237,11 @@ class NoteBackgroundView: UIView {
     /// colored strip on the left side of the view
     let statusView = UIView()
     private let backgroundLayer = CAShapeLayer()
+    var leftBorderRadius: CGFloat = 4 {
+        didSet {
+            updateCorners()
+        }
+    }
 
     init() {
         super.init(frame: .zero)
@@ -277,9 +282,9 @@ class NoteBackgroundView: UIView {
         // different radius) and it needs to be calculated when frame changes as we need mask path
         let cornersPath = UIBezierPath(
             roundRect: bounds,
-            topLeftRadius: 4,
+            topLeftRadius: leftBorderRadius,
             topRightRadius: 16,
-            bottomLeftRadius: 4,
+            bottomLeftRadius: leftBorderRadius,
             bottomRightRadius: 16
         ).cgPath
         let noteBackgroundMask = CAShapeLayer()
