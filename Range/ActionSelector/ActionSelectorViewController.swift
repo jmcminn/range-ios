@@ -84,7 +84,7 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
             forCell: cell,
             forRowAt: indexPath,
             backgroundColor: .dynamicColor(light: .Neutral_02, dark: .Neutral_09),
-            borderColor: .dynamicColor(light: .Neutral_03, dark: .Neutral_08),
+            borderColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_08),
             selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
         )
     }
