@@ -44,7 +44,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
         let messageString = NSMutableAttributedString(
             string: collaboration.author?.displayName ?? "",
             attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
+                .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
             ]
         )

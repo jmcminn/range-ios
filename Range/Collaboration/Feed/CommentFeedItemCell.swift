@@ -73,7 +73,7 @@ class CommentFeedItemCell: UITableViewCell {
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
 
-        authorLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
 
         timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
