@@ -275,8 +275,7 @@ extension ProjectModel {
         let makeCompleted = !note.completed
         return [UpdateNoteCompletedCommand(
             noteId: note.id,
-            completedById: makeCompleted ? userId : nil,
-            completedTimestamp: makeCompleted ? Date.now : nil
+            completedById: makeCompleted ? userId : nil
         )]
     }
 

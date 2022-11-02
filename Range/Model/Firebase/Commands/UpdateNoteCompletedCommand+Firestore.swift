@@ -7,8 +7,8 @@ extension UpdateNoteCompletedCommand: FirestoreCommand {
         transaction.updateData(
             [
                 FirebaseComment.CodingKeys.completedById.rawValue: completedById ?? FieldValue.delete(),
-                FirebaseComment.CodingKeys.completedTimestamp.rawValue: completedTimestamp != nil
-                    ? Timestamp(date: completedTimestamp!)
+                FirebaseComment.CodingKeys.completedTimestamp.rawValue: completedById != nil
+                    ? FieldValue.serverTimestamp()
                     : FieldValue.delete(),
             ],
             forDocument: context.commentsRef.document(noteId)

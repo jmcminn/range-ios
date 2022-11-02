@@ -1,7 +1,7 @@
 import FirebaseFirestore
 import Foundation
 
-/// Apply the `Upload` add/update in Firestore.
+/// Add the `Upload` in Firestore.
 extension AddUploadCommand: FirestoreCommand {
     func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreObject = FirebaseUpload(
@@ -16,9 +16,10 @@ extension AddUploadCommand: FirestoreCommand {
             fileTypeString: fileType.rawValue,
             imageHeightToWidth: imageHeightToWidth
         )
-        try transaction.setData(
-            from: firestoreObject,
-            forDocument: context.uploadsRef.document(uploadId)
-        )
+        var data = try Firestore.Encoder().encode(firestoreObject)
+
+        data[FirebaseUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()
+
+        transaction.setData(data, forDocument: context.uploadsRef.document(uploadId))
     }
 }

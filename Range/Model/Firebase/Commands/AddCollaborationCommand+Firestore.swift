@@ -1,7 +1,7 @@
 import FirebaseFirestore
 import Foundation
 
-/// Apply the `Collaboration` add/update in Firestore.
+/// Add the `Collaboration` in Firestore.
 extension AddCollaborationCommand: FirestoreCommand {
     func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreObject = FirebaseCollaboration(
@@ -15,9 +15,11 @@ extension AddCollaborationCommand: FirestoreCommand {
             assigneeId: assigneeId,
             dueDateTimestamp: dueDateTimestamp != nil ? Timestamp(date: dueDateTimestamp!) : nil
         )
-        try transaction.setData(
-            from: firestoreObject,
-            forDocument: context.collaborationsRef.document(collaborationId)
-        )
+
+        var data = try Firestore.Encoder().encode(firestoreObject)
+
+        data[FirebaseUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()
+
+        transaction.setData(data, forDocument: context.collaborationsRef.document(collaborationId))
     }
 }

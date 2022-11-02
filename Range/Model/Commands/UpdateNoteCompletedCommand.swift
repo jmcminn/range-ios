@@ -1,11 +1,10 @@
 import Foundation
 import RealmSwift
 
-/// Update completedBy, completedTimestamp for given note (comment)
+/// Update completedBy, completedTimestamp (serverside timestamp) for given note (comment)
 struct UpdateNoteCompletedCommand: Command, Equatable {
     let noteId: String
     var completedById: String?
-    var completedTimestamp: Date?
 
     func apply(inRealm _: Realm) throws {
         // this command is not run locally, only applied to firestore.

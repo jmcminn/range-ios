@@ -1,7 +1,7 @@
 import FirebaseFirestore
 import Foundation
 
-/// Apply the `Feature` add/update in Firestore.
+/// Add the `Feature` in Firestore.
 extension AddFeatureCommand: FirestoreCommand {
     func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreFeature = FirebaseFeature(geometryId: geometryId, name: name, description: featureDescription)

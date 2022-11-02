@@ -1,7 +1,7 @@
 import FirebaseFirestore
 import Foundation
 
-/// Apply the `Comment` add/update in Firestore.
+/// Add the `Comment` in Firestore.
 extension AddCommentCommand: FirestoreCommand {
     func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         let firestoreObject = FirebaseComment(
@@ -13,11 +13,14 @@ extension AddCommentCommand: FirestoreCommand {
             textIsEdited: textIsEdited,
             isNote: isNote,
             completedById: completedById,
+            // TODO: 460 it's never completed when created (?)
             completedTimestamp: completedTimestamp != nil ? Timestamp(date: completedTimestamp!) : nil
         )
-        try transaction.setData(
-            from: firestoreObject,
-            forDocument: context.commentsRef.document(commentId)
-        )
+
+        var data = try Firestore.Encoder().encode(firestoreObject)
+
+        data[FirebaseUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()
+
+        transaction.setData(data, forDocument: context.commentsRef.document(commentId))
     }
 }

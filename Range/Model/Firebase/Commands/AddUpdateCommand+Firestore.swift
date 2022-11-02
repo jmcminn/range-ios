@@ -13,9 +13,13 @@ extension AddUpdateCommand: FirestoreCommand {
             oldValue: oldValue,
             newValue: newValue
         )
-        try transaction.setData(
-            from: firestoreObject,
-            forDocument: context.updatesRef.document(updateId)
-        )
+
+        var data = try Firestore.Encoder().encode(firestoreObject)
+
+        // overwrite timestamp with serverTimestamp - we want the Firestore to set
+        // its current timestamp when creating the `Update`
+        data[FirebaseUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()
+
+        transaction.setData(data, forDocument: context.updatesRef.document(updateId))
     }
 }
