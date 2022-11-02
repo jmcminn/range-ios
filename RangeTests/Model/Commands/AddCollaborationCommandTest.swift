@@ -27,6 +27,7 @@ class AddCollaborationCommandTest: XCTestCase {
         let cmd = AddCollaborationCommand(
             collaborationId: "collaboration1",
             featureId: "feature1",
+            timestamp: Date.now,
             name: "",
             collaborationDescription: "",
             statusId: "status1",
@@ -63,6 +64,7 @@ class AddCollaborationCommandTest: XCTestCase {
         var cmd1 = AddCollaborationCommand(
             collaborationId: "collaboration1",
             featureId: "feature1",
+            timestamp: Date(timeIntervalSince1970: 1),
             name: "Collaboration1",
             collaborationDescription: "",
             statusId: "status1",
@@ -77,6 +79,7 @@ class AddCollaborationCommandTest: XCTestCase {
             realm.object(ofType: Collaboration.self, forPrimaryKey: "collaboration1"),
             "collaboration1 not found"
         )
+        XCTAssertEqual(collaboration1.timestamp.timeIntervalSince1970, 1)
         XCTAssertEqual(collaboration1.name, "Collaboration1")
         XCTAssertEqual(collaboration1.status, status1)
         XCTAssertEqual(collaboration1.feature.first, feature1)
@@ -96,6 +99,7 @@ class AddCollaborationCommandTest: XCTestCase {
         let cmd2 = AddCollaborationCommand(
             collaborationId: "collaboration2",
             featureId: "feature1",
+            timestamp: Date.now,
             name: "Collaboration2",
             collaborationDescription: "",
             statusId: "status1",
@@ -128,6 +132,7 @@ class AddCollaborationCommandTest: XCTestCase {
         let cmd = AddCollaborationCommand(
             collaborationId: "collaboration1",
             featureId: "feature1",
+            timestamp: Date.now,
             name: "",
             collaborationDescription: "",
             statusId: nil,
@@ -154,6 +159,7 @@ class AddCollaborationCommandTest: XCTestCase {
         var cmd = AddCollaborationCommand(
             collaborationId: "collaboration1",
             featureId: "feature1",
+            timestamp: Date.now,
             name: "",
             collaborationDescription: "",
             statusId: nil,

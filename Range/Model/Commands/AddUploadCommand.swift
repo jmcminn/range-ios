@@ -9,7 +9,7 @@ struct AddUploadCommand: Command, Equatable {
     var parentType: String
     var parentId: String
     var authorId: String
-    var timestamp: TimeInterval
+    var timestamp: Date
     var name: String?
     var uploadDescription: String?
     var tagIds: [String]

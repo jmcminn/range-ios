@@ -79,7 +79,7 @@ class DatePickerCardViewController: SheetCardViewController {
     }
 
     @objc func handleDateSelection() {
-        selectedDateLabel.text = TimeInterval.dueDateFormat2(datePicker.date.timeIntervalSince1970, timeZone: timeZone)
+        selectedDateLabel.text = Date.dueDateFormat2(datePicker.date, timeZone: timeZone)
         selectedDate = datePicker.date
     }
 }

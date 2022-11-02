@@ -8,12 +8,12 @@ extension AddCommentCommand: FirestoreCommand {
             parentId: parentId,
             parentType: parentType,
             authorId: authorId,
-            timestamp: Int(timestamp * 1000), // server-side is in milliseconds
+            timestamp: Timestamp(date: timestamp),
             text: text,
             textIsEdited: textIsEdited,
             isNote: isNote,
             completedById: completedById,
-            completedTimestamp: completedTimestamp != nil ? Int(completedTimestamp! * 1000) : nil
+            completedTimestamp: completedTimestamp != nil ? Timestamp(date: completedTimestamp!) : nil
         )
         try transaction.setData(
             from: firestoreObject,

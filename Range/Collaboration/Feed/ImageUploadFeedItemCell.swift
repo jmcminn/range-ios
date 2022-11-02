@@ -187,7 +187,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         uploadImageView.kf.cancelDownloadTask()
 
         if let upload = upload {
-            timestampLabel.text = TimeInterval.format1(upload.timestamp)
+            timestampLabel.text = Date.format1(upload.timestamp)
             possiblyUpdateUploadImageViewConstraints(upload: upload)
             guard let imageCaches = imageCaches else { return }
             uploadImageView.kf.setImage(

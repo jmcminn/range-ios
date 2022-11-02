@@ -8,7 +8,7 @@ extension UpdateNoteCompletedCommand: FirestoreCommand {
             [
                 FirebaseComment.CodingKeys.completedById.rawValue: completedById ?? FieldValue.delete(),
                 FirebaseComment.CodingKeys.completedTimestamp.rawValue: completedTimestamp != nil
-                    ? Int(completedTimestamp! * 1000)
+                    ? Timestamp(date: completedTimestamp!)
                     : FieldValue.delete(),
             ],
             forDocument: context.commentsRef.document(noteId)

@@ -1,5 +1,5 @@
-
 import CoreLocation
+import FirebaseFirestore
 import Foundation
 import RealmSwift
 
@@ -20,20 +20,20 @@ struct FirebaseUpdate: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Update
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case parentId = "parent", parentType, timestamp, userId = "user", field, oldValue, newValue
     }
 
     var parentId: String
     var parentType: String
-    var timestamp: Int // milliseconds
+    var timestamp: Timestamp
     var userId: String
     var field: String // allow anything but constrain to supported Update.Field when upserting
-    // old and new value can have different types depending on the field. For now support Int or
-    // String. The support needs to be made on the firebase object level as it requires proper
+    // old and new value can have different types depending on the field. For now Int, String or
+    // Date is supported. The support needs to be made on the firebase object level as it requires proper
     // decoding depending on the type. (e.g. it cannot say oldValue: AnyObject, as it's not Codable)
-    var oldValue: IntOrString?
-    var newValue: IntOrString?
+    var oldValue: IntOrStringOrDate?
+    var newValue: IntOrStringOrDate?
 
     func upsertCommand(id: String) throws -> Command {
         guard parentType == "Collaboration" else {
@@ -46,7 +46,7 @@ struct FirebaseUpdate: Codable, FirestoreToRealmSyncable {
             updateId: id,
             parentId: parentId,
             parentType: parentType,
-            timestamp: TimeInterval(timestamp) / 1000.0,
+            timestamp: timestamp.dateValue(),
             userId: userId,
             field: uploadField,
             oldValue: oldValue,

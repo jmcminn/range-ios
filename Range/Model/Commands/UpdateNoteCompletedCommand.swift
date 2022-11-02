@@ -5,7 +5,7 @@ import RealmSwift
 struct UpdateNoteCompletedCommand: Command, Equatable {
     let noteId: String
     var completedById: String?
-    var completedTimestamp: TimeInterval?
+    var completedTimestamp: Date?
 
     func apply(inRealm _: Realm) throws {
         // this command is not run locally, only applied to firestore.

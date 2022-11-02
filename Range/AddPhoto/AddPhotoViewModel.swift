@@ -10,7 +10,7 @@ struct PhotoToAdd {
     /// Identifier of the asset selected from the camera roll (only present if the photo was selected using photo picker)
     var assetIdentifier: String?
     /// when the photo was taken
-    var timestamp: TimeInterval
+    var timestamp: Date
     /// key for images.cameraCache, matches the storage keys, so composed of projectId and uploadId
     var cacheKey: String
     /// small 100x100 image (with proper aspect ratio)
@@ -96,7 +96,7 @@ class PhotosToAddViewModel: NSObject {
         return PhotoToAdd(
             uploadId: uploadId,
             assetIdentifier: result.assetIdentifier,
-            timestamp: Date.now.timeIntervalSince1970,
+            timestamp: Date.now,
             cacheKey: cacheKey,
             thumbnail: thumbnail,
             height2Width: thumbnail.size.height / thumbnail.size.width

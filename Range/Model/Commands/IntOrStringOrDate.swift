@@ -1,11 +1,11 @@
 import Foundation
 import RealmSwift
 
-/// Utility type to represent Int or String as Codable
-enum IntOrString: Codable, Equatable {
-    case int(Int), string(String)
+/// Utility type to represent Int, String or Date as Codable
+enum IntOrStringOrDate: Codable, Equatable {
+    case int(Int), string(String), date(Date)
 
-    enum IntOrStringError: Error {
+    enum IntOrStringOrDateError: Error {
         case missingValue
         case realmValueNotSupported
     }
@@ -17,6 +17,8 @@ enum IntOrString: Codable, Equatable {
             return .int(i)
         case let .string(s):
             return .string(s)
+        case let .date(d):
+            return .date(d)
         }
     }
 
@@ -27,6 +29,8 @@ enum IntOrString: Codable, Equatable {
             try container.encode(i)
         case let .string(s):
             try container.encode(s)
+        case let .date(d):
+            try container.encode(d)
         }
     }
 
@@ -35,12 +39,15 @@ enum IntOrString: Codable, Equatable {
             self = .int(int)
             return
         }
-
         if let string = try? decoder.singleValueContainer().decode(String.self) {
             self = .string(string)
             return
         }
+        if let date = try? decoder.singleValueContainer().decode(Date.self) {
+            self = .date(date)
+            return
+        }
 
-        throw IntOrStringError.missingValue
+        throw IntOrStringOrDateError.missingValue
     }
 }

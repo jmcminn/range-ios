@@ -6,7 +6,7 @@ extension UpdateCollaborationDueDateCommand: FirestoreCommand {
     func apply(inFirestoreTransaction transaction: Transaction, context: ProjectModelFirestoreContext) throws {
         transaction.updateData(
             [FirebaseCollaboration.CodingKeys.dueDateTimestamp.rawValue: dueDateTimestamp != nil
-                ? Int(dueDateTimestamp! * 1000)
+                ? Timestamp(date: dueDateTimestamp!)
                 : FieldValue.delete()],
             forDocument: context.collaborationsRef.document(collaborationId)
         )

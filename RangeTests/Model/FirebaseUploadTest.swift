@@ -1,3 +1,4 @@
+import FirebaseFirestore
 @testable import Range
 import XCTest
 
@@ -8,7 +9,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: 1000,
+            timestamp: Timestamp(date: Date(timeIntervalSince1970: 1000)),
             name: "name",
             uploadDescription: "description",
             correlationId: "upload1",
@@ -23,7 +24,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
                 parentType: "Collaboration",
                 parentId: "collaboration1",
                 authorId: "user1",
-                timestamp: 1,
+                timestamp: Date(timeIntervalSince1970: 1000),
                 name: "name",
                 uploadDescription: "description",
                 tagIds: ["tag1"]
@@ -36,7 +37,7 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             parentId: "feature1",
             parentType: "Feature",
             authorId: "user1",
-            timestamp: 1000,
+            timestamp: Timestamp(),
             name: "name",
             uploadDescription: "description",
             correlationId: "upload1",

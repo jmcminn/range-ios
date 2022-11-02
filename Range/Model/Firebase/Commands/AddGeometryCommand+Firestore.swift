@@ -7,7 +7,7 @@ extension AddGeometryCommand: FirestoreCommand {
         let firestoreGeometry = FirebaseGeometry(
             canvasId: canvasId,
             geometry: geometry,
-            archivedTimestamp: archivedTimestamp != nil ? Int(archivedTimestamp! * 1000) : nil
+            archivedTimestamp: archivedTimestamp != nil ? Timestamp(date: archivedTimestamp!) : nil
         )
         try transaction.setData(
             from: firestoreGeometry,

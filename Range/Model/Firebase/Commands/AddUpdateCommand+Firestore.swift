@@ -7,7 +7,7 @@ extension AddUpdateCommand: FirestoreCommand {
         let firestoreObject = FirebaseUpdate(
             parentId: parentId,
             parentType: parentType,
-            timestamp: Int(timestamp * 1000), // server-side is in milliseconds,
+            timestamp: Timestamp(date: timestamp),
             userId: userId,
             field: field.rawValue,
             oldValue: oldValue,

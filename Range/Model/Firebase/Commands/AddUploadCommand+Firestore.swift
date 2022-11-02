@@ -8,7 +8,7 @@ extension AddUploadCommand: FirestoreCommand {
             parentId: parentId,
             parentType: parentType,
             authorId: authorId,
-            timestamp: Int(timestamp * 1000), // server-side is in milliseconds
+            timestamp: Timestamp(date: timestamp),
             name: name,
             uploadDescription: uploadDescription,
             correlationId: correlationId,

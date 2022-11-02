@@ -6,13 +6,13 @@ struct AddCollaborationCommand: Command, Equatable {
     let collaborationId: String
     var featureId: String
     var authorId: String?
-    var timestamp: TimeInterval?
+    var timestamp: Date
     var name: String
     var collaborationDescription: String?
     var statusId: String?
     var tagIds: [String]
     var assigneeId: String?
-    var dueDateTimestamp: TimeInterval?
+    var dueDateTimestamp: Date?
 
     func apply(inRealm realm: Realm) throws {
         // remove the collaboration from the tags it was attached to and is not anymore

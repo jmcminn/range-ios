@@ -6,11 +6,11 @@ struct AddUpdateCommand: Command, Equatable {
     let updateId: String
     var parentId: String
     var parentType: String
-    var timestamp: TimeInterval
+    var timestamp: Date
     var userId: String
     var field: Update.Field
-    var oldValue: IntOrString?
-    var newValue: IntOrString?
+    var oldValue: IntOrStringOrDate?
+    var newValue: IntOrStringOrDate?
 
     func apply(inRealm realm: Realm) throws {
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)

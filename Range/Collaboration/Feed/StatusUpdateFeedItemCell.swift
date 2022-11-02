@@ -71,8 +71,12 @@ class StatusUpdateFeedItemCell: UITableViewCell {
         // to 1st line because of the non braking space but that's acceptable.
         let nonBrakingSpace = " "
         messageString
-            .append(NSAttributedString(string: " \(nonBrakingSpace)\(TimeInterval.format2(update.timestamp)).",
-                                       attributes: textAttributes))
+            .append(
+                NSAttributedString(
+                    string: " \(nonBrakingSpace)\(Date.format2(update.timestamp)).",
+                    attributes: textAttributes
+                )
+            )
         messageLabel.attributedText = messageString
     }
 

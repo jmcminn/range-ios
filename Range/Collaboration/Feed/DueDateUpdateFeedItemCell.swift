@@ -44,10 +44,9 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
             ]
         )
         let message: String
-        if let newDueDateInt = update.newValue.intValue {
-            let newDueDate = TimeInterval(newDueDateInt) / 1000
-            let newDueDateString = TimeInterval.dueDateFormat(newDueDate, timeZone: timeZone)
-            if update.oldValue.intValue == nil {
+        if let newDueDate = update.newValue.dateValue {
+            let newDueDateString = Date.dueDateFormat(newDueDate, timeZone: timeZone)
+            if update.oldValue.dateValue == nil {
                 message = "added a due date of \(newDueDateString)"
             } else {
                 message = "changed the due date to \(newDueDateString)"
@@ -56,7 +55,7 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
             message = "removed the due date"
         }
         messageString.append(NSAttributedString(
-            string: " \(message) \(TimeInterval.format2(update.timestamp)).",
+            string: " \(message) \(Date.format2(update.timestamp)).",
             attributes: [
                 .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
                 .font: UIFont.preferredFont(forTextStyle: .footnote),

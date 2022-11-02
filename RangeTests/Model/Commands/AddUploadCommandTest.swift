@@ -32,7 +32,7 @@ class AddUploadCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user2",
-            timestamp: 1,
+            timestamp: Date.now,
             name: nil,
             uploadDescription: nil,
             tagIds: []
@@ -61,8 +61,18 @@ class AddUploadCommandTest: XCTestCase {
             avatarUrl: nil,
             email: "first@last.com"
         )
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: 1, name: "Collaboration1", description: "")
-        let collaboration2 = Collaboration(id: "collaboration2", timestamp: 1, name: "Collaboration2", description: "")
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            timestamp: Date.now,
+            name: "Collaboration1",
+            description: ""
+        )
+        let collaboration2 = Collaboration(
+            id: "collaboration2",
+            timestamp: Date.now,
+            name: "Collaboration2",
+            description: ""
+        )
         try realm.write {
             realm.add([user1, collaboration1, collaboration2])
         }
@@ -77,7 +87,7 @@ class AddUploadCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
-            timestamp: 1,
+            timestamp: Date(timeIntervalSince1970: 1),
             name: "upload 1",
             uploadDescription: "upload 1 description",
             tagIds: []
@@ -88,7 +98,7 @@ class AddUploadCommandTest: XCTestCase {
         XCTAssertEqual(collaboration1.uploads.count, 1)
         XCTAssertEqual(collaboration2.uploads.count, 0)
         let upload1 = try XCTUnwrap(realm.object(ofType: Upload.self, forPrimaryKey: "upload1"), "upload1 not found")
-        XCTAssertEqual(upload1.timestamp, 1)
+        XCTAssertEqual(upload1.timestamp.timeIntervalSince1970, 1)
         XCTAssertEqual(upload1.name, "upload 1")
         XCTAssertEqual(upload1.uploadDescription, "upload 1 description")
         XCTAssertEqual(upload1.author, user1)
@@ -110,7 +120,7 @@ class AddUploadCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
-            timestamp: 1,
+            timestamp: Date.now,
             name: "upload 2",
             uploadDescription: "upload 2 description",
             tagIds: []
@@ -150,7 +160,7 @@ class AddUploadCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
-            timestamp: 1,
+            timestamp: Date.now,
             name: "upload 1",
             uploadDescription: "upload 1 description",
             tagIds: ["tag1", "tag2", "tag1"]

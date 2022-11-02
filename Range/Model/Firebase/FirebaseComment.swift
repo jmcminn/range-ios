@@ -1,5 +1,6 @@
 
 import CoreLocation
+import FirebaseFirestore
 import Foundation
 import RealmSwift
 
@@ -27,12 +28,12 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
     var parentId: String
     var parentType: String
     var authorId: String
-    var timestamp: Int // milliseconds
+    var timestamp: Timestamp
     var text: String
     var textIsEdited: Bool? // if missing will default to false
     var isNote: Bool? // if missing will default to false
     var completedById: String? // participant id
-    var completedTimestamp: Int? // milliseconds
+    var completedTimestamp: Timestamp?
 
     func upsertCommand(id: String) throws -> Command {
         guard parentType == "Collaboration" else {
@@ -43,12 +44,12 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
             parentType: parentType,
             parentId: parentId,
             authorId: authorId,
-            timestamp: TimeInterval(timestamp) / 1000.0,
+            timestamp: timestamp.dateValue(),
             text: text,
             textIsEdited: textIsEdited ?? false,
             isNote: isNote ?? false,
             completedById: completedById,
-            completedTimestamp: completedTimestamp != nil ? TimeInterval(completedTimestamp!) / 1000.0 : nil
+            completedTimestamp: completedTimestamp?.dateValue()
         )
     }
 }

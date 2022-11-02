@@ -1,16 +1,11 @@
 import Foundation
 
-extension TimeInterval {
-    /// Returns the formatted timestamp as defined in Figma for primary timestamp type
-    /// - Parameter timestamp: the timestamp to format
-    /// - Parameter now: the current timestamp can be customized - used in tests
+extension Date {
+    /// Returns the formatted date as defined in Figma for primary timestamp type
+    /// - Parameter date: the date to format
+    /// - Parameter now: the current date can be customized - used in tests
     /// - Parameter locale: the locale to be used for formatting, customized in tests
-    static func format1(_ timestamp: TimeInterval, now: TimeInterval = Date.now.timeIntervalSince1970,
-                        locale: Locale = Locale.current) -> String
-    {
-        let date = Date(timeIntervalSince1970: timestamp)
-        let now = Date(timeIntervalSince1970: now)
-
+    static func format1(_ date: Date, now: Date = Date.now, locale: Locale = Locale.current) -> String {
         var calendar = Calendar.current
         calendar.locale = locale
 
@@ -42,16 +37,11 @@ extension TimeInterval {
         }
     }
 
-    /// Returns the formatted timestamp as defined in Figma for secondary timestamp type
-    /// - Parameter timestamp: the timestamp to format
-    /// - Parameter now: the current timestamp can be customized - used in tests
+    /// Returns the formatted date as defined in Figma for secondary timestamp type
+    /// - Parameter date: the date to format
+    /// - Parameter now: the current date can be customized - used in tests
     /// - Parameter locale: the locale to be used for formatting, customized in tests
-    static func format2(_ timestamp: TimeInterval, now: TimeInterval = Date.now.timeIntervalSince1970,
-                        locale: Locale = Locale.current) -> String
-    {
-        let date = Date(timeIntervalSince1970: timestamp)
-        let now = Date(timeIntervalSince1970: now)
-
+    static func format2(_ date: Date, now: Date = Date.now, locale: Locale = Locale.current) -> String {
         var calendar = Calendar.current
         calendar.locale = locale
 
@@ -70,16 +60,13 @@ extension TimeInterval {
         }
     }
 
-    /// Returns the formatted timestamp as defined in Figma for tertiary timestamp type
-    /// - Parameter timestamp: the timestamp to format
-    /// - Parameter now: the current timestamp can be customized - used in tests
+    /// Returns the formatted date as defined in Figma for tertiary timestamp type
+    /// - Parameter timestamp: the date to format
+    /// - Parameter now: the current date can be customized - used in tests
     /// - Parameter locale: the locale to be used for formatting, customized in tests
-    static func format3(_ timestamp: TimeInterval, now: TimeInterval = Date.now.timeIntervalSince1970,
+    static func format3(_ date: Date, now: Date = Date.now,
                         locale: Locale = Locale.current) -> String
     {
-        let date = Date(timeIntervalSince1970: timestamp)
-        let now = Date(timeIntervalSince1970: now)
-
         let timeFormatter = DateFormatter()
         timeFormatter.dateStyle = .none
         timeFormatter.timeStyle = .short
@@ -104,8 +91,7 @@ extension TimeInterval {
         }
     }
 
-    static func dueDateFormat(_ timestamp: TimeInterval, timeZone: TimeZone?) -> String {
-        let date = Date(timeIntervalSince1970: timestamp)
+    static func dueDateFormat(_ date: Date, timeZone: TimeZone?) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
         dateFormatter.dateStyle = .medium
@@ -115,8 +101,7 @@ extension TimeInterval {
         return dateFormatter.string(from: date)
     }
 
-    static func dueDateFormat2(_ timestamp: TimeInterval, timeZone: TimeZone?) -> String {
-        let date = Date(timeIntervalSince1970: timestamp)
+    static func dueDateFormat2(_ date: Date, timeZone: TimeZone?) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
         dateFormatter.dateStyle = .long

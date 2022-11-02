@@ -1,7 +1,7 @@
 @testable import Range
 import XCTest
 
-final class TimeIntervalFormattingTest: XCTestCase {
+final class DateFormattingTest: XCTestCase {
     let formatter = DateFormatter()
     let locale = Locale(identifier: "en-US")
 
@@ -10,23 +10,23 @@ final class TimeIntervalFormattingTest: XCTestCase {
         formatter.locale = locale
     }
 
-    // helper function to return TimeInterval for given time string formatted as
+    // helper function to return Date for given time string formatted as
     // YYYY-MM-dd HH:mm
-    private func _t(_ timeString: String) -> TimeInterval {
-        formatter.date(from: timeString)!.timeIntervalSince1970
+    private func _t(_ timeString: String) -> Date {
+        formatter.date(from: timeString)!
     }
 
     // helper functions for shorter tests
     private func format1(_ timestamp: String, now: String) -> String {
-        TimeInterval.format1(_t(timestamp), now: _t(now), locale: locale)
+        Date.format1(_t(timestamp), now: _t(now), locale: locale)
     }
 
     private func format2(_ timestamp: String, now: String) -> String {
-        TimeInterval.format2(_t(timestamp), now: _t(now), locale: locale)
+        Date.format2(_t(timestamp), now: _t(now), locale: locale)
     }
 
     private func format3(_ timestamp: String, now: String) -> String {
-        TimeInterval.format3(_t(timestamp), now: _t(now), locale: locale)
+        Date.format3(_t(timestamp), now: _t(now), locale: locale)
     }
 
     func testFormat1() throws {

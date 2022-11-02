@@ -513,13 +513,10 @@ extension CollaborationFlowController {
 extension CollaborationFlowController {
     func editDueDateAction() {
         guard let collaboration = collaboration else { return }
-        let currentDueDate = collaboration.dueDateTimestamp != nil
-            ? Date(timeIntervalSince1970: collaboration.dueDateTimestamp!)
-            : nil
         DatePickerCardViewController(
             title: "Due Date",
             timeZone: model.projectSummary.timeZone,
-            initialSelectedDate: currentDueDate,
+            initialSelectedDate: collaboration.dueDateTimestamp,
             onDatePicked: { [weak self] newDueDate in
                 self?.updateDueDate(newDueDate)
             }

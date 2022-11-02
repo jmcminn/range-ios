@@ -13,8 +13,8 @@ class Collaboration: Object, WithPlaceholder {
     // the author, needs to be optional because of how Realm
     // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
     @Persisted var author: Participant?
-    // timestamp (since 1970)
-    @Persisted var timestamp: TimeInterval?
+    // timestamp
+    @Persisted var timestamp: Date
     /// name
     @Persisted var name: String
     /// description (can't really use the description name for it as it's already used)
@@ -29,8 +29,8 @@ class Collaboration: Object, WithPlaceholder {
     @Persisted var tags: List<Tag>
     /// optional assignee
     @Persisted var assignee: Participant?
-    /// due date timestamp (since 1970)
-    @Persisted var dueDateTimestamp: TimeInterval?
+    /// due date timestamp
+    @Persisted var dueDateTimestamp: Date?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -41,7 +41,7 @@ class Collaboration: Object, WithPlaceholder {
 
     /// Whether the due date passed already
     var isOverdue: Bool {
-        dueDateTimestamp != nil && dueDateTimestamp! < Date.now.timeIntervalSince1970
+        dueDateTimestamp != nil && dueDateTimestamp! < Date.now
     }
 
     /// Default initializer required by Realm.
@@ -52,11 +52,11 @@ class Collaboration: Object, WithPlaceholder {
     /// Initializer to init all the fields of object.
     init(
         id: String,
-        timestamp: TimeInterval?,
+        timestamp: Date,
         name: String,
         description: String?,
         placeholder: Bool = false,
-        dueDateTimestamp: TimeInterval? = nil
+        dueDateTimestamp: Date? = nil
     ) {
         super.init()
         self.id = id
@@ -71,7 +71,7 @@ class Collaboration: Object, WithPlaceholder {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
-            timestamp: 0,
+            timestamp: Date(),
             name: "",
             description: nil,
             placeholder: true

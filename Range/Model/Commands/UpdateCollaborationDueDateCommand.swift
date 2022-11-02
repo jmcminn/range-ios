@@ -4,7 +4,7 @@ import RealmSwift
 /// Update dueDateTimestamp for given Collaboration
 struct UpdateCollaborationDueDateCommand: Command, Equatable {
     let collaborationId: String
-    var dueDateTimestamp: TimeInterval?
+    var dueDateTimestamp: Date?
 
     func apply(inRealm _: Realm) throws {
         // this command is not run locally, only applied to firestore.

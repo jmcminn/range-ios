@@ -1,3 +1,4 @@
+import FirebaseFirestore
 @testable import Range
 import XCTest
 
@@ -8,7 +9,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: 1000,
+            timestamp: Timestamp(date: Date(timeIntervalSince1970: 1)),
             text: "comment 1"
         )
         XCTAssertEqual(
@@ -18,7 +19,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
                 parentType: "Collaboration",
                 parentId: "collaboration1",
                 authorId: "user1",
-                timestamp: 1,
+                timestamp: Date(timeIntervalSince1970: 1),
                 text: "comment 1",
                 textIsEdited: false,
                 isNote: false,
@@ -34,12 +35,12 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: 1000,
+            timestamp: Timestamp(date: Date(timeIntervalSince1970: 1)),
             text: "comment 1",
             textIsEdited: true,
             isNote: true,
             completedById: "user2",
-            completedTimestamp: 2000
+            completedTimestamp: Timestamp(date: Date(timeIntervalSince1970: 2))
         )
         XCTAssertEqual(
             try firebaseComment.upsertCommand(id: "comment1") as? AddCommentCommand,
@@ -48,12 +49,12 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
                 parentType: "Collaboration",
                 parentId: "collaboration1",
                 authorId: "user1",
-                timestamp: 1,
+                timestamp: Date(timeIntervalSince1970: 1),
                 text: "comment 1",
                 textIsEdited: true,
                 isNote: true,
                 completedById: "user2",
-                completedTimestamp: 2
+                completedTimestamp: Date(timeIntervalSince1970: 2)
             )
         )
     }
@@ -63,7 +64,7 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             parentId: "feature1",
             parentType: "Feature",
             authorId: "user1",
-            timestamp: 1,
+            timestamp: Timestamp(),
             text: "comment 1"
         )
         XCTAssertThrowsError(

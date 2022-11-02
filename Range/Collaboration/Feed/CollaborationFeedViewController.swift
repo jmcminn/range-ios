@@ -12,15 +12,15 @@ class CollaborationFeedViewController: UIViewController {
     /// will need hash when computing the diff and the object may already be gone (if some upload was removed for example)
     struct FeedItem: Hashable, Comparable {
         var id: String
-        var timestamp: TimeInterval
+        var timestamp: Date
         var item: AnyObject
         // whether this is a major or minor feed item
         var isMajor: Bool
 
         init?(asCollaborationCreated collaboration: Collaboration) {
-            guard let timestamp = collaboration.timestamp, collaboration.author != nil else { return nil }
+            guard collaboration.author != nil else { return nil }
             id = collaboration.id
-            self.timestamp = timestamp
+            timestamp = collaboration.timestamp
             item = collaboration
             isMajor = true
         }

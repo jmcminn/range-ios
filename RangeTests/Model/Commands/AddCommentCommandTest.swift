@@ -30,7 +30,7 @@ class AddCommentCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user2",
-            timestamp: 1,
+            timestamp: Date.now,
             text: "",
             textIsEdited: false, isNote: false
         )
@@ -58,8 +58,18 @@ class AddCommentCommandTest: XCTestCase {
             avatarUrl: nil,
             email: "first@last.com"
         )
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: 1, name: "Collaboration1", description: "")
-        let collaboration2 = Collaboration(id: "collaboration2", timestamp: 1, name: "Collaboration2", description: "")
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            timestamp: Date.now,
+            name: "Collaboration1",
+            description: ""
+        )
+        let collaboration2 = Collaboration(
+            id: "collaboration2",
+            timestamp: Date.now,
+            name: "Collaboration2",
+            description: ""
+        )
         try realm.write {
             realm.add([user1, collaboration1, collaboration2])
         }
@@ -72,7 +82,7 @@ class AddCommentCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
-            timestamp: 1,
+            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 1",
             textIsEdited: false,
             isNote: false
@@ -88,7 +98,7 @@ class AddCommentCommandTest: XCTestCase {
         )
         XCTAssertEqual(comment1.text, "comment 1")
         XCTAssertEqual(comment1.author, user1)
-        XCTAssertEqual(comment1.timestamp, 1)
+        XCTAssertEqual(comment1.timestamp.timeIntervalSince1970, 1)
 
         // 3. update comment1
         cmd1.text = "comment 1 ..."
@@ -105,7 +115,7 @@ class AddCommentCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
-            timestamp: 2,
+            timestamp: Date.now,
             text: "comment 2",
             textIsEdited: false,
             isNote: false
@@ -145,7 +155,12 @@ class AddCommentCommandTest: XCTestCase {
             avatarUrl: nil,
             email: "first@last2.com"
         )
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: 1, name: "Collaboration1", description: "")
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            timestamp: Date.now,
+            name: "Collaboration1",
+            description: ""
+        )
         try realm.write {
             realm.add([user1, user2, collaboration1])
         }
@@ -157,12 +172,12 @@ class AddCommentCommandTest: XCTestCase {
             parentType: "Collaboration",
             parentId: "collaboration1",
             authorId: "user1",
-            timestamp: 1,
+            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 1",
             textIsEdited: true,
             isNote: true,
             completedById: "user2",
-            completedTimestamp: 2
+            completedTimestamp: Date(timeIntervalSince1970: 2)
         )
         try realm.write {
             try cmd1.apply(inRealm: realm)
@@ -174,10 +189,10 @@ class AddCommentCommandTest: XCTestCase {
         )
         XCTAssertEqual(comment1.text, "comment 1")
         XCTAssertEqual(comment1.author, user1)
-        XCTAssertEqual(comment1.timestamp, 1)
+        XCTAssertEqual(comment1.timestamp.timeIntervalSince1970, 1)
         XCTAssertTrue(comment1.isNote)
         XCTAssertTrue(comment1.textIsEdited)
         XCTAssertEqual(comment1.completedBy, user2)
-        XCTAssertEqual(comment1.completedTimestamp, 2)
+        XCTAssertEqual(comment1.completedTimestamp?.timeIntervalSince1970, 2)
     }
 }

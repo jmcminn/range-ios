@@ -77,7 +77,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
                 .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
             ]
         )
-        let messageText = " changed the \(update.field.rawValue) \(TimeInterval.format2(update.timestamp))."
+        let messageText = " changed the \(update.field.rawValue) \(Date.format2(update.timestamp))."
         messageString.append(NSAttributedString(string: messageText, attributes: [
             .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
             .font: UIFont.preferredFont(forTextStyle: .footnote),

@@ -48,10 +48,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
                 .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
             ]
         )
-        var messageText = " created this issue"
-        if let timestamp = collaboration.timestamp {
-            messageText += " " + TimeInterval.format3(timestamp)
-        }
+        var messageText = " created this issue " + Date.format3(collaboration.timestamp)
         messageString.append(NSAttributedString(string: messageText, attributes: [
             .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
             .font: UIFont.preferredFont(forTextStyle: .footnote),

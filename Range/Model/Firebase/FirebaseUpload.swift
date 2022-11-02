@@ -1,5 +1,6 @@
 
 import CoreLocation
+import FirebaseFirestore
 import Foundation
 import RealmSwift
 
@@ -29,7 +30,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     var parentId: String
     var parentType: String
     var authorId: String
-    var timestamp: Int // milliseconds
+    var timestamp: Timestamp
     var name: String?
     var uploadDescription: String?
     var correlationId: String
@@ -55,7 +56,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
             parentType: parentType,
             parentId: parentId,
             authorId: authorId,
-            timestamp: TimeInterval(timestamp) / 1000.0, // TimeInterval is in seconds
+            timestamp: timestamp.dateValue(),
             name: name,
             uploadDescription: uploadDescription,
             tagIds: tagIds,

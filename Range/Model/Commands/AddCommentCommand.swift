@@ -7,12 +7,12 @@ struct AddCommentCommand: Command, Equatable {
     var parentType: String
     var parentId: String
     var authorId: String
-    var timestamp: TimeInterval
+    var timestamp: Date
     var text: String
     var textIsEdited: Bool
     var isNote: Bool
     var completedById: String?
-    var completedTimestamp: TimeInterval?
+    var completedTimestamp: Date?
 
     func apply(inRealm realm: Realm) throws {
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)

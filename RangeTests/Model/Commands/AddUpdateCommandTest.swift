@@ -29,7 +29,7 @@ class AddUpdateCommandTest: XCTestCase {
             updateId: "udpate1",
             parentId: "collaboration1",
             parentType: "Collaboration",
-            timestamp: 1,
+            timestamp: Date.now,
             userId: "user2",
             field: .name
         )
@@ -57,8 +57,18 @@ class AddUpdateCommandTest: XCTestCase {
             avatarUrl: nil,
             email: "first@last.com"
         )
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: 1, name: "Collaboration1", description: "")
-        let collaboration2 = Collaboration(id: "collaboration2", timestamp: 1, name: "Collaboration2", description: "")
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            timestamp: Date.now,
+            name: "Collaboration1",
+            description: ""
+        )
+        let collaboration2 = Collaboration(
+            id: "collaboration2",
+            timestamp: Date.now,
+            name: "Collaboration2",
+            description: ""
+        )
         try realm.write {
             realm.add([user1, collaboration1, collaboration2])
         }
@@ -70,7 +80,7 @@ class AddUpdateCommandTest: XCTestCase {
             updateId: "update1",
             parentId: "collaboration1",
             parentType: "Collaboration",
-            timestamp: 1,
+            timestamp: Date(timeIntervalSince1970: 1),
             userId: "user1",
             field: .name,
             oldValue: nil,
@@ -82,7 +92,7 @@ class AddUpdateCommandTest: XCTestCase {
         XCTAssertEqual(collaboration1.updates.count, 1)
         XCTAssertEqual(collaboration2.updates.count, 0)
         let update1 = try XCTUnwrap(realm.object(ofType: Update.self, forPrimaryKey: "update1"), "update1 not found")
-        XCTAssertEqual(update1.timestamp, 1)
+        XCTAssertEqual(update1.timestamp.timeIntervalSince1970, 1)
         XCTAssertEqual(update1.user, user1)
         XCTAssertEqual(update1.field, Update.Field.name)
         XCTAssertEqual(update1.oldValue, .none)
@@ -93,7 +103,7 @@ class AddUpdateCommandTest: XCTestCase {
             updateId: "update2",
             parentId: "collaboration1",
             parentType: "Collaboration",
-            timestamp: 1,
+            timestamp: Date.now,
             userId: "user1",
             field: .name,
             oldValue: .string("before"),

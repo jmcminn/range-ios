@@ -12,8 +12,8 @@ class Update: Object, WithPlaceholder {
     @Persisted(primaryKey: true) var id: String
     /// Backlink to the Collaboration. This is automatically updated whenever this upload is added to or removed from the parent
     @Persisted(originProperty: "updates") var collaboration: LinkingObjects<Collaboration>
-    // timestamp (since 1970)
-    @Persisted var timestamp: TimeInterval
+    // timestamp
+    @Persisted var timestamp: Date
     // the user who created the update, needs to be optional because of how Realm
     // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
     @Persisted var user: Participant?
@@ -35,7 +35,7 @@ class Update: Object, WithPlaceholder {
     /// Initializer to init all the fields of object.
     init(
         id: String,
-        timestamp: TimeInterval,
+        timestamp: Date,
         field: Field,
         oldValue: AnyRealmValue,
         newValue: AnyRealmValue,
@@ -54,7 +54,7 @@ class Update: Object, WithPlaceholder {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
-            timestamp: 0,
+            timestamp: Date(),
             field: .name,
             oldValue: AnyRealmValue.none,
             newValue: AnyRealmValue.none,

@@ -56,7 +56,7 @@ class CompletedStatusUpdateFeedItemCell: UITableViewCell {
             ]
         )
         messageString.append(NSAttributedString(
-            string: " completed this issue \(TimeInterval.format3(update.timestamp)).",
+            string: " completed this issue \(Date.format3(update.timestamp)).",
             attributes: [
                 .foregroundColor: status.color,
                 .font: UIFont.preferredFont(forTextStyle: .footnote),

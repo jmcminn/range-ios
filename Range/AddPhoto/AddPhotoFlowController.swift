@@ -138,7 +138,7 @@ class AddPhotoFlowController {
 
         let photoToAdd = PhotoToAdd(
             uploadId: uploadId,
-            timestamp: Date.now.timeIntervalSince1970,
+            timestamp: Date.now,
             cacheKey: cacheKey,
             thumbnail: image.imageResized(toFill: 100),
             height2Width: image.size.height / image.size.width

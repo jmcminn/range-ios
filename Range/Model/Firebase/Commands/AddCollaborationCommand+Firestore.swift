@@ -7,13 +7,13 @@ extension AddCollaborationCommand: FirestoreCommand {
         let firestoreObject = FirebaseCollaboration(
             featureId: featureId,
             authorId: authorId,
-            timestamp: timestamp != nil ? Int(timestamp! * 1000) : nil,
+            timestamp: Timestamp(date: timestamp),
             statusId: statusId,
             name: name,
             collaborationDescription: collaborationDescription,
             tagIds: tagIds,
             assigneeId: assigneeId,
-            dueDateTimestamp: dueDateTimestamp != nil ? Int(dueDateTimestamp! * 1000) : nil
+            dueDateTimestamp: dueDateTimestamp != nil ? Timestamp(date: dueDateTimestamp!) : nil
         )
         try transaction.setData(
             from: firestoreObject,

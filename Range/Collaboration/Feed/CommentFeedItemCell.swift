@@ -137,7 +137,7 @@ class CommentFeedItemCell: UITableViewCell {
     func set(comment: Comment) {
         self.comment = comment
         authorLabel.text = comment.author?.displayName
-        timestampLabel.text = TimeInterval.format1(comment.timestamp)
+        timestampLabel.text = Date.format1(comment.timestamp)
 
         let textString = NSMutableAttributedString(
             string: comment.text,
@@ -197,7 +197,7 @@ class CommentFeedItemCell: UITableViewCell {
             )
             var messageText = " completed this note"
             if let timestamp = comment.completedTimestamp {
-                messageText += " " + TimeInterval.format3(timestamp)
+                messageText += " " + Date.format3(timestamp)
             }
             messageString.append(NSAttributedString(string: messageText, attributes: [
                 .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),

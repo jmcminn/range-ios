@@ -8,7 +8,7 @@ class DueDateButton: UIButton {
     private let timeZone: TimeZone
 
     /// The due date
-    var dueDate: TimeInterval? {
+    var dueDate: Date? {
         didSet { updateButton() }
     }
 
@@ -87,7 +87,7 @@ class DueDateButton: UIButton {
                 ]
             )
             title
-                .append(NSAttributedString(string: TimeInterval.dueDateFormat(dueDate, timeZone: timeZone),
+                .append(NSAttributedString(string: Date.dueDateFormat(dueDate, timeZone: timeZone),
                                            attributes: [
                                                .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
                                                .font: UIFont._preferredFont(

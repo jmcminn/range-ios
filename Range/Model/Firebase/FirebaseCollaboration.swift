@@ -1,4 +1,5 @@
 import CoreLocation
+import FirebaseFirestore
 import Foundation
 import OSLog
 import RealmSwift
@@ -26,26 +27,26 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
 
     var featureId: String
     var authorId: String?
-    var timestamp: Int? // milliseconds
+    var timestamp: Timestamp
     var statusId: String?
     var name: String
     var collaborationDescription: String?
     var tagIds: [String]
     var assigneeId: String?
-    var dueDateTimestamp: Int? // milliseconds
+    var dueDateTimestamp: Timestamp?
 
     func upsertCommand(id: String) throws -> Command {
         AddCollaborationCommand(
             collaborationId: id,
             featureId: featureId,
             authorId: authorId,
-            timestamp: timestamp != nil ? TimeInterval(timestamp!) / 1000.0 : nil,
+            timestamp: timestamp.dateValue(),
             name: name,
             collaborationDescription: collaborationDescription,
             statusId: statusId,
             tagIds: tagIds,
             assigneeId: assigneeId,
-            dueDateTimestamp: dueDateTimestamp != nil ? TimeInterval(dueDateTimestamp!) / 1000.0 : nil
+            dueDateTimestamp: dueDateTimestamp?.dateValue()
         )
     }
 }

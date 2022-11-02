@@ -1,3 +1,4 @@
+import FirebaseFirestore
 @testable import Range
 import XCTest
 
@@ -7,7 +8,7 @@ class FirebaseCollaborationTest: XCTestCase {
         let firebaseCollaboration = FirebaseCollaboration(
             featureId: "feature1",
             authorId: "user1",
-            timestamp: 1000,
+            timestamp: Timestamp(date: Date(timeIntervalSince1970: 1)),
             statusId: "status1",
             name: "Collaboration1",
             collaborationDescription: "",
@@ -19,7 +20,7 @@ class FirebaseCollaborationTest: XCTestCase {
                 collaborationId: "collaboration1",
                 featureId: "feature1",
                 authorId: "user1",
-                timestamp: 1.0,
+                timestamp: Date(timeIntervalSince1970: 1),
                 name: "Collaboration1",
                 collaborationDescription: "",
                 statusId: "status1",

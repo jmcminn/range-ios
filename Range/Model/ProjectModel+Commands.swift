@@ -81,7 +81,7 @@ extension ProjectModel {
             collaborationId = collaboration.id
         } else {
             collaborationId = generateRealmId()
-            let timestamp = photosToAdd.first?.timestamp ?? Date.now.timeIntervalSince1970
+            let timestamp = photosToAdd.first?.timestamp ?? Date.now
             commands.append(AddCollaborationCommand(
                 collaborationId: collaborationId,
                 featureId: featureId,
@@ -147,7 +147,7 @@ extension ProjectModel {
             name: "",
             featureDescription: nil
         )
-        let timestamp = photosToAdd.first?.timestamp ?? Date.now.timeIntervalSince1970
+        let timestamp = photosToAdd.first?.timestamp ?? Date.now
         let addCollaborationCmd = AddCollaborationCommand(
             collaborationId: generateRealmId(),
             featureId: addFeatureCmd.featureId,
@@ -178,7 +178,7 @@ extension ProjectModel {
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     @MainActor
     func _addUpload(uploadId: String,
-                    timestamp: TimeInterval,
+                    timestamp: Date,
                     tags: [TagViewModel],
                     description: String,
                     toCollaboration collaborationId: String,
@@ -247,7 +247,7 @@ extension ProjectModel {
                 parentType: "Collaboration",
                 parentId: collaborationId,
                 authorId: userId,
-                timestamp: Date.now.timeIntervalSince1970,
+                timestamp: Date.now,
                 text: commentText,
                 textIsEdited: false,
                 isNote: isNote
@@ -262,7 +262,7 @@ extension ProjectModel {
                 updateId: generateRealmId(),
                 parentId: collaborationId,
                 parentType: "Collaboration",
-                timestamp: Date.now.timeIntervalSince1970,
+                timestamp: Date.now,
                 userId: userId,
                 field: .name,
                 oldValue: .string(oldName),
@@ -276,7 +276,7 @@ extension ProjectModel {
         return [UpdateNoteCompletedCommand(
             noteId: note.id,
             completedById: makeCompleted ? userId : nil,
-            completedTimestamp: makeCompleted ? Date.now.timeIntervalSince1970 : nil
+            completedTimestamp: makeCompleted ? Date.now : nil
         )]
     }
 
@@ -291,29 +291,24 @@ extension ProjectModel {
         // the date has the selected day in project timezone, the time needs to be updated
         // to 23:59:59 (in project timezone) - the time might be different because there was
         // no due date and the current time was used, or the time was different in Firestore (which shouldn't happen?)
-        let dueDateTimestamp: TimeInterval? = dueDate?._endOfDay(in: projectSummary.timeZone)?
-            .timeIntervalSince1970
-        guard dueDateTimestamp != collaboration.dueDateTimestamp else {
+        let endOfDayDueDate: Date? = dueDate?._endOfDay(in: projectSummary.timeZone)
+        guard endOfDayDueDate != collaboration.dueDateTimestamp else {
             return []
         }
         return [
             UpdateCollaborationDueDateCommand(
                 collaborationId: collaboration.id,
-                dueDateTimestamp: dueDateTimestamp
+                dueDateTimestamp: endOfDayDueDate
             ),
             AddUpdateCommand(
                 updateId: generateRealmId(),
                 parentId: collaboration.id,
                 parentType: "Collaboration",
-                timestamp: Date.now.timeIntervalSince1970,
+                timestamp: Date.now,
                 userId: userId,
                 field: .dueDateTimestamp,
-                oldValue: collaboration.dueDateTimestamp != nil
-                    ? .int(Int(collaboration.dueDateTimestamp! * 1000))
-                    : nil,
-                newValue: dueDateTimestamp != nil
-                    ? .int(Int(dueDateTimestamp! * 1000))
-                    : nil
+                oldValue: collaboration.dueDateTimestamp != nil ? .date(collaboration.dueDateTimestamp!) : nil,
+                newValue: endOfDayDueDate != nil ? .date(endOfDayDueDate!) : nil
             ),
         ]
     }

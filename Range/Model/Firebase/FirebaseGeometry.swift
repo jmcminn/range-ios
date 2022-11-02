@@ -1,4 +1,5 @@
 import CoreLocation
+import FirebaseFirestore
 import FirebaseFirestoreSwift
 import Foundation
 import RealmSwift
@@ -32,9 +33,9 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
     /// decodes into Turf Geometry
     var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
     /// not nil if the geometry was archived
-    var archivedTimestamp: Int? // milliseconds
+    var archivedTimestamp: Timestamp?
 
-    init(canvasId: String, geometry: Turf.Geometry, archivedTimestamp: Int? = nil) {
+    init(canvasId: String, geometry: Turf.Geometry, archivedTimestamp: Timestamp? = nil) {
         self.canvasId = canvasId
         self.geometry = geometry
         self.archivedTimestamp = archivedTimestamp
@@ -62,7 +63,7 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
         let coordinates = CLLocationCoordinate2D(latitude: coordinatesArray[1], longitude: coordinatesArray[0])
 
         geometry = .point(Point(coordinates))
-        archivedTimestamp = try container.decodeIfPresent(Int.self, forKey: .archivedTimestamp)
+        archivedTimestamp = try container.decodeIfPresent(Timestamp.self, forKey: .archivedTimestamp)
     }
 
     /// Custom implementation of encoding that handles different geometry types
@@ -94,7 +95,7 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
             canvasId: canvasId,
             annotationType: annotationType,
             geometry: geometry,
-            archivedTimestamp: archivedTimestamp != nil ? TimeInterval(archivedTimestamp!) / 1000.0 : nil
+            archivedTimestamp: archivedTimestamp?.dateValue()
         )
     }
 }
