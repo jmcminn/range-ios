@@ -415,7 +415,8 @@ extension CollaborationFeedViewController {
         } else if let upload = feedItem.item as? Upload, upload.fileType == .image {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
                                                      for: indexPath) as! ImageUploadFeedItemCell
-            cell.imageCaches = imageCaches
+            let imageCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 1)
+            cell.imageDataProvider = imageCaches.imageProvider(forPhotoWithCacheKey: imageCacheKey)
             cell.set(upload: upload)
             return cell
         } else if let comment = feedItem.item as? Comment {

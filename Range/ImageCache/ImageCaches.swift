@@ -25,12 +25,7 @@ func thumbnailKey(forUploadKey key: String, thumbnailNumber: Int = 0) -> String 
 /// 1 - 650x650>
 /// see the [generate thumbnails function repo](https://gitlab.com/range.io/range.io/-/blob/master/modules/firebase-functions-generate-thumbnails/src/generate-thumbnails-from-upload.js#L27)
 /// for more details
-///
-/// For now iOS uses only thumbnail0
 class ImageCaches {
-    /// The UUID for the project
-    let projectId: String
-
     /// Firebase storage for uploading photos
     let storage = Storage.storage()
 
@@ -42,9 +37,7 @@ class ImageCaches {
     /// The default cache for the images. Should be created outside of this class when it's actually used for displaying uploads...
     let downloadsCache = ImageCache.default
 
-    init(projectId: String) {
-        self.projectId = projectId
-
+    init() {
         localPhotosCache.diskStorage.config.expiration = .never
     }
 
@@ -54,12 +47,10 @@ class ImageCaches {
         LocalPhotosImageDataProvider(localPhotosCache: localPhotosCache, cacheKey: cacheKey)
     }
 
-    /// Returns image data provider for upload.
+    /// Returns image data provider for given cache key.
     /// Returns an instance of FirebaseStoreImageDataProvider which allows Kingfisher images cache to load the image from Firebase.
-    /// if thumbnailNumber is provided it returns the key for thumbnail
-    func imageProvider(forUpload upload: Upload, thumbnailNumber: Int? = nil) -> RangeImageDataProvider {
-        let uploadKey = uploadKey(projectId: projectId, uploadId: upload.id, thumbnailNumber: thumbnailNumber)
-        let ref = Storage.storage().reference(withPath: uploadKey)
+    func imageProvider(forPhotoWithCacheKey cacheKey: String) -> RangeImageDataProvider {
+        let ref = Storage.storage().reference(withPath: cacheKey)
         return FirebaseStorageImageDataProvider(localPhotosCache: localPhotosCache, ref: ref)
     }
 

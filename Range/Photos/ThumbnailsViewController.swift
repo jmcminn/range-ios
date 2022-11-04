@@ -139,7 +139,8 @@ class ThumbnailsViewController: UIViewController {
     private func imageProvider(forItemAt indexPath: IndexPath) -> ImageDataProvider? {
         guard indexPath.item < uploads.count else { return nil }
         let upload = uploads[indexPath.item]
-        return imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 0)
+        let uploadCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 0)
+        return imageCaches.imageProvider(forPhotoWithCacheKey: uploadCacheKey)
     }
 }
 
@@ -185,7 +186,7 @@ extension ThumbnailsViewController {
                 withReuseIdentifier: "ThumbnailCell",
                 for: indexPath
             ) as! ThumbnailCollectionViewCell
-            cell.imageCaches = imageCaches
+            cell.imageDataProvider = imageProvider(forItemAt: indexPath)
             cell.upload = upload
             return cell
         } else {

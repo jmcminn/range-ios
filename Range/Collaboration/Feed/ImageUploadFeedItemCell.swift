@@ -1,4 +1,5 @@
 import Foundation
+import Kingfisher
 import RealmSwift
 import SnapKit
 import UIKit
@@ -18,7 +19,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let leftTagsViewGradient = GradientView()
     let rightTagsViewGradient = GradientView()
 
-    weak var imageCaches: ImageCaches?
+    var imageDataProvider: ImageDataProvider?
     weak var upload: Upload?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -189,10 +190,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
         if let upload = upload {
             timestampLabel.text = Date.format1(upload.timestamp)
             possiblyUpdateUploadImageViewConstraints(upload: upload)
-            guard let imageCaches = imageCaches else { return }
-            uploadImageView.kf.setImage(
-                with: imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 1)
-            )
+            guard let imageDataProvider = imageDataProvider else { return }
+            uploadImageView.kf.setImage(with: imageDataProvider)
             tagsView.tags = upload.tags.where { $0.placeholder == false }
         } else {
             timestampLabel.text = nil

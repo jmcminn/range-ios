@@ -1,5 +1,6 @@
 import FirebaseStorage
 import Foundation
+import Kingfisher
 import RealmSwift
 import UIKit
 
@@ -10,7 +11,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
     /// listen to changes in upload and reload the image
     private var notificationToken: NotificationToken?
 
-    weak var imageCaches: ImageCaches?
+    var imageDataProvider: ImageDataProvider?
     weak var upload: Upload? {
         didSet {
             reloadImage()
@@ -64,11 +65,9 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
     }
 
     private func reloadImage() {
-        if let upload = upload, let imageCaches = imageCaches {
+        if let imageDataProvider = imageDataProvider {
             imageView.kf.cancelDownloadTask()
-            imageView.kf.setImage(
-                with: imageCaches.imageProvider(forUpload: upload, thumbnailNumber: 0)
-            )
+            imageView.kf.setImage(with: imageDataProvider)
         } else {
             imageView.image = nil
         }
@@ -76,5 +75,6 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         upload = nil
+        imageDataProvider = nil
     }
 }

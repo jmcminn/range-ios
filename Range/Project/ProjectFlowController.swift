@@ -41,7 +41,8 @@ final class ProjectFlowController: UIViewController {
                                            demoProject: DemoProject) async throws -> ProjectFlowController
     {
         let projectId = demoProject.id
-        let imageCaches = ImageCaches(projectId: projectId)
+        // TODO: 457 move imageCaches and pendingUploadsModel to ProjectsFlowController
+        let imageCaches = ImageCaches()
         let pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches)
         try await pendingUploadsModel.start()
 
