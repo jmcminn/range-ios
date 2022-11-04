@@ -16,7 +16,7 @@ class AddTagCommandTest: XCTestCase {
         model = try ProjectModel(
             userId: "user1",
             projectId: UUID().uuidString,
-            imageCaches: ImageCaches(projectId: ""),
+            imageCaches: ImageCaches(),
             pendingUploadsModel: pendingUploadsModel,
             inMemory: true
         )

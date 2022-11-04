@@ -6,6 +6,8 @@ import UIKit
 /// This flow controller is a UINavigationController as it pushes project flow controller(s) onto the navigation stack
 class ProjectsFlowController: UINavigationController {
     private let userId: String
+    let imageCaches = ImageCaches()
+    let pendingUploadsModel: FirebasePendingUploadsModel
 
     private let projects = [DemoProject.vanderbilt, DemoProject.preserve]
 
@@ -13,8 +15,9 @@ class ProjectsFlowController: UINavigationController {
 
     var projectFC: ProjectFlowController?
 
-    init(userId: String) {
+    init(userId: String) throws {
         self.userId = userId
+        pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches)
         super.init(rootViewController: LaunchScreenViewController())
     }
 
@@ -23,29 +26,33 @@ class ProjectsFlowController: UINavigationController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func start() {
+    func start() async throws {
+        try await pendingUploadsModel.start()
+
         // reopen last project
         if let lastOpenProjectId = UserDefaults.lastOpenProjectId,
            let lastOpenProject = projects.first(where: { $0.id == lastOpenProjectId })
         {
             // try load the last open project
-            Task {
-                do {
-                    self.projectFC = try await buildProjectFlowController(lastOpenProject)
-                    setViewControllers([buildProjectsViewController(), self.projectFC!], animated: false)
-                    self.setNavigationBarHidden(true, animated: false)
-                    UserDefaults.lastOpenProjectId = lastOpenProjectId
-                } catch {
-                    Logger.model
-                        .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
-                    // fallback to projects list only
-                    setViewControllers([buildProjectsViewController()], animated: false)
-                    UserDefaults.lastOpenProjectId = nil
-                }
+            do {
+                projectFC = try await buildProjectFlowController(lastOpenProject)
+                setViewControllers([buildProjectsViewController(), projectFC!], animated: false)
+                setNavigationBarHidden(true, animated: false)
+                UserDefaults.lastOpenProjectId = lastOpenProjectId
+            } catch {
+                Logger.model
+                    .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
+                // fallback to projects list only
+                setViewControllers([buildProjectsViewController()], animated: false)
+                UserDefaults.lastOpenProjectId = nil
             }
         } else {
             setViewControllers([buildProjectsViewController()], animated: false)
         }
+    }
+
+    func stop() {
+        pendingUploadsModel.stop()
     }
 
     private func buildProjectsViewController() -> ActionSelectorViewController {
@@ -101,7 +108,9 @@ class ProjectsFlowController: UINavigationController {
     private func buildProjectFlowController(_ demoProject: DemoProject) async throws -> ProjectFlowController {
         let projectFC = try await ProjectFlowController.buildProjectFlowController(
             userId: userId,
-            demoProject: demoProject
+            demoProject: demoProject,
+            imageCaches: imageCaches,
+            pendingUploadsModel: pendingUploadsModel
         )
         projectFC.onBack = { [weak self] in
             _ = self?.popViewController(animated: true)

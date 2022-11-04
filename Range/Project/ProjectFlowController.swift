@@ -7,10 +7,9 @@ import UIKit
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
-    let imageCaches: ImageCaches
+    unowned let imageCaches: ImageCaches
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
-    let pendingUploadsModel: FirebasePendingUploadsModel
 
     let canvasContainer: CanvasContainerViewController
     let collaborationFlow: CollaborationFlowController
@@ -37,14 +36,13 @@ final class ProjectFlowController: UIViewController {
     ///     - userId: range id of the logged in user
     ///     - projectId: id of the project
     /// - Returns: loaded ProjectModel
-    static func buildProjectFlowController(userId: String,
-                                           demoProject: DemoProject) async throws -> ProjectFlowController
-    {
+    static func buildProjectFlowController(
+        userId: String,
+        demoProject: DemoProject,
+        imageCaches: ImageCaches,
+        pendingUploadsModel: PendingUploadsModel
+    ) async throws -> ProjectFlowController {
         let projectId = demoProject.id
-        // TODO: 457 move imageCaches and pendingUploadsModel to ProjectsFlowController
-        let imageCaches = ImageCaches()
-        let pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches)
-        try await pendingUploadsModel.start()
 
         let projectModel = try ProjectModel(
             userId: userId,
@@ -62,22 +60,19 @@ final class ProjectFlowController: UIViewController {
         return try ProjectFlowController(
             imageCaches: imageCaches,
             model: projectModel,
-            modelFirestoreSync: projectModelFirestoreSync,
-            pendingUploadsModel: pendingUploadsModel
+            modelFirestoreSync: projectModelFirestoreSync
         )
     }
 
     fileprivate init(
         imageCaches: ImageCaches,
         model: ProjectModel,
-        modelFirestoreSync: ProjectModelFirestoreSync,
-        pendingUploadsModel: FirebasePendingUploadsModel
+        modelFirestoreSync: ProjectModelFirestoreSync
 
     ) throws {
         self.imageCaches = imageCaches
         self.model = model
         self.modelFirestoreSync = modelFirestoreSync
-        self.pendingUploadsModel = pendingUploadsModel
 
         canvasContainer = try CanvasContainerViewController(model: model)
         collaborationFlow = CollaborationFlowController(
@@ -153,7 +148,6 @@ final class ProjectFlowController: UIViewController {
     }
 
     func stop() {
-        pendingUploadsModel.stop()
         collaborationFlow.stop()
         pinsDisplay?.stop()
         canvasContainer.removeCard(cardViewController: actionCardVC)

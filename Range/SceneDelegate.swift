@@ -40,14 +40,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Show the main flow for the app (which currently is the projects listing)
     private func showProjects(forUser userId: String) {
-        let projectsFlowController = ProjectsFlowController(userId: userId)
-        projectsFlowController.onSignedOut = { [weak self] in
-            self?.onSignedOut()
-        }
-        window!.rootViewController = projectsFlowController
-        window!.makeKeyAndVisible()
+        Task {
+            do {
+                let projectsFlowController = try ProjectsFlowController(userId: userId)
+                projectsFlowController.onSignedOut = { [weak self, weak projectsFlowController] in
+                    projectsFlowController?.stop()
+                    self?.onSignedOut()
+                }
+                window!.rootViewController = projectsFlowController
+                window!.makeKeyAndVisible()
 
-        projectsFlowController.start()
+                try await projectsFlowController.start()
+            } catch {
+                DispatchQueue.main.async {
+                    self.onSignedOut()
+                    self.showProjectsOpenError(withMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func showProjectsOpenError(withMessage message: String) {
+        let alertController = UIAlertController(
+            title: "Loading project failed",
+            message: message,
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: "Ok", style: .cancel) { _ in })
+        window!.rootViewController!.present(alertController, animated: true)
     }
 
     private func onSignedOut() {
