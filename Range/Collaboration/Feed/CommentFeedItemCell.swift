@@ -183,11 +183,9 @@ class CommentFeedItemCell: UITableViewCell {
 
     /// update the text and insets for completed label
     private func updateCompletedLabel(comment: Comment) {
-        let completed: Bool = comment.completed
-
-        // distance from view above if it has text, collapse otherwise
-        completedLabel.textInsets = completed ? UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0) : .zero
-        if completed {
+        if comment.completed, let completedTimestamp = comment.completedTimestamp {
+            // distance from view above if it has text, collapse otherwise
+            completedLabel.textInsets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
             let messageString = NSMutableAttributedString(
                 string: comment.completedBy?.displayName ?? "",
                 attributes: [
@@ -195,10 +193,7 @@ class CommentFeedItemCell: UITableViewCell {
                     .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                 ]
             )
-            var messageText = " completed this note"
-            if let timestamp = comment.completedTimestamp {
-                messageText += " " + Date.format3(timestamp)
-            }
+            var messageText = " completed this note " + Date.format3(completedTimestamp)
             messageString.append(NSAttributedString(string: messageText, attributes: [
                 .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
                 .font: UIFont.preferredFont(forTextStyle: .caption2),
@@ -206,6 +201,7 @@ class CommentFeedItemCell: UITableViewCell {
 
             completedLabel.attributedText = messageString
         } else {
+            completedLabel.textInsets = .zero
             completedLabel.attributedText = nil
         }
     }

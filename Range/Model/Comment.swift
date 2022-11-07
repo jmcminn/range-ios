@@ -23,9 +23,9 @@ class Comment: Object, WithPlaceholder {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
-    /// Derived property, whether the note is completed or not, based on the presence of completedTimestamp
+    /// Derived property, whether the note is completed or not, based on the presence of completedBy
     var completed: Bool {
-        completedTimestamp != nil
+        completedBy != nil
     }
 
     /// Default initializer required by Realm.

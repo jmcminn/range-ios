@@ -36,7 +36,7 @@ class Collaboration: Object, WithPlaceholder {
 
     /// If it has uncompleted notes
     var hasUncompletedNotes: Bool {
-        comments.contains { $0.isNote == true && $0.completedTimestamp == nil }
+        comments.contains { $0.isNote == true && $0.completedBy == nil }
     }
 
     /// Whether the due date passed already
