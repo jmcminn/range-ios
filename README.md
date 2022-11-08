@@ -25,14 +25,23 @@ In order for Swift Package Manager to download it, follow the instructions in â€
 
 ## Firebase connection
 
-By default the app connects to Range `development` firebase account.
+There are separate GoogleService-Info.plist files for different environments:
 
-To switch to Firebase emulator use the `Range firebase emulator` scheme instead of `Range` to start the app.
+The currently configured are:
+- GoogleService-Info.dev.plist for `development` firebase project used in `Range dev` iOS app (configuration)
+- GoogleService-Info.demo.plist for `demorangeio` firebase project used in `Range demo` iOS app
+
+Those files are copied as `GoogleService-Info.plist` in a custom build phase.
+
+There's also a special configuration for using the firebase emulator enabled when using `Range firebase emulator` scheme to start the app.
 
 
 ## CI/CD
 
-The builds are running on [Xcode Cloud](https://appstoreconnect.apple.com/teams/92067bb5-d614-4ce2-9dc8-dc6f07912892/apps/1643881765/ci/groups) and are configured to build a dev configuration (run tests and push to TestFlight).
+The builds are running on Xcode Cloud:
+
+- when pushing to `develop` branch a [build for Range dev app](https://appstoreconnect.apple.com/teams/92067bb5-d614-4ce2-9dc8-dc6f07912892/apps/1643881765/ci/groups) is running (tests + internal TestFlight release)
+- when pushing to `demo` branch a [build for Range demo app](https://appstoreconnect.apple.com/teams/92067bb5-d614-4ce2-9dc8-dc6f07912892/apps/6444283096/ci/groups) is running (internal TestFlight release)
 
 
 
