@@ -127,14 +127,15 @@ class ProjectModel {
         mainRealm = try Realm(configuration: realmConfig)
     }
 
-    /// Returns `true` if the project is available for offline usage
-    /// The current implementation relies on the project summary and the participant for current user being available.
-    func isProjectDownloaded() -> Bool {
-        getProjectSummary() != nil && getCurrentUser() != nil
+    /// Initiates the writeRealm
+    func start() async throws {
+        try await _asyncOnQueue(queue: writeQueue) {
+            self.writeRealm = try Realm(configuration: self.realmConfig, queue: self.writeQueue)
+        }
     }
 
     /// Initial method to be called on the model after initiating it. It checks that all required project data is available and fails otherwise.
-    func loadProject() throws {
+    func loadProject(initialCanvasId: String) throws {
         guard let summary = getProjectSummary() else {
             throw ModelError.summaryNotFound
         }
@@ -143,6 +144,9 @@ class ProjectModel {
             throw ModelError.currentUserNotFound
         }
         currentUser = user
+        guard mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: initialCanvasId) != nil else {
+            throw ModelError.canvasNotFound
+        }
     }
 
     /// Loads the project summary for this project.

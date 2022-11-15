@@ -71,9 +71,13 @@ class ProjectModelFirestoreSync {
     }
 
     /// Starts synchronization - observes all relevant paths and updates the db.
-    func start() async throws {
+    func start() async {
         // wait for the initial sync of the required data
-        try await doInitialSync()
+        do {
+            try await doInitialSync()
+        } catch {
+            Logger.firestore.error("initial sync failed: \(error.localizedDescription)")
+        }
 
         // after this point it's only registering for observation and the function returns
         // register itself as a remote updates for the model
@@ -90,29 +94,26 @@ class ProjectModelFirestoreSync {
         syncDetails(collection(.upload), as: FirebaseUpload.self)
     }
 
-    /// Do the initial sync by getting the documents for project summary and canvases and storing the objects in the model.
+    /// Do the initial sync by getting the documents for project summary, initial canvas and current user which are required for loading
+    /// the project (see `ProjectModel.loadProject`)
     private func doInitialSync() async throws {
         // do this in parallel
-        async let projectSummaryRequest = ctx.projectRef.getDocument(as: FirebaseProjectSummary.self)
-        async let canvasesRequest = ctx.canvasesRef.getDocuments()
-        async let participantsRequest = ctx.participantsRef.getDocuments()
+        async let projectSummaryRequest = projectRef.getDocument(as: FirebaseProjectSummary.self)
+        async let canvasRequest = collection(.canvas).document(model.demoCanvas.id)
+            .getDocument(as: FirebasePDFCanvas.self)
+        async let userRequest = collection(.participant).document(model.userId)
+            .getDocument(as: FirebaseParticipant.self)
 
         // await for results
         let projectSummary = try await projectSummaryRequest
-        let canvases = try await canvasesRequest
-        let participants = try await participantsRequest
+        let canvas = try await canvasRequest
+        let user = try await userRequest
 
         // store in the db
         try await model.write { realm in
             try projectSummary.upsertCommand(id: self.model.projectId).apply(inRealm: realm)
-            try canvases.documents.forEach {
-                let canvas = try $0.data(as: FirebasePDFCanvas.self)
-                try canvas.upsertCommand(id: $0.documentID).apply(inRealm: realm)
-            }
-            try participants.documents.forEach {
-                let participant = try $0.data(as: FirebaseParticipant.self)
-                try participant.upsertCommand(id: $0.documentID).apply(inRealm: realm)
-            }
+            try canvas.upsertCommand(id: self.model.demoCanvas.id).apply(inRealm: realm)
+            try user.upsertCommand(id: self.model.userId).apply(inRealm: realm)
         }
     }
 

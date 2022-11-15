@@ -51,11 +51,12 @@ final class ProjectFlowController: UIViewController {
             pendingUploadsModel: pendingUploadsModel
         )
         projectModel.demoCanvas = demoProject.canvas
+        try await projectModel.start()
 
         let projectModelFirestoreSync = ProjectModelFirestoreSync(model: projectModel)
-        try await projectModelFirestoreSync.start()
+        await projectModelFirestoreSync.start()
 
-        try projectModel.loadProject()
+        try projectModel.loadProject(initialCanvasId: demoProject.canvas.id)
 
         return try ProjectFlowController(
             imageCaches: imageCaches,
