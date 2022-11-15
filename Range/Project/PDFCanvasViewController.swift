@@ -148,7 +148,6 @@ class PDFCanvasViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    // TODO: for now it is assumed that url is just a file name from the app bundle
     /// Loads pdf page for given canvas or throws if cannot load.
     fileprivate static func loadPDFPage(pdfCanvas: DemoCanvas) throws -> PDFPage {
         guard

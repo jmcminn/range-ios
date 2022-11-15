@@ -36,9 +36,6 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// Realm operating on `writeQueue`, initialized on first use
     var writeRealm: Realm!
 
-    /// Background serial queue to perform firebase storage upload operations
-    let uploadQueue = DispatchQueue(label: "pending-uploads-upload-queue")
-
     /// for monitoring network access
     let networkMonitor = NWPathMonitor()
 
