@@ -367,6 +367,7 @@
 		0A3831D428E44404001AF38A /* StringOrDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringOrDate.swift; sourceTree = "<group>"; };
 		0A3831D628E44550001AF38A /* AddUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUpdateCommand.swift; sourceTree = "<group>"; };
 		0A3831D828E44CA3001AF38A /* AddUpdateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUpdateCommandTest.swift; sourceTree = "<group>"; };
+		0A3831D428E44404001AF38A /* StringOrDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringOrDate.swift; sourceTree = "<group>"; };
 		0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpdateTest.swift; sourceTree = "<group>"; };
 		0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSkeletonCollectionViewCell.swift; sourceTree = "<group>"; };
