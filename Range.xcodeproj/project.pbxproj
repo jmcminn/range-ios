@@ -191,7 +191,9 @@
 		0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */; };
 		0A7FC4192844E6A80097888A /* FirebaseStatusName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */; };
 		0A854E1C2900669E00666713 /* AddUpdateCommand+Firestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */; };
+		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A881983291D018B0050FC41 /* FirestoreDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881982291D018B0050FC41 /* FirestoreDocument.swift */; };
+		0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */; };
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */; };
 		0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */; };
@@ -480,7 +482,9 @@
 		0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		0A7FC4182844E6A80097888A /* FirebaseStatusName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStatusName.swift; sourceTree = "<group>"; };
 		0A854E1B2900669E00666713 /* AddUpdateCommand+Firestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddUpdateCommand+Firestore.swift"; sourceTree = "<group>"; };
+		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A881982291D018B0050FC41 /* FirestoreDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreDocument.swift; sourceTree = "<group>"; };
+		0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeView.swift; sourceTree = "<group>"; };
 		0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithTapAreaInsets.swift; sourceTree = "<group>"; };
@@ -749,6 +753,7 @@
 			isa = PBXGroup;
 			children = (
 				0A881982291D018B0050FC41 /* FirestoreDocument.swift */,
+				0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */,
 				0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */,
 				0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */,
 				0A2F32FE2837E8E500D04A1C /* FirebaseProjectSummary.swift */,
@@ -1040,6 +1045,7 @@
 				0A4DC77027EE111400712518 /* Resources */,
 				0ABFD8AC28EDB945008CDA74 /* Settings */,
 				0AD9B75B28644D85005ACFD7 /* Tags */,
+				0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */,
 				0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */,
 			);
 			path = RangeTests;
@@ -1495,6 +1501,7 @@
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
 				0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */,
+				0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */,
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
@@ -1683,6 +1690,7 @@
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */,
 				0A724F562889763800708C6B /* AddStatusCommandTest.swift in Sources */,
+				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
 				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
