@@ -11,30 +11,38 @@ func generateRealmId() -> String {
 
 // MARK: - run commands
 
-/// ProjectModel extension for running commands
 extension ProjectModel {
-    func runCommands(_ commands: [Command]) async throws {
-        // try to apply remotely
-        if let remoteUpdater = remoteUpdater {
-            try await remoteUpdater.runCommands(commands, writer: self)
-        } else {
-            // if remote not supported then try locally
-            try await write { realm in
-                try commands.forEach { try $0.apply(inRealm: realm) }
+    /// Run command locally and add an action for running in Firestore transaction.
+    /// The Firestore transaction is queued by `PendingActionsModel` and not awaited here.
+    func run(_ command: Command?) async throws {
+        guard let command = command else { return }
+
+        // Execute the command locally and store action for server side execution.
+        // They both can fail. So first prepare the command for storage,  if it doesn't fail
+        // then execute the local action and then store the action (this will not fail). So
+        // local execution and storing for server side is "transactional".
+
+        // 1. First prepare the action data (it might fail)
+        let actionData = try pendingActionsModel.prepareAction(Action(projectId: projectId, command: command))
+
+        // 2. Then apply the command in Realm (it might fail)
+        try await write { realm in
+            if let localCommand = command as? LocalCommand {
+                try localCommand.apply(inRealm: realm)
             }
         }
+
+        // 3. Store the action for server side execution (will not fail).
+        pendingActionsModel.addAction(data: actionData)
     }
 }
 
 // MARK: - commands
 
-/// Implementation of higher level commands (composed of multiple `Command`s)
 extension ProjectModel {
-    /// Adds given photos to pending uploads and returns commands for:
-    /// - creating the feature If geometry with given id has no feature
-    /// - creating a collaboration If the feature has no collaboration
+    /// Adds given photos to pending uploads and returns command for:
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
-    /// Throws error if geometry with given id not found.
+    /// Throws error if geometry with given id not found, or it has not feature with colllaboration
     ///
     /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
     /// The write operation will be executed on a `writeRealm` so not on the main thread
@@ -50,64 +58,31 @@ extension ProjectModel {
         tags: [TagViewModel],
         description: String,
         toCollaborationForGeometryId geometryId: String
-    ) async throws -> [Command] {
+    ) async throws -> Command {
         guard let geometry = mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
             throw ModelError.geometryNotFound
+        }
+        guard let feature = geometry.features.first else {
+            throw ModelError.featureNotFound
+        }
+        guard let collaboration = feature.collaborations.first else {
+            throw ModelError.collaborationNotFound
         }
 
         for photoToAdd in photosToAdd {
             try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
         }
 
-        var commands: [Command] = []
-
-        // create feature if geometry has no feature
-        let featureId: String
-        if let feature = geometry.features.first {
-            featureId = feature.id
-        } else {
-            featureId = generateRealmId()
-            commands.append(AddFeatureCommand(
-                featureId: featureId,
-                geometryId: geometryId,
-                name: "",
-                featureDescription: ""
-            ))
-        }
-
-        // create collaboration if not there yet
-        let collaborationId: String
-        if let feature = geometry.features.first, let collaboration = feature.collaborations.first {
-            collaborationId = collaboration.id
-        } else {
-            collaborationId = generateRealmId()
-            let timestamp = photosToAdd.first?.timestamp ?? Date.now
-            commands.append(AddCollaborationCommand(
-                collaborationId: collaborationId,
-                featureId: featureId,
-                authorId: userId,
-                timestamp: timestamp,
-                name: "",
-                collaborationDescription: "",
-                statusId: nil,
-                tagIds: []
-            ))
-        }
-
-        photosToAdd.forEach {
-            commands.append(contentsOf: _addUpload(
-                uploadId: $0.uploadId,
-                timestamp: $0.timestamp,
-                tags: tags,
-                description: description,
-                toCollaboration: collaborationId,
-                imageHeightToWidth: $0.height2Width
-            ))
-        }
-        return commands
+        return AddUploadsToCollaborationCommand(
+            authorId: userId,
+            collaborationId: collaboration.id,
+            tags: tags.map(CommandTag.init(fromViewModel:)),
+            uploadDescription: description,
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
+        )
     }
 
-    /// Adds given photos to pending uploads and returns commands for:
+    /// Adds given photos to pending uploads and returns command for:
     /// - creating a new geometry of photoMarker type and adding it to given canvas.
     /// - creating a feature attached to this geometry and the collaboration attached to the feature.
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
@@ -123,192 +98,102 @@ extension ProjectModel {
     ///     - canvas: should be from the `mainRealm`
     ///     - geometryId: this id will be used for the newly created geometry
     @MainActor
-    func addPhotos(
+    func createPhotoCollaboration(
         _ photosToAdd: [PhotoToAdd],
         tags: [TagViewModel],
         description: String,
         at coordinates: CLLocationCoordinate2D,
         in canvas: PDFCanvas,
-        geometryId: String
-    ) async throws -> [Command] {
+        withGeometryId geometryId: String
+    ) async throws -> Command {
         for photoToAdd in photosToAdd {
             try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
         }
 
-        let addGeometryCmd = AddGeometryCommand(
-            geometryId: geometryId,
+        return CreatePhotoCollaborationCommand(
+            authorId: userId,
             canvasId: canvas.id,
-            annotationType: .photoMarker,
-            geometry: .point(Point(coordinates))
-        )
-        let addFeatureCmd = AddFeatureCommand(
-            featureId: generateRealmId(),
-            geometryId: addGeometryCmd.geometryId,
-            name: "",
-            featureDescription: nil
-        )
-        let timestamp = photosToAdd.first?.timestamp ?? Date.now
-        let addCollaborationCmd = AddCollaborationCommand(
-            collaborationId: generateRealmId(),
-            featureId: addFeatureCmd.featureId,
-            authorId: userId,
-            timestamp: timestamp,
-            name: "",
-            collaborationDescription: nil,
-            statusId: nil,
-            tagIds: []
-        )
-        var commands: [Command] = [addGeometryCmd, addFeatureCmd, addCollaborationCmd]
-        photosToAdd.forEach {
-            commands.append(contentsOf: _addUpload(
-                uploadId: $0.uploadId,
-                timestamp: $0.timestamp,
-                tags: tags,
-                description: description,
-                toCollaboration: addCollaborationCmd.collaborationId,
-                imageHeightToWidth: $0.height2Width
-            ))
-        }
-        return commands
-    }
-
-    /// Returns commands for adding new upload with given tags (some of them may require creation) to collaboration with given id
-    ///
-    /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
-    /// The write operation will be executed on a `writeRealm` so not on the main thread
-    @MainActor
-    func _addUpload(uploadId: String,
-                    timestamp: Date,
-                    tags: [TagViewModel],
-                    description: String,
-                    toCollaboration collaborationId: String,
-                    imageHeightToWidth: Double) -> [Command]
-    {
-        var commands: [Command] = []
-
-        // add all new tags
-        commands.append(contentsOf: tags
-            .filter(\.newTag)
-            .map { AddTagCommand(tagId: $0.id, name: $0.name) })
-
-        let addUploadCmd = AddUploadCommand(
-            uploadId: uploadId,
-            correlationId: uploadId,
-            fileType: .image,
-            parentType: "Collaboration",
-            parentId: collaborationId,
-            authorId: userId,
-            timestamp: timestamp,
-            name: nil,
+            geometryId: geometryId,
+            coordinates: coordinates,
+            tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: description,
-            tagIds: tags.map(\.id),
-            imageHeightToWidth: imageHeightToWidth
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
         )
-        commands.append(addUploadCmd)
-
-        return commands
     }
 
-    /// Create commands for updating given Upload tags.
-    /// The commands include creating new tags.
-    func update(tags: [TagViewModel], forUpload upload: Upload) -> [Command] {
-        var commands: [Command] = []
+    /// Create command for updating given Upload tags  (only if tags are different than existing ones).
+    /// The command creates new tags.
+    func update(tags: [TagViewModel], forUpload upload: Upload) -> Command? {
+        let tagIdsSet = Set(tags.map(\.id))
+        let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
+        guard tagIdsSet != existingTagIdsSet else { return nil }
 
-        // add all new tags
-        commands.append(contentsOf: tags
-            .filter(\.newTag)
-            .map { AddTagCommand(tagId: $0.id, name: $0.name) })
-
-        commands.append(UpdateUploadTagsCommand(uploadId: upload.id, tagIds: tags.map(\.id)))
-
-        return commands
+        return UpdateUploadTagsCommand(
+            uploadId: upload.id,
+            tags: tags.map(CommandTag.init(fromViewModel:))
+        )
     }
 
-    /// Create commands for updating given Collaboration tags.
-    /// The commands include creating new tags.
-    func update(tags: [TagViewModel], forCollaboration collaboration: Collaboration) -> [Command] {
-        var commands: [Command] = []
+    /// Create command for updating given Collaboration tags (only if tags are different than existing ones).
+    /// The command creates new tags.
+    func update(tags: [TagViewModel], forCollaboration collaboration: Collaboration) -> Command? {
+        let tagIdsSet = Set(tags.map(\.id))
+        let existingTagIdsSet: Set<String> = Set(collaboration.tags.map(\.id))
+        guard tagIdsSet != existingTagIdsSet else { return nil }
 
-        // add all new tags
-        commands.append(contentsOf: tags
-            .filter(\.newTag)
-            .map { AddTagCommand(tagId: $0.id, name: $0.name) })
-
-        commands.append(UpdateCollaborationTagsCommand(collaborationId: collaboration.id, tagIds: tags.map(\.id)))
-
-        return commands
+        return UpdateCollaborationTagsCommand(
+            collaborationId: collaboration.id,
+            tags: tags.map(CommandTag.init(fromViewModel:))
+        )
     }
 
     /// Create command for creating a new comment (or note if isNote = `true`) for given collaboration id.
-    func addComment(commentText: String, isNote: Bool, toCollaboration collaborationId: String) -> [Command] {
-        [
-            AddCommentCommand(
-                commentId: generateRealmId(),
-                parentType: "Collaboration",
-                parentId: collaborationId,
-                authorId: userId,
-                timestamp: Date.now,
-                text: commentText,
-                textIsEdited: false,
-                isNote: isNote
-            ),
-        ]
+    func addComment(commentText: String, isNote: Bool, toCollaboration collaborationId: String) -> Command {
+        CreateCollaborationCommentCommand(
+            commentId: generateRealmId(),
+            collaborationId: collaborationId,
+            authorId: userId,
+            text: commentText,
+            isNote: isNote
+        )
     }
 
-    func update(name: String, oldName: String, forCollaboration collaborationId: String) -> [Command] {
-        [
-            UpdateCollaborationNameCommand(collaborationId: collaborationId, name: name),
-            AddUpdateCommand(
-                updateId: generateRealmId(),
-                parentId: collaborationId,
-                parentType: "Collaboration",
-                timestamp: Date.now,
-                userId: userId,
-                field: .name,
-                oldValue: .string(oldName),
-                newValue: .string(name)
-            ),
-        ]
+    /// Updates the name for collaboration if it's different than the current name.
+    func update(name: String, forCollaboration collaboration: Collaboration) -> Command? {
+        guard name != collaboration.name else { return nil }
+        return UpdateCollaborationNameCommand(
+            authorId: userId,
+            collaborationId: collaboration.id,
+            name: name
+        )
     }
 
-    func toggleNoteCompleted(note: Comment) -> [Command] {
+    /// Updates the completed state of note (comment)
+    func toggleNoteCompleted(note: Comment) -> Command {
         let makeCompleted = !note.completed
-        return [UpdateNoteCompletedCommand(
+        return UpdateNoteCompletedCommand(
             noteId: note.id,
             completedById: makeCompleted ? userId : nil
-        )]
+        )
     }
 
-    func update(text: String, forComment commentId: String) -> [Command] {
-        [
-            UpdateCommentTextCommand(commentId: commentId, text: text),
-        ]
+    /// Updates the comment text if different than current.
+    func update(text: String, forComment comment: Comment) -> Command? {
+        guard text != comment.text else { return nil }
+        return UpdateCommentTextCommand(commentId: comment.id, text: text)
     }
 
     /// Updates the due date for collaboration. If the provided due date is the same as the current one it returns no commands
-    func update(dueDate: Date?, forCollaboration collaboration: Collaboration) -> [Command] {
+    func update(dueDate: Date?, forCollaboration collaboration: Collaboration) -> Command? {
         // the date has the selected day in project timezone, the time needs to be updated
         // to 23:59:59 (in project timezone) - the time might be different because there was
         // no due date and the current time was used, or the time was different in Firestore (which shouldn't happen?)
         let endOfDayDueDate: Date? = dueDate?._endOfDay(in: projectSummary.timeZone)
-        guard endOfDayDueDate != collaboration.dueDateTimestamp else {
-            return []
-        }
-        return [
-            UpdateCollaborationDueDateCommand(
-                collaborationId: collaboration.id,
-                dueDateTimestamp: endOfDayDueDate
-            ),
-            AddUpdateCommand(
-                updateId: generateRealmId(),
-                parentId: collaboration.id,
-                parentType: "Collaboration",
-                timestamp: Date.now,
-                userId: userId,
-                field: .dueDateTimestamp,
-                oldValue: collaboration.dueDateTimestamp != nil ? .date(collaboration.dueDateTimestamp!) : nil,
-                newValue: endOfDayDueDate != nil ? .date(endOfDayDueDate!) : nil
-            ),
-        ]
+        guard endOfDayDueDate != collaboration.dueDateTimestamp else { return nil }
+        return UpdateCollaborationDueDateCommand(
+            authorId: userId,
+            collaborationId: collaboration.id,
+            dueDateTimestamp: endOfDayDueDate
+        )
     }
 }

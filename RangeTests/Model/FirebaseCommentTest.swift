@@ -13,8 +13,8 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             text: "comment 1"
         )
         XCTAssertEqual(
-            try firebaseComment.upsertCommand(id: "comment1") as? AddCommentCommand,
-            AddCommentCommand(
+            try firebaseComment.upsertCommand(id: "comment1") as? UpsertCommentCommand,
+            UpsertCommentCommand(
                 commentId: "comment1",
                 parentType: "Collaboration",
                 parentId: "collaboration1",
@@ -43,8 +43,8 @@ class FirebaseCommentRealmSyncTest: XCTestCase {
             completedTimestamp: Timestamp(date: Date(timeIntervalSince1970: 2))
         )
         XCTAssertEqual(
-            try firebaseComment.upsertCommand(id: "comment1") as? AddCommentCommand,
-            AddCommentCommand(
+            try firebaseComment.upsertCommand(id: "comment1") as? UpsertCommentCommand,
+            UpsertCommentCommand(
                 commentId: "comment1",
                 parentType: "Collaboration",
                 parentId: "collaboration1",

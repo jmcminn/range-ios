@@ -10,8 +10,8 @@ class FirebaseFeatureTest: XCTestCase {
             description: "description"
         )
         XCTAssertEqual(
-            try firebaseFeature.upsertCommand(id: "feature1") as? AddFeatureCommand,
-            AddFeatureCommand(
+            try firebaseFeature.upsertCommand(id: "feature1") as? UpsertFeatureCommand,
+            UpsertFeatureCommand(
                 featureId: "feature1",
                 geometryId: "geometry1",
                 name: "name",

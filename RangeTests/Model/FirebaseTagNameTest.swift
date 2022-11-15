@@ -6,8 +6,8 @@ class FirebaseTagNameTest: XCTestCase {
     func testUpsertCommand() throws {
         let firebaseTagName = FirebaseTagName(name: "kitchen")
         XCTAssertEqual(
-            try firebaseTagName.upsertCommand(id: "tag1") as? AddTagCommand,
-            AddTagCommand(tagId: "tag1", name: "kitchen")
+            try firebaseTagName.upsertCommand(id: "tag1") as? UpsertTagCommand,
+            UpsertTagCommand(tagId: "tag1", name: "kitchen")
         )
     }
 }

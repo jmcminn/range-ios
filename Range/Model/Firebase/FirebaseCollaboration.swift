@@ -35,8 +35,8 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
     var assigneeId: String?
     var dueDateTimestamp: Timestamp?
 
-    func upsertCommand(id: String) throws -> Command {
-        AddCollaborationCommand(
+    func upsertCommand(id: String) throws -> LocalCommand {
+        UpsertCollaborationCommand(
             collaborationId: id,
             featureId: featureId,
             authorId: authorId,

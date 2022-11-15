@@ -8,6 +8,7 @@ class ProjectsFlowController: UINavigationController {
     private let userId: String
     let imageCaches = ImageCaches()
     let pendingUploadsModel: FirebasePendingUploadsModel
+    let pendingActionsModel = PendingActionsModelImpl()
 
     private let projects = [DemoProject.vanderbilt, DemoProject.preserve]
 
@@ -28,6 +29,7 @@ class ProjectsFlowController: UINavigationController {
 
     func start() async throws {
         try await pendingUploadsModel.start()
+        pendingActionsModel.start()
 
         // reopen last project
         if let lastOpenProjectId = UserDefaults.lastOpenProjectId,
@@ -53,6 +55,7 @@ class ProjectsFlowController: UINavigationController {
 
     func stop() {
         pendingUploadsModel.stop()
+        pendingActionsModel.stop()
     }
 
     private func buildProjectsViewController() -> ActionSelectorViewController {
@@ -110,7 +113,8 @@ class ProjectsFlowController: UINavigationController {
             userId: userId,
             demoProject: demoProject,
             imageCaches: imageCaches,
-            pendingUploadsModel: pendingUploadsModel
+            pendingUploadsModel: pendingUploadsModel,
+            pendingActionsModel: pendingActionsModel
         )
         projectFC.onBack = { [weak self] in
             _ = self?.popViewController(animated: true)

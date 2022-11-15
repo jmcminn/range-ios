@@ -35,11 +35,11 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
     var completedById: String? // participant id
     var completedTimestamp: Timestamp?
 
-    func upsertCommand(id: String) throws -> Command {
+    func upsertCommand(id: String) throws -> LocalCommand {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
-        return AddCommentCommand(
+        return UpsertCommentCommand(
             commentId: id,
             parentType: parentType,
             parentId: parentId,

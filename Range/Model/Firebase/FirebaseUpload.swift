@@ -38,7 +38,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     var fileTypeString: String?
     var imageHeightToWidth: Double?
 
-    func upsertCommand(id: String) throws -> Command {
+    func upsertCommand(id: String) throws -> LocalCommand {
         let fileType: Upload.FileType
         if let fileTypeString = fileTypeString {
             fileType = try Upload.FileType.allCases.first { $0.rawValue == fileTypeString }
@@ -49,7 +49,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
-        return AddUploadCommand(
+        return UpsertUploadCommand(
             uploadId: id,
             correlationId: correlationId,
             fileType: fileType,

@@ -9,44 +9,18 @@ protocol FirestoreToRealmSyncable {
     /// The type used to store the objects in the model Realm db
     associatedtype ModelType: Object
     /// Upsert this element with given id to given Realm. Will be performed in a realm write transaction
-    func upsertCommand(id: String) throws -> Command
-}
-
-/// A context for firestore commands. It stores the current projectId and provides the references to all the project collections.
-class ProjectModelFirestoreContext {
-    let projectId: String
-    private unowned let firestore: Firestore
-
-    lazy var projectRef = firestore.document("projects/\(projectId)")
-    lazy var canvasesRef = projectRef.collection("canvases")
-    lazy var collaborationsRef = projectRef.collection("collaborations")
-    lazy var commentsRef = projectRef.collection("comments")
-    lazy var featuresRef = projectRef.collection("features")
-    lazy var geometriesRef = projectRef.collection("geometries")
-    lazy var participantsRef = projectRef.collection("participants")
-    lazy var statusNamesRef = projectRef.collection("statusNames")
-    lazy var tagNamesRef = projectRef.collection("tagNames")
-    lazy var updatesRef = projectRef.collection("updates")
-    lazy var uploadsRef = projectRef.collection("uploads")
-
-    init(firestore: Firestore, projectId: String) {
-        self.firestore = firestore
-        self.projectId = projectId
-    }
+    func upsertCommand(id: String) throws -> LocalCommand
 }
 
 //
 //          applyLocally                         upsertCmd                       decode
 // Realm  <--------------                      <-----------                    <--------
-//                         AddGeometryCommand                FirebaseGeometry             Firestore
-// Memory  ------------->                      ----------->                    --------->
-//          addGeometry                         applyToFirestore                encode + save
+//                         UpsertGeometryCommand                FirebaseGeometry             Firestore
 
 /// This object provides the way to sync Firestore backend data with local Realm db.
 class ProjectModelFirestoreSync {
     /// The model to synchronize Firebase with
     private unowned let model: ProjectModel
-    private let ctx: ProjectModelFirestoreContext
 
     /// Firestore reference
     let firestore: Firestore
@@ -63,7 +37,6 @@ class ProjectModelFirestoreSync {
     init(model: ProjectModel) {
         self.model = model
         firestore = Firestore.firestore()
-        ctx = ProjectModelFirestoreContext(firestore: firestore, projectId: model.projectId)
     }
 
     deinit {
@@ -80,8 +53,6 @@ class ProjectModelFirestoreSync {
         }
 
         // after this point it's only registering for observation and the function returns
-        // register itself as a remote updates for the model
-        model.remoteUpdater = self
         syncDetails(collection(.canvas), as: FirebasePDFCanvas.self)
         syncDetails(collection(.statusName), as: FirebaseStatusName.self)
         syncDetails(collection(.tagName), as: FirebaseTagName.self)
@@ -190,28 +161,5 @@ class ProjectModelFirestoreSync {
     func stop() {
         listeners.forEach { $0.remove() }
         listeners.removeAll()
-    }
-}
-
-/// Implementation of the remote updater protocol.
-/// ProjectModelFirestoreSync registers itself as a remote updater in ProjectModel, so all the update commands are executed
-/// against the Firestore
-extension ProjectModelFirestoreSync: ProjectModelRemoteUpdater {
-    /// Runs given commands in firestore transaction.
-    /// It is assumed that *all* the commands support applying in Firestore transaction by implementing the `FirestoreCommand`
-    /// protocol. If that's not the case this method will crash.
-    func runCommands(_ commands: [Command], writer _: ProjectModelWriter) async throws {
-        try await firestore.runTransaction { transaction, errorPointer -> Any? in
-            for command in commands {
-                do {
-                    try (command as! FirestoreCommand).apply(inFirestoreTransaction: transaction, context: self.ctx)
-                } catch let error as NSError {
-                    errorPointer?.pointee = error
-                    return false
-                }
-            }
-            // don't return nil, it's supposed to work but it crashes
-            return true
-        }
     }
 }

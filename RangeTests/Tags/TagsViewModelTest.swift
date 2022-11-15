@@ -3,18 +3,20 @@ import RealmSwift
 import XCTest
 
 class TagsViewModelTest: XCTestCase {
-    var pendingUploadsModel: PendingUploadsModel!
+    let pendingUploadsModel = TestPendingUploadsModel()
+    let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
     var realm: Realm!
 
+    @MainActor
     override func setUpWithError() throws {
-        pendingUploadsModel = TestPendingUploadsModel()
         // create a different Realm in each test by using a new UUID
         model = try ProjectModel(
             userId: "user1",
             projectId: UUID().uuidString,
             imageCaches: ImageCaches(),
             pendingUploadsModel: pendingUploadsModel,
+            pendingActionsModel: pendingActionsModel,
             inMemory: true
         )
         realm = model.mainRealm

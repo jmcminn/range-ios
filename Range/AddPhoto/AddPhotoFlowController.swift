@@ -410,7 +410,7 @@ class AddPhotoFlowController {
     @MainActor
     private func _storeData() async throws {
         if let geometryId = geometryId {
-            try await model.runCommands(model.addPhotos(
+            try await model.run(model.addPhotos(
                 photosToAddViewModel.photos,
                 tags: tagsViewModel.selectedTags,
                 description: photoDescription,
@@ -419,13 +419,13 @@ class AddPhotoFlowController {
             UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
-            try await model.runCommands(model.addPhotos(
+            try await model.run(model.createPhotoCollaboration(
                 photosToAddViewModel.photos,
                 tags: tagsViewModel.selectedTags,
                 description: photoDescription,
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: canvasContainer.pdfCanvasViewController.pdfCanvas,
-                geometryId: geometryId
+                withGeometryId: geometryId
             ))
             UserDefaults.lastPhotoPinId = geometryId
         }

@@ -16,6 +16,8 @@ extension Logger {
     static let mapbox = Logger(subsystem: subsystem, category: "mapbox")
     /// Internal model (Realm based) logs
     static let model = Logger(subsystem: subsystem, category: "model")
+    /// pending actions related logs
+    static let pendingActions = Logger(subsystem: subsystem, category: "actions")
     /// Firebase sync related logs
     static let firebase = Logger(subsystem: subsystem, category: "firebase")
     /// Firestore sync related logs

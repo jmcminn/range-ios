@@ -35,14 +35,14 @@ struct FirebaseUpdate: Codable, FirestoreToRealmSyncable {
     var oldValue: StringOrDate?
     var newValue: StringOrDate?
 
-    func upsertCommand(id: String) throws -> Command {
+    func upsertCommand(id: String) throws -> LocalCommand {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
         // select the field from supported Update.Field
         let uploadField = try Update.Field.allCases.first { $0.rawValue == field }
             .or(error: ModelError.fieldNotSupported(field))
-        return AddUpdateCommand(
+        return UpsertUpdateCommand(
             updateId: id,
             parentId: parentId,
             parentType: parentType,

@@ -11,8 +11,8 @@ class FirebaseStatusNameTest: XCTestCase {
             isCompleted: false
         )
         XCTAssertEqual(
-            try firebaseStatus.upsertCommand(id: "status1") as? AddStatusCommand,
-            AddStatusCommand(
+            try firebaseStatus.upsertCommand(id: "status1") as? UpsertStatusCommand,
+            UpsertStatusCommand(
                 statusId: "status1",
                 name: "In progress",
                 color: "#123456",

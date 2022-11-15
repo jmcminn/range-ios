@@ -1,30 +1,49 @@
+import FirebaseFirestore
 import Foundation
 import RealmSwift
 
 /// Update tags for given Upload
-struct UpdateUploadTagsCommand: Command, Equatable {
+struct UpdateUploadTagsCommand: Command, Codable, Equatable {
     let uploadId: String
-    var tagIds: [String]
+    var tags: [CommandTag]
+}
 
-    func apply(inRealm _: Realm) throws {
-        // this command is not run locally, only applied to firestore. Below is the implementation
-        // proposal in case we ever need it locally (if we have offline support for the model updates)
-        // needs a test case if enabled
-        fatalError("UpdateUploadTagsCommand.apply(inRealm:) has not been implemented")
-//        guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
-//
-//        // remove the upload from the tags it was attached to and is not anymore
-//        // for fast lookup
-//        let tagIdsSet = Set(tagIds)
-//        for tag in upload.tags {
-//            if !tagIdsSet.contains(tag.id) {
-//                // updated tags don't contain this tag, remove the object from it
-//                tag.uploads.remove(upload)
-//            }
-//        }
-//
-//        let tags = tagIds.compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
-//        upload.tags.append(objectsIn: tags)
-//        tags.forEach { $0.uploads.insert(upload) }
+extension UpdateUploadTagsCommand: LocalCommand {
+    func apply(inRealm realm: Realm) throws {
+        guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) else {
+            throw ModelError.uploadNotFound
+        }
+        // add or update tags
+        let tags = tags.map(\.asTag)
+        tags.forEach { realm.add($0, update: .modified) }
+
+        // update tags <-> upload
+        let tagIds = tags.map(\.id)
+        UpsertUploadCommand.cleanupOldTags(upload: upload, newTagIds: tagIds)
+        upload.tags.removeAll()
+        UpsertUploadCommand.addNewTags(upload: upload, newTagIds: tagIds, realm: realm)
+    }
+}
+
+/// Apply the `Upload.tags` update in Firestore.
+extension UpdateUploadTagsCommand: FirestoreCommand {
+    func apply(inFirestore ctx: FirestoreCommandContext) throws {
+        // ------------- READS -----------------
+        // check that target exists, otherwise abort (the command cannot be applied)
+        guard try ctx.exists(.upload(uploadId)) else {
+            throw FirestoreCommandError.obsolete("upload doesn't exist")
+        }
+        // only add new tags... don't touch the existing ones
+        let newTags = try tags.filter { try !ctx.exists(.tagName($0.id)) }
+
+        // ------------- WRITES ----------------
+        try newTags.forEach {
+            try ctx.setData(from: $0.asFirestoreTagName, forDocument: .tagName($0.id))
+        }
+        let tagIds = tags.map(\.id)
+        ctx.updateData(
+            [FirebaseUpload.CodingKeys.tagIds.rawValue: tagIds],
+            forDocument: .upload(uploadId)
+        )
     }
 }

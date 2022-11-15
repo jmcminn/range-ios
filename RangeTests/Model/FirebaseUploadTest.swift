@@ -16,8 +16,8 @@ class FirebaseUploadRealmSyncTest: XCTestCase {
             tagIds: ["tag1"]
         )
         XCTAssertEqual(
-            try firebaseUpload.upsertCommand(id: "upload1") as? AddUploadCommand,
-            AddUploadCommand(
+            try firebaseUpload.upsertCommand(id: "upload1") as? UpsertUploadCommand,
+            UpsertUploadCommand(
                 uploadId: "upload1",
                 correlationId: "upload1",
                 fileType: .image,

@@ -5,6 +5,7 @@ import XCTest
 
 class ProjectModelTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
+    let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
     var realm: Realm!
 
@@ -15,6 +16,7 @@ class ProjectModelTest: XCTestCase {
             projectId: UUID().uuidString,
             imageCaches: ImageCaches(),
             pendingUploadsModel: pendingUploadsModel,
+            pendingActionsModel: pendingActionsModel,
             inMemory: true
         )
         realm = model.mainRealm

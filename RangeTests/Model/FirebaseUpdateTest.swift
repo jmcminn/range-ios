@@ -38,8 +38,8 @@ class FirebaseUpdateRealmSyncTest: XCTestCase {
             newValue: .string("new name")
         )
         XCTAssertEqual(
-            try firebaseUpdate.upsertCommand(id: "update1") as? AddUpdateCommand,
-            AddUpdateCommand(
+            try firebaseUpdate.upsertCommand(id: "update1") as? UpsertUpdateCommand,
+            UpsertUpdateCommand(
                 updateId: "update1",
                 parentId: "collaboration1",
                 parentType: "Collaboration",

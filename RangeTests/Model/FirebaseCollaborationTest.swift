@@ -15,8 +15,8 @@ class FirebaseCollaborationTest: XCTestCase {
             tagIds: []
         )
         XCTAssertEqual(
-            try firebaseCollaboration.upsertCommand(id: "collaboration1") as? AddCollaborationCommand,
-            AddCollaborationCommand(
+            try firebaseCollaboration.upsertCommand(id: "collaboration1") as? UpsertCollaborationCommand,
+            UpsertCollaborationCommand(
                 collaborationId: "collaboration1",
                 featureId: "feature1",
                 authorId: "user1",

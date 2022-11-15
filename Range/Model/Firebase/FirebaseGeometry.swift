@@ -89,8 +89,8 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
         try container.encodeIfPresent(archivedTimestamp, forKey: .archivedTimestamp)
     }
 
-    func upsertCommand(id: String) throws -> Command {
-        AddGeometryCommand(
+    func upsertCommand(id: String) throws -> LocalCommand {
+        UpsertGeometryCommand(
             geometryId: id,
             canvasId: canvasId,
             annotationType: annotationType,

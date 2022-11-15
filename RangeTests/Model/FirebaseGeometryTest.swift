@@ -91,8 +91,8 @@ class FirebaseGeometryTest: XCTestCase {
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
         XCTAssertEqual(
-            try firebaseGeometry.upsertCommand(id: "geometry1") as? AddGeometryCommand,
-            AddGeometryCommand(
+            try firebaseGeometry.upsertCommand(id: "geometry1") as? UpsertGeometryCommand,
+            UpsertGeometryCommand(
                 geometryId: "geometry1",
                 canvasId: "canvas1",
                 annotationType: .photoMarker,

@@ -37,7 +37,7 @@ struct FirebaseProjectSummary: Decodable, FirestoreToRealmSyncable {
 //        try coordinatesContainer.encode(center.latitude)
 //    }
 
-    func upsertCommand(id: String) throws -> Command {
-        AddProjectSummaryCommand(projectId: id, name: name, center: center)
+    func upsertCommand(id: String) throws -> LocalCommand {
+        UpsertProjectSummaryCommand(projectId: id, name: name, center: center)
     }
 }

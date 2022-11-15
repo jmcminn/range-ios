@@ -40,7 +40,8 @@ final class ProjectFlowController: UIViewController {
         userId: String,
         demoProject: DemoProject,
         imageCaches: ImageCaches,
-        pendingUploadsModel: PendingUploadsModel
+        pendingUploadsModel: PendingUploadsModel,
+        pendingActionsModel: PendingActionsModel
     ) async throws -> ProjectFlowController {
         let projectId = demoProject.id
 
@@ -48,7 +49,8 @@ final class ProjectFlowController: UIViewController {
             userId: userId,
             projectId: projectId,
             imageCaches: imageCaches,
-            pendingUploadsModel: pendingUploadsModel
+            pendingUploadsModel: pendingUploadsModel,
+            pendingActionsModel: pendingActionsModel
         )
         projectModel.demoCanvas = demoProject.canvas
         try await projectModel.start()

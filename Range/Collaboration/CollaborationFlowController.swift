@@ -395,31 +395,22 @@ extension CollaborationFlowController {
     }
 
     private func addComment(fromCommentVC addCommentVC: CommentViewController) {
+        addCommentVC.hideCard(animated: true) {
+            self.removeCard(cardViewController: addCommentVC)
+        }
         guard let collaboration = collaboration else { return }
-
-        runCommandsWithProgress(
-            commands: model.addComment(
-                commentText: addCommentVC.commentText,
-                isNote: addCommentVC.isNote,
-                toCollaboration: collaboration.id
-            ),
-            onSuccess: { [weak self] in
-                guard let self = self else { return }
+        Task {
+            do {
+                try await model.run(model.addComment(
+                    commentText: addCommentVC.commentText,
+                    isNote: addCommentVC.isNote,
+                    toCollaboration: collaboration.id
+                ))
                 self.lastCancelledCommentText = ""
-                addCommentVC.hideCard(animated: true) {
-                    self.removeCard(cardViewController: addCommentVC)
-                }
-            },
-            onFailure: { error in
-                let alert = UIAlertController(
-                    title: "Creating comment error",
-                    message: error.localizedDescription,
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-                addCommentVC.present(alert, animated: true)
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
             }
-        )
+        }
     }
 }
 
@@ -454,21 +445,7 @@ extension CollaborationFlowController {
     /// If updating failed give user a choice to retry or abort (close the editTagsVC and not save changes)
     private func updateTagsIfChanged(forObject object: Object) {
         guard let editTagsVC = editTagsVC else { return }
-
         let selectedTags = editTagsVC.tagsViewModel.selectedTags
-        let selectedTagIdsSet = Set(selectedTags.map(\.id))
-        let existingTagIdsSet: Set<String>
-        let commands: [Command]
-
-        if let collaboration = object as? Collaboration {
-            existingTagIdsSet = Set(collaboration.tags.map(\.id))
-            commands = model.update(tags: selectedTags, forCollaboration: collaboration)
-        } else if let upload = object as? Upload {
-            existingTagIdsSet = Set(upload.tags.map(\.id))
-            commands = model.update(tags: selectedTags, forUpload: upload)
-        } else {
-            fatalError("updateTagsIfChanged not implemented for \(object)")
-        }
 
         let closeEditTagsVC = {
             editTagsVC.hideCard(animated: true) {
@@ -476,14 +453,17 @@ extension CollaborationFlowController {
             }
         }
 
-        // just close the editTagsVC if the same tags
-        guard selectedTagIdsSet != existingTagIdsSet else {
-            closeEditTagsVC()
-            return
+        let command: Command?
+        if let collaboration = object as? Collaboration {
+            command = model.update(tags: selectedTags, forCollaboration: collaboration)
+        } else if let upload = object as? Upload {
+            command = model.update(tags: selectedTags, forUpload: upload)
+        } else {
+            fatalError("updateTagsIfChanged not implemented for \(object)")
         }
 
-        runCommandsWithProgress(
-            commands: commands,
+        runCommandWithProgress(
+            command: command,
             onSuccess: { [weak self] in
                 guard let self = self else { return }
                 UserDefaults.addRecentTagIds(selectedTags.map(\.id), forProjectId: self.model.projectId)
@@ -526,11 +506,9 @@ extension CollaborationFlowController {
 
     private func updateDueDate(_ dueDate: Date?) {
         guard let collaboration = collaboration else { return }
-        let commands = model.update(dueDate: dueDate, forCollaboration: collaboration)
-        guard !commands.isEmpty else { return }
         Task {
             do {
-                try await model.runCommands(commands)
+                try await model.run(model.update(dueDate: dueDate, forCollaboration: collaboration))
             } catch {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
             }
@@ -542,28 +520,15 @@ extension CollaborationFlowController {
 
 extension CollaborationFlowController {
     private func updateName(_ name: String) {
+        collaborationVC?.view.endEditing(true)
         guard let collaboration = collaboration else { return }
-        guard name != collaboration.name else {
-            // no change in name, just end editing
-            collaborationVC?.view.endEditing(true)
-            return
-        }
-
-        runCommandsWithProgress(
-            commands: model.update(name: name, oldName: collaboration.name, forCollaboration: collaboration.id),
-            onSuccess: { [weak self] in
-                self?.collaborationVC?.view.endEditing(true)
-            },
-            onFailure: { error in
-                let alert = UIAlertController(
-                    title: "Updating name error",
-                    message: error.localizedDescription,
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-                self.present(alert, animated: true)
+        Task {
+            do {
+                try await model.run(model.update(name: name, forCollaboration: collaboration))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
             }
-        )
+        }
     }
 }
 
@@ -590,7 +555,7 @@ extension CollaborationFlowController {
         guard let comment = event.object as? Comment, comment.isNote else { return }
         Task {
             do {
-                try await model.runCommands(model.toggleNoteCompleted(note: comment))
+                try await model.run(model.toggleNoteCompleted(note: comment))
             } catch {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
             }
@@ -613,10 +578,9 @@ extension CollaborationFlowController {
             commentVC.hideCard(animated: true) {
                 self.removeCard(cardViewController: commentVC)
             }
-            guard text != comment.text else { return }
             Task {
                 do {
-                    try await self.model.runCommands(self.model.update(text: text!, forComment: comment.id))
+                    try await self.model.run(self.model.update(text: text!, forComment: comment))
                 } catch {
                     Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
                 }
@@ -630,15 +594,17 @@ extension CollaborationFlowController {
     }
 }
 
-// MARK: - running server side commands
+// MARK: - running commands
 
 extension CollaborationFlowController {
     /// Shows the activity indicator making the UI not interactive, runs provided commands and runs one of the provided blocks depending
     /// on the success of the commands.
-    private func runCommandsWithProgress(commands: [Command],
-                                         onSuccess: @escaping () -> Void,
-                                         onFailure: @escaping (Error) -> Void)
+    /// If the command is nil this function doesn nothing
+    private func runCommandWithProgress(command: Command?,
+                                        onSuccess: @escaping () -> Void,
+                                        onFailure: @escaping (Error) -> Void)
     {
+        guard let command = command else { return }
         // show activity view (a spinner) that covers the screen disabling any user interactions
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
@@ -657,7 +623,7 @@ extension CollaborationFlowController {
                         activityView.removeFromSuperview()
                     }
                 }
-                try await model.runCommands(commands)
+                try await model.run(command)
                 DispatchQueue.main.async {
                     onSuccess()
                 }
