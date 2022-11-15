@@ -44,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             Logger.firebase.debug("Using firebase project: \(FirebaseOptions.defaultOptions()?.projectID ?? "?")")
             FirebaseApp.configure()
+            // ACHTUNG: isPersistenceEnabled must be true for Firestore. Otherwise it won't notify about
+            // removed objects while the app was not running
         }
     }
 

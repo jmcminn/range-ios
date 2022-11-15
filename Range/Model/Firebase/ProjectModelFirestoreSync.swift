@@ -144,6 +144,15 @@ class ProjectModelFirestoreSync {
                 Logger.firestore.error("\(loggingKey) fetching snapshots failed: \(error!.localizedDescription)")
                 return
             }
+            guard !snapshot.metadata.isFromCache else {
+                // we don't want data from cache. Firestore will report all local objects when the app
+                // is starting even in offline mode (because it has persistence enabled, see AppDelegate
+                // Firestore config comment for why it has to be enabled).
+                // This data from cache is not needed, because we have it in Realm and would override
+                // any local pending changes. So it would flicker but for a potentially very long time:
+                // From the time user restarted the app in offline after making local changes until the user is back online.
+                return
+            }
             self.model.writeQueue.async {
                 snapshot.documentChanges.forEach { diff in
                     let document = diff.document
