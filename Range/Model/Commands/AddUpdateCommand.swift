@@ -9,8 +9,8 @@ struct AddUpdateCommand: Command, Equatable {
     var timestamp: Date
     var userId: String
     var field: Update.Field
-    var oldValue: IntOrStringOrDate?
-    var newValue: IntOrStringOrDate?
+    var oldValue: StringOrDate?
+    var newValue: StringOrDate?
 
     func apply(inRealm realm: Realm) throws {
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)

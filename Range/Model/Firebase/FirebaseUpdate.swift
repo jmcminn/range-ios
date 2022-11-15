@@ -32,8 +32,8 @@ struct FirebaseUpdate: Codable, FirestoreToRealmSyncable {
     // old and new value can have different types depending on the field. For now Int, String or
     // Date is supported. The support needs to be made on the firebase object level as it requires proper
     // decoding depending on the type. (e.g. it cannot say oldValue: AnyObject, as it's not Codable)
-    var oldValue: IntOrStringOrDate?
-    var newValue: IntOrStringOrDate?
+    var oldValue: StringOrDate?
+    var newValue: StringOrDate?
 
     func upsertCommand(id: String) throws -> Command {
         guard parentType == "Collaboration" else {
