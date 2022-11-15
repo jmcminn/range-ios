@@ -7,8 +7,6 @@ import RealmSwift
 class PDFCanvas: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
-    /// URL of the PDF
-    @Persisted var url: String
     /// 0-based PDF page number
     @Persisted var pageNumber: Int
     /// the scale of PDF. Example value: 48.0, meaning the scale is 1:48
@@ -24,10 +22,9 @@ class PDFCanvas: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, url: String, pageNumber: Int, userDefinedScale: Double, placeholder: Bool = false) {
+    init(id: String, pageNumber: Int, userDefinedScale: Double, placeholder: Bool = false) {
         super.init()
         self.id = id
-        self.url = url
         self.pageNumber = pageNumber
         self.userDefinedScale = userDefinedScale
         self.placeholder = placeholder
@@ -35,6 +32,6 @@ class PDFCanvas: Object, WithPlaceholder {
 
     /// Convenience initializer for placeholder object
     required convenience init(placeholderId id: String) {
-        self.init(id: id, url: "", pageNumber: 0, userDefinedScale: 0, placeholder: true)
+        self.init(id: id, pageNumber: 0, userDefinedScale: 0, placeholder: true)
     }
 }

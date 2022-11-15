@@ -25,7 +25,7 @@ class ProjectModelCommandsTest: XCTestCase {
             inMemory: true
         )
         realm = model.mainRealm
-        canvas = PDFCanvas(id: "canvas1", url: "url1", pageNumber: 0, userDefinedScale: 1)
+        canvas = PDFCanvas(id: "canvas1", pageNumber: 0, userDefinedScale: 1)
         try realm.write {
             realm.add(canvas)
         }
