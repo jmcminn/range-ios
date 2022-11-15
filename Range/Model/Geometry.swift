@@ -6,7 +6,7 @@ import Turf
 /// Realm object for `project/details/geometry/<id>`
 class Geometry: Object, WithId, WithPlaceholder {
     /// Supported annotation types, all others are ignored by Range iOS app
-    enum AnnotationType: String, PersistableEnum {
+    enum AnnotationType: String, Codable, PersistableEnum {
         case photoMarker
     }
 

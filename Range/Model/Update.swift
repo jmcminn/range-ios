@@ -4,7 +4,7 @@ import UIKit
 /// Realm object for `project/updates/<id>`.
 class Update: Object, WithPlaceholder {
     /// Supported updated fields
-    enum Field: String, PersistableEnum {
+    enum Field: String, Codable, PersistableEnum {
         case name, description, statusName, assignee, dueDateTimestamp
     }
 

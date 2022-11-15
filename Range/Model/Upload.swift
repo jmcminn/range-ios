@@ -4,7 +4,7 @@ import UIKit
 /// Realm object for `project/details/uploads/<id>`.
 class Upload: Object, WithPlaceholder {
     /// Supported file types, all others are ignored by Range iOS app
-    enum FileType: String, PersistableEnum {
+    enum FileType: String, Codable, PersistableEnum {
         case image
         case pdf
     }
