@@ -50,6 +50,12 @@ class ProjectModelFirestoreSync {
 
     /// Firestore reference
     let firestore: Firestore
+    /// Access to Firestore project document
+    lazy var projectRef = firestore.document("projects/\(model.projectId)")
+    /// Access to project subcollections based on the document type
+    func collection(_ docType: FirestoreDocumentType) -> CollectionReference {
+        projectRef.collection(docType.rawValue)
+    }
 
     var listeners: [ListenerRegistration] = []
 
@@ -70,18 +76,18 @@ class ProjectModelFirestoreSync {
         try await doInitialSync()
 
         // after this point it's only registering for observation and the function returns
-        syncDetails(ctx.statusNamesRef, as: FirebaseStatusName.self)
-        syncDetails(ctx.tagNamesRef, as: FirebaseTagName.self)
-        syncDetails(ctx.participantsRef, as: FirebaseParticipant.self)
-        syncDetails(ctx.geometriesRef, as: FirebaseGeometry.self)
-        syncDetails(ctx.featuresRef, as: FirebaseFeature.self)
-        syncDetails(ctx.collaborationsRef, as: FirebaseCollaboration.self)
-        syncDetails(ctx.commentsRef, as: FirebaseComment.self)
-        syncDetails(ctx.updatesRef, as: FirebaseUpdate.self)
-        syncDetails(ctx.uploadsRef, as: FirebaseUpload.self)
-
         // register itself as a remote updates for the model
         model.remoteUpdater = self
+        syncDetails(collection(.canvas), as: FirebasePDFCanvas.self)
+        syncDetails(collection(.statusName), as: FirebaseStatusName.self)
+        syncDetails(collection(.tagName), as: FirebaseTagName.self)
+        syncDetails(collection(.participant), as: FirebaseParticipant.self)
+        syncDetails(collection(.geometry), as: FirebaseGeometry.self)
+        syncDetails(collection(.feature), as: FirebaseFeature.self)
+        syncDetails(collection(.collaboration), as: FirebaseCollaboration.self)
+        syncDetails(collection(.comment), as: FirebaseComment.self)
+        syncDetails(collection(.update), as: FirebaseUpdate.self)
+        syncDetails(collection(.upload), as: FirebaseUpload.self)
     }
 
     /// Do the initial sync by getting the documents for project summary and canvases and storing the objects in the model.
