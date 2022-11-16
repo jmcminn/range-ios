@@ -182,7 +182,21 @@ extension GeometriesViewAnnotationPinsDisplay {
         // The pinView doesn't animate the image properly when this code is run withing animation block, so disable
         // animations for pinView updates.
         UIView.performWithoutAnimation {
-            pinView.image = pinOptions.pinImage.image
+            let newImage = pinOptions.pinImage.image
+            let imageSizeChanged: Bool
+            if let previousSize = pinView.image?.size, let newSize = newImage?.size, previousSize != newSize {
+                imageSizeChanged = true
+            } else {
+                imageSizeChanged = false
+            }
+            // if image size has changed for pin, we need to remove it and add again as the views
+            // cannot be updated live. The same applies to anchor/offset but currently the only
+            // case we have is that selecting/unselecting changes the pin (size) and also anchor/offset
+            // so it's enough to check for size change.
+            if imageSizeChanged {
+                canvasVC.mapView.viewAnnotations.remove(pinView)
+            }
+            pinView.image = newImage
             pinView.sizeToFit()
             pinView.alpha = pinOptions.alpha
             let options = ViewAnnotationOptions(
@@ -195,7 +209,7 @@ extension GeometriesViewAnnotationPinsDisplay {
                 selected: selected
             )
             do {
-                if update {
+                if update, !imageSizeChanged {
                     try canvasVC.mapView.viewAnnotations.update(pinView, options: options)
                 } else {
                     try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
