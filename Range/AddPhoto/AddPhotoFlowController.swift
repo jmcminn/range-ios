@@ -258,6 +258,7 @@ class AddPhotoFlowController {
             guard let self = self, let detailsVC = self.detailsVC else { return }
             self.photoDescription = detailsVC.photoDescription
             detailsVC.navigationController?.popViewController(animated: true)
+            self.detailsVC = nil
         }
         vc.onNext = { [weak self] in
             guard let self = self, let detailsVC = self.detailsVC else { return }
