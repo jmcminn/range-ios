@@ -463,6 +463,11 @@ extension CollaborationFlowController {
             fatalError("updateTagsIfChanged not implemented for \(object)")
         }
 
+        guard let command = command else {
+            closeEditTagsVC()
+            return
+        }
+
         runCommandWithProgress(
             command: command,
             onSuccess: { [weak self] in
@@ -605,11 +610,10 @@ extension CollaborationFlowController {
     /// Shows the activity indicator making the UI not interactive, runs provided commands and runs one of the provided blocks depending
     /// on the success of the commands.
     /// If the command is nil this function doesn nothing
-    private func runCommandWithProgress(command: Command?,
+    private func runCommandWithProgress(command: Command,
                                         onSuccess: @escaping () -> Void,
                                         onFailure: @escaping (Error) -> Void)
     {
-        guard let command = command else { return }
         // show activity view (a spinner) that covers the screen disabling any user interactions
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
