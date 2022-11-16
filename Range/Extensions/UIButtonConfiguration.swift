@@ -2,6 +2,32 @@ import UIKit
 
 /// Different button configurations used in the app
 extension UIButton.Configuration {
+    /// Configuration used for the gray button with red text
+    static func redButton() -> UIButton.Configuration {
+        let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)
+            .applying(UIImage.SymbolConfiguration(weight: .bold))
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = NSDirectionalEdgeInsets(
+            top: 14,
+            leading: 0,
+            bottom: 14,
+            trailing: 0
+        )
+        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseForegroundColor = .Red_03
+        config.background.cornerRadius = 12
+        config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        config.preferredSymbolConfigurationForImage = imageConfig
+        config.imagePlacement = .leading
+        config.imagePadding = 5
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
+            return outgoing
+        }
+        return config
+    }
+
     /// Configuration used for the "back" button in the bottom navigation
     static func grayButton() -> UIButton.Configuration {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)

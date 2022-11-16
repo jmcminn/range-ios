@@ -6,9 +6,11 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class DatePickerCardViewController: SheetCardViewController {
+    private let datePickerBackground = UIView()
     private let datePicker = UIDatePicker()
     private let selectedDateLabel = LabelWithTextInsets()
-    private var clearSelectionButton: UIButton!
+    private var leftButton: UIButton! // either "cancel" or "remove date" button
+    private var doneButton: UIButton!
     let timeZone: TimeZone
 
     var selectedDate: Date?
@@ -26,17 +28,15 @@ class DatePickerCardViewController: SheetCardViewController {
         super.init(icon: UIImage(systemName: "calendar"), title: title)
         selectedDate = initialSelectedDate
         self.onDatePicked = onDatePicked
-        onDismiss = { [weak self] in
-            self?.onDatePicked?(self?.selectedDate)
-        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupDatePicker()
-        containerView.addSubview(datePicker)
-        datePicker.snp.makeConstraints { make in
+        containerView.addSubview(datePickerBackground)
+        datePickerBackground.addSubview(datePicker)
+        datePickerBackground.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             if let subtitleLabel = subtitleLabel {
                 make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
@@ -44,19 +44,22 @@ class DatePickerCardViewController: SheetCardViewController {
                 make.top.equalTo(closeButton.snp.bottom).offset(16)
             }
         }
-
-        setupSelectedDateLabel()
-        containerView.addSubview(selectedDateLabel)
-        selectedDateLabel.snp.makeConstraints { make in
-            make.top.equalTo(datePicker.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
+        datePicker.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(10)
         }
 
-        setupClearSelectionButton()
-        containerView.addSubview(clearSelectionButton)
-        clearSelectionButton.snp.makeConstraints { make in
-            make.centerY.trailing.equalTo(selectedDateLabel)
-            make.width.height.equalTo(40)
+        setupButtons()
+        containerView.addSubview(leftButton)
+        containerView.addSubview(doneButton)
+        leftButton.snp.makeConstraints { make in
+            make.leading.equalTo(16)
+            make.top.equalTo(doneButton)
+            make.trailing.equalTo(doneButton.snp.leading).offset(-16)
+            make.width.equalTo(doneButton.snp.width)
+        }
+        doneButton.snp.makeConstraints { make in
+            make.trailing.equalTo(-16)
+            make.top.equalTo(datePickerBackground.snp.bottom).offset(16)
         }
 
         handleDateSelection()
@@ -65,7 +68,7 @@ class DatePickerCardViewController: SheetCardViewController {
     override func updateColors() {
         super.updateColors()
 
-        datePicker.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        datePickerBackground.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
         selectedDateLabel.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
@@ -73,7 +76,7 @@ class DatePickerCardViewController: SheetCardViewController {
         let baseHeight = super.height(forContainer: cardContainerView, cardPosition: cardPosition)
         if cardPosition == .max {
             view.layoutIfNeeded()
-            return selectedDateLabel.frame.maxY + 16
+            return doneButton.frame.maxY + 16
         }
         return baseHeight
     }
@@ -88,6 +91,10 @@ class DatePickerCardViewController: SheetCardViewController {
 
 extension DatePickerCardViewController {
     private func setupDatePicker() {
+        datePickerBackground.layer.cornerRadius = 13
+        datePickerBackground.layer.borderWidth = 1
+        datePickerBackground.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+
         datePicker.datePickerMode = .date
         if let selectedDate = selectedDate {
             datePicker.date = selectedDate
@@ -95,35 +102,39 @@ extension DatePickerCardViewController {
         datePicker.timeZone = timeZone
         datePicker.preferredDatePickerStyle = .inline
         datePicker.tintColor = .Pink_03
-        datePicker.layer.cornerRadius = 13
-        datePicker.layer.borderWidth = 1
         datePicker.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         datePicker.clipsToBounds = true
         datePicker.addTarget(self, action: #selector(handleDateSelection), for: .valueChanged)
     }
 
-    private func setupSelectedDateLabel() {
-        selectedDateLabel.textInsets = UIEdgeInsets(top: 13, left: 0, bottom: 13, right: 0)
-        selectedDateLabel.layer.cornerRadius = 13
-        selectedDateLabel.layer.borderWidth = 1
-        selectedDateLabel.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-        selectedDateLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        selectedDateLabel.font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
-        selectedDateLabel.clipsToBounds = true
-        selectedDateLabel.textAlignment = .center
-    }
-
-    private func setupClearSelectionButton() {
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)
-        var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
-        config.preferredSymbolConfigurationForImage = imageConfig
-
-        clearSelectionButton = UIButton(
-            configuration: config,
-            primaryAction: UIAction(image: UIImage(systemName: "xmark.circle.fill")) { [weak self] _ in
-                self?.selectedDate = nil
+    private func setupButtons() {
+        if selectedDate == nil {
+            // no initial date, just cancel
+            leftButton = UIButton(
+                configuration: UIButton.Configuration.grayButton(),
+                primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
+                    self?.dismissCard()
+                }
+            )
+        } else {
+            // remove current date button
+            leftButton = UIButton(
+                configuration: UIButton.Configuration.redButton(),
+                primaryAction: UIAction(
+                    title: String(localized: "Remove Date"),
+                    image: UIImage(systemName: "trash")
+                ) { [weak self] _ in
+                    self?.selectedDate = nil
+                    self?.dismissCard()
+                    self?.onDatePicked?(self?.selectedDate)
+                }
+            )
+        }
+        doneButton = UIButton(
+            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
+            primaryAction: UIAction(title: "Done") { [weak self] _ in
                 self?.dismissCard()
+                self?.onDatePicked?(self?.selectedDate)
             }
         )
     }
