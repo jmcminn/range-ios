@@ -1,21 +1,23 @@
 import UIKit
 
-/// Simple "toast" view that says "Pan and zoom to adjust the location"
-class PanAndZoomIndicatorView: UIView {
-    init() {
+/// Simple "toast" view that displays given text
+class ToastView: UIView {
+    init(text: String, backgroundColor: UIColor, borderColor: UIColor? = nil) {
         super.init(frame: .zero)
 
-        backgroundColor = UIColor.Neutral_10
+        self.backgroundColor = backgroundColor
         setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
         layer.cornerRadius = 10
+        if let borderColor = borderColor {
+            layer.borderWidth = 1
+            layer.borderColor = borderColor.cgColor
+        }
 
-        let font = UIFont.preferredFont(forTextStyle: .subheadline)
-        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
         let textLabel = UILabel()
-        textLabel.text = "Pan and zoom to adjust the location"
+        textLabel.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        textLabel.text = text
         textLabel.textColor = UIColor.Neutral_01
-        textLabel.font = boldFont
-        textLabel.adjustsFontForContentSizeCategory = true
+        textLabel.numberOfLines = 0
         addSubview(textLabel)
 
         textLabel.snp.makeConstraints { make in

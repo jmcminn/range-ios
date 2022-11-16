@@ -18,7 +18,7 @@ class AddPhotoFlowController {
     var topViewController: AddPhotoTopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
     var photosPreviewCardVC: PhotosPreviewViewController?
-    var panAndZoomIndicatorView: PanAndZoomIndicatorView?
+    var panAndZoomIndicatorView: ToastView?
 
     /// id of registered delegate
     var canvasDelegateId: UUID?
@@ -101,6 +101,7 @@ class AddPhotoFlowController {
         let navC = UINavigationController(rootViewController: createCameraViewController())
         navC.modalPresentationStyle = .fullScreen
         canvasContainer.present(navC, animated: true)
+        ToastWindow.shared.updateStatusBarAppearance()
     }
 
     /// Creates the `CameraViewController` and installs the flow callbacks
@@ -226,6 +227,7 @@ class AddPhotoFlowController {
         } else {
             // go straight to photo location
             canvasContainer.dismiss(animated: true)
+            ToastWindow.shared.updateStatusBarAppearance()
             selectPhotoLocation()
         }
     }
@@ -293,6 +295,7 @@ class AddPhotoFlowController {
         }
         navC.modalPresentationStyle = .fullScreen
         canvasContainer.present(navC, animated: true)
+        ToastWindow.shared.updateStatusBarAppearance()
     }
 
     /// Store the photo(s) and stop the flow
@@ -301,7 +304,7 @@ class AddPhotoFlowController {
         guard let cameraVC = cameraVC else { return }
 
         finalize(
-            withProgressInView: cameraVC.view,
+            withProgressInViewController: cameraVC,
             cleanup: {},
             onSuccess: {
                 self.canvasContainer.dismiss(animated: true)
@@ -318,7 +321,7 @@ class AddPhotoFlowController {
         detailsVC.nextButton.configuration?.showsActivityIndicator = true
 
         finalize(
-            withProgressInView: detailsVC.view,
+            withProgressInViewController: detailsVC,
             cleanup: {
                 detailsVC.nextButton.configuration?.showsActivityIndicator = false
             },
@@ -342,7 +345,7 @@ class AddPhotoFlowController {
         geometryId = pinsDisplay?.selectedPin?.id
 
         finalize(
-            withProgressInView: canvasContainer.view,
+            withProgressInViewController: canvasContainer,
             cleanup: {
                 confirmationCardVC.setActive()
             },
@@ -360,7 +363,7 @@ class AddPhotoFlowController {
     /// Runs the `onSuccess` callback when storing data succeeded
     /// Both callbacks are dispatched on the main queue
     private func finalize(
-        withProgressInView progressHostView: UIView,
+        withProgressInViewController progressHost: UIViewController,
         cleanup: @escaping () -> Void,
         onSuccess: @escaping () -> Void
     ) {
@@ -368,7 +371,7 @@ class AddPhotoFlowController {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
-        progressHostView.addSubview(activityView)
+        progressHost.view.addSubview(activityView)
         activityView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -390,7 +393,7 @@ class AddPhotoFlowController {
             } catch {
                 Logger.model.error("finalize error: \(error.localizedDescription, privacy: .public)")
                 DispatchQueue.main.async {
-                    self.showError(withMessage: error.localizedDescription, in: self.canvasContainer)
+                    self.showError(withMessage: error.localizedDescription, in: progressHost)
                 }
             }
         }
@@ -526,7 +529,7 @@ extension AddPhotoFlowController {
     }
 
     private func showPanAndZoomIndicatorView() {
-        panAndZoomIndicatorView = PanAndZoomIndicatorView()
+        panAndZoomIndicatorView = ToastView(text: "Pan and zoom to adjust the location", backgroundColor: .Neutral_10)
         canvasContainer.controls.addSubview(panAndZoomIndicatorView!)
         panAndZoomIndicatorView!.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(12)

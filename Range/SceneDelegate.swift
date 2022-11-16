@@ -35,6 +35,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
 
+        ToastWindow.shared.showForKeyWindow(window!)
+
         authFlowController.start()
     }
 
@@ -49,6 +51,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
                 window!.rootViewController = projectsFlowController
                 window!.makeKeyAndVisible()
+
+                ToastWindow.shared.showForKeyWindow(window!)
 
                 try await projectsFlowController.start()
             } catch {

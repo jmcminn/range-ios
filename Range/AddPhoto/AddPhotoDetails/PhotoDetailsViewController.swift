@@ -118,6 +118,10 @@ class PhotoDetailsViewController: UIViewController {
         navigationController?.isNavigationBarHidden = true
     }
 
+    override dynamic var preferredStatusBarStyle: UIStatusBarStyle {
+        UIStatusBarStyle.lightContent
+    }
+
     /// build all the views when view will appear as we need to layout views for headers measurements
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

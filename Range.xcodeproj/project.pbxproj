@@ -33,7 +33,6 @@
 		0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
-		0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */; };
 		0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
 		0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */; };
@@ -75,11 +74,14 @@
 		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
 		0A34C1912846190A00BEDC7C /* FirebaseUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirebaseUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */; };
+		0A374DD8292418230036C184 /* ToastWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DD7292418230036C184 /* ToastWindow.swift */; };
+		0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DD929241ED40036C184 /* ToastViewController.swift */; };
+		0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */; };
+		0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DDD2924F18C0036C184 /* ToastView.swift */; };
 		0A37837A291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */; };
 		0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */; };
 		0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */; };
 		0A3831D328E42D3D001AF38A /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D228E42D3D001AF38A /* Update.swift */; };
-		0A3831D528E44404001AF38A /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0A3831D728E44550001AF38A /* UpsertUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D628E44550001AF38A /* UpsertUpdateCommand.swift */; };
 		0A3831D928E44CA3001AF38A /* UpsertUpdateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D828E44CA3001AF38A /* UpsertUpdateCommandTest.swift */; };
 		0A3831DB28E44FF5001AF38A /* FirebaseUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */; };
@@ -325,7 +327,6 @@
 		0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
-		0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanAndZoomIndicatorView.swift; sourceTree = "<group>"; };
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
 		0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationHeaderCoverViewController.swift; sourceTree = "<group>"; };
@@ -368,6 +369,10 @@
 		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		0A34C1902846190900BEDC7C /* FirebaseUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUploadTest.swift; sourceTree = "<group>"; };
+		0A374DD7292418230036C184 /* ToastWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastWindow.swift; sourceTree = "<group>"; };
+		0A374DD929241ED40036C184 /* ToastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewController.swift; sourceTree = "<group>"; };
+		0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+TopViewController.swift"; sourceTree = "<group>"; };
+		0A374DDD2924F18C0036C184 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		0A378375291A71880018BF3C /* GoogleService-Info.demo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.demo.plist"; sourceTree = "<group>"; };
 		0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.dev.plist"; sourceTree = "<group>"; };
 		0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadsToCollaborationCommand.swift; sourceTree = "<group>"; };
@@ -641,7 +646,6 @@
 				0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */,
 				0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */,
 				0A48ACE0281C1ADD0044E06E /* AddPhotoPinsDisplay.swift */,
-				0A1812702833A88600A8515B /* PanAndZoomIndicatorView.swift */,
 				0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */,
 			);
 			path = AddPhotoLocation;
@@ -820,6 +824,16 @@
 			path = Tags;
 			sourceTree = "<group>";
 		};
+		0A374DD6292418070036C184 /* Toast */ = {
+			isa = PBXGroup;
+			children = (
+				0A374DD7292418230036C184 /* ToastWindow.swift */,
+				0A374DD929241ED40036C184 /* ToastViewController.swift */,
+				0A374DDD2924F18C0036C184 /* ToastView.swift */,
+			);
+			path = Toast;
+			sourceTree = "<group>";
+		};
 		0A4782FE28A5169A0063040F /* Collaboration */ = {
 			isa = PBXGroup;
 			children = (
@@ -935,6 +949,7 @@
 				0AB8557A28FF276500491E20 /* UIView+AsImage.swift */,
 				0A18126E28339EC800A8515B /* UIView+Shadow.swift */,
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
+				0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1038,6 +1053,7 @@
 				0AC9E18928F56C1600C7185D /* Projects */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A30E8BA284A090000A50D54 /* Tags */,
+				0A374DD6292418070036C184 /* Toast */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
@@ -1484,6 +1500,7 @@
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */,
+				0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */,
 				0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
@@ -1506,6 +1523,7 @@
 				0AB8557628F98EB600491E20 /* DueDateButton.swift in Sources */,
 				0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */,
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
+				0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */,
 				0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */,
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,
 				0A724F3F28884A9100708C6B /* UpsertCollaborationCommand.swift in Sources */,
@@ -1521,7 +1539,9 @@
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
+				0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
+				0A374DD8292418230036C184 /* ToastWindow.swift in Sources */,
 				0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */,
 				0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
@@ -1548,7 +1568,6 @@
 				0A130E9E28D4A8F700FF1368 /* CollaborationFeedViewController.swift in Sources */,
 				0A3831D728E44550001AF38A /* UpsertUpdateCommand.swift in Sources */,
 				0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */,
-				0A1812712833A88600A8515B /* PanAndZoomIndicatorView.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,

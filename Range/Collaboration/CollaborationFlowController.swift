@@ -409,6 +409,7 @@ extension CollaborationFlowController {
                 self.lastCancelledCommentText = ""
             } catch {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to add the comment")
             }
         }
     }
@@ -511,6 +512,7 @@ extension CollaborationFlowController {
                 try await model.run(model.update(dueDate: dueDate, forCollaboration: collaboration))
             } catch {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to update the due date")
             }
         }
     }
@@ -527,6 +529,7 @@ extension CollaborationFlowController {
                 try await model.run(model.update(name: name, forCollaboration: collaboration))
             } catch {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to update the name")
             }
         }
     }
@@ -558,6 +561,7 @@ extension CollaborationFlowController {
                 try await model.run(model.toggleNoteCompleted(note: comment))
             } catch {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to update the comment")
             }
         }
     }
@@ -583,6 +587,7 @@ extension CollaborationFlowController {
                     try await self.model.run(self.model.update(text: text!, forComment: comment))
                 } catch {
                     Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                    ToastWindow.shared.showError(text: "Failed to update the comment")
                 }
             }
         }
