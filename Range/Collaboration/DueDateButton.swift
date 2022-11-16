@@ -121,7 +121,7 @@ class DueDateButton: UIButton {
         let imageWithBackground = image?.addCircleBackground(
             bgSize: CGSize(width: 32, height: 32),
             bgColor: .dynamicColor(light: .Neutral_01, dark: .Neutral_10),
-            strokeColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
+            strokeColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         )
         setImage(imageWithBackground, for: .normal)
         setImage(imageWithBackground, for: .highlighted)

@@ -16,7 +16,7 @@ extension UIButton.Configuration {
         config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         config.background.cornerRadius = 12
-        config.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_07)
+        config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig
         config.imagePlacement = .leading
         config.imagePadding = 5
@@ -99,7 +99,7 @@ extension UIButton.Configuration {
         config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
         config.background.cornerRadius = cornerRadius
-        config.background.strokeColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
+        config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig
         return config
     }

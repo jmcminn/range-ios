@@ -156,7 +156,7 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
 
     private func buildBottomStroke() {
         bottomStroke = UIView()
-        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
+        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
     }
 
     /// update bottom stroke visibility (+ shadow)

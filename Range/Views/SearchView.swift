@@ -105,7 +105,7 @@ class SearchView: UIView {
     /// Adapt CG colors to interface style change
     private func updateColors() {
         // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
-        layer.borderColor = chooseColor(light: .Neutral_03, dark: .Neutral_08).cgColor
+        layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     @available(*, unavailable)
