@@ -33,8 +33,6 @@ class ProjectTopViewController: UIViewController {
             make.height.equalTo(1)
         }
 
-        // TODO: 372 back action
-
         setupTitleLabel()
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in

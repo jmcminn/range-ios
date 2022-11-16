@@ -27,7 +27,7 @@ extension PinDisplayOptions {
     static func regularPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                  anythingSelected: Bool) -> PinDisplayOptions
     {
-        let archived = collaboration.feature.first?.geometry.first?.archivedTimestamp != nil
+        let archived = collaboration.isArchived
         let uploadsCount = collaboration.uploads.count
         let overdue = collaboration.isOverdue
         let hasUncompletedNotes = collaboration.hasUncompletedNotes
@@ -97,7 +97,7 @@ extension PinDisplayOptions {
     static func addPhotoPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                   anythingSelected _: Bool) -> PinDisplayOptions
     {
-        let archived = collaboration.feature.first?.geometry.first?.archivedTimestamp != nil
+        let archived = collaboration.isArchived
         let pinImage: PinImage
         if let status = collaboration.status {
             pinImage = archived ? .pinArchivedTask : .pinTask(color: status.color)

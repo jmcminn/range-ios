@@ -8,9 +8,8 @@ class DueDateButton: UIButton {
     private let timeZone: TimeZone
 
     /// The due date
-    var dueDate: Date? {
-        didSet { updateButton() }
-    }
+    private(set) var dueDate: Date?
+    private(set) var markOverdue: Bool = false
 
     /// - Parameters:
     ///     - timezone: the timezone in which to display the due date (it's project time zone, not current user timezone)
@@ -27,10 +26,18 @@ class DueDateButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func setDueDate(_ dueDate: Date?, markOverdue: Bool) {
+        self.dueDate = dueDate
+        self.markOverdue = markOverdue
+        // TODO: 511 markOverdue
+        updateButton()
+    }
+
     /// Update the content when due date change
     private func updateButton() {
-        updateImage()
         updateTitle()
+        updateImage()
+        updateColors()
     }
 
     override open var isHighlighted: Bool {
@@ -70,7 +77,9 @@ class DueDateButton: UIButton {
     }
 
     private func updateColors() {
-        layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        layer.borderColor = markOverdue
+            ? UIColor.Red_03.cgColor
+            : UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     /// Updates the title (both, the content and colors)
@@ -82,14 +91,18 @@ class DueDateButton: UIButton {
             let title = NSMutableAttributedString(
                 string: "Due date\n",
                 attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                    .foregroundColor: markOverdue
+                        ? UIColor.Red_03
+                        : chooseColor(light: .Neutral_06, dark: .Neutral_05),
                     .font: UIFont.preferredFont(forTextStyle: .caption2),
                 ]
             )
             title
                 .append(NSAttributedString(string: Date.dueDateFormat(dueDate, timeZone: timeZone),
                                            attributes: [
-                                               .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
+                                               .foregroundColor: markOverdue
+                                                   ? UIColor.Red_03
+                                                   : chooseColor(light: .Neutral_07, dark: .Neutral_04),
                                                .font: UIFont._preferredFont(
                                                    forTextStyle: .subheadline,
                                                    symbolicTraits: .traitBold
@@ -100,7 +113,9 @@ class DueDateButton: UIButton {
             let title = NSMutableAttributedString(
                 string: "Due Date",
                 attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                    .foregroundColor: markOverdue
+                        ? UIColor.Red_03
+                        : chooseColor(light: .Neutral_06, dark: .Neutral_05),
                     .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
                 ]
             )
@@ -116,12 +131,14 @@ class DueDateButton: UIButton {
                 .SymbolConfiguration(font: UIFont
                     ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold))
         )?
-            .withTintColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04),
+            .withTintColor(markOverdue ? .Red_03 : .dynamicColor(light: .Neutral_07, dark: .Neutral_04),
                            renderingMode: .alwaysTemplate)
         let imageWithBackground = image?.addCircleBackground(
             bgSize: CGSize(width: 32, height: 32),
             bgColor: .dynamicColor(light: .Neutral_01, dark: .Neutral_10),
-            strokeColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+            strokeColor: markOverdue
+                ? .Red_03
+                : .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         )
         setImage(imageWithBackground, for: .normal)
         setImage(imageWithBackground, for: .highlighted)

@@ -167,7 +167,10 @@ class CollaborationDetailsViewController: UIViewController {
         if isTaskWindow {
             descriptionTextView.text = collaboration.collaborationDescription
             assigneeButton.assignee = collaboration.assignee
-            dueDateButton.dueDate = collaboration.dueDateTimestamp
+            dueDateButton.setDueDate(
+                collaboration.dueDateTimestamp,
+                markOverdue: !collaboration.isCompleted && !collaboration.isArchived && collaboration.isOverdue
+            )
         }
 
         if hideThumbnails != thumbnailsVC.view.isHidden {

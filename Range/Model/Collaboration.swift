@@ -44,6 +44,16 @@ class Collaboration: Object, WithPlaceholder {
         dueDateTimestamp != nil && dueDateTimestamp! < Date.now
     }
 
+    /// Whether the collaboration is archived, based on the geometry.archivedTimestamp existence
+    var isArchived: Bool {
+        feature.first?.geometry.first?.archivedTimestamp != nil
+    }
+
+    /// it's completed if it has a status with isCompleted = true
+    var isCompleted: Bool {
+        status != nil && status!.isCompleted
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()
