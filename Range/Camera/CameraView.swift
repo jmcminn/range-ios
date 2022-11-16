@@ -120,7 +120,7 @@ struct CameraView: View {
                 .overlay(Image(systemName: "arrow.forward").font(.title3.bold())
                     .foregroundColor(.Neutral_01))
         }.buttonStyle(.plain)
-            .disabled(model.numberOfPhotos == 0)
+            .disabled(model.numberOfPhotos == 0 || camera.isProcessingPhoto)
     }
 
     struct TakePhotoButtonStyle: ButtonStyle {
