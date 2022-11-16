@@ -120,9 +120,17 @@ class PhotosToAddViewModel: NSObject {
         let assetIdsInPickerResults: Set<String> = Set(results.compactMap(\.assetIdentifier))
 
         // keep only non camera roll photos and the ones from the camera roll that are still selected
-        photos = photos.filter {
-            $0.assetIdentifier == nil || assetIdsInPickerResults.contains($0.assetIdentifier!)
+        // find indices to remove
+        var indicesToRemove = [Int]()
+        photos.enumerated().forEach { index, photo in
+            if let assetIdentifier = photo.assetIdentifier, !assetIdsInPickerResults.contains(assetIdentifier) {
+                indicesToRemove.append(index)
+            }
         }
+        for index in indicesToRemove.reversed() {
+            remove(photoAtIndex: index)
+        }
+
         var resultError: Error?
         for result in results {
             if let assetId = result.assetIdentifier, assetIdsInPhotosToAdd.contains(assetId) {

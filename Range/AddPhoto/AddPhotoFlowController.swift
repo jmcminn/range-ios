@@ -682,7 +682,9 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
                     }
                     self.showError(withMessage: errorMessage, in: cameraVC)
                 }
-                if updatePhotosError == nil, !UserDefaults.multiPhotoSessionEnabled {
+                if updatePhotosError == nil, !UserDefaults.multiPhotoSessionEnabled,
+                   !self.photosToAddViewModel.photos.isEmpty
+                {
                     self.nextStepAfterCamera()
                 }
             }
