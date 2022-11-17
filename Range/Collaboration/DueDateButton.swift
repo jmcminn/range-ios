@@ -79,7 +79,7 @@ class DueDateButton: UIButton {
     private func updateColors() {
         layer.borderColor = markOverdue
             ? UIColor.Red_03.cgColor
-            : UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+            : chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     /// Updates the title (both, the content and colors)
@@ -131,14 +131,14 @@ class DueDateButton: UIButton {
                 .SymbolConfiguration(font: UIFont
                     ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold))
         )?
-            .withTintColor(markOverdue ? .Red_03 : .dynamicColor(light: .Neutral_07, dark: .Neutral_04),
+            .withTintColor(markOverdue ? .Red_03 : chooseColor(light: .Neutral_07, dark: .Neutral_04),
                            renderingMode: .alwaysTemplate)
         let imageWithBackground = image?.addCircleBackground(
             bgSize: CGSize(width: 32, height: 32),
-            bgColor: .dynamicColor(light: .Neutral_01, dark: .Neutral_10),
+            bgColor: chooseColor(light: .Neutral_01, dark: .Neutral_10),
             strokeColor: markOverdue
                 ? .Red_03
-                : .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+                : chooseColor(light: .Neutral_04, dark: .Neutral_07)
         )
         setImage(imageWithBackground, for: .normal)
         setImage(imageWithBackground, for: .highlighted)

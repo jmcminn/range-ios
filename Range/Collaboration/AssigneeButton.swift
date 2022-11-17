@@ -63,7 +63,7 @@ class AssigneeButton: UIButton {
     }
 
     private func updateColors() {
-        layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     /// Updates the title (both, the content and colors)
@@ -107,12 +107,12 @@ class AssigneeButton: UIButton {
                 .SymbolConfiguration(font: UIFont
                     ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold))
         )?
-            .withTintColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04),
+            .withTintColor(chooseColor(light: .Neutral_07, dark: .Neutral_04),
                            renderingMode: .alwaysTemplate)
         let imageWithBackground = image?.addCircleBackground(
             bgSize: CGSize(width: 32, height: 32),
-            bgColor: .dynamicColor(light: .Neutral_01, dark: .Neutral_10),
-            strokeColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+            bgColor: chooseColor(light: .Neutral_01, dark: .Neutral_10),
+            strokeColor: chooseColor(light: .Neutral_04, dark: .Neutral_07)
         )
         setImage(imageWithBackground, for: .normal)
         setImage(imageWithBackground, for: .highlighted)
