@@ -161,7 +161,7 @@ class CommentFeedItemCell: UITableViewCell {
             completeButton.isHidden = false
             noteBackground.statusView.backgroundColor = comment.completed ? .Green_03 : .Orange_03
         } else {
-            commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+            commentTextLabel.textInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 10)
             noteBackground.leftBorderRadius = 16
             completeButton.isHidden = true
             noteBackground.statusView.backgroundColor = .clear
