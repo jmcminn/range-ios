@@ -38,7 +38,7 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
     var fileTypeString: String?
     var imageHeightToWidth: Double?
 
-    func upsertCommand(id: String) throws -> LocalCommand {
+    func upsert(withId id: String, inRealm realm: Realm) throws {
         let fileType: Upload.FileType
         if let fileTypeString = fileTypeString {
             fileType = try Upload.FileType.allCases.first { $0.rawValue == fileTypeString }
@@ -49,18 +49,26 @@ struct FirebaseUpload: Codable, FirestoreToRealmSyncable {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
-        return UpsertUploadCommand(
-            uploadId: id,
-            correlationId: correlationId,
-            fileType: fileType,
-            parentType: parentType,
-            parentId: parentId,
-            authorId: authorId,
+
+        if let existingObject = realm.object(ofType: Upload.self, forPrimaryKey: id) {
+            existingObject.cleanupOldTags(newTagIds: tagIds)
+        }
+
+        let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
+        let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
+        let upload = Upload(
+            id: id,
             timestamp: timestamp.dateValue(),
             name: name,
-            uploadDescription: uploadDescription,
-            tagIds: tagIds,
+            description: uploadDescription,
+            correlationId: correlationId,
+            fileType: fileType,
             imageHeightToWidth: imageHeightToWidth
         )
+        upload.author = author
+        realm.add(upload, update: .modified)
+        collaboration.uploads.insert(upload)
+        upload.tags.removeAll()
+        upload.addNewTags(newTagIds: tagIds, realm: realm)
     }
 }

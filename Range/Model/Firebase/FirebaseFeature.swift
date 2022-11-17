@@ -37,7 +37,10 @@ struct FirebaseFeature: Codable, FirestoreToRealmSyncable {
         self.init(geometryId: geometryId, name: feature.name, description: feature.featureDescription)
     }
 
-    func upsertCommand(id: String) throws -> LocalCommand {
-        UpsertFeatureCommand(featureId: id, geometryId: geometryId, name: name, featureDescription: featureDescription)
+    func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
+        let geometry = realm.objectOrPlaceholder(ofType: Geometry.self, forPrimaryKey: geometryId)
+        let feature = Feature(id: id, name: name, description: featureDescription)
+        realm.add(feature, update: .modified)
+        geometry.features.insert(feature)
     }
 }

@@ -9,7 +9,7 @@ protocol FirestoreToRealmSyncable {
     /// The type used to store the objects in the model Realm db
     associatedtype ModelType: Object
     /// Upsert this element with given id to given Realm. Will be performed in a realm write transaction
-    func upsertCommand(id: String) throws -> LocalCommand
+    func upsert(withId id: String, inRealm realm: Realm) throws
 }
 
 //
@@ -82,9 +82,9 @@ class ProjectModelFirestoreSync {
 
         // store in the db
         try await model.write { realm in
-            try projectSummary.upsertCommand(id: self.model.projectId).apply(inRealm: realm)
-            try canvas.upsertCommand(id: self.model.demoCanvas.id).apply(inRealm: realm)
-            try user.upsertCommand(id: self.model.userId).apply(inRealm: realm)
+            try projectSummary.upsert(withId: self.model.projectId, inRealm: realm)
+            try canvas.upsert(withId: self.model.demoCanvas.id, inRealm: realm)
+            try user.upsert(withId: self.model.userId, inRealm: realm)
         }
     }
 
@@ -103,7 +103,7 @@ class ProjectModelFirestoreSync {
                 let firebaseObject = try snapshot.data(as: type, decoder: decoder)
                 try realm.write {
                     if changeType == .added || changeType == .modified {
-                        try firebaseObject.upsertCommand(id: snapshot.documentID).apply(inRealm: realm)
+                        try firebaseObject.upsert(withId: snapshot.documentID, inRealm: realm)
                     } else if changeType == .removed {
                         guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: snapshot.documentID)
                         else {

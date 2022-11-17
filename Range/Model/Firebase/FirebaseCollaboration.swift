@@ -35,18 +35,31 @@ struct FirebaseCollaboration: Codable, FirestoreToRealmSyncable {
     var assigneeId: String?
     var dueDateTimestamp: Timestamp?
 
-    func upsertCommand(id: String) throws -> LocalCommand {
-        UpsertCollaborationCommand(
-            collaborationId: id,
-            featureId: featureId,
-            authorId: authorId,
+    func upsert(withId id: String, inRealm realm: Realm) throws {
+        if let existingCollaboration = realm.object(ofType: Collaboration.self, forPrimaryKey: id) {
+            existingCollaboration.cleanupOldTags(newTagIds: tagIds)
+        }
+
+        let feature = realm.objectOrPlaceholder(ofType: Feature.self, forPrimaryKey: featureId)
+        let collaboration = Collaboration(
+            id: id,
             timestamp: timestamp.dateValue(),
             name: name,
-            collaborationDescription: collaborationDescription,
-            statusId: statusId,
-            tagIds: tagIds,
-            assigneeId: assigneeId,
+            description: collaborationDescription,
             dueDateTimestamp: dueDateTimestamp?.dateValue()
         )
+        if let authorId = authorId {
+            collaboration.author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
+        }
+        if let statusId = statusId {
+            collaboration.status = realm.objectOrPlaceholder(ofType: Status.self, forPrimaryKey: statusId)
+        }
+        if let assigneeId = assigneeId {
+            collaboration.assignee = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: assigneeId)
+        }
+        realm.add(collaboration, update: .modified)
+        collaboration.tags.removeAll()
+        collaboration.addNewTags(newTagIds: tagIds, realm: realm)
+        feature.collaborations.insert(collaboration)
     }
 }

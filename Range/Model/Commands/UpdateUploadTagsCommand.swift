@@ -19,9 +19,9 @@ extension UpdateUploadTagsCommand: LocalCommand {
 
         // update tags <-> upload
         let tagIds = tags.map(\.id)
-        UpsertUploadCommand.cleanupOldTags(upload: upload, newTagIds: tagIds)
+        upload.cleanupOldTags(newTagIds: tagIds)
         upload.tags.removeAll()
-        UpsertUploadCommand.addNewTags(upload: upload, newTagIds: tagIds, realm: realm)
+        upload.addNewTags(newTagIds: tagIds, realm: realm)
     }
 }
 

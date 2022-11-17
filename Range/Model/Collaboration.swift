@@ -87,4 +87,25 @@ class Collaboration: Object, WithPlaceholder {
             placeholder: true
         )
     }
+
+    // MARK: - upsert/command helper functions
+
+    /// remove the collaboration from the tags it was attached to and is not anymore
+    func cleanupOldTags(newTagIds: [String]) {
+        // for fast lookup
+        let tagIdsSet = Set(newTagIds)
+        for tag in tags {
+            if !tagIdsSet.contains(tag.id) {
+                // updated tags don't contain this tag, remove the collaboration from it
+                tag.collaborations.remove(self)
+            }
+        }
+    }
+
+    /// Add given tags to collaboration and also link the Collaboration in Tags
+    func addNewTags(newTagIds: [String], realm: Realm) {
+        let newTags = newTagIds.uniqued().compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
+        tags.append(objectsIn: newTags)
+        newTags.forEach { $0.collaborations.insert(self) }
+    }
 }

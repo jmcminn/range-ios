@@ -19,9 +19,9 @@ extension UpdateCollaborationTagsCommand: LocalCommand {
 
         // update tags <-> collaboration
         let tagIds = tags.map(\.id)
-        UpsertCollaborationCommand.cleanupOldTags(collaboration: collaboration, newTagIds: tagIds)
+        collaboration.cleanupOldTags(newTagIds: tagIds)
         collaboration.tags.removeAll()
-        UpsertCollaborationCommand.addNewTags(collaboration: collaboration, newTagIds: tagIds, realm: realm)
+        collaboration.addNewTags(newTagIds: tagIds, realm: realm)
     }
 }
 

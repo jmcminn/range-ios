@@ -8,7 +8,8 @@ struct FirebasePDFCanvas: Decodable, FirestoreToRealmSyncable {
     var pageNumber: Int
     var userDefinedScale: Double
 
-    func upsertCommand(id: String) throws -> LocalCommand {
-        UpsertPDFCanvasCommand(canvasId: id, pageNumber: pageNumber, userDefinedScale: userDefinedScale)
+    func upsert(withId id: String, inRealm realm: Realm) throws {
+        let canvas = PDFCanvas(id: id, pageNumber: pageNumber, userDefinedScale: userDefinedScale)
+        realm.add(canvas, update: .modified)
     }
 }

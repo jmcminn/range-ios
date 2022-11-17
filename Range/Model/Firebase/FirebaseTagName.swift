@@ -15,7 +15,8 @@ struct FirebaseTagName: Codable, FirestoreToRealmSyncable {
 
     var name: String
 
-    func upsertCommand(id: String) throws -> LocalCommand {
-        UpsertTagCommand(tagId: id, name: name)
+    func upsert(withId id: String, inRealm realm: Realm) throws {
+        let tag = Tag(id: id, name: name)
+        realm.add(tag, update: .modified)
     }
 }

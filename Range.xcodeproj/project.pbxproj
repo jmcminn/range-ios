@@ -82,8 +82,6 @@
 		0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */; };
 		0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */; };
 		0A3831D328E42D3D001AF38A /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D228E42D3D001AF38A /* Update.swift */; };
-		0A3831D728E44550001AF38A /* UpsertUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D628E44550001AF38A /* UpsertUpdateCommand.swift */; };
-		0A3831D928E44CA3001AF38A /* UpsertUpdateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D828E44CA3001AF38A /* UpsertUpdateCommandTest.swift */; };
 		0A3831DB28E44FF5001AF38A /* FirebaseUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */; };
 		0A3831DD28E467B2001AF38A /* NameUpdateFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */; };
 		0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */; };
@@ -159,23 +157,7 @@
 		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
 		0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */; };
-		0A724F372888302400708C6B /* UpsertGeometryCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F362888302400708C6B /* UpsertGeometryCommand.swift */; };
 		0A724F39288835A600708C6B /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F38288835A600708C6B /* Placeholder.swift */; };
-		0A724F3D2888483600708C6B /* UpsertFeatureCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F3C2888483600708C6B /* UpsertFeatureCommand.swift */; };
-		0A724F3F28884A9100708C6B /* UpsertCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F3E28884A9100708C6B /* UpsertCollaborationCommand.swift */; };
-		0A724F4528887A7D00708C6B /* UpsertProjectSummaryCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4428887A7D00708C6B /* UpsertProjectSummaryCommand.swift */; };
-		0A724F4728887B7200708C6B /* UpsertStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4628887B7200708C6B /* UpsertStatusCommand.swift */; };
-		0A724F4928887C6D00708C6B /* UpsertTagCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4828887C6D00708C6B /* UpsertTagCommand.swift */; };
-		0A724F4B28887CF400708C6B /* UpsertParticipantCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4A28887CF400708C6B /* UpsertParticipantCommand.swift */; };
-		0A724F4D28887E4C00708C6B /* UpsertPDFCanvasCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4C28887E4C00708C6B /* UpsertPDFCanvasCommand.swift */; };
-		0A724F4F28887ED400708C6B /* UpsertCommentCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F4E28887ED300708C6B /* UpsertCommentCommand.swift */; };
-		0A724F542889733000708C6B /* UpsertTagCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F532889733000708C6B /* UpsertTagCommandTest.swift */; };
-		0A724F562889763800708C6B /* UpsertStatusCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F552889763800708C6B /* UpsertStatusCommandTest.swift */; };
-		0A724F582889780000708C6B /* UpsertGeometryCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F572889780000708C6B /* UpsertGeometryCommandTest.swift */; };
-		0A724F5A28897B8A00708C6B /* UpsertFeatureCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5928897B8A00708C6B /* UpsertFeatureCommandTest.swift */; };
-		0A724F5C28897DE500708C6B /* UpsertCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5B28897DE500708C6B /* UpsertCollaborationCommandTest.swift */; };
-		0A724F5E288980F800708C6B /* UpsertCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5D288980F800708C6B /* UpsertCommentCommandTest.swift */; };
-		0A724F6028898B9400708C6B /* UpsertUploadCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F5F28898B9400708C6B /* UpsertUploadCommandTest.swift */; };
 		0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F62288AAFFD00708C6B /* PendingUpload.swift */; };
 		0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F64288AF07800708C6B /* FirebasePendingUploadsModel.swift */; };
 		0A724F67288B0C8C00708C6B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0A724F66288B0C8C00708C6B /* FirebaseStorage */; };
@@ -269,7 +251,6 @@
 		0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75728621782005ACFD7 /* Result+Throws.swift */; };
 		0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75928624204005ACFD7 /* Authentication.swift */; };
 		0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75C28644D99005ACFD7 /* TagsViewModelTest.swift */; };
-		0AD9B7662869DE22005ACFD7 /* UpsertUploadCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B7652869DE22005ACFD7 /* UpsertUploadCommand.swift */; };
 		0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B7672869E55E005ACFD7 /* Command.swift */; };
 		0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */; };
 		0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */; };
@@ -380,8 +361,6 @@
 		0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpdate.swift; sourceTree = "<group>"; };
 		0A3831D228E42D3D001AF38A /* Update.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
 		0A3831D428E44404001AF38A /* StringOrDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringOrDate.swift; sourceTree = "<group>"; };
-		0A3831D628E44550001AF38A /* UpsertUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertUpdateCommand.swift; sourceTree = "<group>"; };
-		0A3831D828E44CA3001AF38A /* UpsertUpdateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertUpdateCommandTest.swift; sourceTree = "<group>"; };
 		0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseUpdateTest.swift; sourceTree = "<group>"; };
 		0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSkeletonCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -459,23 +438,7 @@
 		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
 		0A720C6C280469A3003D6B13 /* NonModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDisplay.swift; sourceTree = "<group>"; };
-		0A724F362888302400708C6B /* UpsertGeometryCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertGeometryCommand.swift; sourceTree = "<group>"; };
 		0A724F38288835A600708C6B /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
-		0A724F3C2888483600708C6B /* UpsertFeatureCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertFeatureCommand.swift; sourceTree = "<group>"; };
-		0A724F3E28884A9100708C6B /* UpsertCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertCollaborationCommand.swift; sourceTree = "<group>"; };
-		0A724F4428887A7D00708C6B /* UpsertProjectSummaryCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertProjectSummaryCommand.swift; sourceTree = "<group>"; };
-		0A724F4628887B7200708C6B /* UpsertStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertStatusCommand.swift; sourceTree = "<group>"; };
-		0A724F4828887C6D00708C6B /* UpsertTagCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertTagCommand.swift; sourceTree = "<group>"; };
-		0A724F4A28887CF400708C6B /* UpsertParticipantCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertParticipantCommand.swift; sourceTree = "<group>"; };
-		0A724F4C28887E4C00708C6B /* UpsertPDFCanvasCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertPDFCanvasCommand.swift; sourceTree = "<group>"; };
-		0A724F4E28887ED300708C6B /* UpsertCommentCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertCommentCommand.swift; sourceTree = "<group>"; };
-		0A724F532889733000708C6B /* UpsertTagCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertTagCommandTest.swift; sourceTree = "<group>"; };
-		0A724F552889763800708C6B /* UpsertStatusCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertStatusCommandTest.swift; sourceTree = "<group>"; };
-		0A724F572889780000708C6B /* UpsertGeometryCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertGeometryCommandTest.swift; sourceTree = "<group>"; };
-		0A724F5928897B8A00708C6B /* UpsertFeatureCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertFeatureCommandTest.swift; sourceTree = "<group>"; };
-		0A724F5B28897DE500708C6B /* UpsertCollaborationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertCollaborationCommandTest.swift; sourceTree = "<group>"; };
-		0A724F5D288980F800708C6B /* UpsertCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertCommentCommandTest.swift; sourceTree = "<group>"; };
-		0A724F5F28898B9400708C6B /* UpsertUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertUploadCommandTest.swift; sourceTree = "<group>"; };
 		0A724F62288AAFFD00708C6B /* PendingUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUpload.swift; sourceTree = "<group>"; };
 		0A724F64288AF07800708C6B /* FirebasePendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebasePendingUploadsModel.swift; sourceTree = "<group>"; };
 		0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_portrait.jpg; sourceTree = "<group>"; };
@@ -566,7 +529,6 @@
 		0AD9B75728621782005ACFD7 /* Result+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Throws.swift"; sourceTree = "<group>"; };
 		0AD9B75928624204005ACFD7 /* Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		0AD9B75C28644D99005ACFD7 /* TagsViewModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModelTest.swift; sourceTree = "<group>"; };
-		0AD9B7652869DE22005ACFD7 /* UpsertUploadCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpsertUploadCommand.swift; sourceTree = "<group>"; };
 		0AD9B7672869E55E005ACFD7 /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewWithPlaceholder.swift; sourceTree = "<group>"; };
 		0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Throws.swift"; sourceTree = "<group>"; };
@@ -683,12 +645,12 @@
 				0A724F522889730300708C6B /* Commands */,
 				0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */,
 				0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */,
-				0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */,
-				0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */,
-				0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */,
-				0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */,
 				0A34C1822845F89700BEDC7C /* FirebaseCollaborationTest.swift */,
 				0A34C18C2846030800BEDC7C /* FirebaseCommentTest.swift */,
+				0A34C180284552AC00BEDC7C /* FirebaseFeatureTest.swift */,
+				0A07D75F28104BF000B6F9A2 /* FirebaseGeometryTest.swift */,
+				0A34C17E284551F500BEDC7C /* FirebaseStatusNameTest.swift */,
+				0A4995C22859D8C900E571FB /* FirebaseTagNameTest.swift */,
 				0A3831DA28E44FF5001AF38A /* FirebaseUpdateTest.swift */,
 				0A34C19228461ADB00BEDC7C /* FirebaseUploadTest.swift */,
 			);
@@ -1143,14 +1105,6 @@
 				0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */,
 				0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */,
 				0A881988291D21160050FC41 /* UpdateUploadTagsCommandTest.swift */,
-				0A724F5B28897DE500708C6B /* UpsertCollaborationCommandTest.swift */,
-				0A724F5D288980F800708C6B /* UpsertCommentCommandTest.swift */,
-				0A724F5928897B8A00708C6B /* UpsertFeatureCommandTest.swift */,
-				0A724F572889780000708C6B /* UpsertGeometryCommandTest.swift */,
-				0A724F552889763800708C6B /* UpsertStatusCommandTest.swift */,
-				0A724F532889733000708C6B /* UpsertTagCommandTest.swift */,
-				0A724F5F28898B9400708C6B /* UpsertUploadCommandTest.swift */,
-				0A3831D828E44CA3001AF38A /* UpsertUpdateCommandTest.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -1269,17 +1223,6 @@
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
 				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
-				0A724F3E28884A9100708C6B /* UpsertCollaborationCommand.swift */,
-				0A724F4E28887ED300708C6B /* UpsertCommentCommand.swift */,
-				0A724F3C2888483600708C6B /* UpsertFeatureCommand.swift */,
-				0A724F362888302400708C6B /* UpsertGeometryCommand.swift */,
-				0A724F4A28887CF400708C6B /* UpsertParticipantCommand.swift */,
-				0A724F4C28887E4C00708C6B /* UpsertPDFCanvasCommand.swift */,
-				0A724F4428887A7D00708C6B /* UpsertProjectSummaryCommand.swift */,
-				0A724F4628887B7200708C6B /* UpsertStatusCommand.swift */,
-				0A724F4828887C6D00708C6B /* UpsertTagCommand.swift */,
-				0AD9B7652869DE22005ACFD7 /* UpsertUploadCommand.swift */,
-				0A3831D628E44550001AF38A /* UpsertUpdateCommand.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -1478,14 +1421,11 @@
 			files = (
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
-				0AD9B7662869DE22005ACFD7 /* UpsertUploadCommand.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
-				0A724F4928887C6D00708C6B /* UpsertTagCommand.swift in Sources */,
-				0A724F4B28887CF400708C6B /* UpsertParticipantCommand.swift in Sources */,
 				0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
 				0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */,
@@ -1526,7 +1466,6 @@
 				0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */,
 				0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */,
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,
-				0A724F3F28884A9100708C6B /* UpsertCollaborationCommand.swift in Sources */,
 				0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A28A1C0290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift in Sources */,
@@ -1545,11 +1484,9 @@
 				0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */,
 				0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
-				0A724F4528887A7D00708C6B /* UpsertProjectSummaryCommand.swift in Sources */,
 				0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */,
 				0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
-				0A724F4728887B7200708C6B /* UpsertStatusCommand.swift in Sources */,
 				0A82A8E6292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
@@ -1566,14 +1503,12 @@
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
 				0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */,
 				0A130E9E28D4A8F700FF1368 /* CollaborationFeedViewController.swift in Sources */,
-				0A3831D728E44550001AF38A /* UpsertUpdateCommand.swift in Sources */,
 				0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirebasePDFCanvas.swift in Sources */,
 				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
-				0A724F372888302400708C6B /* UpsertGeometryCommand.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,
@@ -1591,7 +1526,6 @@
 				0A4995BF2858D00100E571FB /* Tag.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
 				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
-				0A724F4D28887E4C00708C6B /* UpsertPDFCanvasCommand.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
 				0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
@@ -1634,11 +1568,9 @@
 				0A34C1892845FE9C00BEDC7C /* FirebaseComment.swift in Sources */,
 				0A0D31D728A41AC6007A8D49 /* ThumbnailsViewController.swift in Sources */,
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
-				0A724F4F28887ED400708C6B /* UpsertCommentCommand.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
-				0A724F3D2888483600708C6B /* UpsertFeatureCommand.swift in Sources */,
 				0A99BF1F28C1DC3700DB3F96 /* PhotosReviewPageView.swift in Sources */,
 				0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
@@ -1700,37 +1632,29 @@
 				0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */,
 				0A130EAE28D8A2FC00FF1368 /* DateFormattingTest.swift in Sources */,
 				0A34C18D2846030800BEDC7C /* FirebaseCommentTest.swift in Sources */,
-				0A724F5C28897DE500708C6B /* UpsertCollaborationCommandTest.swift in Sources */,
 				0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */,
 				0A07D76028104BF000B6F9A2 /* FirebaseGeometryTest.swift in Sources */,
 				0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */,
-				0A724F542889733000708C6B /* UpsertTagCommandTest.swift in Sources */,
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
 				0A82A8EC292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift in Sources */,
 				0A881981291C25630050FC41 /* TestPendingActionsModel.swift in Sources */,
-				0A3831D928E44CA3001AF38A /* UpsertUpdateCommandTest.swift in Sources */,
 				0A88198F291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift in Sources */,
 				0A34C17F284551F500BEDC7C /* FirebaseStatusNameTest.swift in Sources */,
 				0ABFD8AE28EDB962008CDA74 /* UserDefaultsTest.swift in Sources */,
 				0A34C181284552AC00BEDC7C /* FirebaseFeatureTest.swift in Sources */,
 				0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */,
 				0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */,
-				0A724F6028898B9400708C6B /* UpsertUploadCommandTest.swift in Sources */,
 				0A34C1832845F89700BEDC7C /* FirebaseCollaborationTest.swift in Sources */,
 				0A88198B291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift in Sources */,
 				0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */,
 				0A3831DB28E44FF5001AF38A /* FirebaseUpdateTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
-				0A724F5E288980F800708C6B /* UpsertCommentCommandTest.swift in Sources */,
-				0A724F5A28897B8A00708C6B /* UpsertFeatureCommandTest.swift in Sources */,
 				0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */,
 				0A881989291D21160050FC41 /* UpdateUploadTagsCommandTest.swift in Sources */,
-				0A724F582889780000708C6B /* UpsertGeometryCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */,
 				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
-				0A724F562889763800708C6B /* UpsertStatusCommandTest.swift in Sources */,
 				0A82A8E829222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift in Sources */,
 				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,
 			);

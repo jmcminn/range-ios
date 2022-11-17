@@ -73,4 +73,25 @@ class Upload: Object, WithPlaceholder {
             placeholder: true
         )
     }
+
+    // MARK: - upsert/command helper functions
+
+    /// remove the upload from the tags it was attached to and is not anymore
+    func cleanupOldTags(newTagIds: [String]) {
+        // for fast lookup
+        let tagIdsSet = Set(newTagIds)
+        for tag in tags {
+            if !tagIdsSet.contains(tag.id) {
+                // updated tags don't contain this tag, remove the upload from it
+                tag.uploads.remove(self)
+            }
+        }
+    }
+
+    /// Add given tags to upload and also link the Upload in Tags
+    func addNewTags(newTagIds: [String], realm: Realm) {
+        let newTags = newTagIds.uniqued().compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
+        tags.append(objectsIn: newTags)
+        newTags.forEach { $0.uploads.insert(self) }
+    }
 }

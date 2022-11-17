@@ -89,13 +89,15 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
         try container.encodeIfPresent(archivedTimestamp, forKey: .archivedTimestamp)
     }
 
-    func upsertCommand(id: String) throws -> LocalCommand {
-        UpsertGeometryCommand(
-            geometryId: id,
-            canvasId: canvasId,
+    func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
+        let canvas = realm.objectOrPlaceholder(ofType: PDFCanvas.self, forPrimaryKey: canvasId)
+        let geometry = Geometry(
+            id: id,
             annotationType: annotationType,
             geometry: geometry,
             archivedTimestamp: archivedTimestamp?.dateValue()
         )
+        realm.add(geometry, update: .modified)
+        canvas.geometries.insert(geometry)
     }
 }

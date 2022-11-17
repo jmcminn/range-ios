@@ -19,7 +19,8 @@ struct FirebaseStatusName: Codable, FirestoreToRealmSyncable {
     var isInitial: Bool
     var isCompleted: Bool
 
-    func upsertCommand(id: String) throws -> LocalCommand {
-        UpsertStatusCommand(statusId: id, name: name, color: color, isInitial: isInitial, isCompleted: isCompleted)
+    func upsert(withId id: String, inRealm realm: Realm) throws {
+        let status = Status(id: id, name: name, hexColor: color, isInitial: isInitial, isCompleted: isCompleted)
+        realm.add(status, update: .modified)
     }
 }

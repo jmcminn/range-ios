@@ -29,7 +29,6 @@ class DueDateButton: UIButton {
     func setDueDate(_ dueDate: Date?, markOverdue: Bool) {
         self.dueDate = dueDate
         self.markOverdue = markOverdue
-        // TODO: 511 markOverdue
         updateButton()
     }
 

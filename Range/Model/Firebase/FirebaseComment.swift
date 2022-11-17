@@ -35,21 +35,25 @@ struct FirebaseComment: Codable, FirestoreToRealmSyncable {
     var completedById: String? // participant id
     var completedTimestamp: Timestamp?
 
-    func upsertCommand(id: String) throws -> LocalCommand {
+    func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
         }
-        return UpsertCommentCommand(
-            commentId: id,
-            parentType: parentType,
-            parentId: parentId,
-            authorId: authorId,
+        let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
+        let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
+        let comment = Comment(
+            id: id,
             timestamp: timestamp.dateValue(),
             text: text,
             textIsEdited: textIsEdited ?? false,
             isNote: isNote ?? false,
-            completedById: completedById,
             completedTimestamp: completedTimestamp?.dateValue()
         )
+        comment.author = author
+        if let completedById = completedById {
+            comment.completedBy = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: completedById)
+        }
+        realm.add(comment, update: .modified)
+        collaboration.comments.insert(comment)
     }
 }

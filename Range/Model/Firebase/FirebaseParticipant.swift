@@ -29,7 +29,7 @@ struct FirebaseParticipant: Decodable, FirestoreToRealmSyncable {
 
     /// Add or update the status.
     /// Ignores not well formed avatarUrl
-    func upsertCommand(id: String) throws -> LocalCommand {
+    func upsert(withId id: String, inRealm realm: Realm) throws {
         let avatarUrl: URL?
         if let avatarUrlString = avatarUrlString {
             avatarUrl = URL(string: avatarUrlString)
@@ -39,12 +39,13 @@ struct FirebaseParticipant: Decodable, FirestoreToRealmSyncable {
         } else {
             avatarUrl = nil
         }
-        return UpsertParticipantCommand(
-            participantId: id,
+        let participant = Participant(
+            id: id,
             firstName: firstName,
             lastName: lastName,
             avatarUrl: avatarUrl,
             email: email
         )
+        realm.add(participant, update: .modified)
     }
 }
