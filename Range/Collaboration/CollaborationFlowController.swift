@@ -31,6 +31,8 @@ final class FlowEvent: UIEvent {
     func toggleCompleteAction(sender: Any?, event: FlowEvent)
     /// Edit due date for collaboration
     func editDueDateAction()
+    /// Edit collaboration name
+    func editNameAction()
 }
 
 /// Manages displaying collaboration window
@@ -491,6 +493,22 @@ extension CollaborationFlowController {
                 editTagsVC.present(alert, animated: true)
             }
         )
+    }
+}
+
+// MARK: - edit name
+
+extension CollaborationFlowController {
+    func editNameAction() {
+        guard let cardDragging = collaborationVC?.cardDragging else { return }
+        // reset the card height to medium (this action is triggered from full screen when
+        // name label is tapped in the header cover), so the nameField is visible and can become first
+        // responder
+        cardDragging.setPosition(.medium, withVelocity: 0, animated: true)
+        // make the nameField first responder, the rest is handler by CollaborationViewController
+        // that is a delegate of the text field. So editing the name can also be started directly
+        // by tapping on the nameField.
+        collaborationVC?.nameField.becomeFirstResponder()
     }
 }
 

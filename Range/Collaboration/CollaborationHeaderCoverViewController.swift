@@ -80,7 +80,16 @@ class CollaborationHeaderCoverViewController: UIViewController {
     }
 
     private func onCollaborationUpdated() {
-        nameLabel.text = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if name.isEmpty {
+            nameLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+            nameLabel.text = collaboration.status != nil
+                ? "Add a task name..."
+                : "Add a photo collection name..."
+        } else {
+            nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+            nameLabel.text = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
     }
 
     private func updateShadow() {
@@ -90,6 +99,15 @@ class CollaborationHeaderCoverViewController: UIViewController {
         } else {
             view.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
         }
+    }
+
+    @objc private func nameTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.editNameAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(collaboration)
+        )
     }
 }
 
@@ -117,5 +135,7 @@ extension CollaborationHeaderCoverViewController {
         nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         nameLabel.font = boldFont
         nameLabel.adjustsFontForContentSizeCategory = true
+        nameLabel.isUserInteractionEnabled = true
+        nameLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(nameTapped)))
     }
 }

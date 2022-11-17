@@ -229,7 +229,7 @@ extension CollaborationViewController {
             string: isTaskWindow ? "Add a task name..." : "Add a photo collection name...",
             attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
         )
-        nameField.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        nameField.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         nameField.font = .systemFont(ofSize: 17, weight: .bold)
         nameField.adjustsFontForContentSizeCategory = true
         nameField.tintColor = .Primary_Blue_04
