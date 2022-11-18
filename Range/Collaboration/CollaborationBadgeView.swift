@@ -7,6 +7,7 @@ import UIKit
 class CollaborationBadgeView: UIView {
     private let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
+    private var geometryNotificationToken: NotificationToken?
     private var commentsNotificationToken: NotificationToken?
     // the pink circle
     private var badgeView = UIView()
@@ -28,6 +29,9 @@ class CollaborationBadgeView: UIView {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.updateBadge()
         }
+        geometryNotificationToken = collaboration.feature.first?.geometry.first?.observe { [weak self] _ in
+            self?.updateBadge()
+        }
         // observe comments as the badge depends on whether there are any uncompleted comments
         commentsNotificationToken = collaboration.comments.observe { [weak self] _ in
             self?.updateBadge()
@@ -37,6 +41,7 @@ class CollaborationBadgeView: UIView {
 
     deinit {
         collaborationNotificationToken?.invalidate()
+        geometryNotificationToken?.invalidate()
         commentsNotificationToken?.invalidate()
     }
 

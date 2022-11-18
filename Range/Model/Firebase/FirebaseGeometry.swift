@@ -22,7 +22,7 @@ struct FirebaseGeometry: Codable, FirestoreToRealmSyncable {
     typealias ModelType = Geometry
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case canvas, annotationType, coordinates, archivedTimestamp
     }
 

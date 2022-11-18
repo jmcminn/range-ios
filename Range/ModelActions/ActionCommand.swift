@@ -31,6 +31,7 @@ enum ActionCommand: Codable {
     case updateCollaborationName(_ command: UpdateCollaborationNameCommand)
     case updateCollaborationTags(_ command: UpdateCollaborationTagsCommand)
     case updateCommentText(_ command: UpdateCommentTextCommand)
+    case updateGeometryArchived(_ command: UpdateGeometryArchivedCommand)
     case updateNoteCompleted(_ command: UpdateNoteCompletedCommand)
     case updateUploadTags(_ command: UpdateUploadTagsCommand)
 
@@ -45,6 +46,7 @@ enum ActionCommand: Codable {
         case let c as UpdateCollaborationNameCommand: self = .updateCollaborationName(c)
         case let c as UpdateCollaborationTagsCommand: self = .updateCollaborationTags(c)
         case let c as UpdateCommentTextCommand: self = .updateCommentText(c)
+        case let c as UpdateGeometryArchivedCommand: self = .updateGeometryArchived(c)
         case let c as UpdateNoteCompletedCommand: self = .updateNoteCompleted(c)
         case let c as UpdateUploadTagsCommand: self = .updateUploadTags(c)
         default: fatalError("ActionCommand not implemented for \(c)")
@@ -62,6 +64,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationName(c): return c
         case let .updateCollaborationTags(c): return c
         case let .updateCommentText(c): return c
+        case let .updateGeometryArchived(c): return c
         case let .updateNoteCompleted(c): return c
         case let .updateUploadTags(c): return c
         }

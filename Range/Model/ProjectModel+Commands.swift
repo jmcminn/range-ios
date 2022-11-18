@@ -209,4 +209,13 @@ extension ProjectModel {
         }
         return DeleteCollaborationCommand(geometryId: geometry.id, collaborationId: collaboration.id)
     }
+
+    /// Updates the archivedTimestamp for geometry of given collaboration
+    func toggleCollaborationArchived(collaboration: Collaboration) throws -> Command {
+        guard let geometry = collaboration.feature.first?.geometry.first else {
+            throw ModelError.geometryNotFound
+        }
+        let archive = geometry.archivedTimestamp == nil
+        return UpdateGeometryArchivedCommand(geometryId: geometry.id, archive: archive)
+    }
 }

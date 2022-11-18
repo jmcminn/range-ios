@@ -573,7 +573,9 @@ extension CollaborationFlowController {
                     ActionItem(
                         title: collaboration.isArchived ? "Unarchive" : "Archive",
                         imageName: "archivebox",
-                        handler: {}
+                        handler: {
+                            self.toggleCollaborationArchived(collaboration)
+                        }
                     ),
                     ActionItem(title: "Delete", imageName: "trash", style: .destructive, handler: {
                         self.confirmAndDeleteCollaboration(collaboration)
@@ -665,6 +667,18 @@ extension CollaborationFlowController {
                     Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
                     ToastWindow.shared.showError(text: "Failed to delete the collaboration")
                 }
+            }
+        }
+    }
+
+    func toggleCollaborationArchived(_ collaboration: Collaboration) {
+        Task {
+            do {
+                try await self.model.run(self.model.toggleCollaborationArchived(collaboration: collaboration))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text:
+                    "Failed to \(collaboration.isArchived ? "unarchive" : "archive") the collaboration")
             }
         }
     }
