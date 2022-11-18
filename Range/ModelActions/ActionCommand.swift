@@ -25,6 +25,7 @@ enum ActionCommand: Codable {
     case addUploadsToCollaboration(AddUploadsToCollaborationCommand)
     case createCollaborationComment(_ command: CreateCollaborationCommentCommand)
     case createPhotoCollaboration(CreatePhotoCollaborationCommand)
+    case deleteCollaboration(DeleteCollaborationCommand)
     case deleteComment(DeleteCommentCommand)
     case updateCollaborationDueDate(_ command: UpdateCollaborationDueDateCommand)
     case updateCollaborationName(_ command: UpdateCollaborationNameCommand)
@@ -38,6 +39,7 @@ enum ActionCommand: Codable {
         case let c as AddUploadsToCollaborationCommand: self = .addUploadsToCollaboration(c)
         case let c as CreateCollaborationCommentCommand: self = .createCollaborationComment(c)
         case let c as CreatePhotoCollaborationCommand: self = .createPhotoCollaboration(c)
+        case let c as DeleteCollaborationCommand: self = .deleteCollaboration(c)
         case let c as DeleteCommentCommand: self = .deleteComment(c)
         case let c as UpdateCollaborationDueDateCommand: self = .updateCollaborationDueDate(c)
         case let c as UpdateCollaborationNameCommand: self = .updateCollaborationName(c)
@@ -54,6 +56,7 @@ enum ActionCommand: Codable {
         case let .addUploadsToCollaboration(c): return c
         case let .createCollaborationComment(c): return c
         case let .createPhotoCollaboration(c): return c
+        case let .deleteCollaboration(c): return c
         case let .deleteComment(c): return c
         case let .updateCollaborationDueDate(c): return c
         case let .updateCollaborationName(c): return c

@@ -9,6 +9,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
     var onClose: (() -> Void)?
 
     private var nameLabel: UILabel!
+    private var moreButton: UIButton!
     private var closeButton: UIButton!
 
     /// - Parameters:
@@ -62,12 +63,19 @@ class CollaborationHeaderCoverViewController: UIViewController {
             make.trailing.equalToSuperview().inset(7)
         }
 
+        setupMoreButton()
+        view.addSubview(moreButton)
+        moreButton.snp.makeConstraints { make in
+            make.width.height.centerY.equalTo(closeButton)
+            make.trailing.equalTo(closeButton.snp.leading)
+        }
+
         setupNameLabel()
         view.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
             make.centerY.equalTo(badgeView.snp.centerY)
             make.leading.equalTo(badgeView.snp.trailing).offset(16)
-            make.trailing.equalTo(closeButton.snp.leading).offset(-16)
+            make.trailing.equalTo(moreButton.snp.leading).offset(-16)
         }
 
         onCollaborationUpdated()
@@ -114,6 +122,26 @@ class CollaborationHeaderCoverViewController: UIViewController {
 // MARK: Views
 
 extension CollaborationHeaderCoverViewController {
+    private func setupMoreButton() {
+        let imageConfig = UIImage.SymbolConfiguration(textStyle: .callout)
+            .applying(UIImage.SymbolConfiguration(weight: .regular))
+        var config = UIButton.Configuration.plain()
+        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.preferredSymbolConfigurationForImage = imageConfig
+        moreButton = UIButton(
+            configuration: config,
+            primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { [weak self] _ in
+                guard let self = self else { return }
+                UIApplication.shared.sendAction(
+                    #selector(CollaborationFlowActions.moreAction),
+                    to: nil,
+                    from: self,
+                    for: FlowEvent(self.collaboration)
+                )
+            }
+        )
+    }
+
     private func setupCloseButton() {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .callout)
             .applying(UIImage.SymbolConfiguration(weight: .regular))

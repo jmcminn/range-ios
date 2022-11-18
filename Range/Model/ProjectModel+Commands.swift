@@ -201,4 +201,12 @@ extension ProjectModel {
     func delete(comment: Comment) -> Command {
         DeleteCommentCommand(commentId: comment.id)
     }
+
+    /// Deletes given comment
+    func delete(collaboration: Collaboration) throws -> Command {
+        guard let geometry = collaboration.feature.first?.geometry.first else {
+            throw ModelError.geometryNotFound
+        }
+        return DeleteCollaborationCommand(geometryId: geometry.id, collaborationId: collaboration.id)
+    }
 }

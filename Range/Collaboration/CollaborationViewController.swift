@@ -26,6 +26,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     /// a view below content to cover the space visible when dragging up past the max height
     var bottomView = UIView()
     var statusButton: CollaborationStatusButton!
+    var moreButton: UIButton!
     var closeButton: UIButton!
     var nameField: UITextField!
     var namePencilView: UIImageView!
@@ -117,6 +118,13 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.width.height.equalTo(32)
             make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(21)
+        }
+
+        setupMoreButton()
+        containerView.addSubview(moreButton)
+        moreButton.snp.makeConstraints { make in
+            make.width.height.top.equalTo(closeButton)
+            make.trailing.equalTo(closeButton.snp.leading).offset(-8)
         }
 
         setupNameField()
@@ -213,6 +221,22 @@ extension CollaborationViewController {
 // MARK: Views
 
 extension CollaborationViewController {
+    private func setupMoreButton() {
+        moreButton = ButtonWithTapAreaInsets(
+            configuration: UIButton.Configuration.closeButton(),
+            primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { [weak self] _ in
+                guard let self = self else { return }
+                UIApplication.shared.sendAction(
+                    #selector(CollaborationFlowActions.moreAction),
+                    to: nil,
+                    from: self,
+                    for: FlowEvent(self.collaboration)
+                )
+            }
+        )
+        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
+    }
+
     private func setupCloseButton() {
         closeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),

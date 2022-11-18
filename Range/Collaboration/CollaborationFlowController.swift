@@ -176,11 +176,12 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     }
 
     /// Hide the currently shown collaboration window (and the header cover)
-    func hideCollaborationWindow(animated: Bool) {
+    func hideCollaborationWindow(animated: Bool, completion: (() -> Void)? = nil) {
         if let collaborationVC = collaborationVC {
             collaborationVC.cardDragging?.delegate = nil
             collaborationVC.hideCard(animated: animated) {
                 self.removeCard(cardViewController: collaborationVC)
+                completion?()
             }
             if let scrollView = collaborationVC.drivingScrollView() {
                 scrollView.cancelForwardingDelegateInvocations(to: self)
@@ -188,6 +189,8 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             collaborationScrollViewObserver?.invalidate()
             collaborationScrollViewObserver = nil
             self.collaborationVC = nil
+        } else {
+            completion?()
         }
         setCollaborationHeaderCoverHidden(true, animated: animated)
         setBottomCardHidden(true, animated: animated)
@@ -562,7 +565,22 @@ extension CollaborationFlowController {
 
 extension CollaborationFlowController {
     func moreAction(sender _: Any?, event: FlowEvent) {
-        if let comment = event.object as? Comment {
+        if let collaboration = event.object as? Collaboration {
+            ActionSelectorCardViewController(
+                icon: UIImage(systemName: "ellipsis"),
+                title: "More Menu",
+                actions: [
+                    ActionItem(
+                        title: collaboration.isArchived ? "Unarchive" : "Archive",
+                        imageName: "archivebox",
+                        handler: {}
+                    ),
+                    ActionItem(title: "Delete", imageName: "trash", style: .destructive, handler: {
+                        self.confirmAndDeleteCollaboration(collaboration)
+                    }),
+                ]
+            ).installAndShowCard(in: canvasContainer)
+        } else if let comment = event.object as? Comment {
             let commentOrNote = comment.isNote ? "Note" : "Comment"
             ActionSelectorCardViewController(
                 icon: UIImage(systemName: "ellipsis"),
@@ -621,6 +639,34 @@ extension CollaborationFlowController {
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         commentVC.showCard(animated: true)
+    }
+
+    func confirmAndDeleteCollaboration(_ collaboration: Collaboration) {
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            subtitle: "This collection will be deleted permanently. It can’t be recovered.",
+            actions: [
+                ActionItem(title: "Delete Collaboration", imageName: "trash", style: .destructive, handler: {
+                    self.deleteCollaboration(collaboration)
+                }),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func deleteCollaboration(_ collaboration: Collaboration) {
+        // hide the window first so all collaboration change listeners are unregistered
+        hideCollaborationWindow(animated: true) {
+            Task {
+                do {
+                    try await self.model.run(self.model.delete(collaboration: collaboration))
+                } catch {
+                    Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                    ToastWindow.shared.showError(text: "Failed to delete the collaboration")
+                }
+            }
+        }
     }
 
     func confirmAndDeleteComment(_ comment: Comment) {
