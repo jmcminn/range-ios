@@ -670,6 +670,8 @@ extension CollaborationFlowController {
     func deleteCollaboration(_ collaboration: Collaboration) {
         // hide the window first so all collaboration change listeners are unregistered
         hideCollaborationWindow(animated: true) {
+            // notify the listener about collaboration close (so the pins are updated)
+            self.onCollaborationClose?()
             Task {
                 do {
                     try await self.model.run(self.model.delete(collaboration: collaboration))
