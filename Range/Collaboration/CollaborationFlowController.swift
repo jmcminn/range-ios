@@ -582,6 +582,16 @@ extension CollaborationFlowController {
                     }),
                 ]
             ).installAndShowCard(in: canvasContainer)
+        } else if let upload = event.object as? Upload {
+            ActionSelectorCardViewController(
+                icon: UIImage(systemName: "ellipsis"),
+                title: "More Menu",
+                actions: [
+                    ActionItem(title: "Delete Photo", imageName: "trash", style: .destructive, handler: {
+                        self.confirmAndDeleteUpload(upload)
+                    }),
+                ]
+            ).installAndShowCard(in: canvasContainer)
         } else if let comment = event.object as? Comment {
             let commentOrNote = comment.isNote ? "Note" : "Comment"
             ActionSelectorCardViewController(
@@ -667,6 +677,32 @@ extension CollaborationFlowController {
                     Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
                     ToastWindow.shared.showError(text: "Failed to delete the collaboration")
                 }
+            }
+        }
+    }
+
+    func confirmAndDeleteUpload(_ upload: Upload) {
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            subtitle: "This photo will be deleted permanently. It can’t be recovered.",
+            actions: [
+                ActionItem(title: "Delete Photo", imageName: "trash", style: .destructive, handler: {
+                    self.deleteUpload(upload)
+                }),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func deleteUpload(_ upload: Upload) {
+        // hide the window first so all collaboration change listeners are unregistered
+        Task {
+            do {
+                try await self.model.run(self.model.delete(upload: upload))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to delete the photo")
             }
         }
     }

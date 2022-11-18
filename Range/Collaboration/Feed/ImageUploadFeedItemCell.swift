@@ -9,6 +9,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let avatarView = UIView()
     let authorLabel = UILabel()
     let timestampLabel = UILabel()
+    var moreButton: UIButton!
     let imageAndDescriptionView = UIView()
     let uploadImageView = UIImageView()
     let descriptionLabel = LabelWithTextInsets()
@@ -30,7 +31,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         setupViews()
 
-        [avatarView, authorLabel, timestampLabel, imageAndDescriptionView, tagsView]
+        [avatarView, authorLabel, timestampLabel, moreButton, imageAndDescriptionView, tagsView]
             .forEach(contentView.addSubview)
 
         [uploadImageView, descriptionBackground, descriptionSeparator, descriptionLabel]
@@ -48,6 +49,11 @@ class ImageUploadFeedItemCell: UITableViewCell {
         timestampLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
             make.top.equalTo(avatarView.snp.centerY)
+        }
+        moreButton.snp.makeConstraints { make in
+            make.width.height.equalTo(40)
+            make.centerY.equalTo(avatarView)
+            make.trailing.equalToSuperview().inset(16)
         }
         imageAndDescriptionView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
@@ -101,6 +107,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         timestampLabel.font = .preferredFont(forTextStyle: .footnote)
+
+        moreButton = FeedItemCells.createMoreButton(handler: { [weak self] _ in
+            self?.moreAction()
+        })
 
         imageAndDescriptionView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         imageAndDescriptionView.layer.borderWidth = 1
@@ -217,5 +227,15 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.height.equalTo(self.uploadImageView.snp.width).multipliedBy(imageHeight2Width)
                 .priority(.high)
         }
+    }
+
+    private func moreAction() {
+        guard let upload = upload else { return }
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.moreAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(upload)
+        )
     }
 }

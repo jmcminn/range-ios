@@ -210,6 +210,10 @@ extension ProjectModel {
         return DeleteCollaborationCommand(geometryId: geometry.id, collaborationId: collaboration.id)
     }
 
+    func delete(upload: Upload) -> Command {
+        DeleteUploadCommand(uploadId: upload.id)
+    }
+
     /// Updates the archivedTimestamp for geometry of given collaboration
     func toggleCollaborationArchived(collaboration: Collaboration) throws -> Command {
         guard let geometry = collaboration.feature.first?.geometry.first else {

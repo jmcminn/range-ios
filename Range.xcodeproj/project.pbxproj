@@ -84,6 +84,8 @@
 		0A374DE62927BA730036C184 /* DeleteCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */; };
 		0A374DE82927D0200036C184 /* UpdateGeometryArchivedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */; };
 		0A374DEA2927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */; };
+		0A374DEC2927DA550036C184 /* DeleteUploadCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */; };
+		0A374DEE2927DAC50036C184 /* DeleteUploadCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */; };
 		0A37837A291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */; };
 		0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */; };
 		0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */; };
@@ -366,6 +368,8 @@
 		0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteCollaborationCommandTest.swift; sourceTree = "<group>"; };
 		0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryArchivedCommand.swift; sourceTree = "<group>"; };
 		0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryArchivedCommandTest.swift; sourceTree = "<group>"; };
+		0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadCommand.swift; sourceTree = "<group>"; };
+		0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadCommandTest.swift; sourceTree = "<group>"; };
 		0A378375291A71880018BF3C /* GoogleService-Info.demo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.demo.plist"; sourceTree = "<group>"; };
 		0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.dev.plist"; sourceTree = "<group>"; };
 		0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadsToCollaborationCommand.swift; sourceTree = "<group>"; };
@@ -1113,6 +1117,7 @@
 				0A82A8E729222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift */,
 				0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */,
 				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
+				0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */,
 				0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */,
 				0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */,
 				0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */,
@@ -1234,6 +1239,7 @@
 				0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */,
 				0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */,
 				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
+				0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */,
@@ -1510,6 +1516,7 @@
 				0A82A8E6292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
+				0A374DEC2927DA550036C184 /* DeleteUploadCommand.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
 				0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */,
 				0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */,
@@ -1675,6 +1682,7 @@
 				0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */,
 				0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */,
 				0A881989291D21160050FC41 /* UpdateUploadTagsCommandTest.swift in Sources */,
+				0A374DEE2927DAC50036C184 /* DeleteUploadCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */,
