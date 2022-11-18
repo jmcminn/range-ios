@@ -571,7 +571,9 @@ extension CollaborationFlowController {
                     ActionItem(title: "Edit \(commentOrNote)", imageName: "pencil", handler: {
                         self.editComment(comment)
                     }),
-                    ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive),
+                    ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive, handler: {
+                        self.confirmAndDeleteComment(comment)
+                    }),
                 ]
             ).installAndShowCard(in: canvasContainer)
         }
@@ -619,6 +621,32 @@ extension CollaborationFlowController {
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         commentVC.showCard(animated: true)
+    }
+
+    func confirmAndDeleteComment(_ comment: Comment) {
+        let commentOrNote = comment.isNote ? "Note" : "Comment"
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            subtitle: "This \(commentOrNote.lowercased()) will be deleted permanently. It can't be recovered.",
+            actions: [
+                ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive, handler: {
+                    self.deleteComment(comment)
+                }),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func deleteComment(_ comment: Comment) {
+        Task {
+            do {
+                try await self.model.run(self.model.delete(comment: comment))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to delete the \(comment.isNote ? "note" : "comment")")
+            }
+        }
     }
 }
 

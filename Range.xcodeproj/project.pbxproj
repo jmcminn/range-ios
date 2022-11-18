@@ -78,6 +78,8 @@
 		0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DD929241ED40036C184 /* ToastViewController.swift */; };
 		0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */; };
 		0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DDD2924F18C0036C184 /* ToastView.swift */; };
+		0A374DE0292786530036C184 /* DeleteCommentCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DDF292786530036C184 /* DeleteCommentCommand.swift */; };
+		0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */; };
 		0A37837A291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */; };
 		0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */; };
 		0A3831D128E42CC4001AF38A /* FirebaseUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D028E42CC4001AF38A /* FirebaseUpdate.swift */; };
@@ -354,6 +356,8 @@
 		0A374DD929241ED40036C184 /* ToastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewController.swift; sourceTree = "<group>"; };
 		0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+TopViewController.swift"; sourceTree = "<group>"; };
 		0A374DDD2924F18C0036C184 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		0A374DDF292786530036C184 /* DeleteCommentCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteCommentCommand.swift; sourceTree = "<group>"; };
+		0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A378375291A71880018BF3C /* GoogleService-Info.demo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.demo.plist"; sourceTree = "<group>"; };
 		0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.dev.plist"; sourceTree = "<group>"; };
 		0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadsToCollaborationCommand.swift; sourceTree = "<group>"; };
@@ -1099,6 +1103,7 @@
 				0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */,
 				0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */,
 				0A82A8E729222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift */,
+				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
 				0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */,
 				0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */,
 				0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */,
@@ -1217,6 +1222,7 @@
 				0A82A8E929226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift */,
 				0A82A8E5292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift */,
 				0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */,
+				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */,
@@ -1584,6 +1590,7 @@
 				0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
+				0A374DE0292786530036C184 /* DeleteCommentCommand.swift in Sources */,
 				0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0ABFD8B728F00A98008CDA74 /* CommentViewController.swift in Sources */,
@@ -1650,6 +1657,7 @@
 				0A3831DB28E44FF5001AF38A /* FirebaseUpdateTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 				0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */,
+				0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */,
 				0A881989291D21160050FC41 /* UpdateUploadTagsCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirebaseUploadTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,

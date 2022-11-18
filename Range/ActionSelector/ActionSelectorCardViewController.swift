@@ -8,7 +8,6 @@ class ActionSelectorCardViewController: SheetCardViewController {
     private var actionsVC: ActionSelectorViewController!
 
     /// Initializer
-    /// The action with .cancel style automatically dismisses the card. Other actions need to dismiss the card manually.
     init(icon: UIImage?, title: String?, subtitle: String? = nil, actions: [ActionItem]) {
         super.init(icon: icon, title: title, subtitle: subtitle)
 

@@ -196,4 +196,9 @@ extension ProjectModel {
             dueDateTimestamp: endOfDayDueDate
         )
     }
+
+    /// Deletes given comment
+    func delete(comment: Comment) -> Command {
+        DeleteCommentCommand(commentId: comment.id)
+    }
 }

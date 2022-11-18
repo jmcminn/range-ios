@@ -12,6 +12,7 @@ protocol FirestoreCommandContext {
     func setData(_ data: [String: Any], forDocument doc: FirestoreDocument)
     func setData<T: Encodable>(from value: T, forDocument doc: FirestoreDocument) throws
     func updateData(_ fields: [String: Any], forDocument doc: FirestoreDocument)
+    func deleteDocument(_ doc: FirestoreDocument)
 }
 
 /// Real implementation of FirestoreCommandContext based on the actual Firestore `Transaction`.
@@ -53,5 +54,9 @@ class TransactionalFirestoreCommandContext: FirestoreCommandContext {
 
     func setData<T: Encodable>(from value: T, forDocument doc: FirestoreDocument) throws {
         setData(try Firestore.Encoder().encode(value), forDocument: doc)
+    }
+
+    func deleteDocument(_ doc: FirestoreDocument) {
+        transaction.deleteDocument(docRef(doc))
     }
 }

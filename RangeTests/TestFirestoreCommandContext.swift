@@ -10,7 +10,7 @@ class TestFirestoreCommandContext: FirestoreCommandContext {
 
     /// transactional operation type
     enum OperationType: Equatable {
-        case set, update
+        case set, update, delete
     }
 
     /// Recorded setting or updating data on firestore context
@@ -27,6 +27,10 @@ class TestFirestoreCommandContext: FirestoreCommandContext {
 
         static func update(_ doc: FirestoreDocument, _ data: [String: Any]) -> Operation {
             Operation(doc: doc, op: .update, data: data)
+        }
+
+        static func delete(_ doc: FirestoreDocument) -> Operation {
+            Operation(doc: doc, op: .delete, data: [:])
         }
     }
 
@@ -65,6 +69,10 @@ class TestFirestoreCommandContext: FirestoreCommandContext {
 
     func updateData(_ data: [String: Any], forDocument doc: FirestoreDocument) {
         operations.append(Operation(doc: doc, op: .update, data: data))
+    }
+
+    func deleteDocument(_ doc: FirestoreDocument) {
+        operations.append(Operation(doc: doc, op: .delete, data: [:]))
     }
 }
 
