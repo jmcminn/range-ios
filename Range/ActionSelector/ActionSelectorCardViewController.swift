@@ -25,7 +25,7 @@ class ActionSelectorCardViewController: SheetCardViewController {
             } else {
                 make.top.equalTo(closeButton.snp.bottom).offset(16)
             }
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(12)
         }
     }
 
@@ -38,7 +38,7 @@ class ActionSelectorCardViewController: SheetCardViewController {
         return baseHeight
     }
 
-    func drivingScrollView() -> UIScrollView? {
+    override func drivingScrollView() -> UIScrollView? {
         actionsVC.tableView
     }
 }

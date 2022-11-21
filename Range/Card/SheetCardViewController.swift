@@ -175,6 +175,11 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         return height
     }
 
+    /// Provide some implementation that returns `nil` so the subclasses can override
+    func drivingScrollView() -> UIScrollView? {
+        nil
+    }
+
     // MARK: - card presentation
 
     /// Convenience function for installing card in given `presentingVC` and showing the card
