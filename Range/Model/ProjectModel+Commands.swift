@@ -222,4 +222,14 @@ extension ProjectModel {
         let archive = geometry.archivedTimestamp == nil
         return UpdateGeometryArchivedCommand(geometryId: geometry.id, archive: archive)
     }
+
+    /// Updates the status for collaboration if it's different than the current one.
+    func update(status: Status, forCollaboration collaboration: Collaboration) -> Command? {
+        guard status != collaboration.status else { return nil }
+        return UpdateCollaborationStatusCommand(
+            authorId: userId,
+            collaborationId: collaboration.id,
+            statusId: status.id
+        )
+    }
 }

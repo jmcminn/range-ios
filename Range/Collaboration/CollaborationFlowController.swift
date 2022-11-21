@@ -510,12 +510,23 @@ extension CollaborationFlowController {
         StatusPickerCardViewController(
             title: "Assign Status",
             statuses: statuses,
-            selectedStatus: collaboration.status, onStatusPicked: { newStatus in
-                // TODO: 443
-                print("status: ", newStatus)
+            selectedStatus: collaboration.status, onStatusPicked: { [weak self] newStatus in
+                self?.updateStatus(newStatus)
             }
         )
         .installAndShowCard(in: self)
+    }
+
+    private func updateStatus(_ status: Status) {
+        guard let collaboration = collaboration else { return }
+        Task {
+            do {
+                try await model.run(model.update(status: status, forCollaboration: collaboration))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to update the status")
+            }
+        }
     }
 }
 
