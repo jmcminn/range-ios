@@ -173,6 +173,8 @@
 		0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */; };
 		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
 		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
+		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
+		0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */; };
 		0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */; };
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
@@ -460,6 +462,8 @@
 		0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_portrait.jpg; sourceTree = "<group>"; };
 		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
+		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
+		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemTableViewCell.swift; sourceTree = "<group>"; };
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
@@ -825,7 +829,6 @@
 				0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */,
 				0AB8557328F9533900491E20 /* AssigneeButton.swift */,
 				0AB8557528F98EB500491E20 /* DueDateButton.swift */,
-				0AB8557C28FF2A0400491E20 /* StatusView.swift */,
 			);
 			path = Collaboration;
 			sourceTree = "<group>";
@@ -1030,6 +1033,7 @@
 				0A4DC79427F5728500712518 /* Project */,
 				0AC9E18928F56C1600C7185D /* Projects */,
 				0A2F3307283CE19100D04A1C /* Settings */,
+				0A797F67292BA3DE00D63567 /* Status */,
 				0A30E8BA284A090000A50D54 /* Tags */,
 				0A374DD6292418070036C184 /* Toast */,
 				0A4DC7A227F7615700712518 /* Views */,
@@ -1137,6 +1141,16 @@
 				0A724F62288AAFFD00708C6B /* PendingUpload.swift */,
 			);
 			path = ModelUploads;
+			sourceTree = "<group>";
+		};
+		0A797F67292BA3DE00D63567 /* Status */ = {
+			isa = PBXGroup;
+			children = (
+				0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */,
+				0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */,
+				0AB8557C28FF2A0400491E20 /* StatusView.swift */,
+			);
+			path = Status;
 			sourceTree = "<group>";
 		};
 		0A97232327FC507200D744F4 /* Camera */ = {
@@ -1544,6 +1558,7 @@
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */,
+				0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
 				0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */,
 				0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */,
@@ -1581,6 +1596,7 @@
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,
+				0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */,
 				0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */,
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
 				0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */,

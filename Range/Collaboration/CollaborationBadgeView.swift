@@ -37,6 +37,8 @@ class CollaborationBadgeView: UIView {
             self?.updateBadge()
         }
         updateBadge()
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
     }
 
     deinit {
@@ -53,7 +55,7 @@ class CollaborationBadgeView: UIView {
         badgeView.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
         addSubview(badgeView)
         badgeView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.edges.equalToSuperview().inset(4)
         }
     }
 
@@ -93,6 +95,9 @@ class CollaborationBadgeView: UIView {
         } else {
             markerView?.isHidden = true
         }
+
+        // make it tappable if not archived - to trigger the status update
+        isUserInteractionEnabled = !collaboration.isArchived
     }
 
     /// Creates the note flag image view
@@ -100,8 +105,8 @@ class CollaborationBadgeView: UIView {
         let marker = UIImageView(image: UIImage(named: "badge.note"))
         addSubview(marker)
         marker.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(18)
-            make.bottom.equalToSuperview().offset(-19)
+            make.leading.equalToSuperview().offset(22)
+            make.bottom.equalToSuperview().offset(-23)
         }
         marker.setShadowWithFigmaValues(y: 4.62, blur: 7.69, opacity: 0.2)
 
@@ -138,6 +143,13 @@ class CollaborationBadgeView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        CGSize(width: 32, height: 32)
+        // bigger than the badge view so it's easier to tap
+        CGSize(width: 40, height: 40)
+    }
+
+    @objc private func tapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.editStatusAction), to: nil, from: self, for: nil
+        )
     }
 }

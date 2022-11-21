@@ -105,6 +105,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         }
 
         statusButton = CollaborationStatusButton(collaboration)
+        statusButton.addTarget(self, action: #selector(statusTapped), for: .touchUpInside)
         containerView.addSubview(statusButton)
         statusButton.snp.makeConstraints { make in
             make.height.equalTo(32)
@@ -203,6 +204,12 @@ extension CollaborationViewController {
             }
         }
         feedVC.scroll(toUpload: upload)
+    }
+
+    @objc private func statusTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.editStatusAction), to: nil, from: self, for: nil
+        )
     }
 }
 

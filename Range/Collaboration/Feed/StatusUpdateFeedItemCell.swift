@@ -52,10 +52,11 @@ class StatusUpdateFeedItemCell: UITableViewCell {
                                                 attributes: textAttributes))
 
         // show the status bubble - it's a view converted to image, added as a text attachment
-        let statusView = StatusView(status: status)
+        let statusView = StatusView()
+        statusView.setStatus(status)
         let statusAttachment = NSTextAttachment(image: statusView.asImage())
         // align the status view to it's text label
-        let statusAttachmentBoundsY = statusView.textLabel.font.descender - statusView.textLabel.textInsets.bottom
+        let statusAttachmentBoundsY = statusView.font.descender - statusView.contentInsets.bottom
         statusAttachment.bounds = CGRect(
             x: 0,
             y: statusAttachmentBoundsY,

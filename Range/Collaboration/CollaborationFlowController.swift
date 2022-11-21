@@ -33,6 +33,8 @@ final class FlowEvent: UIEvent {
     func editDueDateAction()
     /// Edit collaboration name
     func editNameAction()
+    /// Edit collaboration status
+    func editStatusAction()
 }
 
 /// Manages displaying collaboration window
@@ -496,6 +498,24 @@ extension CollaborationFlowController {
                 editTagsVC.present(alert, animated: true)
             }
         )
+    }
+}
+
+// MARK: - edit status
+
+extension CollaborationFlowController {
+    func editStatusAction() {
+        let statuses = [Status](model.mainRealm.objects(Status.self))
+        guard let collaboration = collaboration else { return }
+        StatusPickerCardViewController(
+            title: "Assign Status",
+            statuses: statuses,
+            selectedStatus: collaboration.status, onStatusPicked: { newStatus in
+                // TODO: 443
+                print("status: ", newStatus)
+            }
+        )
+        .installAndShowCard(in: self)
     }
 }
 
