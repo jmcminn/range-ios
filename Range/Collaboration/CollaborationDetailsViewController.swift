@@ -99,6 +99,7 @@ class CollaborationDetailsViewController: UIViewController {
             }
 
             assigneeButton = AssigneeButton()
+            assigneeButton.addTarget(self, action: #selector(assigneeTapped), for: .touchUpInside)
             view.addSubview(assigneeButton)
             assigneeButton.snp.makeConstraints { make in
                 make.top.equalTo(tagsView.snp.bottom).offset(Constants.verticalSpacing)
@@ -218,18 +219,22 @@ extension CollaborationDetailsViewController {
 extension CollaborationDetailsViewController {
     @objc private func tagsTapped() {
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.tagsSelectedAction),
-            to: nil,
+            #selector(CollaborationFlowActions.tagsSelectedAction), to: nil,
             from: self,
+            for: FlowEvent(collaboration)
+        )
+    }
+
+    @objc private func assigneeTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.editAssigneeAction), to: nil, from: self,
             for: FlowEvent(collaboration)
         )
     }
 
     @objc private func dueDateTapped() {
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.editDueDateAction),
-            to: nil,
-            from: self,
+            #selector(CollaborationFlowActions.editDueDateAction), to: nil, from: self,
             for: FlowEvent(collaboration)
         )
     }

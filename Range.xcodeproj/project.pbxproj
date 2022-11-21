@@ -177,7 +177,10 @@
 		0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */; };
 		0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */; };
 		0A797F6F292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */; };
+		0A797F72292BDA8900D63567 /* UserPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */; };
 		0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */; };
+		0A797F76292CC60800D63567 /* UserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F75292CC60800D63567 /* UserTableViewCell.swift */; };
+		0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */; };
 		0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */; };
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
@@ -469,7 +472,10 @@
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommand.swift; sourceTree = "<group>"; };
 		0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommandTest.swift; sourceTree = "<group>"; };
+		0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithTapAreaInsets.swift; sourceTree = "<group>"; };
+		0A797F75292CC60800D63567 /* UserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTableViewCell.swift; sourceTree = "<group>"; };
+		0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearUserTableViewCell.swift; sourceTree = "<group>"; };
 		0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemTableViewCell.swift; sourceTree = "<group>"; };
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
@@ -1043,6 +1049,7 @@
 				0A797F67292BA3DE00D63567 /* Status */,
 				0A30E8BA284A090000A50D54 /* Tags */,
 				0A374DD6292418070036C184 /* Toast */,
+				0A797F70292BDA6D00D63567 /* UserPicker */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
@@ -1159,6 +1166,16 @@
 				0AB8557C28FF2A0400491E20 /* StatusView.swift */,
 			);
 			path = Status;
+			sourceTree = "<group>";
+		};
+		0A797F70292BDA6D00D63567 /* UserPicker */ = {
+			isa = PBXGroup;
+			children = (
+				0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */,
+				0A797F75292CC60800D63567 /* UserTableViewCell.swift */,
+				0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */,
+			);
+			path = UserPicker;
 			sourceTree = "<group>";
 		};
 		0A97232327FC507200D744F4 /* Camera */ = {
@@ -1538,6 +1555,7 @@
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A82A8E6292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
+				0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
 				0A374DEC2927DA550036C184 /* DeleteUploadCommand.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
@@ -1562,6 +1580,7 @@
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirebaseFeature.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,
+				0A797F76292CC60800D63567 /* UserTableViewCell.swift in Sources */,
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */,
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
@@ -1674,6 +1693,7 @@
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 				0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */,
 				0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */,
+				0A797F72292BDA8900D63567 /* UserPickerCardViewController.swift in Sources */,
 				0A724F39288835A600708C6B /* Placeholder.swift in Sources */,
 				0A37837A291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift in Sources */,
 			);

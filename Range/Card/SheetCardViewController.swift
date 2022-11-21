@@ -14,6 +14,9 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private(set) var titleLabel: UILabel?
     private(set) var subtitleLabel: UILabel?
 
+    /// a view below content to cover the space visible when dragging up past the max height
+    private(set) var bottomView = UIView()
+
     /// Invoked when the sheet will be dismissed
     var onDismiss: (() -> Void)?
 
@@ -91,6 +94,16 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             }
         }
 
+        bottomView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        // added to view (rounded view) as the containerView has a layer mask
+        // and bottom view is added outside of its bounds
+        view.addSubview(bottomView)
+        bottomView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.snp.bottom).offset(-1)
+            // magic number, just enough so the user won't drag higher than that (beyond the max height)
+            make.height.equalTo(500)
+        }
         updateColors()
     }
 

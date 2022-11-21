@@ -35,6 +35,8 @@ final class FlowEvent: UIEvent {
     func editNameAction()
     /// Edit collaboration status
     func editStatusAction()
+    /// Edit collaboration assignee
+    func editAssigneeAction()
 }
 
 /// Manages displaying collaboration window
@@ -543,6 +545,24 @@ extension CollaborationFlowController {
         // that is a delegate of the text field. So editing the name can also be started directly
         // by tapping on the nameField.
         collaborationVC?.nameField.becomeFirstResponder()
+    }
+}
+
+// MARK: - edit assignee
+
+extension CollaborationFlowController {
+    func editAssigneeAction() {
+        let users = [Participant](model.mainRealm.objects(Participant.self))
+        guard let collaboration = collaboration else { return }
+        UserPickerCardViewController(
+            title: "Assignee",
+            users: users,
+            selectedUser: collaboration.assignee,
+            onUserPicked: { newAssignee in
+                print("TODO: 445: \(newAssignee)")
+            }
+        )
+        .installAndShowCard(in: self)
     }
 }
 
