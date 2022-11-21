@@ -177,6 +177,7 @@
 		0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */; };
 		0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */; };
 		0A797F6F292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */; };
+		0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */; };
 		0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */; };
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */; };
@@ -468,6 +469,7 @@
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommand.swift; sourceTree = "<group>"; };
 		0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommandTest.swift; sourceTree = "<group>"; };
+		0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemTableViewCell.swift; sourceTree = "<group>"; };
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirebaseCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseCollaboration.swift; sourceTree = "<group>"; };
@@ -984,6 +986,7 @@
 				0A4995B42854C28200E571FB /* TextView.swift */,
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
+				0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1648,6 +1651,7 @@
 				0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
+				0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */,
 				0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */,
 				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,

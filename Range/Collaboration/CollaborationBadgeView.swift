@@ -4,7 +4,7 @@ import UIKit
 
 /// Badge for a collaboration that display uploads count and a flag.
 /// It observes the collaboration and reloads if it's updated.
-class CollaborationBadgeView: UIView {
+class CollaborationBadgeView: ViewWithTapAreaInsets {
     private let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
     private var geometryNotificationToken: NotificationToken?
@@ -22,6 +22,8 @@ class CollaborationBadgeView: UIView {
         self.collaboration = collaboration
         super.init(frame: .zero)
 
+        // make the tappable area bigger as this view intrinsic size is 32/32i
+        tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
         setContentHuggingPriority(.required, for: .horizontal)
 
         setupView()
@@ -55,7 +57,7 @@ class CollaborationBadgeView: UIView {
         badgeView.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
         addSubview(badgeView)
         badgeView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(4)
+            make.edges.equalToSuperview()
         }
     }
 
@@ -143,8 +145,7 @@ class CollaborationBadgeView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        // bigger than the badge view so it's easier to tap
-        CGSize(width: 40, height: 40)
+        CGSize(width: 32, height: 32)
     }
 
     @objc private func tapped() {
