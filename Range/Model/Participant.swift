@@ -5,10 +5,10 @@ import UIKit
 class Participant: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
-    /// user first name
-    @Persisted var firstName: String
+    /// user first name (@objc added so it can be used in SortDescriptor)
+    @objc @Persisted var firstName: String
     /// user last name
-    @Persisted var lastName: String
+    @objc @Persisted var lastName: String
     /// avatar url
     @Persisted var avatarUrl: URL?
     /// email

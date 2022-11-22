@@ -5,7 +5,12 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class UserPickerCardViewController: SheetCardViewController {
+    /// All users to display in picker
     let users: [Participant]
+    /// for each user from `users` this array has a search string to be used when filtering the users (based on the first/last name and email)
+    let searchStrings: [String]
+    /// Users currently filtered by search term from search view (this array is used in the tableView)
+    var filteredUsers: [Participant]
     private let selectedUser: Participant?
 
     // background view for searchView that has the headerStroke at the bottom, added so it can
@@ -28,7 +33,15 @@ class UserPickerCardViewController: SheetCardViewController {
         selectedUser: Participant?,
         onUserPicked: ((Participant?) -> Void)? = nil
     ) {
-        self.users = users
+        let firstNameSort = SortDescriptor(\Participant.firstName, comparator: .localizedStandard)
+        let lastNameSort = SortDescriptor(\Participant.lastName, comparator: .localizedStandard)
+        // users are sorted by first name and then last name
+        self.users = users.sorted(using: [firstNameSort, lastNameSort])
+        searchStrings = self.users.map {
+            "\($0.firstName) \($0.lastName) \($0.email)"
+                .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        }
+        filteredUsers = self.users
         self.selectedUser = selectedUser
         super.init(icon: UIImage(systemName: "person"), title: title)
         self.onUserPicked = onUserPicked
@@ -45,6 +58,7 @@ class UserPickerCardViewController: SheetCardViewController {
             make.height.equalTo(56)
         }
 
+        setupSearchView()
         headerView.addSubview(searchView)
         searchView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -88,6 +102,18 @@ class UserPickerCardViewController: SheetCardViewController {
         tableView
     }
 
+    private func setupHeaderVew() {
+        headerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+    }
+
+    private func setupSearchView() {
+        searchView.addDelegate(self)
+    }
+
+    private func setupHeaderStroke() {
+        headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+    }
+
     private func setupTableView() {
         tableView.backgroundColor = view.backgroundColor
         // distance between first section (the rest is covered by sections footers)
@@ -101,14 +127,6 @@ class UserPickerCardViewController: SheetCardViewController {
         tableView.register(UserTableViewCell.self, forCellReuseIdentifier: "UserCell")
         tableView.register(ClearUserTableViewCell.self, forCellReuseIdentifier: "ClearUserCell")
         tableView.keyboardDismissMode = .onDrag
-    }
-
-    private func setupHeaderVew() {
-        headerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
-    }
-
-    private func setupHeaderStroke() {
-        headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
     }
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
@@ -137,6 +155,35 @@ class UserPickerCardViewController: SheetCardViewController {
     }
 }
 
+// MARK: - filtering users
+
+extension UserPickerCardViewController: SearchViewDelegate {
+    func searchView(_: SearchView, textDidChange text: String) {
+        filter(by: text)
+    }
+
+    /// filter `users` by given String and store results in `filteredUsers`
+    func filter(by filterString: String) {
+        let filterStringTrimmed = filterString.trimmingCharacters(in: .whitespacesAndNewlines)
+        // remove diacritics and make it lowercase
+        let filterTerm = filterStringTrimmed
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        // split by whitespace to multiple terms
+        let filterTerms = filterTerm.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        // user matches if the corresponding searchString matches
+        filteredUsers = users.enumerated().compactMap { userIndex, user in
+            // has to contain all of the search terms
+            if filterTerms.allSatisfy({ searchStrings[userIndex].contains($0) }) {
+                return user
+            }
+            return nil
+        }
+        tableView.reloadData()
+    }
+}
+
+// MARK: - users table view delegate / data source
+
 extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         selectedUser != nil ? 2 : 1
@@ -147,7 +194,7 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
             // first section with one row to clear the selected user
             return 1
         }
-        return users.count
+        return filteredUsers.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -156,7 +203,7 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
             return tableView.dequeueReusableCell(withIdentifier: "ClearUserCell", for: indexPath)
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserTableViewCell
-        let user = users[indexPath.row]
+        let user = filteredUsers[indexPath.row]
         cell.setUser(user)
         return cell
     }
@@ -179,7 +226,7 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
             dismissCard()
             onUserPicked?(nil)
         } else {
-            let user = users[indexPath.row]
+            let user = filteredUsers[indexPath.row]
             dismissCard()
             onUserPicked?(user)
         }
