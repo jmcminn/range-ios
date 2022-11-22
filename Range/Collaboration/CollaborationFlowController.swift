@@ -558,11 +558,23 @@ extension CollaborationFlowController {
             title: "Assignee",
             users: users,
             selectedUser: collaboration.assignee,
-            onUserPicked: { newAssignee in
-                print("TODO: 445: \(newAssignee)")
+            onUserPicked: { [weak self] newAssignee in
+                self?.updateAssignee(newAssignee)
             }
         )
         .installAndShowCard(in: self)
+    }
+
+    private func updateAssignee(_ assignee: Participant?) {
+        guard let collaboration = collaboration else { return }
+        Task {
+            do {
+                try await model.run(model.update(assignee: assignee, forCollaboration: collaboration))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to update the assignee")
+            }
+        }
     }
 }
 

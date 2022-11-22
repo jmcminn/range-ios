@@ -61,7 +61,6 @@ extension UpdateCollaborationDueDateCommand: FirestoreCommand {
             field: .dueDateTimestamp,
             oldValue: collaboration.dueDateTimestamp != nil ? .date(collaboration.dueDateTimestamp!.dateValue()) : nil,
             newValue: dueDateTimestamp != nil ? .date(dueDateTimestamp!) : nil,
-
             inFirestore: ctx
         )
     }
