@@ -5,13 +5,14 @@ class UserTableViewCell: UITableViewCell {
     let avatarView = UIView()
     let nameLabel = UILabel()
     let emailLabel = UILabel()
+    let selectedIconView = UIImageView(image: UIImage(named: "checkmark_checked"))
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in the view controller
 
         setupViews()
-        [avatarView, nameLabel, emailLabel].forEach(contentView.addSubview)
+        [avatarView, nameLabel, emailLabel, selectedIconView].forEach(contentView.addSubview)
 
         avatarView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview()
@@ -32,6 +33,10 @@ class UserTableViewCell: UITableViewCell {
             make.leading.equalTo(contentView.snp.leadingMargin).offset(52)
             make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
         }
+        selectedIconView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalTo(contentView.snp.trailingMargin).inset(12)
+        }
     }
 
     @available(*, unavailable)
@@ -50,8 +55,15 @@ class UserTableViewCell: UITableViewCell {
         emailLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
     }
 
-    func setUser(_ user: Participant) {
+    func setUser(_ user: Participant, selected: Bool) {
         nameLabel.text = user.displayName
         emailLabel.text = user.email
+        selectedIconView.isHidden = !selected
+    }
+
+    override func prepareForReuse() {
+        nameLabel.text = nil
+        emailLabel.text = nil
+        selectedIconView.isHidden = true
     }
 }

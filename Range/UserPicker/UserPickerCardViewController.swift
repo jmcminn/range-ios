@@ -204,7 +204,7 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserTableViewCell
         let user = filteredUsers[indexPath.row]
-        cell.setUser(user)
+        cell.setUser(user, selected: user == selectedUser)
         return cell
     }
 
