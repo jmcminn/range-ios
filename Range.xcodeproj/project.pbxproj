@@ -153,6 +153,7 @@
 		0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9428E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift */; };
 		0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */; };
 		0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9828E9CE5500F78B34 /* PinPoint.swift */; };
+		0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DB6A2292E08700017D511 /* TextCardViewController.swift */; };
 		0A6FAC3228B552440057995B /* LocalPhotosImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */; };
 		0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */; };
 		0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */; };
@@ -452,6 +453,7 @@
 		0A671F9428E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesAnnotationPinsDisplay.swift; sourceTree = "<group>"; };
 		0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDisplayOptions.swift; sourceTree = "<group>"; };
 		0A671F9828E9CE5500F78B34 /* PinPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinPoint.swift; sourceTree = "<group>"; };
+		0A6DB6A2292E08700017D511 /* TextCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCardViewController.swift; sourceTree = "<group>"; };
 		0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPhotosImageDataProvider.swift; sourceTree = "<group>"; };
 		0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_landscape.jpg; sourceTree = "<group>"; };
 		0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryViewController.swift; sourceTree = "<group>"; };
@@ -1052,6 +1054,7 @@
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A797F67292BA3DE00D63567 /* Status */,
 				0A30E8BA284A090000A50D54 /* Tags */,
+				0A6DB6A1292E08560017D511 /* TextCard */,
 				0A374DD6292418070036C184 /* Toast */,
 				0A797F70292BDA6D00D63567 /* UserPicker */,
 				0A4DC7A227F7615700712518 /* Views */,
@@ -1121,6 +1124,14 @@
 				0A671F9828E9CE5500F78B34 /* PinPoint.swift */,
 			);
 			path = Pins;
+			sourceTree = "<group>";
+		};
+		0A6DB6A1292E08560017D511 /* TextCard */ = {
+			isa = PBXGroup;
+			children = (
+				0A6DB6A2292E08700017D511 /* TextCardViewController.swift */,
+			);
+			path = TextCard;
 			sourceTree = "<group>";
 		};
 		0A7121B0290BB8330013E2F8 /* DatePicker */ = {
@@ -1612,6 +1623,7 @@
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
+				0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */,
 				0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */,
 				0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,

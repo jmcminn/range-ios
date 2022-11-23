@@ -217,10 +217,16 @@ extension CollaborationDetailsViewController {
 // MARK: - actions
 
 extension CollaborationDetailsViewController {
+    @objc private func descriptionTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.editDescriptionAction), to: nil, from: self,
+            for: FlowEvent(collaboration)
+        )
+    }
+
     @objc private func tagsTapped() {
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.tagsSelectedAction), to: nil,
-            from: self,
+            #selector(CollaborationFlowActions.tagsSelectedAction), to: nil, from: self,
             for: FlowEvent(collaboration)
         )
     }
@@ -252,6 +258,9 @@ extension CollaborationDetailsViewController {
         descriptionTextView.textContainerInset = UIEdgeInsets(top: 0, left: 12, bottom: 10, right: 12)
         descriptionTextView.returnKeyType = .done
         descriptionTextView.isEditable = false
+        descriptionTextView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(descriptionTapped))
+        )
     }
 
     private func setupTagsView() {

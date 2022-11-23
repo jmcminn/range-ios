@@ -6,12 +6,18 @@ class TextView: UIView {
     /// wrapped text view, exposed for adding delegate
     let textView: UITextViewWithPlaceholder
 
+    private let doneText: String
+    private let showCancelButton: Bool
     private let backgroundView = UIView()
 
     /// callback for Done accessory button
     var onDone: (() -> Void)?
+    /// callback for Cancel accessory button
+    var onCancel: (() -> Void)?
 
-    init(placeholderText: String) {
+    init(placeholderText: String, doneText: String = String(localized: "Done"), showCancelButton: Bool = false) {
+        self.doneText = doneText
+        self.showCancelButton = showCancelButton
         textView = UITextViewWithPlaceholder(placeholderText: placeholderText)
 
         super.init(frame: .zero)
@@ -32,7 +38,7 @@ class TextView: UIView {
     /// Adapt CG colors to interface style change
     private func updateColors() {
         // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
-        layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        backgroundView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     private func setupBackgroundView() {
@@ -71,14 +77,28 @@ class TextView: UIView {
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         let doneButton = UIButton(
             configuration: UIButton.Configuration.blueButton(),
-            primaryAction: UIAction(
-                title: String(localized: "Done")
-            ) { [weak self] _ in self?.onDone?() }
+            primaryAction: UIAction(title: doneText) { [weak self] _ in self?.onDone?() }
         )
         view.addSubview(doneButton)
         doneButton.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
             make.height.equalTo(48)
+            make.top.bottom.trailing.equalToSuperview().inset(16)
+            if showCancelButton {
+                make.width.equalToSuperview().multipliedBy(0.5).offset(-24).priority(.high)
+            } else {
+                make.leading.equalToSuperview().inset(16)
+            }
+        }
+        if showCancelButton {
+            let cancelButton = UIButton(
+                configuration: UIButton.Configuration.grayButton(),
+                primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in self?.onCancel?() }
+            )
+            view.addSubview(cancelButton)
+            cancelButton.snp.makeConstraints { make in
+                make.top.height.width.equalTo(doneButton)
+                make.leading.equalTo(16)
+            }
         }
         return view
     }

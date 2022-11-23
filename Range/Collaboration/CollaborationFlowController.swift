@@ -33,6 +33,8 @@ final class FlowEvent: UIEvent {
     func editDueDateAction()
     /// Edit collaboration name
     func editNameAction()
+    /// Edit collaboration description
+    func editDescriptionAction()
     /// Edit collaboration status
     func editStatusAction()
     /// Edit collaboration assignee
@@ -545,6 +547,22 @@ extension CollaborationFlowController {
         // that is a delegate of the text field. So editing the name can also be started directly
         // by tapping on the nameField.
         collaborationVC?.nameField.becomeFirstResponder()
+    }
+}
+
+// MARK: - edit name
+
+extension CollaborationFlowController {
+    func editDescriptionAction() {
+        guard let collaboration = collaboration else { return }
+        TextCardViewController(
+            title: "Description",
+            initialText: collaboration.collaborationDescription,
+            onTextSaved: { newDescription in
+                print("new description: '\(newDescription)'")
+            }
+        )
+        .installAndShowCard(in: self)
     }
 }
 
