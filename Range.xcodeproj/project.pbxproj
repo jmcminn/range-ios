@@ -154,6 +154,8 @@
 		0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */; };
 		0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9828E9CE5500F78B34 /* PinPoint.swift */; };
 		0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DB6A2292E08700017D511 /* TextCardViewController.swift */; };
+		0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */; };
+		0A6DB6A7292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DB6A6292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift */; };
 		0A6FAC3228B552440057995B /* LocalPhotosImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */; };
 		0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */; };
 		0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */; };
@@ -454,6 +456,8 @@
 		0A671F9628E9CBC800F78B34 /* PinDisplayOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDisplayOptions.swift; sourceTree = "<group>"; };
 		0A671F9828E9CE5500F78B34 /* PinPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinPoint.swift; sourceTree = "<group>"; };
 		0A6DB6A2292E08700017D511 /* TextCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCardViewController.swift; sourceTree = "<group>"; };
+		0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDescriptionCommand.swift; sourceTree = "<group>"; };
+		0A6DB6A6292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDescriptionCommandTest.swift; sourceTree = "<group>"; };
 		0A6FAC3128B552440057995B /* LocalPhotosImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPhotosImageDataProvider.swift; sourceTree = "<group>"; };
 		0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_landscape.jpg; sourceTree = "<group>"; };
 		0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryViewController.swift; sourceTree = "<group>"; };
@@ -1152,6 +1156,7 @@
 				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
 				0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */,
 				0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */,
+				0A6DB6A6292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift */,
 				0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */,
 				0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */,
 				0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */,
@@ -1296,6 +1301,7 @@
 				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
 				0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */,
 				0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */,
+				0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
 				0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */,
@@ -1617,6 +1623,7 @@
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
 				0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
+				0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */,
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
@@ -1755,6 +1762,7 @@
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirebaseTagNameTest.swift in Sources */,
 				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
+				0A6DB6A7292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift in Sources */,
 				0A82A8E829222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift in Sources */,
 				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,
 			);

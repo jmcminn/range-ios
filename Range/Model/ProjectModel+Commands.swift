@@ -241,4 +241,14 @@ extension ProjectModel {
             assigneeId: assignee?.id
         )
     }
+
+    /// Updates collaboration.description. If provided description is empty it's treated as nil (to remove the description in Firestore)
+    func update(description: String?, forCollaboration collaboration: Collaboration) -> Command? {
+        guard description != collaboration.collaborationDescription else { return nil }
+        return UpdateCollaborationDescriptionCommand(
+            authorId: userId,
+            collaborationId: collaboration.id,
+            description: (description?.isEmpty ?? true) ? nil : description
+        )
+    }
 }

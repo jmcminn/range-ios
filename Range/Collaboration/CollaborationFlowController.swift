@@ -558,11 +558,23 @@ extension CollaborationFlowController {
         TextCardViewController(
             title: "Description",
             initialText: collaboration.collaborationDescription,
-            onTextSaved: { newDescription in
-                print("new description: '\(newDescription)'")
+            onTextSaved: { [weak self] newDescription in
+                self?.updateDescription(newDescription)
             }
         )
         .installAndShowCard(in: self)
+    }
+
+    private func updateDescription(_ description: String?) {
+        guard let collaboration = collaboration else { return }
+        Task {
+            do {
+                try await model.run(model.update(description: description, forCollaboration: collaboration))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to update the description")
+            }
+        }
     }
 }
 
