@@ -269,11 +269,18 @@ final class ProjectFlowController: UIViewController {
         vc.onCamera = { [weak self] in
             self?.startAddPhotoFlow()
         }
+        vc.onAddMarker = { [weak self] in
+            self?.addMarker()
+        }
         canvasContainer.installCard(cardViewController: vc, inView: canvasContainer.controls)
         return vc
     }
+}
 
-    fileprivate func startAddPhotoFlow() {
+// MARK: - actions
+
+extension ProjectFlowController {
+    private func startAddPhotoFlow() {
         addPhotoFlow = AddPhotoFlowController(model: model, imageCaches: imageCaches, canvasContainer: canvasContainer)
         addPhotoFlow?.onStop = { [weak self] in
             self?.showDefaultCanvasUI()
@@ -287,5 +294,24 @@ final class ProjectFlowController: UIViewController {
                 self?.addPhotoFlow = nil
             }
         }
+    }
+
+    private func addMarker() {
+        ActionSelectorCardViewController(
+            icon: UIImage(systemName: "mappin.and.ellipse"),
+            title: String(localized: "Add Marker"),
+            actions: [
+                ActionItem(
+                    title: String(localized: "Photo Collection"),
+                    imageName: "photo",
+                    handler: {}
+                ),
+                ActionItem(
+                    title: String(localized: "Issue"),
+                    imageName: "checkmark.circle",
+                    handler: {}
+                ),
+            ]
+        ).installAndShowCard(in: canvasContainer)
     }
 }

@@ -25,7 +25,7 @@ class ActionSelectorCardViewController: SheetCardViewController {
             } else {
                 make.top.equalTo(closeButton.snp.bottom).offset(16)
             }
-            make.bottom.equalToSuperview().inset(12)
+            make.bottom.equalToSuperview().inset(16)
         }
     }
 
@@ -33,7 +33,7 @@ class ActionSelectorCardViewController: SheetCardViewController {
         let baseHeight = super.height(forContainer: cardContainerView, cardPosition: cardPosition)
 
         if cardPosition == .max {
-            return baseHeight + actionsVC.tableView.contentSize.height + 12.0
+            return baseHeight + actionsVC.tableView.contentSize.height + 16.0
         }
         return baseHeight
     }

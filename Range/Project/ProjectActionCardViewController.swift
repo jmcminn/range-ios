@@ -4,14 +4,18 @@ import UIKit
 class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
     let actions: [ActionItem]
 
-    var cardDragging: NonModalCardDragging?
+    var cardDragging: NonModalCardDragging? {
+        didSet { cardDragging?.delegate = self }
+    }
 
     var onCamera: (() -> Void)?
+    var onAddMarker: (() -> Void)?
 
     static let topPadding = 21.0
     static let headerToActionsPadding = 16.0
 
-    var searchView: SearchView!
+    var addMarkerButton: UIButton!
+    var expandButton: UIButton!
     var photoButton: UIButton!
     var actionSelectorVC: ActionSelectorViewController!
 
@@ -46,50 +50,35 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
         containerView.installSliderView()
 
-        searchView = SearchView(placeholderText: "Search")
-        searchView.isUserInteractionEnabled = false
-        containerView.addSubview(searchView)
+        setupAddMarkerButton()
 
-        let photoImage = UIImage(
-            systemName: "camera",
-            withConfiguration: UIImage.SymbolConfiguration(textStyle: .subheadline)
-                .applying(UIImage.SymbolConfiguration(weight: .medium))
-        )
+        setupAddMarkerButton()
+        setupExpandButton()
+        setupPhotoButton()
 
-        var photoButtonConfig = UIButton.Configuration.filled()
-        photoButtonConfig.contentInsets = NSDirectionalEdgeInsets(
-            top: 15,
-            leading: 12.5,
-            bottom: 15,
-            trailing: 12.5
-        )
-        photoButtonConfig.background.cornerRadius = 12
-        photoButtonConfig.background.strokeColor = UIColor.Primary_Blue_06
-        photoButtonConfig.baseForegroundColor = .Neutral_01
-        photoButtonConfig.baseBackgroundColor = .Primary_Blue_04
+        [addMarkerButton, expandButton, photoButton].forEach(containerView.addSubview)
 
-        photoButton = UIButton(
-            configuration: photoButtonConfig,
-            primaryAction: UIAction(image: photoImage) { [weak self] _ in self?.onCamera?() }
-        )
-        photoButton.setContentHuggingPriority(.required, for: .horizontal)
-        photoButton.setContentHuggingPriority(.required, for: .vertical)
-        containerView.addSubview(photoButton)
-
-        photoButton.snp.makeConstraints { make in
-            make.right.equalTo(-16)
-            make.top.equalTo(ProjectActionCardViewController.topPadding)
-        }
-        searchView.snp.makeConstraints { make in
+        addMarkerButton.snp.makeConstraints { make in
             make.top.equalTo(photoButton)
-            make.left.equalTo(16)
             make.height.equalTo(photoButton)
-            make.right.equalTo(photoButton.snp.left).offset(-16)
+            make.leading.equalToSuperview().inset(16)
+            make.trailing.equalTo(expandButton.snp.leading).offset(-16)
+        }
+        expandButton.snp.makeConstraints { make in
+            make.top.equalTo(photoButton)
+            make.height.equalTo(photoButton)
+            make.width.greaterThanOrEqualTo(52)
+            make.centerX.equalToSuperview()
+        }
+        photoButton.snp.makeConstraints { make in
+            make.top.equalTo(ProjectActionCardViewController.topPadding)
+            make.leading.equalTo(expandButton.snp.trailing).offset(16)
+            make.trailing.equalTo(-16)
         }
 
-        actionSelectorVC = ActionSelectorViewController(actions: actions + [
-            ActionItem(title: "View All Media", imageName: "photo"),
-        ])
+        actionSelectorVC = ActionSelectorViewController(
+            actions: [ActionItem(title: "All Media", imageName: "photo")] + actions
+        )
         add(childController: actionSelectorVC, toView: containerView)
         actionSelectorVC.view.snp.makeConstraints { make in
             make.top.equalTo(photoButton.snp.bottom)
@@ -116,6 +105,51 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         }
         // stroke not visible in dark mode (same color as background)
         roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
+    }
+
+    private func setupAddMarkerButton() {
+        addMarkerButton = UIButton(
+            configuration: UIButton.Configuration.blackButton(imagePlacement: .leading),
+            primaryAction: UIAction(title: String(localized: "Add"),
+                                    image: UIImage(systemName: "mappin.and.ellipse")) { [weak self] _ in
+                self?.onAddMarker?()
+            }
+        )
+    }
+
+    private func setupExpandButton() {
+        var config = UIButton.Configuration.blackButton()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)
+        expandButton = UIButton(
+            configuration: config,
+            primaryAction: UIAction(image: UIImage(systemName: "chevron.up")) { [weak self] _ in
+                self?.toggleCardExpanded()
+            }
+        )
+        expandButton.setContentHuggingPriority(.required, for: .horizontal)
+    }
+
+    private func setupPhotoButton() {
+        photoButton = UIButton(
+            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
+            primaryAction: UIAction(title: String(localized: "Add"),
+                                    image: UIImage(systemName: "camera")) { [weak self] _ in
+                self?.onCamera?()
+            }
+        )
+    }
+
+    private func toggleCardExpanded() {
+        guard let cardDragging = cardDragging else { return }
+        let expand = cardDragging.position == .min
+        cardDragging.setPosition(expand ? .max : .min, withVelocity: 0, animated: true)
+    }
+}
+
+extension ProjectActionCardViewController: CardDraggingDelegate {
+    func cardWillChangePosition(_ position: CardPosition) {
+        expandButton.setImage(UIImage(systemName: position == .max ? "chevron.down" : "chevron.up"),
+                              for: .normal)
     }
 }
 
