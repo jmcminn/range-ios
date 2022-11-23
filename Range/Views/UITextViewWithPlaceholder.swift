@@ -12,6 +12,15 @@ class UITextViewWithPlaceholder: UITextView {
         }
     }
 
+    /// distance between placeholder label top and this view top
+    /// 0.5 is derived experimentally, so the placeholder label matches the position of the text in text view
+    private let placeholderTopMargin = 0.5
+
+    /// the height of the view when showing the placeholder
+    var placeholderHeight: CGFloat {
+        textContainerInset.top + placeholderTopMargin + placeholderLabel.frame.height + textContainerInset.bottom
+    }
+
     /// when text changes updates the placeholder visibility (called when setting text programmatically)
     override var text: String! {
         didSet {
@@ -23,9 +32,9 @@ class UITextViewWithPlaceholder: UITextView {
     override var textContainerInset: UIEdgeInsets {
         didSet {
             placeholderLabel.snp.remakeConstraints { make in
-                // 5 and 0.5 is derived experimentally
+                // 5 is derived experimentally
                 make.leading.equalToSuperview().inset(textContainerInset.left + 5)
-                make.top.equalToSuperview().offset(textContainerInset.top + 0.5)
+                make.top.equalToSuperview().offset(textContainerInset.top + placeholderTopMargin)
             }
         }
     }

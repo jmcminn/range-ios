@@ -44,7 +44,7 @@ class CollaborationDetailsViewController: UIViewController {
     var onToggleMoreUpdates: ((Bool) -> Void)?
 
     // -- BEGIN: only for task collaboration
-    var descriptionTextView: UITextView!
+    var descriptionTextView: UITextViewWithPlaceholder!
     /// handle for observing description text view content size
     private var descriptionTextViewObservations = [NSKeyValueObservation]()
     /// description text view height changes with its content size
@@ -250,7 +250,7 @@ extension CollaborationDetailsViewController {
 
 extension CollaborationDetailsViewController {
     private func setupDescriptionTextView() {
-        descriptionTextView = UITextView()
+        descriptionTextView = UITextViewWithPlaceholder(placeholderText: "Add a description...")
         descriptionTextView.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
         descriptionTextView.font = .preferredFont(forTextStyle: .subheadline)
         // left/right = 12 to achieve the visual 16 margin...
@@ -404,7 +404,7 @@ extension CollaborationDetailsViewController {
     /// Notify about the height change if changed.
     private func animateTextViewHeightIfChanged() {
         let newDescriptionTextViewHeight = descriptionTextView.text.isEmpty
-            ? 0
+            ? max(0, descriptionTextView.placeholderHeight)
             : max(0, descriptionTextView.contentSize.height)
         guard descriptionTextViewHeight != newDescriptionTextViewHeight else { return }
         descriptionTextViewHeight = newDescriptionTextViewHeight
