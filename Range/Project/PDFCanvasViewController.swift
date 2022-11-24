@@ -101,7 +101,7 @@ class PDFCanvasViewController: UIViewController {
 
     unowned let model: ProjectModel
     let pdfCanvas: PDFCanvas
-    let pdfPage: PDFPage
+    private let pdfPage: PDFPage
 
     let zoomConverter: MapboxZoomConverter
 

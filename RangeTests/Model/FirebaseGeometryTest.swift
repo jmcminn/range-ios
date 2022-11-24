@@ -125,8 +125,22 @@ class FirebaseGeometryTest: XCTestCase {
 
     func testUpsert() throws {
         // 1. create 2 empty canvases
-        let canvas1 = PDFCanvas(id: "canvas1", pageNumber: 0, userDefinedScale: 1)
-        let canvas2 = PDFCanvas(id: "canvas2", pageNumber: 0, userDefinedScale: 1)
+        let canvas1 = PDFCanvas(
+            id: "canvas1",
+            canvasCollectionId: "",
+            name: "",
+            pageNumber: 0,
+            sheetNumber: nil,
+            userDefinedScale: 1
+        )
+        let canvas2 = PDFCanvas(
+            id: "canvas2",
+            canvasCollectionId: "",
+            name: "",
+            pageNumber: 0,
+            sheetNumber: nil,
+            userDefinedScale: 1
+        )
         try realm.write {
             realm.add([canvas1, canvas2])
         }

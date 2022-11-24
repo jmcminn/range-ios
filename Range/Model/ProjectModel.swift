@@ -97,10 +97,11 @@ class ProjectModel {
         self.pendingActionsModel = pendingActionsModel
         var config = Realm.Configuration.defaultConfiguration
         // TODO: [db-migration] for now we just remove the Realm and resync if migration needed...
-        config.deleteRealmIfMigrationNeeded = true
+//        config.deleteRealmIfMigrationNeeded = true
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
+            config.schemaVersion = 2
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent(self.projectId)
             config.fileURL!.appendPathExtension("realm")

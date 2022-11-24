@@ -50,7 +50,14 @@ final class CreatePhotoCollaborationCommandRealmTest: XCTestCase {
     }
 
     func testApply_noUser() throws {
-        let canvas1 = PDFCanvas(id: "canvas1", pageNumber: 0, userDefinedScale: 1)
+        let canvas1 = PDFCanvas(
+            id: "canvas1",
+            canvasCollectionId: "",
+            name: "",
+            pageNumber: 0,
+            sheetNumber: nil,
+            userDefinedScale: 1
+        )
         try realm.write {
             realm.add(canvas1)
         }
@@ -62,7 +69,14 @@ final class CreatePhotoCollaborationCommandRealmTest: XCTestCase {
     }
 
     func testApply_successful() throws {
-        let canvas1 = PDFCanvas(id: "canvas1", pageNumber: 0, userDefinedScale: 1)
+        let canvas1 = PDFCanvas(
+            id: "canvas1",
+            canvasCollectionId: "",
+            name: "",
+            pageNumber: 0,
+            sheetNumber: nil,
+            userDefinedScale: 1
+        )
         let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
         try realm.write {
             realm.add([canvas1, user1])

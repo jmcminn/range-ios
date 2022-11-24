@@ -48,8 +48,6 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// - Warning: to be called on the Main thread
     init(imageCaches: ImageCaches, inMemory: Bool = false) throws {
         var config = Realm.Configuration.defaultConfiguration
-        // TODO: [db-migration] for now we just remove the Realm and resync if migration needed...
-        config.deleteRealmIfMigrationNeeded = true
         if inMemory {
             config.inMemoryIdentifier = "pendingUploads"
         } else {
