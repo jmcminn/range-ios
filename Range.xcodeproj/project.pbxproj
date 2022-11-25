@@ -147,7 +147,6 @@
 		0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */; };
 		0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EDE27E4DC2C001A019B /* PDFPageScrollView.swift */; };
 		0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */; };
-		0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */; };
 		0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */; };
 		0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */; };
 		0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */; };
@@ -258,7 +257,6 @@
 		0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7D290980DD00D3CCA1 /* GradientView.swift */; };
 		0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */; };
 		0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */; };
-		0AC9E18828F5646D00C7185D /* The Preserve v01.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */; };
 		0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18A28F56C2800C7185D /* DemoProject.swift */; };
 		0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */; };
 		0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */; };
@@ -450,7 +448,6 @@
 		0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageTiledView.swift; sourceTree = "<group>"; };
 		0A632EDE27E4DC2C001A019B /* PDFPageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageScrollView.swift; sourceTree = "<group>"; };
 		0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageViewController.swift; sourceTree = "<group>"; };
-		0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "5451 VANDERBILT AVE-A1.1A.pdf"; sourceTree = "<group>"; };
 		0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFCanvasViewController.swift; sourceTree = "<group>"; };
 		0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesViewAnnotationPinsDisplay.swift; sourceTree = "<group>"; };
 		0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesPinsDisplay.swift; sourceTree = "<group>"; };
@@ -558,7 +555,6 @@
 		0AC89D7D290980DD00D3CCA1 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVerticalLine.swift; sourceTree = "<group>"; };
 		0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSelectorCardViewController.swift; sourceTree = "<group>"; };
-		0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "The Preserve v01.pdf"; sourceTree = "<group>"; };
 		0AC9E18A28F56C2800C7185D /* DemoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProject.swift; sourceTree = "<group>"; };
 		0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsFlowController.swift; sourceTree = "<group>"; };
 		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
@@ -1119,10 +1115,8 @@
 		0A632EE427E4E52E001A019B /* DemoResources */ = {
 			isa = PBXGroup;
 			children = (
-				0A632EE527E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf */,
 				0A6FAC3728B67A350057995B /* sample_photo_landscape.jpg */,
 				0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */,
-				0AC9E18728F5646D00C7185D /* The Preserve v01.pdf */,
 			);
 			path = DemoResources;
 			sourceTree = "<group>";
@@ -1466,9 +1460,7 @@
 			files = (
 				0A632EB827E49638001A019B /* LaunchScreen.storyboard in Resources */,
 				0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */,
-				0A632EE627E4E53F001A019B /* 5451 VANDERBILT AVE-A1.1A.pdf in Resources */,
 				0A07D7632810562700B6F9A2 /* fonts in Resources */,
-				0AC9E18828F5646D00C7185D /* The Preserve v01.pdf in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
 				0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */,
 				0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */,

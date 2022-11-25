@@ -70,7 +70,7 @@ class ProjectModelFirestoreSync {
     private func doInitialSync() async throws {
         // do this in parallel
         async let projectSummaryRequest = projectRef.getDocument(as: FirebaseProjectSummary.self)
-        async let canvasRequest = collection(.canvas).document(model.demoCanvas.id)
+        async let canvasRequest = collection(.canvas).document(model.demoCanvasId)
             .getDocument(as: FirebasePDFCanvas.self)
         async let userRequest = collection(.participant).document(model.userId)
             .getDocument(as: FirebaseParticipant.self)
@@ -83,7 +83,7 @@ class ProjectModelFirestoreSync {
         // store in the db
         try await model.write { realm in
             try projectSummary.upsert(withId: self.model.projectId, inRealm: realm)
-            try canvas.upsert(withId: self.model.demoCanvas.id, inRealm: realm)
+            try canvas.upsert(withId: self.model.demoCanvasId, inRealm: realm)
             try user.upsert(withId: self.model.userId, inRealm: realm)
         }
     }

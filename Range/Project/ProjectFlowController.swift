@@ -50,13 +50,13 @@ final class ProjectFlowController: UIViewController {
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )
-        model.demoCanvas = demoProject.canvas
+        model.demoCanvasId = demoProject.canvasId
         try await model.start()
 
         modelFirestoreSync = ProjectModelFirestoreSync(model: model)
         await modelFirestoreSync.start()
 
-        try model.loadProject(initialCanvasId: demoProject.canvas.id)
+        try model.loadProject(initialCanvasId: demoProject.canvasId)
 
         canvasContainer = try await CanvasContainerViewController(model: model)
         collaborationFlow = CollaborationFlowController(

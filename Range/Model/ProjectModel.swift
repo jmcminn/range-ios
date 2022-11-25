@@ -69,8 +69,8 @@ class ProjectModel {
     // TODO: 638
     var currentCanvas: PDFCanvas!
 
-    /// temporarily store the canvas to show (until canvas loading/selection is implemented)
-    var demoCanvas: DemoCanvas!
+    /// temporarily store the canvas id to show (until canvas loading/selection is implemented)
+    var demoCanvasId: String!
 
     /// Background serial queue to perform write operations.
     let writeQueue = DispatchQueue(label: "model-write-queue")
