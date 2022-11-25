@@ -63,27 +63,6 @@ extension PDFCanvasViewControllerError: LocalizedError {
 class PDFCanvasViewController: UIViewController {
     let maxMapboxZoom = 25.5
 
-    /// Available mechanisms of syncing the center/zoom of the background PDF and mapbox map (annotations)
-    enum PDFMapSync {
-        // 1. interactions with pdf scroll view are translated to mapbox camera:
-        case pdf
-        // 2. mapbox camera changes are translated to pdf scroll view zoom/offset:
-        case mapCamera // this one is currently not used - trying to switch to the .mapCameraAndAnnotation one
-        // 3. mapbox transparent annotation views are used to calculate the zoom/offset
-        //    this one relies on the fact that mapbox annotations are lagging behind the gesture (and mapbox camera)
-        //    so if we sync background PDF offset with some annotation position it should not lag visually
-        //    The solution is to add 2 native annotations that are transparent and big enough so they're always
-        //    visible on the map (no matter what zoom level, etc.). They need to be always visible as mapbox
-        //    does not update positions for views that are not in the map viewport
-        case mapAnnotations
-    }
-
-    // Current pdf<->map sync mechanism. Currently set to .mapAnnotations.
-    // The other ways of sync are left only for reference and will not be used anymore.
-    var pdfMapSync: PDFMapSync = .mapAnnotations {
-        didSet { updatePDFMapSync() }
-    }
-
     /// observers for pdf/mapbox views. They're being activated/deactivated when switching who drives the interactions
     private var canvasTapGestureRecognizer: UITapGestureRecognizer?
     private var mapboxCameraChangedObserver: Cancelable?
@@ -108,13 +87,10 @@ class PDFCanvasViewController: UIViewController {
     var mapView: MapView!
     var pdfScrollView: PDFPageScrollView!
 
-    private var initialMetersPerPoint: Double = 0.0
     private var initialZoom: Double = 0.0
 
     /// when animating the pdf and mapview together, we need to disable the sync of zoom/center between them
     private var programmaticAnimationInProgress = false
-    /// display link used for pan/zoom animations
-    private var displayLink: DisplayLink?
 
     /// dictionary of delegates stored per id
     private var delegates: [UUID: CanvasViewControllerDelegate] = [:]
@@ -188,7 +164,7 @@ class PDFCanvasViewController: UIViewController {
 
         setupMapView()
 
-        updatePDFMapSync()
+        setupPDFMapSync()
 
 //        setupDebugViews()
     }
@@ -207,7 +183,7 @@ class PDFCanvasViewController: UIViewController {
         let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / pdfCanvas.userDefinedScale)
         let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
         let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
-        initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
+        let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
         initialZoom = zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
 
         // minimum is arbitrarily chosen to allow to view the area of 10x width of pdf
@@ -232,13 +208,10 @@ class PDFCanvasViewController: UIViewController {
     private func setupMapView() {
         // TODO: it seems that we don't need Mapbox accessToken for annotations
 //        ResourceOptionsManager.default.resourceOptions.accessToken =
-        if pdfMapSync == .pdf {
-            mapView = MapView(frame: view.bounds)
-        } else {
-            // set initial mapbox zoom level and position
-            let cameraOptions = CameraOptions(center: model.projectSummary.center, zoom: initialZoom)
-            mapView = MapView(frame: view.bounds, mapInitOptions: MapInitOptions(cameraOptions: cameraOptions))
-        }
+        // set initial mapbox zoom level and position
+        let cameraOptions = CameraOptions(center: model.projectSummary.center, zoom: initialZoom)
+        mapView = MapView(frame: view.bounds, mapInitOptions: MapInitOptions(cameraOptions: cameraOptions))
+
         // hack to make the Metal subview of the mapView transparent
         // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
         // by default it's black even if there's no layers). The trick is to make
@@ -270,41 +243,16 @@ class PDFCanvasViewController: UIViewController {
         view.addSubview(mapView)
     }
 
-    private func updatePDFMapSync() {
-        if pdfMapSync == .mapAnnotations {
-            setupSyncDriverAnnotationViews()
-        } else {
-            tearDownSyncDriverAnnotationViews()
-        }
-        if pdfMapSync == .pdf {
-            pdfScrollView.pdfPageScrollViewDelegate = self
-            if let canvasTapGestureRecognizer = canvasTapGestureRecognizer {
-                mapView.removeGestureRecognizer(canvasTapGestureRecognizer)
-            }
-            canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
-            pdfScrollView.addGestureRecognizer(canvasTapGestureRecognizer!)
-            mapView.isUserInteractionEnabled = false
-            mapView.gestures.delegate = nil
-            mapboxCameraChangedObserver?.cancel()
-            syncCameraStateWithPDFView()
-        } else {
-            pdfScrollView.pdfPageScrollViewDelegate = nil
-            if let canvasTapGestureRecognizer = canvasTapGestureRecognizer {
-                pdfScrollView.removeGestureRecognizer(canvasTapGestureRecognizer)
-            }
-            canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
-            mapView.addGestureRecognizer(canvasTapGestureRecognizer!)
-            mapView.isUserInteractionEnabled = true
-            mapView.gestures.delegate = self
-            mapboxCameraChangedObserver = mapView.mapboxMap.onEvery(event: .cameraChanged, handler: { [weak self] _ in
-                guard let self = self else { return }
-                self.syncPDFViewWithCameraState()
-                if let currentCameraChangeReason = self.currentCameraChangeReason {
-                    self.delegates.values.forEach { $0.canvasCameraChanged(reason: currentCameraChangeReason) }
-                }
-            })
-            syncPDFViewWithCameraState()
-        }
+    private func setupPDFMapSync() {
+        setupSyncDriverAnnotationViews()
+        canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
+        mapView.addGestureRecognizer(canvasTapGestureRecognizer!)
+        mapView.isUserInteractionEnabled = true
+        mapView.gestures.delegate = self
+        mapboxCameraChangedObserver = mapView.mapboxMap.onEvery(event: .cameraChanged, handler: { [weak self] _ in
+            guard let self = self, let currentCameraChangeReason = self.currentCameraChangeReason else { return }
+            self.delegates.values.forEach { $0.canvasCameraChanged(reason: currentCameraChangeReason) }
+        })
     }
 
     /// Add special mapbox annotation views that are transparent and act as a map -> pdf sync driver.
@@ -368,91 +316,19 @@ class PDFCanvasViewController: UIViewController {
 
     /// Animate to given cameraCenter and mapboxZoom.
     func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {
-        if pdfMapSync == .pdf {
-            let endContentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
-                cameraCenter: cameraCenter,
-                scrollView: pdfScrollView,
-                initialCenter: model.projectSummary.center,
-                initialMetersPerPoint: initialMetersPerPoint
-            )
-            let endZoomScale = initialMetersPerPoint / zoomConverter.getMetersPerPoint(forZoom: mapboxZoom)
-            animatePanAndZoom(contentOffset: endContentOffset, zoomScale: endZoomScale)
-        } else {
-            // HACK: dispatch async on main queue is a hack, otherwise the mapbox was not reacting
-            // when invoking this method on callback from gesture manager delegate
-            DispatchQueue.main.async {
-                self.programmaticAnimationInProgress = true
-                let animator = self.mapView.camera.makeAnimator(duration: 0.2, curve: .easeOut) { transition in
-                    transition.zoom.toValue = mapboxZoom
-                    transition.center.toValue = cameraCenter
-                }
-                animator.addCompletion { [weak self] _ in
-                    self?.programmaticAnimationInProgress = false
-                }
-                animator.startAnimation()
+        // HACK: dispatch async on main queue is a hack, otherwise the mapbox was not reacting
+        // when invoking this method on callback from gesture manager delegate
+        DispatchQueue.main.async {
+            self.programmaticAnimationInProgress = true
+            let animator = self.mapView.camera.makeAnimator(duration: 0.2, curve: .easeOut) { transition in
+                transition.zoom.toValue = mapboxZoom
+                transition.center.toValue = cameraCenter
             }
+            animator.addCompletion { [weak self] _ in
+                self?.programmaticAnimationInProgress = false
+            }
+            animator.startAnimation()
         }
-    }
-
-    /// Animate to given pdf content offset  and zoom.
-    /// To sync PDF and Mapbox we need to "manually" animate the scrollView contentOffset and zoom, so mapbox is synced along the way
-    /// This is only needed when pdf drives interactions
-    private func animatePanAndZoom(contentOffset endContentOffset: CGPoint, zoomScale endZoomScale: Double) {
-        let duration = 0.2
-
-        let startContentOffset = pdfScrollView.contentOffset
-        let startZoomScale = pdfScrollView.zoomScale
-
-        // any running animation?
-        displayLink?.invalidate()
-        programmaticAnimationInProgress = true
-        displayLink = DisplayLink(handler: { [unowned self] _, t in
-            let progress = min(Double(t) / Double(duration), 1)
-            let x: CGFloat = startContentOffset.x + (endContentOffset.x - startContentOffset.x) * progress
-            let y: CGFloat = startContentOffset.y + (endContentOffset.y - startContentOffset.y) * progress
-            let zoom: CGFloat = startZoomScale + (endZoomScale - startZoomScale) * progress
-            self.pdfScrollView.contentOffset = CGPoint(x: x, y: y)
-            self.pdfScrollView.zoomScale = zoom
-            self.syncCameraStateWithPDFView()
-            if t >= duration {
-                self.displayLink?.invalidate()
-                self.displayLink = nil
-                self.programmaticAnimationInProgress = false
-            }
-        })
-    }
-
-    /// Set mapbox camera center and zoom based on current pdf view contentOffset and zoomScale
-    private func syncCameraStateWithPDFView() {
-        guard pdfMapSync == .pdf else { return }
-        let cameraCenter = PDFCanvasViewController.scrollViewStateToMapboxCenter(
-            scrollView: pdfScrollView,
-            initialCenter: model.projectSummary.center,
-            initialMetersPerPoint: initialMetersPerPoint
-        )
-        let metersPerPoint = initialMetersPerPoint / pdfScrollView.zoomScale
-        let mapboxZoom = zoomConverter.getZoom(forMetersPerPoint: metersPerPoint)
-        mapView.mapboxMap.setCamera(to: CameraOptions(center: cameraCenter, zoom: mapboxZoom))
-    }
-
-    /// Calculate and apply PDF zoom and offset based on current Mapbox camera state.
-    private func syncPDFViewWithCameraState() {
-        guard pdfMapSync == .mapCamera else { return }
-
-        let cameraState = mapView.cameraState
-
-        // offset is sync based on mapbox camera only in .mapboxCamera option, .mapboxCameraAndAnnotation syncs offset based on the annotation position
-        let contentOffset = PDFCanvasViewController.mapboxCenterToScrollViewContentOffset(
-            cameraCenter: cameraState.center,
-            scrollView: pdfScrollView,
-            initialCenter: model.projectSummary.center,
-            initialMetersPerPoint: initialMetersPerPoint
-        )
-        pdfScrollView.contentOffset = contentOffset
-
-        // translate current mapbox zoom to pdf UIView.zoomScale
-        let currentMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: cameraState.zoom)
-        pdfScrollView.zoomScale = initialMetersPerPoint / currentMetersPerPoint
     }
 
     /// Calculate and apply PDF offset and zoom based on the sync driving annotation views
@@ -481,58 +357,6 @@ class PDFCanvasViewController: UIViewController {
         let xOffset = -(syncViewsCenter.x - pdfScrollView.center.x * scale)
         let yOffset = -(syncViewsCenter.y - pdfScrollView.center.y * scale)
         pdfScrollView.contentOffset = CGPoint(x: xOffset, y: yOffset)
-    }
-
-    /// Calculate what should be the camera center for Mapbox so it matches the current pdf scroll view contentOffset and zoom
-    private static func scrollViewStateToMapboxCenter(
-        scrollView: UIScrollView,
-        initialCenter: CLLocationCoordinate2D,
-        initialMetersPerPoint: Double
-    ) -> CLLocationCoordinate2D {
-        // The contentOffset is the distance between initial and current top/left corner of the content.
-        let contentOffset = scrollView.contentOffset
-        let viewCenter = scrollView.center
-        let zoomScale = scrollView.zoomScale
-        let metersPerPoint = initialMetersPerPoint / zoomScale
-
-        // Distance measured in screen coordinates fro current pdf center on screen to screen center.
-        // Grows when moving PDF on screen right
-        let xPdfCenterDistanceFromViewCenter = -contentOffset.x - viewCenter.x + viewCenter
-            .x * zoomScale
-        // grows when moving the PDF on screen down
-        let yPdfCenterDistanceFromViewCenter = -contentOffset.y - viewCenter.y + viewCenter
-            .y * zoomScale
-        // move camera the other direction than the PDF
-        let cameraUp = initialCenter.coordinate(at: yPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 0)
-        let cameraLeft = initialCenter.coordinate(at: xPdfCenterDistanceFromViewCenter * metersPerPoint, facing: 270)
-        let cameraCenter = CLLocationCoordinate2D(latitude: cameraUp.latitude, longitude: cameraLeft.longitude)
-        return cameraCenter
-    }
-
-    // calculate what should be the pdf scroll view content offset to match given mapbox camera center (at current zoom level)
-    private static func mapboxCenterToScrollViewContentOffset(
-        cameraCenter: CLLocationCoordinate2D,
-        scrollView: UIScrollView,
-        initialCenter: CLLocationCoordinate2D,
-        initialMetersPerPoint: Double
-    ) -> CGPoint {
-        let viewCenter = scrollView.center
-        let zoomScale = scrollView.zoomScale
-        let metersPerPoint = initialMetersPerPoint / zoomScale
-
-        let xSign: Double = cameraCenter.longitude > initialCenter.longitude ? -1 : 1
-        let xCameraCenterDistanceFromInitialCenter = xSign *
-            cameraCenter.distance(to: CLLocationCoordinate2D(latitude: cameraCenter.latitude,
-                                                             longitude: initialCenter.longitude)) / metersPerPoint
-        let ySign: Double = cameraCenter.latitude < initialCenter.latitude ? -1 : 1
-        let yCameraCenterDistanceFromInitialCenter = ySign *
-            cameraCenter.distance(to: CLLocationCoordinate2D(latitude: initialCenter.latitude,
-                                                             longitude: cameraCenter.longitude)) / metersPerPoint
-
-        let xOffset = -(xCameraCenterDistanceFromInitialCenter + viewCenter.x - viewCenter.x * zoomScale)
-        let yOffset = -(yCameraCenterDistanceFromInitialCenter + viewCenter.y - viewCenter.y * zoomScale)
-
-        return CGPoint(x: xOffset, y: yOffset)
     }
 }
 
@@ -581,59 +405,6 @@ extension PDFCanvasViewController {
         guard let pointInMapView = sender.view?.convert(point, to: mapView) else { return }
         delegates.values.forEach {
             $0.canvasTapRecognized(at: pointInMapView)
-        }
-    }
-}
-
-/// Delegate for PDF driving scroll view
-extension PDFCanvasViewController: PDFPageScrollViewDelegate {
-    func scrollViewDidScroll(_: PDFPageScrollView) {
-        // controlled animation syncs the state itself
-        if !programmaticAnimationInProgress {
-            syncCameraStateWithPDFView()
-        }
-        delegates.values.forEach {
-            $0.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .pan)
-        }
-    }
-
-    func scrollViewDidZoom(_: PDFPageScrollView) {
-        // controlled animation syncs the state itself
-        if !programmaticAnimationInProgress {
-            syncCameraStateWithPDFView()
-        }
-        delegates.values.forEach {
-            $0.canvasCameraChanged(reason: programmaticAnimationInProgress ? .programmatic : .zoom)
-        }
-    }
-
-    /// Notify about panEnd but only if not decelerating (if decelerating the panEnd will be notified on deceleration end)
-    /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
-    func scrollViewDidEndDragging(_: PDFPageScrollView, willDecelerate decelerate: Bool) {
-        if !decelerate, !programmaticAnimationInProgress {
-            delegates.values.forEach {
-                $0.canvasCameraChanged(reason: .panEnd)
-            }
-        }
-    }
-
-    /// Notify about panEnd when there was a deceleration
-    /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
-    func scrollViewDidEndDecelerating(_: PDFPageScrollView) {
-        if !programmaticAnimationInProgress {
-            delegates.values.forEach {
-                $0.canvasCameraChanged(reason: .panEnd)
-            }
-        }
-    }
-
-    /// Notify about zoomEnd when there was a deceleration
-    /// Do not notiy when programmaticAnimationInProgress - these are only interesting for user interactions
-    func scrollViewDidEndZooming(_: PDFPageScrollView, with _: UIView?, atScale _: CGFloat) {
-        if !programmaticAnimationInProgress {
-            delegates.values.forEach {
-                $0.canvasCameraChanged(reason: .zoomEnd)
-            }
         }
     }
 }
