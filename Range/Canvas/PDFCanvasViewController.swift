@@ -38,25 +38,6 @@ protocol CanvasViewControllerDelegate {
     func canvasTapRecognized(at: CGPoint)
 }
 
-// possible errors for ProjectModel
-enum PDFCanvasViewControllerError: Error {
-    // TODO: 638 remove?
-    case canvasNotFound
-    case pdfPageLoadFailed
-}
-
-// Error extension to provide localized descriptions of errors
-extension PDFCanvasViewControllerError: LocalizedError {
-    public var errorDescription: String? {
-        switch self {
-        case .canvasNotFound:
-            return "No canvas found"
-        case .pdfPageLoadFailed:
-            return "Couldn't load the PDF page"
-        }
-    }
-}
-
 /**
  Displays background PDF with Mapbox map view on top.
  The mapbox map is receiving the user interactions and controls the PDF zoom/offset
@@ -114,23 +95,9 @@ class PDFCanvasViewController: UIViewController {
     init(model: ProjectModel) async throws {
         self.model = model
         pdfCanvas = model.currentCanvas
-        pdfPage = try PDFCanvasViewController.loadPDFPage(pdfCanvas: model.demoCanvas)
-
+        pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: pdfCanvas, projectId: model.projectId)
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
-    }
-
-    /// Loads pdf page for given canvas or throws if cannot load.
-    fileprivate static func loadPDFPage(pdfCanvas: DemoCanvas) throws -> PDFPage {
-        guard
-            let documentUrl = Bundle.main.url(
-                forResource: pdfCanvas.localFileName,
-                withExtension: nil
-            ),
-            let document = PDFDocument(url: documentUrl),
-            let page = document.page(at: pdfCanvas.pageNumber)
-        else { throw PDFCanvasViewControllerError.pdfPageLoadFailed }
-        return page
     }
 
     @available(*, unavailable)

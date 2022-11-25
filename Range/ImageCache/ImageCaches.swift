@@ -50,7 +50,7 @@ class ImageCaches {
     /// Returns image data provider for given cache key.
     /// Returns an instance of FirebaseStoreImageDataProvider which allows Kingfisher images cache to load the image from Firebase.
     func imageProvider(forPhotoWithCacheKey cacheKey: String) -> RangeImageDataProvider {
-        let ref = Storage.storage().reference(withPath: cacheKey)
+        let ref = storage.reference(withPath: cacheKey)
         return FirebaseStorageImageDataProvider(localPhotosCache: localPhotosCache, ref: ref)
     }
 

@@ -38,6 +38,7 @@
 		0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */; };
 		0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */; };
 		0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */; };
+		0A22CF1C2930CE4D0084332B /* CanvasFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */; };
 		0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */; };
 		0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */; };
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */; };
@@ -334,6 +335,7 @@
 		0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationHeaderCoverViewController.swift; sourceTree = "<group>"; };
 		0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTopViewController.swift; sourceTree = "<group>"; };
 		0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFlowController.swift; sourceTree = "<group>"; };
+		0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileLoader.swift; sourceTree = "<group>"; };
 		0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+Corners.swift"; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBottomViewController.swift; sourceTree = "<group>"; };
@@ -753,6 +755,7 @@
 			children = (
 				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
 				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
+				0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -1727,6 +1730,7 @@
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
 				0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */,
 				0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */,
+				0A22CF1C2930CE4D0084332B /* CanvasFileLoader.swift in Sources */,
 				0A797F72292BDA8900D63567 /* UserPickerCardViewController.swift in Sources */,
 				0A724F39288835A600708C6B /* Placeholder.swift in Sources */,
 				0A37837A291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift in Sources */,
