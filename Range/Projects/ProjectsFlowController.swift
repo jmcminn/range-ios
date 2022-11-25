@@ -109,7 +109,7 @@ class ProjectsFlowController: UINavigationController {
 
     /// Build and configure project flow controller
     private func buildProjectFlowController(_ demoProject: DemoProject) async throws -> ProjectFlowController {
-        let projectFC = try await ProjectFlowController.buildProjectFlowController(
+        let projectFC = try await ProjectFlowController(
             userId: userId,
             demoProject: demoProject,
             imageCaches: imageCaches,

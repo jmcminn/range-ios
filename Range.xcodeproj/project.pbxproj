@@ -748,6 +748,15 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		0A22CF1A2930CD310084332B /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
+				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
+			);
+			path = Canvas;
+			sourceTree = "<group>";
+		};
 		0A25D82B28C8B4EB00F132D4 /* ci_scripts */ = {
 			isa = PBXGroup;
 			children = (
@@ -977,8 +986,6 @@
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
 				0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
-				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
-				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
 			);
 			path = Project;
 			sourceTree = "<group>";
@@ -1038,6 +1045,7 @@
 				0A4995D62860C6A900E571FB /* AddPhoto */,
 				0A07D764281295B500B6F9A2 /* Auth */,
 				0A97232327FC507200D744F4 /* Camera */,
+				0A22CF1A2930CD310084332B /* Canvas */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0ABFD8B528F00A46008CDA74 /* Comment */,

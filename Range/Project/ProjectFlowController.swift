@@ -29,60 +29,42 @@ final class ProjectFlowController: UIViewController {
     var started = false
     var onBack: (() -> Void)?
 
-    /// Builds ProjectFlowController
-    /// This can throw if project model cannot be loaded
+    /// Initialize ProjectFlowController
+    /// This can throw if project model cannot be loaded or started
     ///
     /// - Parameters:
     ///     - userId: range id of the logged in user
     ///     - projectId: id of the project
-    /// - Returns: loaded ProjectModel
-    static func buildProjectFlowController(
+    init(
         userId: String,
         demoProject: DemoProject,
         imageCaches: ImageCaches,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel
-    ) async throws -> ProjectFlowController {
-        let projectId = demoProject.id
-
-        let projectModel = try ProjectModel(
+    ) async throws {
+        self.imageCaches = imageCaches
+        model = try ProjectModel(
             userId: userId,
-            projectId: projectId,
+            projectId: demoProject.id,
             imageCaches: imageCaches,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )
-        projectModel.demoCanvas = demoProject.canvas
-        try await projectModel.start()
+        model.demoCanvas = demoProject.canvas
+        try await model.start()
 
-        let projectModelFirestoreSync = ProjectModelFirestoreSync(model: projectModel)
-        await projectModelFirestoreSync.start()
+        modelFirestoreSync = ProjectModelFirestoreSync(model: model)
+        await modelFirestoreSync.start()
 
-        try projectModel.loadProject(initialCanvasId: demoProject.canvas.id)
+        try model.loadProject(initialCanvasId: demoProject.canvas.id)
 
-        return try ProjectFlowController(
-            imageCaches: imageCaches,
-            model: projectModel,
-            modelFirestoreSync: projectModelFirestoreSync
-        )
-    }
-
-    fileprivate init(
-        imageCaches: ImageCaches,
-        model: ProjectModel,
-        modelFirestoreSync: ProjectModelFirestoreSync
-
-    ) throws {
-        self.imageCaches = imageCaches
-        self.model = model
-        self.modelFirestoreSync = modelFirestoreSync
-
-        canvasContainer = try CanvasContainerViewController(model: model)
+        canvasContainer = try await CanvasContainerViewController(model: model)
         collaborationFlow = CollaborationFlowController(
             model: model,
             imageCaches: imageCaches,
             canvasContainer: canvasContainer
         )
+
         super.init(nibName: nil, bundle: nil)
 
         collaborationFlow.onCollaborationClose = { [weak self] in

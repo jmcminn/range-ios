@@ -61,13 +61,16 @@ class ProjectModel {
     /// Main thread Realm
     let mainRealm: Realm
 
-    /// temporarily store the canvas to show (until canvas loading/selection is implemented)
-    var demoCanvas: DemoCanvas!
-
     /// Project summary, only available after `loadProject`
     private(set) var projectSummary: ProjectSummary!
     /// Participant object for current user (user with id = `userId`)
     private(set) var currentUser: Participant!
+
+    // TODO: 638
+    var currentCanvas: PDFCanvas!
+
+    /// temporarily store the canvas to show (until canvas loading/selection is implemented)
+    var demoCanvas: DemoCanvas!
 
     /// Background serial queue to perform write operations.
     let writeQueue = DispatchQueue(label: "model-write-queue")
@@ -133,9 +136,10 @@ class ProjectModel {
             throw ModelError.currentUserNotFound
         }
         currentUser = user
-        guard mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: initialCanvasId) != nil else {
+        guard let initialCanvas = mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: initialCanvasId) else {
             throw ModelError.canvasNotFound
         }
+        currentCanvas = initialCanvas
     }
 
     /// Loads the project summary for this project.

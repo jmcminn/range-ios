@@ -40,6 +40,7 @@ protocol CanvasViewControllerDelegate {
 
 // possible errors for ProjectModel
 enum PDFCanvasViewControllerError: Error {
+    // TODO: 638 remove?
     case canvasNotFound
     case pdfPageLoadFailed
 }
@@ -87,6 +88,7 @@ class PDFCanvasViewController: UIViewController {
     var mapView: MapView!
     var pdfScrollView: PDFPageScrollView!
 
+    /// Initial mapbox zoom matching the pdf page fitting the view
     private var initialZoom: Double = 0.0
 
     /// when animating the pdf and mapview together, we need to disable the sync of zoom/center between them
@@ -109,15 +111,9 @@ class PDFCanvasViewController: UIViewController {
             """
     }
 
-    init(model: ProjectModel) throws {
-        guard let pdfCanvas = model.mainRealm.object(
-            ofType: PDFCanvas.self,
-            forPrimaryKey: model.demoCanvas.id
-        ) else {
-            throw PDFCanvasViewControllerError.canvasNotFound
-        }
+    init(model: ProjectModel) async throws {
         self.model = model
-        self.pdfCanvas = pdfCanvas
+        pdfCanvas = model.currentCanvas
         pdfPage = try PDFCanvasViewController.loadPDFPage(pdfCanvas: model.demoCanvas)
 
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
@@ -158,13 +154,17 @@ class PDFCanvasViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
 
+        // 1. setup scroll view with given pdf page
         setupPDFScrollView()
 
-        setupInitialZoomAndZoomLimits()
+        // 2. calculate the initialMetersPerPoint given the pdf page, view size and user defined scale
+        setupInitialZoom()
 
+        // 3. initiate mapview with initial zoom
         setupMapView()
 
-        setupPDFMapSync()
+        // 4. setup annotation views
+        setupSyncAnnotationViews()
 
 //        setupDebugViews()
     }
@@ -176,21 +176,9 @@ class PDFCanvasViewController: UIViewController {
         pdfScrollView.showsVerticalScrollIndicator = false
         pdfScrollView.showsHorizontalScrollIndicator = false
         pdfScrollView.bouncesZoom = false
-    }
+        // just a small number, the zoom is controlled by the mapbox, so we don't need maximum
+        pdfScrollView.minimumZoomScale = 0.001
 
-    /// Calculates initial mapbox zoom so the PDFPage fits the screen
-    private func setupInitialZoomAndZoomLimits() {
-        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / pdfCanvas.userDefinedScale)
-        let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
-        let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
-        let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
-        initialZoom = zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
-
-        // minimum is arbitrarily chosen to allow to view the area of 10x width of pdf
-        pdfScrollView.minimumZoomScale = 0.1
-        // maximum is added so we don't go above the max mapbox zoom scale
-        let minMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: maxMapboxZoom)
-        pdfScrollView.maximumZoomScale = initialMetersPerPoint / minMetersPerPoint
         // Just a big number to allow zooming out
         // TODO: add limit to geographical location the center may reach.
         // This cannot be done by the contentInset as it works in a way dependent on zoom.
@@ -203,6 +191,15 @@ class PDFCanvasViewController: UIViewController {
             bottom: pdfInset,
             right: pdfInset
         )
+    }
+
+    /// Calculates initial zoom for mapbox, so it matches the zoom scale of PDFPage when it fits the view
+    private func setupInitialZoom() {
+        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / pdfCanvas.userDefinedScale)
+        let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
+        let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
+        let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
+        initialZoom = zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
     }
 
     private func setupMapView() {
@@ -239,15 +236,12 @@ class PDFCanvasViewController: UIViewController {
         mapView.ornaments.options.scaleBar.visibility = .hidden
         mapView.gestures.options.rotateEnabled = false
         mapView.gestures.options.pitchEnabled = false
+        mapView.isUserInteractionEnabled = true
 
         view.addSubview(mapView)
-    }
 
-    private func setupPDFMapSync() {
-        setupSyncDriverAnnotationViews()
         canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
         mapView.addGestureRecognizer(canvasTapGestureRecognizer!)
-        mapView.isUserInteractionEnabled = true
         mapView.gestures.delegate = self
         mapboxCameraChangedObserver = mapView.mapboxMap.onEvery(event: .cameraChanged, handler: { [weak self] _ in
             guard let self = self, let currentCameraChangeReason = self.currentCameraChangeReason else { return }
@@ -256,7 +250,7 @@ class PDFCanvasViewController: UIViewController {
     }
 
     /// Add special mapbox annotation views that are transparent and act as a map -> pdf sync driver.
-    private func setupSyncDriverAnnotationViews() {
+    private func setupSyncAnnotationViews() {
         do {
             let pdfFrame = mapView.convert(pdfScrollView.pdfView.frame, from: pdfScrollView)
             let topLeft = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100_001, height: 100_001)))
@@ -278,12 +272,12 @@ class PDFCanvasViewController: UIViewController {
                 self?.syncPDFViewWithAnnotationViews()
             }
         } catch {
-            Logger.mapbox.error("error adding mapbox sync driver view: \(error)")
+            Logger.mapbox.error("error adding mapbox sync view: \(error)")
         }
     }
 
     /// Remove the mapbox annotation views for driving mapbox -> pdf sync and stop observing
-    private func tearDownSyncDriverAnnotationViews() {
+    private func tearDownSyncAnnotationViews() {
         bottomRightSyncAnnotationViewObservation?.invalidate()
 
         if let topLeft = topLeftSyncAnnotationView {

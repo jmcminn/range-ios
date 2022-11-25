@@ -21,8 +21,8 @@ class CanvasContainerViewController: UIViewController {
     /// for presenting views on top of controls
     let overlays = PassthroughView()
 
-    init(model: ProjectModel) throws {
-        pdfCanvasViewController = try PDFCanvasViewController(model: model)
+    init(model: ProjectModel) async throws {
+        pdfCanvasViewController = try await PDFCanvasViewController(model: model)
         super.init(nibName: nil, bundle: nil)
     }
 
