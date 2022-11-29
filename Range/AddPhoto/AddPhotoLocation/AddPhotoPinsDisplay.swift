@@ -40,19 +40,22 @@ class AddPhotoPinsDisplay {
     private var canvasDelegateId: UUID?
 
     /// - Parameters:
-    ///   - canvasContainer:    handler will add pins to this canvas
+    ///   - canvas:             handler will add pins for this canvas
+    ///   - canvasContainer:    handler will add pins to this canvas view
     ///   - image:              image to be displayed on the new photo pin
-    init(canvasContainer: CanvasContainerViewController, image: UIImage) {
+    init(canvas: PDFCanvas, canvasContainer: CanvasContainerViewController, image: UIImage) {
         self.canvasContainer = canvasContainer
         canvasVC = canvasContainer.pdfCanvasViewController
         self.image = image
         geometriesPinsDisplay = DebugSettings().nativeViewsForPins
             ? GeometriesViewAnnotationPinsDisplay(
+                canvas: canvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: false,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoPinDisplayOptionsProvider
             )
             : GeometriesAnnotationPinsDisplay(
+                canvas: canvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: false,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoPinDisplayOptionsProvider

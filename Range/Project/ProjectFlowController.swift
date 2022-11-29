@@ -125,15 +125,17 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     private func createGeometriesPinsDisplay(useNativeViews: Bool) {
         pinsDisplay = useNativeViews
             ? GeometriesViewAnnotationPinsDisplay(
+                canvas: model.currentCanvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: true,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
             )
-            : GeometriesAnnotationPinsDisplay(canvasViewController:
-                canvasContainer.pdfCanvasViewController,
+            : GeometriesAnnotationPinsDisplay(
+                canvas: model.currentCanvas,
+                canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: true,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions
-                    .regularPinDisplayOptionsProvider)
+                geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
+            )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
             if let geometryId = pinPoint?.id {
                 // minimize the action card when showing collab

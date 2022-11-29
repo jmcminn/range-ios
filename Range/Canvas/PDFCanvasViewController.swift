@@ -61,7 +61,7 @@ class PDFCanvasViewController: UIViewController {
     private var currentCameraChangeReason: CanvasCameraChangeReason?
 
     unowned let model: ProjectModel
-    let pdfCanvas: PDFCanvas
+    private let pdfCanvas: PDFCanvas
     private let pdfPage: PDFPage
 
     let zoomConverter: MapboxZoomConverter

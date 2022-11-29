@@ -4,10 +4,12 @@ import MapboxMaps
 /// Interface for classes implementing Geometries pins display
 protocol GeometriesPinsDisplay: AnyObject {
     /// - Parameters:
-    ///   - canvasViewController:              will add pins to this canvas
+    ///   - canvas:                            will add pins for this canvas
+    ///   - canvasViewController:              will add pins to this canvas view
     ///   - deselectOnCanvasTap:               should the display deselect the currently selected pin if user taps on the canvas outside of any pin
     ///   - geometryPinDisplayOptionsProvider: the function providing pin display options given geometry and selection state
-    init(canvasViewController: PDFCanvasViewController,
+    init(canvas: PDFCanvas,
+         canvasViewController: PDFCanvasViewController,
          deselectOnCanvasTap: Bool,
          geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider)
 

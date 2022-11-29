@@ -430,7 +430,7 @@ class AddPhotoFlowController {
                 tags: tagsViewModel.selectedTags,
                 description: photoDescription,
                 at: canvasContainer.annotationsMapView.cameraState.center,
-                in: canvasContainer.pdfCanvasViewController.pdfCanvas,
+                in: model.currentCanvas,
                 withGeometryId: geometryId
             ))
             UserDefaults.lastPhotoPinId = geometryId
@@ -498,6 +498,7 @@ extension AddPhotoFlowController {
     /// Starts the pin handler that adds the pins to the canvas and allows for the selection
     private func showPins() {
         pinsDisplay = AddPhotoPinsDisplay(
+            canvas: model.currentCanvas,
             canvasContainer: canvasContainer,
             image: photosToAddViewModel.photos.first!.thumbnail
         )

@@ -10,6 +10,7 @@ import UIKit
 /// #Reference
 /// [Mapbox view annotations](https://docs.mapbox.com/ios/maps/guides/annotations/view-annotations/)
 class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
+    private let canvas: PDFCanvas
     unowned let canvasVC: PDFCanvasViewController
     private let deselectOnCanvasTap: Bool
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
@@ -33,10 +34,12 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
     /// - Parameters:
     ///   - canvasViewController:    will add pins to this canvas
     required init(
+        canvas: PDFCanvas,
         canvasViewController: PDFCanvasViewController,
         deselectOnCanvasTap: Bool,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
+        self.canvas = canvas
         canvasVC = canvasViewController
         self.deselectOnCanvasTap = deselectOnCanvasTap
         self.geometryPinDisplayOptionsProvider = geometryPinDisplayOptionsProvider
@@ -102,7 +105,7 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
 extension GeometriesViewAnnotationPinsDisplay {
     /// observe the geometries and reload pins when the change is observed
     private func loadAndDisplayPins(onInitialLoad: (() -> Void)?) {
-        geometriesNotificationToken = canvasVC.pdfCanvas.geometries
+        geometriesNotificationToken = canvas.geometries
             .where { $0.placeholder == false &&
                 $0.annotationType == .photoMarker &&
                 // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
