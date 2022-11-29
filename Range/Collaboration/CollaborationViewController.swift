@@ -29,7 +29,6 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var moreButton: UIButton!
     var closeButton: UIButton!
     var nameField: UITextField!
-    var namePencilView: UIImageView!
 
     var detailsVC: CollaborationDetailsViewController!
     var feedVC: CollaborationFeedViewController!
@@ -129,17 +128,11 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         }
 
         setupNameField()
-        setupNamePencilView()
         containerView.addSubview(nameField)
-        containerView.addSubview(namePencilView)
         nameField.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
-            make.trailing.equalTo(namePencilView.snp.leading).offset(-4)
-            make.top.equalTo(badgeView.snp.bottom).offset(Constants.verticalSpacing)
-        }
-        namePencilView.snp.makeConstraints { make in
-            make.centerY.equalTo(nameField.snp.centerY)
             make.trailing.equalToSuperview().offset(-16).priority(.required)
+            make.top.equalTo(badgeView.snp.bottom).offset(Constants.verticalSpacing)
         }
 
         setupFeedVC()
@@ -221,7 +214,6 @@ extension CollaborationViewController {
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         nameField.text = name
-        namePencilView.isHidden = name.isEmpty
     }
 }
 
@@ -270,20 +262,6 @@ extension CollaborationViewController {
         nameField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         nameField.returnKeyType = .done
         nameField.delegate = self
-    }
-
-    private func setupNamePencilView() {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .bold)
-        let image = UIImage(systemName: "pencil", withConfiguration: imageConfig)
-        namePencilView = UIImageView(image: image)
-        namePencilView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        namePencilView.setContentHuggingPriority(.required, for: .horizontal)
-        namePencilView.isUserInteractionEnabled = true
-        namePencilView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(namePencilTapped)))
-    }
-
-    @objc private func namePencilTapped() {
-        nameField.becomeFirstResponder()
     }
 
     private func setupFeedVC() {
