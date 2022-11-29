@@ -61,8 +61,8 @@ class PDFCanvasViewController: UIViewController {
     private var currentCameraChangeReason: CanvasCameraChangeReason?
 
     unowned let model: ProjectModel
-    private let pdfCanvas: PDFCanvas
-    private let pdfPage: PDFPage
+    private var pdfCanvas: PDFCanvas
+    private var pdfPage: PDFPage
 
     let zoomConverter: MapboxZoomConverter
 
@@ -77,6 +77,9 @@ class PDFCanvasViewController: UIViewController {
 
     /// dictionary of delegates stored per id
     private var delegates: [UUID: CanvasViewControllerDelegate] = [:]
+
+    /// To observed changes in model.currentCanvas
+    private var canvasObservation: NSKeyValueObservation?
 
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
@@ -98,11 +101,24 @@ class PDFCanvasViewController: UIViewController {
         pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: pdfCanvas, projectId: model.projectId)
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
+
+        canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
+            guard let self = self else { return }
+            // update the pdfCanvas
+            self.pdfCanvas = self.model.currentCanvas
+            Task { @MainActor in
+                await self.reloadPDFScrollView()
+            }
+        }
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        canvasObservation?.invalidate()
     }
 
     /// Add delegate and returns id so it can be later removed
@@ -136,9 +152,28 @@ class PDFCanvasViewController: UIViewController {
 //        setupDebugViews()
     }
 
+    /// This is called when canvas changes after loading the initial canvas.
+    /// We keep the zoom/offset, so there's no recalculation of initial zoom.
+    @MainActor
+    private func reloadPDFScrollView() async {
+        // first hide the previous pdf view
+        pdfScrollView.removeFromSuperview()
+        do {
+            // load the page
+            pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: pdfCanvas, projectId: model.projectId)
+            // build new view
+            setupPDFScrollView()
+            // sync with current zoom/offset from mapbox
+            syncPDFViewWithAnnotationViews()
+        } catch {
+            Logger.model.error("load canvas error: \(error.localizedDescription, privacy: .public)")
+            ToastWindow.shared.showError(text: "Failed to load the canvas")
+        }
+    }
+
     private func setupPDFScrollView() {
         pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
-        view.addSubview(pdfScrollView)
+        view.insertSubview(pdfScrollView, at: 0)
         pdfScrollView.scrollsToTop = false // we don't want scroll to top on top bar touch
         pdfScrollView.showsVerticalScrollIndicator = false
         pdfScrollView.showsHorizontalScrollIndicator = false
