@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 /// Configuration for card presentation, modal or non modal.
 /// Some properties are valid only for a particular presentation style - see the properties documentation.
@@ -20,6 +21,13 @@ struct CardConfiguration {
     ///
     /// - Warning: only for non-modal card presentation
     var showOverlay: Bool = false
+
+    /// If any view is provided here it'll `layoutIfNeeded` when animating the card height.
+    /// This might be needed for views that are layed out in relation to the card and need to animate the position when the card is being
+    /// dragged or animated to new height.
+    ///
+    /// - Warning: only for non-modal card presentation
+    weak var linkedViewToLayout: UIView?
 
     /// Show the blur over the presented card in the bottom safe area, `false` by default
     ///

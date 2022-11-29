@@ -124,6 +124,9 @@ extension CardDragging {
             let animator = animator(withVelocity: velocity)
             animator.addAnimations {
                 self.cardHeight = height
+                if let linkedViewToLayout = self.config.linkedViewToLayout {
+                    linkedViewToLayout.layoutIfNeeded()
+                }
             }
             animator.addCompletion { _ in
                 completion?()
