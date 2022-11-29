@@ -4,12 +4,14 @@ import UIKit
 /// Round button with an image that changes its shadow when pressed
 class RoundShadowButton: UIControl {
     private let style: Style
+    private let size: CGFloat
     enum Style {
         case black, blue
     }
 
     init(image: UIImage, style: Style = .black, size: CGFloat = 48) {
         self.style = style
+        self.size = size
         super.init(frame: .zero)
 
         backgroundColor = style == .black
@@ -20,10 +22,6 @@ class RoundShadowButton: UIControl {
 
         setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
         isHighlighted = false
-
-        snp.makeConstraints { make in
-            make.width.height.equalTo(size).priority(.required)
-        }
 
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .subheadline)
             .applying(UIImage.SymbolConfiguration(weight: style == .black ? .regular : .bold))
@@ -60,5 +58,9 @@ class RoundShadowButton: UIControl {
         didSet {
             layer.shadowOpacity = isHighlighted ? 0.4 : 0.1
         }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: size, height: size)
     }
 }
