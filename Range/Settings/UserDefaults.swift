@@ -5,6 +5,8 @@ extension UserDefaults {
     enum UserDefaultsConstants: String {
         /// last project open by the user (to automatically reopen when starting the app)
         case lastOpenProjectId
+        /// the prefix to be used for storing last open canvas for a project, will be followed by a project id
+        case lastOpenCanvasIdPrefix = "lastOpenCanvasId_"
         /// last select geometry id for a photo to use it as a default for the next photo
         case lastPhotoPinId
         /// last user's choice if annotation (tags/description) is enabled in the photo flow, `false` by default
@@ -28,6 +30,25 @@ extension UserDefaults {
                 UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastOpenProjectId.rawValue)
             }
         }
+    }
+
+    /// construct key used for storing last open canvas id for given project
+    private static func lastOpenCanvasIdKey(forProjectId projectId: String) -> String {
+        UserDefaultsConstants.lastOpenCanvasIdPrefix.rawValue + projectId
+    }
+
+    /// Returns the last open canvas id for given project or nil if nothing yet
+    static func lastOpenCanvasId(forProjectId projectId: String) -> String? {
+        guard let canvasId = UserDefaults.standard
+            .object(forKey: lastOpenCanvasIdKey(forProjectId: projectId)) as? String
+        else {
+            return nil
+        }
+        return canvasId
+    }
+
+    static func setLastOpenCanvasId(_ canvasId: String, forProjectId projectId: String) {
+        UserDefaults.standard.set(canvasId, forKey: lastOpenCanvasIdKey(forProjectId: projectId))
     }
 
     /// stores the last select geometry id for a photo to use it as a default for the next photo

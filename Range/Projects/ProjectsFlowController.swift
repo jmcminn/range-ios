@@ -41,6 +41,10 @@ class ProjectsFlowController: UINavigationController {
                 setViewControllers([buildProjectsViewController(), projectFC!], animated: false)
                 setNavigationBarHidden(true, animated: false)
                 UserDefaults.lastOpenProjectId = lastOpenProjectId
+                UserDefaults.setLastOpenCanvasId(
+                    projectFC!.model.currentCanvas.id,
+                    forProjectId: projectFC!.model.projectId
+                )
             } catch {
                 Logger.model
                     .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
@@ -97,6 +101,10 @@ class ProjectsFlowController: UINavigationController {
                     // a custom navigation bar anyway
                     self.setNavigationBarHidden(true, animated: true)
                     UserDefaults.lastOpenProjectId = demoProject.id
+                    UserDefaults.setLastOpenCanvasId(
+                        self.projectFC!.model.currentCanvas.id,
+                        forProjectId: self.projectFC!.model.projectId
+                    )
                 }
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
@@ -111,7 +119,8 @@ class ProjectsFlowController: UINavigationController {
     private func buildProjectFlowController(_ demoProject: DemoProject) async throws -> ProjectFlowController {
         let projectFC = try await ProjectFlowController(
             userId: userId,
-            demoProject: demoProject,
+            projectId: demoProject.id,
+            canvasId: UserDefaults.lastOpenCanvasId(forProjectId: demoProject.id),
             imageCaches: imageCaches,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel

@@ -67,10 +67,11 @@ class ProjectModel: NSObject {
     private(set) var currentUser: Participant!
 
     /// The current canvas for the project, @objc dynamic so it can be observed
-    @objc dynamic var currentCanvas: PDFCanvas!
-
-    /// temporarily store the canvas id to show (until canvas loading/selection is implemented)
-    var demoCanvasId: String!
+    @objc dynamic var currentCanvas: PDFCanvas! {
+        didSet {
+            UserDefaults.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
+        }
+    }
 
     /// Background serial queue to perform write operations.
     let writeQueue = DispatchQueue(label: "model-write-queue")
@@ -127,7 +128,10 @@ class ProjectModel: NSObject {
     }
 
     /// Initial method to be called on the model after initiating it. It checks that all required project data is available and fails otherwise.
-    func loadProject(initialCanvasId: String) throws {
+    ///
+    /// - Parameters:
+    ///     - initialCanvasId: id of the canvas to set as currentCanvas, if not provided then load the 1st canvas in a project
+    func loadProject(initialCanvasId: String?) throws {
         guard let summary = getProjectSummary() else {
             throw ModelError.summaryNotFound
         }
@@ -136,10 +140,17 @@ class ProjectModel: NSObject {
             throw ModelError.currentUserNotFound
         }
         currentUser = user
-        guard let initialCanvas = mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: initialCanvasId) else {
-            throw ModelError.canvasNotFound
+        if let initialCanvasId = initialCanvasId {
+            guard let initialCanvas = mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: initialCanvasId) else {
+                throw ModelError.canvasNotFound
+            }
+            currentCanvas = initialCanvas
+        } else {
+            guard let firstCanvas = mainRealm.objects(PDFCanvas.self).sorted(by: \PDFCanvas.pageNumber).first else {
+                throw ModelError.canvasNotFound
+            }
+            currentCanvas = firstCanvas
         }
-        currentCanvas = initialCanvas
     }
 
     /// Loads the project summary for this project.

@@ -46,9 +46,11 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     /// - Parameters:
     ///     - userId: range id of the logged in user
     ///     - projectId: id of the project
+    ///     - canvasId: id of the canvas, if not provided then load the 1st canvas in a project
     init(
         userId: String,
-        demoProject: DemoProject,
+        projectId: String,
+        canvasId: String?,
         imageCaches: ImageCaches,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel
@@ -56,18 +58,27 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
         self.imageCaches = imageCaches
         model = try ProjectModel(
             userId: userId,
-            projectId: demoProject.id,
+            projectId: projectId,
             imageCaches: imageCaches,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )
-        model.demoCanvasId = demoProject.canvasId
         try await model.start()
 
         modelFirestoreSync = ProjectModelFirestoreSync(model: model)
         await modelFirestoreSync.start()
 
-        try model.loadProject(initialCanvasId: demoProject.canvasId)
+        do {
+            try model.loadProject(initialCanvasId: canvasId)
+        } catch {
+            if canvasId != nil {
+                // failed to load some canvas, try the default one
+                Logger.model.info("failed to load canvas \(canvasId) for project \(projectId). Try the default canvas.")
+                try model.loadProject(initialCanvasId: nil)
+            } else {
+                throw error
+            }
+        }
 
         canvasContainer = try await CanvasContainerViewController(model: model)
         collaborationFlow = CollaborationFlowController(
