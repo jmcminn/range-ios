@@ -32,6 +32,9 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     var pinsDisplay: GeometriesPinsDisplay?
     var canvasSelectorButton: RoundShadowButton!
 
+    /// To observed changes in model.currentCanvas
+    private var canvasObservation: NSKeyValueObservation?
+
     var addPhotoFlow: AddPhotoFlowController?
 
     var started = false
@@ -110,15 +113,29 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
         showDefaultCanvasUI(animated: false)
         collaborationFlow.start()
         observeDebugSettings()
+
+        canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
+            guard let self = self else { return }
+            self.reloadGeometriesPinsDisplay(useNativeViews: self.debugSettings.nativeViewsForPins)
+        }
+    }
+
+    /// Reload the geometries pins display.
+    /// It stops the current pins display, creates a new one and starts it if the previous one was started (maybe it was temporarily stopped,
+    /// then we need the new one to be stopped too)
+    private func reloadGeometriesPinsDisplay(useNativeViews: Bool) {
+        let start = pinsDisplay?.started ?? false
+        pinsDisplay?.stop()
+        createGeometriesPinsDisplay(useNativeViews: useNativeViews)
+        if start {
+            pinsDisplay?.start(onInitialLoad: nil)
+        }
     }
 
     private func observeDebugSettings() {
         debugSettingsNativeViewsForPinsSubscriber = debugSettings.$nativeViewsForPins
             .sink { [weak self] useNativeViews in
-                guard let self = self else { return }
-                self.pinsDisplay?.stop()
-                self.createGeometriesPinsDisplay(useNativeViews: useNativeViews)
-                self.pinsDisplay?.start(onInitialLoad: nil)
+                self?.reloadGeometriesPinsDisplay(useNativeViews: useNativeViews)
             }
     }
 
@@ -154,6 +171,8 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
         remove(childController: canvasContainer)
         debugSettingsNativeViewsForPinsSubscriber?.cancel()
         debugSettingsNativeViewsForPinsSubscriber = nil
+        canvasObservation?.invalidate()
+        canvasObservation = nil
     }
 
     /// shows the view controller covering the top of of the screen
@@ -320,8 +339,10 @@ extension ProjectFlowController {
             title: String(localized: "Source Selector"),
             canvases: canvases,
             selectedCanvas: model.currentCanvas,
-            onCanvasSelected: { _ in
-                print("TODO: 642 canvas selected")
+            onCanvasSelected: { [weak self] canvas in
+                guard let self = self else { return }
+                guard self.model.currentCanvas != canvas else { return }
+                self.model.currentCanvas = canvas
             }
         )
         .installAndShowCard(in: canvasContainer)

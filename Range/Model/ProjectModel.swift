@@ -45,7 +45,7 @@ extension ModelError: LocalizedError {
 
 /// Responsible for configuring the Realm for given project (id).
 /// Contains all the business methods for project (like adding photo, etc.)
-class ProjectModel {
+class ProjectModel: NSObject {
     /// The Range id of the current logged in user
     let userId: String
     /// The UUID for the project
@@ -66,8 +66,8 @@ class ProjectModel {
     /// Participant object for current user (user with id = `userId`)
     private(set) var currentUser: Participant!
 
-    // TODO: 638
-    var currentCanvas: PDFCanvas!
+    /// The current canvas for the project, @objc dynamic so it can be observed
+    @objc dynamic var currentCanvas: PDFCanvas!
 
     /// temporarily store the canvas id to show (until canvas loading/selection is implemented)
     var demoCanvasId: String!

@@ -31,6 +31,9 @@ protocol GeometriesPinsDisplay: AnyObject {
     ///     - completion: callback to be called with the result
     func findPin(closestToPoint point: CGPoint, searchSquareSize: CGFloat, completion: @escaping (PinPoint?) -> Void)
 
+    /// Whether the pins display is currently started or not (not started yet or stopped)
+    var started: Bool { get }
+
     /// Currently selected pin
     var selectedPin: PinPoint? { get }
 

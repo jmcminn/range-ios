@@ -18,6 +18,9 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
     /// Token for notifications about changes in the canvas geometries
     private var geometriesNotificationToken: NotificationToken?
 
+    /// Whether the pins display is currently started or not (not started yet or stopped)
+    private(set) var started: Bool = false
+
     /// selected pin point or nil if nothing is selected
     private(set) var selectedPin: PinPoint?
 
@@ -46,11 +49,13 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
     }
 
     func start(onInitialLoad: (() -> Void)? = nil) {
+        started = true
         loadAndDisplayPins(onInitialLoad: onInitialLoad)
         canvasDelegateId = canvasVC.addDelegate(self)
     }
 
     func stop() {
+        started = false
         if let id = canvasDelegateId {
             canvasVC.removeDelegate(id: id)
         }

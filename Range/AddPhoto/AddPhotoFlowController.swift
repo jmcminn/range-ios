@@ -24,6 +24,9 @@ class AddPhotoFlowController {
     /// id of registered delegate
     var canvasDelegateId: UUID?
 
+    /// To observed changes in model.currentCanvas
+    private var canvasObservation: NSKeyValueObservation?
+
     /// selected photos to add
     let photosToAddViewModel: PhotosToAddViewModel
     /// tags from the details step
@@ -461,6 +464,8 @@ extension AddPhotoFlowController {
         pinsDisplay?.stop()
         panAndZoomIndicatorView?.removeFromSuperview()
         pinsDisplay = nil
+        canvasObservation?.invalidate()
+        canvasObservation = nil
     }
 
     /// shows the view controller covering the top of of the screen
@@ -495,8 +500,7 @@ extension AddPhotoFlowController {
         }
     }
 
-    /// Starts the pin handler that adds the pins to the canvas and allows for the selection
-    private func showPins() {
+    private func createAddPhotoPinsDisplay() {
         pinsDisplay = AddPhotoPinsDisplay(
             canvas: model.currentCanvas,
             canvasContainer: canvasContainer,
@@ -509,7 +513,28 @@ extension AddPhotoFlowController {
                 self?.hidePhotosPreview(animated: true)
             }
         }
+    }
+
+    /// Starts the pin handler that adds the pins to the canvas and allows for the selection
+    private func showPins() {
+        createAddPhotoPinsDisplay()
         pinsDisplay?.start()
+        canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
+            self?.reloadGeometriesPinsDisplay()
+            self?.hidePhotosPreview(animated: true)
+        }
+    }
+
+    /// Reload the geometries pins display.
+    /// It stops the current pins display, creates a new one and starts it if the previous one was started (maybe it was temporarily stopped,
+    /// then we need the new one to be stopped too)
+    private func reloadGeometriesPinsDisplay() {
+        let start = pinsDisplay?.geometriesPinsDisplay.started ?? false
+        pinsDisplay?.stop()
+        createAddPhotoPinsDisplay()
+        if start {
+            pinsDisplay?.start()
+        }
     }
 
     /// Presents a card with cancel/confirm and registers callbacks for user actions
