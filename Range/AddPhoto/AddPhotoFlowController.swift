@@ -19,6 +19,7 @@ class AddPhotoFlowController {
     var confirmationCardVC: AddPhotoConfirmationViewController?
     var photosPreviewCardVC: PhotosPreviewViewController?
     var panAndZoomIndicatorView: ToastView?
+    var canvasSelectorButton: RoundShadowButton?
 
     /// id of registered delegate
     var canvasDelegateId: UUID?
@@ -280,6 +281,7 @@ class AddPhotoFlowController {
         showTopViewController()
         showConfirmationCard()
         showPanAndZoomIndicatorView()
+        showCanvasSelectorButton()
         showPins()
     }
 
@@ -538,6 +540,23 @@ extension AddPhotoFlowController {
         }
     }
 
+    private func showCanvasSelectorButton() {
+        canvasSelectorButton = RoundShadowButton(image: UIImage(systemName: "square.3.layers.3d") ?? UIImage())
+        canvasSelectorButton!.addTarget(self, action: #selector(canvasSelectorButtonTapped), for: .touchUpInside)
+        canvasContainer.controls.addSubview(canvasSelectorButton!)
+        canvasSelectorButton!.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
+        }
+    }
+
+    @objc private func canvasSelectorButtonTapped() {
+        // send from canvasSelectorButton and not self, as AddPhotoFlowController is not in the
+        // responder chain (it's not UIView or UIViewController)
+        UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
+                                        to: nil, from: canvasSelectorButton, for: nil)
+    }
+
     /// shows the photos for given geometryId
     private func showPhotosPreview(forGeometry geometryId: String, animated: Bool) {
         guard let confirmationCardVC = confirmationCardVC else { return }
@@ -571,17 +590,31 @@ extension AddPhotoFlowController {
                 make.bottom.equalTo(photosPreviewVC.view.snp.top).offset(-12)
             }
         }
+        if let canvasSelectorButton = canvasSelectorButton {
+            // anchor to photos preview
+            canvasSelectorButton.snp.remakeConstraints { make in
+                make.trailing.equalToSuperview().inset(12)
+                make.bottom.equalTo(photosPreviewVC.view.snp.top).offset(-12)
+            }
+        }
     }
 
     /// Hide the currently shown collaboration window
     private func hidePhotosPreview(animated: Bool) {
-        if let panAndZoomIndicatorView = panAndZoomIndicatorView,
-           let confirmationCardVC = confirmationCardVC
-        {
-            // anchor back to confirmation
-            panAndZoomIndicatorView.snp.remakeConstraints { make in
-                make.leading.equalToSuperview().offset(12)
-                make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
+        if let confirmationCardVC = confirmationCardVC {
+            if let panAndZoomIndicatorView = panAndZoomIndicatorView {
+                // anchor back to confirmation
+                panAndZoomIndicatorView.snp.remakeConstraints { make in
+                    make.leading.equalToSuperview().offset(12)
+                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
+                }
+            }
+            if let canvasSelectorButton = canvasSelectorButton {
+                // anchor to photos preview
+                canvasSelectorButton.snp.remakeConstraints { make in
+                    make.trailing.equalToSuperview().inset(12)
+                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
+                }
             }
         }
         confirmationCardVC?.showDarkBorder = false

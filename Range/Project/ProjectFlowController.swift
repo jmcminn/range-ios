@@ -4,9 +4,17 @@ import SnapKit
 import SwiftUI
 import UIKit
 
+/// Protocol defining actions that project flow can perform.
+/// Required by the views sending actions, so they can use selectors for these functions.
+/// See https://swiftrocks.com/understanding-the-ios-responder-chain.html for more info
+@objc protocol ProjectFlowActions: AnyObject {
+    /// Select and change the current canvas for project
+    func selectCanvasAction()
+}
+
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
-final class ProjectFlowController: UIViewController {
+final class ProjectFlowController: UIViewController, ProjectFlowActions {
     unowned let imageCaches: ImageCaches
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
@@ -20,9 +28,9 @@ final class ProjectFlowController: UIViewController {
 
     var topViewController: ProjectTopViewController?
     lazy var bottomBlurView = setupBottomBlur()
-    lazy var actionCardVC = installActionCardVC()
+    lazy var actionCardVC = setupActionCardVC()
     var pinsDisplay: GeometriesPinsDisplay?
-    var debugSettingsButton: RoundShadowButton!
+    var canvasSelectorButton: RoundShadowButton!
 
     var addPhotoFlow: AddPhotoFlowController?
 
@@ -96,6 +104,9 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.layoutIfNeeded()
         showTopViewController(animated: false)
         bottomBlurView.isHidden = false
+
+        setupCanvasSelectorButton()
+
         showDefaultCanvasUI(animated: false)
         collaborationFlow.start()
         observeDebugSettings()
@@ -125,6 +136,8 @@ final class ProjectFlowController: UIViewController {
                     .regularPinDisplayOptionsProvider)
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
             if let geometryId = pinPoint?.id {
+                // minimize the action card when showing collab
+                self?.actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
                 self?.collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
             } else {
                 self?.collaborationFlow.hideCollaborationWindow(animated: true)
@@ -185,34 +198,25 @@ final class ProjectFlowController: UIViewController {
     /// Show the default UI elements when viewing the canvas
     fileprivate func showDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.showCard(animated: animated)
-        showDebugSettingsButton()
+        canvasSelectorButton.isHidden = false
         pinsDisplay?.start(onInitialLoad: nil)
     }
 
     /// Hide the default UI elements when viewing the canvas
     fileprivate func hideDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.hideCard(animated: animated)
-        hideDebugSettingsButton()
+        canvasSelectorButton.isHidden = true
         pinsDisplay?.stop()
     }
 
-    // TODO: this should be hidden in the production version
-    /// Shows a button that shows the debug settings view
-    fileprivate func showDebugSettingsButton() {
-        if debugSettingsButton == nil {
-            debugSettingsButton = RoundShadowButton(image: UIImage(systemName: "gearshape") ?? UIImage())
-            canvasContainer.controls.addSubview(debugSettingsButton)
-            debugSettingsButton.snp.makeConstraints { make in
-                make.trailing.equalToSuperview().offset(-10)
-                make.centerY.equalToSuperview()
-            }
-            debugSettingsButton.addTarget(self, action: #selector(showDebugSettingsAction), for: .touchUpInside)
+    fileprivate func setupCanvasSelectorButton() {
+        canvasSelectorButton = RoundShadowButton(image: UIImage(systemName: "square.3.layers.3d") ?? UIImage())
+        canvasSelectorButton.addTarget(self, action: #selector(selectCanvasAction), for: .touchUpInside)
+        canvasContainer.controls.addSubview(canvasSelectorButton)
+        canvasSelectorButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(actionCardVC.view.snp.top).offset(-12)
         }
-        debugSettingsButton.isHidden = false
-    }
-
-    fileprivate func hideDebugSettingsButton() {
-        debugSettingsButton.isHidden = true
     }
 
     /// Shows view controller for debug settings
@@ -235,7 +239,8 @@ final class ProjectFlowController: UIViewController {
         return blurView
     }
 
-    fileprivate func installActionCardVC() -> ProjectActionCardViewController {
+    fileprivate func setupActionCardVC() -> ProjectActionCardViewController {
+        // TODO: this should be hidden in the production version
         let additionalCardActions = [
             ActionItem(
                 title: "Toggle Light/Dark mode",
@@ -246,6 +251,13 @@ final class ProjectFlowController: UIViewController {
                         .userInterfaceStyle == .dark ? .light : .dark
                 }
             ),
+            ActionItem(
+                title: "Show dev settings",
+                imageName: "gearshape",
+                handler: { [weak self] in
+                    self?.showDebugSettingsAction()
+                }
+            ),
         ]
         let vc = ProjectActionCardViewController(actions: additionalCardActions)
         vc.onCamera = { [weak self] in
@@ -254,7 +266,10 @@ final class ProjectFlowController: UIViewController {
         vc.onAddMarker = { [weak self] in
             self?.addMarker()
         }
-        canvasContainer.installCard(cardViewController: vc, inView: canvasContainer.controls)
+
+        canvasContainer.installCard(cardViewController: vc,
+                                    inView: canvasContainer.controls,
+                                    cardConfig: CardConfiguration(linkedViewToLayout: canvasContainer.controls))
         return vc
     }
 }
@@ -295,5 +310,13 @@ extension ProjectFlowController {
                 ),
             ]
         ).installAndShowCard(in: canvasContainer)
+    }
+}
+
+// MARK: - project flow actions
+
+extension ProjectFlowController {
+    func selectCanvasAction() {
+        print("TODO: 639 select canvas")
     }
 }
