@@ -23,6 +23,14 @@ class PDFCanvas: Object, WithPlaceholder {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
+    /// The value to display in the UI
+    var displayName: String {
+        var components: [String] = []
+        if let sheetNumber = sheetNumber, !sheetNumber.isEmpty { components.append(sheetNumber) }
+        if !name.isEmpty { components.append(name) }
+        return components.joined(separator: " • ")
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

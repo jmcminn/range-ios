@@ -311,12 +311,17 @@ extension ProjectFlowController {
             ]
         ).installAndShowCard(in: canvasContainer)
     }
-}
 
-// MARK: - project flow actions
-
-extension ProjectFlowController {
     func selectCanvasAction() {
-        print("TODO: 639 select canvas")
+        let canvases = [PDFCanvas](model.mainRealm.objects(PDFCanvas.self).sorted(by: \PDFCanvas.pageNumber))
+        CanvasSelectorCardViewController(
+            title: String(localized: "Source Selector"),
+            canvases: canvases,
+            selectedCanvas: model.currentCanvas,
+            onCanvasSelected: { _ in
+                print("TODO: 642 canvas selected")
+            }
+        )
+        .installAndShowCard(in: canvasContainer)
     }
 }
