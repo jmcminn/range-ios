@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A05312429375BEC00738BA3 /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05312329375BEC00738BA3 /* Throttler.swift */; };
 		0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */; };
 		0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */; };
 		0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */; };
@@ -305,6 +306,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A05312329375BEC00738BA3 /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDragging.swift; sourceTree = "<group>"; };
 		0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Slider.swift"; sourceTree = "<group>"; };
 		0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoConfirmationViewController.swift; sourceTree = "<group>"; };
@@ -625,6 +627,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A05312229375BDF00738BA3 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				0A05312329375BEC00738BA3 /* Throttler.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		0A07D50D2807095400B6F9A2 /* Modal */ = {
 			isa = PBXGroup;
 			children = (
@@ -1074,6 +1084,7 @@
 				0A6DB6A1292E08560017D511 /* TextCard */,
 				0A374DD6292418070036C184 /* Toast */,
 				0A797F70292BDA6D00D63567 /* UserPicker */,
+				0A05312229375BDF00738BA3 /* Utils */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
@@ -1621,6 +1632,7 @@
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirebaseCollaboration.swift in Sources */,
 				0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */,
+				0A05312429375BEC00738BA3 /* Throttler.swift in Sources */,
 				0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
 				0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */,

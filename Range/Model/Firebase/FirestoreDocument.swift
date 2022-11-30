@@ -9,6 +9,7 @@ enum FirestoreDocumentType: String {
     case feature = "features"
     case geometry = "geometries"
     case participant = "participants"
+    case presence = "presences"
     case statusName = "statusNames"
     case tagName = "tagNames"
     case update = "updates"
@@ -32,6 +33,7 @@ struct FirestoreDocument: Hashable, Equatable {
     static func feature(_ id: String) -> FirestoreDocument { .init(.feature, id) }
     static func geometry(_ id: String) -> FirestoreDocument { .init(.geometry, id) }
     static func participant(_ id: String) -> FirestoreDocument { .init(.participant, id) }
+    static func presence(_ id: String) -> FirestoreDocument { .init(.presence, id) }
     static func statusName(_ id: String) -> FirestoreDocument { .init(.statusName, id) }
     static func tagName(_ id: String) -> FirestoreDocument { .init(.tagName, id) }
     static func update(_ id: String) -> FirestoreDocument { .init(.update, id) }

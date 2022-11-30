@@ -321,7 +321,9 @@ class PDFCanvasViewController: UIViewController {
                 transition.center.toValue = cameraCenter
             }
             animator.addCompletion { [weak self] _ in
-                self?.programmaticAnimationInProgress = false
+                guard let self = self else { return }
+                self.delegates.values.forEach { $0.canvasCameraChanged(reason: .programmatic) }
+                self.programmaticAnimationInProgress = false
             }
             animator.startAnimation()
         }

@@ -35,6 +35,12 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     /// To observed changes in model.currentCanvas
     private var canvasObservation: NSKeyValueObservation?
 
+    /// id of registered canvas delegate
+    var canvasDelegateId: UUID?
+
+    /// throttle the presence reporting when canvas camera changes, report no more frequently than every 0.5 seconds
+    var reportPresenceThrottler = Throttler(throttleTime: 0.5)
+
     var addPhotoFlow: AddPhotoFlowController?
 
     var started = false
@@ -129,6 +135,8 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
             guard let self = self else { return }
             self.reloadGeometriesPinsDisplay(useNativeViews: self.debugSettings.nativeViewsForPins)
         }
+
+        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
     }
 
     /// Reload the geometries pins display.
@@ -178,6 +186,9 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     func stop() {
         collaborationFlow.stop()
         pinsDisplay?.stop()
+        if let canvasDelegateId = canvasDelegateId {
+            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
+        }
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)
         debugSettingsNativeViewsForPinsSubscriber?.cancel()
@@ -306,9 +317,29 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     }
 }
 
+// MARK: - canvas delegate
+
+extension ProjectFlowController: CanvasViewControllerDelegate {
+    func canvasCameraChanged(reason: CanvasCameraChangeReason) {
+        if reason == .panEnd || reason == .zoomEnd || reason == .programmatic {
+            reportPresenceThrottler.throttle { [weak self] in
+                self?.reportPresence()
+            }
+        }
+    }
+
+    func canvasTapRecognized(at _: CGPoint) {}
+}
+
 // MARK: - actions
 
 extension ProjectFlowController {
+    /// Reports the current canvas and position so it can be displayed on other devices
+    private func reportPresence() {
+        let coordinates = canvasContainer.annotationsMapView.cameraState.center
+        modelFirestoreSync.reportPresence(coordinates: coordinates)
+    }
+
     private func startAddPhotoFlow() {
         addPhotoFlow = AddPhotoFlowController(model: model, imageCaches: imageCaches, canvasContainer: canvasContainer)
         addPhotoFlow?.onStop = { [weak self] in

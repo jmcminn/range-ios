@@ -1,3 +1,4 @@
+import CoreLocation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 import Foundation
@@ -163,5 +164,30 @@ class ProjectModelFirestoreSync {
     func stop() {
         listeners.forEach { $0.remove() }
         listeners.removeAll()
+    }
+}
+
+// MARK: - presence reporting
+
+extension ProjectModelFirestoreSync {
+    /// This is the only function that stores data directly in the Firestore. All other updates are going through Pending Actions model but
+    /// presence does not make sense in offline mode
+    /// The presence is reported for current user and current canvas, the timestamp is server side.
+    func reportPresence(coordinates: CLLocationCoordinate2D) {
+        let canvasId = model.currentCanvas.id
+        let documentRef = collection(.presence).document(model.userId)
+        firestore.runTransaction { tx, _ in
+            let data = [
+                "canvas": canvasId,
+                "lastPresencePlace": [coordinates.longitude, coordinates.latitude],
+                "lastPresenceTimestamp": FieldValue.serverTimestamp(),
+            ]
+            tx.setData(data, forDocument: documentRef)
+            return true
+        } completion: { _, error in
+            if let error = error {
+                Logger.firestore.debug("report presence transaction failed: \(error.localizedDescription)")
+            }
+        }
     }
 }
