@@ -76,9 +76,16 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             make.trailing.equalTo(-16)
         }
 
-        actionSelectorVC = ActionSelectorViewController(
-            actions: [ActionItem(title: "All Media", imageName: "photo")] + actions
+        let allMediaAction = ActionItem(
+            title: String(localized: "All Media"),
+            imageName: "photo",
+            handler: { [weak self] in
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowActions.showMediaAction), to: nil, from: self, for: nil
+                )
+            }
         )
+        actionSelectorVC = ActionSelectorViewController(actions: [allMediaAction] + actions)
         add(childController: actionSelectorVC, toView: containerView)
         actionSelectorVC.view.snp.makeConstraints { make in
             make.top.equalTo(photoButton.snp.bottom)

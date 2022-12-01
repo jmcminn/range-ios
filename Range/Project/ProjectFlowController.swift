@@ -1,5 +1,7 @@
 import Combine
 import OSLog
+import Realm
+import RealmSwift
 import SnapKit
 import SwiftUI
 import UIKit
@@ -8,6 +10,8 @@ import UIKit
 /// Required by the views sending actions, so they can use selectors for these functions.
 /// See https://swiftrocks.com/understanding-the-ios-responder-chain.html for more info
 @objc protocol ProjectFlowActions: AnyObject {
+    /// show the Media card view controller with all project uploads
+    func showMediaAction()
     /// Select and change the current canvas for project
     func selectCanvasAction()
 }
@@ -385,6 +389,19 @@ extension ProjectFlowController {
                 guard let self = self else { return }
                 guard self.model.currentCanvas != canvas else { return }
                 self.model.currentCanvas = canvas
+            }
+        )
+        .installAndShowCard(in: canvasContainer)
+    }
+
+    func showMediaAction() {
+        MediaCardViewController(
+            projectModel: model,
+            imageCaches: imageCaches,
+            title: String(localized: "Media"),
+            uploads: model.mainRealm.objects(Upload.self).where
+                { $0.placeholder == false && $0.fileType == .image },
+            onUploadSelected: { _ in
             }
         )
         .installAndShowCard(in: canvasContainer)
