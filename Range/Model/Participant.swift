@@ -24,6 +24,12 @@ class Participant: Object, WithPlaceholder {
         return components.joined(separator: " ")
     }
 
+    var initials: String {
+        if let firstNameLetter = firstName.first { return String(firstNameLetter) }
+        if let lastNameLetter = lastName.first { return String(lastNameLetter) }
+        return ""
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

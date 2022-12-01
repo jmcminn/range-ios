@@ -36,6 +36,7 @@
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
+		0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935312938C1E2000E8BF8 /* AvatarView.swift */; };
 		0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */; };
 		0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */; };
 		0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */; };
@@ -334,6 +335,7 @@
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
+		0A1935312938C1E2000E8BF8 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationHeaderCoverViewController.swift; sourceTree = "<group>"; };
 		0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTopViewController.swift; sourceTree = "<group>"; };
 		0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFlowController.swift; sourceTree = "<group>"; };
@@ -760,6 +762,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		0A1935302938C1D6000E8BF8 /* Avatar */ = {
+			isa = PBXGroup;
+			children = (
+				0A1935312938C1E2000E8BF8 /* AvatarView.swift */,
+			);
+			path = Avatar;
+			sourceTree = "<group>";
+		};
 		0A22CF1A2930CD310084332B /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
@@ -1059,6 +1069,7 @@
 				0ABFD8BE28F48556008CDA74 /* ActionSelector */,
 				0A4995D62860C6A900E571FB /* AddPhoto */,
 				0A07D764281295B500B6F9A2 /* Auth */,
+				0A1935302938C1D6000E8BF8 /* Avatar */,
 				0A97232327FC507200D744F4 /* Camera */,
 				0A22CF1A2930CD310084332B /* Canvas */,
 				0A4DC78627F4953600712518 /* Card */,
@@ -1559,6 +1570,7 @@
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
 				0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */,
 				0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */,
+				0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */,
 				0AA42437291431470088E2B1 /* PendingActionsModelImpl.swift in Sources */,
 				0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */,
 				0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */,
