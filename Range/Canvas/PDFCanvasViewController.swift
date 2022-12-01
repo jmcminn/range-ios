@@ -178,8 +178,9 @@ class PDFCanvasViewController: UIViewController {
         pdfScrollView.showsVerticalScrollIndicator = false
         pdfScrollView.showsHorizontalScrollIndicator = false
         pdfScrollView.bouncesZoom = false
-        // just a small number, the zoom is controlled by the mapbox, so we don't need maximum
+        // just a small number and a big number, the zoom is controlled by the mapbox anyway.
         pdfScrollView.minimumZoomScale = 0.001
+        pdfScrollView.maximumZoomScale = 100_000
 
         // Just a big number to allow zooming out
         // TODO: add limit to geographical location the center may reach.
