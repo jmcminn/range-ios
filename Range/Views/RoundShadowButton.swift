@@ -5,18 +5,19 @@ import UIKit
 class RoundShadowButton: UIControl {
     private let style: Style
     private let size: CGFloat
+    ///
     enum Style {
-        case black, blue
+        case black // black button (not dependent on the light/dark mode)
+        case blue // blue button (not dependent on the light/dark mode)
     }
 
+    ///
     init(image: UIImage, style: Style = .black, size: CGFloat = 48) {
         self.style = style
         self.size = size
         super.init(frame: .zero)
 
-        backgroundColor = style == .black
-            ? .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-            : .Primary_Blue_04
+        backgroundColor = style == .black ? .Neutral_09 : .Primary_Blue_04
         layer.cornerRadius = size / 2.0
         layer.borderWidth = 1
 
@@ -26,9 +27,7 @@ class RoundShadowButton: UIControl {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .subheadline)
             .applying(UIImage.SymbolConfiguration(weight: style == .black ? .regular : .bold))
         let imageView = UIImageView(image: image.withConfiguration(imageConfig))
-        imageView.tintColor = style == .black
-            ? .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-            : .Neutral_01
+        imageView.tintColor = style == .black ? .Neutral_04 : .Neutral_01
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -49,7 +48,7 @@ class RoundShadowButton: UIControl {
     /// Update colors that do not automatically adjust when appearance changes
     private func updateColors() {
         layer.borderColor = style == .black
-            ? UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+            ? UIColor.Neutral_07.cgColor
             : UIColor.Primary_Blue_06.cgColor
     }
 
