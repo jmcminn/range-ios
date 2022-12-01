@@ -91,6 +91,33 @@ extension Date {
         }
     }
 
+    /// Returns the formatted date as defined in Figma for media header in media grid view
+    /// - Parameter timestamp: the date to format
+    /// - Parameter now: the current date can be customized - used in tests
+    /// - Parameter locale: the locale to be used for formatting, customized in tests
+    static func formatMediaHeader(_ date: Date, now: Date = Date.now,
+                                  locale: Locale = Locale.current) -> String
+    {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .none
+        dateFormatter.dateStyle = .full
+        dateFormatter.locale = locale
+        let dateString = dateFormatter.string(from: date)
+
+        var calendar = Calendar.current
+        calendar.locale = locale
+
+        if calendar.isDate(date, inSameDayAs: now) {
+            return "Today • " + dateString
+        } else if let yesterday = calendar.date(byAdding: .day, value: -1, to: now),
+                  calendar.isDate(date, inSameDayAs: yesterday)
+        {
+            return "Yesterday • " + dateString
+        } else {
+            return dateString
+        }
+    }
+
     static func dueDateFormat(_ date: Date, timeZone: TimeZone?) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none

@@ -29,6 +29,10 @@ final class DateFormattingTest: XCTestCase {
         Date.format3(_t(timestamp), now: _t(now), locale: locale)
     }
 
+    private func formatMediaHeader(_ timestamp: String, now: String) -> String {
+        Date.formatMediaHeader(_t(timestamp), now: _t(now), locale: locale)
+    }
+
     func testFormat1() throws {
         // today
         XCTAssertEqual(format1("2021-06-02 15:26", now: "2021-06-02 15:27"), "Today @3:26 PM (1 minute ago)")
@@ -76,5 +80,22 @@ final class DateFormattingTest: XCTestCase {
         // older
         XCTAssertEqual(format3("2020-12-31 23:59", now: "2021-06-02 15:27"), "on Dec 31, 2020 @11:59 PM")
         XCTAssertEqual(format3("2000-01-01 00:59", now: "2021-06-02 15:27"), "on Jan 01, 2000 @12:59 AM")
+    }
+
+    func testFormatMediaHeader() throws {
+        // today
+        XCTAssertEqual(
+            formatMediaHeader("2021-06-02 15:26", now: "2021-06-02 15:27"),
+            "Today • Wednesday, June 2, 2021"
+        )
+        // yesterday
+        XCTAssertEqual(
+            formatMediaHeader("2021-06-02 23:59", now: "2021-06-03 00:00"),
+            "Yesterday • Wednesday, June 2, 2021"
+        )
+        // other
+        XCTAssertEqual(formatMediaHeader("2021-05-31 15:40", now: "2021-06-02 15:27"), "Monday, May 31, 2021")
+        XCTAssertEqual(formatMediaHeader("2021-01-01 00:01", now: "2021-06-02 15:27"), "Friday, January 1, 2021")
+        XCTAssertEqual(formatMediaHeader("2000-01-01 00:59", now: "2021-06-02 15:27"), "Saturday, January 1, 2000")
     }
 }
