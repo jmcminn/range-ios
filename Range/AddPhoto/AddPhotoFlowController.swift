@@ -466,6 +466,7 @@ extension AddPhotoFlowController {
         pinsDisplay = nil
         canvasObservation?.invalidate()
         canvasObservation = nil
+        hideCanvasSelectorButton()
     }
 
     /// shows the view controller covering the top of of the screen
@@ -574,6 +575,11 @@ extension AddPhotoFlowController {
             make.trailing.equalToSuperview().inset(12)
             make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
         }
+    }
+
+    private func hideCanvasSelectorButton() {
+        canvasSelectorButton?.removeFromSuperview()
+        canvasSelectorButton = nil
     }
 
     @objc private func canvasSelectorButtonTapped() {
