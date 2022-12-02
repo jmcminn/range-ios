@@ -35,7 +35,7 @@ class ProjectModelTest: XCTestCase {
     func testLoadProject_noCurrentUser() throws {
         try realm.write {
             realm.add(ProjectSummary(id: model.projectId, name: "", center:
-                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
         }
         XCTAssertThrowsError(
             try model.loadProject(initialCanvasId: "canvas1")
@@ -47,7 +47,8 @@ class ProjectModelTest: XCTestCase {
     func testLoadProject_noCanvas() throws {
         try realm.write {
             realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
-                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil,
+                address: nil))
             realm.add(Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: ""))
         }
         XCTAssertThrowsError(
@@ -60,7 +61,7 @@ class ProjectModelTest: XCTestCase {
     func testLoadProject_successful() throws {
         try realm.write {
             realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
-                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
             realm.add(Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: ""))
             realm.add(
                 PDFCanvas(id: "canvas1", canvasCollectionId: "", name: "", pageNumber: 0, sheetNumber: nil,

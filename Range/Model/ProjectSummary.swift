@@ -8,6 +8,10 @@ class ProjectSummary: Object {
     @Persisted(primaryKey: true) var id: String
     /// Project name
     @Persisted var name: String
+    /// Project description
+    @Persisted var projectDescription: String?
+    /// Project address
+    @Persisted var address: String?
     /// Center geo location for the project
     @Persisted var center: CLLocationCoordinate2D
     /// project time zone
@@ -21,10 +25,12 @@ class ProjectSummary: Object {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, center: CLLocationCoordinate2D) {
+    init(id: String, name: String, center: CLLocationCoordinate2D, description: String?, address: String?) {
         super.init()
         self.id = id
         self.name = name
         self.center = center
+        projectDescription = description
+        self.address = address
     }
 }
