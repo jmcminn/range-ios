@@ -32,12 +32,10 @@ class ProjectsFlowController: UINavigationController {
         pendingActionsModel.start()
 
         // reopen last project
-        if let lastOpenProjectId = UserDefaults.lastOpenProjectId,
-           let lastOpenProject = projects.first(where: { $0.id == lastOpenProjectId })
-        {
+        if let lastOpenProjectId = UserDefaults.lastOpenProjectId {
             // try load the last open project
             do {
-                projectFC = try await buildProjectFlowController(lastOpenProject)
+                projectFC = try await buildProjectFlowController(projectId: lastOpenProjectId)
                 setViewControllers([buildProjectsViewController(), projectFC!], animated: false)
                 setNavigationBarHidden(true, animated: false)
                 UserDefaults.lastOpenProjectId = lastOpenProjectId
@@ -65,7 +63,7 @@ class ProjectsFlowController: UINavigationController {
     private func buildProjectsViewController() -> ActionSelectorViewController {
         let projectActions = projects.map { project in
             ActionItem(title: project.name) { [weak self] in
-                self?.loadAndPushProjectFlowController(project)
+                self?.loadAndPushProjectFlowController(projectId: project.id)
             }
         }
         let signOutAction = ActionItem(title: "Sign out", style: .destructive) { [weak self] in
@@ -75,7 +73,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
-    private func loadAndPushProjectFlowController(_ demoProject: DemoProject) {
+    private func loadAndPushProjectFlowController(projectId: String) {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
@@ -92,7 +90,7 @@ class ProjectsFlowController: UINavigationController {
                         activityView.removeFromSuperview()
                     }
                 }
-                self.projectFC = try await buildProjectFlowController(demoProject)
+                self.projectFC = try await buildProjectFlowController(projectId: projectId)
                 DispatchQueue.main.async {
                     self.pushViewController(self.projectFC!, animated: true)
                     // hide navigation bar when showing Project flow and show again on back.
@@ -100,7 +98,7 @@ class ProjectsFlowController: UINavigationController {
                     // some padding at the top ;) To be removed later as projects view will have
                     // a custom navigation bar anyway
                     self.setNavigationBarHidden(true, animated: true)
-                    UserDefaults.lastOpenProjectId = demoProject.id
+                    UserDefaults.lastOpenProjectId = projectId
                     UserDefaults.setLastOpenCanvasId(
                         self.projectFC!.model.currentCanvas.id,
                         forProjectId: self.projectFC!.model.projectId
@@ -116,11 +114,11 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Build and configure project flow controller
-    private func buildProjectFlowController(_ demoProject: DemoProject) async throws -> ProjectFlowController {
+    private func buildProjectFlowController(projectId: String) async throws -> ProjectFlowController {
         let projectFC = try await ProjectFlowController(
             userId: userId,
-            projectId: demoProject.id,
-            canvasId: UserDefaults.lastOpenCanvasId(forProjectId: demoProject.id),
+            projectId: projectId,
+            canvasId: UserDefaults.lastOpenCanvasId(forProjectId: projectId),
             imageCaches: imageCaches,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
