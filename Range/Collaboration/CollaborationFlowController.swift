@@ -441,8 +441,8 @@ extension CollaborationFlowController {
         }
         let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialTags)
         editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
-        editTagsVC!.onClose = { [weak self, weak object] in
-            guard let self = self, let object = object else { return }
+        editTagsVC!.onClose = { [weak self] in
+            guard let self = self else { return }
             self.updateTagsIfChanged(forObject: object)
         }
         installCard(

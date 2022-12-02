@@ -20,8 +20,11 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let leftTagsViewGradient = GradientView()
     let rightTagsViewGradient = GradientView()
 
+    /// Set when setting the Upload
+    private var uploadId: String?
+    /// Required to fetch the upload for actions triggering
+    private weak var model: ProjectModel?
     var imageDataProvider: ImageDataProvider?
-    weak var upload: Upload?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -143,17 +146,6 @@ class ImageUploadFeedItemCell: UITableViewCell {
         rightTagsViewGradient.gradientLayer.endPoint = CGPoint(x: 0, y: 0.5)
     }
 
-    @objc private func tagsTapped() {
-        guard let upload = upload else { return }
-        // send action to the responder chain with custom UploadEvent
-        UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.tagsSelectedAction(sender:event:)),
-            to: nil,
-            from: self,
-            for: FlowEvent(upload)
-        )
-    }
-
     override func traitCollectionDidChange(_: UITraitCollection?) {
         updateColors()
     }
@@ -173,19 +165,22 @@ class ImageUploadFeedItemCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
-        upload = nil
-        updateContent()
+        updateContent(upload: nil)
     }
 
-    func set(upload: Upload) {
-        self.upload = upload
-        updateContent()
+    /// Updates all the fields
+    /// Don't store the Upload as the object might be invalidated while the cell is displayed.
+    /// Store the upload id and model so the upload can be fetched if needed.
+    func set(upload: Upload, model: ProjectModel) {
+        uploadId = upload.id
+        self.model = model
+        updateContent(upload: upload)
         updateColors()
     }
 
     /// Called whenever an upload is set for the cell or updated
     /// Updates all the fields, loads the image and depending on the settings adjusts the uploadImageView constraints
-    private func updateContent() {
+    private func updateContent(upload: Upload?) {
         authorLabel.text = upload?.author?.displayName
         if let uploadDescription = upload?.uploadDescription, !uploadDescription.isEmpty {
             descriptionLabel.text = uploadDescription
@@ -229,8 +224,23 @@ class ImageUploadFeedItemCell: UITableViewCell {
         }
     }
 
+    @objc private func tagsTapped() {
+        guard let model = model,
+              let uploadId = uploadId,
+              let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
+        // send action to the responder chain with custom UploadEvent
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.tagsSelectedAction(sender:event:)),
+            to: nil,
+            from: self,
+            for: FlowEvent(upload)
+        )
+    }
+
     private func moreAction() {
-        guard let upload = upload else { return }
+        guard let model = model,
+              let uploadId = uploadId,
+              let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
         UIApplication.shared.sendAction(
             #selector(CollaborationFlowActions.moreAction),
             to: nil,

@@ -16,7 +16,11 @@ class CommentFeedItemCell: UITableViewCell {
     let commentTextLabel = LabelWithTextInsets()
     let completedLabel = LabelWithTextInsets()
 
-    private weak var comment: Comment?
+    /// Set when setting the comment
+    private var commentId: String?
+    private var isCompleted: Bool = false
+    /// Required to fetch the comment for actions triggering
+    private weak var model: ProjectModel?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -102,8 +106,7 @@ class CommentFeedItemCell: UITableViewCell {
         }
         completeButton.configurationUpdateHandler = { [unowned self] button in
             var config = button.configuration
-            let completed: Bool = comment?.completed ?? false
-            if completed {
+            if isCompleted {
                 config?.baseBackgroundColor = .Green_04
                 config?.background.strokeColor = .Green_04
             } else {
@@ -126,7 +129,8 @@ class CommentFeedItemCell: UITableViewCell {
     override func prepareForReuse() {
         commentTextLabel.attributedText = nil
         completedLabel.attributedText = nil
-        comment = nil
+        isCompleted = false
+        commentId = nil
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
@@ -134,8 +138,12 @@ class CommentFeedItemCell: UITableViewCell {
     }
 
     /// Updates all the fields
-    func set(comment: Comment) {
-        self.comment = comment
+    /// Don't store the Comment as the object might be invalidated while the cell is displayed.
+    /// Store the comment id and model so the comment can be fetched if needed.
+    func set(comment: Comment, model: ProjectModel) {
+        commentId = comment.id
+        isCompleted = comment.completed
+        self.model = model
         authorLabel.text = comment.author?.displayName
         timestampLabel.text = Date.format1(comment.timestamp)
 
@@ -171,9 +179,8 @@ class CommentFeedItemCell: UITableViewCell {
 
     /// update complete button for the note completed state
     private func updateCompleteButton() {
-        let completed: Bool = comment?.completed ?? false
         completeButton.setImage(
-            UIImage(named: "tick.small")?.withTintColor(completed
+            UIImage(named: "tick.small")?.withTintColor(isCompleted
                 ? .Neutral_01
                 : .dynamicColor(light: .Neutral_06, dark: .Neutral_05)),
             for: .normal
@@ -193,7 +200,7 @@ class CommentFeedItemCell: UITableViewCell {
                     .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                 ]
             )
-            var messageText = " completed this note " + Date.format3(completedTimestamp)
+            let messageText = " completed this note " + Date.format3(completedTimestamp)
             messageString.append(NSAttributedString(string: messageText, attributes: [
                 .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
                 .font: UIFont.preferredFont(forTextStyle: .caption2),
@@ -207,7 +214,9 @@ class CommentFeedItemCell: UITableViewCell {
     }
 
     private func moreAction() {
-        guard let comment = comment else { return }
+        guard let model = model,
+              let commentId = commentId,
+              let comment = model.mainRealm.object(ofType: Comment.self, forPrimaryKey: commentId) else { return }
         UIApplication.shared.sendAction(
             #selector(CollaborationFlowActions.moreAction),
             to: nil,
@@ -217,7 +226,9 @@ class CommentFeedItemCell: UITableViewCell {
     }
 
     private func toggleCompleteAction() {
-        guard let comment = comment else { return }
+        guard let model = model,
+              let commentId = commentId,
+              let comment = model.mainRealm.object(ofType: Comment.self, forPrimaryKey: commentId) else { return }
         UIApplication.shared.sendAction(
             #selector(CollaborationFlowActions.toggleCompleteAction),
             to: nil,

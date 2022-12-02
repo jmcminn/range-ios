@@ -417,12 +417,12 @@ extension CollaborationFeedViewController {
                                                      for: indexPath) as! ImageUploadFeedItemCell
             let imageCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 1)
             cell.imageDataProvider = imageCaches.imageProvider(forPhotoWithCacheKey: imageCacheKey)
-            cell.set(upload: upload)
+            cell.set(upload: upload, model: projectModel)
             return cell
         } else if let comment = feedItem.item as? Comment {
             let cell = tableView.dequeueReusableCell(withIdentifier: "Comment",
                                                      for: indexPath) as! CommentFeedItemCell
-            cell.set(comment: comment)
+            cell.set(comment: comment, model: projectModel)
             return cell
         } else if let update = feedItem.item as? Update, update.field == .name || update.field == .description {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NameUpdate",
