@@ -6,6 +6,7 @@ import UIKit
 /// This flow controller is a UINavigationController as it pushes project flow controller(s) onto the navigation stack
 class ProjectsFlowController: UINavigationController {
     private let userId: String
+    let projectsModel: ProjectsModel
     let imageCaches = ImageCaches()
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel = PendingActionsModelImpl()
@@ -18,6 +19,7 @@ class ProjectsFlowController: UINavigationController {
 
     init(userId: String) throws {
         self.userId = userId
+        projectsModel = try ProjectsModel(userId: userId)
         pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches)
         super.init(rootViewController: LaunchScreenViewController())
     }
@@ -28,6 +30,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func start() async throws {
+        try await projectsModel.start()
         try await pendingUploadsModel.start()
         pendingActionsModel.start()
 
@@ -56,6 +59,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func stop() {
+        projectsModel.stop()
         pendingUploadsModel.stop()
         pendingActionsModel.stop()
     }

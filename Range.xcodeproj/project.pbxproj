@@ -194,6 +194,7 @@
 		0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5371293E3D130093D913 /* RealmModel.swift */; };
 		0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */; };
 		0A7A5377293E49800093D913 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5376293E49800093D913 /* ModelError.swift */; };
+		0A7A537B293E4E540093D913 /* ProjectsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A537A293E4E540093D913 /* ProjectsModel.swift */; };
 		0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */; };
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */; };
@@ -505,6 +506,8 @@
 		0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RealmModel+SyncFromFirestore.swift"; sourceTree = "<group>"; };
 		0A7A5375293E48C70093D913 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A7A5376293E49800093D913 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
+		0A7A5379293E4E140093D913 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0A7A537A293E4E540093D913 /* ProjectsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsModel.swift; sourceTree = "<group>"; };
 		0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemTableViewCell.swift; sourceTree = "<group>"; };
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollaboration.swift; sourceTree = "<group>"; };
@@ -1100,6 +1103,7 @@
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A05312729378FC800738BA3 /* Media */,
 				0A7A5370293E3CFE0093D913 /* Model */,
+				0A7A5378293E4DFB0093D913 /* ModelProjects */,
 				0A07D75428101B1C00B6F9A2 /* ModelProject */,
 				0AA424302913C6D80088E2B1 /* ModelActions */,
 				0A724F61288AAFCF00708C6B /* ModelUploads */,
@@ -1277,6 +1281,15 @@
 				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		0A7A5378293E4DFB0093D913 /* ModelProjects */ = {
+			isa = PBXGroup;
+			children = (
+				0A7A5379293E4E140093D913 /* README.md */,
+				0A7A537A293E4E540093D913 /* ProjectsModel.swift */,
+			);
+			path = ModelProjects;
 			sourceTree = "<group>";
 		};
 		0A97232327FC507200D744F4 /* Camera */ = {
@@ -1597,6 +1610,7 @@
 				0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */,
 				0A3831D128E42CC4001AF38A /* FirestoreUpdate.swift in Sources */,
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
+				0A7A537B293E4E540093D913 /* ProjectsModel.swift in Sources */,
 				0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */,
 				0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */,
 				0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */,
