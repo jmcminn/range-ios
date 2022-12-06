@@ -5,47 +5,9 @@ import OSLog
 import RealmSwift
 import UIKit
 
-// possible errors for ProjectModel
-enum ModelError: Error, Equatable {
-    case canvasNotFound
-    case collaborationNotFound
-    case commentNotFound
-    case currentUserNotFound
-    case featureNotFound
-    case fieldNotSupported(_ field: String)
-    case fileTypeNotSupported(_ type: String)
-    case geometryNotFound
-    case malformedUrl(_ url: String)
-    case statusNotFound
-    case summaryNotFound
-    case uploadNotFound
-    case userNotFound
-}
-
-// model error extension to provide localized descriptions of errors
-extension ModelError: LocalizedError {
-    public var errorDescription: String? {
-        switch self {
-        case .canvasNotFound: return "Canvas not found"
-        case .collaborationNotFound: return "Collaboration not found"
-        case .commentNotFound: return "Comment not found"
-        case .currentUserNotFound: return "Couldn't load user data"
-        case .featureNotFound: return "Feature not found"
-        case let .fieldNotSupported(field): return "\(field) field not supported"
-        case let .fileTypeNotSupported(type): return "\(type) fileType not supported"
-        case .geometryNotFound: return "Geometry not found"
-        case let .malformedUrl(url): return "Malformed URL: \(url)"
-        case .statusNotFound: return "Status not found"
-        case .summaryNotFound: return "Couldn't load project"
-        case .uploadNotFound: return "Upload not found"
-        case .userNotFound: return "User not found"
-        }
-    }
-}
-
 /// Responsible for configuring the Realm for given project (id).
 /// Contains all the business methods for project (like adding photo, etc.)
-class ProjectModel: NSObject {
+class ProjectModel: NSObject, RealmModel {
     /// The Range id of the current logged in user
     let userId: String
     /// The UUID for the project
@@ -103,7 +65,7 @@ class ProjectModel: NSObject {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 3
+            config.schemaVersion = 4
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent(self.projectId)
             config.fileURL!.appendPathExtension("realm")
@@ -159,15 +121,5 @@ class ProjectModel: NSObject {
     /// Loads the current user
     private func getCurrentUser() -> Participant? {
         mainRealm.object(ofType: Participant.self, forPrimaryKey: userId)
-    }
-
-    /// Runs given closure on the writeQueue in the writeRealm transaction as an async function
-    func write(_ closure: @escaping (Realm) throws -> Void) async throws {
-        try await _asyncOnQueue(queue: writeQueue) { [self] in
-            // at this point writeRealm is set or it threw an error
-            try writeRealm!.write {
-                try closure(writeRealm!)
-            }
-        }
     }
 }

@@ -191,6 +191,9 @@
 		0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */; };
 		0A797F7A292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */; };
 		0A797F7C292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */; };
+		0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5371293E3D130093D913 /* RealmModel.swift */; };
+		0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */; };
+		0A7A5377293E49800093D913 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5376293E49800093D913 /* ModelError.swift */; };
 		0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */; };
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */; };
@@ -498,6 +501,10 @@
 		0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearUserTableViewCell.swift; sourceTree = "<group>"; };
 		0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationAssigneeCommand.swift; sourceTree = "<group>"; };
 		0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationAssigneeCommandTest.swift; sourceTree = "<group>"; };
+		0A7A5371293E3D130093D913 /* RealmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmModel.swift; sourceTree = "<group>"; };
+		0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RealmModel+SyncFromFirestore.swift"; sourceTree = "<group>"; };
+		0A7A5375293E48C70093D913 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0A7A5376293E49800093D913 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
 		0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemTableViewCell.swift; sourceTree = "<group>"; };
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollaboration.swift; sourceTree = "<group>"; };
@@ -693,7 +700,6 @@
 				0A45622E283E327500BA8D21 /* README.md */,
 				0A2F32F02836CA0500D04A1C /* ProjectModel.swift */,
 				0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */,
-				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
 				0A724F38288835A600708C6B /* Placeholder.swift */,
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
 				0A7FC4142844E0670097888A /* Status.swift */,
@@ -819,7 +825,6 @@
 				0A881982291D018B0050FC41 /* FirestoreDocument.swift */,
 				0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */,
 				0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */,
-				0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */,
 				0A2F32FE2837E8E500D04A1C /* FirestoreProjectSummary.swift */,
 				0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */,
 				0A4995C02858D05D00E571FB /* FirestoreTagName.swift */,
@@ -1094,6 +1099,7 @@
 				0AF812B72840D52A00F7BD09 /* Logging */,
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A05312729378FC800738BA3 /* Media */,
+				0A7A5370293E3CFE0093D913 /* Model */,
 				0A07D75428101B1C00B6F9A2 /* ModelProject */,
 				0AA424302913C6D80088E2B1 /* ModelActions */,
 				0A724F61288AAFCF00708C6B /* ModelUploads */,
@@ -1258,6 +1264,19 @@
 				0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */,
 			);
 			path = Firestore;
+			sourceTree = "<group>";
+		};
+		0A7A5370293E3CFE0093D913 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0A7A5375293E48C70093D913 /* README.md */,
+				0A7A5371293E3D130093D913 /* RealmModel.swift */,
+				0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */,
+				0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */,
+				0A7A5376293E49800093D913 /* ModelError.swift */,
+				0A2F3300283B737C00D04A1C /* CustomPersistable.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		0A97232327FC507200D744F4 /* Camera */ = {
@@ -1590,6 +1609,7 @@
 				0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */,
 				0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */,
 				0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */,
+				0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
@@ -1629,6 +1649,7 @@
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */,
+				0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
 				0A374DD8292418230036C184 /* ToastWindow.swift in Sources */,
 				0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */,
@@ -1733,6 +1754,7 @@
 				0A0D31D728A41AC6007A8D49 /* ThumbnailsViewController.swift in Sources */,
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
+				0A7A5377293E49800093D913 /* ModelError.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
 				0A99BF1F28C1DC3700DB3F96 /* PhotosReviewPageView.swift in Sources */,

@@ -1,9 +1,9 @@
-# Model
+# Project Model
 
 
 ## Overview
 
-This folder handles the Range iOS app model.
+This folder handles the Range iOS app project model.
 
 There are 2 main parts of the model:
 

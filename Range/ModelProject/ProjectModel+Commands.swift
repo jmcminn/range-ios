@@ -4,11 +4,6 @@ import Kingfisher
 import RealmSwift
 import Turf
 
-/// convenience function for generating new realm id
-func generateRealmId() -> String {
-    UUID().uuidString.lowercased()
-}
-
 // MARK: - run commands
 
 extension ProjectModel {
