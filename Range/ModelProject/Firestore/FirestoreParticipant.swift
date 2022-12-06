@@ -19,13 +19,14 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case firstName, lastName, avatarUrlString = "avatarUrl", email
+        case firstName, lastName, avatarUrlString = "avatarUrl", email, permissions
     }
 
     var firstName: String
     var lastName: String
     var avatarUrlString: String?
     var email: String
+    var permissions: [String: [String]]?
 
     /// Add or update the status.
     /// Ignores not well formed avatarUrl
@@ -39,12 +40,14 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
         } else {
             avatarUrl = nil
         }
+        let projectIds: [String] = (permissions?["projects"] as? [String]) ?? []
         let participant = Participant(
             id: id,
             firstName: firstName,
             lastName: lastName,
             avatarUrl: avatarUrl,
-            email: email
+            email: email,
+            projectIds: projectIds
         )
         realm.add(participant, update: .modified)
     }

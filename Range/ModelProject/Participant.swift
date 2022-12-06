@@ -13,6 +13,8 @@ class Participant: Object, WithPlaceholder {
     @Persisted var avatarUrl: URL?
     /// email
     @Persisted var email: String
+    /// array of projects ids this user has permission to access
+    @Persisted var projectIds: List<String>
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -36,13 +38,22 @@ class Participant: Object, WithPlaceholder {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, firstName: String, lastName: String, avatarUrl: URL?, email: String, placeholder: Bool = false) {
+    init(
+        id: String,
+        firstName: String,
+        lastName: String,
+        avatarUrl: URL?,
+        email: String,
+        projectIds: [String] = [],
+        placeholder: Bool = false
+    ) {
         super.init()
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.avatarUrl = avatarUrl
         self.email = email
+        self.projectIds.append(objectsIn: projectIds)
         self.placeholder = placeholder
     }
 
@@ -54,6 +65,7 @@ class Participant: Object, WithPlaceholder {
             lastName: "",
             avatarUrl: nil,
             email: "",
+            projectIds: [],
             placeholder: true
         )
     }
