@@ -34,16 +34,19 @@ class CommentFeedItemCell: UITableViewCell {
             .forEach(contentView.addSubview)
 
         avatarView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.top.equalToSuperview().priority(.high)
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)
         }
         authorLabel.snp.makeConstraints { make in
+            make.top.lessThanOrEqualToSuperview() // for bigger font when author label is the top most view
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().offset(-56) // place for more button
             make.bottom.equalTo(avatarView.snp.centerY)
         }
         timestampLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().offset(-56) // place for more button
             make.top.equalTo(avatarView.snp.centerY)
         }
         moreButton.snp.makeConstraints { make in
@@ -54,7 +57,8 @@ class CommentFeedItemCell: UITableViewCell {
         commentTextLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
             make.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(avatarView.snp.bottom).offset(12)
+            make.top.greaterThanOrEqualTo(avatarView.snp.bottom).offset(12)
+            make.top.greaterThanOrEqualTo(timestampLabel.snp.bottom).offset(12)
         }
         noteBackground.snp.makeConstraints { make in
             make.edges.equalTo(commentTextLabel)

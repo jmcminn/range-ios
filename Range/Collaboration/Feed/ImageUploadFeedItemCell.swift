@@ -41,16 +41,19 @@ class ImageUploadFeedItemCell: UITableViewCell {
             .forEach(imageAndDescriptionView.addSubview)
 
         avatarView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.top.equalToSuperview().priority(.high)
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)
         }
         authorLabel.snp.makeConstraints { make in
+            make.top.lessThanOrEqualToSuperview() // for bigger font when author label is the top most view
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().offset(-56) // place for more button
             make.bottom.equalTo(avatarView.snp.centerY)
         }
         timestampLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().offset(-56) // place for more button
             make.top.equalTo(avatarView.snp.centerY)
         }
         moreButton.snp.makeConstraints { make in
@@ -61,7 +64,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
         imageAndDescriptionView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
             make.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(avatarView.snp.bottom).offset(14)
+            make.top.greaterThanOrEqualTo(avatarView.snp.bottom).offset(14)
+            make.top.greaterThanOrEqualTo(timestampLabel.snp.bottom).offset(14)
         }
         updateUploadImageViewConstraints(imageHeight2Width: 0.75)
         descriptionBackground.snp.makeConstraints { make in
