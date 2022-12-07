@@ -195,6 +195,8 @@
 		0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */; };
 		0A7A5377293E49800093D913 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5376293E49800093D913 /* ModelError.swift */; };
 		0A7A537B293E4E540093D913 /* ProjectsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A537A293E4E540093D913 /* ProjectsModel.swift */; };
+		0A7A537D293FB3690093D913 /* ProjectsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A537C293FB3690093D913 /* ProjectsViewController.swift */; };
+		0A7A537F293FB8F70093D913 /* ProjectTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A537E293FB8F70093D913 /* ProjectTableViewCell.swift */; };
 		0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */; };
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */; };
@@ -268,7 +270,6 @@
 		0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7D290980DD00D3CCA1 /* GradientView.swift */; };
 		0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */; };
 		0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */; };
-		0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18A28F56C2800C7185D /* DemoProject.swift */; };
 		0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */; };
 		0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */; };
 		0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19028F8057B00C7185D /* PinImage.swift */; };
@@ -508,6 +509,8 @@
 		0A7A5376293E49800093D913 /* ModelError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelError.swift; sourceTree = "<group>"; };
 		0A7A5379293E4E140093D913 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A7A537A293E4E540093D913 /* ProjectsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsModel.swift; sourceTree = "<group>"; };
+		0A7A537C293FB3690093D913 /* ProjectsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsViewController.swift; sourceTree = "<group>"; };
+		0A7A537E293FB8F70093D913 /* ProjectTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTableViewCell.swift; sourceTree = "<group>"; };
 		0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemTableViewCell.swift; sourceTree = "<group>"; };
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollaboration.swift; sourceTree = "<group>"; };
@@ -580,7 +583,6 @@
 		0AC89D7D290980DD00D3CCA1 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVerticalLine.swift; sourceTree = "<group>"; };
 		0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSelectorCardViewController.swift; sourceTree = "<group>"; };
-		0AC9E18A28F56C2800C7185D /* DemoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProject.swift; sourceTree = "<group>"; };
 		0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsFlowController.swift; sourceTree = "<group>"; };
 		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
 		0AC9E19028F8057B00C7185D /* PinImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinImage.swift; sourceTree = "<group>"; };
@@ -1114,12 +1116,12 @@
 				0AC9E18928F56C1600C7185D /* Projects */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A797F67292BA3DE00D63567 /* Status */,
+				0A4DC7A227F7615700712518 /* Views */,
 				0A30E8BA284A090000A50D54 /* Tags */,
 				0A6DB6A1292E08560017D511 /* TextCard */,
 				0A374DD6292418070036C184 /* Toast */,
 				0A797F70292BDA6D00D63567 /* UserPicker */,
 				0A05312229375BDF00738BA3 /* Utils */,
-				0A4DC7A227F7615700712518 /* Views */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
@@ -1356,8 +1358,9 @@
 		0AC9E18928F56C1600C7185D /* Projects */ = {
 			isa = PBXGroup;
 			children = (
-				0AC9E18A28F56C2800C7185D /* DemoProject.swift */,
 				0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */,
+				0A7A537C293FB3690093D913 /* ProjectsViewController.swift */,
+				0A7A537E293FB8F70093D913 /* ProjectTableViewCell.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -1692,7 +1695,6 @@
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
 				0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */,
 				0A130E9E28D4A8F700FF1368 /* CollaborationFeedViewController.swift in Sources */,
-				0AC9E18B28F56C2800C7185D /* DemoProject.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
@@ -1733,6 +1735,7 @@
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
 				0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */,
 				0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */,
+				0A7A537F293FB8F70093D913 /* ProjectTableViewCell.swift in Sources */,
 				0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A4995B52854C28200E571FB /* TextView.swift in Sources */,
@@ -1815,6 +1818,7 @@
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirestoreProjectSummary.swift in Sources */,
 				0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */,
+				0A7A537D293FB3690093D913 /* ProjectsViewController.swift in Sources */,
 				0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
 				0AB855832900040700491E20 /* AssigneeUpdateFeedItemCell.swift in Sources */,

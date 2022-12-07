@@ -12,9 +12,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        setupAppearance()
+
         initiateFirebase()
 
         return true
+    }
+
+    /// Set appearance for UI elements
+    private func setupAppearance() {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithDefaultBackground()
+        tabBarAppearance.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        tabBarAppearance.stackedLayoutAppearance.normal
+            .titleTextAttributes = [.foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04)]
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+//        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        UITabBar.appearance().tintColor = .Primary_Blue_04
     }
 
     private func initiateFirebase() {

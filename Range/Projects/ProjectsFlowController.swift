@@ -11,8 +11,6 @@ class ProjectsFlowController: UINavigationController {
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel = PendingActionsModelImpl()
 
-    private let projects = [DemoProject.vanderbilt, DemoProject.preserve]
-
     var onSignedOut: (() -> Void)?
 
     var projectFC: ProjectFlowController?
@@ -29,18 +27,25 @@ class ProjectsFlowController: UINavigationController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // hide as the controllers in tab bar have their own navigation stacks
+        setNavigationBarHidden(true, animated: animated)
+    }
+
     func start() async throws {
         try await projectsModel.start()
         try await pendingUploadsModel.start()
         pendingActionsModel.start()
+
+        setupTabBarViewController()
 
         // reopen last project
         if let lastOpenProjectId = UserDefaults.lastOpenProjectId {
             // try load the last open project
             do {
                 projectFC = try await buildProjectFlowController(projectId: lastOpenProjectId)
-                setViewControllers([buildProjectsViewController(), projectFC!], animated: false)
-                setNavigationBarHidden(true, animated: false)
+                pushViewController(projectFC!, animated: false)
                 UserDefaults.lastOpenProjectId = lastOpenProjectId
                 UserDefaults.setLastOpenCanvasId(
                     projectFC!.model.currentCanvas.id,
@@ -49,12 +54,8 @@ class ProjectsFlowController: UINavigationController {
             } catch {
                 Logger.model
                     .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
-                // fallback to projects list only
-                setViewControllers([buildProjectsViewController()], animated: false)
                 UserDefaults.lastOpenProjectId = nil
             }
-        } else {
-            setViewControllers([buildProjectsViewController()], animated: false)
         }
     }
 
@@ -64,16 +65,55 @@ class ProjectsFlowController: UINavigationController {
         pendingActionsModel.stop()
     }
 
-    private func buildProjectsViewController() -> ActionSelectorViewController {
-        let projectActions = projects.map { project in
-            ActionItem(title: project.name) { [weak self] in
-                self?.loadAndPushProjectFlowController(projectId: project.id)
-            }
+    private func buildProjectsViewController() -> ProjectsViewController {
+        let projects = projectsModel.mainRealm.objects(ProjectSummary.self).sorted(by: \.name)
+        let projectsVC = ProjectsViewController(projects: projects)
+        projectsVC.onProjectSelected = { [weak self] project in
+            self?.loadAndPushProjectFlowController(projectId: project.id)
         }
+        return projectsVC
+    }
+
+    private func buildSettingsViewController() -> ActionSelectorViewController {
         let signOutAction = ActionItem(title: "Sign out", style: .destructive) { [weak self] in
             self?.signOut()
         }
-        return ActionSelectorViewController(actions: projectActions + [signOutAction])
+        return ActionSelectorViewController(actions: [signOutAction])
+    }
+
+    /// Sets the root view controller of this navigation controller to be a tab bar with "My Projects" and "Settings" tabs
+    private func setupTabBarViewController() {
+        let projectsVC = buildProjectsViewController()
+        projectsVC.title = String(localized: "My Projects")
+        let projectsNavC = UINavigationController(rootViewController: projectsVC)
+        projectsNavC.tabBarItem = UITabBarItem(
+            title: String(localized: "My Projects"),
+            image: UIImage(systemName: "rectangle.grid.1x2"),
+            tag: 0
+        )
+
+        let settingsVC = buildSettingsViewController()
+        settingsVC.title = String(localized: "Settings")
+        let settingsNavC = UINavigationController(rootViewController: settingsVC)
+        settingsNavC.tabBarItem = UITabBarItem(
+            title: String(localized: "Settings"),
+            image: UIImage(systemName: "gearshape"),
+            tag: 1
+        )
+
+        let tabBarVC = UITabBarController()
+        tabBarVC.setViewControllers([projectsNavC, settingsNavC], animated: false)
+
+        // HACK - add separator to tab bar (maybe not even a hack??)
+        let separator = UIView()
+        separator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        tabBarVC.tabBar.addSubview(separator)
+        separator.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(1)
+        }
+
+        setViewControllers([tabBarVC], animated: false)
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
@@ -97,11 +137,6 @@ class ProjectsFlowController: UINavigationController {
                 self.projectFC = try await buildProjectFlowController(projectId: projectId)
                 DispatchQueue.main.async {
                     self.pushViewController(self.projectFC!, animated: true)
-                    // hide navigation bar when showing Project flow and show again on back.
-                    // We want the navigation bar visible for now in projects view so there's
-                    // some padding at the top ;) To be removed later as projects view will have
-                    // a custom navigation bar anyway
-                    self.setNavigationBarHidden(true, animated: true)
                     UserDefaults.lastOpenProjectId = projectId
                     UserDefaults.setLastOpenCanvasId(
                         self.projectFC!.model.currentCanvas.id,
@@ -129,7 +164,6 @@ class ProjectsFlowController: UINavigationController {
         )
         projectFC.onBack = { [weak self] in
             _ = self?.popViewController(animated: true)
-            self?.setNavigationBarHidden(false, animated: true)
             UserDefaults.lastOpenProjectId = nil
         }
         return projectFC
