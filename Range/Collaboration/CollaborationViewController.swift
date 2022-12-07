@@ -43,8 +43,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     private enum Constants {
         // distance between views
         static let verticalSpacing = 16.0
-        // height from the top until bottom of the name text field
-        static let heightIncludingName = 91.0
+        // height from the top until the top of the name text field
+        static let heightToName = 69.0
     }
 
     var roundedShadowView: RoundShadowView {
@@ -253,7 +253,7 @@ extension CollaborationViewController {
             attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
         )
         nameField.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        nameField.font = .systemFont(ofSize: 17, weight: .bold)
+        nameField.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
         nameField.adjustsFontForContentSizeCategory = true
         nameField.tintColor = .Primary_Blue_04
         nameField.autocapitalizationType = .sentences
@@ -314,12 +314,17 @@ extension CollaborationViewController: CardPresentable {
     func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .min {
             return 0 // will be hidden when minimized
-        } else if cardPosition == .medium {
+        }
+
+        // +2 is a hack for nameField being bigger than line height
+        let nameHeight = ceil(nameField.font?.lineHeight ?? 22.0) + 2.0
+
+        if cardPosition == .medium {
             // what's shown above the keyboard if keyboard visible, "header" height + avaiable spacing in the details view (so no content is shown)
             // The spacing available in details view is actually dependent on the type of collaboration and whether
             // there's a description, but it's at least `descriptionTopSpacing`
             let detailsTopSpace = CollaborationDetailsViewController.Constants.descriptionTopSpacing
-            let baseHeight = Constants.heightIncludingName + detailsTopSpace
+            let baseHeight = Constants.heightToName + nameHeight + detailsTopSpace
 
             // what's visible in the .medium card position but not when showing keyboard
             let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true) - detailsTopSpace
@@ -334,7 +339,7 @@ extension CollaborationViewController: CardPresentable {
             let fullHeight = cardContainerView.bounds.height - cardContainerView.safeAreaInsets.bottom
             // the height of the collaboration view header that we want to hide
             // behind the header cover
-            var headerHeight = Constants.heightIncludingName
+            var headerHeight = Constants.heightToName + nameHeight
             if isTaskWindow {
                 // for task we present all the details
             } else {
