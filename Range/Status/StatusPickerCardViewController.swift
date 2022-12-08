@@ -31,7 +31,7 @@ class StatusPickerCardViewController: SheetCardViewController {
         containerView.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(closeButton.snp.bottom).offset(16)
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.bottom.equalToSuperview().inset(12)
         }
     }

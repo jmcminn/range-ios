@@ -30,7 +30,7 @@ class TextCardViewController: SheetCardViewController {
         buildTextView()
         containerView.addSubview(textView)
         textView.snp.makeConstraints { make in
-            make.top.equalTo(closeButton.snp.bottom).offset(16)
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
 //            self.textViewBottomConstraint = make.bottom.equalToSuperview().inset(16).constraint
             self.textViewBottomConstraint = make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).inset(16)

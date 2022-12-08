@@ -53,7 +53,7 @@ class UserPickerCardViewController: SheetCardViewController {
         setupHeaderVew()
         containerView.addSubview(headerView)
         headerView.snp.makeConstraints { make in
-            make.top.equalTo(closeButton.snp.bottom).offset(16)
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(56)
         }

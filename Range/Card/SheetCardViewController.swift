@@ -9,6 +9,9 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     /// This card presents itself in given vc
     private weak var presentingVC: UIViewController?
 
+    /// The view containing the slider, icon, title, subtitle and close button
+    /// It also has some bottom margin added, so any sheet content view can be added directly below it
+    let sheetHeaderView = UIView()
     private(set) var closeButton: UIButton!
     private(set) var titleIcon: UIImageView?
     private(set) var titleLabel: UILabel?
@@ -58,25 +61,34 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         super.viewDidLoad()
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
-        containerView.installSliderView()
+        setupSheetHeaderView()
+        containerView.addSubview(sheetHeaderView)
+        sheetHeaderView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
+
+        sheetHeaderView.installSliderView()
 
         setupCloseButton()
-        containerView.addSubview(closeButton)
+        sheetHeaderView.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
             make.width.height.equalTo(32)
             make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(21)
+            if subtitleLabel == nil {
+                make.bottom.equalToSuperview().offset(-16)
+            }
         }
 
         if let titleIcon = titleIcon {
-            containerView.addSubview(titleIcon)
+            sheetHeaderView.addSubview(titleIcon)
             titleIcon.snp.makeConstraints { make in
                 make.centerY.equalTo(closeButton.snp.centerY)
                 make.leading.equalTo(16)
             }
         }
         if let titleLabel = titleLabel {
-            containerView.addSubview(titleLabel)
+            sheetHeaderView.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { make in
                 make.centerY.equalTo(closeButton.snp.centerY)
                 if titleIcon != nil {
@@ -87,10 +99,11 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             }
         }
         if let subtitleLabel = subtitleLabel {
-            containerView.addSubview(subtitleLabel)
+            sheetHeaderView.addSubview(subtitleLabel)
             subtitleLabel.snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(59)
+                make.top.equalTo(closeButton.snp.bottom).offset(8)
                 make.leading.trailing.equalToSuperview().inset(16)
+                make.bottom.equalToSuperview().offset(-16)
             }
         }
 
@@ -126,6 +139,11 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
 
     // MARK: Views
 
+    private func setupSheetHeaderView() {
+        sheetHeaderView.backgroundColor = containerView.backgroundColor
+        sheetHeaderView.setContentHuggingPriority(.required, for: .vertical)
+    }
+
     private func setupTitleIcon(image: UIImage) {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
@@ -148,6 +166,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         subtitleLabel!.font = UIFont.preferredFont(forTextStyle: .subheadline)
         subtitleLabel!.numberOfLines = 0
         subtitleLabel!.lineBreakMode = .byWordWrapping
+        subtitleLabel!.adjustsFontForContentSizeCategory = true
     }
 
     private func setupCloseButton() {
@@ -173,7 +192,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         let height: CGFloat
         if let subtitleLabel = subtitleLabel {
             let fittingSize = CGSize(
-                width: containerView.bounds.width,
+                width: containerView.bounds.width - 32,
                 height: UIView.layoutFittingCompressedSize.height
             )
             let subtitleHeight = subtitleLabel.systemLayoutSizeFitting(
@@ -181,9 +200,9 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
                 withHorizontalFittingPriority: .required,
                 verticalFittingPriority: .defaultLow
             ).height
-            height = 59.0 + subtitleHeight + 16.0
+            height = 61.0 + subtitleHeight + 16.0
         } else {
-            height = 67.0
+            height = 69.0
         }
         return height
     }

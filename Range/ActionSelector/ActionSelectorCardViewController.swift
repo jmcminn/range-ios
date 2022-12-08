@@ -20,11 +20,7 @@ class ActionSelectorCardViewController: SheetCardViewController {
         add(childController: actionsVC, toView: containerView)
         actionsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            if let subtitleLabel = subtitleLabel {
-                make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
-            } else {
-                make.top.equalTo(closeButton.snp.bottom).offset(16)
-            }
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.bottom.equalToSuperview().inset(16)
         }
     }

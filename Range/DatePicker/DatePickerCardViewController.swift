@@ -37,12 +37,8 @@ class DatePickerCardViewController: SheetCardViewController {
         containerView.addSubview(datePickerBackground)
         datePickerBackground.addSubview(datePicker)
         datePickerBackground.snp.makeConstraints { make in
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(16)
-            if let subtitleLabel = subtitleLabel {
-                make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
-            } else {
-                make.top.equalTo(closeButton.snp.bottom).offset(16)
-            }
         }
         datePicker.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(10)
@@ -60,6 +56,7 @@ class DatePickerCardViewController: SheetCardViewController {
         doneButton.snp.makeConstraints { make in
             make.trailing.equalTo(-16)
             make.top.equalTo(datePickerBackground.snp.bottom).offset(16)
+            make.height.equalTo(leftButton)
         }
 
         handleDateSelection()
@@ -76,7 +73,7 @@ class DatePickerCardViewController: SheetCardViewController {
         let baseHeight = super.height(forContainer: cardContainerView, cardPosition: cardPosition)
         if cardPosition == .max {
             view.layoutIfNeeded()
-            return doneButton.frame.maxY + 16
+            return max(leftButton.frame.maxY, doneButton.frame.maxY) + 16
         }
         return baseHeight
     }

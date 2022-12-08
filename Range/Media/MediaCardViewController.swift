@@ -17,9 +17,6 @@ class MediaCardViewController: SheetCardViewController {
 
     var onUploadSelected: ((Upload) -> Void)?
 
-    // background view for searchView that has the headerStroke at the bottom, added so it can
-    // have a shadow when scrolling the collectionView
-    private let headerView = UIView()
     private let headerStroke = UIView()
     private let collectionView: UICollectionView
 
@@ -82,25 +79,17 @@ class MediaCardViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupHeaderVew()
-        // HACK: we need a bigger header view to support the shadow, so put it below the card view icon/title/buttons
-        containerView.insertSubview(headerView, at: 0)
-        headerView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(closeButton.snp.bottom).offset(16)
-        }
-
         setupHeaderStroke()
-        headerView.addSubview(headerStroke)
+        sheetHeaderView.addSubview(headerStroke)
         headerStroke.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(1)
         }
 
         setupCollectionView()
-        containerView.insertSubview(collectionView, belowSubview: headerView)
+        containerView.insertSubview(collectionView, belowSubview: sheetHeaderView)
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
@@ -177,10 +166,6 @@ class MediaCardViewController: SheetCardViewController {
         collectionView
     }
 
-    private func setupHeaderVew() {
-        headerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
-    }
-
     private func setupHeaderStroke() {
         headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
     }
@@ -218,9 +203,9 @@ class MediaCardViewController: SheetCardViewController {
         if shadowVisible {
             let darkMode = traitCollection.userInterfaceStyle == .dark
             if darkMode {
-                headerView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
+                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
             } else {
-                headerView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
+                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
             }
             // make the shadow height = 10 points, so the top part of the shadow is not visible
             // (the path covers bottom part of the view only)
@@ -228,12 +213,12 @@ class MediaCardViewController: SheetCardViewController {
             // then the shadow with no shadowPath would not be shown (for view that has 0 height)
             // so we still need to "cover" this view from top with another view (in a view that's
             // adding this view controller as a child)
-            headerView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
-                                                                    y: headerView.bounds.maxY - 10,
-                                                                    width: headerView.bounds.width,
-                                                                    height: 10)).cgPath
+            sheetHeaderView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                                         y: sheetHeaderView.bounds.maxY - 10,
+                                                                         width: sheetHeaderView.bounds.width,
+                                                                         height: 10)).cgPath
         } else {
-            headerView.layer.shadowOpacity = 0
+            sheetHeaderView.layer.shadowOpacity = 0
         }
     }
 }
