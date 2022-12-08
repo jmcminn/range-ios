@@ -38,14 +38,14 @@ class ProjectsFlowController: UINavigationController {
         try await pendingUploadsModel.start()
         pendingActionsModel.start()
 
-        setupTabBarViewController()
+        let tabBarVC = setupTabBarViewController()
 
         // reopen last project
         if let lastOpenProjectId = UserDefaults.lastOpenProjectId {
             // try load the last open project
             do {
                 projectFC = try await buildProjectFlowController(projectId: lastOpenProjectId)
-                pushViewController(projectFC!, animated: false)
+                setViewControllers([tabBarVC, projectFC!], animated: false)
                 UserDefaults.lastOpenProjectId = lastOpenProjectId
                 UserDefaults.setLastOpenCanvasId(
                     projectFC!.model.currentCanvas.id,
@@ -54,8 +54,12 @@ class ProjectsFlowController: UINavigationController {
             } catch {
                 Logger.model
                     .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
+                // fallback to projects list only
+                setViewControllers([tabBarVC], animated: false)
                 UserDefaults.lastOpenProjectId = nil
             }
+        } else {
+            setViewControllers([tabBarVC], animated: false)
         }
     }
 
@@ -82,7 +86,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Sets the root view controller of this navigation controller to be a tab bar with "My Projects" and "Settings" tabs
-    private func setupTabBarViewController() {
+    private func setupTabBarViewController() -> UITabBarController {
         let projectsVC = buildProjectsViewController()
         projectsVC.title = String(localized: "My Projects")
         let projectsNavC = UINavigationController(rootViewController: projectsVC)
@@ -113,7 +117,7 @@ class ProjectsFlowController: UINavigationController {
             make.height.equalTo(1)
         }
 
-        setViewControllers([tabBarVC], animated: false)
+        return tabBarVC
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
