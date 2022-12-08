@@ -78,13 +78,14 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
             make.trailing.equalTo(doneButton.snp.leading).offset(-16)
             make.width.equalTo(48)
-            make.height.equalTo(continueButton.snp.height)
+            make.height.equalTo(continueButton)
         }
         doneButton.snp.makeConstraints { make in
             make.leading.equalTo(backButton.snp.trailing).offset(16)
             make.trailing.equalTo(continueButton.snp.leading).offset(-16)
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
             make.width.equalTo(continueButton.snp.width)
+            make.height.equalTo(continueButton)
         }
         continueButton.snp.makeConstraints { make in
             make.trailing.equalTo(-16)
@@ -93,8 +94,14 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColors()
+        }
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            // animate the card to adjust for the possible height change because of font size change
+            guard let cardDragging = cardDragging else { return }
+            cardDragging.setPosition(cardDragging.position, withVelocity: 0)
         }
     }
 
@@ -119,6 +126,7 @@ extension AddPhotoConfirmationViewController: CardPresentable {
             return -1 // not supported
         }
 
+        view.layoutIfNeeded()
         let fittingSize = CGSize(
             width: containerView.bounds.width,
             height: UIView.layoutFittingCompressedSize.height

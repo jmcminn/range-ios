@@ -17,6 +17,11 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     /// Token for observing changes in uploads
     private var notificationToken: NotificationToken?
 
+    var imageAndText: UIStackView!
+    var photoCountFont: UIFont {
+        ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
+    }
+
     var photoCountLabel: UILabel!
     var thumbnailsVC: ThumbnailsViewController!
     var onClose: (() -> Void)?
@@ -63,12 +68,18 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         containerView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
 
         buildPhotoCountView()
+        containerView.addSubview(imageAndText)
+        imageAndText.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(8)
+        }
+
         buildThumbnailsView()
         add(childController: thumbnailsVC, toView: containerView)
 
         thumbnailsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview().offset(29)
+            make.top.equalTo(imageAndText.snp.bottom).offset(8)
             make.height.equalTo(ThumbnailsViewController.thumbnailHeight)
         }
 
@@ -90,8 +101,14 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColors()
+        }
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            // animate the card to adjust for the possible height change because of font size change
+            guard let cardDragging = cardDragging else { return }
+            cardDragging.setPosition(cardDragging.position, withVelocity: 0)
         }
     }
 
@@ -106,30 +123,22 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     }
 
     private func buildPhotoCountView() {
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .caption2)
-            .applying(UIImage.SymbolConfiguration(weight: .bold))
+        let imageConfig = UIImage.SymbolConfiguration(font: photoCountFont)
         let image = UIImage(systemName: "photo.on.rectangle.angled", withConfiguration: imageConfig)
         let imageView = UIImageView(image: image)
         imageView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
 
-        let font = UIFont.preferredFont(forTextStyle: .caption2)
-        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
         photoCountLabel = UILabel()
         photoCountLabel.textColor = imageView.tintColor
-        photoCountLabel.font = boldFont
+        photoCountLabel.font = photoCountFont
         photoCountLabel.adjustsFontForContentSizeCategory = true
         updatePhotoCount()
 
-        let imageAndText = UIStackView(arrangedSubviews: [imageView, photoCountLabel])
+        imageAndText = UIStackView(arrangedSubviews: [imageView, photoCountLabel])
         imageAndText.axis = .horizontal
         imageAndText.distribution = .equalSpacing
         imageAndText.spacing = 4
         imageAndText.alignment = .trailing
-        containerView.addSubview(imageAndText)
-        imageAndText.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(8)
-        }
     }
 
     /// Update the label with photo count
@@ -150,7 +159,10 @@ extension PhotosPreviewViewController: CardPresentable {
             return -1 // not supported
         }
 
-        let thumbnailsHeight: CGFloat = uploads.isEmpty ? 0 : ThumbnailsViewController.thumbnailHeight + 41
+        view.layoutIfNeeded()
+        let thumbnailsHeight: CGFloat = uploads.isEmpty
+            ? 0
+            : 8 + photoCountFont.lineHeight + 8 + ThumbnailsViewController.thumbnailHeight + 12
         return confirmationVC.height(forContainer: containerView, cardPosition: cardPosition)
             + thumbnailsHeight
     }
