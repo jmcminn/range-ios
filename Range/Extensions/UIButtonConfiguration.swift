@@ -15,6 +15,7 @@ extension UIButton.Configuration {
         )
         config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         config.baseForegroundColor = .Red_03
+        config.cornerStyle = .fixed
         config.background.cornerRadius = 12
         config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig
@@ -41,6 +42,7 @@ extension UIButton.Configuration {
         )
         config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.cornerStyle = .fixed
         config.background.cornerRadius = 12
         config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig
@@ -66,6 +68,7 @@ extension UIButton.Configuration {
         )
         config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
         config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig
@@ -92,6 +95,7 @@ extension UIButton.Configuration {
         )
         config.baseBackgroundColor = .Primary_Blue_04
         config.baseForegroundColor = .Neutral_01
+        config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
         config.background.strokeColor = .dynamicColor(light: .Primary_Blue_04, dark: .Primary_Blue_06)
         config.preferredSymbolConfigurationForImage = imageConfig
@@ -109,6 +113,7 @@ extension UIButton.Configuration {
 
         config.baseBackgroundColor = backgroundColor
         config.baseForegroundColor = .Neutral_01
+        config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
         config.background.strokeColor = strokeColor
         config.preferredSymbolConfigurationForImage = imageConfig
@@ -124,6 +129,7 @@ extension UIButton.Configuration {
 
         config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
         config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.preferredSymbolConfigurationForImage = imageConfig

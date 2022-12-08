@@ -33,6 +33,7 @@ class CollaborationStatusButton: ButtonWithTapAreaInsets {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 8)
         config.baseForegroundColor = .Neutral_01
+        config.cornerStyle = .fixed
         config.background.cornerRadius = 16
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
