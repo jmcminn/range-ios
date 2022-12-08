@@ -89,7 +89,8 @@ class ThumbnailsViewController: UIViewController {
         notificationToken?.invalidate()
     }
 
-    override func traitCollectionDidChange(_: UITraitCollection?) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         // update the border color for cells
         collectionView.reloadData()
     }

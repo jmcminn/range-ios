@@ -96,7 +96,8 @@ class MediaCardViewController: SheetCardViewController {
         observeUploads()
     }
 
-    override func traitCollectionDidChange(_: UITraitCollection?) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         // update the border color for cells
         collectionView.reloadData()
         updateHeaderShadow()

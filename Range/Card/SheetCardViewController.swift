@@ -121,8 +121,14 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColors()
+        }
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            // animate the card to adjust for the possible height change because of font size change
+            guard let cardDragging = cardDragging else { return }
+            cardDragging.setPosition(cardDragging.position, withVelocity: 0)
         }
     }
 
@@ -189,6 +195,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             return -1 // not supported
         }
 
+        view.layoutIfNeeded()
         let height: CGFloat
         if let subtitleLabel = subtitleLabel {
             let fittingSize = CGSize(

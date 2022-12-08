@@ -48,7 +48,8 @@ class StatusPickerCardViewController: SheetCardViewController {
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: "StatusCell")
     }
 
-    override func traitCollectionDidChange(_: UITraitCollection?) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         // update the border color for cells
         tableView.reloadData()
     }
