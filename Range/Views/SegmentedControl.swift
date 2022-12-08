@@ -1,13 +1,83 @@
-import CoreMIDI
 import UIKit
 
-/// Extend UIButton to provide higher hit area for the segmented control buttons - the view itself is pretty
-/// low (32 points) and the buttons even lower (28 points), so let's add 10 points on the top and bottom.
-class SegmentedControlButton: UIButton {
-    override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
-        let biggerFrame = bounds.insetBy(dx: 0, dy: -10)
+/// Control used as a button in the SegmentedControl
+// because of a bug that doesn't allow for limiting the number of lines for UIButton title
+// to 1 for buttons configured using UIButton.Configuration we cannot use the
+// UIButton.Configuration, bug: https://developer.apple.com/forums/thread/699622
+// But using button with 'normal' configuration of image/title is problematic with font sizing
+// (there were problems with image font update).
+// That's why we use a plain UIControl (a subclass that provides tap area insets) and manually
+// configure the icon/label and tap + selected state.
+class SegmentedControlButton: ControlWithTapAreaInsets {
+    private let iconView = UIImageView(frame: .zero)
+    private let label = UILabel()
+    private let imageName: String?
+    let title: String?
 
-        return biggerFrame.contains(point)
+    init(action: ActionItem) {
+        title = action.title
+        imageName = action.imageName
+        super.init(frame: .zero)
+
+        /// Provide higher hit area for the segmented control buttons - the view itself is pretty
+        /// low (32 points) and the buttons even lower (28 points), so let's add 10 points on the top and bottom.
+        tapAreaInsets = UIEdgeInsets(top: -10, left: 0, bottom: -10, right: 0)
+
+        setupViews()
+
+        label.text = action.title
+
+        updateFontsAndColors()
+    }
+
+    private func setupViews() {
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
+        label.adjustsFontForContentSizeCategory = true
+        label.isUserInteractionEnabled = false
+
+        let iconAndText = UIStackView(arrangedSubviews: imageName != nil ? [iconView, label] : [label])
+        iconAndText.axis = .horizontal
+        iconAndText.distribution = .fillProportionally
+        iconAndText.spacing = 5
+        iconAndText.alignment = .trailing
+        iconAndText.isUserInteractionEnabled = false
+
+        addSubview(iconAndText)
+        iconAndText.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+
+    override open var isSelected: Bool {
+        didSet {
+            updateFontsAndColors()
+        }
+    }
+
+    override open var isHighlighted: Bool {
+        didSet {
+            updateFontsAndColors()
+        }
+    }
+
+    func updateFontsAndColors() {
+        let color: UIColor = isSelected
+            ? (isHighlighted
+                ? .dynamicColor(light: .Neutral_05, dark: .Neutral_06) // selected, highlighted
+                : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)) // selected, not highlighted
+            : (isHighlighted
+                ? .dynamicColor(light: .Neutral_04, dark: .Neutral_07) // not selected, highlighted
+                : .dynamicColor(light: .Neutral_06, dark: .Neutral_05)) // not selected, not highlighted
+        let font: UIFont = isSelected
+            ? ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+            : .preferredFont(forTextStyle: .footnote)
+        label.textColor = color
+        label.font = font
+        iconView.tintColor = color
+        if let imageName = imageName {
+            iconView.image = UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(font: font))
+        }
     }
 }
 
@@ -24,7 +94,7 @@ class SegmentedControl: UIView {
     private static let contentPadding = 2.5
 
     /// The index number that identifies the selected segment that the user last touched.
-    var selectedSegmentIndex: Int = 0
+    private(set) var selectedSegmentIndex: Int = 0
 
     /// current width of the button
     private var buttonWidth: CGFloat = 0.0
@@ -32,11 +102,11 @@ class SegmentedControl: UIView {
     /// The selection view that moves behind buttons when segment is selected
     private var selectedSegmentIndicator: UIView!
     /// Buttons corresponding to provided items
-    private var buttons: [UIButton]!
+    private var buttons: [SegmentedControlButton]!
     /// Separators between buttons
     private var separators: [UIView]!
 
-    init(items: [UIAction]) {
+    init(items: [ActionItem]) {
         super.init(frame: .zero)
 
         setupView()
@@ -155,24 +225,14 @@ class SegmentedControl: UIView {
     }
 
     /// Builds the buttons from actions
-    private func buildButtons(actions: [UIAction]) {
-        // because of a bug that doesn't allow for limiting the number of lines for
-        // UIButton title to 1 for buttons configured using UIButton.Configuration
-        // we need to use the old way of configuring the button
-        // bug: https://developer.apple.com/forums/thread/699622
-        buttons = actions.map { action in
-            SegmentedControlButton(primaryAction: action)
-        }
-        for (index, button) in buttons.enumerated() {
-            button.setInsets(
-                forContentPadding: UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5),
-                imageTitlePadding: 5
-            )
-            button.titleLabel?.numberOfLines = 1
-            button.titleLabel?.lineBreakMode = .byTruncatingMiddle
+    private func buildButtons(actions: [ActionItem]) {
+        buttons = actions.enumerated().map { index, action in
+            let button = SegmentedControlButton(action: action)
             button.addAction(UIAction(handler: { [weak self] _ in
                 self?.setSelectedSegmentIndex(index, animated: true)
+                action.handler?()
             }), for: .touchUpInside)
+            return button
         }
         buttons.forEach(addSubview)
     }
@@ -181,17 +241,7 @@ class SegmentedControl: UIView {
     private func updateButtonsSelectedStyle() {
         for (index, button) in buttons.enumerated() {
             let selected = index == selectedSegmentIndex
-            button.tintColor = selected
-                ? .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-                : .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
-            button.titleLabel?.font = UIFont.systemFont(
-                ofSize: 13,
-                weight: selected ? .semibold : .medium
-            )
-            button.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(
-                pointSize: 13,
-                weight: selected ? .semibold : .medium
-            ), forImageIn: .normal)
+            button.isSelected = selected
         }
     }
 

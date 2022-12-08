@@ -78,15 +78,15 @@ class PhotoDetailsHeaderViewController: UIViewController {
 
     private func buildTagsDescriptionSegmentedControl() {
         tagsDescriptionSegmentedControl = SegmentedControl(items: [
-            UIAction(
+            ActionItem(
                 title: String(localized: "Tags"),
-                image: UIImage(systemName: "tag"),
-                handler: { [weak self] _ in self?.onTagsSelected?() }
+                imageName: "tag",
+                handler: { [weak self] in self?.onTagsSelected?() }
             ),
-            UIAction(
+            ActionItem(
                 title: String(localized: "Description"),
-                image: UIImage(systemName: "text.quote"),
-                handler: { [weak self] _ in self?.onDescriptionSelected?() }
+                imageName: "text.quote",
+                handler: { [weak self] in self?.onDescriptionSelected?() }
             ),
         ])
     }

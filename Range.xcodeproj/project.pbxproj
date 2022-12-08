@@ -123,6 +123,7 @@
 		0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CF285B647600E571FB /* TagsViewModel.swift */; };
 		0A4995D5286099D800E571FB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995D4286099D800E571FB /* Algorithms */; };
 		0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995DA2861DBE600E571FB /* Kingfisher */; };
+		0A4ADD6429423AA8006DB186 /* ControlWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */; };
 		0A4D0D352805B618007A249F /* CardDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardDragging.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
@@ -434,6 +435,7 @@
 		0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagSelectionTableViewCell.swift; sourceTree = "<group>"; };
 		0A4995CF285B647600E571FB /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
 		0A4995D1285C9D1E00E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A4B043B28CA21AE006E8630 /* Range.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Range.entitlements; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDragging.swift; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
@@ -1041,6 +1043,7 @@
 			isa = PBXGroup;
 			children = (
 				0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */,
+				0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */,
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
 				0AC89D7D290980DD00D3CCA1 /* GradientView.swift */,
 				0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */,
@@ -1808,6 +1811,7 @@
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
+				0A4ADD6429423AA8006DB186 /* ControlWithTapAreaInsets.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
 				0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */,
 				0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */,

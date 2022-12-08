@@ -298,23 +298,23 @@ extension CollaborationDetailsViewController {
         }
 
         updatesToggle = SegmentedControl(items: [
-            UIAction(
+            ActionItem(
                 title: String(localized: "More updates"),
-                handler: { [weak self] _ in
+                handler: { [weak self] in
                     UserDefaults.moreUpdatesInTheFeed = true
                     self?.onToggleMoreUpdates?(true)
                 }
             ),
-            UIAction(
+            ActionItem(
                 title: String(localized: "Less updates"),
-                handler: { [weak self] _ in
+                handler: { [weak self] in
                     UserDefaults.moreUpdatesInTheFeed = false
                     self?.onToggleMoreUpdates?(false)
                 }
             ),
         ])
         if UserDefaults.moreUpdatesInTheFeed == false {
-            updatesToggle.selectedSegmentIndex = 1
+            updatesToggle.setSelectedSegmentIndex(1, animated: false)
         }
         updatesToggle.backgroundColor = view.backgroundColor
         view.addSubview(updatesToggle)
