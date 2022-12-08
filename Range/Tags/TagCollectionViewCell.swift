@@ -44,6 +44,7 @@ class TagCollectionViewCell: UICollectionViewCell {
         label.textAlignment = .center
         label.font = UIFont.preferredFont(forTextStyle: .caption2)
         label.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        label.adjustsFontForContentSizeCategory = true
         label.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.width.greaterThanOrEqualTo(TagCollectionViewCell.minLabelWidth)

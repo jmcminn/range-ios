@@ -115,6 +115,12 @@ class TagsView: UIView {
         }
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        collectionView.reloadData()
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+
     /// Apply snapshot and invalidate intrinsic content size
     private func applyNewSnapshot(animatingDifferences: Bool) {
         dataSource.apply(prepareSnapshot(), animatingDifferences: animatingDifferences)
@@ -145,17 +151,17 @@ extension TagsView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
         guard let collectionItem = dataSource.itemIdentifier(for: indexPath) else { return .zero }
 
         let contentWidth: CGFloat
+        let nameFont = UIFont.preferredFont(forTextStyle: .caption2)
+        let nameWidth = collectionItem.name.size(withAttributes: [NSAttributedString.Key.font: nameFont]).width
         if collectionItem.addTag {
             // this is the last special "add" tag
-            let nameWidth = collectionItem.name.size(withAttributes: [
-                NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1),
-            ]).width
-            let imageWidth = TagAddCollectionViewCell.tagImage?.size.width ?? 0
+            let imageWidth = UIImage(
+                systemName: TagAddCollectionViewCell.tagImageName,
+                withConfiguration: UIImage.SymbolConfiguration(font: nameFont)
+            )?.size.width ?? 0
             contentWidth = imageWidth + TagAddCollectionViewCell.imageToLabelDistance + nameWidth
         } else {
-            contentWidth = collectionItem.name.size(withAttributes: [
-                NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2),
-            ]).width
+            contentWidth = nameWidth
         }
         return CGSize(
             width: max(contentWidth, TagCollectionViewCell.minLabelWidth) +

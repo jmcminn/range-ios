@@ -3,11 +3,9 @@ import UIKit
 
 class TagAddCollectionViewCell: UICollectionViewCell {
     static let labelText = String(localized: "Add")
+    static let tagImageName = "tag"
     static let imageToLabelDistance: CGFloat = 3
-    static let tagImage = UIImage(
-        systemName: "tag",
-        withConfiguration: UIImage.SymbolConfiguration(textStyle: .caption1)
-    )
+
     private let tagBackgroundView = UIView()
     private let label = UILabel()
 
@@ -35,7 +33,12 @@ class TagAddCollectionViewCell: UICollectionViewCell {
             make.edges.equalToSuperview().priority(.high)
         }
 
-        let tagImageView = UIImageView(image: TagAddCollectionViewCell.tagImage)
+        let font = UIFont.preferredFont(forTextStyle: .caption2)
+
+        let tagImageView = UIImageView(image: UIImage(
+            systemName: TagAddCollectionViewCell.tagImageName,
+            withConfiguration: UIImage.SymbolConfiguration(font: font)
+        ))
         tagImageView.tintColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         contentView.addSubview(tagImageView)
         tagImageView.snp.makeConstraints { make in
@@ -46,8 +49,9 @@ class TagAddCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(label)
         label.text = TagAddCollectionViewCell.labelText
         label.textAlignment = .center
-        label.font = UIFont.preferredFont(forTextStyle: .caption1)
+        label.font = font
         label.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        label.adjustsFontForContentSizeCategory = true
         label.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.width.greaterThanOrEqualTo(TagCollectionViewCell.minLabelWidth)
