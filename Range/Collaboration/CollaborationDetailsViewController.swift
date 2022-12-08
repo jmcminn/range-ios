@@ -258,6 +258,7 @@ extension CollaborationDetailsViewController {
         descriptionTextView.textContainerInset = UIEdgeInsets(top: 0, left: 12, bottom: 10, right: 12)
         descriptionTextView.returnKeyType = .done
         descriptionTextView.isEditable = false
+        descriptionTextView.adjustsFontForContentSizeCategory = true
         descriptionTextView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(descriptionTapped))
         )

@@ -170,8 +170,14 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColors()
+        }
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            // animate the card to adjust for the possible height change because of font size change
+            guard let cardDragging = cardDragging else { return }
+            cardDragging.setPosition(cardDragging.position, withVelocity: 0)
         }
     }
 
@@ -257,7 +263,6 @@ extension CollaborationViewController {
         nameField.adjustsFontForContentSizeCategory = true
         nameField.tintColor = .Primary_Blue_04
         nameField.autocapitalizationType = .sentences
-        nameField.adjustsFontSizeToFitWidth = true
         nameField.setContentHuggingPriority(.defaultLow, for: .horizontal)
         nameField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         nameField.returnKeyType = .done
