@@ -192,9 +192,8 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
             cell.textLabel?.text = "Show more"
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.textColor = .Primary_Blue_04
-            let font = UIFont.preferredFont(forTextStyle: .subheadline)
-            let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
-            cell.textLabel?.font = boldFont
+            cell.textLabel?.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+            cell.textLabel?.adjustsFontForContentSizeCategory = true
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(
@@ -222,9 +221,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
         let view = UIView()
         let label = UILabel(frame: .zero)
         label.text = self.tableView(tableView, titleForHeaderInSection: section)
-        let font = UIFont.preferredFont(forTextStyle: .subheadline)
-        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
-        label.font = boldFont
+        label.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_05)
         label.sizeToFit()
@@ -268,7 +265,9 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
         // no header for filtered tags
-        showFilteredTags ? 0 : 36
+        showFilteredTags
+            ? 0
+            : UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold).lineHeight + 16
     }
 
     func tableView(_: UITableView, heightForFooterInSection _: Int) -> CGFloat {

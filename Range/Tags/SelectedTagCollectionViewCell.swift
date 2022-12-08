@@ -24,6 +24,7 @@ class SelectedTagCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(label)
         label.font = UIFont.preferredFont(forTextStyle: .caption2)
         label.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        label.adjustsFontForContentSizeCategory = true
         label.snp.makeConstraints { make in
             make.centerY.equalToSuperview().offset(-8)
             make.leading.equalToSuperview().inset(SelectedTagCollectionViewCell.leadingLabelInset)

@@ -12,6 +12,7 @@ class TagSelectionTableViewCell: UITableViewCell {
 
         iconView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         titleView.textColor = iconView.tintColor
+        titleView.adjustsFontForContentSizeCategory = true
 
         contentView.addSubview(iconView)
         contentView.addSubview(titleView)
@@ -21,7 +22,7 @@ class TagSelectionTableViewCell: UITableViewCell {
             make.centerX.equalTo(contentView.snp.leadingMargin).offset(24)
         }
         titleView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+            make.top.bottom.equalToSuperview().inset(14)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(44)
             make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
         }
@@ -49,19 +50,18 @@ class TagSelectionTableViewCell: UITableViewCell {
                 let attributedText =
                     NSMutableAttributedString(
                         string: "\(tagViewModel.name) \(countText)",
-                        attributes: [.foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04)]
+                        attributes: [
+                            .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
+                            .font: UIFont.preferredFont(forTextStyle: .body),
+                        ]
                     )
                 if let range = attributedText.string.range(of: countText) {
                     let nsRange = NSRange(range, in: attributedText.string)
-                    let font = UIFont.preferredFont(forTextStyle: .footnote)
-                    let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
-                    attributedText.setAttributes(
-                        [
-                            .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05),
-                            .font: boldFont,
-                        ],
-                        range: nsRange
-                    )
+                    attributedText.setAttributes([
+                        .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05),
+                        .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+                    ],
+                    range: nsRange)
                 }
                 titleView.attributedText = attributedText
             } else {
@@ -75,14 +75,17 @@ class TagSelectionTableViewCell: UITableViewCell {
         let attributedText =
             NSMutableAttributedString(
                 string: "Create '\(name)' tag",
-                attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
+                attributes: [
+                    .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05),
+                    .font: UIFont.preferredFont(forTextStyle: .body),
+                ]
             )
         if let range = attributedText.string.range(of: "'\(name)'") {
             let nsRange = NSRange(range, in: attributedText.string)
-            attributedText.setAttributes(
-                [.foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04)],
-                range: nsRange
-            )
+            attributedText.setAttributes([
+                .foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04),
+                .font: UIFont.preferredFont(forTextStyle: .body),
+            ], range: nsRange)
         }
         titleView.attributedText = attributedText
         iconView.image = UIImage(named: "add_circle")
