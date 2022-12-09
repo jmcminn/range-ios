@@ -64,6 +64,11 @@ class ProjectModelFirestoreSync {
     /// the project (see `ProjectModel.loadProject`)
     private func doInitialSync() async throws {
         // do this in parallel
+
+        // one of the reasons we need to get the project summary and user is that it's also
+        // synced by projects model, so just syncing it here would not have an effect if it's
+        // already in the Firestore SDK cache and is not updated (as we ignore cached changes
+        // when syncing from firestore using `model.sync`)
         async let projectSummaryRequest = projectRef.getDocument(as: FirestoreProjectSummary.self)
         async let canvasesRequest = collection(.canvas).getDocuments()
         async let userRequest = collection(.participant).document(model.userId)

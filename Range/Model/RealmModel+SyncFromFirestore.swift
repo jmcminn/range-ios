@@ -83,9 +83,11 @@ extension RealmModel {
     ///  - Parameters:
     ///     - documentRef:  the document to observe updates
     ///     - type: the type to use for decoding the firestore SnapshotData for given db reference
+    ///     - allowFromCache: should sync update the data if the snapshot is from local Firestore SDK cache? `false` by default to not overwrite any local pending changes. Use `true` only in cases where no local changes are possible
     func sync<T: Decodable & FirestoreToRealmSyncable>(
         _ documentRef: DocumentReference,
-        as type: T.Type
+        as type: T.Type,
+        allowFromCache: Bool = false
     ) -> ListenerRegistration {
         let loggingId = "\(documentRef.parent.collectionID)/\(documentRef.documentID)"
         let listenerRegistration = documentRef.addSnapshotListener { [weak self] documentSnapshot, error in
@@ -98,14 +100,18 @@ extension RealmModel {
                     self.deleteObject(documentRef, as: type, inRealm: self.writeRealm)
                     return
                 }
-                guard !snapshot.metadata.isFromCache else {
-                    // we don't want data from cache. Firestore will report all local objects when the app
-                    // is starting even in offline mode (because it has persistence enabled, see AppDelegate
-                    // Firestore config comment for why it has to be enabled).
-                    // This data from cache is not needed, because we have it in Realm and would override
-                    // any local pending changes. So it would flicker but for a potentially very long time:
-                    // From the time user restarted the app in offline after making local changes until the user is back online.
-                    return
+
+                // if we don't allow changes from cache then guard against changes being not from cache
+                if !allowFromCache {
+                    guard !snapshot.metadata.isFromCache else {
+                        // we don't want data from cache. Firestore will report all local objects when the app
+                        // is starting even in offline mode (because it has persistence enabled, see AppDelegate
+                        // Firestore config comment for why it has to be enabled).
+                        // This data from cache is not needed, because we have it in Realm and would override
+                        // any local pending changes. So it would flicker but for a potentially very long time:
+                        // From the time user restarted the app in offline after making local changes until the user is back online.
+                        return
+                    }
                 }
                 guard snapshot.data() != nil else {
                     Logger.firestore.info("\(loggingId) fetched no data, removing local object")
