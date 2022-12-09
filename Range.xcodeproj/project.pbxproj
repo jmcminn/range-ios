@@ -1994,6 +1994,7 @@
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range demo";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -2125,6 +2126,7 @@
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range demo";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -2318,6 +2320,7 @@
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Range;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -2355,6 +2358,7 @@
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Range;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -2530,6 +2534,7 @@
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range emulator";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -2661,6 +2666,7 @@
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -2798,6 +2804,7 @@
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
