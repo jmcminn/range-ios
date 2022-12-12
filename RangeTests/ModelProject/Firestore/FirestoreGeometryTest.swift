@@ -127,7 +127,6 @@ class FirestoreGeometryTest: XCTestCase {
         // 1. create 2 empty canvases
         let canvas1 = PDFCanvas(
             id: "canvas1",
-            canvasCollectionId: "",
             name: "",
             pageNumber: 0,
             sheetNumber: nil,
@@ -135,7 +134,6 @@ class FirestoreGeometryTest: XCTestCase {
         )
         let canvas2 = PDFCanvas(
             id: "canvas2",
-            canvasCollectionId: "",
             name: "",
             pageNumber: 0,
             sheetNumber: nil,

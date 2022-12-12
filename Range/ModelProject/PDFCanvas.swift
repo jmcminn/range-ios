@@ -8,8 +8,8 @@ class PDFCanvas: Object, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
 
-    /// The id for canvas collection. Canvas collection is not modelled in Realm as the only needed thing is the id (to fetch the PDF)
-    @Persisted var canvasCollectionId: String
+    /// Backlink to the collection. This is automatically updated whenever this canvas is added to or removed from the parent
+    @Persisted(originProperty: "canvases") var collection: LinkingObjects<CanvasCollection>
     /// The name of canvas
     @Persisted var name: String
     /// 0-based PDF page number
@@ -39,7 +39,6 @@ class PDFCanvas: Object, WithPlaceholder {
     /// Initializer to init all the fields of object.
     init(
         id: String,
-        canvasCollectionId: String,
         name: String,
         pageNumber: Int,
         sheetNumber: String?,
@@ -48,7 +47,6 @@ class PDFCanvas: Object, WithPlaceholder {
     ) {
         super.init()
         self.id = id
-        self.canvasCollectionId = canvasCollectionId
         self.name = name
         self.pageNumber = pageNumber
         self.sheetNumber = sheetNumber
@@ -60,7 +58,6 @@ class PDFCanvas: Object, WithPlaceholder {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
-            canvasCollectionId: "",
             name: "",
             pageNumber: 0,
             sheetNumber: nil,

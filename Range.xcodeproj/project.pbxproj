@@ -294,6 +294,8 @@
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
+		0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */; };
+		0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC05294776AB002E7549 /* CanvasCollection.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */; };
 		0AFCD61A2939285F004843AA /* String+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCD6192939285F004843AA /* String+Size.swift */; };
@@ -606,6 +608,8 @@
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasCollection.swift; sourceTree = "<group>"; };
+		0AF9BC05294776AB002E7549 /* CanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCollection.swift; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
 		0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeature.swift; sourceTree = "<group>"; };
 		0AFCD6192939285F004843AA /* String+Size.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Size.swift"; sourceTree = "<group>"; };
@@ -712,6 +716,7 @@
 				0A7FC4142844E0670097888A /* Status.swift */,
 				0A4995BE2858D00100E571FB /* Tag.swift */,
 				0A34C1842845FB4100BEDC7C /* Participant.swift */,
+				0AF9BC05294776AB002E7549 /* CanvasCollection.swift */,
 				0A4DC78427F490CA00712518 /* PDFCanvas.swift */,
 				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
 				0AFAF1B5283FC9EB002F216A /* Feature.swift */,
@@ -836,6 +841,7 @@
 				0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */,
 				0A4995C02858D05D00E571FB /* FirestoreTagName.swift */,
 				0A34C1862845FB7800BEDC7C /* FirestoreParticipant.swift */,
+				0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */,
 				0A2F3302283BDC2B00D04A1C /* FirestorePDFCanvas.swift */,
 				0A456237283E792200BA8D21 /* FirestoreGeometry.swift */,
 				0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */,
@@ -1768,6 +1774,7 @@
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
 				0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
+				0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */,
 				0A881983291D018B0050FC41 /* FirestoreDocument.swift in Sources */,
 				0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */,
 				0A34C1892845FE9C00BEDC7C /* FirestoreComment.swift in Sources */,
@@ -1775,6 +1782,7 @@
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A7A5377293E49800093D913 /* ModelError.swift in Sources */,
+				0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
 				0A99BF1F28C1DC3700DB3F96 /* PhotosReviewPageView.swift in Sources */,

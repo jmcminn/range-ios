@@ -3,6 +3,7 @@ import Foundation
 /// Enumerates document types used in Range app
 enum FirestoreDocumentType: String {
     case projectSummary
+    case canvasCollection = "canvasCollections"
     case canvas = "canvases"
     case collaboration = "collaborations"
     case comment = "comments"
@@ -27,6 +28,7 @@ struct FirestoreDocument: Hashable, Equatable {
     }
 
     // helper functions to shorten the code for creating `FirestoreDoc`
+    static func canvasCollection(_ id: String) -> FirestoreDocument { .init(.canvasCollection, id) }
     static func canvas(_ id: String) -> FirestoreDocument { .init(.canvas, id) }
     static func collaboration(_ id: String) -> FirestoreDocument { .init(.collaboration, id) }
     static func comment(_ id: String) -> FirestoreDocument { .init(.comment, id) }

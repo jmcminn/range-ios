@@ -28,7 +28,6 @@ class ProjectModelCommandsTest: XCTestCase {
         realm = model.mainRealm
         canvas = PDFCanvas(
             id: "canvas1",
-            canvasCollectionId: "",
             name: "",
             pageNumber: 0,
             sheetNumber: nil,

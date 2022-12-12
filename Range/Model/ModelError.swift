@@ -2,6 +2,7 @@ import Foundation
 
 // possible errors for model
 enum ModelError: Error, Equatable {
+    case canvasCollectionNotFound
     case canvasNotFound
     case collaborationNotFound
     case commentNotFound
@@ -21,6 +22,7 @@ enum ModelError: Error, Equatable {
 extension ModelError: LocalizedError {
     public var errorDescription: String? {
         switch self {
+        case .canvasCollectionNotFound: return "Canvas collection not found"
         case .canvasNotFound: return "Canvas not found"
         case .collaborationNotFound: return "Collaboration not found"
         case .commentNotFound: return "Comment not found"

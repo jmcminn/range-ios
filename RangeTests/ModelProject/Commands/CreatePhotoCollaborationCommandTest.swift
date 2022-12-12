@@ -52,7 +52,6 @@ final class CreatePhotoCollaborationCommandRealmTest: XCTestCase {
     func testApply_noUser() throws {
         let canvas1 = PDFCanvas(
             id: "canvas1",
-            canvasCollectionId: "",
             name: "",
             pageNumber: 0,
             sheetNumber: nil,
@@ -71,7 +70,6 @@ final class CreatePhotoCollaborationCommandRealmTest: XCTestCase {
     func testApply_successful() throws {
         let canvas1 = PDFCanvas(
             id: "canvas1",
-            canvasCollectionId: "",
             name: "",
             pageNumber: 0,
             sheetNumber: nil,

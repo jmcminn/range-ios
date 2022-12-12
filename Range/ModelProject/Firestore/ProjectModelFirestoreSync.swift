@@ -47,6 +47,7 @@ class ProjectModelFirestoreSync {
 
         // after this point it's only registering for observation and the function returns
         listeners.append(contentsOf: [
+            model.sync(collection(.canvasCollection), as: FirestoreCanvasCollection.self),
             model.sync(collection(.canvas), as: FirestorePDFCanvas.self),
             model.sync(collection(.statusName), as: FirestoreStatusName.self),
             model.sync(collection(.tagName), as: FirestoreTagName.self),
@@ -70,18 +71,24 @@ class ProjectModelFirestoreSync {
         // already in the Firestore SDK cache and is not updated (as we ignore cached changes
         // when syncing from firestore using `model.sync`)
         async let projectSummaryRequest = projectRef.getDocument(as: FirestoreProjectSummary.self)
+        async let canvasCollectionsRequest = collection(.canvasCollection).getDocuments()
         async let canvasesRequest = collection(.canvas).getDocuments()
         async let userRequest = collection(.participant).document(model.userId)
             .getDocument(as: FirestoreParticipant.self)
 
         // await for results
         let projectSummary = try await projectSummaryRequest
+        let canvasCollections = try await canvasCollectionsRequest
         let canvases = try await canvasesRequest
         let user = try await userRequest
 
         // store in the db
         try await model.write { realm in
             try projectSummary.upsert(withId: self.model.projectId, inRealm: realm)
+            try canvasCollections.documents.forEach {
+                let canvasCollection = try $0.data(as: FirestoreCanvasCollection.self)
+                try canvasCollection.upsert(withId: $0.documentID, inRealm: realm)
+            }
             try canvases.documents.forEach {
                 let canvas = try $0.data(as: FirestorePDFCanvas.self)
                 try canvas.upsert(withId: $0.documentID, inRealm: realm)

@@ -63,10 +63,7 @@ class ProjectModelTest: XCTestCase {
             realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
                 CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
             realm.add(Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: ""))
-            realm.add(
-                PDFCanvas(id: "canvas1", canvasCollectionId: "", name: "", pageNumber: 0, sheetNumber: nil,
-                          userDefinedScale: 1)
-            )
+            realm.add(PDFCanvas(id: "canvas1", name: "", pageNumber: 0, sheetNumber: nil, userDefinedScale: 1))
         }
         try model.loadProject(initialCanvasId: "canvas1")
         XCTAssertEqual(model.projectSummary.id, model.projectId)

@@ -20,12 +20,13 @@ struct FirestorePDFCanvas: Decodable, FirestoreToRealmSyncable {
     func upsert(withId id: String, inRealm realm: Realm) throws {
         let canvas = PDFCanvas(
             id: id,
-            canvasCollectionId: canvasCollectionId,
             name: name,
             pageNumber: pageNumber,
             sheetNumber: sheetNumber,
             userDefinedScale: userDefinedScale
         )
+        let collection = realm.objectOrPlaceholder(ofType: CanvasCollection.self, forPrimaryKey: canvasCollectionId)
         realm.add(canvas, update: .modified)
+        collection.canvases.insert(canvas)
     }
 }

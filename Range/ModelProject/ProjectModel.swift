@@ -65,16 +65,16 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 4
+            config.schemaVersion = 5
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent(self.projectId)
             config.fileURL!.appendPathExtension("realm")
             Logger.model.info("project realm file url: \(config.fileURL?.path ?? "")")
         }
         config.objectTypes = [
-            ProjectSummary.self, Status.self, Tag.self, Participant.self, PDFCanvas.self,
-            Geometry.self, Feature.self, Collaboration.self, Comment.self, Update.self, Upload.self,
-            Location.self,
+            ProjectSummary.self, Status.self, Tag.self, Participant.self, CanvasCollection.self,
+            PDFCanvas.self, Geometry.self, Feature.self, Collaboration.self, Comment.self,
+            Update.self, Upload.self, Location.self,
         ]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
