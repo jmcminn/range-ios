@@ -2,6 +2,7 @@ import CoreLocation
 @_spi(Restricted) @_spi(Experimental) import MapboxMaps
 import OSLog
 import PDFKit
+import RealmSwift
 import Turf
 import UIKit
 
@@ -80,6 +81,8 @@ class PDFCanvasViewController: UIViewController {
 
     /// To observed changes in model.currentCanvas
     private var canvasObservation: NSKeyValueObservation?
+    /// Observe canvas collection for pdf storage version change to reload the pdf
+    private var canvasCollectionNotificationToken: NotificationToken?
 
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
@@ -102,11 +105,13 @@ class PDFCanvasViewController: UIViewController {
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
 
+        observeCanvasCollection()
         canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
-            // update the pdfCanvas
-            self.pdfCanvas = self.model.currentCanvas
             Task { @MainActor in
+                // update the pdfCanvas
+                self.pdfCanvas = self.model.currentCanvas
+                self.observeCanvasCollection()
                 await self.reloadPDFScrollView()
             }
         }
@@ -119,6 +124,7 @@ class PDFCanvasViewController: UIViewController {
 
     deinit {
         canvasObservation?.invalidate()
+        canvasCollectionNotificationToken?.invalidate()
     }
 
     /// Add delegate and returns id so it can be later removed
@@ -131,6 +137,19 @@ class PDFCanvasViewController: UIViewController {
     /// remove the delegate with given id
     func removeDelegate(id: UUID) {
         delegates.removeValue(forKey: id)
+    }
+
+    /// update the canvas collection observation
+    private func observeCanvasCollection() {
+        canvasCollectionNotificationToken?.invalidate()
+        if let collection = pdfCanvas.collection.first {
+            canvasCollectionNotificationToken = collection.observe { [weak self] _ in
+                Task { @MainActor in
+                    // update the pdfCanvas
+                    await self?.reloadPDFScrollView()
+                }
+            }
+        }
     }
 
     override func viewDidLoad() {

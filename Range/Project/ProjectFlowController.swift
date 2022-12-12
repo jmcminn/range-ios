@@ -287,7 +287,7 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     }
 
     fileprivate func setupActionCardVC() -> ProjectActionCardViewController {
-        // TODO: this should be hidden in the production version
+        // TODO: 704 this should be hidden in the production version
         let additionalCardActions = [
             ActionItem(
                 title: "Toggle Light/Dark mode",
