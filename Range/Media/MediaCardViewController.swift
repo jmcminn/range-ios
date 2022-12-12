@@ -109,8 +109,13 @@ class MediaCardViewController: SheetCardViewController {
             switch changes {
             case .initial:
                 self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
-            case .update:
-                self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+            case let .update(_, _, _, modifications):
+                self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
+                if !modifications.isEmpty {
+                    // if there are some modifications then reload the data as the cells don't listen
+                    // for changes (reload data is ok in media view, we don't need any animations here)
+                    self.collectionView.reloadData()
+                }
             case let .error(error):
                 Logger.model.error("observing uploads failed: \(error.localizedDescription, privacy: .public)")
             }
