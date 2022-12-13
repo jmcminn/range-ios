@@ -32,6 +32,8 @@ class Upload: Object, WithPlaceholder {
     @Persisted var imageHeightToWidth: Double?
     /// File type
     @Persisted var fileType: FileType
+    /// The storage versions (map of type, for example, "main", "thumbnail0" to version string)
+    @Persisted var storageVersion: Map<String, String>
 
     /// Default initializer required by Realm.
     override init() {
@@ -47,6 +49,7 @@ class Upload: Object, WithPlaceholder {
         correlationId: String,
         fileType: FileType,
         imageHeightToWidth: Double?,
+        storageVersion: [String: String]? = nil,
         placeholder: Bool = false
     ) {
         super.init()
@@ -57,6 +60,10 @@ class Upload: Object, WithPlaceholder {
         self.correlationId = correlationId
         self.fileType = fileType
         self.imageHeightToWidth = imageHeightToWidth
+        if let storageVersion = storageVersion {
+            // merge overwriting with new values
+            self.storageVersion.merge(storageVersion) { _, new in new }
+        }
         self.placeholder = placeholder
     }
 
@@ -70,6 +77,7 @@ class Upload: Object, WithPlaceholder {
             correlationId: id,
             fileType: .image,
             imageHeightToWidth: nil,
+            storageVersion: nil,
             placeholder: true
         )
     }

@@ -24,7 +24,7 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
     enum CodingKeys: String, CodingKey {
         case parentId = "parent", parentType, authorId = "author", timestamp, name,
              uploadDescription = "description", correlationId = "correlation", tagIds = "tags",
-             fileTypeString = "fileType", imageHeightToWidth
+             fileTypeString = "fileType", imageHeightToWidth, storageVersion
     }
 
     var parentId: String
@@ -37,6 +37,7 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
     var tagIds: [String]
     var fileTypeString: String?
     var imageHeightToWidth: Double?
+    var storageVersion: [String: String]?
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
         let fileType: Upload.FileType
@@ -63,7 +64,8 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
             description: uploadDescription,
             correlationId: correlationId,
             fileType: fileType,
-            imageHeightToWidth: imageHeightToWidth
+            imageHeightToWidth: imageHeightToWidth,
+            storageVersion: storageVersion
         )
         upload.author = author
         realm.add(upload, update: .modified)
