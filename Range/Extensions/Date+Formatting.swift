@@ -118,6 +118,20 @@ extension Date {
         }
     }
 
+    /// Returns the formatted date as defined in Figma for media title in fullscreen media view
+    /// - Parameter timestamp: the date to format
+    /// - Parameter now: the current date can be customized - used in tests
+    /// - Parameter locale: the locale to be used for formatting, customized in tests
+    static func formatMediaTitle(_ date: Date, now _: Date = Date.now,
+                                 locale: Locale = Locale.current) -> String
+    {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .medium
+        dateFormatter.dateStyle = .medium
+        dateFormatter.locale = locale
+        return dateFormatter.string(from: date)
+    }
+
     static func dueDateFormat(_ date: Date, timeZone: TimeZone?) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none

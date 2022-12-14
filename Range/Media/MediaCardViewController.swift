@@ -262,6 +262,19 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
         return CGSize(width: 1, height: height)
     }
 
+    func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let sectionId = dataSource.sectionIdentifier(for: indexPath.section) else { return }
+        let sectionUploads = dataSource.snapshot(for: sectionId).items
+        guard indexPath.item < sectionUploads.count else { return }
+        let upload = sectionUploads[indexPath.item].upload
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.showFullscreenMediaAction),
+            to: nil,
+            from: self,
+            for: FullscreenMediaEvent(upload, fromMedia: true)
+        )
+    }
+
     func scrollViewDidScroll(_: UIScrollView) {
         updateHeaderShadow()
     }

@@ -398,6 +398,19 @@ extension CollaborationFeedViewController: UITableViewDelegate {
         return distanceBetweenMajorRows
     }
 
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        guard indexPath.section < items.count else { return }
+        guard let upload = items[indexPath.section].item as? Upload else { return }
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.showFullscreenMediaAction),
+            to: nil,
+            from: self,
+            for: FullscreenMediaEvent(upload, fromMedia: false)
+        )
+    }
+
     func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         UIView()
     }

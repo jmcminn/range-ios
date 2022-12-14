@@ -6,6 +6,18 @@ import SnapKit
 import SwiftUI
 import UIKit
 
+/// Custom UIEvent sent by views to trigger full screen media view.
+/// Introduced so the action can be triggered with some custom parameters (whether it was open from media view or collaboration feed, etc.)
+final class FullscreenMediaEvent: UIEvent {
+    let upload: Upload
+    // if true this event comes from media view, otherwise from collaboration feed
+    let fromMedia: Bool
+    init(_ upload: Upload, fromMedia: Bool) {
+        self.upload = upload
+        self.fromMedia = fromMedia
+    }
+}
+
 /// Protocol defining actions that project flow can perform.
 /// Required by the views sending actions, so they can use selectors for these functions.
 /// See https://swiftrocks.com/understanding-the-ios-responder-chain.html for more info
@@ -14,6 +26,8 @@ import UIKit
     func showMediaAction()
     /// Select and change the current canvas for project
     func selectCanvasAction()
+    /// Show fullscreen media view for given upload
+    func showFullscreenMediaAction(sender: Any?, event: FullscreenMediaEvent)
 }
 
 /// Main view controller for displaying a project.
@@ -403,5 +417,12 @@ extension ProjectFlowController {
             onUploadSelected: { _ in
             }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    func showFullscreenMediaAction(sender _: Any?, event: FullscreenMediaEvent) {
+        // media view already shows the overlay so don't show in this case
+        let showOverlay = !event.fromMedia
+        FullscreenMediaCardViewController(upload: event.upload)
+            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls, showOverlay: showOverlay)
     }
 }
