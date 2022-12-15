@@ -376,7 +376,7 @@ extension ProjectFlowController {
                     handler: {}
                 ),
             ]
-        ).installAndShowCard(in: canvasContainer)
+        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     func selectCanvasAction() {
@@ -390,8 +390,7 @@ extension ProjectFlowController {
                 guard self.model.currentCanvas != canvas else { return }
                 self.model.currentCanvas = canvas
             }
-        )
-        .installAndShowCard(in: canvasContainer)
+        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     func showMediaAction() {
@@ -403,7 +402,6 @@ extension ProjectFlowController {
                 { $0.placeholder == false && $0.fileType == .image },
             onUploadSelected: { _ in
             }
-        )
-        .installAndShowCard(in: canvasContainer)
+        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 }

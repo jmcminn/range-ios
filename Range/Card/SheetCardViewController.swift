@@ -222,9 +222,10 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     // MARK: - card presentation
 
     /// Convenience function for installing card in given `presentingVC` and showing the card
-    func installAndShowCard(in presentingVC: UIViewController) {
+    func installAndShowCard(in presentingVC: UIViewController, inView: UIView? = nil) {
         presentingVC.installCard(
             cardViewController: self,
+            inView: inView,
             cardConfig: CardConfiguration(initialCardPosition: .max, showOverlay: true)
         )
         cardDragging?.delegate = self
