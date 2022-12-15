@@ -9,16 +9,23 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     /// This card presents itself in given vc
     private weak var presentingVC: UIViewController?
 
+    private let projectModel: ProjectModel
+    private let imageCaches: ImageCaches
+
     /// The view containing the slider, icon, title, subtitle and close button
     /// It also has some bottom margin added, so any sheet content view can be added directly below it
-    private let sheetHeaderView = UIView()
+    private let headerView = UIView()
+    private let headerStroke = UIView()
     private let avatarView = UIView()
     private let authorLabel = UILabel()
     private let timestampLabel = UILabel()
     private(set) var moreButton: UIButton!
     private(set) var closeButton: UIButton!
 
+    private(set) var summaryVC: FullscreenMediaSummaryViewController!
+
     private let tabBar = UITabBar()
+    private let safeAreaCoverView = UIView()
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
 
@@ -26,7 +33,12 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private var uploadNotificationToken: NotificationToken?
 
     /// Initializer
-    init(upload: Upload) {
+    init(projectModel: ProjectModel,
+         imageCaches: ImageCaches,
+         upload: Upload)
+    {
+        self.projectModel = projectModel
+        self.imageCaches = imageCaches
         self.upload = upload
         super.init(nibName: nil, bundle: nil)
 
@@ -54,19 +66,14 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         super.viewDidLoad()
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
-        setupSheetHeaderView()
-        containerView.addSubview(sheetHeaderView)
-        sheetHeaderView.snp.makeConstraints { make in
+        setupHeaderView()
+        containerView.addSubview(headerView)
+        headerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
         }
+        headerView.installSliderView()
 
-        sheetHeaderView.installSliderView()
-
-        setupHeaderViews()
-        setupCloseButton()
-        setupMoreButton()
-
-        [avatarView, authorLabel, timestampLabel, moreButton, closeButton].forEach(sheetHeaderView.addSubview)
+        [avatarView, authorLabel, timestampLabel, moreButton, closeButton].forEach(headerView.addSubview)
         avatarView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(21)
             make.width.height.equalTo(32)
@@ -90,11 +97,22 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         closeButton.snp.makeConstraints { make in
             make.top.width.height.equalTo(avatarView)
             make.trailing.equalToSuperview().inset(16)
-            make.bottom.lessThanOrEqualToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-16).priority(.high)
         }
 
         setupTabBar()
+        if let firstItem = tabBar.items?.first {
+            tabBar.selectedItem = firstItem
+        }
         // tab bar is added to view hierarchy on view did appear, because it's added to superview
+
+        setupSummaryVC()
+        add(childController: summaryVC)
+        containerView.insertSubview(summaryVC.view, belowSubview: headerView)
+        summaryVC.view.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
 
         bottomView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         // added to view (rounded view) as the containerView has a layer mask
@@ -122,18 +140,78 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        // Add to this card container view
+        addTabBar()
+    }
+
+    /// Add tabBar to this card super view (so it doesn't move with the card and is always at the bottom
+    private func addTabBar() {
         let tabBarSuperview = view.superview!
         tabBarSuperview.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(tabBarSuperview.safeAreaLayoutGuide.snp.bottom)
         }
+        // we need a view below bottom bar to cover the save area (so the content is not visible below the tab bar)
+        safeAreaCoverView.backgroundColor = containerView.backgroundColor
+        tabBarSuperview.addSubview(safeAreaCoverView)
+        safeAreaCoverView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalTo(tabBar.snp.bottom)
+        }
+
+        tabBarSuperview.layoutIfNeeded()
+        updateContentScrollInsets()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         uploadNotificationToken?.invalidate()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateContentScrollInsets()
+    }
+
+    /// Calculate the overlap of tab bar and content scroll and set the content inset for scroll view
+    /// This is needed as tab bar is presented on top of the card covering the bottom of the content.
+    private func updateContentScrollInsets() {
+        guard let tabBarSuperview = tabBar.superview else { return }
+        let tabBarFrame = tabBar.frame
+        // already layed out?
+        guard tabBarFrame.height > 0 else { return }
+        let containerFrame = containerView.convert(containerView.bounds, to: tabBarSuperview)
+        let overlap = containerFrame.maxY - tabBarFrame.minY
+        // +16 to have some margin at the bottom
+        summaryVC.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: overlap + 16, right: 0)
+        // for scroll indicator there's no need to add 16, let it extend until the tab bar
+        summaryVC.scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: overlap, right: 0)
+    }
+
+    /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
+    private func updateHeaderShadow(scrollView: UIScrollView) {
+        let shadowVisible = scrollView.contentOffset.y > 0
+        headerStroke.isHidden = !shadowVisible
+        if shadowVisible {
+            let darkMode = traitCollection.userInterfaceStyle == .dark
+            if darkMode {
+                headerView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
+            } else {
+                headerView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
+            }
+            // make the shadow height = 10 points, so the top part of the shadow is not visible
+            // (the path covers bottom part of the view only)
+            // This only works if the view is actually higher than 10 points. But if it's lower
+            // then the shadow with no shadowPath would not be shown (for view that has 0 height)
+            // so we still need to "cover" this view from top with another view (in a view that's
+            // adding this view controller as a child)
+            headerView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                                    y: headerView.bounds.maxY - 10,
+                                                                    width: headerView.bounds.width,
+                                                                    height: 10)).cgPath
+        } else {
+            headerView.layer.shadowOpacity = 0
+        }
     }
 
     private func onUploadUpdated() {
@@ -145,6 +223,8 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColors()
+            // TODO: 672 use current content view
+            updateHeaderShadow(scrollView: summaryVC.scrollView)
         }
         if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
             // animate the card to adjust for the possible height change because of font size change
@@ -180,7 +260,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     /// Provide some implementation that returns `nil` so the subclasses can override
     func drivingScrollView() -> UIScrollView? {
-        nil
+        summaryVC.scrollView
     }
 
     // MARK: - card presentation
@@ -199,8 +279,8 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller
     func dismissCard() {
-//        onDismiss?()
         tabBar.removeFromSuperview()
+        safeAreaCoverView.removeFromSuperview()
         hideCard(animated: true) {
             self.cardDragging?.delegate = nil
             self.presentingVC?.removeCard(cardViewController: self)
@@ -221,15 +301,29 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     }
 }
 
+// MARK: - content scroll delegate
+
+extension FullscreenMediaCardViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateHeaderShadow(scrollView: scrollView)
+    }
+}
+
 // MARK: - setup views
 
 extension FullscreenMediaCardViewController {
-    private func setupSheetHeaderView() {
-        sheetHeaderView.backgroundColor = containerView.backgroundColor
-        sheetHeaderView.setContentHuggingPriority(.required, for: .vertical)
-    }
+    private func setupHeaderView() {
+        headerView.backgroundColor = containerView.backgroundColor
+        headerView.setContentHuggingPriority(.required, for: .vertical)
 
-    private func setupHeaderViews() {
+        headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        headerView.addSubview(headerStroke)
+        headerStroke.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        headerStroke.isHidden = true
+
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
 
@@ -242,9 +336,7 @@ extension FullscreenMediaCardViewController {
         timestampLabel.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
         timestampLabel.adjustsFontForContentSizeCategory = true
         timestampLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-    }
 
-    private func setupMoreButton() {
         moreButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { _ in
@@ -259,9 +351,7 @@ extension FullscreenMediaCardViewController {
             }
         )
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
-    }
 
-    private func setupCloseButton() {
         closeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
@@ -290,5 +380,16 @@ extension FullscreenMediaCardViewController {
             make.top.leading.trailing.equalToSuperview()
             make.height.equalTo(1)
         }
+    }
+
+    private func setupSummaryVC() {
+        summaryVC = FullscreenMediaSummaryViewController(
+            projectModel: projectModel,
+            imageCaches: imageCaches,
+            upload: upload
+        )
+        summaryVC.scrollView.contentInsetAdjustmentBehavior = .never
+        summaryVC.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
+        summaryVC.scrollView.delegate = self
     }
 }

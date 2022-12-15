@@ -28,7 +28,7 @@ class Upload: Object, WithPlaceholder {
     @Persisted var placeholder: Bool = false
     /// Versions of a photo has the same correlationId (the id of the first version)
     @Persisted var correlationId: String
-    /// Image aspect ratio. Temporary optional until the model is migrated
+    /// Image aspect ratio. Optional as it's only provided for images
     @Persisted var imageHeightToWidth: Double?
     /// File type
     @Persisted var fileType: FileType

@@ -297,6 +297,7 @@
 		0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */; };
 		0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC05294776AB002E7549 /* CanvasCollection.swift */; };
 		0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */; };
+		0AFA1A4B294B19E100491492 /* FullscreenMediaSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFA1A4A294B19E100491492 /* FullscreenMediaSummaryViewController.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */; };
 		0AFCD61A2939285F004843AA /* String+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCD6192939285F004843AA /* String+Size.swift */; };
@@ -612,6 +613,7 @@
 		0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasCollection.swift; sourceTree = "<group>"; };
 		0AF9BC05294776AB002E7549 /* CanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCollection.swift; sourceTree = "<group>"; };
 		0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenMediaCardViewController.swift; sourceTree = "<group>"; };
+		0AFA1A4A294B19E100491492 /* FullscreenMediaSummaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenMediaSummaryViewController.swift; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
 		0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeature.swift; sourceTree = "<group>"; };
 		0AFCD6192939285F004843AA /* String+Size.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Size.swift"; sourceTree = "<group>"; };
@@ -1435,6 +1437,7 @@
 			isa = PBXGroup;
 			children = (
 				0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */,
+				0AFA1A4A294B19E100491492 /* FullscreenMediaSummaryViewController.swift */,
 			);
 			path = FullscreenMedia;
 			sourceTree = "<group>";
@@ -1644,6 +1647,7 @@
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */,
+				0AFA1A4B294B19E100491492 /* FullscreenMediaSummaryViewController.swift in Sources */,
 				0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */,
 				0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */,
 				0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */,

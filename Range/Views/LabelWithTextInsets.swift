@@ -8,6 +8,13 @@ class LabelWithTextInsets: UILabel {
         didSet { invalidateIntrinsicContentSize() }
     }
 
+    /// if configured it adds a border with given color and radius appropriate for the height
+    var borderColor: UIColor? {
+        didSet {
+            updateBorderColor()
+        }
+    }
+
     override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
         let insetRect = bounds.inset(by: textInsets)
         let textRect = super.textRect(forBounds: insetRect, limitedToNumberOfLines: numberOfLines)
@@ -22,5 +29,32 @@ class LabelWithTextInsets: UILabel {
 
     override func drawText(in rect: CGRect) {
         super.drawText(in: rect.inset(by: textInsets))
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateBorderColor()
+        }
+    }
+
+    private func updateBorderColor() {
+        if let borderColor = borderColor {
+            layer.borderColor = borderColor.cgColor
+            layer.borderWidth = 1
+            clipsToBounds = true
+        } else {
+            layer.borderColor = nil
+            clipsToBounds = false
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if borderColor != nil {
+            layer.cornerRadius = frame.height / 2
+        } else {
+            layer.cornerRadius = 0
+        }
     }
 }
