@@ -222,7 +222,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     // MARK: - card presentation
 
     /// Convenience function for installing card in given `presentingVC` and showing the card
-    func installAndShowCard(in presentingVC: UIViewController, inView: UIView? = nil) {
+    @discardableResult func installAndShowCard(in presentingVC: UIViewController, inView: UIView? = nil) -> Self {
         presentingVC.installCard(
             cardViewController: self,
             inView: inView,
@@ -231,6 +231,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         cardDragging?.delegate = self
         showCard(animated: true)
         self.presentingVC = presentingVC
+        return self
     }
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller

@@ -126,6 +126,17 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
     private func setupCollaborationButton(collaboration: Collaboration) {
         collaborationButton = CollaborationButton(collaboration: collaboration)
+        collaborationButton.addTarget(self, action: #selector(collaborationTapped), for: .touchUpInside)
+    }
+
+    @objc private func collaborationTapped() {
+        guard let collaboration = upload.collaboration.first else { return }
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.showCollaborationAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(collaboration)
+        )
     }
 
     private func setupDescriptionLabel() {

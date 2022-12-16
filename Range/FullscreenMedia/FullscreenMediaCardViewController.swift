@@ -269,7 +269,11 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     // MARK: - card presentation
 
     /// Convenience function for installing card in given `presentingVC` and showing the card
-    func installAndShowCard(in presentingVC: UIViewController, inView: UIView? = nil, showOverlay: Bool = true) {
+    @discardableResult func installAndShowCard(
+        in presentingVC: UIViewController,
+        inView: UIView? = nil,
+        showOverlay: Bool = true
+    ) -> Self {
         presentingVC.installCard(
             cardViewController: self,
             inView: inView,
@@ -278,6 +282,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         cardDragging?.delegate = self
         showCard(animated: true)
         self.presentingVC = presentingVC
+        return self
     }
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller

@@ -28,6 +28,8 @@ final class FullscreenMediaEvent: UIEvent {
     func selectCanvasAction()
     /// Show fullscreen media view for given upload
     func showFullscreenMediaAction(sender: Any?, event: FullscreenMediaEvent)
+    /// Show collaboration window for collaboration passed in the event
+    func showCollaborationAction(sender: Any?, event: FlowEvent)
 }
 
 /// Main view controller for displaying a project.
@@ -49,6 +51,8 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     lazy var actionCardVC = setupActionCardVC()
     var pinsDisplay: GeometriesPinsDisplay?
     var canvasSelectorButton: RoundShadowButton!
+    weak var mediaVC: MediaCardViewController?
+    weak var fullscreenMediaVC: FullscreenMediaCardViewController?
 
     /// To observed changes in model.currentCanvas
     private var canvasObservation: NSKeyValueObservation?
@@ -151,7 +155,7 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
 
         canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
-            self.reloadGeometriesPinsDisplay(useNativeViews: self.debugSettings.nativeViewsForPins)
+            self.reloadGeometriesPinsDisplay(useNativeViews: self.debugSettings.nativeViewsForPins, onReloaded: nil)
         }
 
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
@@ -160,19 +164,19 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     /// Reload the geometries pins display.
     /// It stops the current pins display, creates a new one and starts it if the previous one was started (maybe it was temporarily stopped,
     /// then we need the new one to be stopped too)
-    private func reloadGeometriesPinsDisplay(useNativeViews: Bool) {
+    private func reloadGeometriesPinsDisplay(useNativeViews: Bool, onReloaded: (() -> Void)?) {
         let start = pinsDisplay?.started ?? false
         pinsDisplay?.stop()
         createGeometriesPinsDisplay(useNativeViews: useNativeViews)
         if start {
-            pinsDisplay?.start(onInitialLoad: nil)
+            pinsDisplay?.start(onInitialLoad: onReloaded)
         }
     }
 
     private func observeDebugSettings() {
         debugSettingsNativeViewsForPinsSubscriber = debugSettings.$nativeViewsForPins
             .sink { [weak self] useNativeViews in
-                self?.reloadGeometriesPinsDisplay(useNativeViews: useNativeViews)
+                self?.reloadGeometriesPinsDisplay(useNativeViews: useNativeViews, onReloaded: nil)
             }
     }
 
@@ -192,13 +196,24 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
             )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
             if let geometryId = pinPoint?.id {
-                // minimize the action card when showing collab
-                self?.actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
-                self?.collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
+                self?.showCollaborationWindow(forGeometry: geometryId)
             } else {
                 self?.collaborationFlow.hideCollaborationWindow(animated: true)
             }
         }
+    }
+
+    private func showCollaborationWindow(forGeometry geometryId: String) {
+        // minimize the action card when showing collab
+        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
+        // hide media/fullscreen
+        if let fullscreenMediaVC = fullscreenMediaVC {
+            fullscreenMediaVC.dismissCard()
+        }
+        if let mediaVC = mediaVC {
+            mediaVC.dismissCard()
+        }
+        collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
     }
 
     func stop() {
@@ -408,7 +423,7 @@ extension ProjectFlowController {
     }
 
     func showMediaAction() {
-        MediaCardViewController(
+        mediaVC = MediaCardViewController(
             projectModel: model,
             imageCaches: imageCaches,
             title: String(localized: "Media"),
@@ -420,7 +435,7 @@ extension ProjectFlowController {
     }
 
     func showFullscreenMediaAction(sender _: Any?, event: FullscreenMediaEvent) {
-        FullscreenMediaCardViewController(
+        fullscreenMediaVC = FullscreenMediaCardViewController(
             projectModel: model,
             imageCaches: imageCaches,
             upload: event.upload,
@@ -434,5 +449,28 @@ extension ProjectFlowController {
             // media view already shows the overlay so don't show in this case
             showOverlay: !event.fromMedia
         )
+    }
+
+    func showCollaborationAction(sender _: Any?, event: FlowEvent) {
+        guard let collaboration = event.object as? Collaboration,
+              let geometry = collaboration.feature.first?.geometry.first,
+              let canvas = geometry.canvas.first
+        else { return }
+        // update the canvas
+        model.currentCanvas = canvas
+        // reload the pins (it only reloads if canvas has changed)
+        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
+            guard let pinsDisplay = self.pinsDisplay else { return }
+            if let pin = pinsDisplay.pinForGeometryId(geometry.id) {
+                // select the pin (which will trigger showing the collaboration window)
+                pinsDisplay.setSelectedPin(pin)
+                let canvasVC = self.canvasContainer.pdfCanvasViewController
+                // pan the canvas to center on the pin
+                canvasVC.animatePanAndZoom(
+                    cameraCenter: pin.point.coordinates,
+                    mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
+                )
+            }
+        }
     }
 }
