@@ -65,7 +65,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 6
+            config.schemaVersion = 7
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent(self.projectId)
             config.fileURL!.appendPathExtension("realm")

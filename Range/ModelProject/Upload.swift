@@ -34,6 +34,8 @@ class Upload: Object, WithPlaceholder {
     @Persisted var fileType: FileType
     /// The storage versions (map of type, for example, "main", "thumbnail0" to version string)
     @Persisted var storageVersion: Map<String, String>
+    /// comments, the order doesn't matter so it's a set (the order is controlled by the comment timestamp when displaying in the UI)
+    @Persisted var comments: MutableSet<Comment>
 
     /// Default initializer required by Realm.
     override init() {

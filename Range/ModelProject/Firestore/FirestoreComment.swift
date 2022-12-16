@@ -36,10 +36,9 @@ struct FirestoreComment: Codable, FirestoreToRealmSyncable {
     var completedTimestamp: Timestamp?
 
     func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
-        guard parentType == "Collaboration" else {
+        guard parentType == "Collaboration" || parentType == "Upload" else {
             throw "parentType not supported: \(parentType)"
         }
-        let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
         let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
         let comment = Comment(
             id: id,
@@ -54,6 +53,12 @@ struct FirestoreComment: Codable, FirestoreToRealmSyncable {
             comment.completedBy = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: completedById)
         }
         realm.add(comment, update: .modified)
-        collaboration.comments.insert(comment)
+        if parentType == "Collaboration" {
+            let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
+            collaboration.comments.insert(comment)
+        } else if parentType == "Upload" {
+            let upload = realm.objectOrPlaceholder(ofType: Upload.self, forPrimaryKey: parentId)
+            upload.comments.insert(comment)
+        }
     }
 }
