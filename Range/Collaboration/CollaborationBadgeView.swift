@@ -39,8 +39,6 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
             self?.updateBadge()
         }
         updateBadge()
-
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
     }
 
     deinit {
@@ -97,9 +95,6 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
         } else {
             markerView?.isHidden = true
         }
-
-        // make it tappable if not archived - to trigger the status update
-        isUserInteractionEnabled = !collaboration.isArchived
     }
 
     /// Creates the note flag image view
@@ -146,11 +141,5 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
 
     override var intrinsicContentSize: CGSize {
         CGSize(width: 32, height: 32)
-    }
-
-    @objc private func tapped() {
-        UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.editStatusAction), to: nil, from: self, for: nil
-        )
     }
 }

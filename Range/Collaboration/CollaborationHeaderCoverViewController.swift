@@ -6,8 +6,10 @@ import UIKit
 class CollaborationHeaderCoverViewController: UIViewController {
     let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
+    private var geometryNotificationToken: NotificationToken?
     var onClose: (() -> Void)?
 
+    private var badgeView: CollaborationBadgeView!
     private var nameLabel: UILabel!
     private var moreButton: UIButton!
     private var closeButton: UIButton!
@@ -19,6 +21,9 @@ class CollaborationHeaderCoverViewController: UIViewController {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.onCollaborationUpdated()
         }
+        geometryNotificationToken = collaboration.feature.first?.geometry.first?.observe { [weak self] _ in
+            self?.onCollaborationUpdated()
+        }
     }
 
     @available(*, unavailable)
@@ -28,6 +33,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
 
     deinit {
         collaborationNotificationToken?.invalidate()
+        geometryNotificationToken?.invalidate()
     }
 
     override func viewDidLoad() {
@@ -47,7 +53,8 @@ class CollaborationHeaderCoverViewController: UIViewController {
             make.height.equalTo(1)
         }
 
-        let badgeView = CollaborationBadgeView(collaboration)
+        badgeView = CollaborationBadgeView(collaboration)
+        badgeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(badgeTapped)))
         view.addSubview(badgeView)
         badgeView.snp.makeConstraints { make in
             make.leading.equalTo(16)
@@ -88,6 +95,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
     }
 
     private func onCollaborationUpdated() {
+        badgeView.isUserInteractionEnabled = !collaboration.isArchived
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
             nameLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
@@ -109,11 +117,15 @@ class CollaborationHeaderCoverViewController: UIViewController {
         }
     }
 
+    @objc private func badgeTapped() {
+        UIApplication.shared.sendAction(
+            #selector(CollaborationFlowActions.editStatusAction), to: nil, from: self, for: nil
+        )
+    }
+
     @objc private func nameTapped() {
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.editNameAction),
-            to: nil,
-            from: self,
+            #selector(CollaborationFlowActions.editNameAction), to: nil, from: self,
             for: FlowEvent(collaboration)
         )
     }

@@ -34,6 +34,7 @@
 		0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */; };
 		0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EB128DB1AB000FF1368 /* TagsView.swift */; };
 		0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */; };
+		0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A147E7D294C5CB700B5833A /* CollaborationButton.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */; };
@@ -347,6 +348,7 @@
 		0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelWithTextInsets.swift; sourceTree = "<group>"; };
 		0A130EB128DB1AB000FF1368 /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
 		0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A147E7D294C5CB700B5833A /* CollaborationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationButton.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
@@ -1438,6 +1440,7 @@
 			children = (
 				0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */,
 				0AFA1A4A294B19E100491492 /* FullscreenMediaSummaryViewController.swift */,
+				0A147E7D294C5CB700B5833A /* CollaborationButton.swift */,
 			);
 			path = FullscreenMedia;
 			sourceTree = "<group>";
@@ -1776,6 +1779,7 @@
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,
+				0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,

@@ -11,6 +11,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     private let projectModel: ProjectModel
     private let imageCaches: ImageCaches
+    private let showCollaborationButton: Bool
 
     /// The view containing the slider, icon, title, subtitle and close button
     /// It also has some bottom margin added, so any sheet content view can be added directly below it
@@ -35,10 +36,12 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     /// Initializer
     init(projectModel: ProjectModel,
          imageCaches: ImageCaches,
-         upload: Upload)
+         upload: Upload,
+         showCollaborationButton: Bool)
     {
         self.projectModel = projectModel
         self.imageCaches = imageCaches
+        self.showCollaborationButton = showCollaborationButton
         self.upload = upload
         super.init(nibName: nil, bundle: nil)
 
@@ -386,7 +389,8 @@ extension FullscreenMediaCardViewController {
         summaryVC = FullscreenMediaSummaryViewController(
             projectModel: projectModel,
             imageCaches: imageCaches,
-            upload: upload
+            upload: upload,
+            showCollaborationButton: showCollaborationButton
         )
         summaryVC.scrollView.contentInsetAdjustmentBehavior = .never
         summaryVC.scrollView.automaticallyAdjustsScrollIndicatorInsets = false

@@ -17,6 +17,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     unowned let projectModel: ProjectModel
     let collaboration: Collaboration
 
+    private var geometryNotificationToken: NotificationToken?
     private var collaborationNotificationToken: NotificationToken?
 
     /// whether this vc displays a task or a photo collaboration version of the view
@@ -25,6 +26,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     /// a view below content to cover the space visible when dragging up past the max height
     var bottomView = UIView()
+    var badgeView: CollaborationBadgeView!
     var statusButton: CollaborationStatusButton!
     var moreButton: UIButton!
     var closeButton: UIButton!
@@ -96,7 +98,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.height.equalTo(500)
         }
 
-        let badgeView = CollaborationBadgeView(collaboration)
+        badgeView = CollaborationBadgeView(collaboration)
+        badgeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(statusTapped)))
         containerView.addSubview(badgeView)
         badgeView.snp.makeConstraints { make in
             make.leading.equalTo(16)
@@ -152,6 +155,9 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.onCollaborationUpdated()
         }
+        geometryNotificationToken = collaboration.feature.first?.geometry.first?.observe { [weak self] _ in
+            self?.onCollaborationUpdated()
+        }
         onCollaborationUpdated()
         // install keyboard observer
         NotificationCenter.default.addObserver(
@@ -165,6 +171,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         collaborationNotificationToken?.invalidate()
+        geometryNotificationToken?.invalidate()
         // remove keyboard observers
         NotificationCenter.default.removeObserver(self)
     }
@@ -216,6 +223,8 @@ extension CollaborationViewController {
 
 extension CollaborationViewController {
     private func onCollaborationUpdated() {
+        badgeView.isUserInteractionEnabled = !collaboration.isArchived
+
         statusButton.isHidden = !isTaskWindow
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)

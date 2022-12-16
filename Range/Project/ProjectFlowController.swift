@@ -420,13 +420,19 @@ extension ProjectFlowController {
     }
 
     func showFullscreenMediaAction(sender _: Any?, event: FullscreenMediaEvent) {
-        // media view already shows the overlay so don't show in this case
-        let showOverlay = !event.fromMedia
         FullscreenMediaCardViewController(
             projectModel: model,
             imageCaches: imageCaches,
-            upload: event.upload
+            upload: event.upload,
+            // show button only from media, otherwise it's from collaboration so user can just close
+            // the fullscreen media and be back in collaboration
+            showCollaborationButton: event.fromMedia
         )
-        .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls, showOverlay: showOverlay)
+        .installAndShowCard(
+            in: canvasContainer,
+            inView: canvasContainer.controls,
+            // media view already shows the overlay so don't show in this case
+            showOverlay: !event.fromMedia
+        )
     }
 }

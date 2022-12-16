@@ -7,18 +7,23 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
     private let projectModel: ProjectModel
     private let imageCaches: ImageCaches
+    private let showCollaborationButton: Bool
     private let upload: Upload
     private var uploadNotificationToken: NotificationToken?
 
     private let stackView = UIStackView()
     private(set) var galleryVC: ImageGalleryViewController<String>!
+    private(set) var collaborationButton: CollaborationButton!
     private let descriptionLabel = LabelWithTextInsets()
     private let tagsView = TagsView()
 
     /// Initializer
-    init(projectModel: ProjectModel, imageCaches: ImageCaches, upload: Upload) {
+    init(projectModel: ProjectModel, imageCaches: ImageCaches, upload: Upload,
+         showCollaborationButton: Bool)
+    {
         self.projectModel = projectModel
         self.imageCaches = imageCaches
+        self.showCollaborationButton = showCollaborationButton
         self.upload = upload
         super.init(nibName: nil, bundle: nil)
     }
@@ -72,6 +77,20 @@ class FullscreenMediaSummaryViewController: UIViewController {
         setupGalleryVC()
         stackView.addArrangedSubview(galleryVC.view)
 
+        if showCollaborationButton, let collaboration = upload.collaboration.first {
+            stackView.setCustomSpacing(12, after: galleryVC.view)
+            setupCollaborationButton(collaboration: collaboration)
+            // put collaboration button in a wrapper view to have horizontal margin
+            let collaborationButtonWrapper = UIView()
+            collaborationButtonWrapper.addSubview(collaborationButton)
+            collaborationButton.snp.makeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
+            stackView.addArrangedSubview(collaborationButtonWrapper)
+            stackView.setCustomSpacing(12, after: collaborationButtonWrapper)
+        }
+
         let descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
         stackView.addArrangedSubview(descriptionHeader)
         stackView.setCustomSpacing(8, after: descriptionHeader)
@@ -83,7 +102,6 @@ class FullscreenMediaSummaryViewController: UIViewController {
         stackView.addArrangedSubview(tagsHeader)
         stackView.setCustomSpacing(8, after: tagsHeader)
 
-        setupTagsView()
         stackView.addArrangedSubview(tagsView)
     }
 
@@ -101,8 +119,13 @@ class FullscreenMediaSummaryViewController: UIViewController {
         galleryVC.view.snp.makeConstraints { make in
             make.width.equalTo(scrollView)
             // make the photo take the whole available width
-            make.height.equalTo(scrollView.snp.width).offset(-32).multipliedBy(galleryHeightToWidth)
+            make.height.equalTo(scrollView.snp.width).offset(-32.0 * galleryHeightToWidth)
+                .multipliedBy(galleryHeightToWidth)
         }
+    }
+
+    private func setupCollaborationButton(collaboration: Collaboration) {
+        collaborationButton = CollaborationButton(collaboration: collaboration)
     }
 
     private func setupDescriptionLabel() {
@@ -111,10 +134,6 @@ class FullscreenMediaSummaryViewController: UIViewController {
         descriptionLabel.adjustsFontForContentSizeCategory = true
         descriptionLabel.textInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         descriptionLabel.numberOfLines = 0
-    }
-
-    private func setupTagsView() {
-//        tagsView.collectionView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
     }
 
     /// Creates a view with an icon, title and edit button
