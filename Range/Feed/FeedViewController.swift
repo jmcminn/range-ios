@@ -3,8 +3,9 @@ import OSLog
 import RealmSwift
 import UIKit
 
-/// Feed for the collaboration. Most recent items are to the top. Collaboration created item is the last one.
-class CollaborationFeedViewController: UIViewController {
+/// Feed showing comments, updates and uploads. Most recent items are to the top.
+/// It can be created for a Collaboration, in this case the collaboration created item is the last one.
+class FeedViewController: UIViewController {
     private let distanceBetweenMajorRows = 32.0
     private let distanceBetweenMinorRows = 16.0
 
@@ -59,23 +60,22 @@ class CollaborationFeedViewController: UIViewController {
             hasher.combine(id)
         }
 
-        static func == (lhs: CollaborationFeedViewController.FeedItem,
-                        rhs: CollaborationFeedViewController.FeedItem) -> Bool
-        {
+        static func == (lhs: FeedViewController.FeedItem, rhs: FeedViewController.FeedItem) -> Bool {
             lhs.id == rhs.id
         }
 
         /// Comparable by timestamp so FeedItems can be sorted by timestamp
-        static func < (lhs: CollaborationFeedViewController.FeedItem,
-                       rhs: CollaborationFeedViewController.FeedItem) -> Bool
-        {
+        static func < (lhs: FeedViewController.FeedItem, rhs: FeedViewController.FeedItem) -> Bool {
             lhs.timestamp < rhs.timestamp
         }
     }
 
     unowned let imageCaches: ImageCaches
     unowned let projectModel: ProjectModel
-    let collaboration: Collaboration
+    let collaboration: Collaboration?
+    let uploads: Results<Upload>?
+    let comments: Results<Comment>?
+    let updates: Results<Update>?
 
     let tableView: UITableView
     var dataSource: UITableViewDiffableDataSource<String, FeedItem>?
@@ -106,10 +106,29 @@ class CollaborationFeedViewController: UIViewController {
     private var updatesNotificationToken: NotificationToken?
     private var updateFeedItems = [FeedItem]()
 
+    /// Initialize for the collaboration feed = show updates for given collaboration
     init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
         self.imageCaches = imageCaches
         self.projectModel = projectModel
         self.collaboration = collaboration
+        // convert collections to results
+        uploads = collaboration.uploads.filter(NSPredicate(value: true))
+        comments = collaboration.comments.filter(NSPredicate(value: true))
+        updates = collaboration.updates.filter(NSPredicate(value: true))
+
+        tableView = UITableView(frame: .zero, style: .plain)
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    /// Initialize for the comments feed = show given comments only
+    init(imageCaches: ImageCaches, projectModel: ProjectModel, comments: Results<Comment>) {
+        self.imageCaches = imageCaches
+        self.projectModel = projectModel
+        collaboration = nil
+        uploads = nil
+        self.comments = comments
+        updates = nil
         tableView = UITableView(frame: .zero, style: .plain)
 
         super.init(nibName: nil, bundle: nil)
@@ -193,8 +212,10 @@ class CollaborationFeedViewController: UIViewController {
     private func updateVerticalLineHeight() {
         // - distanceBetweenMajorRows because it's a table footer view included in the content size
         // - lastRowHeight + 8 because for last row the vertical line should only reach the avatar/dot
-        verticalLine.frame.size.height = tableView.contentSize.height - distanceBetweenMajorRows
-            - lastRowHeight + 8 - verticalLine.frame.minY
+        verticalLine.frame.size.height = max(
+            tableView.contentSize.height - distanceBetweenMajorRows - lastRowHeight + 8
+                - verticalLine.frame.origin.y, 0
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -213,6 +234,9 @@ class CollaborationFeedViewController: UIViewController {
                     self.updateVerticalLineHeight()
                 })
             )
+        } else {
+            verticalLine.frame.origin.y = distanceBetweenMinorRows + 8
+            updateVerticalLineHeight()
         }
         observationsForVerticalLine.append(
             tableView.observe(\.contentSize, changeHandler: { [weak self] _, _ in
@@ -251,7 +275,8 @@ class CollaborationFeedViewController: UIViewController {
     }
 
     private func observeUploads() {
-        uploadsNotificationToken = collaboration.uploads
+        guard let uploads = uploads else { return }
+        uploadsNotificationToken = uploads
             .where { $0.placeholder == false && $0.fileType == .image }
             .sorted(by: \Upload.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
@@ -284,7 +309,8 @@ class CollaborationFeedViewController: UIViewController {
     }
 
     private func observeComments() {
-        commentsNotificationToken = collaboration.comments
+        guard let comments = comments else { return }
+        commentsNotificationToken = comments
             .where { $0.placeholder == false }
             .sorted(by: \Comment.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
@@ -318,7 +344,8 @@ class CollaborationFeedViewController: UIViewController {
     }
 
     private func observeUpdates() {
-        updatesNotificationToken = collaboration.updates
+        guard let updates = updates else { return }
+        updatesNotificationToken = updates
             .where {
                 $0.placeholder == false &&
                     ($0.field == .name || $0.field == .description || $0.field == .statusName ||
@@ -356,7 +383,7 @@ class CollaborationFeedViewController: UIViewController {
         }
 
         /// Add 'collaboration created' feed item
-        if let createdFeedItem = FeedItem(asCollaborationCreated: collaboration) {
+        if let collaboration = collaboration, let createdFeedItem = FeedItem(asCollaborationCreated: collaboration) {
             if ascending {
                 // if ascending then 'created' first and items after
                 items.insert(createdFeedItem, at: 0)
@@ -385,7 +412,7 @@ class CollaborationFeedViewController: UIViewController {
 
 // MARK: table view delegate
 
-extension CollaborationFeedViewController: UITableViewDelegate {
+extension FeedViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section == 0 {
             // there's already some padding at the top
@@ -418,7 +445,7 @@ extension CollaborationFeedViewController: UITableViewDelegate {
 
 // MARK: table view diffable data source
 
-extension CollaborationFeedViewController {
+extension FeedViewController {
     func cell(forTableView tableView: UITableView, indexPath: IndexPath, feedItem: FeedItem) -> UITableViewCell? {
         if let collaboration = feedItem.item as? Collaboration {
             let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCreated",

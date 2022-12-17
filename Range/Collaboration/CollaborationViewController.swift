@@ -33,7 +33,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var nameField: UITextField!
 
     var detailsVC: CollaborationDetailsViewController!
-    var feedVC: CollaborationFeedViewController!
+    var feedVC: FeedViewController!
 
     /// how high is the currently visible part of the keyboard
     private var keyboardHeightInWindow: CGFloat = 0
@@ -65,7 +65,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         isTaskWindow = collaboration.status != nil
         super.init(nibName: nil, bundle: nil)
 
-        feedVC = CollaborationFeedViewController(
+        feedVC = FeedViewController(
             imageCaches: imageCaches,
             projectModel: projectModel,
             collaboration: collaboration
