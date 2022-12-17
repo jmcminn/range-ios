@@ -20,10 +20,16 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private let avatarView = UIView()
     private let authorLabel = UILabel()
     private let timestampLabel = UILabel()
-    private(set) var moreButton: UIButton!
-    private(set) var closeButton: UIButton!
+    private var moreButton: UIButton!
+    private var closeButton: UIButton!
 
-    private(set) var summaryVC: FullscreenMediaSummaryViewController!
+    private enum Mode {
+        case summary, comments
+    }
+
+    private var mode = Mode.summary
+    private var summaryVC: FullscreenMediaSummaryViewController!
+    private var commentsVC: FeedViewController!
 
     private let tabBar = UITabBar()
     private let safeAreaCoverView = UIView()
@@ -116,6 +122,14 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
+        setupCommentsVC()
+        add(childController: commentsVC)
+        containerView.insertSubview(commentsVC.view, belowSubview: headerView)
+        commentsVC.view.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+        setMode(.summary)
 
         bottomView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         // added to view (rounded view) as the containerView has a layer mask
@@ -185,16 +199,23 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         guard tabBarFrame.height > 0 else { return }
         let containerFrame = containerView.convert(containerView.bounds, to: tabBarSuperview)
         let overlap = containerFrame.maxY - tabBarFrame.minY
+
         // +16 to have some margin at the bottom
-        summaryVC.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: overlap + 16, right: 0)
+        let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: overlap + 16, right: 0)
         // for scroll indicator there's no need to add 16, let it extend until the tab bar
-        summaryVC.scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: overlap, right: 0)
+        let scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: overlap, right: 0)
+        summaryVC.scrollView.contentInset = contentInset
+        summaryVC.scrollView.scrollIndicatorInsets = scrollIndicatorInsets
+        commentsVC.tableView.contentInset = contentInset
+        commentsVC.tableView.scrollIndicatorInsets = scrollIndicatorInsets
     }
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
-    private func updateHeaderShadow(scrollView: UIScrollView) {
+    private func updateHeaderShadow() {
+        guard let scrollView = drivingScrollView() else { return }
         let shadowVisible = scrollView.contentOffset.y > 0
-        headerStroke.isHidden = !shadowVisible
+        // always show for .comments
+        headerStroke.isHidden = mode == .summary && !shadowVisible
         if shadowVisible {
             let darkMode = traitCollection.userInterfaceStyle == .dark
             if darkMode {
@@ -226,8 +247,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColors()
-            // TODO: 672 use current content view
-            updateHeaderShadow(scrollView: summaryVC.scrollView)
+            updateHeaderShadow()
         }
         if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
             // animate the card to adjust for the possible height change because of font size change
@@ -263,7 +283,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     /// Provide some implementation that returns `nil` so the subclasses can override
     func drivingScrollView() -> UIScrollView? {
-        summaryVC.scrollView
+        mode == .summary ? summaryVC.scrollView : commentsVC.tableView
     }
 
     // MARK: - card presentation
@@ -309,11 +329,38 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     }
 }
 
+// MARK: - tab switching
+
+extension FullscreenMediaCardViewController: UITabBarDelegate {
+    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        let mode: Mode = item == tabBar.items?[0] ? .summary : .comments
+        if mode != self.mode {
+            setMode(mode)
+        }
+    }
+
+    /// set summary or comments
+    private func setMode(_ mode: Mode) {
+        self.mode = mode
+
+        summaryVC.view.isHidden = mode == .comments
+        commentsVC.view.isHidden = mode == .summary
+
+        updateHeaderShadow()
+
+        if let cardDragging = cardDragging {
+            // reset scroll view listeners
+            cardDragging.remove()
+            cardDragging.install()
+        }
+    }
+}
+
 // MARK: - content scroll delegate
 
 extension FullscreenMediaCardViewController: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        updateHeaderShadow(scrollView: scrollView)
+    func scrollViewDidScroll(_: UIScrollView) {
+        updateHeaderShadow()
     }
 }
 
@@ -378,6 +425,7 @@ extension FullscreenMediaCardViewController {
                 title: String(localized: "Comments"), image: UIImage(systemName: "bubble.right"), tag: 1
             ),
         ]
+        tabBar.delegate = self
         // to hide the default top stroke for tab bar:
         tabBar.clipsToBounds = true
         // HACK - add separator to tab bar (maybe not even a hack??)
@@ -400,5 +448,16 @@ extension FullscreenMediaCardViewController {
         summaryVC.scrollView.contentInsetAdjustmentBehavior = .never
         summaryVC.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
         summaryVC.scrollView.delegate = self
+    }
+
+    private func setupCommentsVC() {
+        commentsVC = FeedViewController(
+            imageCaches: imageCaches,
+            projectModel: projectModel,
+            comments: upload.comments.filter(NSPredicate(value: true))
+        )
+        commentsVC.tableView.contentInsetAdjustmentBehavior = .never
+        commentsVC.tableView.automaticallyAdjustsScrollIndicatorInsets = false
+        commentsVC.tableView.forwardDelegateInvocations(to: self)
     }
 }
