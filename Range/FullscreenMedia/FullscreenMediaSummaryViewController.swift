@@ -103,9 +103,11 @@ class FullscreenMediaSummaryViewController: UIViewController {
         stackView.addArrangedSubview(descriptionLabel)
 
         let tagsHeader = createSectionHeaderView(iconName: "tag", title: String(localized: "Tags"))
+        tagsHeader.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
         stackView.addArrangedSubview(tagsHeader)
         stackView.setCustomSpacing(8, after: tagsHeader)
 
+        tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
         stackView.addArrangedSubview(tagsView)
     }
 
@@ -208,6 +210,13 @@ class FullscreenMediaSummaryViewController: UIViewController {
     @objc private func descriptionTapped() {
         UIApplication.shared.sendAction(
             #selector(ProjectFlowActions.editDescriptionAction), to: nil, from: self,
+            for: FlowEvent(upload)
+        )
+    }
+
+    @objc private func tagsTapped() {
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.editTagsAction), to: nil, from: self,
             for: FlowEvent(upload)
         )
     }

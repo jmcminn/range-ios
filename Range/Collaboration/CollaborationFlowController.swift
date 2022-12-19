@@ -11,9 +11,6 @@ import UIKit
     func addPhotosAction()
     /// When "Add comment" button in the Collaboration window header or CTA was tapped
     func addCommentAction()
-    /// Notifies the flow that tags were selected for `Upload` provided in the event. This will results in the flow triggering
-    /// tags editing
-    func tagsSelectedAction(sender: Any?, event: FlowEvent)
     /// Show more menu for FlowEvent.object
     func moreAction(sender: Any?, event: FlowEvent)
     /// Toggle the complete state of the Note
@@ -55,9 +52,6 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
 
     /// When adding photos from collaboration window
     var addPhotosFlow: AddPhotoFlowController?
-
-    /// When editing tags for upload
-    var editTagsVC: SearchAndSelectTagsViewController?
 
     /// Remember the text for the last comment that was cancelled, so when showing the next AddCommentViewController
     /// for the same collaboration use this text. It's reset when the current collaboration changes
@@ -414,85 +408,6 @@ extension CollaborationFlowController {
     }
 }
 
-// MARK: - edit tags for collaboration or upload
-
-extension CollaborationFlowController {
-    func tagsSelectedAction(sender _: Any?, event: FlowEvent) {
-        let object = event.object
-        let initialTags: [TagViewModel]
-        if let upload = object as? Upload {
-            initialTags = Array(upload.tags.map { TagViewModel(fromTag: $0) })
-        } else if let collaboration = object as? Collaboration {
-            initialTags = Array(collaboration.tags.map { TagViewModel(fromTag: $0) })
-        } else {
-            fatalError("tagsSelected action not implemented for \(event.object)")
-        }
-        let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialTags)
-        editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
-        editTagsVC!.onClose = { [weak self] in
-            guard let self = self else { return }
-            self.updateTagsIfChanged(forObject: object)
-        }
-        installCard(
-            cardViewController: editTagsVC!,
-            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
-        )
-        editTagsVC!.showCard(animated: true)
-    }
-
-    /// Update tags for given collaboration or upload and close the editTagsVC. The tags are taken from the current editTagsVC
-    /// If tags haven't changed, just close the editTagsVC
-    /// If updating failed give user a choice to retry or abort (close the editTagsVC and not save changes)
-    private func updateTagsIfChanged(forObject object: Object) {
-        guard let editTagsVC = editTagsVC else { return }
-        let selectedTags = editTagsVC.tagsViewModel.selectedTags
-
-        let closeEditTagsVC = {
-            editTagsVC.hideCard(animated: true) {
-                self.removeCard(cardViewController: editTagsVC)
-            }
-        }
-
-        let command: Command?
-        if let collaboration = object as? Collaboration {
-            command = model.update(tags: selectedTags, forCollaboration: collaboration)
-        } else if let upload = object as? Upload {
-            command = model.update(tags: selectedTags, forUpload: upload)
-        } else {
-            fatalError("updateTagsIfChanged not implemented for \(object)")
-        }
-
-        guard let command = command else {
-            closeEditTagsVC()
-            return
-        }
-
-        runCommandWithProgress(
-            command: command,
-            onSuccess: { [weak self] in
-                guard let self = self else { return }
-                UserDefaults.addRecentTagIds(selectedTags.map(\.id), forProjectId: self.model.projectId)
-                closeEditTagsVC()
-            },
-            onFailure: { error in
-                let alert = UIAlertController(
-                    title: "Updating tags error",
-                    message: error.localizedDescription,
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
-                    // try again
-                    self?.updateTagsIfChanged(forObject: object)
-                }))
-                alert.addAction(UIAlertAction(title: "Abort", style: .destructive, handler: { _ in
-                    closeEditTagsVC()
-                }))
-                editTagsVC.present(alert, animated: true)
-            }
-        )
-    }
-}
-
 // MARK: - edit status
 
 extension CollaborationFlowController {
@@ -781,48 +696,6 @@ extension CollaborationFlowController {
         model.run(model.delete(comment: comment)) { error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to delete the \(comment.isNote ? "note" : "comment")")
-            }
-        }
-    }
-}
-
-// MARK: - running commands
-
-extension CollaborationFlowController {
-    /// Shows the activity indicator making the UI not interactive, runs provided commands and runs one of the provided blocks depending
-    /// on the success of the commands.
-    /// If the command is nil this function doesn nothing
-    private func runCommandWithProgress(command: Command,
-                                        onSuccess: @escaping () -> Void,
-                                        onFailure: @escaping (Error) -> Void)
-    {
-        // show activity view (a spinner) that covers the screen disabling any user interactions
-        let activityView = UIActivityIndicatorView(style: .large)
-        activityView.backgroundColor = .black.withAlphaComponent(0.3)
-        activityView.color = .Pink_03
-        view.addSubview(activityView)
-        activityView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        activityView.startAnimating()
-
-        Task {
-            do {
-                // hide the spinner when data store call is finished
-                defer {
-                    DispatchQueue.main.async {
-                        activityView.removeFromSuperview()
-                    }
-                }
-                try await model.run(command)
-                DispatchQueue.main.async {
-                    onSuccess()
-                }
-            } catch {
-                Logger.model.error("finalize error: \(error.localizedDescription, privacy: .public)")
-                DispatchQueue.main.async {
-                    onFailure(error)
-                }
             }
         }
     }

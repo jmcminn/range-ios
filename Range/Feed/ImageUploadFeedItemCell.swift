@@ -234,9 +234,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
               let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
         // send action to the responder chain with custom UploadEvent
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.tagsSelectedAction(sender:event:)),
-            to: nil,
-            from: self,
+            #selector(ProjectFlowActions.editTagsAction), to: nil, from: self,
             for: FlowEvent(upload)
         )
     }

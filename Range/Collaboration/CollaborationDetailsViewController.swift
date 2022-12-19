@@ -226,7 +226,7 @@ extension CollaborationDetailsViewController {
 
     @objc private func tagsTapped() {
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.tagsSelectedAction), to: nil, from: self,
+            #selector(ProjectFlowActions.editTagsAction), to: nil, from: self,
             for: FlowEvent(collaboration)
         )
     }
