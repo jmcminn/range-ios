@@ -241,9 +241,7 @@ extension CollaborationViewController {
             primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { [weak self] _ in
                 guard let self = self else { return }
                 UIApplication.shared.sendAction(
-                    #selector(CollaborationFlowActions.moreAction),
-                    to: nil,
-                    from: self,
+                    #selector(ProjectFlowController.moreAction), to: nil, from: self,
                     for: FlowEvent(self.collaboration)
                 )
             }

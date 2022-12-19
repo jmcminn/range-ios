@@ -394,15 +394,12 @@ extension FullscreenMediaCardViewController {
 
         moreButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),
-            primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { _ in
-                // TODO: 676 more action
-//                guard let self = self else { return }
-//                UIApplication.shared.sendAction(
-//                    #selector(CollaborationFlowActions.moreAction),
-//                    to: nil,
-//                    from: self,
-//                    for: FlowEvent(self.collaboration)
-//                )
+            primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { [weak self] _ in
+                guard let self = self else { return }
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowController.moreAction), to: nil, from: self,
+                    for: FlowEvent(self.upload)
+                )
             }
         )
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))

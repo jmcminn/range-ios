@@ -36,6 +36,8 @@ final class FlowEvent: UIEvent {
     func editDescriptionAction(sender: Any?, event: FlowEvent)
     /// Edit tags for Collaboration or Upload
     func editTagsAction(sender: Any?, event: FlowEvent)
+    /// Show more menu for FlowEvent.object
+    func moreAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -240,6 +242,167 @@ extension ProjectFlowController {
                 DispatchQueue.main.async {
                     onFailure(error)
                 }
+            }
+        }
+    }
+}
+
+// MARK: - more menu actions
+
+extension ProjectFlowController {
+    func moreAction(sender _: Any?, event: FlowEvent) {
+        if let collaboration = event.object as? Collaboration {
+            ActionSelectorCardViewController(
+                icon: UIImage(systemName: "ellipsis"),
+                title: "More Menu",
+                actions: [
+                    ActionItem(
+                        title: collaboration.isArchived ? "Unarchive" : "Archive",
+                        imageName: "archivebox",
+                        handler: {
+                            self.toggleCollaborationArchived(collaboration)
+                        }
+                    ),
+                    ActionItem(title: "Delete", imageName: "trash", style: .destructive, handler: {
+                        self.confirmAndDeleteCollaboration(collaboration)
+                    }),
+                ]
+            ).installAndShowCard(in: canvasContainer)
+        } else if let upload = event.object as? Upload {
+            ActionSelectorCardViewController(
+                icon: UIImage(systemName: "ellipsis"),
+                title: "More Menu",
+                actions: [
+                    ActionItem(title: "Delete Photo", imageName: "trash", style: .destructive, handler: {
+                        self.confirmAndDeleteUpload(upload)
+                    }),
+                ]
+            ).installAndShowCard(in: canvasContainer)
+        } else if let comment = event.object as? Comment {
+            let commentOrNote = comment.isNote ? "Note" : "Comment"
+            ActionSelectorCardViewController(
+                icon: UIImage(systemName: "ellipsis"),
+                title: "More Menu",
+                actions: [
+                    ActionItem(title: "Edit \(commentOrNote)", imageName: "pencil", handler: {
+                        self.editComment(comment)
+                    }),
+                    ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive, handler: {
+                        self.confirmAndDeleteComment(comment)
+                    }),
+                ]
+            ).installAndShowCard(in: canvasContainer)
+        }
+    }
+
+    func editComment(_ comment: Comment) {
+        let commentVC = CommentViewController(mode: .edit)
+        commentVC.commentText = comment.text
+        commentVC.isNote = comment.isNote
+        commentVC.onCancel = { [weak self, weak commentVC] in
+            guard let self = self, let commentVC = commentVC else { return }
+            commentVC.hideCard(animated: true) {
+                self.removeCard(cardViewController: commentVC)
+            }
+        }
+        commentVC.onDone = { [weak self, weak commentVC] in
+            guard let self = self, let commentVC = commentVC else { return }
+            let text = commentVC.commentText
+            commentVC.hideCard(animated: true) {
+                self.removeCard(cardViewController: commentVC)
+            }
+            self.model.run(self.model.update(text: text!, forComment: comment)) { error in
+                if error != nil { ToastWindow.shared.showError(text: "Failed to update the comment") }
+            }
+        }
+        installCard(
+            cardViewController: commentVC,
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
+        )
+        commentVC.showCard(animated: true)
+    }
+
+    func confirmAndDeleteCollaboration(_ collaboration: Collaboration) {
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            subtitle: "This collection will be deleted permanently. It can’t be recovered.",
+            actions: [
+                ActionItem(title: "Delete Collaboration", imageName: "trash", style: .destructive, handler: {
+                    self.deleteCollaboration(collaboration)
+                }),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func deleteCollaboration(_ collaboration: Collaboration) {
+        // hide the window first so all collaboration change listeners are unregistered
+        collaborationFlow.hideCollaborationWindow(animated: true) {
+            // unselect the pin
+            self.pinsDisplay?.setSelectedPin(nil)
+            Task {
+                do {
+                    try await self.model.run(self.model.delete(collaboration: collaboration))
+                } catch {
+                    Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                    ToastWindow.shared.showError(text: "Failed to delete the collaboration")
+                }
+            }
+        }
+    }
+
+    func confirmAndDeleteUpload(_ upload: Upload) {
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            subtitle: "This photo will be deleted permanently. It can’t be recovered.",
+            actions: [
+                ActionItem(title: "Delete Photo", imageName: "trash", style: .destructive, handler: {
+                    self.deleteUpload(upload)
+                }),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func deleteUpload(_ upload: Upload) {
+        model.run(model.delete(upload: upload)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to delete the photo") }
+        }
+    }
+
+    func toggleCollaborationArchived(_ collaboration: Collaboration) {
+        Task {
+            do {
+                try await self.model.run(self.model.toggleCollaborationArchived(collaboration: collaboration))
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text:
+                    "Failed to \(collaboration.isArchived ? "unarchive" : "archive") the collaboration")
+            }
+        }
+    }
+
+    func confirmAndDeleteComment(_ comment: Comment) {
+        let commentOrNote = comment.isNote ? "Note" : "Comment"
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            subtitle: "This \(commentOrNote.lowercased()) will be deleted permanently. It can't be recovered.",
+            actions: [
+                ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive, handler: {
+                    self.deleteComment(comment)
+                }),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func deleteComment(_ comment: Comment) {
+        model.run(model.delete(comment: comment)) { error in
+            if error != nil {
+                ToastWindow.shared.showError(text: "Failed to delete the \(comment.isNote ? "note" : "comment")")
             }
         }
     }

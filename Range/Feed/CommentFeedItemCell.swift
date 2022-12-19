@@ -222,9 +222,7 @@ class CommentFeedItemCell: UITableViewCell {
               let commentId = commentId,
               let comment = model.mainRealm.object(ofType: Comment.self, forPrimaryKey: commentId) else { return }
         UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.moreAction),
-            to: nil,
-            from: self,
+            #selector(ProjectFlowController.moreAction), to: nil, from: self,
             for: FlowEvent(comment)
         )
     }
