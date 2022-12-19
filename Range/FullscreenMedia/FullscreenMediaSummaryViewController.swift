@@ -92,10 +92,14 @@ class FullscreenMediaSummaryViewController: UIViewController {
         }
 
         let descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
+        descriptionHeader
+            .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
         stackView.addArrangedSubview(descriptionHeader)
         stackView.setCustomSpacing(8, after: descriptionHeader)
 
         setupDescriptionLabel()
+        descriptionLabel
+            .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
         stackView.addArrangedSubview(descriptionLabel)
 
         let tagsHeader = createSectionHeaderView(iconName: "tag", title: String(localized: "Tags"))
@@ -145,6 +149,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         descriptionLabel.adjustsFontForContentSizeCategory = true
         descriptionLabel.textInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         descriptionLabel.numberOfLines = 0
+        descriptionLabel.isUserInteractionEnabled = true
     }
 
     /// Creates a view with an icon, title and edit button
@@ -198,5 +203,12 @@ class FullscreenMediaSummaryViewController: UIViewController {
         }
 
         return sectionHeader
+    }
+
+    @objc private func descriptionTapped() {
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.editDescriptionAction), to: nil, from: self,
+            for: FlowEvent(upload)
+        )
     }
 }

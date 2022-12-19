@@ -82,6 +82,8 @@
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
 		0A3714DF29504FA6004ED1B0 /* ProjectFlowController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */; };
+		0A3714E12950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3714E02950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift */; };
+		0A3714E32950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3714E22950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift */; };
 		0A374DD8292418230036C184 /* ToastWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DD7292418230036C184 /* ToastWindow.swift */; };
 		0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DD929241ED40036C184 /* ToastViewController.swift */; };
 		0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */; };
@@ -398,6 +400,8 @@
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
 		0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectFlowController+Actions.swift"; sourceTree = "<group>"; };
+		0A3714E02950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadDescriptionCommand.swift; sourceTree = "<group>"; };
+		0A3714E22950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadDescriptionCommandTest.swift; sourceTree = "<group>"; };
 		0A374DD7292418230036C184 /* ToastWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastWindow.swift; sourceTree = "<group>"; };
 		0A374DD929241ED40036C184 /* ToastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewController.swift; sourceTree = "<group>"; };
 		0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+TopViewController.swift"; sourceTree = "<group>"; };
@@ -1241,6 +1245,7 @@
 				0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */,
 				0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */,
 				0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */,
+				0A3714E22950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift */,
 				0A881988291D21160050FC41 /* UpdateUploadTagsCommandTest.swift */,
 			);
 			path = Commands;
@@ -1424,6 +1429,7 @@
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */,
 				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
+				0A3714E02950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift */,
 				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
 			);
 			path = Commands;
@@ -1697,6 +1703,7 @@
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */,
 				0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */,
+				0A3714E12950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift in Sources */,
 				0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */,
 				0A374DD8292418230036C184 /* ToastWindow.swift in Sources */,
 				0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */,
@@ -1889,6 +1896,7 @@
 				0A34C181284552AC00BEDC7C /* FirestoreFeatureTest.swift in Sources */,
 				0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */,
 				0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */,
+				0A3714E32950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift in Sources */,
 				0A34C1832845F89700BEDC7C /* FirestoreCollaborationTest.swift in Sources */,
 				0A88198B291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift in Sources */,
 				0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */,

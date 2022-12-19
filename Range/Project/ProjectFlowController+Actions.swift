@@ -31,6 +31,8 @@ final class FlowEvent: UIEvent {
     func showFullscreenMediaAction(sender: Any?, event: FlowEvent)
     /// Show collaboration window for collaboration passed in the event
     func showCollaborationAction(sender: Any?, event: FlowEvent)
+    /// Edit description of Upload passed in the event
+    func editDescriptionAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -99,6 +101,24 @@ extension ProjectFlowController: ProjectFlowActions {
                     mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
                 )
             }
+        }
+    }
+
+    func editDescriptionAction(sender _: Any?, event: FlowEvent) {
+        guard let upload = event.object as? Upload else { return }
+        TextCardViewController(
+            title: "Description",
+            initialText: upload.uploadDescription,
+            onTextSaved: { [weak self] newDescription in
+                self?.updateDescription(newDescription, forUpload: upload)
+            }
+        )
+        .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    private func updateDescription(_ description: String?, forUpload upload: Upload) {
+        model.run(model.update(description: description, forUpload: upload)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the description") }
         }
     }
 }

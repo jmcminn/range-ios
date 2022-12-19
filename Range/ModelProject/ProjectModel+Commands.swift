@@ -265,4 +265,14 @@ extension ProjectModel {
             description: (description?.isEmpty ?? true) ? nil : description
         )
     }
+
+    /// Updates upload.description. If provided description is empty it's treated as nil (to remove the description in Firestore)
+    func update(description: String?, forUpload upload: Upload) -> Command? {
+        guard description != upload.uploadDescription else { return nil }
+        return UpdateUploadDescriptionCommand(
+            authorId: userId,
+            uploadId: upload.id,
+            uploadDescription: (description?.isEmpty ?? true) ? nil : description
+        )
+    }
 }
