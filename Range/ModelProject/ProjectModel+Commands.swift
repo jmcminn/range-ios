@@ -1,6 +1,7 @@
 import CoreLocation
 import Foundation
 import Kingfisher
+import OSLog
 import RealmSwift
 import Turf
 
@@ -29,6 +30,24 @@ extension ProjectModel {
 
         // 3. Store the action for server side execution (will not fail).
         pendingActionsModel.addAction(data: actionData)
+    }
+
+    /// A convenience wrapper for the `run` function that does the async call and catches and logs the error.
+    /// It also accepts an optional callback which is invoked with the optional Error
+    func run(_ command: Command?, callback: ((Error?) -> Void)?) {
+        Task {
+            do {
+                try await run(command)
+                DispatchQueue.main.async {
+                    callback?(nil)
+                }
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                DispatchQueue.main.async {
+                    callback?(error)
+                }
+            }
+        }
     }
 }
 

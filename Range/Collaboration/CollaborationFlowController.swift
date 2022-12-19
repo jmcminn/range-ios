@@ -410,17 +410,16 @@ extension CollaborationFlowController {
             self.removeCard(cardViewController: addCommentVC)
         }
         guard let collaboration = collaboration else { return }
-        Task {
-            do {
-                try await model.run(model.addComment(
-                    commentText: addCommentVC.commentText,
-                    isNote: addCommentVC.isNote,
-                    toCollaboration: collaboration.id
-                ))
-                self.lastCancelledCommentText = ""
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+
+        model.run(model.addComment(
+            commentText: addCommentVC.commentText,
+            isNote: addCommentVC.isNote,
+            toCollaboration: collaboration.id
+        )) { error in
+            if error != nil {
                 ToastWindow.shared.showError(text: "Failed to add the comment")
+            } else {
+                self.lastCancelledCommentText = ""
             }
         }
     }
@@ -524,13 +523,8 @@ extension CollaborationFlowController {
 
     private func updateStatus(_ status: Status) {
         guard let collaboration = collaboration else { return }
-        Task {
-            do {
-                try await model.run(model.update(status: status, forCollaboration: collaboration))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to update the status")
-            }
+        model.run(model.update(status: status, forCollaboration: collaboration)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the status") }
         }
     }
 }
@@ -568,13 +562,8 @@ extension CollaborationFlowController {
 
     private func updateDescription(_ description: String?) {
         guard let collaboration = collaboration else { return }
-        Task {
-            do {
-                try await model.run(model.update(description: description, forCollaboration: collaboration))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to update the description")
-            }
+        model.run(model.update(description: description, forCollaboration: collaboration)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the description") }
         }
     }
 }
@@ -598,13 +587,8 @@ extension CollaborationFlowController {
 
     private func updateAssignee(_ assignee: Participant?) {
         guard let collaboration = collaboration else { return }
-        Task {
-            do {
-                try await model.run(model.update(assignee: assignee, forCollaboration: collaboration))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to update the assignee")
-            }
+        model.run(model.update(assignee: assignee, forCollaboration: collaboration)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the assignee") }
         }
     }
 }
@@ -627,13 +611,8 @@ extension CollaborationFlowController {
 
     private func updateDueDate(_ dueDate: Date?) {
         guard let collaboration = collaboration else { return }
-        Task {
-            do {
-                try await model.run(model.update(dueDate: dueDate, forCollaboration: collaboration))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to update the due date")
-            }
+        model.run(model.update(dueDate: dueDate, forCollaboration: collaboration)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the due date") }
         }
     }
 }
@@ -644,13 +623,8 @@ extension CollaborationFlowController {
     private func updateName(_ name: String) {
         collaborationVC?.view.endEditing(true)
         guard let collaboration = collaboration else { return }
-        Task {
-            do {
-                try await model.run(model.update(name: name, forCollaboration: collaboration))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to update the name")
-            }
+        model.run(model.update(name: name, forCollaboration: collaboration)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the name") }
         }
     }
 }
@@ -705,13 +679,8 @@ extension CollaborationFlowController {
 
     func toggleCompleteAction(sender _: Any?, event: FlowEvent) {
         guard let comment = event.object as? Comment, comment.isNote else { return }
-        Task {
-            do {
-                try await model.run(model.toggleNoteCompleted(note: comment))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to update the comment")
-            }
+        model.run(model.toggleNoteCompleted(note: comment)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the comment") }
         }
     }
 
@@ -731,13 +700,8 @@ extension CollaborationFlowController {
             commentVC.hideCard(animated: true) {
                 self.removeCard(cardViewController: commentVC)
             }
-            Task {
-                do {
-                    try await self.model.run(self.model.update(text: text!, forComment: comment))
-                } catch {
-                    Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                    ToastWindow.shared.showError(text: "Failed to update the comment")
-                }
+            self.model.run(self.model.update(text: text!, forComment: comment)) { error in
+                if error != nil { ToastWindow.shared.showError(text: "Failed to update the comment") }
             }
         }
         installCard(
@@ -792,14 +756,8 @@ extension CollaborationFlowController {
     }
 
     func deleteUpload(_ upload: Upload) {
-        // hide the window first so all collaboration change listeners are unregistered
-        Task {
-            do {
-                try await self.model.run(self.model.delete(upload: upload))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to delete the photo")
-            }
+        model.run(model.delete(upload: upload)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to delete the photo") }
         }
     }
 
@@ -831,11 +789,8 @@ extension CollaborationFlowController {
     }
 
     func deleteComment(_ comment: Comment) {
-        Task {
-            do {
-                try await self.model.run(self.model.delete(comment: comment))
-            } catch {
-                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+        model.run(model.delete(comment: comment)) { error in
+            if error != nil {
                 ToastWindow.shared.showError(text: "Failed to delete the \(comment.isNote ? "note" : "comment")")
             }
         }
