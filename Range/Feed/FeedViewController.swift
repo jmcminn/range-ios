@@ -434,7 +434,7 @@ extension FeedViewController: UITableViewDelegate {
             #selector(ProjectFlowActions.showFullscreenMediaAction),
             to: nil,
             from: self,
-            for: FullscreenMediaEvent(upload, fromMedia: false)
+            for: FlowEvent(upload)
         )
     }
 

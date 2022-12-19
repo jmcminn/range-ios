@@ -81,6 +81,7 @@
 		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
+		0A3714DF29504FA6004ED1B0 /* ProjectFlowController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */; };
 		0A374DD8292418230036C184 /* ToastWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DD7292418230036C184 /* ToastWindow.swift */; };
 		0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DD929241ED40036C184 /* ToastViewController.swift */; };
 		0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */; };
@@ -396,6 +397,7 @@
 		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
+		0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectFlowController+Actions.swift"; sourceTree = "<group>"; };
 		0A374DD7292418230036C184 /* ToastWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastWindow.swift; sourceTree = "<group>"; };
 		0A374DD929241ED40036C184 /* ToastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewController.swift; sourceTree = "<group>"; };
 		0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+TopViewController.swift"; sourceTree = "<group>"; };
@@ -1044,6 +1046,7 @@
 			isa = PBXGroup;
 			children = (
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
+				0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */,
 				0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
 			);
@@ -1836,6 +1839,7 @@
 				0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */,
 				0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */,
 				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
+				0A3714DF29504FA6004ED1B0 /* ProjectFlowController+Actions.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,

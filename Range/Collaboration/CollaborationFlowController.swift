@@ -3,17 +3,6 @@ import OSLog
 import RealmSwift
 import UIKit
 
-/// Custom UIEvent sent by views to trigger certain actions defined in `CollaborationFlowActions` and related to given `Object`
-/// The way responder chain works forces us to pass objects (Upload, Comment, etc.) as Object as there's no way to use generics
-/// to define the custom UIEvent (as they need to later match the signature of action functions which are Objective-C action(sender: Any?, event: UIEvent?)
-/// (See "Discussion" in https://developer.apple.com/documentation/uikit/uiapplication/1622946-sendaction)
-final class FlowEvent: UIEvent {
-    let object: Object
-    init(_ object: Object) {
-        self.object = object
-    }
-}
-
 /// Protocol defining actions that collaboration flow can perform.
 /// Required by the views sending actions, so they can use selectors for these functions.
 /// See https://swiftrocks.com/understanding-the-ios-responder-chain.html for more info

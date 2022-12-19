@@ -271,7 +271,7 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
             #selector(ProjectFlowActions.showFullscreenMediaAction),
             to: nil,
             from: self,
-            for: FullscreenMediaEvent(upload, fromMedia: true)
+            for: FlowEvent(upload, source: .media)
         )
     }
 

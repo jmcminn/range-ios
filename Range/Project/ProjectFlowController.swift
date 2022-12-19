@@ -6,35 +6,9 @@ import SnapKit
 import SwiftUI
 import UIKit
 
-/// Custom UIEvent sent by views to trigger full screen media view.
-/// Introduced so the action can be triggered with some custom parameters (whether it was open from media view or collaboration feed, etc.)
-final class FullscreenMediaEvent: UIEvent {
-    let upload: Upload
-    // if true this event comes from media view, otherwise from collaboration feed
-    let fromMedia: Bool
-    init(_ upload: Upload, fromMedia: Bool) {
-        self.upload = upload
-        self.fromMedia = fromMedia
-    }
-}
-
-/// Protocol defining actions that project flow can perform.
-/// Required by the views sending actions, so they can use selectors for these functions.
-/// See https://swiftrocks.com/understanding-the-ios-responder-chain.html for more info
-@objc protocol ProjectFlowActions: AnyObject {
-    /// show the Media card view controller with all project uploads
-    func showMediaAction()
-    /// Select and change the current canvas for project
-    func selectCanvasAction()
-    /// Show fullscreen media view for given upload
-    func showFullscreenMediaAction(sender: Any?, event: FullscreenMediaEvent)
-    /// Show collaboration window for collaboration passed in the event
-    func showCollaborationAction(sender: Any?, event: FlowEvent)
-}
-
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
-final class ProjectFlowController: UIViewController, ProjectFlowActions {
+final class ProjectFlowController: UIViewController {
     unowned let imageCaches: ImageCaches
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
@@ -164,7 +138,7 @@ final class ProjectFlowController: UIViewController, ProjectFlowActions {
     /// Reload the geometries pins display.
     /// It stops the current pins display, creates a new one and starts it if the previous one was started (maybe it was temporarily stopped,
     /// then we need the new one to be stopped too)
-    private func reloadGeometriesPinsDisplay(useNativeViews: Bool, onReloaded: (() -> Void)?) {
+    func reloadGeometriesPinsDisplay(useNativeViews: Bool, onReloaded: (() -> Void)?) {
         let start = pinsDisplay?.started ?? false
         pinsDisplay?.stop()
         createGeometriesPinsDisplay(useNativeViews: useNativeViews)
@@ -406,71 +380,5 @@ extension ProjectFlowController {
                 ),
             ]
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
-    }
-
-    func selectCanvasAction() {
-        let canvases = [PDFCanvas](model.mainRealm.objects(PDFCanvas.self).sorted(by: \PDFCanvas.pageNumber))
-        CanvasSelectorCardViewController(
-            title: String(localized: "Source Selector"),
-            canvases: canvases,
-            selectedCanvas: model.currentCanvas,
-            onCanvasSelected: { [weak self] canvas in
-                guard let self = self else { return }
-                guard self.model.currentCanvas != canvas else { return }
-                self.model.currentCanvas = canvas
-            }
-        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
-    }
-
-    func showMediaAction() {
-        mediaVC = MediaCardViewController(
-            projectModel: model,
-            imageCaches: imageCaches,
-            title: String(localized: "Media"),
-            uploads: model.mainRealm.objects(Upload.self).where
-                { $0.placeholder == false && $0.fileType == .image },
-            onUploadSelected: { _ in
-            }
-        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
-    }
-
-    func showFullscreenMediaAction(sender _: Any?, event: FullscreenMediaEvent) {
-        fullscreenMediaVC = FullscreenMediaCardViewController(
-            projectModel: model,
-            imageCaches: imageCaches,
-            upload: event.upload,
-            // show button only from media, otherwise it's from collaboration so user can just close
-            // the fullscreen media and be back in collaboration
-            showCollaborationButton: event.fromMedia
-        )
-        .installAndShowCard(
-            in: canvasContainer,
-            inView: canvasContainer.controls,
-            // media view already shows the overlay so don't show in this case
-            showOverlay: !event.fromMedia
-        )
-    }
-
-    func showCollaborationAction(sender _: Any?, event: FlowEvent) {
-        guard let collaboration = event.object as? Collaboration,
-              let geometry = collaboration.feature.first?.geometry.first,
-              let canvas = geometry.canvas.first
-        else { return }
-        // update the canvas
-        model.currentCanvas = canvas
-        // reload the pins (it only reloads if canvas has changed)
-        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
-            guard let pinsDisplay = self.pinsDisplay else { return }
-            if let pin = pinsDisplay.pinForGeometryId(geometry.id) {
-                // select the pin (which will trigger showing the collaboration window)
-                pinsDisplay.setSelectedPin(pin)
-                let canvasVC = self.canvasContainer.pdfCanvasViewController
-                // pan the canvas to center on the pin
-                canvasVC.animatePanAndZoom(
-                    cameraCenter: pin.point.coordinates,
-                    mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
-                )
-            }
-        }
     }
 }
