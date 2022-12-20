@@ -305,6 +305,8 @@
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
 		0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */; };
 		0AFCD61A2939285F004843AA /* String+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCD6192939285F004843AA /* String+Size.swift */; };
+		0AFDFA972952106D00F64D62 /* CreateUploadCommentCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFDFA962952106D00F64D62 /* CreateUploadCommentCommand.swift */; };
+		0AFDFA992952110400F64D62 /* CreateUploadCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFDFA982952110400F64D62 /* CreateUploadCommentCommandTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -625,6 +627,8 @@
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
 		0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeature.swift; sourceTree = "<group>"; };
 		0AFCD6192939285F004843AA /* String+Size.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Size.swift"; sourceTree = "<group>"; };
+		0AFDFA962952106D00F64D62 /* CreateUploadCommentCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUploadCommentCommand.swift; sourceTree = "<group>"; };
+		0AFDFA982952110400F64D62 /* CreateUploadCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUploadCommentCommandTest.swift; sourceTree = "<group>"; };
 		A6E8166BBA53B1A993643B7A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1233,6 +1237,7 @@
 				0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */,
 				0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */,
 				0A82A8E729222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift */,
+				0AFDFA982952110400F64D62 /* CreateUploadCommentCommandTest.swift */,
 				0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */,
 				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
 				0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */,
@@ -1417,6 +1422,7 @@
 				0A82A8E929226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift */,
 				0A82A8E5292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift */,
 				0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */,
+				0AFDFA962952106D00F64D62 /* CreateUploadCommentCommand.swift */,
 				0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */,
 				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
 				0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */,
@@ -1650,6 +1656,7 @@
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A7A537B293E4E540093D913 /* ProjectsModel.swift in Sources */,
 				0A2E04D328AC0F6D00E10503 /* ImageCaches.swift in Sources */,
+				0AFDFA972952106D00F64D62 /* CreateUploadCommentCommand.swift in Sources */,
 				0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */,
 				0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */,
 				0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */,
@@ -1916,6 +1923,7 @@
 				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
 				0A6DB6A7292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift in Sources */,
 				0A82A8E829222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift in Sources */,
+				0AFDFA992952110400F64D62 /* CreateUploadCommentCommandTest.swift in Sources */,
 				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

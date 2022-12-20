@@ -46,7 +46,8 @@ class CollaborationStatusButton: ButtonWithTapAreaInsets {
         config.imagePadding = 6
 
         // more vertical tap area as button is only 32 points high
-        configurationUpdateHandler = { [unowned self] button in
+        configurationUpdateHandler = { [weak self] button in
+            guard let self = self else { return }
             var config = button.configuration
             config?.baseBackgroundColor = self.collaboration.status?.color ?? .Primary_Blue_04
             button.configuration = config

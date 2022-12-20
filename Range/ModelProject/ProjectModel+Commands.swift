@@ -172,6 +172,16 @@ extension ProjectModel {
         )
     }
 
+    /// Create command for creating a new comment for given upload id.
+    func addComment(commentText: String, toUpload uploadId: String) -> Command {
+        CreateUploadCommentCommand(
+            commentId: generateRealmId(),
+            uploadId: uploadId,
+            authorId: userId,
+            text: commentText
+        )
+    }
+
     /// Updates the name for collaboration if it's different than the current name.
     func update(name: String, forCollaboration collaboration: Collaboration) -> Command? {
         guard name != collaboration.name else { return nil }

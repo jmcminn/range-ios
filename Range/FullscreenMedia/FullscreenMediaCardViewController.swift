@@ -207,8 +207,15 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             addCommentVC.view.endEditing(true)
             addCommentVC.cardDragging?.setPosition(.medium, withVelocity: 0, animated: true)
         }
-        addCommentVC.onDone = {
-            // TODO: 713 save the comment and cleanup the text view (the same as in onCancel)
+        addCommentVC.onDone = { [weak self] in
+            guard let self = self else { return }
+            // save the comment and cleanup the text view (the same as in onCancel)
+            self.projectModel.run(
+                self.projectModel.addComment(commentText: addCommentVC.commentText, toUpload: self.upload.id)
+            ) { error in
+                if error != nil { ToastWindow.shared.showError(text: "Failed to add the comment") }
+            }
+            addCommentVC.onCancel?()
         }
 
         presentingVC.installCard(

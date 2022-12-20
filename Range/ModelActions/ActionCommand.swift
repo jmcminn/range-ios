@@ -23,28 +23,30 @@ import RealmSwift
 /// Not ideal either but at least it's keyed by the enum cases...
 enum ActionCommand: Codable {
     case addUploadsToCollaboration(AddUploadsToCollaborationCommand)
-    case createCollaborationComment(_ command: CreateCollaborationCommentCommand)
+    case createCollaborationComment(CreateCollaborationCommentCommand)
     case createPhotoCollaboration(CreatePhotoCollaborationCommand)
+    case createUploadComment(CreateUploadCommentCommand)
     case deleteCollaboration(DeleteCollaborationCommand)
     case deleteComment(DeleteCommentCommand)
     case deleteUpload(DeleteUploadCommand)
-    case updateCollaborationAssignee(_ command: UpdateCollaborationAssigneeCommand)
-    case updateCollaborationDescription(_ command: UpdateCollaborationDescriptionCommand)
-    case updateCollaborationDueDate(_ command: UpdateCollaborationDueDateCommand)
-    case updateCollaborationName(_ command: UpdateCollaborationNameCommand)
-    case updateCollaborationStatus(_ command: UpdateCollaborationStatusCommand)
-    case updateCollaborationTags(_ command: UpdateCollaborationTagsCommand)
-    case updateCommentText(_ command: UpdateCommentTextCommand)
-    case updateGeometryArchived(_ command: UpdateGeometryArchivedCommand)
-    case updateNoteCompleted(_ command: UpdateNoteCompletedCommand)
-    case updateUploadDescription(_ command: UpdateUploadDescriptionCommand)
-    case updateUploadTags(_ command: UpdateUploadTagsCommand)
+    case updateCollaborationAssignee(UpdateCollaborationAssigneeCommand)
+    case updateCollaborationDescription(UpdateCollaborationDescriptionCommand)
+    case updateCollaborationDueDate(UpdateCollaborationDueDateCommand)
+    case updateCollaborationName(UpdateCollaborationNameCommand)
+    case updateCollaborationStatus(UpdateCollaborationStatusCommand)
+    case updateCollaborationTags(UpdateCollaborationTagsCommand)
+    case updateCommentText(UpdateCommentTextCommand)
+    case updateGeometryArchived(UpdateGeometryArchivedCommand)
+    case updateNoteCompleted(UpdateNoteCompletedCommand)
+    case updateUploadDescription(UpdateUploadDescriptionCommand)
+    case updateUploadTags(UpdateUploadTagsCommand)
 
     init(_ c: Any) {
         switch c {
         case let c as AddUploadsToCollaborationCommand: self = .addUploadsToCollaboration(c)
         case let c as CreateCollaborationCommentCommand: self = .createCollaborationComment(c)
         case let c as CreatePhotoCollaborationCommand: self = .createPhotoCollaboration(c)
+        case let c as CreateUploadCommentCommand: self = .createUploadComment(c)
         case let c as DeleteCollaborationCommand: self = .deleteCollaboration(c)
         case let c as DeleteCommentCommand: self = .deleteComment(c)
         case let c as DeleteUploadCommand: self = .deleteUpload(c)
@@ -68,6 +70,7 @@ enum ActionCommand: Codable {
         case let .addUploadsToCollaboration(c): return c
         case let .createCollaborationComment(c): return c
         case let .createPhotoCollaboration(c): return c
+        case let .createUploadComment(c): return c
         case let .deleteCollaboration(c): return c
         case let .deleteComment(c): return c
         case let .deleteUpload(c): return c

@@ -108,9 +108,10 @@ class CommentFeedItemCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(10)
             make.centerY.equalToSuperview()
         }
-        completeButton.configurationUpdateHandler = { [unowned self] button in
+        completeButton.configurationUpdateHandler = { [weak self] button in
+            guard let self = self else { return }
             var config = button.configuration
-            if isCompleted {
+            if self.isCompleted {
                 config?.baseBackgroundColor = .Green_04
                 config?.background.strokeColor = .Green_04
             } else {
