@@ -8,12 +8,15 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
         didSet { cardDragging?.delegate = self }
     }
 
-    /// The UI differs a little depending on whether it's for adding a new comment/note or editing the existing one
+    /// The UI differs a little depending on whether it's for adding a new comment/note, adding a comment only or editing the existing one
     enum Mode {
-        case add, edit
+        case add, addComment, edit
     }
 
     let mode: Mode
+    // whether the text view should automatically become first responder when shown
+    private let startEditingWhenShown: Bool
+    private let shownAboveView: UIView?
 
     var onCancel: (() -> Void)?
     var onDone: (() -> Void)?
@@ -73,8 +76,15 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
         view = RoundShadowView(cornerRadius: 24)
     }
 
-    init(mode: Mode) {
+    ///
+    /// - Parameters:
+    ///   - mode: the mode for the controller
+    ///   - startEditingWhenShown: whether it should automatically start editing (show keyboard) when shown
+    ///   - shownAboveView: hack, optional view above which this vc should be presented. (it uses the height/position of the provided view to adjust it's height, assuming this vc is presented behind it)
+    init(mode: Mode, startEditingWhenShown: Bool = true, shownAboveView: UIView? = nil) {
         self.mode = mode
+        self.startEditingWhenShown = startEditingWhenShown
+        self.shownAboveView = shownAboveView
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -90,17 +100,19 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
         setupTextView()
         containerView.addSubview(textView)
         textView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(CommentViewController.margin)
+            make.top.equalToSuperview()
+                .inset(CommentViewController.margin / 2.0) // textView is higher so it takes half of the top margin
+            make.leading.trailing.equalToSuperview().inset(CommentViewController.margin)
             textViewHeightConstraint = make.height.equalTo(textViewHeight).priority(.high).constraint
         }
 
         setupCommentButton()
         containerView.addSubview(commentButton)
         commentButton.snp.makeConstraints { make in
-            make.top.equalTo(textView.snp.bottom)
+            make.top.equalTo(textView.snp.bottom).offset(CommentViewController.margin / 2.0)
             make.trailing.equalToSuperview().offset(-CommentViewController.margin)
             make.height.equalTo(CommentViewController.commentButtonHeight).priority(.required)
-            if mode == .edit {
+            if mode == .addComment || mode == .edit {
                 make.width.equalToSuperview().multipliedBy(0.5).offset(-CommentViewController.margin - 6)
             }
         }
@@ -108,7 +120,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
         setupCancelButton()
         containerView.addSubview(cancelButton)
         cancelButton.snp.makeConstraints { make in
-            make.top.equalTo(textView.snp.bottom)
+            make.top.equalTo(textView.snp.bottom).offset(CommentViewController.margin / 2.0)
             if mode == .add {
                 make.trailing.equalTo(commentButton.snp.leading).offset(-8)
             } else {
@@ -128,6 +140,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
                 make.centerY.equalTo(commentButton.snp.centerY)
             }
         }
+        updateColors()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -143,8 +156,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
         } else {
             view.setShadowWithFigmaValues(y: -3, blur: 6, opacity: 0.05)
         }
-        // stroke visibility in dark mode depends on showDarkBorder (if false same color as background)
-        roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
+        roundedShadowView.topStrokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
     }
 
     private func isNoteDidSet() {
@@ -181,7 +193,9 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
             name: UIResponder.keyboardWillChangeFrameNotification,
             object: nil
         )
-        textView.becomeFirstResponder()
+        if startEditingWhenShown {
+            textView.becomeFirstResponder()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -268,9 +282,10 @@ extension CommentViewController {
             outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
             return outgoing
         }
+        let commentButtonText = mode == .edit ? "Save" : "Comment"
         commentButton = ButtonWithTapAreaInsets(
             configuration: commentConfig,
-            primaryAction: UIAction(title: mode == .add ? "Comment" : "Save") { [weak self] _ in
+            primaryAction: UIAction(title: commentButtonText) { [weak self] _ in
                 self?.onDone?()
             }
         )
@@ -305,12 +320,13 @@ extension CommentViewController: CardPresentable {
 
     func height(forContainer cardContainer: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .medium {
-            return -1 // not supported
+            // just show the text view so it can be used to trigger the editing
+            return CommentViewController.margin + textViewHeight + (shownAboveView?.frame.height ?? 0.0)
         }
 
-        return CommentViewController.margin + textViewHeight +
-            CommentViewController.commentButtonHeight + CommentViewController.margin
-            + extraSpaceForKeyboard(cardContainer: cardContainer)
+        return CommentViewController.margin + textViewHeight
+            + CommentViewController.commentButtonHeight + CommentViewController.margin
+            + max(extraSpaceForKeyboard(cardContainer: cardContainer), shownAboveView?.frame.height ?? 0.0)
     }
 
     func drivingScrollView() -> UIScrollView? {
@@ -404,6 +420,13 @@ extension CommentViewController {
 // MARK: - text view delegate
 
 extension CommentViewController: UITextViewDelegate {
+    func textViewShouldBeginEditing(_: UITextView) -> Bool {
+        if let cardDragging = cardDragging, cardDragging.position == .medium {
+            cardDragging.setPosition(.max, withVelocity: 0, animated: true)
+        }
+        return true
+    }
+
     func textViewDidChange(_: UITextView) {
         updateCommentButtonEnabled()
     }
