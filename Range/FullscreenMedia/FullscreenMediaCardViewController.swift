@@ -25,10 +25,11 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private var moreButton: UIButton!
     private var closeButton: UIButton!
 
-    private enum Mode {
+    enum Mode {
         case summary, comments
     }
 
+    private let initialMode: Mode
     private var mode = Mode.summary
     private var summaryVC: FullscreenMediaSummaryViewController!
     private var commentsVC: FeedViewController!
@@ -46,12 +47,14 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     init(projectModel: ProjectModel,
          imageCaches: ImageCaches,
          upload: Upload,
-         showCollaborationButton: Bool)
+         showCollaborationButton: Bool,
+         initialMode: Mode = .summary)
     {
         self.projectModel = projectModel
         self.imageCaches = imageCaches
         self.showCollaborationButton = showCollaborationButton
         self.upload = upload
+        self.initialMode = initialMode
         super.init(nibName: nil, bundle: nil)
 
         onUploadUpdated()
@@ -113,9 +116,6 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         }
 
         setupTabBar()
-        if let firstItem = tabBar.items?.first {
-            tabBar.selectedItem = firstItem
-        }
         // tab bar is added to view hierarchy on view did appear, because it's added to superview
 
         setupSummaryVC()
@@ -132,7 +132,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
-        setMode(.summary)
+        setMode(initialMode)
 
         bottomView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
         // added to view (rounded view) as the containerView has a layer mask
@@ -482,7 +482,7 @@ extension FullscreenMediaCardViewController {
     }
 
     private func setupTabBar() {
-        tabBar.items = [
+        let items = [
             UITabBarItem(
                 title: String(localized: "Summary"), image: UIImage(systemName: "info.circle"), tag: 0
             ),
@@ -490,6 +490,12 @@ extension FullscreenMediaCardViewController {
                 title: String(localized: "Comments"), image: UIImage(systemName: "bubble.right"), tag: 1
             ),
         ]
+        tabBar.items = items
+        if initialMode == .summary {
+            tabBar.selectedItem = items[0]
+        } else {
+            tabBar.selectedItem = items[1]
+        }
         tabBar.delegate = self
         // to hide the default top stroke for tab bar:
         tabBar.clipsToBounds = true

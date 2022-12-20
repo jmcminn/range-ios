@@ -15,6 +15,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     let descriptionLabel = LabelWithTextInsets()
     let descriptionBackground = UIView()
     let descriptionSeparator = UIView()
+    let commentsLabel = LabelWithTextInsets()
     let tagsView = TagsView(leftInset: FeedItemCells.leadingContentLayoutMargin -
         FeedItemCells.leadingVerticalLineMargin)
     let leftTagsViewGradient = GradientView()
@@ -34,7 +35,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         setupViews()
 
-        [avatarView, authorLabel, timestampLabel, moreButton, imageAndDescriptionView, tagsView]
+        [avatarView, authorLabel, timestampLabel, moreButton, imageAndDescriptionView, commentsLabel, tagsView]
             .forEach(contentView.addSubview)
 
         [uploadImageView, descriptionBackground, descriptionSeparator, descriptionLabel]
@@ -81,11 +82,17 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.top.equalTo(uploadImageView.snp.bottom)
             make.left.right.bottom.equalToSuperview()
         }
+        commentsLabel.snp.makeConstraints { make in
+            make.top.equalTo(imageAndDescriptionView.snp.bottom)
+                .offset(6) // 6 is included in the text inset to collapse when no text to distance 12 between image and tags
+            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
+            make.trailing.equalToSuperview().inset(16)
+        }
         tagsView.snp.makeConstraints { make in
             // +0.5 as this is the width of the vertical line, we don't want to colide with it
             make.leading.equalToSuperview().offset(FeedItemCells.leadingVerticalLineMargin + 0.5)
             make.trailing.equalToSuperview()
-            make.top.equalTo(imageAndDescriptionView.snp.bottom).offset(12)
+            make.top.equalTo(commentsLabel.snp.bottom).offset(6)
             make.bottom.equalToSuperview()
         }
         tagsView.addSubview(leftTagsViewGradient)
@@ -134,6 +141,11 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         descriptionBackground.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
         descriptionSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+
+        commentsLabel.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        commentsLabel.textColor = .Primary_Blue_04
+        commentsLabel.isUserInteractionEnabled = true
+        commentsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(commentsTapped)))
 
         tagsView.showAddTagCell = true
         tagsView.collectionView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
@@ -202,9 +214,21 @@ class ImageUploadFeedItemCell: UITableViewCell {
             guard let imageDataProvider = imageDataProvider else { return }
             uploadImageView.kf.setImage(with: imageDataProvider)
             tagsView.tags = upload.tags.where { $0.placeholder == false }
+            let commentsCount = upload.comments.count
+            if commentsCount > 0 {
+                commentsLabel.text = commentsCount == 1
+                    ? String(localized: "1 comment")
+                    : String(localized: "\(commentsCount) comments")
+                commentsLabel.textInsets = UIEdgeInsets(top: 6, left: 0, bottom: 6, right: 0)
+            } else {
+                commentsLabel.text = nil
+                // collapse the view if no comments
+                commentsLabel.textInsets = .zero
+            }
         } else {
             timestampLabel.text = nil
             uploadImageView.image = nil
+            commentsLabel.text = nil
             tagsView.tags = nil
         }
     }
@@ -226,6 +250,18 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.height.equalTo(self.uploadImageView.snp.width).multipliedBy(imageHeight2Width)
                 .priority(.high)
         }
+    }
+
+    @objc private func commentsTapped() {
+        guard let model = model,
+              let uploadId = uploadId,
+              let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.showFullscreenMediaCommentsAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(upload, source: .media)
+        )
     }
 
     @objc private func tagsTapped() {

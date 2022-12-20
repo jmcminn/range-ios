@@ -30,6 +30,8 @@ final class FlowEvent: UIEvent {
     func selectCanvasAction()
     /// Show fullscreen media view for given upload
     func showFullscreenMediaAction(sender: Any?, event: FlowEvent)
+    /// Show fullscreen media view and open comments tab for given upload
+    func showFullscreenMediaCommentsAction(sender: Any?, event: FlowEvent)
     /// Show collaboration window for collaboration passed in the event
     func showCollaborationAction(sender: Any?, event: FlowEvent)
     /// Edit description of Upload passed in the event
@@ -68,6 +70,17 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func showFullscreenMediaAction(sender _: Any?, event: FlowEvent) {
+        showFullscreenMedia(forEvent: event)
+    }
+
+    func showFullscreenMediaCommentsAction(sender _: Any?, event: FlowEvent) {
+        showFullscreenMedia(forEvent: event, initialMode: .comments)
+    }
+
+    private func showFullscreenMedia(
+        forEvent event: FlowEvent,
+        initialMode mode: FullscreenMediaCardViewController.Mode = .summary
+    ) {
         guard let upload = event.object as? Upload else { return }
         let fromMedia = event.source == .media
         fullscreenMediaVC = FullscreenMediaCardViewController(
@@ -76,7 +89,8 @@ extension ProjectFlowController: ProjectFlowActions {
             upload: upload,
             // show button only from media, otherwise it's from collaboration so user can just close
             // the fullscreen media and be back in collaboration
-            showCollaborationButton: fromMedia
+            showCollaborationButton: fromMedia,
+            initialMode: mode
         )
         .installAndShowCard(
             in: canvasContainer,
