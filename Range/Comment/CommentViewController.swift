@@ -20,6 +20,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
 
     var onCancel: (() -> Void)?
     var onDone: (() -> Void)?
+    var onHeightUpdated: ((CGFloat) -> Void)?
 
     // top/left/bottom/right margins for views layout
     private static let margin = 16.0
@@ -238,7 +239,8 @@ extension CommentViewController {
                 self.isNote = !self.isNote
             }
         )
-        flagButton.configurationUpdateHandler = { [unowned self] button in
+        flagButton.configurationUpdateHandler = { [weak self] button in
+            guard let self = self else { return }
             var config = button.configuration
             config?.baseForegroundColor = self.isNote
                 ? .Orange_03
@@ -291,7 +293,8 @@ extension CommentViewController {
         )
         // more vertical tap area as button is only 32 points high
         commentButton.tapAreaInsets = UIEdgeInsets(top: -16, left: 0, bottom: -16, right: 0)
-        commentButton.configurationUpdateHandler = { [unowned self] button in
+        commentButton.configurationUpdateHandler = { [weak self] button in
+            guard let self = self else { return }
             var config = button.configuration
             config?.baseBackgroundColor = self.isNote ? .Orange_03 : .Primary_Blue_04
             button.configuration = config
@@ -307,6 +310,10 @@ extension CommentViewController: CardDraggingDelegate {
     func cardOverlayTapped() {
         textView.resignFirstResponder()
         onCancel?()
+    }
+
+    func cardHeightUpdated(_ height: CGFloat) {
+        onHeightUpdated?(height)
     }
 }
 

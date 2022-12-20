@@ -79,5 +79,6 @@ class UITextViewWithPlaceholder: UITextView {
             make.leading.equalToSuperview().inset(textContainerInset.left + 5)
             make.top.equalToSuperview().offset(textContainerInset.top + 0.5)
         }
+        placeholderLabel.isUserInteractionEnabled = false
     }
 }

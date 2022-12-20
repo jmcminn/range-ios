@@ -8,6 +8,8 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     var cardDragging: NonModalCardDragging?
     /// This card presents itself in given vc
     private weak var presentingVC: UIViewController?
+    /// The view in which it's presented
+    private weak var presentingView: UIView?
 
     private let projectModel: ProjectModel
     private let imageCaches: ImageCaches
@@ -32,6 +34,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private var commentsVC: FeedViewController!
 
     private let tabBar = UITabBar()
+    private var addCommentVC: CommentViewController?
     private let safeAreaCoverView = UIView()
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
@@ -158,26 +161,69 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         addTabBar()
+        addCommentBar()
     }
 
     /// Add tabBar to this card super view (so it doesn't move with the card and is always at the bottom
     private func addTabBar() {
-        let tabBarSuperview = view.superview!
-        tabBarSuperview.addSubview(tabBar)
+        guard let presentingView = presentingView else {
+            return
+        }
+        presentingView.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(tabBarSuperview.safeAreaLayoutGuide.snp.bottom)
+            make.bottom.equalTo(presentingView.safeAreaLayoutGuide.snp.bottom)
         }
         // we need a view below bottom bar to cover the save area (so the content is not visible below the tab bar)
         safeAreaCoverView.backgroundColor = containerView.backgroundColor
-        tabBarSuperview.addSubview(safeAreaCoverView)
+        presentingView.addSubview(safeAreaCoverView)
         safeAreaCoverView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             make.top.equalTo(tabBar.snp.bottom)
         }
 
-        tabBarSuperview.layoutIfNeeded()
-        updateContentScrollInsets()
+        presentingView.layoutIfNeeded()
+        updateSummaryContentScrollInsets()
+    }
+
+    /// Add a CommentViewController behind the tab bar so the text view is visible and user can start adding new comment
+    /// by tapping on the text view and making it first responder (then the card will animate to full height)
+    private func addCommentBar() {
+        guard let presentingVC = presentingVC, let presentingView = presentingView else {
+            return
+        }
+        let addCommentVC = CommentViewController(
+            mode: .addComment,
+            startEditingWhenShown: false,
+            shownAboveView: tabBar
+        )
+        addCommentVC.onHeightUpdated = { [weak self] _ in
+            self?.updateCommentsContentScrollInsets()
+        }
+        addCommentVC.onCancel = { [weak self] in
+            guard let addCommentVC = self?.addCommentVC else { return }
+            // clear the text, close keyboard and reset to medium height (so buttons are not visible)
+            addCommentVC.commentText = ""
+            addCommentVC.view.endEditing(true)
+            addCommentVC.cardDragging?.setPosition(.medium, withVelocity: 0, animated: true)
+        }
+        addCommentVC.onDone = {
+            // TODO: 713 save the comment and cleanup the text view (the same as in onCancel)
+        }
+
+        presentingVC.installCard(
+            cardViewController: addCommentVC,
+            inView: presentingView,
+            cardConfig: CardConfiguration(initialCardPosition: .medium, interactive: false, showOverlay: false)
+        )
+        // we want it behind the tab bar
+        presentingView.insertSubview(addCommentVC.view, belowSubview: tabBar)
+        addCommentVC.showCard(animated: true)
+        addCommentVC.view.isHidden = mode == .summary
+        self.addCommentVC = addCommentVC
+
+        presentingView.layoutIfNeeded()
+        updateCommentsContentScrollInsets()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -187,27 +233,32 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateContentScrollInsets()
+        updateSummaryContentScrollInsets()
+        updateCommentsContentScrollInsets()
     }
 
-    /// Calculate the overlap of tab bar and content scroll and set the content inset for scroll view
+    /// Calculate the overlap of tab bar and content scroll and set the content inset for summary scroll view.
     /// This is needed as tab bar is presented on top of the card covering the bottom of the content.
-    private func updateContentScrollInsets() {
-        guard let tabBarSuperview = tabBar.superview else { return }
-        let tabBarFrame = tabBar.frame
+    private func updateSummaryContentScrollInsets() {
+        guard let presentingView = presentingView else { return }
+        let containerFrame = containerView.convert(containerView.bounds, to: presentingView)
         // already layed out?
-        guard tabBarFrame.height > 0 else { return }
-        let containerFrame = containerView.convert(containerView.bounds, to: tabBarSuperview)
-        let overlap = containerFrame.maxY - tabBarFrame.minY
-
+        guard tabBar.frame.height > 0 else { return }
+        let tabBarOverlap = containerFrame.maxY - tabBar.frame.minY
         // +16 to have some margin at the bottom
-        let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: overlap + 16, right: 0)
-        // for scroll indicator there's no need to add 16, let it extend until the tab bar
-        let scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: overlap, right: 0)
-        summaryVC.scrollView.contentInset = contentInset
-        summaryVC.scrollView.scrollIndicatorInsets = scrollIndicatorInsets
-        commentsVC.tableView.contentInset = contentInset
-        commentsVC.tableView.scrollIndicatorInsets = scrollIndicatorInsets
+        summaryVC.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: tabBarOverlap + 16, right: 0)
+        summaryVC.scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: tabBarOverlap, right: 0)
+    }
+
+    /// Similar to `updateSummaryContentScrollInsets` It updates the content inset for comments, in this case it's based on the addCommentVC height
+    private func updateCommentsContentScrollInsets() {
+        guard let presentingView = presentingView else { return }
+        let containerFrame = containerView.convert(containerView.bounds, to: presentingView)
+
+        guard let addCommentVC = addCommentVC, addCommentVC.view.frame.height > 0 else { return }
+        let addCommentOverlap = containerFrame.maxY - addCommentVC.view.frame.minY
+        commentsVC.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: addCommentOverlap, right: 0)
+        commentsVC.tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: addCommentOverlap, right: 0)
     }
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
@@ -302,6 +353,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         cardDragging?.delegate = self
         showCard(animated: true)
         self.presentingVC = presentingVC
+        presentingView = inView ?? presentingVC.view
         return self
     }
 
@@ -309,10 +361,18 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     func dismissCard() {
         tabBar.removeFromSuperview()
         safeAreaCoverView.removeFromSuperview()
+        if let addCommentVC = addCommentVC {
+            addCommentVC.hideCard(animated: false)
+            if let presentingVC = presentingVC {
+                presentingVC.removeCard(cardViewController: addCommentVC)
+            }
+        }
+
         hideCard(animated: true) {
             self.cardDragging?.delegate = nil
             self.presentingVC?.removeCard(cardViewController: self)
             self.presentingVC = nil
+            self.presentingView = nil
         }
     }
 
@@ -345,6 +405,7 @@ extension FullscreenMediaCardViewController: UITabBarDelegate {
 
         summaryVC.view.isHidden = mode == .comments
         commentsVC.view.isHidden = mode == .summary
+        addCommentVC?.view.isHidden = mode == .summary
 
         updateHeaderShadow()
 
