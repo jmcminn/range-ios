@@ -33,6 +33,8 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private var mode = Mode.summary
     private var summaryVC: FullscreenMediaSummaryViewController!
     private var commentsVC: FeedViewController!
+    // shown when there's no comments in the feed
+    private let noCommentsView = UIView()
 
     private let tabBar = UITabBar()
     private var addCommentVC: CommentViewController?
@@ -132,6 +134,13 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
+
+        setupNoCommentsView()
+        commentsVC.view.addSubview(noCommentsView)
+        noCommentsView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
         setMode(initialMode)
 
         bottomView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
@@ -266,6 +275,10 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         let addCommentOverlap = containerFrame.maxY - addCommentVC.view.frame.minY
         commentsVC.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: addCommentOverlap, right: 0)
         commentsVC.tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: addCommentOverlap, right: 0)
+
+        noCommentsView.snp.updateConstraints { make in
+            make.centerY.equalToSuperview().offset(-addCommentOverlap / 2)
+        }
     }
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
@@ -530,5 +543,27 @@ extension FullscreenMediaCardViewController {
         commentsVC.tableView.contentInsetAdjustmentBehavior = .never
         commentsVC.tableView.automaticallyAdjustsScrollIndicatorInsets = false
         commentsVC.tableView.forwardDelegateInvocations(to: self)
+    }
+
+    private func setupNoCommentsView() {
+        let image = UIImageView(image: UIImage(named: "comments"))
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        label.adjustsFontForContentSizeCategory = true
+        label.text = String(localized: "There are no comments...")
+        noCommentsView.addSubview(image)
+        image.snp.makeConstraints { make in
+            make.top.centerX.equalToSuperview()
+        }
+        noCommentsView.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.top.equalTo(image.snp.bottom).offset(12)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+        commentsVC.onFeedUpdated = { [weak self] in
+            guard let self = self else { return }
+            self.noCommentsView.isHidden = !self.commentsVC.items.isEmpty
+        }
     }
 }

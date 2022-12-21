@@ -76,10 +76,11 @@ class FeedViewController: UIViewController {
     let uploads: Results<Upload>?
     let comments: Results<Comment>?
     let updates: Results<Update>?
+    var onFeedUpdated: (() -> Void)?
 
     let tableView: UITableView
-    var dataSource: UITableViewDiffableDataSource<String, FeedItem>?
-    var items: [FeedItem] = []
+    private var dataSource: UITableViewDiffableDataSource<String, FeedItem>?
+    private(set) var items: [FeedItem] = []
 
     /// Vertical line shown along the items
     private var verticalLine: FeedVerticalLine!
@@ -401,6 +402,7 @@ class FeedViewController: UIViewController {
             snapshot.appendItems([item], toSection: item.id)
         }
         self.items = items
+        onFeedUpdated?()
         return snapshot
     }
 
