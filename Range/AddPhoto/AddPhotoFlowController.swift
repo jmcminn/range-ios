@@ -187,7 +187,7 @@ class AddPhotoFlowController {
 
     private func showPhotosReviewFromCameraScreen() {
         guard let cameraVC = cameraVC else { return }
-        let vc = FullscreenImageGalleryViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
+        let vc = createPhotosReviewViewController()
         vc.onDone = { [weak vc] in
             guard let vc = vc else { return }
             vc.dismiss(animated: true)
@@ -198,7 +198,7 @@ class AddPhotoFlowController {
 
     private func showPhotosReviewFromDetailsScreen(interactivePresentation: UIPercentDrivenInteractiveTransition?) {
         guard let detailsVC = detailsVC else { return }
-        let vc = FullscreenImageGalleryViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
+        let vc = createPhotosReviewViewController()
         vc.onDone = { [weak self, weak vc] in
             guard let self = self, let vc = vc else { return }
             if let detailsVC = self.detailsVC {
@@ -220,6 +220,21 @@ class AddPhotoFlowController {
         vc.transitioningDelegate = transitioningDelegate
         vc.modalPresentationStyle = .custom
         detailsVC.present(vc, animated: true)
+    }
+
+    private func createPhotosReviewViewController() -> FullscreenImageGalleryViewController {
+        FullscreenImageGalleryViewController(
+            imageDataProviderFactory: { [imageCaches] in
+                imageCaches.imageProvider(forLocalPhotoWithCacheKey: $0)
+            },
+            photoKeys: photosToAddViewModel.photos.map(\.cacheKey),
+            removePhotoHandler: { [weak self] photoIndex in
+                guard let self = self else { return false }
+                guard photoIndex < self.photosToAddViewModel.photos.count else { return false }
+                self.photosToAddViewModel.remove(photoAtIndex: photoIndex)
+                return true
+            }
+        )
     }
 
     private func nextStepAfterCamera() {

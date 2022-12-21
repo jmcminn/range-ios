@@ -12,10 +12,12 @@ import UIKit
 /// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
 /// just like in the Photos app)
 class FullscreenImageGalleryViewController: UIViewController {
-    unowned let imageCaches: ImageCaches
-    let photosViewModel: PhotosToAddViewModel
+    let imageDataProviderFactory: (String) -> RangeImageDataProvider
+    private var photoKeys: [String]
 
     var onDone: (() -> Void)?
+    /// Handler that accepts removal of photo at given index by returning `true`
+    let removePhotoHandler: ((Int) -> Bool)?
 
     /// views representing pages for images
     private var pages: [FullscreenImageGalleryPageView]
@@ -51,12 +53,18 @@ class FullscreenImageGalleryViewController: UIViewController {
     private var previousSize: CGSize = .zero
 
     /// - Parameters
-    ///   - imageCaches   for getting the image provider
-    ///   - photos:             photos to display
-    init(imageCaches: ImageCaches, photosViewModel: PhotosToAddViewModel) {
-        self.imageCaches = imageCaches
-        self.photosViewModel = photosViewModel
-        pages = photosViewModel.photos.map { _ in FullscreenImageGalleryPageView() }
+    ///   - imageDataProviderFactory   function returning ImageDataProvider for given PhotoKey
+    ///   - photoKeys:                            array of cache key for photos
+    ///   - removePhotoHandler:           if provided then a button for removing photo will be shown. This vc will remove the photo from given photo keys and animate the changes iff the handler returns `true`
+    ///
+    init(imageDataProviderFactory: @escaping (String) -> RangeImageDataProvider,
+         photoKeys: [String],
+         removePhotoHandler: ((Int) -> Bool)? = nil)
+    {
+        self.imageDataProviderFactory = imageDataProviderFactory
+        self.photoKeys = photoKeys
+        self.removePhotoHandler = removePhotoHandler
+        pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -82,23 +90,34 @@ class FullscreenImageGalleryViewController: UIViewController {
         scrollView.addSubview(pageSeparator)
 
         view.addSubview(currentPageLabel)
-        view.addSubview(deleteButton)
+        if removePhotoHandler != nil {
+            view.addSubview(deleteButton)
+        }
         view.addSubview(confirmButton)
 
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        deleteButton.snp.makeConstraints { make in
-            make.width.height.equalTo(48)
-            // center in the left half
-            make.centerX.equalTo(self.view.snp.centerX).dividedBy(2).offset(4)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
-        }
-        confirmButton.snp.makeConstraints { make in
-            make.width.height.equalTo(48)
-            // center in the right half
-            make.centerX.equalTo(self.view.snp.centerX).multipliedBy(1.5).offset(-4)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+        if removePhotoHandler != nil {
+            deleteButton.snp.makeConstraints { make in
+                make.width.height.equalTo(48)
+                // center in the left half
+                make.centerX.equalTo(self.view.snp.centerX).dividedBy(2).offset(4)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            }
+            confirmButton.snp.makeConstraints { make in
+                make.width.height.equalTo(48)
+                // center in the right half
+                make.centerX.equalTo(self.view.snp.centerX).multipliedBy(1.5).offset(-4)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            }
+        } else {
+            confirmButton.snp.makeConstraints { make in
+                make.width.height.equalTo(48)
+                // center in the right half
+                make.centerX.equalTo(self.view.snp.centerX)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            }
         }
         currentPageLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -173,7 +192,7 @@ class FullscreenImageGalleryViewController: UIViewController {
                 / Int(scrollView.frame.width))
             : 0
         // limit page in case user scrolls to far to reach -1 or photos.count
-        page = min(max(0, page), photosViewModel.photos.count - 1)
+        page = min(max(0, page), photoKeys.count - 1)
         return page
     }
 
@@ -186,7 +205,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     /// Update scroll view content size based on number of pages
     private func updateContentSize() {
         scrollView.contentSize = CGSize(
-            width: view.frame.width * CGFloat(photosViewModel.photos.count),
+            width: view.frame.width * CGFloat(photoKeys.count),
             height: view.frame.height
         )
     }
@@ -226,7 +245,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     }
 
     private func updateCurrentPageLabel(currentPage: Int) {
-        currentPageLabel.text = "\(currentPage + 1)/\(photosViewModel.photos.count)"
+        currentPageLabel.text = "\(currentPage + 1)/\(photoKeys.count)"
     }
 
     /// Load images so we always have 2 images loaded before the current and 2 after, so 5 in total
@@ -240,11 +259,18 @@ class FullscreenImageGalleryViewController: UIViewController {
                     page.imageView.kf.cancelDownloadTask()
                     page.imageView.image = nil
                 } else {
-                    let rangeImageDataProvider = imageCaches
-                        .imageProvider(forLocalPhotoWithCacheKey: photosViewModel.photos[index].cacheKey)
+                    let rangeImageDataProvider = imageDataProviderFactory(photoKeys[index])
+                    /// we may already have the image for this page, so update the size
+                    page.imageUpdated()
                     page.imageView.kf.setImage(
                         with: rangeImageDataProvider,
-                        placeholder: nil, options: [.targetCache(rangeImageDataProvider.cache)], progressBlock: nil,
+                        placeholder: nil,
+                        options: [
+                            .targetCache(rangeImageDataProvider.cache),
+                            // keep the image (maybe we have a thumb there and now loading full, no need to go blank while loading)
+                            .keepCurrentImageWhileLoading,
+                        ],
+                        progressBlock: nil,
                         completionHandler: { _ in
                             page.imageUpdated()
                         }
@@ -257,9 +283,10 @@ class FullscreenImageGalleryViewController: UIViewController {
 
     /// Removes the currently showing photo from view model and adjusts the layout
     private func removePhoto() {
-        guard !photosViewModel.photos.isEmpty else { return }
         let photoIndexToRemove = primaryVisiblePage
-        photosViewModel.remove(photoAtIndex: photoIndexToRemove)
+        guard let removePhotoHandler = removePhotoHandler,
+              removePhotoHandler(photoIndexToRemove) == true else { return }
+        photoKeys.remove(at: photoIndexToRemove)
         let removedPage = pages.remove(at: photoIndexToRemove)
         // animate changes
         UIView.animate(withDuration: 0.2) {
