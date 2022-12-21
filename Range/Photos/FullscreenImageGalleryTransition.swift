@@ -184,6 +184,7 @@ class FullscreenImageGalleryPresentationAnimatedTransitioning: NSObject, UIViewC
             fullscreenVC.view.backgroundColor = fullscreenBackgroundColor
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+            fromVC.view.alpha = 1
         }
         animatorForCurrentTransition = animator
 
