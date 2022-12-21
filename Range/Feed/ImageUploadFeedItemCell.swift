@@ -269,7 +269,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
             #selector(ProjectFlowActions.showFullscreenMediaCommentsAction),
             to: nil,
             from: self,
-            for: FlowEvent(upload, source: .media)
+            for: FlowEvent(upload)
         )
     }
 
