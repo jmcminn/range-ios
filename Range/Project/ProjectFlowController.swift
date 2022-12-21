@@ -21,7 +21,6 @@ final class ProjectFlowController: UIViewController {
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
 
     var topViewController: ProjectTopViewController?
-    lazy var bottomBlurView = setupBottomBlur()
     lazy var actionCardVC = setupActionCardVC()
     var pinsDisplay: GeometriesPinsDisplay?
     var canvasSelectorButton: RoundShadowButton!
@@ -119,7 +118,6 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
         showTopViewController(animated: false)
-        bottomBlurView.isHidden = false
 
         setupCanvasSelectorButton()
 
@@ -277,18 +275,6 @@ final class ProjectFlowController: UIViewController {
         present(debugSettingsVC, animated: true)
     }
 
-    fileprivate func setupBottomBlur() -> UIView {
-        let blur = UIBlurEffect(style: .regular)
-        let blurView = UIVisualEffectView(effect: blur)
-        canvasContainer.overlays.addSubview(blurView)
-        blurView.snp.makeConstraints { [weak self] make in
-            guard let self = self else { return }
-            make.left.right.bottom.equalToSuperview()
-            make.height.equalTo(self.view.safeAreaInsets.bottom)
-        }
-        return blurView
-    }
-
     fileprivate func setupActionCardVC() -> ProjectActionCardViewController {
         // TODO: 704 this should be hidden in the production version
         let additionalCardActions = [
@@ -319,7 +305,10 @@ final class ProjectFlowController: UIViewController {
 
         canvasContainer.installCard(cardViewController: vc,
                                     inView: canvasContainer.controls,
-                                    cardConfig: CardConfiguration(linkedViewToLayout: canvasContainer.controls))
+                                    cardConfig: CardConfiguration(
+                                        linkedViewToLayout: canvasContainer.controls,
+                                        showSafeAreaBlur: true
+                                    ))
         return vc
     }
 }
