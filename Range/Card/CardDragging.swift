@@ -103,7 +103,7 @@ extension CardDragging {
         )
         // add the bottom safearea insets when presented from bottom (but only if > 0.
         // If it's < 0 then this position is not supported, if == 0 then it means autohide)
-        if !topDown, height > 0 {
+        if !topDown, height > 0, !config.allowsFullScreen {
             height += containerView.safeAreaInsets.bottom
         }
         if config.allowsFullScreen {

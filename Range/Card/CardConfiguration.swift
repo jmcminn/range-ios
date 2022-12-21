@@ -13,6 +13,8 @@ struct CardConfiguration {
 
     /// Whether the card can go full screen = cover the top safe area
     ///
+    /// - Warning: when this flag is `true` the NonModalCardDragging does not automatically add the
+    ///             bottom safe area to the card height (as it does otherwise)
     /// - Warning: only for non-modal card presentation
     var allowsFullScreen: Bool = false
 

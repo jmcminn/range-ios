@@ -339,16 +339,18 @@ extension CollaborationViewController: CardPresentable {
             let baseHeight = Constants.heightToName + nameHeight + detailsTopSpace
 
             // what's visible in the .medium card position but not when showing keyboard
-            let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true) - detailsTopSpace
+            let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true)
+                - detailsTopSpace + cardContainerView.safeAreaInsets
+                .bottom // add bottom safe area as this card is in full screen mode
 
-            let extraSpaceForKeyboard = max(keyboardHeightInWindow - cardContainerView.safeAreaInsets.bottom, 0)
+            let extraSpaceForKeyboard = max(keyboardHeightInWindow, 0)
 
             // show either keyboard or additional content
             return baseHeight + max(additionalContentHeight, extraSpaceForKeyboard)
         } else { // .max
-            // the card display controller adds handling for bottom safe area so
-            // we need to subtract it
-            let fullHeight = cardContainerView.bounds.height - cardContainerView.safeAreaInsets.bottom
+            // the card display controller does not add handling for bottom safe area as we're
+            // in full screen mode, so use the full cardContainer height
+            let fullHeight = cardContainerView.bounds.height
             // the height of the collaboration view header that we want to hide
             // behind the header cover
             var headerHeight = Constants.heightToName + nameHeight
