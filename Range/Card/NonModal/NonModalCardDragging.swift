@@ -78,6 +78,12 @@ class NonModalCardDragging: CardDragging {
         }
     }
 
+    override func remove() {
+        super.remove()
+        overlayView?.removeFromSuperview()
+        overlayView = nil
+    }
+
     /// When tapped on the overlay
     @objc private func overlayTapped() {
         delegate?.cardOverlayTapped()
