@@ -35,10 +35,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         setupViews()
 
-        [avatarView, authorLabel, timestampLabel, moreButton, imageAndDescriptionView, commentsLabel, tagsView]
+        [avatarView, authorLabel, timestampLabel, moreButton, imageAndDescriptionView, tagsView]
             .forEach(contentView.addSubview)
 
-        [uploadImageView, descriptionBackground, descriptionSeparator, descriptionLabel]
+        [uploadImageView, descriptionBackground, descriptionSeparator, descriptionLabel, commentsLabel]
             .forEach(imageAndDescriptionView.addSubview)
 
         avatarView.snp.makeConstraints { make in
@@ -80,19 +80,18 @@ class ImageUploadFeedItemCell: UITableViewCell {
         }
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(uploadImageView.snp.bottom)
-            make.left.right.bottom.equalToSuperview()
+            make.left.right.equalToSuperview()
         }
         commentsLabel.snp.makeConstraints { make in
-            make.top.equalTo(imageAndDescriptionView.snp.bottom)
-                .offset(6) // 6 is included in the text inset to collapse when no text to distance 12 between image and tags
-            make.leading.equalToSuperview().offset(FeedItemCells.leadingContentLayoutMargin)
-            make.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(descriptionLabel.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.bottom.equalToSuperview()
         }
         tagsView.snp.makeConstraints { make in
             // +0.5 as this is the width of the vertical line, we don't want to colide with it
             make.leading.equalToSuperview().offset(FeedItemCells.leadingVerticalLineMargin + 0.5)
             make.trailing.equalToSuperview()
-            make.top.equalTo(commentsLabel.snp.bottom).offset(6)
+            make.top.equalTo(imageAndDescriptionView.snp.bottom).offset(12)
             make.bottom.equalToSuperview()
         }
         tagsView.addSubview(leftTagsViewGradient)
@@ -198,14 +197,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     /// Updates all the fields, loads the image and depending on the settings adjusts the uploadImageView constraints
     private func updateContent(upload: Upload?) {
         authorLabel.text = upload?.author?.displayName
-        if let uploadDescription = upload?.uploadDescription, !uploadDescription.isEmpty {
-            descriptionLabel.text = uploadDescription
-            descriptionLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        } else {
-            descriptionLabel.text = nil
-            // collapse the view if not description:
-            descriptionLabel.textInsets = .zero
-        }
+
         uploadImageView.kf.cancelDownloadTask()
 
         if let upload = upload {
@@ -214,12 +206,28 @@ class ImageUploadFeedItemCell: UITableViewCell {
             guard let imageDataProvider = imageDataProvider else { return }
             uploadImageView.kf.setImage(with: imageDataProvider)
             tagsView.tags = upload.tags.where { $0.placeholder == false }
+
+            let showDescription = !(upload.uploadDescription?.isEmpty ?? true)
             let commentsCount = upload.comments.count
-            if commentsCount > 0 {
+            let showComments = commentsCount > 0
+            if let uploadDescription = upload.uploadDescription, !uploadDescription.isEmpty {
+                descriptionLabel.text = uploadDescription
+                descriptionLabel.textInsets = UIEdgeInsets(
+                    top: 10,
+                    left: 10,
+                    bottom: showComments ? 6 : 10,
+                    right: 10
+                )
+            } else {
+                descriptionLabel.text = nil
+                // collapse the view if not description:
+                descriptionLabel.textInsets = .zero
+            }
+            if showComments {
                 commentsLabel.text = commentsCount == 1
                     ? String(localized: "1 comment")
                     : String(localized: "\(commentsCount) comments")
-                commentsLabel.textInsets = UIEdgeInsets(top: 6, left: 0, bottom: 6, right: 0)
+                commentsLabel.textInsets = UIEdgeInsets(top: showDescription ? 0 : 10, left: 0, bottom: 10, right: 0)
             } else {
                 commentsLabel.text = nil
                 // collapse the view if no comments
@@ -228,6 +236,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         } else {
             timestampLabel.text = nil
             uploadImageView.image = nil
+            descriptionLabel.text = nil
             commentsLabel.text = nil
             tagsView.tags = nil
         }
