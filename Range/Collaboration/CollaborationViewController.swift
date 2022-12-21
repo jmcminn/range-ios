@@ -225,7 +225,7 @@ extension CollaborationViewController {
     private func onCollaborationUpdated() {
         badgeView.isUserInteractionEnabled = !collaboration.isArchived
 
-        statusButton.isHidden = !isTaskWindow
+        statusButton.isHidden = !isTaskWindow || collaboration.isArchived
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         nameField.text = name

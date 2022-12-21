@@ -84,7 +84,9 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
             checkmarkView?.isHidden = true
         }
 
-        if !collaboration.isArchived, collaboration.isOverdue || collaboration.hasUncompletedNotes {
+        if !collaboration.isArchived, !collaboration.isCompleted,
+           collaboration.isOverdue || collaboration.hasUncompletedNotes
+        {
             if let markerView = markerView {
                 markerView.isHidden = false
             } else {
