@@ -4,24 +4,24 @@ import UIKit
 // Good set of articles on view controller transitions: https://danielgauthier.me/2020/02/19/indie-4.html
 // although this was still more based on: https://github.com/zvonicek/ImageSlideshow/blob/master/ImageSlideshow/Classes/Core/ZoomAnimatedTransitioning.swift
 
-/// Support transitioning from a view controller with photo to full screen PhotosReviewViewController
-class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+/// Support transitioning from a view controller with photo to FullscreenImageGalleryViewController
+class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     weak var galleryVC: ImageGalleryViewController<String>?
-    weak var photosReviewVC: PhotosReviewViewController?
+    weak var fullscreenGalleryVC: FullscreenImageGalleryViewController?
     weak var interactivePresentation: UIViewControllerInteractiveTransitioning?
     fileprivate var interactiveDismissal: UIPercentDrivenInteractiveTransition?
 
     /// Init the transitioning delegate to transition from ImageGalleryViewController
     /// - parameter galleryVC: gallery from which to transition
-    /// - parameter photosReviewVC: show this photos review view controller in full screen
+    /// - parameter fullscreenGalleryVC: show this fullscreen gallery view controller
     /// - parameter interactivePresentation: optional controller for interactive presentation, if not provided then it's non interactive
     public init(
         fromGallery galleryVC: ImageGalleryViewController<String>,
-        toPhotosReview photosReviewVC: PhotosReviewViewController,
+        toFullscreenGallery fullscreenGalleryVC: FullscreenImageGalleryViewController,
         interactivePresentation: UIViewControllerInteractiveTransitioning?
     ) {
         self.galleryVC = galleryVC
-        self.photosReviewVC = photosReviewVC
+        self.fullscreenGalleryVC = fullscreenGalleryVC
         self.interactivePresentation = interactivePresentation
         super.init()
 
@@ -31,17 +31,17 @@ class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioning
             action: #selector(handlePanGesture(_:))
         )
         panGestureRecognizer.cancelsTouchesInView = false
-        photosReviewVC.scrollView.addGestureRecognizer(panGestureRecognizer)
+        fullscreenGalleryVC.scrollView.addGestureRecognizer(panGestureRecognizer)
     }
 
-    /// when user drags the photo up initiate the interactionController and start photosReviewVC dismissal.
-    /// UIPercentDrivenInteractiveTransition will work together with `PhotosReviewDismissalAnimatedTransitioning` and
+    /// when user drags the photo up initiate the interactionController and start fullscreenGalleryVC dismissal.
+    /// UIPercentDrivenInteractiveTransition will work together with `FullscreenImageGalleryDismissalAnimatedTransitioning` and
     /// will set the animation progress to whatever is the calculated percentage of gesture (100% set to translation = 200 points - this
     /// is arbitrary and may be in future calculated from the real distance between the full screen image and the target frame in details screen)
     @objc
     func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
         guard let view = gesture.view else { return }
-        guard let photosReviewVC = photosReviewVC else { return }
+        guard let fullscreenGalleryVC = fullscreenGalleryVC else { return }
         guard let galleryVC = galleryVC else { return }
 
         // up only
@@ -49,10 +49,10 @@ class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioning
 
         if gesture.state == .began {
             // before triggering dismissal let's first update the galleryVC page so it matches
-            // the photosReview one (otherwise we would possibly animate a photo onto a different photo)
-            galleryVC.setCurrentPage(photosReviewVC.currentPage)
+            // the fullscreen one (otherwise we would possibly animate a photo onto a different photo)
+            galleryVC.setCurrentPage(fullscreenGalleryVC.currentPage)
             interactiveDismissal = UIPercentDrivenInteractiveTransition()
-            photosReviewVC.dismiss(animated: true)
+            fullscreenGalleryVC.dismiss(animated: true)
         } else if gesture.state == .changed {
             interactiveDismissal?.update(percent)
         } else if gesture.state == .ended || gesture.state == .cancelled || gesture.state == .failed {
@@ -77,7 +77,7 @@ class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioning
         guard let referenceImageView = galleryVC?.imageViewForCurrentPage else {
             return nil
         }
-        return PhotosReviewPresentationAnimatedTransitioning(referenceImageView: referenceImageView)
+        return FullscreenImageGalleryPresentationAnimatedTransitioning(referenceImageView: referenceImageView)
     }
 
     func interactionControllerForPresentation(using _: UIViewControllerAnimatedTransitioning)
@@ -87,14 +87,14 @@ class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioning
     }
 
     func animationController(forDismissed _: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let referenceImageView = photosReviewVC?.imageViewForCurrentPage else { return nil }
+        guard let referenceImageView = fullscreenGalleryVC?.imageViewForCurrentPage else { return nil }
         guard let referenceImage = referenceImageView.image else { return nil }
         let imageHeight2Width = referenceImage.size.height / referenceImage.size.width
 
         guard let targetView = galleryVC?.viewForCurrentPage else { return nil }
         let targetFrame = targetView.imageViewFrame(forImageHeight2Width: imageHeight2Width)
 
-        return PhotosReviewDismissalAnimatedTransitioning(
+        return FullscreenImageGalleryDismissalAnimatedTransitioning(
             referenceImageView: referenceImageView,
             targetFrame: targetFrame,
             inView: targetView
@@ -108,8 +108,8 @@ class PhotosReviewTransitioningDelegate: NSObject, UIViewControllerTransitioning
     }
 }
 
-/// Zooming in to PhotosReviewViewController
-class PhotosReviewPresentationAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
+/// Zooming in to FullscreenImageGalleryViewController
+class FullscreenImageGalleryPresentationAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
     private let referenceImageView: UIImageView
 
     private var animatorForCurrentTransition: UIViewImplicitlyAnimating?
@@ -127,7 +127,7 @@ class PhotosReviewPresentationAnimatedTransitioning: NSObject, UIViewControllerA
         interruptibleAnimator(using: transitionContext).startAnimation()
     }
 
-    /// animate from a view controller with referenceImage to PhotosReviewViewController by animating fromVC.alpha to 0,
+    /// animate from a view controller with referenceImage to FullscreenImageGalleryViewController by animating fromVC.alpha to 0,
     /// animating toVC to 1 and animating the size/position of a photo (for this we create a transition view with same image so the
     /// original and target image/gallery stay untouched)
     func interruptibleAnimator(using transitionContext: UIViewControllerContextTransitioning)
@@ -140,19 +140,20 @@ class PhotosReviewPresentationAnimatedTransitioning: NSObject, UIViewControllerA
 
         let containerView = transitionContext.containerView
         let fromVC = transitionContext.viewController(forKey: .from)!
-        guard let photosReviewVC = transitionContext.viewController(forKey: .to) as? PhotosReviewViewController else {
-            fatalError("Transition not used with PhotosReviewViewController")
+        guard let fullscreenVC = transitionContext.viewController(forKey: .to) as? FullscreenImageGalleryViewController
+        else {
+            fatalError("Transition not used with FullscreenImageGalleryViewController")
         }
 
-        photosReviewVC.view.frame = transitionContext.finalFrame(for: photosReviewVC)
-        photosReviewVC.view.alpha = 0
+        fullscreenVC.view.frame = transitionContext.finalFrame(for: fullscreenVC)
+        fullscreenVC.view.alpha = 0
         // this won't animate but will change to 1 on completion, not to interfere with transition
         // view animation
-        photosReviewVC.scrollView.alpha = 0
-        let photosReviewBackgroundColor = photosReviewVC.view.backgroundColor
-        // photosReview is rendered on top of transition view so it needs to be transparent for the time
-        // of transition
-        photosReviewVC.view.backgroundColor = .clear
+        fullscreenVC.scrollView.alpha = 0
+        let fullscreenBackgroundColor = fullscreenVC.view.backgroundColor
+        // fullscreen image gallery is rendered on top of transition view so it needs to be
+        // transparent for the time of transition
+        fullscreenVC.view.backgroundColor = .clear
 
         // hide immediately as we will move the transition view (with same photo) and they
         // cannot be both visible at the same time
@@ -165,22 +166,22 @@ class PhotosReviewPresentationAnimatedTransitioning: NSObject, UIViewControllerA
         transitionView.frame = containerView.convert(referenceImageView.bounds, from: referenceImageView)
         containerView.addSubview(transitionView)
 
-        containerView.addSubview(photosReviewVC.view)
+        containerView.addSubview(fullscreenVC.view)
 
         let animator = UIViewPropertyAnimator(
             duration: transitionDuration(using: transitionContext),
             dampingRatio: 1.0
         ) {
             fromVC.view.alpha = 0
-            photosReviewVC.view.alpha = 1
-            transitionView.frame = photosReviewVC.view.frame
-            transitionView.center = photosReviewVC.view.center
+            fullscreenVC.view.alpha = 1
+            transitionView.frame = fullscreenVC.view.frame
+            transitionView.center = fullscreenVC.view.center
         }
         animator.addCompletion { [weak self] _ in
             guard let self = self else { return }
             self.referenceImageView.alpha = 1
-            photosReviewVC.scrollView.alpha = 1
-            photosReviewVC.view.backgroundColor = photosReviewBackgroundColor
+            fullscreenVC.scrollView.alpha = 1
+            fullscreenVC.view.backgroundColor = fullscreenBackgroundColor
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
@@ -190,8 +191,8 @@ class PhotosReviewPresentationAnimatedTransitioning: NSObject, UIViewControllerA
     }
 }
 
-/// Zoom out from the PhotosReviewViewController
-class PhotosReviewDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
+/// Zoom out from the FullscreenImageGalleryViewController
+class FullscreenImageGalleryDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
     private let referenceImageView: UIImageView
     private let targetFrame: CGRect
     private let targetView: UIView
@@ -215,9 +216,9 @@ class PhotosReviewDismissalAnimatedTransitioning: NSObject, UIViewControllerAnim
         interruptibleAnimator(using: transitionContext).startAnimation()
     }
 
-    /// animate from a PhotosReviewViewController to a view controller with targetView and targetFrame for the image by animating fromVC.alpha to 0,
-    /// animating toVC to 1 and animating the size/position of a photo (for this we create a transition view with same image so the
-    /// original and target image/gallery stay untouched)
+    /// animate from a FullscreenImageGalleryViewController to a view controller with targetView and targetFrame for the image
+    /// by animating fromVC.alpha to 0, animating toVC to 1 and animating the size/position of a photo (for this we create a transition
+    /// view with same image so the original and target image/gallery stay untouched)
     func interruptibleAnimator(using transitionContext: UIViewControllerContextTransitioning)
         -> UIViewImplicitlyAnimating
     {
@@ -227,8 +228,10 @@ class PhotosReviewDismissalAnimatedTransitioning: NSObject, UIViewControllerAnim
         }
 
         let containerView = transitionContext.containerView
-        guard let photosReviewVC = transitionContext.viewController(forKey: .from) as? PhotosReviewViewController else {
-            fatalError("Transition not used with PhotosReviewViewController")
+        guard let fullscreenVC = transitionContext
+            .viewController(forKey: .from) as? FullscreenImageGalleryViewController
+        else {
+            fatalError("Transition not used with FullscreenImageGalleryViewController")
         }
         let toVC = transitionContext.viewController(forKey: .to)!
         let targetFrame = containerView.convert(targetFrame, from: targetView)
@@ -245,29 +248,29 @@ class PhotosReviewDismissalAnimatedTransitioning: NSObject, UIViewControllerAnim
         transitionView.contentMode = .scaleAspectFit
         transitionView.clipsToBounds = true
         transitionView.frame = containerView.convert(referenceImageView.bounds, from: referenceImageView)
-        // so the buttons of PhotosReviewVC are on top of the transition view
-        containerView.insertSubview(transitionView, belowSubview: photosReviewVC.view)
+        // so the buttons of fullscreen vc are on top of the transition view
+        containerView.insertSubview(transitionView, belowSubview: fullscreenVC.view)
 
-        let photosReviewBackgroundColor = photosReviewVC.view.backgroundColor
-        // photosReview rendered on top of transition view so it needs to be transparent for the time
+        let fullscreenBackgroundColor = fullscreenVC.view.backgroundColor
+        // fullscreen vc rendered on top of transition view so it needs to be transparent for the time
         // of transition
-        photosReviewVC.view.backgroundColor = .clear
+        fullscreenVC.view.backgroundColor = .clear
 
         let animator = UIViewPropertyAnimator(
             duration: transitionDuration(using: transitionContext),
             dampingRatio: 1.0
         ) {
-            photosReviewVC.view.alpha = 0
+            fullscreenVC.view.alpha = 0
             toVC.view.alpha = 1
             transitionView.layer.cornerRadius = 13
             transitionView.frame = targetFrame
         }
         animator.addCompletion { [weak self] _ in
             guard let self = self else { return }
-            photosReviewVC.view.alpha = 1
+            fullscreenVC.view.alpha = 1
             self.targetView.alpha = 1
             self.referenceImageView.alpha = 1
-            photosReviewVC.view.backgroundColor = photosReviewBackgroundColor
+            fullscreenVC.view.backgroundColor = fullscreenBackgroundColor
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }

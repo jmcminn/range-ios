@@ -187,7 +187,7 @@ class AddPhotoFlowController {
 
     private func showPhotosReviewFromCameraScreen() {
         guard let cameraVC = cameraVC else { return }
-        let vc = PhotosReviewViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
+        let vc = FullscreenImageGalleryViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
         vc.onDone = { [weak vc] in
             guard let vc = vc else { return }
             vc.dismiss(animated: true)
@@ -198,7 +198,7 @@ class AddPhotoFlowController {
 
     private func showPhotosReviewFromDetailsScreen(interactivePresentation: UIPercentDrivenInteractiveTransition?) {
         guard let detailsVC = detailsVC else { return }
-        let vc = PhotosReviewViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
+        let vc = FullscreenImageGalleryViewController(imageCaches: imageCaches, photosViewModel: photosToAddViewModel)
         vc.onDone = { [weak self, weak vc] in
             guard let self = self, let vc = vc else { return }
             if let detailsVC = self.detailsVC {
@@ -211,12 +211,12 @@ class AddPhotoFlowController {
 
         let galleryVC = detailsVC.headerVC.galleryVC!
         vc.currentPage = galleryVC.currentPage
-        let transitioningDelegate = PhotosReviewTransitioningDelegate(
+        let transitioningDelegate = FullscreenImageGalleryTransitioningDelegate(
             fromGallery: galleryVC,
-            toPhotosReview: vc,
+            toFullscreenGallery: vc,
             interactivePresentation: interactivePresentation
         )
-        vc.photosReviewTransitioningDelegate = transitioningDelegate
+        vc.fullscreenTransitioningDelegate = transitioningDelegate
         vc.transitioningDelegate = transitioningDelegate
         vc.modalPresentationStyle = .custom
         detailsVC.present(vc, animated: true)

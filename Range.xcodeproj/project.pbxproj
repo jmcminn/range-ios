@@ -243,10 +243,10 @@
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
 		0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */; };
 		0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */; };
-		0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1A28C0BC5400DB3F96 /* PhotosReviewViewController.swift */; };
-		0A99BF1F28C1DC3700DB3F96 /* PhotosReviewPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1E28C1DC3700DB3F96 /* PhotosReviewPageView.swift */; };
+		0A99BF1B28C0BC5400DB3F96 /* FullscreenImageGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1A28C0BC5400DB3F96 /* FullscreenImageGalleryViewController.swift */; };
+		0A99BF1F28C1DC3700DB3F96 /* FullscreenImageGalleryPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1E28C1DC3700DB3F96 /* FullscreenImageGalleryPageView.swift */; };
 		0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */; };
-		0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2A28C62BC400DB3F96 /* PhotosReviewTransition.swift */; };
+		0A99BF2B28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2A28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift */; };
 		0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */; };
 		0AA424322913C6F40088E2B1 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424312913C6F40088E2B1 /* Action.swift */; };
 		0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424332913C7030088E2B1 /* ActionCommand.swift */; };
@@ -568,10 +568,10 @@
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 		0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeImageDataProvider.swift; sourceTree = "<group>"; };
 		0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Async.swift"; sourceTree = "<group>"; };
-		0A99BF1A28C0BC5400DB3F96 /* PhotosReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosReviewViewController.swift; sourceTree = "<group>"; };
-		0A99BF1E28C1DC3700DB3F96 /* PhotosReviewPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosReviewPageView.swift; sourceTree = "<group>"; };
+		0A99BF1A28C0BC5400DB3F96 /* FullscreenImageGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryViewController.swift; sourceTree = "<group>"; };
+		0A99BF1E28C1DC3700DB3F96 /* FullscreenImageGalleryPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryPageView.swift; sourceTree = "<group>"; };
 		0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoViewModel.swift; sourceTree = "<group>"; };
-		0A99BF2A28C62BC400DB3F96 /* PhotosReviewTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosReviewTransition.swift; sourceTree = "<group>"; };
+		0A99BF2A28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryTransition.swift; sourceTree = "<group>"; };
 		0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanDirectionGestureRecognizer.swift; sourceTree = "<group>"; };
 		0AA424312913C6F40088E2B1 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		0AA424332913C7030088E2B1 /* ActionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCommand.swift; sourceTree = "<group>"; };
@@ -771,6 +771,9 @@
 		0A0D31D428A41A94007A8D49 /* Photos */ = {
 			isa = PBXGroup;
 			children = (
+				0A99BF1A28C0BC5400DB3F96 /* FullscreenImageGalleryViewController.swift */,
+				0A99BF1E28C1DC3700DB3F96 /* FullscreenImageGalleryPageView.swift */,
+				0A99BF2A28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift */,
 				0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */,
 				0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */,
 				0A0D31D628A41AC6007A8D49 /* ThumbnailsViewController.swift */,
@@ -970,7 +973,6 @@
 			children = (
 				0A30E8AE2847AF5200A50D54 /* AddPhotoDetails */,
 				0A07D516280730A200B6F9A2 /* AddPhotoLocation */,
-				0A99BF2228C5DDD800DB3F96 /* PhotosReview */,
 				0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */,
 				0A07D51B2808063C00B6F9A2 /* AddPhotoFlowController.swift */,
 			);
@@ -1336,16 +1338,6 @@
 			path = Camera;
 			sourceTree = "<group>";
 		};
-		0A99BF2228C5DDD800DB3F96 /* PhotosReview */ = {
-			isa = PBXGroup;
-			children = (
-				0A99BF1A28C0BC5400DB3F96 /* PhotosReviewViewController.swift */,
-				0A99BF1E28C1DC3700DB3F96 /* PhotosReviewPageView.swift */,
-				0A99BF2A28C62BC400DB3F96 /* PhotosReviewTransition.swift */,
-			);
-			path = PhotosReview;
-			sourceTree = "<group>";
-		};
 		0AA424302913C6D80088E2B1 /* ModelActions */ = {
 			isa = PBXGroup;
 			children = (
@@ -1670,7 +1662,7 @@
 				0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */,
 				0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */,
 				0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */,
-				0A99BF2B28C62BC400DB3F96 /* PhotosReviewTransition.swift in Sources */,
+				0A99BF2B28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */,
@@ -1737,7 +1729,7 @@
 				0A7FC4192844E6A80097888A /* FirestoreStatusName.swift in Sources */,
 				0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */,
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
-				0A99BF1B28C0BC5400DB3F96 /* PhotosReviewViewController.swift in Sources */,
+				0A99BF1B28C0BC5400DB3F96 /* FullscreenImageGalleryViewController.swift in Sources */,
 				0A130E9E28D4A8F700FF1368 /* FeedViewController.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
@@ -1822,7 +1814,7 @@
 				0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
-				0A99BF1F28C1DC3700DB3F96 /* PhotosReviewPageView.swift in Sources */,
+				0A99BF1F28C1DC3700DB3F96 /* FullscreenImageGalleryPageView.swift in Sources */,
 				0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */,
 				0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,

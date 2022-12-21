@@ -11,14 +11,14 @@ import UIKit
 /// that the pages are changing width (see the iPhone Photos app for how it works). In fact the pages are layed out next to each other
 /// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
 /// just like in the Photos app)
-class PhotosReviewViewController: UIViewController {
+class FullscreenImageGalleryViewController: UIViewController {
     unowned let imageCaches: ImageCaches
     let photosViewModel: PhotosToAddViewModel
 
     var onDone: (() -> Void)?
 
     /// views representing pages for images
-    private var pages: [PhotosReviewPageView]
+    private var pages: [FullscreenImageGalleryPageView]
     /// a black stripe overlayed on top of pages that adds a separation between 2 visible pages
     private let pageSeparator = UIView()
     let scrollView = UIScrollView()
@@ -27,7 +27,7 @@ class PhotosReviewViewController: UIViewController {
     private var confirmButton: UIButton!
 
     /// Transitioning delegate to manage the transition to this controller
-    var photosReviewTransitioningDelegate: PhotosReviewTransitioningDelegate?
+    var fullscreenTransitioningDelegate: FullscreenImageGalleryTransitioningDelegate?
 
     var currentPage: Int = 0 {
         didSet {
@@ -56,7 +56,7 @@ class PhotosReviewViewController: UIViewController {
     init(imageCaches: ImageCaches, photosViewModel: PhotosToAddViewModel) {
         self.imageCaches = imageCaches
         self.photosViewModel = photosViewModel
-        pages = photosViewModel.photos.map { _ in PhotosReviewPageView() }
+        pages = photosViewModel.photos.map { _ in FullscreenImageGalleryPageView() }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -280,7 +280,7 @@ class PhotosReviewViewController: UIViewController {
     }
 }
 
-extension PhotosReviewViewController: UIScrollViewDelegate {
+extension FullscreenImageGalleryViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_: UIScrollView) {
         updatePageSeparatorFrame()
         // update images while scrolling, user might be scrolling with no breaks between pages

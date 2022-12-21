@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 
-/// View displayed in the PhotosReviewViewController for 1 image.
-class PhotosReviewPageView: UIView {
+/// View displayed in the FullscreenImageGalleryViewController for 1 image.
+class FullscreenImageGalleryPageView: UIView {
     /// scroll view for zooming image
     let scrollView = UIScrollView()
     /// image view presenting the image
@@ -142,7 +142,7 @@ class PhotosReviewPageView: UIView {
 }
 
 /// UIScrollViewDelegate
-extension PhotosReviewPageView: UIScrollViewDelegate {
+extension FullscreenImageGalleryPageView: UIScrollViewDelegate {
     func viewForZooming(in _: UIScrollView) -> UIView? {
         imageView
     }
