@@ -14,8 +14,12 @@ class FullscreenMediaSummaryViewController: UIViewController {
     private let stackView = UIStackView()
     private(set) var galleryVC: ImageGalleryViewController<String>!
     private(set) var collaborationButton: CollaborationButton!
+    private(set) var descriptionHeader: UIView!
     private let descriptionLabel = LabelWithTextInsets()
+    private(set) var addDescriptionButton: UIView! // visible when there's no description
+    private(set) var tagsHeader: UIView!
     private let tagsView = TagsView()
+    private(set) var addTagsButton: UIView! // visible when there's no description
 
     /// Initializer
     init(projectModel: ProjectModel, imageCaches: ImageCaches, upload: Upload,
@@ -55,8 +59,18 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     private func onUploadUpdated() {
+        let hasDescription = !(upload.uploadDescription ?? "").isEmpty
+        let hasTags = !upload.tags.isEmpty
+
         descriptionLabel.text = upload.uploadDescription
         tagsView.tags = upload.tags.where { $0.placeholder == false }
+
+        descriptionHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasDescription }
+        descriptionLabel.isHidden = !hasDescription
+        addDescriptionButton.isHidden = hasDescription
+        tagsHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasTags }
+        tagsView.isHidden = !hasTags
+        addTagsButton.isHidden = hasTags
     }
 
     private func setupViews() {
@@ -67,7 +81,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         }
 
         stackView.axis = .vertical
-        stackView.spacing = 16
+        stackView.spacing = 8
 
         scrollView.addSubview(stackView)
         stackView.snp.makeConstraints { make in
@@ -89,26 +103,37 @@ class FullscreenMediaSummaryViewController: UIViewController {
             }
             stackView.addArrangedSubview(collaborationButtonWrapper)
             stackView.setCustomSpacing(12, after: collaborationButtonWrapper)
+        } else {
+            stackView.setCustomSpacing(20, after: galleryVC.view)
         }
 
-        let descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
+        descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
         descriptionHeader
             .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
         stackView.addArrangedSubview(descriptionHeader)
-        stackView.setCustomSpacing(8, after: descriptionHeader)
 
         setupDescriptionLabel()
         descriptionLabel
             .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
         stackView.addArrangedSubview(descriptionLabel)
+        stackView.setCustomSpacing(16, after: descriptionLabel)
+        addDescriptionButton = createAddButton(title: String(localized: "Add description"), handler: { [weak self] _ in
+            self?.descriptionTapped()
+        })
+        stackView.addArrangedSubview(addDescriptionButton)
+        stackView.setCustomSpacing(16, after: addDescriptionButton)
 
-        let tagsHeader = createSectionHeaderView(iconName: "tag", title: String(localized: "Tags"))
+        tagsHeader = createSectionHeaderView(iconName: "tag", title: String(localized: "Tags"))
         tagsHeader.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
         stackView.addArrangedSubview(tagsHeader)
-        stackView.setCustomSpacing(8, after: tagsHeader)
 
         tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
         stackView.addArrangedSubview(tagsView)
+
+        addTagsButton = createAddButton(title: String(localized: "Add Tags"), handler: { [weak self] _ in
+            self?.tagsTapped()
+        })
+        stackView.addArrangedSubview(addTagsButton)
     }
 
     private func setupGalleryVC() {
@@ -154,6 +179,24 @@ class FullscreenMediaSummaryViewController: UIViewController {
         descriptionLabel.isUserInteractionEnabled = true
     }
 
+    /// Creates a button but returns a wrapping UIView to add horizontal padding
+    private func createAddButton(title: String, handler: @escaping UIActionHandler) -> UIView {
+        var config = UIButton.Configuration.blackButton()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)
+        let button = UIButton(
+            configuration: UIButton.Configuration.blackButton(),
+            primaryAction: UIAction(title: title, handler: handler)
+        )
+        let wrapperView = UIView()
+        wrapperView.addSubview(button)
+        button.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+        return wrapperView
+//        expandButton.setContentHuggingPriority(.required, for: .horizontal)
+    }
+
     /// Creates a view with an icon, title and edit button
     private func createSectionHeaderView(iconName: String, title: String) -> UIView {
         let sectionHeader = UIView()
@@ -182,6 +225,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         editLabel.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         editLabel.setContentHuggingPriority(.required, for: .horizontal)
         editLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        editLabel.tag = 66 // mark it so it can be later hidden
 
         [iconView, label, editLabel].forEach(sectionHeader.addSubview)
         iconView.snp.makeConstraints { make in
