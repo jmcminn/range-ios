@@ -91,7 +91,11 @@ class FullscreenMediaSummaryViewController: UIViewController {
         setupGalleryVC()
         stackView.addArrangedSubview(galleryVC.view)
 
-        if showCollaborationButton, let collaboration = upload.collaboration.first {
+        // only add if there's a collaboration and it has a canvas (it should always have a canvas but
+        // in case of placeholders or bad data just don't show the button)
+        if showCollaborationButton, let collaboration = upload.collaboration.first,
+           collaboration.feature.first?.geometry.first?.canvas.first != nil
+        {
             stackView.setCustomSpacing(12, after: galleryVC.view)
             setupCollaborationButton(collaboration: collaboration)
             // put collaboration button in a wrapper view to have horizontal margin
