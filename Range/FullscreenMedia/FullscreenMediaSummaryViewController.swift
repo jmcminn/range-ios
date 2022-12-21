@@ -21,6 +21,8 @@ class FullscreenMediaSummaryViewController: UIViewController {
     private let tagsView = TagsView()
     private(set) var addTagsButton: UIView! // visible when there's no description
 
+    var onPhotoSelected: (() -> Void)?
+
     /// Initializer
     init(projectModel: ProjectModel, imageCaches: ImageCaches, upload: Upload,
          showCollaborationButton: Bool)
@@ -150,6 +152,9 @@ class FullscreenMediaSummaryViewController: UIViewController {
             photoKeys: [uploadCacheKey],
             pageHeight2Width: galleryHeightToWidth
         )
+        galleryVC.onPhotoSelected = { [weak self] in
+            self?.onPhotoSelected?()
+        }
         add(childController: galleryVC, toView: stackView)
         galleryVC.view.snp.makeConstraints { make in
             make.width.equalTo(scrollView)

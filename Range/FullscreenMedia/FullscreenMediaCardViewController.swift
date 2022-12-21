@@ -532,6 +532,9 @@ extension FullscreenMediaCardViewController {
         summaryVC.scrollView.contentInsetAdjustmentBehavior = .never
         summaryVC.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
         summaryVC.scrollView.delegate = self
+        summaryVC.onPhotoSelected = { [weak self] in
+            self?.showFullScreenImageGallery()
+        }
     }
 
     private func setupCommentsVC() {
@@ -565,5 +568,46 @@ extension FullscreenMediaCardViewController {
             guard let self = self else { return }
             self.noCommentsView.isHidden = !self.commentsVC.items.isEmpty
         }
+    }
+}
+
+extension FullscreenMediaCardViewController {
+    /// Shows the fullscreen image view when the image is tapped in the summary tab
+    private func showFullScreenImageGallery() {
+        let uploadCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id)
+        let vc = FullscreenImageGalleryViewController(
+            imageDataProviderFactory: { [imageCaches] in
+                imageCaches.imageProvider(forPhotoWithCacheKey: $0)
+            },
+            photoKeys: [uploadCacheKey]
+        )
+        vc.onDone = { [weak vc] in
+            guard let vc = vc else { return }
+            vc.dismiss(animated: true)
+        }
+
+        guard let galleryVC = summaryVC.galleryVC else {
+            // no gallery vc? this shouldn't happen but if so present the fullscreen gallery in a standard way
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
+            return
+        }
+
+        // custom presentation animating from the image in the gallery view to the fullscreen gallery
+        vc.currentPage = galleryVC.currentPage
+        if let fullscreenImageView = vc.imageViewForCurrentPage {
+            // set the thumb image in the fullscreen gallery so it's initially visible while loading
+            // the full image after the gallery was presented (so there's no black screen)
+            fullscreenImageView.image = galleryVC.imageViewForCurrentPage?.image
+        }
+        let transitioningDelegate = FullscreenImageGalleryTransitioningDelegate(
+            fromGallery: galleryVC,
+            toFullscreenGallery: vc,
+            interactivePresentation: nil
+        )
+        vc.fullscreenTransitioningDelegate = transitioningDelegate
+        vc.transitioningDelegate = transitioningDelegate
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true)
     }
 }
