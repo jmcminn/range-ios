@@ -6,6 +6,7 @@ class NonModalCardDragging: CardDragging {
     fileprivate var cardHidden = true
 
     private var overlayView: UIView?
+    private var blurView: UIView?
 
     override init(
         presentedViewController: UIViewController & CardPresentable,
@@ -24,6 +25,17 @@ class NonModalCardDragging: CardDragging {
             overlayView.isUserInteractionEnabled = true
             overlayView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(overlayTapped)))
             self.overlayView = overlayView
+        }
+        if config.showSafeAreaBlur {
+            let blur = UIBlurEffect(style: .regular)
+            let blurView = UIVisualEffectView(effect: blur)
+            containerView.addSubview(blurView)
+            blurView.snp.makeConstraints { make in
+                make.left.right.bottom.equalToSuperview()
+                make.height.equalTo(containerView.safeAreaInsets.bottom)
+            }
+            blurView.isHidden = true
+            self.blurView = blurView
         }
     }
 
@@ -57,6 +69,7 @@ class NonModalCardDragging: CardDragging {
                 overlayView.alpha = 1
             }
         }
+        blurView?.isHidden = false
     }
 
     /// Hides card = moves it off the screen
@@ -76,12 +89,15 @@ class NonModalCardDragging: CardDragging {
                                overlayView.isHidden = true
                            })
         }
+        blurView?.isHidden = true
     }
 
     override func remove() {
         super.remove()
         overlayView?.removeFromSuperview()
         overlayView = nil
+        blurView?.removeFromSuperview()
+        blurView = nil
     }
 
     /// When tapped on the overlay
