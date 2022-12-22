@@ -1,3 +1,4 @@
+import Firebase
 import FirebaseAuth
 import OSLog
 import UIKit
@@ -30,6 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// Start the auth flow for authenticating the user
     private func showAuth() {
         let authFlowController = AuthFlowController { [weak self] userId in
+            Analytics.logEvent(AnalyticsEventLogin, parameters: [AnalyticsParameterMethod: "email"])
             self?.showProjects(forUser: userId)
         }
         window!.rootViewController = authFlowController
@@ -42,6 +44,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Show the main flow for the app (which currently is the projects listing)
     private func showProjects(forUser userId: String) {
+        Analytics.setUserID(userId)
         Task {
             do {
                 let projectsFlowController = try ProjectsFlowController(userId: userId)
