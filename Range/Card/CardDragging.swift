@@ -66,10 +66,17 @@ class CardDragging: NSObject {
         setupScrollViewDelegate()
     }
 
-    /// Install the gesture recognizers
+    /// Removed the gesture recognizers
     func remove() {
         removeCardDragRecogniser()
         removeScrollViewDelegate()
+    }
+
+    /// When the driving scroll view for card dragging has changed this function will reload the delegates
+    /// to listen to the new driving scroll view
+    func reloadScrollViewDelegate() {
+        removeScrollViewDelegate()
+        setupScrollViewDelegate()
     }
 }
 

@@ -431,8 +431,7 @@ extension FullscreenMediaCardViewController: UITabBarDelegate {
 
         if let cardDragging = cardDragging {
             // reset scroll view listeners
-            cardDragging.remove()
-            cardDragging.install()
+            cardDragging.reloadScrollViewDelegate()
         }
     }
 }
