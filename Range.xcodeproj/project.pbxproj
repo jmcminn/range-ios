@@ -15,6 +15,7 @@
 		0A06241929534AA0004B6512 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0A06241829534AA0004B6512 /* FirebaseFirestore */; };
 		0A06241B29534AA0004B6512 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0A06241A29534AA0004B6512 /* FirebaseFirestoreSwift */; };
 		0A06241D29534AA0004B6512 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0A06241C29534AA0004B6512 /* FirebaseStorage */; };
+		0A06241F2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06241E2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift */; };
 		0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */; };
 		0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */; };
 		0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */; };
@@ -328,6 +329,7 @@
 		0A05312329375BEC00738BA3 /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		0A05312829378FE900738BA3 /* MediaCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCardViewController.swift; sourceTree = "<group>"; };
 		0A05312A2937B2FA00738BA3 /* MediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A06241E2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertedToTaskFeedItemCell.swift; sourceTree = "<group>"; };
 		0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDragging.swift; sourceTree = "<group>"; };
 		0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Slider.swift"; sourceTree = "<group>"; };
 		0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoConfirmationViewController.swift; sourceTree = "<group>"; };
@@ -800,6 +802,7 @@
 				0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */,
 				0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */,
 				0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */,
+				0A06241E2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift */,
 				0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */,
 				0AB85584290009C600491E20 /* DueDateUpdateFeedItemCell.swift */,
 			);
@@ -1704,6 +1707,7 @@
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
 				0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */,
 				0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */,
+				0A06241F2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift in Sources */,
 				0A05312929378FE900738BA3 /* MediaCardViewController.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A82A8E6292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift in Sources */,

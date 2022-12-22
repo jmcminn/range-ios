@@ -266,22 +266,28 @@ extension ProjectFlowController {
 extension ProjectFlowController {
     func moreAction(sender _: Any?, event: FlowEvent) {
         if let collaboration = event.object as? Collaboration {
+            var actions: [ActionItem] = collaboration.status == nil
+                ? [ActionItem(title: "Convert to Task", imageName: "checkmark.circle", handler: {
+                    self.confirmAndConvertPhotoCollaborationToTask(collaboration)
+                })]
+                : []
+            actions.append(contentsOf: [
+                ActionItem(
+                    title: collaboration.isArchived ? "Unarchive" : "Archive",
+                    imageName: "archivebox",
+                    handler: {
+                        self.toggleCollaborationArchived(collaboration)
+                    }
+                ),
+                ActionItem(title: "Delete", imageName: "trash", style: .destructive, handler: {
+                    self.confirmAndDeleteCollaboration(collaboration)
+                }),
+            ])
+
             ActionSelectorCardViewController(
-                icon: UIImage(systemName: "ellipsis"),
-                title: "More Menu",
-                actions: [
-                    ActionItem(
-                        title: collaboration.isArchived ? "Unarchive" : "Archive",
-                        imageName: "archivebox",
-                        handler: {
-                            self.toggleCollaborationArchived(collaboration)
-                        }
-                    ),
-                    ActionItem(title: "Delete", imageName: "trash", style: .destructive, handler: {
-                        self.confirmAndDeleteCollaboration(collaboration)
-                    }),
-                ]
-            ).installAndShowCard(in: canvasContainer)
+                icon: UIImage(systemName: "ellipsis"), title: "More Menu", actions: actions
+            )
+            .installAndShowCard(in: canvasContainer)
         } else if let upload = event.object as? Upload {
             ActionSelectorCardViewController(
                 icon: UIImage(systemName: "ellipsis"),
@@ -334,6 +340,34 @@ extension ProjectFlowController {
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         commentVC.showCard(animated: true)
+    }
+
+    func confirmAndConvertPhotoCollaborationToTask(_ collaboration: Collaboration) {
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            subtitle: "Doing this means you can add a description, tags and assign a status, due date and assignee. The style of the map pin will also change. ",
+            actions: [
+                ActionItem(title: "Convert to Task", imageName: "checkmark.circle", handler: {
+                    self.convertPhotoCollaborationToTask(collaboration)
+                }),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func convertPhotoCollaborationToTask(_ collaboration: Collaboration) {
+        Task {
+            do {
+                try await self.model.run(self.model.convertPhotoCollaborationToTask(collaboration))
+                // show the window again as it's not switching automatically from photo to task layout
+                collaboration.realm?.refresh()
+                self.collaborationFlow.showCollaborationWindow(collaboration, animated: true)
+            } catch {
+                Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to convert to task")
+            }
+        }
     }
 
     func confirmAndDeleteCollaboration(_ collaboration: Collaboration) {

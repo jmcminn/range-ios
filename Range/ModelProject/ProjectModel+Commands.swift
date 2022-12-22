@@ -135,6 +135,17 @@ extension ProjectModel {
         )
     }
 
+    func convertPhotoCollaborationToTask(_ collaboration: Collaboration) throws -> Command? {
+        let statuses = mainRealm.objects(Status.self)
+        if let initialStatus = statuses.first(where: { $0.isInitial }) {
+            return update(status: initialStatus, forCollaboration: collaboration)
+        } else if let firstStatus = statuses.first {
+            return update(status: firstStatus, forCollaboration: collaboration)
+        } else {
+            throw ModelError.statusNotFound
+        }
+    }
+
     /// Create command for updating given Upload tags  (only if tags are different than existing ones).
     /// The command creates new tags.
     func update(tags: [TagViewModel], forUpload upload: Upload) -> Command? {

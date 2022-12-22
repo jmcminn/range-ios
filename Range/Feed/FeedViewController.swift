@@ -50,6 +50,10 @@ class FeedViewController: UIViewController {
                let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId),
                status.isCompleted
             {
+                // when status is changed to Completed it's a major update
+                isMajor = true
+            } else if update.field == .statusName, update.oldValue == .none {
+                // when status is first assigned it's a major update (converting to Task)
                 isMajor = true
             } else {
                 isMajor = false
@@ -183,6 +187,7 @@ class FeedViewController: UIViewController {
         tableView.register(NameUpdateFeedItemCell.self, forCellReuseIdentifier: "NameUpdate")
         tableView.register(StatusUpdateFeedItemCell.self, forCellReuseIdentifier: "StatusUpdate")
         tableView.register(CompletedStatusUpdateFeedItemCell.self, forCellReuseIdentifier: "CompletedStatusUpdate")
+        tableView.register(ConvertedToTaskFeedItemCell.self, forCellReuseIdentifier: "ConvertedToTask")
         tableView.register(AssigneeUpdateFeedItemCell.self, forCellReuseIdentifier: "AssigneeUpdate")
         tableView.register(DueDateUpdateFeedItemCell.self, forCellReuseIdentifier: "DueDateUpdate")
 
@@ -481,7 +486,11 @@ extension FeedViewController {
                                                          for: indexPath) as! CompletedStatusUpdateFeedItemCell
                 cell.set(update: update, status: status)
                 return cell
-
+            } else if update.oldValue == .none {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ConvertedToTask",
+                                                         for: indexPath) as! ConvertedToTaskFeedItemCell
+                cell.set(update: update)
+                return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "StatusUpdate",
                                                          for: indexPath) as! StatusUpdateFeedItemCell

@@ -122,44 +122,48 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
            let feature = geometry.features.first,
            let collaboration = feature.collaborations.first
         {
-            self.collaboration = collaboration
-            let collaborationVC = createCollaborationViewController(forCollaboration: collaboration)
-
-            installCard(
-                cardViewController: collaborationVC,
-                cardConfig: CardConfiguration(initialCardPosition: .medium, allowsFullScreen: true)
-            )
-            // move collaboration window behind bottom card
-            if let collaborationBottomVC = collaborationBottomVC {
-                view.insertSubview(collaborationVC.view, belowSubview: collaborationBottomVC.view)
-            }
-            collaborationVC.cardDragging?.delegate = self
-
-            // check if already showing, if so then ignore animated and replace instantly
-            if self.collaborationVC != nil {
-                self.collaborationVC?.cardDragging?.delegate = nil
-                let previousCardHeight = self.collaborationVC?.cardDragging?.cardHeight
-                hideCollaborationWindow(animated: false)
-                setCollaborationHeaderCoverHidden(true, animated: false)
-                setBottomCardHidden(true, animated: false)
-                collaborationVC.showCard(animated: false)
-                if let previousCardHeight = previousCardHeight, let newCardDragging = collaborationVC.cardDragging {
-                    // animate the height from previous height, so there's no jump
-                    newCardDragging.setCardHeight(previousCardHeight)
-                    newCardDragging.setPosition(newCardDragging.position, withVelocity: 0, animated: true)
-                }
-            } else {
-                collaborationVC.showCard(animated: animated)
-            }
-            addCollaborationHeaderCover()
-            setupBottomCard()
-            self.collaborationVC = collaborationVC
+            showCollaborationWindow(collaboration, animated: animated)
         } else {
             Logger.model.warning("""
                 Trying to present collaboration window for geometry
                 \(geometryId, privacy: .public) with no collaboration
             """)
         }
+    }
+
+    func showCollaborationWindow(_ collaboration: Collaboration, animated: Bool) {
+        self.collaboration = collaboration
+        let collaborationVC = createCollaborationViewController(forCollaboration: collaboration)
+
+        installCard(
+            cardViewController: collaborationVC,
+            cardConfig: CardConfiguration(initialCardPosition: .medium, allowsFullScreen: true)
+        )
+        // move collaboration window behind bottom card
+        if let collaborationBottomVC = collaborationBottomVC {
+            view.insertSubview(collaborationVC.view, belowSubview: collaborationBottomVC.view)
+        }
+        collaborationVC.cardDragging?.delegate = self
+
+        // check if already showing, if so then ignore animated and replace instantly
+        if self.collaborationVC != nil {
+            self.collaborationVC?.cardDragging?.delegate = nil
+            let previousCardHeight = self.collaborationVC?.cardDragging?.cardHeight
+            hideCollaborationWindow(animated: false)
+            setCollaborationHeaderCoverHidden(true, animated: false)
+            setBottomCardHidden(true, animated: false)
+            collaborationVC.showCard(animated: false)
+            if let previousCardHeight = previousCardHeight, let newCardDragging = collaborationVC.cardDragging {
+                // animate the height from previous height, so there's no jump
+                newCardDragging.setCardHeight(previousCardHeight)
+                newCardDragging.setPosition(newCardDragging.position, withVelocity: 0, animated: true)
+            }
+        } else {
+            collaborationVC.showCard(animated: animated)
+        }
+        addCollaborationHeaderCover()
+        setupBottomCard()
+        self.collaborationVC = collaborationVC
     }
 
     /// Hide the currently shown collaboration window (and the header cover)
