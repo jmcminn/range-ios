@@ -10,6 +10,7 @@ class AddPinFlowController {
     var onStop: ((Collaboration?) -> Void)?
 
     private var topViewController: TopViewController?
+    private var confirmationCardVC: AddPinConfirmationViewController?
 
     /// - Parameters:
     ///     - model: - the project model
@@ -36,13 +37,31 @@ class AddPinFlowController {
         // TODO: 306 here
 //        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
         showTopViewController(pinType: pinType)
-//        showConfirmationCard()
+        showConfirmationCard()
 //        showPanAndZoomIndicatorView()
 //        showCanvasSelectorButton()
 //        showPins()
     }
 
-    // TODO: 306 dismiss the location selection UI
+    /// remove the photo location selection views/handlers
+    private func dismissPhotoLocationSelectionUI() {
+        // TODO: 306
+//        if let canvasDelegateId = canvasDelegateId {
+//            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
+//        }
+        if let confirmationCardVC = confirmationCardVC {
+            confirmationCardVC.hideCard(animated: true) {
+                self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
+            }
+        }
+        hideTopViewController()
+//        pinsDisplay?.stop()
+//        panAndZoomIndicatorView?.removeFromSuperview()
+//        pinsDisplay = nil
+//        canvasObservation?.invalidate()
+//        canvasObservation = nil
+//        hideCanvasSelectorButton()
+    }
 
     /// shows the view controller covering the top of of the screen
     private func showTopViewController(pinType: PinType) {
@@ -64,5 +83,36 @@ class AddPinFlowController {
             self.canvasContainer.controls.layoutIfNeeded()
         }
         self.topViewController = topViewController
+    }
+
+    /// hides the top view controller
+    private func hideTopViewController() {
+        if let topViewController = topViewController {
+            UIView.animate(withDuration: 0.2) {
+                topViewController.view.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.canvasContainer.controls.snp.top)
+                }
+                self.canvasContainer.controls.layoutIfNeeded()
+            }
+        }
+    }
+
+    /// Presents a card with cancel/confirm and registers callbacks for user actions
+    private func showConfirmationCard() {
+        confirmationCardVC = AddPinConfirmationViewController()
+        confirmationCardVC!.onCancel = { [weak self] in
+            self?.dismissPhotoLocationSelectionUI()
+            self?.onStop?(nil)
+        }
+//        confirmationCardVC!.onConfirm = { _ in
+//            // TODO: 306 add collaboration
+//        }
+        canvasContainer.installCard(
+            cardViewController: confirmationCardVC!,
+            inView: canvasContainer.controls,
+            cardConfig: CardConfiguration(interactive: false, showSafeAreaBlur: true)
+        )
+        confirmationCardVC!.showCard(animated: true)
     }
 }

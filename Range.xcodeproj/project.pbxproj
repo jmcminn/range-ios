@@ -297,6 +297,7 @@
 		0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */; };
 		0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */; };
 		0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183C29633E70007A59CA /* TopViewController.swift */; };
+		0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
@@ -623,6 +624,7 @@
 		0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
 		0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinFlowController.swift; sourceTree = "<group>"; };
 		0ADC183C29633E70007A59CA /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
+		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -1445,6 +1447,7 @@
 				0A0E2065296311A7001782A5 /* PinType.swift */,
 				0A0E2061296309FB001782A5 /* SelectPinTypeCardViewController.swift */,
 				0A0E206329630B7C001782A5 /* SelectPinTypeButton.swift */,
+				0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */,
 			);
 			path = AddPin;
 			sourceTree = "<group>";
@@ -1868,6 +1871,7 @@
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
 				0A4ADD6429423AA8006DB186 /* ControlWithTapAreaInsets.swift in Sources */,
+				0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
 				0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */,
 				0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */,
