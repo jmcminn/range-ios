@@ -1,14 +1,22 @@
 import UIKit
 
 /// The view displayed at the top of the screen that looks similar to navigation bar (but is a custom view)
-class ProjectTopViewController: UIViewController {
-    private let projectSummary: ProjectSummary
-    private var backButton: UIButton!
-    private var titleLabel: UILabel!
-    var onBack: (() -> Void)?
+class TopViewController: UIViewController {
+    private let iconName: String?
+    private let onBack: (() -> Void)?
 
-    init(projectSummary: ProjectSummary) {
-        self.projectSummary = projectSummary
+    private var backButton: UIButton?
+    private var imageView: UIImageView?
+    private let titleLabel = UILabel()
+
+    private var font: UIFont {
+        ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
+    }
+
+    init(iconName: String? = nil, title: String, onBack: (() -> Void)? = nil) {
+        self.iconName = iconName
+        titleLabel.text = title
+        self.onBack = onBack
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -24,29 +32,42 @@ class ProjectTopViewController: UIViewController {
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         let bottomStroke = UIView()
-        bottomStroke
-            .backgroundColor = .dynamicColor(light: .Neutral_04,
-                                             dark: .Neutral_10) // in dark mode the same color as background as we don't want the stroke
+        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04,
+                                                     dark: .Neutral_10) // in dark mode the same color as background as we don't want the stroke
         view.addSubview(bottomStroke)
         bottomStroke.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(1)
         }
 
+        let imageAndTitle = UIStackView()
+        imageAndTitle.axis = .horizontal
+        imageAndTitle.distribution = .equalSpacing
+        imageAndTitle.spacing = 8
+        imageAndTitle.alignment = .trailing
+
+        setupImageView()
+        if let imageView = imageView {
+            imageAndTitle.addArrangedSubview(imageView)
+        }
+
         setupTitleLabel()
-        view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        imageAndTitle.addArrangedSubview(titleLabel)
+        view.addSubview(imageAndTitle)
+        imageAndTitle.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-11)
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(11)
+            make.bottom.equalToSuperview().offset(-10)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
         }
 
         setupBackButton()
-        view.addSubview(backButton)
-        backButton.snp.makeConstraints { make in
-            make.width.height.equalTo(40)
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(titleLabel.snp.centerY)
+        if let backButton = backButton {
+            view.addSubview(backButton)
+            backButton.snp.makeConstraints { make in
+                make.width.height.equalTo(40)
+                make.leading.equalToSuperview()
+                make.centerY.equalTo(imageAndTitle.snp.centerY)
+            }
         }
     }
 
@@ -66,6 +87,7 @@ class ProjectTopViewController: UIViewController {
     }
 
     private func setupBackButton() {
+        guard onBack != nil else { return }
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         var config = UIButton.Configuration.plain()
@@ -79,13 +101,18 @@ class ProjectTopViewController: UIViewController {
         )
     }
 
+    private func setupImageView() {
+        guard let iconName = iconName else { return }
+        imageView = UIImageView(image: UIImage(
+            systemName: iconName,
+            withConfiguration: UIImage.SymbolConfiguration(font: font)
+        ))
+        imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+    }
+
     private func setupTitleLabel() {
-        let font = UIFont.preferredFont(forTextStyle: .subheadline)
-        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
-        titleLabel = UILabel()
-        titleLabel.text = projectSummary.name
         titleLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        titleLabel.font = boldFont
+        titleLabel.font = font
         titleLabel.adjustsFontForContentSizeCategory = true
     }
 }

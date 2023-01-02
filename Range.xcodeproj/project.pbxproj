@@ -45,12 +45,10 @@
 		0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A147E7D294C5CB700B5833A /* CollaborationButton.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
-		0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
 		0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935312938C1E2000E8BF8 /* AvatarView.swift */; };
 		0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */; };
 		0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */; };
-		0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */; };
 		0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */; };
 		0A22CF1C2930CE4D0084332B /* CanvasFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */; };
 		0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */; };
@@ -298,6 +296,7 @@
 		0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */; };
 		0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */; };
 		0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */; };
+		0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183C29633E70007A59CA /* TopViewController.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
@@ -363,12 +362,10 @@
 		0A147E7D294C5CB700B5833A /* CollaborationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationButton.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
-		0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoTopViewController.swift; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
 		0A1935312938C1E2000E8BF8 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionHeaderView.swift; sourceTree = "<group>"; };
 		0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationHeaderCoverViewController.swift; sourceTree = "<group>"; };
-		0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTopViewController.swift; sourceTree = "<group>"; };
 		0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFlowController.swift; sourceTree = "<group>"; };
 		0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileLoader.swift; sourceTree = "<group>"; };
 		0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+Corners.swift"; sourceTree = "<group>"; };
@@ -625,6 +622,7 @@
 		0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelFirestoreSync.swift; sourceTree = "<group>"; };
 		0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
 		0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinFlowController.swift; sourceTree = "<group>"; };
+		0ADC183C29633E70007A59CA /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -719,7 +717,6 @@
 			isa = PBXGroup;
 			children = (
 				A6E8166BBA53B1A993643B7A /* README.md */,
-				0A1812722833E3AD00A8515B /* AddPhotoTopViewController.swift */,
 				0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */,
 				0A48ACE0281C1ADD0044E06E /* AddPhotoPinsDisplay.swift */,
 				0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */,
@@ -1064,7 +1061,6 @@
 			children = (
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
 				0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */,
-				0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
 			);
 			path = Project;
@@ -1088,6 +1084,7 @@
 				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
 				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
 				0A4995B42854C28200E571FB /* TextView.swift */,
+				0ADC183C29633E70007A59CA /* TopViewController.swift */,
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
 				0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */,
@@ -1693,7 +1690,6 @@
 				0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
 				0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */,
-				0A1812732833E3AD00A8515B /* AddPhotoTopViewController.swift in Sources */,
 				0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */,
 				0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */,
 				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,
@@ -1789,6 +1785,7 @@
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
 				0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */,
 				0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */,
+				0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */,
 				0A7A537F293FB8F70093D913 /* ProjectTableViewCell.swift in Sources */,
 				0A2E04D528ACFA9900E10503 /* FirebaseStorageImageDataProvider.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
@@ -1864,7 +1861,6 @@
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */,
-				0A1F8E8A28D0C6BE0066F08F /* ProjectTopViewController.swift in Sources */,
 				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
 				0A3714DF29504FA6004ED1B0 /* ProjectFlowController+Actions.swift in Sources */,
 				0A0E206429630B7C001782A5 /* SelectPinTypeButton.swift in Sources */,

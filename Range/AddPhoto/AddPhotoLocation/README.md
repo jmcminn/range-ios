@@ -45,11 +45,6 @@ Geometries are stored in Firebase and read in order to create Mapbox pins
 Defines the data associated with the selected pin (simply: id and point) and is
 instantiated from a Mapbox PointAnnotation or Turf Feature
 
-
-### AddPhotoTopViewController
-
-A simple view at the top of the screen showing "Add Location"
-
 ### PanAndZoomIndicatorView
 
 A simple "toast" view that says "Pan and zoom to adjust the location" at the bottom 

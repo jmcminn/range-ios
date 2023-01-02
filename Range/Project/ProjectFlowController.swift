@@ -20,7 +20,7 @@ final class ProjectFlowController: UIViewController {
     /// for storing the debugSettings observer(s)
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
 
-    var topViewController: ProjectTopViewController?
+    var topViewController: TopViewController?
     lazy var actionCardVC = setupActionCardVC()
     var pinsDisplay: GeometriesPinsDisplay?
     var canvasSelectorButton: RoundShadowButton!
@@ -205,8 +205,7 @@ final class ProjectFlowController: UIViewController {
 
     /// shows the view controller covering the top of of the screen
     private func showTopViewController(animated: Bool) {
-        let topViewController = ProjectTopViewController(projectSummary: model.projectSummary)
-        topViewController.onBack = onBack
+        let topViewController = TopViewController(title: model.projectSummary.name, onBack: onBack)
         canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
         if animated {
             topViewController.view.snp.makeConstraints { make in

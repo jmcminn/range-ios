@@ -15,7 +15,7 @@ class AddPhotoFlowController {
     var cameraVC: CameraViewController?
     var detailsVC: PhotoDetailsViewController?
     var pinsDisplay: AddPhotoPinsDisplay?
-    var topViewController: AddPhotoTopViewController?
+    var topViewController: TopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
     var photosPreviewCardVC: PhotosPreviewViewController?
     var panAndZoomIndicatorView: ToastView?
@@ -486,7 +486,10 @@ extension AddPhotoFlowController {
 
     /// shows the view controller covering the top of of the screen
     private func showTopViewController() {
-        let topViewController = AddPhotoTopViewController()
+        let topViewController = TopViewController(
+            iconName: "mappin.and.ellipse",
+            title: String(localized: "Add Location")
+        )
         canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
         topViewController.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
