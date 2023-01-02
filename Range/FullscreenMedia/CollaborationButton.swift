@@ -12,7 +12,12 @@ class CollaborationButton: UIControl {
         super.init(frame: .zero)
 
         setupViews()
-        collaborationNameLabel.text = collaboration.name
+
+        collaborationNameLabel.text = collaboration.name.isEmpty
+            ? (collaboration.status == nil
+                ? String(localized: "Untitled photos...")
+                : String(localized: "Untitled task..."))
+            : collaboration.name
         canvasNameLabel.text = collaboration.feature.first?.geometry.first?.canvas.first?.displayName
         updateColors()
         updateHighlightedColor()
