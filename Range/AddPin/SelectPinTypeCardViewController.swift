@@ -8,12 +8,14 @@ class SelectPinTypeCardViewController: SheetCardViewController {
     private let photoPinButton = SelectPinTypeButton(type: .photo)
     private let taskPinButton = SelectPinTypeButton(type: .task)
 
-    var onPinTypeSelected: ((PinType) -> Void)?
+    /// Callback for pin selected, optional = nil when the selector was dismissed
+    var onPinTypeSelected: ((PinType?) -> Void)?
 
     /// Initializer
-    init(onPinTypeSelected: ((PinType) -> Void)? = nil) {
+    init(onPinTypeSelected: ((PinType?) -> Void)? = nil) {
         self.onPinTypeSelected = onPinTypeSelected
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Add Pin"))
+        onDismiss = { [weak self] in self?.onPinTypeSelected?(nil) }
     }
 
     override func viewDidLoad() {

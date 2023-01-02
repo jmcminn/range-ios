@@ -297,6 +297,7 @@
 		0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */; };
 		0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */; };
 		0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */; };
+		0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
@@ -623,6 +624,7 @@
 		0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Throws.swift"; sourceTree = "<group>"; };
 		0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelFirestoreSync.swift; sourceTree = "<group>"; };
 		0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
+		0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinFlowController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -1064,9 +1066,6 @@
 				0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */,
 				0A1F8E8928D0C6BE0066F08F /* ProjectTopViewController.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
-				0A0E2065296311A7001782A5 /* PinType.swift */,
-				0A0E2061296309FB001782A5 /* SelectPinTypeCardViewController.swift */,
-				0A0E206329630B7C001782A5 /* SelectPinTypeButton.swift */,
 			);
 			path = Project;
 			sourceTree = "<group>";
@@ -1125,6 +1124,7 @@
 				0A48ACDC281C0CBD0044E06E /* Supporting Files */,
 				0ABFD8BE28F48556008CDA74 /* ActionSelector */,
 				0A4995D62860C6A900E571FB /* AddPhoto */,
+				0ADC183929631C84007A59CA /* AddPin */,
 				0A07D764281295B500B6F9A2 /* Auth */,
 				0A1935302938C1D6000E8BF8 /* Avatar */,
 				0A97232327FC507200D744F4 /* Camera */,
@@ -1439,6 +1439,17 @@
 				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
 			);
 			path = Commands;
+			sourceTree = "<group>";
+		};
+		0ADC183929631C84007A59CA /* AddPin */ = {
+			isa = PBXGroup;
+			children = (
+				0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */,
+				0A0E2065296311A7001782A5 /* PinType.swift */,
+				0A0E2061296309FB001782A5 /* SelectPinTypeCardViewController.swift */,
+				0A0E206329630B7C001782A5 /* SelectPinTypeButton.swift */,
+			);
+			path = AddPin;
 			sourceTree = "<group>";
 		};
 		0AF812B72840D52A00F7BD09 /* Logging */ = {
@@ -1808,6 +1819,7 @@
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
 				0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */,
+				0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
 				0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */,
 				0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */,

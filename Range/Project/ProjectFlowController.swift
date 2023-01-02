@@ -37,6 +37,7 @@ final class ProjectFlowController: UIViewController {
     var reportPresenceThrottler = Throttler(throttleTime: 0.5)
 
     var addPhotoFlow: AddPhotoFlowController?
+    var addPinFlow: AddPinFlowController?
 
     var started = false
     var onBack: (() -> Void)?
@@ -300,7 +301,7 @@ final class ProjectFlowController: UIViewController {
             self?.startAddPhotoFlow()
         }
         vc.onAddPin = { [weak self] in
-            self?.addPin()
+            self?.startAddPinFlow()
         }
 
         canvasContainer.installCard(cardViewController: vc,
@@ -352,14 +353,26 @@ extension ProjectFlowController {
         }
     }
 
-    private func addPin() {
+    private func startAddPinFlow() {
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
-        // select pin type
-        SelectPinTypeCardViewController(onPinTypeSelected: { pinType in
-            print("TODO: 306 Pin type: \(pinType)")
-        })
-        .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer)
+        addPinFlow?.onStop = { [weak self] collaboration in
+            if let collaboration = collaboration {
+                // TODO: 306 select collaboration and edit name
+                print("Collaboration added: \(collaboration)")
+            }
+            self?.showDefaultCanvasUI()
+            self?.addPinFlow = nil
+        }
+        addPinFlow?.start { [weak self] started in
+            // hide cards/pins if pin flow started (so the pins are still visible until it reports started = when the choice for pin type is made)
+            if started {
+                self?.hideDefaultCanvasUI()
+            } else {
+                self?.addPhotoFlow = nil
+            }
+        }
     }
 }
