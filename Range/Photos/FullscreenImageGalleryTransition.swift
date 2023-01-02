@@ -86,12 +86,19 @@ class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTra
         interactivePresentation
     }
 
-    func animationController(forDismissed _: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let referenceImageView = fullscreenGalleryVC?.imageViewForCurrentPage else { return nil }
-        guard let referenceImage = referenceImageView.image else { return nil }
-        let imageHeight2Width = referenceImage.size.height / referenceImage.size.width
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard let referenceImageView = fullscreenGalleryVC?.imageViewForCurrentPage,
+              let referenceImage = referenceImageView.image,
+              let targetView = galleryVC?.viewForCurrentPage
+        else {
+            // if we are not using the fullscreen transition for dismissal then reset the "from" vc
+            // alpha to 1 so it's visible again (otherwise the alpha is animated from 0 to 1 in
+            // FullscreenImageGalleryDismissalAnimatedTransitioning
+            dismissed.presentingViewController?.view.alpha = 1
+            return nil
+        }
 
-        guard let targetView = galleryVC?.viewForCurrentPage else { return nil }
+        let imageHeight2Width = referenceImage.size.height / referenceImage.size.width
         let targetFrame = targetView.imageViewFrame(forImageHeight2Width: imageHeight2Width)
 
         return FullscreenImageGalleryDismissalAnimatedTransitioning(
@@ -184,7 +191,6 @@ class FullscreenImageGalleryPresentationAnimatedTransitioning: NSObject, UIViewC
             fullscreenVC.view.backgroundColor = fullscreenBackgroundColor
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-            fromVC.view.alpha = 1
         }
         animatorForCurrentTransition = animator
 
