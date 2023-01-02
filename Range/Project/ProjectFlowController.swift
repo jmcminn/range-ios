@@ -299,8 +299,8 @@ final class ProjectFlowController: UIViewController {
         vc.onCamera = { [weak self] in
             self?.startAddPhotoFlow()
         }
-        vc.onAddMarker = { [weak self] in
-            self?.addMarker()
+        vc.onAddPin = { [weak self] in
+            self?.addPin()
         }
 
         canvasContainer.installCard(cardViewController: vc,
@@ -352,22 +352,14 @@ extension ProjectFlowController {
         }
     }
 
-    private func addMarker() {
-        ActionSelectorCardViewController(
-            icon: UIImage(systemName: "mappin.and.ellipse"),
-            title: String(localized: "Add Marker"),
-            actions: [
-                ActionItem(
-                    title: String(localized: "Photo Collection"),
-                    imageName: "photo",
-                    handler: {}
-                ),
-                ActionItem(
-                    title: String(localized: "Issue"),
-                    imageName: "checkmark.circle",
-                    handler: {}
-                ),
-            ]
-        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    private func addPin() {
+        // minimize the action card
+        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
+
+        // select pin type
+        SelectPinTypeCardViewController(onPinTypeSelected: { pinType in
+            print("TODO: 306 Pin type: \(pinType)")
+        })
+        .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 }

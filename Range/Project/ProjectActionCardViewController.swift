@@ -9,12 +9,12 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     }
 
     var onCamera: (() -> Void)?
-    var onAddMarker: (() -> Void)?
+    var onAddPin: (() -> Void)?
 
     static let topPadding = 21.0
     static let headerToActionsPadding = 16.0
 
-    var addMarkerButton: UIButton!
+    var addPinButton: UIButton!
     var expandButton: UIButton!
     var photoButton: UIButton!
     var actionSelectorVC: ActionSelectorViewController!
@@ -50,15 +50,15 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
         containerView.installSliderView()
 
-        setupAddMarkerButton()
+        setupAddPinButton()
 
-        setupAddMarkerButton()
+        setupAddPinButton()
         setupExpandButton()
         setupPhotoButton()
 
-        [addMarkerButton, expandButton, photoButton].forEach(containerView.addSubview)
+        [addPinButton, expandButton, photoButton].forEach(containerView.addSubview)
 
-        addMarkerButton.snp.makeConstraints { make in
+        addPinButton.snp.makeConstraints { make in
             make.top.equalTo(photoButton)
             make.height.equalTo(photoButton)
             make.leading.equalToSuperview().inset(16)
@@ -120,12 +120,12 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
     }
 
-    private func setupAddMarkerButton() {
-        addMarkerButton = UIButton(
+    private func setupAddPinButton() {
+        addPinButton = UIButton(
             configuration: UIButton.Configuration.blackButton(imagePlacement: .leading),
-            primaryAction: UIAction(title: String(localized: "Add"),
+            primaryAction: UIAction(title: String(localized: "Add Pin"),
                                     image: UIImage(systemName: "mappin.and.ellipse")) { [weak self] _ in
-                self?.onAddMarker?()
+                self?.onAddPin?()
             }
         )
     }
@@ -145,7 +145,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     private func setupPhotoButton() {
         photoButton = UIButton(
             configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
-            primaryAction: UIAction(title: String(localized: "Add"),
+            primaryAction: UIAction(title: String(localized: "Capture"),
                                     image: UIImage(systemName: "camera")) { [weak self] _ in
                 self?.onCamera?()
             }
