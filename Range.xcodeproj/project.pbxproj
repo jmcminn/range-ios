@@ -211,8 +211,8 @@
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
 		0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */; };
 		0A7FC4192844E6A80097888A /* FirestoreStatusName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */; };
-		0A82A8E6292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8E5292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift */; };
-		0A82A8E829222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8E729222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift */; };
+		0A82A8E6292178E000A4BBCE /* CreateCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8E5292178E000A4BBCE /* CreateCollaborationCommand.swift */; };
+		0A82A8E829222ED200A4BBCE /* CreateCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8E729222ED200A4BBCE /* CreateCollaborationCommandTest.swift */; };
 		0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8E929226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift */; };
 		0A82A8EC292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */; };
 		0A82A8EE292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */; };
@@ -539,8 +539,8 @@
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
 		0A7FC4162844E1DD0097888A /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreStatusName.swift; sourceTree = "<group>"; };
-		0A82A8E5292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePhotoCollaborationCommand.swift; sourceTree = "<group>"; };
-		0A82A8E729222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePhotoCollaborationCommandTest.swift; sourceTree = "<group>"; };
+		0A82A8E5292178E000A4BBCE /* CreateCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollaborationCommand.swift; sourceTree = "<group>"; };
+		0A82A8E729222ED200A4BBCE /* CreateCollaborationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollaborationCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8E929226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollaborationCommentCommand.swift; sourceTree = "<group>"; };
 		0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollaborationCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommandTest.swift; sourceTree = "<group>"; };
@@ -1244,8 +1244,8 @@
 			isa = PBXGroup;
 			children = (
 				0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */,
+				0A82A8E729222ED200A4BBCE /* CreateCollaborationCommandTest.swift */,
 				0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */,
-				0A82A8E729222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift */,
 				0AFDFA982952110400F64D62 /* CreateUploadCommentCommandTest.swift */,
 				0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */,
 				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
@@ -1418,8 +1418,8 @@
 				0AD9B7672869E55E005ACFD7 /* Command.swift */,
 				0A881986291D17060050FC41 /* CommandTypes.swift */,
 				0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */,
+				0A82A8E5292178E000A4BBCE /* CreateCollaborationCommand.swift */,
 				0A82A8E929226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift */,
-				0A82A8E5292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift */,
 				0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */,
 				0AFDFA962952106D00F64D62 /* CreateUploadCommentCommand.swift */,
 				0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */,
@@ -1729,7 +1729,7 @@
 				0A06241F2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift in Sources */,
 				0A05312929378FE900738BA3 /* MediaCardViewController.swift in Sources */,
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
-				0A82A8E6292178E000A4BBCE /* CreatePhotoCollaborationCommand.swift in Sources */,
+				0A82A8E6292178E000A4BBCE /* CreateCollaborationCommand.swift in Sources */,
 				0A05312B2937B2FA00738BA3 /* MediaCollectionViewCell.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */,
@@ -1936,7 +1936,7 @@
 				0A4995C32859D8C900E571FB /* FirestoreTagNameTest.swift in Sources */,
 				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
 				0A6DB6A7292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift in Sources */,
-				0A82A8E829222ED200A4BBCE /* CreatePhotoCollaborationCommandTest.swift in Sources */,
+				0A82A8E829222ED200A4BBCE /* CreateCollaborationCommandTest.swift in Sources */,
 				0AFDFA992952110400F64D62 /* CreateUploadCommentCommandTest.swift in Sources */,
 				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,
 			);

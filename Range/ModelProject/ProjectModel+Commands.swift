@@ -124,7 +124,7 @@ extension ProjectModel {
             try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
         }
 
-        return CreatePhotoCollaborationCommand(
+        return CreateCollaborationCommand(
             authorId: userId,
             canvasId: canvas.id,
             geometryId: geometryId,
@@ -132,6 +132,41 @@ extension ProjectModel {
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: description,
             uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
+        )
+    }
+
+    /// Creates an empty photo collaboration
+    func createPhotoCollaboration(at coordinates: CLLocationCoordinate2D,
+                                  in canvas: PDFCanvas,
+                                  withGeometryId geometryId: String) -> CreateCollaborationCommand
+    {
+        CreateCollaborationCommand(
+            authorId: userId,
+            canvasId: canvas.id,
+            geometryId: geometryId,
+            coordinates: coordinates,
+            tags: [],
+            uploadDescription: nil,
+            uploads: []
+        )
+    }
+
+    func createTaskCollaboration(at coordinates: CLLocationCoordinate2D,
+                                 in canvas: PDFCanvas,
+                                 withGeometryId geometryId: String) throws -> CreateCollaborationCommand
+    {
+        guard let initialStatus = mainRealm.objects(Status.self).first(where: { $0.isInitial }) else {
+            throw ModelError.statusNotFound
+        }
+        return CreateCollaborationCommand(
+            authorId: userId,
+            canvasId: canvas.id,
+            geometryId: geometryId,
+            coordinates: coordinates,
+            tags: [],
+            uploadDescription: nil,
+            uploads: [],
+            statusId: initialStatus.id
         )
     }
 

@@ -8,7 +8,7 @@ import Turf
 /// Adds given uploads to collaboration.
 /// Creates tags if not existing yet.
 /// Attach provided tags to all uploads.
-struct CreatePhotoCollaborationCommand: Command, Codable, Equatable {
+struct CreateCollaborationCommand: Command, Codable, Equatable {
     var authorId: String
     var canvasId: String
     var geometryId: String
@@ -18,6 +18,7 @@ struct CreatePhotoCollaborationCommand: Command, Codable, Equatable {
     var tags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
+    var statusId: String? // optional status to create a task collaboration
 
     init(
         authorId: String,
@@ -28,7 +29,8 @@ struct CreatePhotoCollaborationCommand: Command, Codable, Equatable {
         coordinates: CLLocationCoordinate2D,
         tags: [CommandTag],
         uploadDescription: String?,
-        uploads: [CommandUpload]
+        uploads: [CommandUpload],
+        statusId: String? = nil
     ) {
         self.authorId = authorId
         self.canvasId = canvasId
@@ -39,11 +41,12 @@ struct CreatePhotoCollaborationCommand: Command, Codable, Equatable {
         self.tags = tags
         self.uploadDescription = uploadDescription
         self.uploads = uploads
+        self.statusId = statusId
     }
 }
 
 /// Apply in local Realm db
-extension CreatePhotoCollaborationCommand: LocalCommand {
+extension CreateCollaborationCommand: LocalCommand {
     func apply(inRealm realm: Realm) throws {
         let canvas = try realm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId)
             .or(error: ModelError.canvasNotFound)
@@ -93,6 +96,11 @@ extension CreatePhotoCollaborationCommand: LocalCommand {
             tags.forEach { t in t.uploads.insert(upload) }
             collaboration.uploads.insert(upload)
         }
+
+        if let statusId = statusId {
+            collaboration.status = try realm.object(ofType: Status.self, forPrimaryKey: statusId)
+                .or(error: ModelError.statusNotFound)
+        }
     }
 }
 
@@ -102,7 +110,7 @@ extension CreatePhotoCollaborationCommand: LocalCommand {
 /// if so it doesn't recreate or update them.
 /// It fails with the "obsolete" error if canvas or author doesn't exist. This means that either of them was already removed
 /// and this command should be aborted and not attempted again.
-extension CreatePhotoCollaborationCommand: FirestoreCommand {
+extension CreateCollaborationCommand: FirestoreCommand {
     func apply(inFirestore ctx: FirestoreCommandContext) throws {
         // ------------- READS -----------------
         // check that collaboration and author exist, otherwise abort (the command cannot be applied)
@@ -140,7 +148,7 @@ extension CreatePhotoCollaborationCommand: FirestoreCommand {
                 featureId: featureId,
                 authorId: authorId,
                 timestamp: Timestamp(),
-                statusId: nil,
+                statusId: statusId,
                 name: "",
                 collaborationDescription: nil,
                 tagIds: [],

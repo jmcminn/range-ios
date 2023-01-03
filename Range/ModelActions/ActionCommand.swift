@@ -24,7 +24,7 @@ import RealmSwift
 enum ActionCommand: Codable {
     case addUploadsToCollaboration(AddUploadsToCollaborationCommand)
     case createCollaborationComment(CreateCollaborationCommentCommand)
-    case createPhotoCollaboration(CreatePhotoCollaborationCommand)
+    case createCollaboration(CreateCollaborationCommand)
     case createUploadComment(CreateUploadCommentCommand)
     case deleteCollaboration(DeleteCollaborationCommand)
     case deleteComment(DeleteCommentCommand)
@@ -45,7 +45,7 @@ enum ActionCommand: Codable {
         switch c {
         case let c as AddUploadsToCollaborationCommand: self = .addUploadsToCollaboration(c)
         case let c as CreateCollaborationCommentCommand: self = .createCollaborationComment(c)
-        case let c as CreatePhotoCollaborationCommand: self = .createPhotoCollaboration(c)
+        case let c as CreateCollaborationCommand: self = .createCollaboration(c)
         case let c as CreateUploadCommentCommand: self = .createUploadComment(c)
         case let c as DeleteCollaborationCommand: self = .deleteCollaboration(c)
         case let c as DeleteCommentCommand: self = .deleteComment(c)
@@ -69,7 +69,7 @@ enum ActionCommand: Codable {
         switch self {
         case let .addUploadsToCollaboration(c): return c
         case let .createCollaborationComment(c): return c
-        case let .createPhotoCollaboration(c): return c
+        case let .createCollaboration(c): return c
         case let .createUploadComment(c): return c
         case let .deleteCollaboration(c): return c
         case let .deleteComment(c): return c

@@ -103,11 +103,11 @@ class ProjectModelCommandsTest: XCTestCase {
             at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
             in: canvas,
             withGeometryId: "geometry1"
-        ) as? CreatePhotoCollaborationCommand else {
+        ) as? CreateCollaborationCommand else {
             XCTFail("addPhotos failed")
             return
         }
-        XCTAssertEqual(command, CreatePhotoCollaborationCommand(
+        XCTAssertEqual(command, CreateCollaborationCommand(
             authorId: "user1",
             canvasId: "canvas1",
             geometryId: "geometry1",

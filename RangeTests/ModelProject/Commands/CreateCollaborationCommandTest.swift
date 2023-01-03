@@ -5,14 +5,14 @@ import RealmSwift
 import Turf
 import XCTest
 
-/// Tests applying `CreatePhotoCollaborationCommand` in local Realm db
-final class CreatePhotoCollaborationCommandRealmTest: XCTestCase {
+/// Tests applying `CreateCollaborationCommand` in local Realm db
+final class CreateCollaborationCommandRealmTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
     var realm: Realm!
 
-    let command = CreatePhotoCollaborationCommand(
+    let command = CreateCollaborationCommand(
         authorId: "user1",
         canvasId: "canvas1",
         geometryId: "geometry1",
@@ -67,6 +67,30 @@ final class CreatePhotoCollaborationCommandRealmTest: XCTestCase {
         }
     }
 
+    func testApply_noStatus() throws {
+        let canvas1 = PDFCanvas(
+            id: "canvas1",
+            name: "",
+            pageNumber: 0,
+            sheetNumber: nil,
+            userDefinedScale: 1
+        )
+        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        try realm.write {
+            realm.add([canvas1, user1])
+        }
+
+        var command = command
+        command.statusId = "status1"
+        XCTAssertThrowsError(
+            try realm.write {
+                try command.apply(inRealm: realm)
+            }
+        ) { error in
+            XCTAssertEqual(error as! ModelError, ModelError.statusNotFound)
+        }
+    }
+
     func testApply_successful() throws {
         let canvas1 = PDFCanvas(
             id: "canvas1",
@@ -118,9 +142,9 @@ final class CreatePhotoCollaborationCommandRealmTest: XCTestCase {
     }
 }
 
-/// Tests applying `CreatePhotoCollaborationCommand` in to Firestore (using a mock for FirestoreCommandContext)
-final class CreatePhotoCollaborationCommandFirestoreTest: XCTestCase {
-    let command = CreatePhotoCollaborationCommand(
+/// Tests applying `CreateCollaborationCommand` in to Firestore (using a mock for FirestoreCommandContext)
+final class CreateCollaborationCommandFirestoreTest: XCTestCase {
+    let command = CreateCollaborationCommand(
         authorId: "user1",
         canvasId: "canvas1",
         geometryId: "geometry1",

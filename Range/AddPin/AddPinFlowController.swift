@@ -47,7 +47,7 @@ class AddPinFlowController {
     private func selectPinLocation(pinType: PinType) {
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
         showTopViewController(pinType: pinType)
-        showConfirmationCard()
+        showConfirmationCard(pinType: pinType)
         showPanAndZoomIndicatorView()
         showCanvasSelectorButton()
         showPins()
@@ -111,15 +111,15 @@ class AddPinFlowController {
     }
 
     /// Presents a card with cancel/confirm and registers callbacks for user actions
-    private func showConfirmationCard() {
+    private func showConfirmationCard(pinType: PinType) {
         confirmationCardVC = AddPinConfirmationViewController()
         confirmationCardVC!.onCancel = { [weak self] in
             self?.dismissPhotoLocationSelectionUI()
             self?.onStop?(nil)
         }
-//        confirmationCardVC!.onConfirm = { _ in
-//            // TODO: 306 add collaboration
-//        }
+        confirmationCardVC!.onConfirm = { [weak self] in
+            self?.createCollaborationAndStop(pinType: pinType)
+        }
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,
             inView: canvasContainer.controls,
@@ -221,6 +221,41 @@ class AddPinFlowController {
         canvasContainer.content.addSubview(pinView!)
         pinView!.snp.makeConstraints { make in
             make.center.equalToSuperview()
+        }
+    }
+
+    private func createCollaborationAndStop(pinType: PinType) {
+        let geometryId = generateRealmId()
+        let command: CreateCollaborationCommand
+        do {
+            command = pinType == .photo
+                ? model.createPhotoCollaboration(
+                    at: canvasContainer.annotationsMapView.cameraState.center,
+                    in: model.currentCanvas,
+                    withGeometryId: geometryId
+                )
+                : try model.createTaskCollaboration(
+                    at: canvasContainer.annotationsMapView.cameraState.center,
+                    in: model.currentCanvas,
+                    withGeometryId: geometryId
+                )
+        } catch {
+            ToastWindow.shared.showError(text: "Failed to create the collaboration")
+            return
+        }
+        model.run(command) { [weak self] error in
+            if error != nil {
+                ToastWindow.shared.showError(text: "Failed to create the collaboration")
+            } else {
+                UserDefaults.lastPhotoPinId = geometryId
+            }
+            self?.dismissPhotoLocationSelectionUI()
+            self?.model.mainRealm.refresh()
+            let collaboration = self?.model.mainRealm.object(
+                ofType: Collaboration.self,
+                forPrimaryKey: command.collaborationId
+            )
+            self?.onStop?(collaboration)
         }
     }
 }
