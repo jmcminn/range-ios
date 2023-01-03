@@ -358,12 +358,12 @@ extension ProjectFlowController {
 
         addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer)
         addPinFlow?.onStop = { [weak self] collaboration in
+            guard let self = self else { return }
+            self.showDefaultCanvasUI()
             if let collaboration = collaboration {
-                // TODO: 306 select collaboration and edit name
-                print("Collaboration added: \(collaboration)")
+                self.showCollaborationAndEditName(collaboration)
             }
-            self?.showDefaultCanvasUI()
-            self?.addPinFlow = nil
+            self.addPinFlow = nil
         }
         addPinFlow?.start { [weak self] started in
             // hide cards/pins if pin flow started (so the pins are still visible until it reports started = when the choice for pin type is made)
@@ -371,6 +371,19 @@ extension ProjectFlowController {
                 self?.hideDefaultCanvasUI()
             } else {
                 self?.addPhotoFlow = nil
+            }
+        }
+    }
+
+    private func showCollaborationAndEditName(_ collaboration: Collaboration) {
+        guard let geometryId = collaboration.feature.first?.geometry.first?.id else { return }
+        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
+            if let pinsDisplay = self.pinsDisplay, let pin = pinsDisplay.pinForGeometryId(geometryId) {
+                // select the pin (which will trigger showing the collaboration window)
+                pinsDisplay.setSelectedPin(pin)
+                DispatchQueue.main.async {
+                    self.collaborationFlow.editNameAction()
+                }
             }
         }
     }
