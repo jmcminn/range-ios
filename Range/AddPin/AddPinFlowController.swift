@@ -12,6 +12,10 @@ class AddPinFlowController {
     private var topViewController: TopViewController?
     private var confirmationCardVC: AddPinConfirmationViewController?
     private var pinsDisplay: GeometriesPinsDisplay?
+    private var canvasSelectorButton: RoundShadowButton?
+
+    /// To observed changes in model.currentCanvas
+    private var canvasObservation: NSKeyValueObservation?
 
     /// - Parameters:
     ///     - model: - the project model
@@ -40,7 +44,7 @@ class AddPinFlowController {
         showTopViewController(pinType: pinType)
         showConfirmationCard()
 //        showPanAndZoomIndicatorView()
-//        showCanvasSelectorButton()
+        showCanvasSelectorButton()
         showPins()
     }
 
@@ -59,9 +63,9 @@ class AddPinFlowController {
         pinsDisplay?.stop()
         pinsDisplay = nil
 //        panAndZoomIndicatorView?.removeFromSuperview()
-//        canvasObservation?.invalidate()
-//        canvasObservation = nil
-//        hideCanvasSelectorButton()
+        canvasObservation?.invalidate()
+        canvasObservation = nil
+        hideCanvasSelectorButton()
     }
 
     /// shows the view controller covering the top of of the screen
@@ -117,7 +121,28 @@ class AddPinFlowController {
         confirmationCardVC!.showCard(animated: true)
     }
 
+    /// Starts the pin handler that adds the pins to the canvas and allows for the selection
     private func showPins() {
+        createPinsDisplay()
+        pinsDisplay?.start(onInitialLoad: nil)
+        canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
+            self?.reloadGeometriesPinsDisplay()
+        }
+    }
+
+    /// Reload the geometries pins display.
+    /// It stops the current pins display, creates a new one and starts it if the previous one was started (maybe it was temporarily stopped,
+    /// then we need the new one to be stopped too)
+    private func reloadGeometriesPinsDisplay() {
+        let start = pinsDisplay?.started ?? false
+        pinsDisplay?.stop()
+        createPinsDisplay()
+        if start {
+            pinsDisplay?.start(onInitialLoad: nil)
+        }
+    }
+
+    private func createPinsDisplay() {
         pinsDisplay = DebugSettings().nativeViewsForPins
             ? GeometriesViewAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
@@ -133,6 +158,27 @@ class AddPinFlowController {
                 deselectOnCanvasTap: false,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
             )
-        pinsDisplay?.start(onInitialLoad: nil)
+    }
+
+    private func showCanvasSelectorButton() {
+        canvasSelectorButton = RoundShadowButton(image: UIImage(systemName: "square.3.layers.3d") ?? UIImage())
+        canvasSelectorButton!.addTarget(self, action: #selector(canvasSelectorButtonTapped), for: .touchUpInside)
+        canvasContainer.controls.addSubview(canvasSelectorButton!)
+        canvasSelectorButton!.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
+        }
+    }
+
+    private func hideCanvasSelectorButton() {
+        canvasSelectorButton?.removeFromSuperview()
+        canvasSelectorButton = nil
+    }
+
+    @objc private func canvasSelectorButtonTapped() {
+        // send from canvasSelectorButton and not self, as AddPhotoFlowController is not in the
+        // responder chain (it's not UIView or UIViewController)
+        UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
+                                        to: nil, from: canvasSelectorButton, for: nil)
     }
 }
