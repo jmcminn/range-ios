@@ -14,6 +14,8 @@ class AddPinFlowController {
     private var pinsDisplay: GeometriesPinsDisplay?
     private var panAndZoomIndicatorView: ToastView?
     private var canvasSelectorButton: RoundShadowButton?
+    /// the pin shown in the center to indicate where the pin is being placed
+    private var pinView: UIView?
 
     /// id of registered delegate
     var canvasDelegateId: UUID?
@@ -49,6 +51,7 @@ class AddPinFlowController {
         showPanAndZoomIndicatorView()
         showCanvasSelectorButton()
         showPins()
+        showPinView(pinType: pinType)
     }
 
     /// remove the photo location selection views/handlers
@@ -68,6 +71,8 @@ class AddPinFlowController {
         canvasObservation?.invalidate()
         canvasObservation = nil
         hideCanvasSelectorButton()
+        pinView?.removeFromSuperview()
+        pinView = nil
     }
 
     /// shows the view controller covering the top of of the screen
@@ -195,6 +200,28 @@ class AddPinFlowController {
         // responder chain (it's not UIView or UIViewController)
         UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
                                         to: nil, from: canvasSelectorButton, for: nil)
+    }
+
+    /// shows the pin view in the center of the screen
+    private func showPinView(pinType: PinType) {
+        let pin: PinImage
+        if pinType == .photo {
+            pin = .pinPhoto(count: 0)
+        } else {
+            /// select color for task pin
+            let pinColor: UIColor
+            if let initialStatus = model.mainRealm.objects(Status.self).first(where: { $0.isInitial }) {
+                pinColor = initialStatus.color
+            } else {
+                pinColor = .Primary_Blue_04
+            }
+            pin = .pinTask(color: pinColor)
+        }
+        pinView = UIImageView(image: pin.image)
+        canvasContainer.content.addSubview(pinView!)
+        pinView!.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
     }
 }
 
