@@ -12,7 +12,11 @@ class AddPinFlowController {
     private var topViewController: TopViewController?
     private var confirmationCardVC: AddPinConfirmationViewController?
     private var pinsDisplay: GeometriesPinsDisplay?
+    private var panAndZoomIndicatorView: ToastView?
     private var canvasSelectorButton: RoundShadowButton?
+
+    /// id of registered delegate
+    var canvasDelegateId: UUID?
 
     /// To observed changes in model.currentCanvas
     private var canvasObservation: NSKeyValueObservation?
@@ -39,21 +43,19 @@ class AddPinFlowController {
 
     /// Adapt the UI for the location selection
     private func selectPinLocation(pinType: PinType) {
-        // TODO: 306 here
-//        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
+        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
         showTopViewController(pinType: pinType)
         showConfirmationCard()
-//        showPanAndZoomIndicatorView()
+        showPanAndZoomIndicatorView()
         showCanvasSelectorButton()
         showPins()
     }
 
     /// remove the photo location selection views/handlers
     private func dismissPhotoLocationSelectionUI() {
-        // TODO: 306
-//        if let canvasDelegateId = canvasDelegateId {
-//            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
-//        }
+        if let canvasDelegateId = canvasDelegateId {
+            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
+        }
         if let confirmationCardVC = confirmationCardVC {
             confirmationCardVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
@@ -62,7 +64,7 @@ class AddPinFlowController {
         hideTopViewController()
         pinsDisplay?.stop()
         pinsDisplay = nil
-//        panAndZoomIndicatorView?.removeFromSuperview()
+        panAndZoomIndicatorView?.removeFromSuperview()
         canvasObservation?.invalidate()
         canvasObservation = nil
         hideCanvasSelectorButton()
@@ -160,6 +162,19 @@ class AddPinFlowController {
             )
     }
 
+    private func showPanAndZoomIndicatorView() {
+        panAndZoomIndicatorView = ToastView(
+            iconName: "hand.point.up.left",
+            text: "Pan and zoom to adjust the location",
+            backgroundColor: .Neutral_10
+        )
+        canvasContainer.controls.addSubview(panAndZoomIndicatorView!)
+        panAndZoomIndicatorView!.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(12)
+            make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
+        }
+    }
+
     private func showCanvasSelectorButton() {
         canvasSelectorButton = RoundShadowButton(image: UIImage(systemName: "square.3.layers.3d") ?? UIImage())
         canvasSelectorButton!.addTarget(self, action: #selector(canvasSelectorButtonTapped), for: .touchUpInside)
@@ -181,4 +196,22 @@ class AddPinFlowController {
         UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
                                         to: nil, from: canvasSelectorButton, for: nil)
     }
+}
+
+/// CanvasViewControllerDelegate
+extension AddPinFlowController: CanvasViewControllerDelegate {
+    func canvasCameraChanged(reason: CanvasCameraChangeReason) {
+        if reason == .pan || reason == .zoom {
+            guard let panAndZoomIndicator = panAndZoomIndicatorView else { return }
+            UIView.animate(withDuration: 0.2,
+                           animations: {
+                               panAndZoomIndicator.alpha = 0
+                           }, completion: { _ in
+                               panAndZoomIndicator.removeFromSuperview()
+                               self.panAndZoomIndicatorView = nil
+                           })
+        }
+    }
+
+    func canvasTapRecognized(at _: CGPoint) {}
 }

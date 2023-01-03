@@ -577,7 +577,11 @@ extension AddPhotoFlowController {
     }
 
     private func showPanAndZoomIndicatorView() {
-        panAndZoomIndicatorView = ToastView(text: "Pan and zoom to adjust the location", backgroundColor: .Neutral_10)
+        panAndZoomIndicatorView = ToastView(
+            iconName: "hand.point.up.left",
+            text: "Pan and zoom to adjust the location",
+            backgroundColor: .Neutral_10
+        )
         canvasContainer.controls.addSubview(panAndZoomIndicatorView!)
         panAndZoomIndicatorView!.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(12)
