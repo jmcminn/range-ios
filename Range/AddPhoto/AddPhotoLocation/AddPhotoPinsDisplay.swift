@@ -52,13 +52,13 @@ class AddPhotoPinsDisplay {
                 canvas: canvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: false,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoPinDisplayOptionsProvider
+                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider
             )
             : GeometriesAnnotationPinsDisplay(
                 canvas: canvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: false,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoPinDisplayOptionsProvider
+                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider
             )
         geometriesPinsDisplay.onSelectedPinChange = { [weak self] pinPoint in
             self?.onSelectedPinChanged(pinPoint: pinPoint)

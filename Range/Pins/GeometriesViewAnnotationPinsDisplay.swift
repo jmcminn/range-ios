@@ -12,6 +12,7 @@ import UIKit
 class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
     private let canvas: PDFCanvas
     unowned let canvasVC: PDFCanvasViewController
+    private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
@@ -39,11 +40,13 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
     required init(
         canvas: PDFCanvas,
         canvasViewController: PDFCanvasViewController,
+        selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
         canvasVC = canvasViewController
+        self.selectionEnabled = selectionEnabled
         self.deselectOnCanvasTap = deselectOnCanvasTap
         self.geometryPinDisplayOptionsProvider = geometryPinDisplayOptionsProvider
     }
@@ -251,6 +254,7 @@ extension GeometriesViewAnnotationPinsDisplay: CanvasViewControllerDelegate, Pin
 
     /// select tapped pin
     func pinViewTapped(_ pinView: PinView) {
+        guard selectionEnabled else { return }
         if pinView.id != selectedPin?.id {
             setSelectedPin(PinPoint(fromPinView: pinView))
             canvasVC.animatePanAndZoom(

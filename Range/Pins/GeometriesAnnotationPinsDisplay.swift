@@ -14,6 +14,7 @@ import UIKit
 class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     private let canvas: PDFCanvas
     unowned let canvasVC: PDFCanvasViewController
+    private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
@@ -40,11 +41,13 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     required init(
         canvas: PDFCanvas,
         canvasViewController: PDFCanvasViewController,
+        selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
         canvasVC = canvasViewController
+        self.selectionEnabled = selectionEnabled
         self.deselectOnCanvasTap = deselectOnCanvasTap
         self.geometryPinDisplayOptionsProvider = geometryPinDisplayOptionsProvider
     }
@@ -261,6 +264,7 @@ extension GeometriesAnnotationPinsDisplay: CanvasViewControllerDelegate {
     /// If any pin is selected the canvas animates to center on it.
     /// This will only get triggered when pdf is driving the user interaction for canvas, so when using PointAnnotation (non native views for pins).
     func canvasTapRecognized(at point: CGPoint) {
+        guard selectionEnabled else { return }
         findPin(at: point) { pin in
             if let pin = pin {
                 // check if a pin different that currently selectedPin was tapped

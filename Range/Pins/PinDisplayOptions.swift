@@ -94,8 +94,8 @@ extension PinDisplayOptions {
     }
 
     /// pin display options provider for displaing pins in photo location selection mode (only show number of photos)
-    static func addPhotoPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
-                                                  anythingSelected _: Bool) -> PinDisplayOptions
+    static func addPhotoDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
+                                               anythingSelected _: Bool) -> PinDisplayOptions
     {
         let archived = collaboration.isArchived
         let pinImage: PinImage
@@ -110,6 +110,40 @@ extension PinDisplayOptions {
             alpha: selected ? 1.0 : 0.4,
             anchor: .bottom,
             offsetY: -4
+        )
+    }
+
+    /// pin display options provider for displaing pins in new pin location selection mode (only show transparent circles)
+    static func addPinDisplayOptionsProvider(collaboration: Collaboration, selected _: Bool,
+                                             anythingSelected _: Bool) -> PinDisplayOptions
+    {
+        let uploadsCount = collaboration.uploads.count
+
+        let pinImage: PinImage
+        if collaboration.isArchived {
+            // archived overrides any other rules
+            if collaboration.status != nil {
+                pinImage = .circleArchivedTask
+            } else {
+                pinImage = .circleArchivedPhoto(count: uploadsCount)
+            }
+        } else if let status = collaboration.status, status.isCompleted {
+            // completed status doesn't care about overdue or notes
+            pinImage = .circleTask(color: status.color)
+        } else if collaboration.isOverdue {
+            pinImage = .circleOverdue
+        } else if collaboration.hasUncompletedNotes {
+            pinImage = .circleNote
+        } else if let status = collaboration.status {
+            pinImage = .circleTask(color: status.color)
+        } else {
+            pinImage = .circlePhoto(count: uploadsCount)
+        }
+        return PinDisplayOptions(
+            pinImage: pinImage,
+            alpha: 0.4,
+            anchor: .center,
+            offsetY: 0
         )
     }
 }

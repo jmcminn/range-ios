@@ -11,6 +11,7 @@ class AddPinFlowController {
 
     private var topViewController: TopViewController?
     private var confirmationCardVC: AddPinConfirmationViewController?
+    private var pinsDisplay: GeometriesPinsDisplay?
 
     /// - Parameters:
     ///     - model: - the project model
@@ -40,7 +41,7 @@ class AddPinFlowController {
         showConfirmationCard()
 //        showPanAndZoomIndicatorView()
 //        showCanvasSelectorButton()
-//        showPins()
+        showPins()
     }
 
     /// remove the photo location selection views/handlers
@@ -55,9 +56,9 @@ class AddPinFlowController {
             }
         }
         hideTopViewController()
-//        pinsDisplay?.stop()
+        pinsDisplay?.stop()
+        pinsDisplay = nil
 //        panAndZoomIndicatorView?.removeFromSuperview()
-//        pinsDisplay = nil
 //        canvasObservation?.invalidate()
 //        canvasObservation = nil
 //        hideCanvasSelectorButton()
@@ -114,5 +115,24 @@ class AddPinFlowController {
             cardConfig: CardConfiguration(interactive: false, showSafeAreaBlur: true)
         )
         confirmationCardVC!.showCard(animated: true)
+    }
+
+    private func showPins() {
+        pinsDisplay = DebugSettings().nativeViewsForPins
+            ? GeometriesViewAnnotationPinsDisplay(
+                canvas: model.currentCanvas,
+                canvasViewController: canvasContainer.pdfCanvasViewController,
+                selectionEnabled: false,
+                deselectOnCanvasTap: false,
+                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
+            )
+            : GeometriesAnnotationPinsDisplay(
+                canvas: model.currentCanvas,
+                canvasViewController: canvasContainer.pdfCanvasViewController,
+                selectionEnabled: false,
+                deselectOnCanvasTap: false,
+                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
+            )
+        pinsDisplay?.start(onInitialLoad: nil)
     }
 }
