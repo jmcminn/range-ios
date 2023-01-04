@@ -273,15 +273,23 @@ extension ProjectFlowController {
                 : []
             actions.append(contentsOf: [
                 ActionItem(
-                    title: collaboration.isArchived ? "Unarchive" : "Archive",
-                    imageName: "archivebox",
-                    handler: {
-                        self.toggleCollaborationArchived(collaboration)
+                    title: String(localized: "Update Location"), imageName: "mappin.and.ellipse",
+                    handler: { [weak self] in
+                        self?.moveCollaboration(collaboration)
                     }
                 ),
-                ActionItem(title: "Delete", imageName: "trash", style: .destructive, handler: {
-                    self.confirmAndDeleteCollaboration(collaboration)
-                }),
+                ActionItem(
+                    title: collaboration.isArchived ? "Unarchive" : "Archive", imageName: "archivebox",
+                    handler: { [weak self] in
+                        self?.toggleCollaborationArchived(collaboration)
+                    }
+                ),
+                ActionItem(
+                    title: "Delete", imageName: "trash", style: .destructive,
+                    handler: { [weak self] in
+                        self?.confirmAndDeleteCollaboration(collaboration)
+                    }
+                ),
             ])
 
             ActionSelectorCardViewController(
@@ -453,5 +461,18 @@ extension ProjectFlowController {
                 ToastWindow.shared.showError(text: "Failed to delete the \(comment.isNote ? "note" : "comment")")
             }
         }
+    }
+
+    /// Update the location of the collaboration
+    func moveCollaboration(_ collaboration: Collaboration) {
+        pinsDisplay?.setSelectedPin(nil)
+        addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer, mode: .move(collaboration))
+        addPinFlow?.onStop = { [weak self] _ in
+            guard let self = self else { return }
+            self.showDefaultCanvasUI()
+            self.addPinFlow = nil
+        }
+        hideDefaultCanvasUI()
+        addPinFlow?.start()
     }
 }

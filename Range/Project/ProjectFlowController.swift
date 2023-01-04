@@ -244,14 +244,14 @@ final class ProjectFlowController: UIViewController {
     }
 
     /// Show the default UI elements when viewing the canvas
-    fileprivate func showDefaultCanvasUI(animated: Bool = true) {
+    func showDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.showCard(animated: animated)
         canvasSelectorButton.isHidden = false
         pinsDisplay?.start(onInitialLoad: nil)
     }
 
     /// Hide the default UI elements when viewing the canvas
-    fileprivate func hideDefaultCanvasUI(animated: Bool = true) {
+    func hideDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.hideCard(animated: animated)
         canvasSelectorButton.isHidden = true
         pinsDisplay?.stop()

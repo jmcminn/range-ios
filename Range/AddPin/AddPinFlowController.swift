@@ -148,12 +148,21 @@ class AddPinFlowController {
     }
 
     private func createPinsDisplay() {
+        // When moving a collaboration we display it's pin using the separate `pinView` so we need
+        // to hide the pin on canvas
+        let ignoredGeometryId: String?
+        if case let .move(c) = mode {
+            ignoredGeometryId = c.feature.first?.geometry.first?.id
+        } else {
+            ignoredGeometryId = nil
+        }
         pinsDisplay = DebugSettings().nativeViewsForPins
             ? GeometriesViewAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 selectionEnabled: false,
                 deselectOnCanvasTap: false,
+                ignoredGeometryId: ignoredGeometryId,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
             )
             : GeometriesAnnotationPinsDisplay(
@@ -161,6 +170,7 @@ class AddPinFlowController {
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 selectionEnabled: false,
                 deselectOnCanvasTap: false,
+                ignoredGeometryId: ignoredGeometryId,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
             )
     }
@@ -238,25 +248,21 @@ class AddPinFlowController {
         let collaborationId: String
         let command: Command
         do {
+            let coordinates = canvasContainer.annotationsMapView.cameraState.center
+            let canvas = model.currentCanvas!
+
             switch mode {
             case .add(.photo):
-                let c = model.createPhotoCollaboration(
-                    at: canvasContainer.annotationsMapView.cameraState.center,
-                    in: model.currentCanvas,
-                    withGeometryId: geometryId
-                )
+                let c = model.createPhotoCollaboration(at: coordinates, in: canvas, withGeometryId: geometryId)
                 collaborationId = c.collaborationId
                 command = c
             case .add(.task):
-                let c = try model.createTaskCollaboration(
-                    at: canvasContainer.annotationsMapView.cameraState.center,
-                    in: model.currentCanvas,
-                    withGeometryId: geometryId
-                )
+                let c = try model.createTaskCollaboration(at: coordinates, in: canvas, withGeometryId: geometryId)
                 collaborationId = c.collaborationId
                 command = c
-            case .move:
-                fatalError("init(coder:) has not been implemented")
+            case let .move(c):
+                collaborationId = c.id
+                command = try model.update(coordinates: coordinates, andCanvas: canvas, forCollaboration: c)
             }
         } catch {
             ToastWindow.shared.showError(text: "Failed to create the collaboration")
