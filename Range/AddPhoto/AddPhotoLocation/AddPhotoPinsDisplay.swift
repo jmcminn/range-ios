@@ -178,7 +178,7 @@ extension AddPhotoPinsDisplay {
         tooltip.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             // center pin tip on the screen center (the asset has insets defined to ignore shadow)
-            make.bottom.equalTo(canvasContainer.content.snp.centerY).offset(-68)
+            make.bottom.equalTo(canvasContainer.content.snp.centerY).offset(-53)
         }
         tooltip.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
         UIView.animate(withDuration: 0.2) {
