@@ -1,8 +1,14 @@
 import Foundation
 import UIKit
 
-/// Manages the flow of adding new pin (select pin type and place on the canvas)
+/// Manages the flow of adding new pin or moving an existing collaboration
 class AddPinFlowController {
+    enum Mode {
+        case add(PinType)
+        case move(Collaboration)
+    }
+
+    private let mode: Mode
     unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
@@ -26,36 +32,25 @@ class AddPinFlowController {
     /// - Parameters:
     ///     - model: - the project model
     ///     - canvas: - the flow will operate on this canvas
-    init(model: ProjectModel, canvasContainer: CanvasContainerViewController) {
+    init(model: ProjectModel, canvasContainer: CanvasContainerViewController, mode: Mode) {
         self.model = model
         self.canvasContainer = canvasContainer
+        self.mode = mode
     }
 
-    /// Presents the pin type selection, if anything selected the call the onStarted callback.
-    func start(onStarted: @escaping (Bool) -> Void) {
-        // select pin type
-        SelectPinTypeCardViewController(onPinTypeSelected: { [weak self] pinType in
-            onStarted(pinType != nil)
-            if let pinType = pinType {
-                self?.selectPinLocation(pinType: pinType)
-            }
-        })
-        .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
-    }
-
-    /// Adapt the UI for the location selection
-    private func selectPinLocation(pinType: PinType) {
+    /// Show the UI for pin selection
+    func start() {
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
-        showTopViewController(pinType: pinType)
-        showConfirmationCard(pinType: pinType)
+        showTopViewController()
+        showConfirmationCard()
         showPanAndZoomIndicatorView()
         showCanvasSelectorButton()
         showPins()
-        showPinView(pinType: pinType)
+        showPinView()
     }
 
     /// remove the photo location selection views/handlers
-    private func dismissPhotoLocationSelectionUI() {
+    private func stop() {
         if let canvasDelegateId = canvasDelegateId {
             canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
         }
@@ -76,11 +71,14 @@ class AddPinFlowController {
     }
 
     /// shows the view controller covering the top of of the screen
-    private func showTopViewController(pinType: PinType) {
-        let topViewController = TopViewController(
-            iconName: "mappin.and.ellipse",
-            title: String(localized: pinType == .photo ? "Add Photo Pin" : "Add Task Pin")
-        )
+    private func showTopViewController() {
+        let title: String
+        switch mode {
+        case .add(.photo): title = String(localized: "Add Photo Pin")
+        case .add(.task): title = String(localized: "Add Task Pin")
+        case .move: title = String(localized: "Update Pin Location")
+        }
+        let topViewController = TopViewController(iconName: "mappin.and.ellipse", title: title)
         canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
         topViewController.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -111,14 +109,14 @@ class AddPinFlowController {
     }
 
     /// Presents a card with cancel/confirm and registers callbacks for user actions
-    private func showConfirmationCard(pinType: PinType) {
+    private func showConfirmationCard() {
         confirmationCardVC = AddPinConfirmationViewController()
         confirmationCardVC!.onCancel = { [weak self] in
-            self?.dismissPhotoLocationSelectionUI()
+            self?.stop()
             self?.onStop?(nil)
         }
         confirmationCardVC!.onConfirm = { [weak self] in
-            self?.createCollaborationAndStop(pinType: pinType)
+            self?.createCollaborationAndStop()
         }
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,
@@ -203,59 +201,78 @@ class AddPinFlowController {
     }
 
     /// shows the pin view in the center of the screen
-    private func showPinView(pinType: PinType) {
-        let pin: PinImage
-        if pinType == .photo {
-            pin = .pinPhoto(count: 0)
-        } else {
-            /// select color for task pin
-            let pinColor: UIColor
-            if let initialStatus = model.mainRealm.objects(Status.self).first(where: { $0.isInitial }) {
-                pinColor = initialStatus.color
-            } else {
-                pinColor = .Primary_Blue_04
-            }
-            pin = .pinTask(color: pinColor)
+    private func showPinView() {
+        // prepare collaboration depending on the mode, so we can use PinDisplayOptions to get the
+        // pin for given collaboration
+        let collaboration: Collaboration
+        switch mode {
+        case .add(.photo):
+            // empty collaboration
+            collaboration = Collaboration(placeholderId: "")
+        case .add(.task):
+            // empty collaboration with initial status
+            collaboration = Collaboration(placeholderId: "")
+            collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
+        case let .move(c):
+            collaboration = c
         }
-        pinView = UIImageView(image: pin.image)
+        let pinDisplayOptions = PinDisplayOptions.regularPinDisplayOptionsProvider(
+            collaboration: collaboration,
+            selected: true,
+            anythingSelected: false
+        )
+        pinView = UIImageView(image: pinDisplayOptions.pinImage.image)
         canvasContainer.content.addSubview(pinView!)
         pinView!.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
+            if pinDisplayOptions.anchor == .bottom {
+                make.bottom.equalTo(canvasContainer.content.snp.centerY).offset(-pinDisplayOptions.offsetY)
+            } else {
+                make.centerY.equalToSuperview().offset(-pinDisplayOptions.offsetY)
+            }
         }
     }
 
-    private func createCollaborationAndStop(pinType: PinType) {
+    private func createCollaborationAndStop() {
         let geometryId = generateRealmId()
-        let command: CreateCollaborationCommand
+        let collaborationId: String
+        let command: Command
         do {
-            command = pinType == .photo
-                ? model.createPhotoCollaboration(
+            switch mode {
+            case .add(.photo):
+                let c = model.createPhotoCollaboration(
                     at: canvasContainer.annotationsMapView.cameraState.center,
                     in: model.currentCanvas,
                     withGeometryId: geometryId
                 )
-                : try model.createTaskCollaboration(
+                collaborationId = c.collaborationId
+                command = c
+            case .add(.task):
+                let c = try model.createTaskCollaboration(
                     at: canvasContainer.annotationsMapView.cameraState.center,
                     in: model.currentCanvas,
                     withGeometryId: geometryId
                 )
+                collaborationId = c.collaborationId
+                command = c
+            case .move:
+                fatalError("init(coder:) has not been implemented")
+            }
         } catch {
             ToastWindow.shared.showError(text: "Failed to create the collaboration")
             return
         }
         model.run(command) { [weak self] error in
+            guard let self = self else { return }
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to create the collaboration")
             } else {
                 UserDefaults.lastPhotoPinId = geometryId
             }
-            self?.dismissPhotoLocationSelectionUI()
-            self?.model.mainRealm.refresh()
-            let collaboration = self?.model.mainRealm.object(
-                ofType: Collaboration.self,
-                forPrimaryKey: command.collaborationId
-            )
-            self?.onStop?(collaboration)
+            self.stop()
+            self.model.mainRealm.refresh()
+            let collaboration = self.model.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)
+            self.onStop?(collaboration)
         }
     }
 }
