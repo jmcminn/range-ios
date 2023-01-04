@@ -8,11 +8,13 @@ protocol GeometriesPinsDisplay: AnyObject {
     ///   - canvasViewController:              will add pins to this canvas view
     ///   - selectionEnabled:                  whether pin selection is enabled
     ///   - deselectOnCanvasTap:               should the display deselect the currently selected pin if user taps on the canvas outside of any pin
+    ///   - ignoredGeometryId:                 don't display given pin (useful when moving a pin, in which case it's displayed outside of GeometriesPinsDisplay)
     ///   - geometryPinDisplayOptionsProvider: the function providing pin display options given geometry and selection state
     init(canvas: PDFCanvas,
          canvasViewController: PDFCanvasViewController,
          selectionEnabled: Bool,
          deselectOnCanvasTap: Bool,
+         ignoredGeometryId: String?,
          geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider)
 
     /// Display the pins and listen for changes

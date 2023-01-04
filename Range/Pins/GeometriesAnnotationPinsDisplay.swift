@@ -16,6 +16,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     unowned let canvasVC: PDFCanvasViewController
     private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
+    private let ignoredGeometryId: String?
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
     /// Token for notifications about changes in the canvas geometries
@@ -43,12 +44,14 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         canvasViewController: PDFCanvasViewController,
         selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
+        ignoredGeometryId: String? = nil,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
         canvasVC = canvasViewController
         self.selectionEnabled = selectionEnabled
         self.deselectOnCanvasTap = deselectOnCanvasTap
+        self.ignoredGeometryId = ignoredGeometryId
         self.geometryPinDisplayOptionsProvider = geometryPinDisplayOptionsProvider
     }
 
@@ -172,6 +175,10 @@ extension GeometriesAnnotationPinsDisplay {
 
     /// Converts the geometry to a PointAnnotation for presenting the pin.
     private func convertGeometryToPin(geometry: Geometry) -> PointAnnotation? {
+        guard geometry.id != ignoredGeometryId else {
+            // this geometry should be ignored and not displayed
+            return nil
+        }
         guard let collaboration = geometry.features.first?.collaborations.first else {
             // no collaboration, ignore
             return nil

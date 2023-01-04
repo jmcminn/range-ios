@@ -14,6 +14,7 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
     unowned let canvasVC: PDFCanvasViewController
     private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
+    private let ignoredGeometryId: String?
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
     /// Token for notifications about changes in the canvas geometries
@@ -42,12 +43,14 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
         canvasViewController: PDFCanvasViewController,
         selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
+        ignoredGeometryId: String? = nil,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
         canvasVC = canvasViewController
         self.selectionEnabled = selectionEnabled
         self.deselectOnCanvasTap = deselectOnCanvasTap
+        self.ignoredGeometryId = ignoredGeometryId
         self.geometryPinDisplayOptionsProvider = geometryPinDisplayOptionsProvider
     }
 
@@ -215,6 +218,7 @@ extension GeometriesViewAnnotationPinsDisplay {
                 width: pinView.bounds.width,
                 height: pinView.bounds.height,
                 allowOverlap: true,
+                visible: pinView.id != ignoredGeometryId,
                 anchor: pinOptions.anchor,
                 offsetY: pinOptions.offsetY,
                 selected: selected
