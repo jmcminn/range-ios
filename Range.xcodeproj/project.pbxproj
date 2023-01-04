@@ -253,6 +253,8 @@
 		0AA424322913C6F40088E2B1 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424312913C6F40088E2B1 /* Action.swift */; };
 		0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424332913C7030088E2B1 /* ActionCommand.swift */; };
 		0AA42437291431470088E2B1 /* PendingActionsModelImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */; };
+		0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */; };
+		0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557328F9533900491E20 /* AssigneeButton.swift */; };
@@ -581,6 +583,8 @@
 		0AA424312913C6F40088E2B1 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		0AA424332913C7030088E2B1 /* ActionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCommand.swift; sourceTree = "<group>"; };
 		0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModelImpl.swift; sourceTree = "<group>"; };
+		0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommand.swift; sourceTree = "<group>"; };
+		0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommandTest.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AB8557328F9533900491E20 /* AssigneeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssigneeButton.swift; sourceTree = "<group>"; };
@@ -1258,6 +1262,7 @@
 				0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */,
 				0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */,
 				0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */,
+				0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */,
 				0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */,
 				0A3714E22950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift */,
 				0A881988291D21160050FC41 /* UpdateUploadTagsCommandTest.swift */,
@@ -1433,6 +1438,7 @@
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */,
+				0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */,
 				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
 				0A3714E02950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift */,
 				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
@@ -1688,6 +1694,7 @@
 				0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */,
 				0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */,
 				0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */,
+				0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */,
 				0AA42437291431470088E2B1 /* PendingActionsModelImpl.swift in Sources */,
 				0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */,
 				0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */,
@@ -1904,6 +1911,7 @@
 				0A82A8EE292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift in Sources */,
 				0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */,
 				0A130EAE28D8A2FC00FF1368 /* DateFormattingTest.swift in Sources */,
+				0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */,
 				0A34C18D2846030800BEDC7C /* FirestoreCommentTest.swift in Sources */,
 				0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */,
 				0A07D76028104BF000B6F9A2 /* FirestoreGeometryTest.swift in Sources */,

@@ -331,4 +331,15 @@ extension ProjectModel {
             uploadDescription: (description?.isEmpty ?? true) ? nil : description
         )
     }
+
+    func update(coordinates: CLLocationCoordinate2D, andCanvas canvas: PDFCanvas,
+                forCollaboration collaboration: Collaboration) throws -> Command
+    {
+        guard let geometry = collaboration.feature.first?.geometry.first else {
+            throw ModelError.geometryNotFound
+        }
+        return try UpdateGeometryLocationCommand(
+            geometryId: geometry.id, canvasId: canvas.id, coordinates: coordinates
+        )
+    }
 }

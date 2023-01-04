@@ -37,6 +37,7 @@ enum ActionCommand: Codable {
     case updateCollaborationTags(UpdateCollaborationTagsCommand)
     case updateCommentText(UpdateCommentTextCommand)
     case updateGeometryArchived(UpdateGeometryArchivedCommand)
+    case updateGeometryLocation(UpdateGeometryLocationCommand)
     case updateNoteCompleted(UpdateNoteCompletedCommand)
     case updateUploadDescription(UpdateUploadDescriptionCommand)
     case updateUploadTags(UpdateUploadTagsCommand)
@@ -58,6 +59,7 @@ enum ActionCommand: Codable {
         case let c as UpdateCollaborationTagsCommand: self = .updateCollaborationTags(c)
         case let c as UpdateCommentTextCommand: self = .updateCommentText(c)
         case let c as UpdateGeometryArchivedCommand: self = .updateGeometryArchived(c)
+        case let c as UpdateGeometryLocationCommand: self = .updateGeometryLocation(c)
         case let c as UpdateNoteCompletedCommand: self = .updateNoteCompleted(c)
         case let c as UpdateUploadDescriptionCommand: self = .updateUploadDescription(c)
         case let c as UpdateUploadTagsCommand: self = .updateUploadTags(c)
@@ -82,6 +84,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationTags(c): return c
         case let .updateCommentText(c): return c
         case let .updateGeometryArchived(c): return c
+        case let .updateGeometryLocation(c): return c
         case let .updateNoteCompleted(c): return c
         case let .updateUploadDescription(c): return c
         case let .updateUploadTags(c): return c
