@@ -11,7 +11,9 @@ class AddPhotoFlowController {
     unowned let imageCaches: ImageCaches
     unowned let canvasContainer: CanvasContainerViewController
 
-    var onStop: (() -> Void)?
+    /// on Stop it returns the id of the geometry to which the photo(s) was added to (if not cancelled) and whether the
+    /// collaboration was created (`true`) or existing one was used (`false`)
+    var onStop: ((String?, Bool?) -> Void)?
     var cameraVC: CameraViewController?
     var detailsVC: PhotoDetailsViewController?
     var pinsDisplay: AddPhotoPinsDisplay?
@@ -43,6 +45,11 @@ class AddPhotoFlowController {
         }
     }
 
+    /// if the photo flow finished with success (and was not cancelled) this stores the id of the geometry the photos were added to
+    private var resultGeometryId: String?
+    /// whether the photos were added to newly created collaboration (`true`) or to an existing one (`false`)
+    private var newCollaborationCreated: Bool?
+
     /// When set to `true` the photo flow will exclude photo placement on the canvas and will use the provided geometryId
     var skipPhotoLocationSelection: Bool = false
 
@@ -72,7 +79,7 @@ class AddPhotoFlowController {
 
     func stop(removeCurrentPhotosToAddFromCache: Bool) {
         photosToAddViewModel.clear(removeFromCache: removeCurrentPhotosToAddFromCache)
-        onStop?()
+        onStop?(resultGeometryId, newCollaborationCreated)
     }
 
     /// Returns `true` if camera was shown.
@@ -431,6 +438,8 @@ class AddPhotoFlowController {
                 description: photoDescription,
                 toCollaborationForGeometryId: geometryId
             ))
+            resultGeometryId = geometryId
+            newCollaborationCreated = false
             UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
@@ -443,6 +452,8 @@ class AddPhotoFlowController {
                 withGeometryId: geometryId,
                 isTask: pinType == .task
             ))
+            resultGeometryId = geometryId
+            newCollaborationCreated = true
             UserDefaults.lastPhotoPinId = geometryId
         }
         UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)

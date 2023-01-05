@@ -12,8 +12,8 @@ class AddPinFlowController {
     unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
-    /// called when the flow finishes, if pin was added it's passed as optional Collaboration. If cancelled nil is passed
-    var onStop: ((Collaboration?) -> Void)?
+    /// called when the flow finishes, if pin was added the id of the created geometry is returned. If cancelled nil is passed
+    var onStop: ((String?) -> Void)?
 
     private var topViewController: TopViewController?
     private var confirmationCardVC: AddPinConfirmationViewController?
@@ -245,7 +245,6 @@ class AddPinFlowController {
 
     private func createCollaborationAndStop() {
         let geometryId = generateRealmId()
-        let collaborationId: String
         let command: Command
         do {
             let coordinates = canvasContainer.annotationsMapView.cameraState.center
@@ -253,25 +252,20 @@ class AddPinFlowController {
 
             switch mode {
             case .add(.photo):
-                let c = try model.createCollaboration(
+                command = try model.createCollaboration(
                     at: coordinates,
                     in: canvas,
                     withGeometryId: geometryId,
                     isTask: false
                 )
-                collaborationId = c.collaborationId
-                command = c
             case .add(.task):
-                let c = try model.createCollaboration(
+                command = try model.createCollaboration(
                     at: coordinates,
                     in: canvas,
                     withGeometryId: geometryId,
                     isTask: true
                 )
-                collaborationId = c.collaborationId
-                command = c
             case let .move(c):
-                collaborationId = c.id
                 command = try model.update(coordinates: coordinates, andCanvas: canvas, forCollaboration: c)
             }
         } catch {
@@ -286,9 +280,7 @@ class AddPinFlowController {
                 UserDefaults.lastPhotoPinId = geometryId
             }
             self.stop()
-            self.model.mainRealm.refresh()
-            let collaboration = self.model.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)
-            self.onStop?(collaboration)
+            self.onStop?(geometryId)
         }
     }
 }

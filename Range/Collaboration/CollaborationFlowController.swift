@@ -355,7 +355,7 @@ extension CollaborationFlowController {
         // (we are adding to the currently showing collaboration window)
         addPhotosFlow?.geometryId = geometryId
         addPhotosFlow?.skipPhotoLocationSelection = true
-        addPhotosFlow?.onStop = { [weak self] in
+        addPhotosFlow?.onStop = { [weak self] _, _ in
             self?.addPhotosFlow = nil
         }
         addPhotosFlow?.start { [weak self] started in

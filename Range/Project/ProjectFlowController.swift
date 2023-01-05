@@ -338,9 +338,12 @@ extension ProjectFlowController {
 
     private func startAddPhotoFlow() {
         addPhotoFlow = AddPhotoFlowController(model: model, imageCaches: imageCaches, canvasContainer: canvasContainer)
-        addPhotoFlow?.onStop = { [weak self] in
+        addPhotoFlow?.onStop = { [weak self] geometryId, newlyCreated in
             self?.showDefaultCanvasUI()
             self?.addPhotoFlow = nil
+            if let geometryId = geometryId, newlyCreated ?? false == true {
+                self?.selectCollaborationAndEditName(forGeometryId: geometryId)
+            }
         }
         addPhotoFlow?.start { [weak self] started in
             // hide cards if photo flow started
@@ -367,11 +370,11 @@ extension ProjectFlowController {
 
     private func startAddPinFlow(pinType: PinType) {
         addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer, mode: .add(pinType))
-        addPinFlow?.onStop = { [weak self] collaboration in
+        addPinFlow?.onStop = { [weak self] geometryId in
             guard let self = self else { return }
             self.showDefaultCanvasUI()
-            if let collaboration = collaboration {
-                self.showCollaborationAndEditName(collaboration)
+            if let geometryId = geometryId {
+                self.selectCollaborationAndEditName(forGeometryId: geometryId)
             }
             self.addPinFlow = nil
         }
@@ -379,8 +382,7 @@ extension ProjectFlowController {
         addPinFlow?.start()
     }
 
-    private func showCollaborationAndEditName(_ collaboration: Collaboration) {
-        guard let geometryId = collaboration.feature.first?.geometry.first?.id else { return }
+    private func selectCollaborationAndEditName(forGeometryId geometryId: String) {
         reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
             if let pinsDisplay = self.pinsDisplay, let pin = pinsDisplay.pinForGeometryId(geometryId) {
                 // select the pin (which will trigger showing the collaboration window)
