@@ -301,6 +301,7 @@
 		0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183C29633E70007A59CA /* TopViewController.swift */; };
 		0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
+		0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */; };
@@ -629,6 +630,7 @@
 		0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinFlowController.swift; sourceTree = "<group>"; };
 		0ADC183C29633E70007A59CA /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
+		0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPinTypeCardViewController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -726,6 +728,7 @@
 				0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */,
 				0A48ACE0281C1ADD0044E06E /* AddPhotoPinsDisplay.swift */,
 				0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */,
+				0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */,
 			);
 			path = AddPhotoLocation;
 			sourceTree = "<group>";
@@ -1732,6 +1735,7 @@
 				0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
 				0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */,
+				0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */,
 				0A30E8B32848AFDD00A50D54 /* SegmentedControl.swift in Sources */,
 				0A06241F2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift in Sources */,
 				0A05312929378FE900738BA3 /* MediaCardViewController.swift in Sources */,

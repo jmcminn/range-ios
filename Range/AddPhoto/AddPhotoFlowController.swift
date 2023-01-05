@@ -18,6 +18,7 @@ class AddPhotoFlowController {
     var topViewController: TopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
     var photosPreviewCardVC: PhotosPreviewViewController?
+    var switchPinTypeCardVC: SwitchPinTypeCardViewController?
     var panAndZoomIndicatorView: ToastView?
     var canvasSelectorButton: RoundShadowButton?
 
@@ -449,6 +450,12 @@ extension AddPhotoFlowController {
         if let canvasDelegateId = canvasDelegateId {
             canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
         }
+        if let switchPinTypeCardVC = switchPinTypeCardVC {
+            switchPinTypeCardVC.hideCard(animated: true) {
+                self.canvasContainer.removeCard(cardViewController: switchPinTypeCardVC)
+                self.switchPinTypeCardVC = nil
+            }
+        }
         if let photosPreviewCardVC = photosPreviewCardVC {
             photosPreviewCardVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: photosPreviewCardVC)
@@ -511,9 +518,11 @@ extension AddPhotoFlowController {
         )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
             if let geometryId = pinPoint?.id {
+                self?.hidePinTypeSelector()
                 self?.showPhotosPreview(forGeometry: geometryId, animated: true)
             } else {
                 self?.hidePhotosPreview(animated: true)
+                self?.showPinTypeSelector()
             }
         }
     }
@@ -590,6 +599,64 @@ extension AddPhotoFlowController {
         // responder chain (it's not UIView or UIViewController)
         UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
                                         to: nil, from: canvasSelectorButton, for: nil)
+    }
+
+    private func showPinTypeSelector() {
+        // TODO: 702 construct only once and then show/hide
+        guard let confirmationCardVC = confirmationCardVC else { return }
+        if switchPinTypeCardVC == nil {
+            let pinTypeVC = SwitchPinTypeCardViewController(confirmationVC: confirmationCardVC)
+            canvasContainer.installCard(
+                cardViewController: pinTypeVC,
+                inView: canvasContainer.controls,
+                cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false)
+            )
+            // move photos preview below confirmation
+            canvasContainer.controls.insertSubview(pinTypeVC.view, belowSubview: confirmationCardVC.view)
+            switchPinTypeCardVC = pinTypeVC
+        }
+
+        guard let switchPinTypeCardVC = switchPinTypeCardVC else { return }
+
+        confirmationCardVC.showDarkBorder = true
+        if let panAndZoomIndicatorView = panAndZoomIndicatorView {
+            // anchor to photos preview
+            panAndZoomIndicatorView.snp.remakeConstraints { make in
+                make.leading.equalToSuperview().offset(12)
+                make.bottom.equalTo(switchPinTypeCardVC.view.snp.top).offset(-12)
+            }
+        }
+        if let canvasSelectorButton = canvasSelectorButton {
+            // anchor to photos preview
+            canvasSelectorButton.snp.remakeConstraints { make in
+                make.trailing.equalToSuperview().inset(12)
+                make.bottom.equalTo(switchPinTypeCardVC.view.snp.top).offset(-12)
+            }
+        }
+        switchPinTypeCardVC.showCard(animated: true)
+    }
+
+    private func hidePinTypeSelector() {
+        if let confirmationCardVC = confirmationCardVC {
+            if let panAndZoomIndicatorView = panAndZoomIndicatorView {
+                // anchor back to confirmation
+                panAndZoomIndicatorView.snp.remakeConstraints { make in
+                    make.leading.equalToSuperview().offset(12)
+                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
+                }
+            }
+            if let canvasSelectorButton = canvasSelectorButton {
+                // anchor to photos preview
+                canvasSelectorButton.snp.remakeConstraints { make in
+                    make.trailing.equalToSuperview().inset(12)
+                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
+                }
+            }
+        }
+        confirmationCardVC?.showDarkBorder = false
+        if let switchPinTypeCardVC = switchPinTypeCardVC {
+            switchPinTypeCardVC.hideCard(animated: true)
+        }
     }
 
     /// shows the photos for given geometryId
