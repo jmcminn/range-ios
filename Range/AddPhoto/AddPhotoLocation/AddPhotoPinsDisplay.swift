@@ -145,8 +145,10 @@ extension AddPhotoPinsDisplay {
         hideTooltip()
         guard let pin = selectedPin else { return }
 
-        let tooltip = MapTooltipView(text:
-            pin.id == UserDefaults.lastPhotoPinId ? "Use last location" : "Use this location")
+        let tooltip = MapTooltipView(
+            text: pin.id == UserDefaults.lastPhotoPinId ? "Use last location" : "Use this location",
+            boxColor: .Secondary_02
+        )
         let fittingSize = CGSize(
             width: canvasVC.mapView.frame.size.width,
             height: UIView.layoutFittingExpandedSize.height
@@ -173,7 +175,7 @@ extension AddPhotoPinsDisplay {
     private func showPhotoPinTooltip() {
         hideTooltip()
         guard photoPinTooltip == nil else { return } // already shown
-        let tooltip = MapTooltipView(text: "New location")
+        let tooltip = MapTooltipView(text: "New location", boxColor: .Green_03)
         canvasContainer.content.addSubview(tooltip)
         tooltip.snp.makeConstraints { make in
             make.centerX.equalToSuperview()

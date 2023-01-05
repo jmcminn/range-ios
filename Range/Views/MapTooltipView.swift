@@ -4,18 +4,31 @@ import UIKit
 
 /// A tooltip view with a text description
 class MapTooltipView: UIView {
-    init(text: String) {
+    init(text: String, boxColor: UIColor) {
         super.init(frame: .zero)
 
-        let boxView = UIImageView(image: UIImage(named: "tooltip_box"))
-        boxView.setShadowWithFigmaValues(y: 6, blur: 10, opacity: 0.2)
+        /// box is just a view with rounded corners
+        let boxView = UIView()
+        boxView.backgroundColor = boxColor
+        boxView.layer.cornerRadius = 10
+        boxView.layer.borderWidth = 1
+        boxView.layer.borderColor = UIColor.black.withAlphaComponent(0.2).cgColor
         boxView.layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
+        boxView.setShadowWithFigmaValues(y: 6, blur: 10, opacity: 0.2)
         addSubview(boxView)
 
-        let arrowView = UIImageView(image: UIImage(named: "tooltip_arrow"))
+        // the arrow view has a custom shape from figma, exported as tooltip_arrow to be used with tint color
+        // and a separate tooltip_arrow_border to add the border at the bottom of the arrow
+        let arrowView = UIImageView(image: UIImage(named: "tooltip_arrow")?.withTintColor(boxColor))
         arrowView.setShadowWithFigmaValues(y: 6, blur: 10, opacity: 0.2)
         arrowView.layer.shadowColor = UIColor.black.cgColor // always black, since "map" is always light?
         addSubview(arrowView)
+
+        let arrowBorderView = UIImageView(image: UIImage(named: "tooltip_arrow_border"))
+        arrowView.addSubview(arrowBorderView)
+        arrowBorderView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         let font = UIFont.preferredFont(forTextStyle: .subheadline)
         let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
