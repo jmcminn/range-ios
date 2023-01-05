@@ -13,6 +13,7 @@ import UIKit
 class AddPhotoPinsDisplay {
     unowned let canvasContainer: CanvasContainerViewController
     unowned let canvasVC: PDFCanvasViewController
+    unowned let model: ProjectModel
     let geometriesPinsDisplay: GeometriesPinsDisplay
     let image: UIImage
 
@@ -29,7 +30,7 @@ class AddPhotoPinsDisplay {
     var onSelectedPinChange: ((PinPoint?) -> Void)?
 
     /// the pin displaying a photo thumb - used for selecting a new location for the image
-    private var photoPinView: UIView?
+    private(set) var photoPinView: PhotoPin?
 
     /// tooltip shown for a currently selected pin
     private var selectedPinTooltip: MapTooltipView?
@@ -43,9 +44,10 @@ class AddPhotoPinsDisplay {
     ///   - canvas:             handler will add pins for this canvas
     ///   - canvasContainer:    handler will add pins to this canvas view
     ///   - image:              image to be displayed on the new photo pin
-    init(canvas: PDFCanvas, canvasContainer: CanvasContainerViewController, image: UIImage) {
+    init(canvas: PDFCanvas, canvasContainer: CanvasContainerViewController, model: ProjectModel, image: UIImage) {
         self.canvasContainer = canvasContainer
         canvasVC = canvasContainer.pdfCanvasViewController
+        self.model = model
         self.image = image
         geometriesPinsDisplay = DebugSettings().nativeViewsForPins
             ? GeometriesViewAnnotationPinsDisplay(
@@ -197,7 +199,9 @@ extension AddPhotoPinsDisplay {
     private func installPhotoPinView() {
         guard photoPinView == nil else { return }
 
-        let pin = PhotoPin(image: image)
+        let initialStatusColor = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })?
+            .color ?? .Primary_Blue_04
+        let pin = PhotoPin(image: image, taskPinColor: initialStatusColor)
         canvasContainer.content.addSubview(pin)
         pin.snp.makeConstraints { make in
             make.center.equalToSuperview()

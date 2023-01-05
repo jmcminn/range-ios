@@ -23,6 +23,9 @@ typealias GeometryPinDisplayOptionsProvider = (
 ) -> PinDisplayOptions
 
 extension PinDisplayOptions {
+    /// offset for pins (not circles) the distance between the image bottom and the tip of the pin
+    static let pinYOffset = -4.0
+
     /// pin display options provider for regular display of pins
     static func regularPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                  anythingSelected: Bool) -> PinDisplayOptions
@@ -61,7 +64,7 @@ extension PinDisplayOptions {
                 pinImage: pinImage,
                 alpha: 1,
                 anchor: .bottom,
-                offsetY: -4
+                offsetY: PinDisplayOptions.pinYOffset
             )
         } else {
             let pinImage: PinImage
@@ -109,7 +112,7 @@ extension PinDisplayOptions {
             pinImage: pinImage,
             alpha: selected ? 1.0 : 0.4,
             anchor: .bottom,
-            offsetY: -4
+            offsetY: PinDisplayOptions.pinYOffset
         )
     }
 

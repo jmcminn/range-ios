@@ -6,15 +6,16 @@ import UIKit
 class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
     unowned let confirmationVC: AddPhotoConfirmationViewController
+    var onPinTypeChange: ((PinType) -> Void)?
 
-    var headerView: UIView!
-    var pinTypeToggle: SegmentedControl!
+    private var headerView: UIView!
+    private var pinTypeToggle: SegmentedControl!
 
-    var roundedShadowView: RoundShadowView {
+    private var roundedShadowView: RoundShadowView {
         view as! RoundShadowView
     }
 
-    var containerView: UIView {
+    private var containerView: UIView {
         roundedShadowView.containerView
     }
 
@@ -121,13 +122,13 @@ extension SwitchPinTypeCardViewController {
             ActionItem(
                 title: String(localized: "Photo Pin"),
                 handler: { [weak self] in
-//                    self?.onToggleMoreUpdates?(true)
+                    self?.onPinTypeChange?(.photo)
                 }
             ),
             ActionItem(
                 title: String(localized: "Task Pin"),
                 handler: { [weak self] in
-//                    self?.onToggleMoreUpdates?(false)
+                    self?.onPinTypeChange?(.task)
                 }
             ),
         ])

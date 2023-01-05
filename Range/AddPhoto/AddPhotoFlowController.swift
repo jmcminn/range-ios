@@ -36,6 +36,12 @@ class AddPhotoFlowController {
     var photoDescription: String = ""
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
     var geometryId: String?
+    /// whether to create photo or task collaboration
+    var pinType: PinType = .photo {
+        didSet {
+            pinsDisplay?.photoPinView?.pinType = pinType
+        }
+    }
 
     /// When set to `true` the photo flow will exclude photo placement on the canvas and will use the provided geometryId
     var skipPhotoLocationSelection: Bool = false
@@ -514,6 +520,7 @@ extension AddPhotoFlowController {
         pinsDisplay = AddPhotoPinsDisplay(
             canvas: model.currentCanvas,
             canvasContainer: canvasContainer,
+            model: model,
             image: photosToAddViewModel.photos.first!.thumbnail
         )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
@@ -602,10 +609,12 @@ extension AddPhotoFlowController {
     }
 
     private func showPinTypeSelector() {
-        // TODO: 702 construct only once and then show/hide
         guard let confirmationCardVC = confirmationCardVC else { return }
         if switchPinTypeCardVC == nil {
             let pinTypeVC = SwitchPinTypeCardViewController(confirmationVC: confirmationCardVC)
+            pinTypeVC.onPinTypeChange = { [weak self] pinType in
+                self?.pinType = pinType
+            }
             canvasContainer.installCard(
                 cardViewController: pinTypeVC,
                 inView: canvasContainer.controls,
