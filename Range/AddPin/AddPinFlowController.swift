@@ -253,11 +253,21 @@ class AddPinFlowController {
 
             switch mode {
             case .add(.photo):
-                let c = model.createPhotoCollaboration(at: coordinates, in: canvas, withGeometryId: geometryId)
+                let c = try model.createCollaboration(
+                    at: coordinates,
+                    in: canvas,
+                    withGeometryId: geometryId,
+                    isTask: false
+                )
                 collaborationId = c.collaborationId
                 command = c
             case .add(.task):
-                let c = try model.createTaskCollaboration(at: coordinates, in: canvas, withGeometryId: geometryId)
+                let c = try model.createCollaboration(
+                    at: coordinates,
+                    in: canvas,
+                    withGeometryId: geometryId,
+                    isTask: true
+                )
                 collaborationId = c.collaborationId
                 command = c
             case let .move(c):

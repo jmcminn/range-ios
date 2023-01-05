@@ -434,13 +434,14 @@ class AddPhotoFlowController {
             UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
-            try await model.run(model.createPhotoCollaboration(
+            try await model.run(model.createCollaboration(
                 photosToAddViewModel.photos,
                 tags: tagsViewModel.selectedTags,
                 description: photoDescription,
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: model.currentCanvas,
-                withGeometryId: geometryId
+                withGeometryId: geometryId,
+                isTask: pinType == .task
             ))
             UserDefaults.lastPhotoPinId = geometryId
         }

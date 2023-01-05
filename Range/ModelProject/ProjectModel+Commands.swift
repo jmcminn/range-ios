@@ -112,18 +112,26 @@ extension ProjectModel {
     ///     - canvas: should be from the `mainRealm`
     ///     - geometryId: this id will be used for the newly created geometry
     @MainActor
-    func createPhotoCollaboration(
+    func createCollaboration(
         _ photosToAdd: [PhotoToAdd],
         tags: [TagViewModel],
         description: String,
         at coordinates: CLLocationCoordinate2D,
         in canvas: PDFCanvas,
-        withGeometryId geometryId: String
+        withGeometryId geometryId: String,
+        isTask: Bool
     ) async throws -> Command {
         for photoToAdd in photosToAdd {
             try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
         }
 
+        var status: Status?
+        if isTask {
+            guard let initialStatus = mainRealm.objects(Status.self).first(where: { $0.isInitial }) else {
+                throw ModelError.statusNotFound
+            }
+            status = initialStatus
+        }
         return CreateCollaborationCommand(
             authorId: userId,
             canvasId: canvas.id,
@@ -131,32 +139,23 @@ extension ProjectModel {
             coordinates: coordinates,
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: description,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
+            statusId: status?.id
         )
     }
 
-    /// Creates an empty photo collaboration
-    func createPhotoCollaboration(at coordinates: CLLocationCoordinate2D,
-                                  in canvas: PDFCanvas,
-                                  withGeometryId geometryId: String) -> CreateCollaborationCommand
+    /// Creates an empty collaboration. If `isTask` is `true` it creates a task, otherwise a photo collaboration
+    func createCollaboration(at coordinates: CLLocationCoordinate2D,
+                             in canvas: PDFCanvas,
+                             withGeometryId geometryId: String,
+                             isTask: Bool) throws -> CreateCollaborationCommand
     {
-        CreateCollaborationCommand(
-            authorId: userId,
-            canvasId: canvas.id,
-            geometryId: geometryId,
-            coordinates: coordinates,
-            tags: [],
-            uploadDescription: nil,
-            uploads: []
-        )
-    }
-
-    func createTaskCollaboration(at coordinates: CLLocationCoordinate2D,
-                                 in canvas: PDFCanvas,
-                                 withGeometryId geometryId: String) throws -> CreateCollaborationCommand
-    {
-        guard let initialStatus = mainRealm.objects(Status.self).first(where: { $0.isInitial }) else {
-            throw ModelError.statusNotFound
+        var status: Status?
+        if isTask {
+            guard let initialStatus = mainRealm.objects(Status.self).first(where: { $0.isInitial }) else {
+                throw ModelError.statusNotFound
+            }
+            status = initialStatus
         }
         return CreateCollaborationCommand(
             authorId: userId,
@@ -166,7 +165,7 @@ extension ProjectModel {
             tags: [],
             uploadDescription: nil,
             uploads: [],
-            statusId: initialStatus.id
+            statusId: status?.id
         )
     }
 
