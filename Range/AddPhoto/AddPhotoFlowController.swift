@@ -68,17 +68,6 @@ class AddPhotoFlowController {
         onStop?()
     }
 
-    /// Restart the flow from the camera screen, cleaning all the collected data
-    private func restart(removeCurrentPhotosToAddFromCache: Bool) {
-        // clear the gathered data
-        photosToAddViewModel.clear(removeFromCache: removeCurrentPhotosToAddFromCache)
-        tagsViewModel = TagsViewModel(model: model)
-        photoDescription = ""
-        geometryId = nil
-
-        showCamera()
-    }
-
     /// Returns `true` if camera was shown.
     private func checkPermissionsAndShowCamera() async -> Bool {
         let cameraPermissions = await checkForCameraPermissions()
@@ -353,15 +342,12 @@ class AddPhotoFlowController {
         )
     }
 
-    /// Store the photo location, save all the data and stop the flow (andContinue == false) or restart with the camera screen
+    /// Store the photo location, save all the data and stop the flow
     /// Invoked from the confirmation card in the photo location selection
-    private func finalizeFromConfirmationCard(andContinue restartFlow: Bool) {
+    private func finalizeFromConfirmationCard() {
         guard let confirmationCardVC = confirmationCardVC else { return }
 
-        confirmationCardVC
-            .setInactiveWithActivityIndicator(on: restartFlow
-                ? confirmationCardVC.continueButton
-                : confirmationCardVC.doneButton)
+        confirmationCardVC.setInactiveWithActivityIndicator(on: confirmationCardVC.doneButton)
 
         geometryId = pinsDisplay?.selectedPin?.id
 
@@ -372,9 +358,7 @@ class AddPhotoFlowController {
             },
             onSuccess: {
                 self.dismissPhotoLocationSelectionUI()
-                restartFlow
-                    ? self.restart(removeCurrentPhotosToAddFromCache: false)
-                    : self.stop(removeCurrentPhotosToAddFromCache: false)
+                self.stop(removeCurrentPhotosToAddFromCache: false)
             }
         )
     }
@@ -559,14 +543,11 @@ extension AddPhotoFlowController {
     /// Presents a card with cancel/confirm and registers callbacks for user actions
     private func showConfirmationCard() {
         confirmationCardVC = AddPhotoConfirmationViewController()
-        confirmationCardVC!.onCancel = { [weak self] in
+        confirmationCardVC!.onBack = { [weak self] in
             self?.onPhotoLocationBack()
         }
         confirmationCardVC!.onDone = { [weak self] in
-            self?.finalizeFromConfirmationCard(andContinue: false)
-        }
-        confirmationCardVC!.onContinue = { [weak self] in
-            self?.finalizeFromConfirmationCard(andContinue: true)
+            self?.finalizeFromConfirmationCard()
         }
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,

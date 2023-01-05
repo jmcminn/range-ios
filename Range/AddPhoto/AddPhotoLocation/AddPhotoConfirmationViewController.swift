@@ -8,13 +8,11 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
     static let topPadding = 21.0
     static let bottomPadding = 16.0
 
-    var onCancel: (() -> Void)?
+    var onBack: (() -> Void)?
     var onDone: (() -> Void)?
-    var onContinue: (() -> Void)?
 
     var backButton: UIButton!
     var doneButton: UIButton!
-    var continueButton: UIButton!
 
     var roundedShadowView: RoundShadowView {
         view as! RoundShadowView
@@ -32,13 +30,13 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
 
     func setInactiveWithActivityIndicator(on button: UIButton) {
         button.configuration?.showsActivityIndicator = true
-        for button in [backButton, doneButton, continueButton] {
+        for button in [backButton, doneButton] {
             button?.isUserInteractionEnabled = false
         }
     }
 
     func setActive() {
-        for button in [backButton, doneButton, continueButton] {
+        for button in [backButton, doneButton] {
             button?.isUserInteractionEnabled = true
             button?.configuration?.showsActivityIndicator = false
         }
@@ -55,7 +53,9 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
 
         backButton = UIButton(
             configuration: UIButton.Configuration.grayButton(),
-            primaryAction: UIAction(image: UIImage(systemName: "arrow.backward")) { [weak self] _ in self?.onCancel?() }
+            primaryAction: UIAction(title: "Back", image: UIImage(systemName: "arrow.backward")) { [weak self] _ in
+                self?.onBack?()
+            }
         )
         doneButton = UIButton(
             configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
@@ -63,33 +63,19 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
                 self?.onDone?()
             }
         )
-        continueButton = UIButton(
-            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
-            primaryAction: UIAction(title: "Continue", image: UIImage(systemName: "camera")) { [weak self] _ in
-                self?.onContinue?()
-            }
-        )
         containerView.addSubview(backButton)
         containerView.addSubview(doneButton)
-        containerView.addSubview(continueButton)
-        backButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
         backButton.snp.makeConstraints { make in
             make.leading.equalTo(16)
             make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
-            make.trailing.equalTo(doneButton.snp.leading).offset(-16)
-            make.width.equalTo(48)
-            make.height.equalTo(continueButton)
+            make.width.equalToSuperview().multipliedBy(0.5).offset(-24)
         }
         doneButton.snp.makeConstraints { make in
             make.leading.equalTo(backButton.snp.trailing).offset(16)
-            make.trailing.equalTo(continueButton.snp.leading).offset(-16)
-            make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
-            make.width.equalTo(continueButton.snp.width)
-            make.height.equalTo(continueButton)
-        }
-        continueButton.snp.makeConstraints { make in
+            make.top.equalTo(AddPinConfirmationViewController.topPadding)
             make.trailing.equalTo(-16)
-            make.top.equalTo(AddPhotoConfirmationViewController.topPadding)
+            make.height.equalTo(backButton)
         }
     }
 
@@ -121,24 +107,16 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
 
 /// AddPhotoConfirmationViewController is a CardPresentable, but of a fixed size never partially-open
 extension AddPhotoConfirmationViewController: CardPresentable {
-    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat {
+    func height(forContainer _: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .medium {
             return -1 // not supported
         }
 
         view.layoutIfNeeded()
-        let fittingSize = CGSize(
-            width: containerView.bounds.width,
-            height: UIView.layoutFittingCompressedSize.height
-        )
 
         return
             AddPhotoConfirmationViewController.topPadding +
-            continueButton.systemLayoutSizeFitting(
-                fittingSize,
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .defaultLow
-            ).height +
+            backButton.frame.height +
             AddPhotoConfirmationViewController.bottomPadding
     }
 }
