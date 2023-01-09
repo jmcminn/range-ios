@@ -18,22 +18,22 @@ extension Date {
         }
 
         if calendar.isDate(date, inSameDayAs: now) {
-            return "Today @" + timeString() + calendar._hoursOrMinutesAgo(from: date, to: now)
+            return "Today @" + timeString() + calendar._hoursOrMinutesAgoString(from: date, to: now)
         } else if let yesterday = calendar.date(byAdding: .day, value: -1, to: now),
                   calendar.isDate(date, inSameDayAs: yesterday)
         {
-            return "Yesterday @" + timeString() + calendar._hoursOrMinutesAgo(from: date, to: now)
-        } else if calendar.isDate(date, equalTo: now, toGranularity: .year) {
+            return "Yesterday @" + timeString() + calendar._hoursOrMinutesAgoString(from: date, to: now)
+        } else if calendar._yearsAgo(from: date, to: now) == 0 {
             // this year
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "MMM dd"
             dateFormatter.locale = locale
-            return dateFormatter.string(from: date) + " @" + timeString() + calendar._daysAgo(from: date, to: now)
+            return dateFormatter.string(from: date) + " @" + timeString() + calendar._daysAgoString(from: date, to: now)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "MMM dd, yyyy"
             dateFormatter.locale = locale
-            return dateFormatter.string(from: date) + calendar._yearsAgo(from: date, to: now)
+            return dateFormatter.string(from: date) + calendar._yearsAgoString(from: date, to: now)
         }
     }
 
@@ -156,7 +156,7 @@ extension Date {
 extension Calendar {
     // if the difference between date and now is only minutes (<1 hour) returns .. minute(s) ago
     // otherwise  hour(s) ago
-    func _hoursOrMinutesAgo(from: Date, to: Date) -> String {
+    func _hoursOrMinutesAgoString(from: Date, to: Date) -> String {
         if let hoursAgo = dateComponents([.hour], from: from, to: to).hour, hoursAgo > 0 {
             return " (\(hoursAgo) \(hoursAgo == 1 ? "hour" : "hours") ago)"
         } else if let minutesAgo = dateComponents([.minute], from: from, to: to).minute {
@@ -168,7 +168,7 @@ extension Calendar {
 
     // compute the distance in days in a way that time of a day doesn't matter
     // (e.g. if from is Monday and to is Wednesday on the same week it'll say 2, no matter what time of the day)
-    func _daysAgo(from: Date, to: Date) -> String {
+    func _daysAgoString(from: Date, to: Date) -> String {
         // reset time of a day
         if let fromNoTime = date(bySettingHour: 0, minute: 0, second: 0, of: from),
            let toNoTime = date(bySettingHour: 0, minute: 0, second: 0, of: to),
@@ -180,9 +180,25 @@ extension Calendar {
         }
     }
 
-    // compute the distance in years by subtracting the to and from years
-    // (e.g. if from is Dec 2021 and to Jan 2022 it'll say 1, even if 1 year hasn't passed yet)
-    func _yearsAgo(from: Date, to: Date) -> String {
+    // compute the distance in years by checking how many full years ago it was
+    func _yearsAgo(from: Date, to: Date) -> Int {
+        if let yearFrom = dateComponents([.year], from: from).year,
+           let yearTo = dateComponents([.year], from: to).year
+        {
+            let yearsAgo = yearTo - yearFrom
+            if let sameYearFrom = date(byAdding: .year, value: yearsAgo, to: from), sameYearFrom <= to {
+                return max(yearsAgo, 0)
+            } else {
+                // the difference in years is yearsAgo, but from is > than to if in the same year, so it's not full `yearsAgo`
+                return max(yearsAgo - 1, 0)
+            }
+        } else {
+            return 0
+        }
+    }
+
+    // compute the distance in years by checking how many full years ago it was
+    func _yearsAgoString(from: Date, to: Date) -> String {
         if let yearFrom = dateComponents([.year], from: from).year,
            let yearTo = dateComponents([.year], from: to).year
         {
