@@ -91,17 +91,17 @@ final class DateFormattingTest: XCTestCase {
         // today
         XCTAssertEqual(
             formatMediaHeader("2021-06-02 15:26", now: "2021-06-02 15:27"),
-            "Today • Wednesday, June 2, 2021"
+            "Today • Wed, Jun 02, 2021"
         )
         // yesterday
         XCTAssertEqual(
             formatMediaHeader("2021-06-02 23:59", now: "2021-06-03 00:00"),
-            "Yesterday • Wednesday, June 2, 2021"
+            "Yesterday • Wed, Jun 02, 2021"
         )
         // other
-        XCTAssertEqual(formatMediaHeader("2021-05-31 15:40", now: "2021-06-02 15:27"), "Monday, May 31, 2021")
-        XCTAssertEqual(formatMediaHeader("2021-01-01 00:01", now: "2021-06-02 15:27"), "Friday, January 1, 2021")
-        XCTAssertEqual(formatMediaHeader("2000-01-01 00:59", now: "2021-06-02 15:27"), "Saturday, January 1, 2000")
+        XCTAssertEqual(formatMediaHeader("2021-05-31 15:40", now: "2021-06-02 15:27"), "Mon, May 31, 2021")
+        XCTAssertEqual(formatMediaHeader("2021-01-01 00:01", now: "2021-06-02 15:27"), "Fri, Jan 01, 2021")
+        XCTAssertEqual(formatMediaHeader("2000-01-01 00:59", now: "2021-06-02 15:27"), "Sat, Jan 01, 2000")
     }
 
     func testFormatMediaTitle() throws {

@@ -22,7 +22,7 @@ class MediaCardViewController: SheetCardViewController {
 
     private var headerFont: UIFont {
         // for some reason the dynamic font only works when the font is created anew every time it's reloaded
-        ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+        ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
     }
 
     /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source

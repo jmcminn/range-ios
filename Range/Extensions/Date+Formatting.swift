@@ -26,13 +26,13 @@ extension Date {
         } else if calendar._yearsAgo(from: date, to: now) == 0 {
             // this year
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMM dd"
             dateFormatter.locale = locale
+            dateFormatter.setLocalizedDateFormatFromTemplate("MMM dd")
             return dateFormatter.string(from: date) + " @" + timeString() + calendar._daysAgoString(from: date, to: now)
         } else {
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMM dd, yyyy"
             dateFormatter.locale = locale
+            dateFormatter.setLocalizedDateFormatFromTemplate("MMM dd, yyyy")
             return dateFormatter.string(from: date) + calendar._yearsAgoString(from: date, to: now)
         }
     }
@@ -54,8 +54,8 @@ extension Date {
         } else {
             let dateFormatter = DateFormatter()
             let isThisYear = Calendar.current.isDate(date, equalTo: now, toGranularity: .year)
-            dateFormatter.dateFormat = isThisYear ? "MMM dd" : "MMM dd, yyyy"
             dateFormatter.locale = locale
+            dateFormatter.setLocalizedDateFormatFromTemplate(isThisYear ? "MMM dd" : "MMM dd, yyyy")
             return "on " + dateFormatter.string(from: date)
         }
     }
@@ -85,8 +85,8 @@ extension Date {
         } else {
             let dateFormatter = DateFormatter()
             let isThisYear = Calendar.current.isDate(date, equalTo: now, toGranularity: .year)
-            dateFormatter.dateFormat = isThisYear ? "MMM dd" : "MMM dd, yyyy"
             dateFormatter.locale = locale
+            dateFormatter.setLocalizedDateFormatFromTemplate(isThisYear ? "MMM dd" : "MMM dd, yyyy")
             return "on " + dateFormatter.string(from: date) + " @" + timeString
         }
     }
@@ -100,8 +100,8 @@ extension Date {
     {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
-        dateFormatter.dateStyle = .full
         dateFormatter.locale = locale
+        dateFormatter.setLocalizedDateFormatFromTemplate("EE, MMM dd, yyyy")
         let dateString = dateFormatter.string(from: date)
 
         var calendar = Calendar.current
