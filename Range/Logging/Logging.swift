@@ -22,6 +22,8 @@ extension Logger {
     static let firebase = Logger(subsystem: subsystem, category: "firebase")
     /// Firestore sync related logs
     static let firestore = Logger(subsystem: subsystem, category: "firestore")
+    /// Logs related to sentry configuration
+    static let sentry = Logger(subsystem: subsystem, category: "sentry")
     /// Cloud Storage sync related logs
     static let storage = Logger(subsystem: subsystem, category: "storage")
     /// anything UI related

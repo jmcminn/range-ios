@@ -6,6 +6,8 @@
 	<string>$(FIREBASE_PROJECT)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>SentryEnv</key>
+	<string>$(SENTRY_ENV)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

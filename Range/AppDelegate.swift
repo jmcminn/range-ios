@@ -4,6 +4,7 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseStorage
 import OSLog
+import Sentry
 import UIKit
 
 @main
@@ -13,6 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         setupAppearance()
+
+        initiateSentry()
 
         initiateFirebase()
 
@@ -30,6 +33,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().standardAppearance = tabBarAppearance
 //        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         UITabBar.appearance().tintColor = .Primary_Blue_04
+    }
+
+    private func initiateSentry() {
+        guard let sentryEnv = Bundle.main.object(forInfoDictionaryKey: "SentryEnv") as? String,
+              sentryEnv.isEmpty == false
+        else {
+            Logger.sentry.debug("No sentry environment provided! Not starting sentry")
+            return
+        }
+        Logger.sentry.debug("Starting sentry for \(sentryEnv) environment")
+
+        SentrySDK.start { options in
+            options.dsn = "https://5c3c709066fb4b5e897f79841727332a@o1384740.ingest.sentry.io/4504475534032896"
+            // for debugging
+//            options.debug = true // Enabled debug when first installing is always helpful
+//            options.diagnosticLevel = .warning
+            options.environment = sentryEnv
+        }
     }
 
     private func initiateFirebase() {

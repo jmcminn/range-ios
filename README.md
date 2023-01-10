@@ -36,6 +36,12 @@ Those files are copied as `GoogleService-Info.plist` in a custom build phase.
 There's also a special configuration for using the firebase emulator enabled when using `Range firebase emulator` scheme to start the app.
 
 
+## Sentry
+
+Sentry is used for crash reporting - [list of iOS issues](https://sentry.io/organizations/range-hq/issues/?project=4504475534032896)
+
+Sentry is enabled for all environments for Release builds (so it's not enabled when running from the Xcode). It's enabled when the `SENTRY_ENV` user defined build setting is not empty for given build configuration.
+
 ## CI/CD
 
 The builds are running on Xcode Cloud:
