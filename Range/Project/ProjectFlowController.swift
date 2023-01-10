@@ -276,25 +276,27 @@ final class ProjectFlowController: UIViewController {
     }
 
     fileprivate func setupActionCardVC() -> ProjectActionCardViewController {
-        // TODO: 704 this should be hidden in the production version
-        let additionalCardActions = [
-            ActionItem(
-                title: "Toggle Light/Dark mode",
-                imageName: "lightbulb",
-                handler: { [weak self] in
-                    guard let self = self else { return }
-                    self.view.window?.overrideUserInterfaceStyle = self.traitCollection
-                        .userInterfaceStyle == .dark ? .light : .dark
-                }
-            ),
-            ActionItem(
-                title: "Show dev settings",
-                imageName: "gearshape",
-                handler: { [weak self] in
-                    self?.showDebugSettingsAction()
-                }
-            ),
-        ]
+        let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
+        let additionalCardActions = showDebugOptions
+            ? [
+                ActionItem(
+                    title: "Toggle Light/Dark mode",
+                    imageName: "lightbulb",
+                    handler: { [weak self] in
+                        guard let self = self else { return }
+                        self.view.window?.overrideUserInterfaceStyle = self.traitCollection
+                            .userInterfaceStyle == .dark ? .light : .dark
+                    }
+                ),
+                ActionItem(
+                    title: "Show dev settings",
+                    imageName: "gearshape",
+                    handler: { [weak self] in
+                        self?.showDebugSettingsAction()
+                    }
+                ),
+            ]
+            : []
         let vc = ProjectActionCardViewController(actions: additionalCardActions)
         vc.onCamera = { [weak self] in
             self?.startAddPhotoFlow()

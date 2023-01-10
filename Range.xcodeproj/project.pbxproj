@@ -284,6 +284,7 @@
 		0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19028F8057B00C7185D /* PinImage.swift */; };
 		0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */; };
 		0ACE1968296C7AD500D223EB /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 0ACE1967296C7AD500D223EB /* Sentry */; };
+		0ACE1972296D68DD00D223EB /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1971296D68DD00D223EB /* AppConfiguration.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
@@ -614,6 +615,7 @@
 		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
 		0AC9E19028F8057B00C7185D /* PinImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinImage.swift; sourceTree = "<group>"; };
 		0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Merge.swift"; sourceTree = "<group>"; };
+		0ACE1971296D68DD00D223EB /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -971,6 +973,7 @@
 				0A4DC79727F5B06200712518 /* Colors.swift */,
 				0A07D7622810562600B6F9A2 /* fonts */,
 				0A0D31D228A3F21E007A8D49 /* Resources.swift */,
+				0ACE1971296D68DD00D223EB /* AppConfiguration.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1761,6 +1764,7 @@
 				0A7FC4192844E6A80097888A /* FirestoreStatusName.swift in Sources */,
 				0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */,
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
+				0ACE1972296D68DD00D223EB /* AppConfiguration.swift in Sources */,
 				0A99BF1B28C0BC5400DB3F96 /* FullscreenImageGalleryViewController.swift in Sources */,
 				0A130E9E28D4A8F700FF1368 /* FeedViewController.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
@@ -2089,6 +2093,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = "";
+				SHOW_DEBUG_OPTIONS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2222,6 +2227,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = beta;
+				SHOW_DEBUG_OPTIONS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2417,6 +2423,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = "";
+				SHOW_DEBUG_OPTIONS = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2456,6 +2463,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = production;
+				SHOW_DEBUG_OPTIONS = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2633,6 +2641,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = "";
+				SHOW_DEBUG_OPTIONS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2766,6 +2775,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = development;
+				SHOW_DEBUG_OPTIONS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2905,6 +2915,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = "";
+				SHOW_DEBUG_OPTIONS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -3044,6 +3055,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = "";
+				SHOW_DEBUG_OPTIONS = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -3177,6 +3189,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = staging;
+				SHOW_DEBUG_OPTIONS = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

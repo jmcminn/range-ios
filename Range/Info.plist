@@ -8,6 +8,8 @@
 	<false/>
 	<key>SentryEnv</key>
 	<string>$(SENTRY_ENV)</string>
+	<key>ShowDebugOptions</key>
+	<string>$(SHOW_DEBUG_OPTIONS)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

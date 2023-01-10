@@ -36,13 +36,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func initiateSentry() {
-        guard let sentryEnv = Bundle.main.object(forInfoDictionaryKey: "SentryEnv") as? String,
-              sentryEnv.isEmpty == false
-        else {
+        guard let sentryEnv: String = try? AppConfiguration.value(for: "SentryEnv"), sentryEnv.isEmpty == false else {
             Logger.sentry.debug("No sentry environment provided! Not starting sentry")
             return
         }
-        Logger.sentry.debug("Starting sentry for \(sentryEnv) environment")
+        Logger.sentry.debug("Starting sentry for '\(sentryEnv)' environment")
 
         SentrySDK.start { options in
             options.dsn = "https://5c3c709066fb4b5e897f79841727332a@o1384740.ingest.sentry.io/4504475534032896"
@@ -58,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // in the `FIREBASE_PROJECT` custom build setting
         // if set to "emulator" then run on emulator, otherwise on the configuration
         // provided in GoogleService-Info.plist
-        let firebaseProject = Bundle.main.object(forInfoDictionaryKey: "FirebaseProject") as! String
+        let firebaseProject: String = try! AppConfiguration.value(for: "FirebaseProject")
         if firebaseProject == "emulator" {
             Logger.firebase.debug("Using firebase emulator")
             let options = FirebaseOptions(
