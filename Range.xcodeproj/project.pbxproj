@@ -616,6 +616,8 @@
 		0AC9E19028F8057B00C7185D /* PinImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinImage.swift; sourceTree = "<group>"; };
 		0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Merge.swift"; sourceTree = "<group>"; };
 		0ACE1971296D68DD00D223EB /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		0ACE1973296D71AE00D223EB /* GoogleService-Info.staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.staging.plist"; sourceTree = "<group>"; };
+		0ACE1974296D738800D223EB /* GoogleService-Info.production.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.production.plist"; sourceTree = "<group>"; };
 		0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
@@ -966,6 +968,8 @@
 				0A632EB927E49638001A019B /* Info.plist */,
 				0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */,
 				0A378375291A71880018BF3C /* GoogleService-Info.demo.plist */,
+				0ACE1973296D71AE00D223EB /* GoogleService-Info.staging.plist */,
+				0ACE1974296D738800D223EB /* GoogleService-Info.production.plist */,
 				0A632EB627E49638001A019B /* LaunchScreen.storyboard */,
 				0A632EE427E4E52E001A019B /* DemoResources */,
 				0A632EB427E49638001A019B /* Assets.xcassets */,
@@ -1657,7 +1661,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "RESOURCE_PATH=$SRCROOT/Range\n\nBUILD_APP_DIR=${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\n\n# if configuration name contains...\nif [[ \"$CONFIGURATION\" == *\"dev\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.dev.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"demo\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.demo.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nfi\n";
+			shellScript = "RESOURCE_PATH=$SRCROOT/Range\n\nBUILD_APP_DIR=${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\n\n# if configuration name contains...\nif [[ \"$CONFIGURATION\" == *\"dev\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.dev.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"demo\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.demo.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"staging\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.staging.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"production\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.production.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2272,7 +2276,7 @@
 			};
 			name = "Release demo";
 		};
-		0A632ED027E49639001A019B /* Debug */ = {
+		0A632ED027E49639001A019B /* Debug production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2332,9 +2336,9 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
-			name = Debug;
+			name = "Debug production";
 		};
-		0A632ED127E49639001A019B /* Release */ = {
+		0A632ED127E49639001A019B /* Release production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2388,9 +2392,9 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = "Release production";
 		};
-		0A632ED327E49639001A019B /* Debug */ = {
+		0A632ED327E49639001A019B /* Debug production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -2428,9 +2432,9 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
-			name = Debug;
+			name = "Debug production";
 		};
-		0A632ED427E49639001A019B /* Release */ = {
+		0A632ED427E49639001A019B /* Release production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -2468,9 +2472,9 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
-			name = Release;
+			name = "Release production";
 		};
-		0A632ED627E49639001A019B /* Debug */ = {
+		0A632ED627E49639001A019B /* Debug production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -2488,9 +2492,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Range.app/Range";
 			};
-			name = Debug;
+			name = "Debug production";
 		};
-		0A632ED727E49639001A019B /* Release */ = {
+		0A632ED727E49639001A019B /* Release production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -2508,9 +2512,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Range.app/Range";
 			};
-			name = Release;
+			name = "Release production";
 		};
-		0A632ED927E49639001A019B /* Debug */ = {
+		0A632ED927E49639001A019B /* Debug production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -2526,9 +2530,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Range;
 			};
-			name = Debug;
+			name = "Debug production";
 		};
-		0A632EDA27E49639001A019B /* Release */ = {
+		0A632EDA27E49639001A019B /* Release production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -2544,7 +2548,7 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Range;
 			};
-			name = Release;
+			name = "Release production";
 		};
 		0A724F32288806DF00708C6B /* Debug firebase emulator */ = {
 			isa = XCBuildConfiguration;
@@ -3025,7 +3029,7 @@
 		0ACE196A296C7E0F00D223EB /* Debug staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -3051,7 +3055,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-staging";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = "";
@@ -3159,7 +3163,7 @@
 		0ACE196E296C7EC600D223EB /* Release staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -3185,7 +3189,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-staging";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = staging;
@@ -3240,66 +3244,66 @@
 		0A632EA327E49636001A019B /* Build configuration list for PBXProject "Range" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A632ED027E49639001A019B /* Debug */,
+				0A632ED027E49639001A019B /* Debug production */,
 				0A99BF3228C890B700DB3F96 /* Debug dev */,
 				0A37836B291A62320018BF3C /* Debug demo */,
 				0ACE1969296C7E0F00D223EB /* Debug staging */,
 				0A724F32288806DF00708C6B /* Debug firebase emulator */,
-				0A632ED127E49639001A019B /* Release */,
+				0A632ED127E49639001A019B /* Release production */,
 				0A99BF2E28C88C4E00DB3F96 /* Release dev */,
 				0A37836F291A623C0018BF3C /* Release demo */,
 				0ACE196D296C7EC600D223EB /* Release staging */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release production";
 		};
 		0A632ED227E49639001A019B /* Build configuration list for PBXNativeTarget "Range" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A632ED327E49639001A019B /* Debug */,
+				0A632ED327E49639001A019B /* Debug production */,
 				0A99BF3328C890B700DB3F96 /* Debug dev */,
 				0A37836C291A62320018BF3C /* Debug demo */,
 				0ACE196A296C7E0F00D223EB /* Debug staging */,
 				0A724F33288806DF00708C6B /* Debug firebase emulator */,
-				0A632ED427E49639001A019B /* Release */,
+				0A632ED427E49639001A019B /* Release production */,
 				0A99BF2F28C88C4E00DB3F96 /* Release dev */,
 				0A378370291A623C0018BF3C /* Release demo */,
 				0ACE196E296C7EC600D223EB /* Release staging */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release production";
 		};
 		0A632ED527E49639001A019B /* Build configuration list for PBXNativeTarget "RangeTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A632ED627E49639001A019B /* Debug */,
+				0A632ED627E49639001A019B /* Debug production */,
 				0A99BF3428C890B700DB3F96 /* Debug dev */,
 				0A37836D291A62320018BF3C /* Debug demo */,
 				0ACE196B296C7E0F00D223EB /* Debug staging */,
 				0A724F34288806DF00708C6B /* Debug firebase emulator */,
-				0A632ED727E49639001A019B /* Release */,
+				0A632ED727E49639001A019B /* Release production */,
 				0A99BF3028C88C4E00DB3F96 /* Release dev */,
 				0A378371291A623C0018BF3C /* Release demo */,
 				0ACE196F296C7EC600D223EB /* Release staging */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release production";
 		};
 		0A632ED827E49639001A019B /* Build configuration list for PBXNativeTarget "RangeUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A632ED927E49639001A019B /* Debug */,
+				0A632ED927E49639001A019B /* Debug production */,
 				0A99BF3528C890B700DB3F96 /* Debug dev */,
 				0A37836E291A62320018BF3C /* Debug demo */,
 				0ACE196C296C7E0F00D223EB /* Debug staging */,
 				0A724F35288806DF00708C6B /* Debug firebase emulator */,
-				0A632EDA27E49639001A019B /* Release */,
+				0A632EDA27E49639001A019B /* Release production */,
 				0A99BF3128C88C4E00DB3F96 /* Release dev */,
 				0A378372291A623C0018BF3C /* Release demo */,
 				0ACE1970296C7EC600D223EB /* Release staging */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release production";
 		};
 /* End XCConfigurationList section */
 
