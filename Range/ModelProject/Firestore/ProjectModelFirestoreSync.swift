@@ -76,11 +76,19 @@ class ProjectModelFirestoreSync {
         async let userRequest = collection(.participant).document(model.userId)
             .getDocument(as: FirestoreParticipant.self)
 
+        // fetch statuses in initial sync so they're guaranteed to be fetched before other objects
+        // this way they'll be placed in local db in the same order as stored in Firestore.
+        // If not done here, we could be fetching some collaboration before fetching it's status
+        // and creating some placeholder status objects in the local db that would be out of order
+        // We need statuses to keep the ordering from db as currently the order is not modelled in any way.
+        async let statusesRequest = collection(.statusName).getDocuments()
+
         // await for results
         let projectSummary = try await projectSummaryRequest
         let canvasCollections = try await canvasCollectionsRequest
         let canvases = try await canvasesRequest
         let user = try await userRequest
+        let statuses = try await statusesRequest
 
         // store in the db
         try await model.write { realm in
@@ -94,6 +102,10 @@ class ProjectModelFirestoreSync {
                 try canvas.upsert(withId: $0.documentID, inRealm: realm)
             }
             try user.upsert(withId: self.model.userId, inRealm: realm)
+            try statuses.documents.forEach {
+                let status = try $0.data(as: FirestoreStatusName.self)
+                try status.upsert(withId: $0.documentID, inRealm: realm)
+            }
         }
     }
 
