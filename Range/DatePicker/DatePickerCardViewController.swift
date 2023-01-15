@@ -8,7 +8,6 @@ import UIKit
 class DatePickerCardViewController: SheetCardViewController {
     private let datePickerBackground = UIView()
     private let datePicker = UIDatePicker()
-    private let selectedDateLabel = LabelWithTextInsets()
     private var leftButton: UIButton! // either "cancel" or "remove date" button
     private var doneButton: UIButton!
     let timeZone: TimeZone
@@ -66,7 +65,6 @@ class DatePickerCardViewController: SheetCardViewController {
         super.updateColors()
 
         datePickerBackground.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
-        selectedDateLabel.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
@@ -79,7 +77,6 @@ class DatePickerCardViewController: SheetCardViewController {
     }
 
     @objc func handleDateSelection() {
-        selectedDateLabel.text = Date.dueDateFormat2(datePicker.date, timeZone: timeZone)
         selectedDate = datePicker.date
     }
 }
