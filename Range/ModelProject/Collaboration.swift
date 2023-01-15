@@ -54,6 +54,13 @@ class Collaboration: Object, WithPlaceholder {
         status != nil && status!.isCompleted
     }
 
+    /// The timestamp of the most recent Update or Comment or Upload or `timestamp` if no updates
+    var lastUpdatedTimestamp: Date {
+        (Array(updates.map(\.timestamp)) + Array(uploads.map(\.timestamp)) + Array(comments.map(\.timestamp)))
+            .max() ?? timestamp
+//        (updates.map(\.timestamp) + uploads.map(\.timestamp) + comments.map(\.timestamp)).max() ?? timestamp
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()
