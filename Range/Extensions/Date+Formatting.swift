@@ -18,22 +18,45 @@ extension Date {
         }
 
         if calendar.isDate(date, inSameDayAs: now) {
-            return "Today @" + timeString() + calendar._hoursOrMinutesAgoString(from: date, to: now)
+            return "Today @" + timeString() + " (" + calendar._hoursOrMinutesAgoString(from: date, to: now) + ")"
         } else if let yesterday = calendar.date(byAdding: .day, value: -1, to: now),
                   calendar.isDate(date, inSameDayAs: yesterday)
         {
-            return "Yesterday @" + timeString() + calendar._hoursOrMinutesAgoString(from: date, to: now)
+            return "Yesterday @" + timeString() + " (" + calendar._hoursOrMinutesAgoString(from: date, to: now) + ")"
         } else if calendar._yearsAgo(from: date, to: now) == 0 {
             // this year
             let dateFormatter = DateFormatter()
             dateFormatter.locale = locale
             dateFormatter.setLocalizedDateFormatFromTemplate("MMM dd")
-            return dateFormatter.string(from: date) + " @" + timeString() + calendar._daysAgoString(from: date, to: now)
+            return dateFormatter.string(from: date) + " @" + timeString() + " (" + calendar
+                ._daysAgoString(from: date, to: now) + ")"
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.locale = locale
             dateFormatter.setLocalizedDateFormatFromTemplate("MMM dd, yyyy")
-            return dateFormatter.string(from: date) + calendar._yearsAgoString(from: date, to: now)
+            return dateFormatter.string(from: date) + " (" + calendar._yearsAgoString(from: date, to: now) + ")"
+        }
+    }
+
+    /// Returns the formatted date as defined in Figma for primary timestamp type. But it only returns the "ago" part
+    /// - Parameter date: the date to format
+    /// - Parameter now: the current date can be customized - used in tests
+    /// - Parameter locale: the locale to be used for formatting, customized in tests
+    static func format1Ago(_ date: Date, now: Date = Date.now, locale: Locale = Locale.current) -> String {
+        var calendar = Calendar.current
+        calendar.locale = locale
+
+        if calendar.isDate(date, inSameDayAs: now) {
+            return calendar._hoursOrMinutesAgoString(from: date, to: now)
+        } else if let yesterday = calendar.date(byAdding: .day, value: -1, to: now),
+                  calendar.isDate(date, inSameDayAs: yesterday)
+        {
+            return calendar._hoursOrMinutesAgoString(from: date, to: now)
+        } else if calendar._yearsAgo(from: date, to: now) == 0 {
+            // this year
+            return calendar._daysAgoString(from: date, to: now)
+        } else {
+            return calendar._yearsAgoString(from: date, to: now)
         }
     }
 
@@ -132,6 +155,7 @@ extension Date {
         return dateFormatter.string(from: date)
     }
 
+    /// Apr 6, 2022
     static func dueDateFormat(_ date: Date, timeZone: TimeZone?) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
@@ -142,10 +166,11 @@ extension Date {
         return dateFormatter.string(from: date)
     }
 
+    /// Apr 6
     static func dueDateFormat2(_ date: Date, timeZone: TimeZone?) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
-        dateFormatter.dateStyle = .long
+        dateFormatter.setLocalizedDateFormatFromTemplate("MMM dd")
         if let timeZone = timeZone {
             dateFormatter.timeZone = timeZone
         }
@@ -158,9 +183,9 @@ extension Calendar {
     // otherwise  hour(s) ago
     func _hoursOrMinutesAgoString(from: Date, to: Date) -> String {
         if let hoursAgo = dateComponents([.hour], from: from, to: to).hour, hoursAgo > 0 {
-            return " (\(hoursAgo) \(hoursAgo == 1 ? "hour" : "hours") ago)"
+            return "\(hoursAgo) \(hoursAgo == 1 ? "hour" : "hours") ago"
         } else if let minutesAgo = dateComponents([.minute], from: from, to: to).minute {
-            return " (\(minutesAgo) \(minutesAgo == 1 ? "minute" : "minutes") ago)"
+            return "\(minutesAgo) \(minutesAgo == 1 ? "minute" : "minutes") ago"
         } else {
             return ""
         }
@@ -174,7 +199,7 @@ extension Calendar {
            let toNoTime = date(bySettingHour: 0, minute: 0, second: 0, of: to),
            let daysAgo = dateComponents([.day], from: fromNoTime, to: toNoTime).day
         {
-            return " (\(daysAgo) days ago)"
+            return "\(daysAgo) days ago"
         } else {
             return ""
         }
@@ -203,7 +228,7 @@ extension Calendar {
            let yearTo = dateComponents([.year], from: to).year
         {
             let yearsAgo = yearTo - yearFrom
-            return " (\(yearsAgo) \(yearsAgo == 1 ? "year" : "years") ago)"
+            return "\(yearsAgo) \(yearsAgo == 1 ? "year" : "years") ago"
         } else {
             return ""
         }
