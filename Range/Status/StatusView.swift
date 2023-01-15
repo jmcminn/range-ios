@@ -32,7 +32,8 @@ class StatusView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setStatus(_ status: Status, selected: Bool = false) {
+    /// If `count` is provided it displays it in the parentheses next to the status name
+    func setStatus(_ status: Status, selected: Bool = false, count: Int? = nil) {
         backgroundColor = status.color
 
         textLabel.font = font
@@ -62,7 +63,11 @@ class StatusView: UIView {
             }
         }
 
-        textLabel.text = status.name
+        var text = status.name
+        if let count = count {
+            text += " (\(count))"
+        }
+        textLabel.text = text
         textLabel.sizeToFit()
         var statusSize = textLabel.frame.size
         if selected {
