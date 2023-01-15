@@ -40,6 +40,8 @@ final class FlowEvent: UIEvent {
     func editTagsAction(sender: Any?, event: FlowEvent)
     /// Show more menu for FlowEvent.object
     func moreAction(sender: Any?, event: FlowEvent)
+    /// show the List view card view controller with project tasks
+    func showListViewAction()
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -67,6 +69,11 @@ extension ProjectFlowController: ProjectFlowActions {
             onUploadSelected: { _ in
             }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    func showListViewAction() {
+        ListViewCardViewController(projectModel: model)
+            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     func showFullscreenMediaAction(sender _: Any?, event: FlowEvent) {
