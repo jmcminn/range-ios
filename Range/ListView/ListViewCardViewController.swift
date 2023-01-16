@@ -10,16 +10,25 @@ import UIKit
 class ListViewCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
 
+    private let headerView = UIView()
+    private var onlyMineToggle: SegmentedControl!
     private let headerStroke = UIView()
 
     private let tableView = UITableView(frame: .zero, style: .plain)
 
     /// whether to show all tasks (`false`) or only tasks of the current user (`true`)
-    private var showOnlyMine = false
+    private var showOnlyMine = false {
+        didSet {
+            UserDefaults.showOnlyMineTasks = showOnlyMine
+            reloadCollaborations()
+        }
+    }
 
     private var collaborationsByStatus: [Status?: [Collaboration]] = [:]
     private var statuses: [Status] = []
-    private var expandedSections: Set<Int> = .init(arrayLiteral: 0)
+    private var expandedStatuses = Set<Status>()
+    /// was the first status expaned loaded and marked as expanded already?
+    private var firstStatusInitiallyExpanded: Bool = false
 
     private var headerFont: UIFont { .preferredFont(forTextStyle: .subheadline) }
 
@@ -34,6 +43,8 @@ class ListViewCardViewController: SheetCardViewController {
         self.projectModel = projectModel
 
         super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "List View"))
+
+        showOnlyMine = UserDefaults.showOnlyMineTasks
     }
 
     deinit {
@@ -43,17 +54,18 @@ class ListViewCardViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupHeaderStroke()
-        sheetHeaderView.addSubview(headerStroke)
-        headerStroke.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1)
+        setupHeaderView()
+        containerView.addSubview(headerView)
+        headerView.snp.makeConstraints { make in
+            make.top.equalTo(sheetHeaderView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(48)
         }
 
         setupTableView()
-        containerView.insertSubview(tableView, belowSubview: sheetHeaderView)
+        containerView.insertSubview(tableView, belowSubview: headerView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(sheetHeaderView.snp.bottom)
+            make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
@@ -64,7 +76,6 @@ class ListViewCardViewController: SheetCardViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         // update the border color for cells
         tableView.reloadData()
-        updateHeaderShadow()
     }
 
     private func reloadCollaborations() {
@@ -123,6 +134,11 @@ class ListViewCardViewController: SheetCardViewController {
                 if s1.isCompleted { return false }
                 return true
             })
+        if !firstStatusInitiallyExpanded, let firstStatus = statuses.first {
+            // initiate so the first status is expanded
+            firstStatusInitiallyExpanded = true
+            expandedStatuses.insert(firstStatus)
+        }
         tableView.reloadData()
     }
 
@@ -139,8 +155,39 @@ class ListViewCardViewController: SheetCardViewController {
         tableView
     }
 
-    private func setupHeaderStroke() {
+    private func setupHeaderView() {
+        headerView.backgroundColor = view.backgroundColor
+
+        onlyMineToggle = SegmentedControl(items: [
+            ActionItem(
+                title: String(localized: "All"),
+                handler: { [weak self] in
+                    self?.showOnlyMine = false
+                }
+            ),
+            ActionItem(
+                title: String(localized: "Only Mine"),
+                handler: { [weak self] in
+                    self?.showOnlyMine = true
+                }
+            ),
+        ])
+        if UserDefaults.showOnlyMineTasks {
+            onlyMineToggle.setSelectedSegmentIndex(1, animated: false)
+        }
+        headerView.addSubview(onlyMineToggle)
+        onlyMineToggle.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(SegmentedControl.height)
+        }
+
         headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        headerView.addSubview(headerStroke)
+        headerStroke.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
     }
 
     private func setupTableView() {
@@ -152,32 +199,6 @@ class ListViewCardViewController: SheetCardViewController {
         tableView.register(ListViewCollaborationTableViewCell.self, forCellReuseIdentifier: "CollaborationCell")
         tableView.keyboardDismissMode = .onDrag
     }
-
-    // TODO: 756
-    /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
-    private func updateHeaderShadow() {
-//        let shadowVisible = tableView.contentOffset.y > 0
-//        if shadowVisible {
-//            let darkMode = traitCollection.userInterfaceStyle == .dark
-//            if darkMode {
-//                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
-//            } else {
-//                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
-//            }
-//            // make the shadow height = 10 points, so the top part of the shadow is not visible
-//            // (the path covers bottom part of the view only)
-//            // This only works if the view is actually higher than 10 points. But if it's lower
-//            // then the shadow with no shadowPath would not be shown (for view that has 0 height)
-//            // so we still need to "cover" this view from top with another view (in a view that's
-//            // adding this view controller as a child)
-//            sheetHeaderView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
-//                                                                         y: sheetHeaderView.bounds.maxY - 10,
-//                                                                         width: sheetHeaderView.bounds.width,
-//                                                                         height: 10)).cgPath
-//        } else {
-//            sheetHeaderView.layer.shadowOpacity = 0
-//        }
-    }
 }
 
 // MARK: table view delegate
@@ -188,9 +209,9 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if !expandedSections.contains(section) { return 0 }
         guard section < statuses.count else { return 0 }
         let status = statuses[section]
+        if !expandedStatuses.contains(status) { return 0 }
         return collaborationsByStatus[status]?.count ?? 0
     }
 
@@ -205,6 +226,19 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
                 cell.setCollaboration(collaboration, projectTimeZone: projectModel.projectSummary.timeZone)
             }
         }
+        cell.onCollaborationTapped = { [weak self] collaborationId in
+            guard let self = self else { return }
+            guard let collaboration = self.projectModel.mainRealm.object(
+                ofType: Collaboration.self,
+                forPrimaryKey: collaborationId
+            ) else { return }
+            UIApplication.shared.sendAction(
+                #selector(ProjectFlowActions.showCollaborationAction),
+                to: nil,
+                from: self,
+                for: FlowEvent(collaboration)
+            )
+        }
         return cell
     }
 
@@ -213,6 +247,9 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard section < statuses.count else { return nil }
+        let status = statuses[section]
+
         let view = UIView()
         view.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
         let chevron =
@@ -221,7 +258,7 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
         chevron.contentMode = .center
         chevron.tintColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         chevron.tag = 999
-        if expandedSections.contains(section) {
+        if expandedStatuses.contains(status) {
             chevron.transform = CGAffineTransform.identity.rotated(by: CGFloat.pi / 2)
         }
         view.addSubview(chevron)
@@ -230,17 +267,14 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
             make.centerY.equalToSuperview()
         }
 
-        if section < statuses.count {
-            let status = statuses[section]
-            let statusView = StatusView()
-            statusView.font = headerFont
-            statusView.contentInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
-            statusView.setStatus(status, count: collaborationsByStatus[status]?.count)
-            view.addSubview(statusView)
-            statusView.snp.makeConstraints { make in
-                make.top.bottom.equalToSuperview().inset(10)
-                make.leading.equalTo(chevron.snp.trailing).offset(8)
-            }
+        let statusView = StatusView()
+        statusView.font = headerFont
+        statusView.contentInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        statusView.setStatus(status, count: collaborationsByStatus[status]?.count)
+        view.addSubview(statusView)
+        statusView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(10)
+            make.leading.equalTo(chevron.snp.trailing).offset(8)
         }
 
         let stroke = UIView()
@@ -262,13 +296,14 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
         guard let headerView = recognizer.view else { return }
         let section = headerView.tag
         guard section < statuses.count else { return }
+        let status = statuses[section]
 
-        let expanded = expandedSections.contains(section)
+        let expanded = expandedStatuses.contains(status)
         let expand = !expanded
         if expand {
-            expandedSections.insert(section)
+            expandedStatuses.insert(status)
         } else {
-            expandedSections.remove(section)
+            expandedStatuses.remove(status)
         }
         let chevronView = headerView.subviews.first { $0.tag == 999 }
         UIView.animate(withDuration: 0.2) {
@@ -284,14 +319,15 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        // TODO: 756
-//        guard indexPath.section < items.count else { return }
-//        guard let upload = items[indexPath.section].item as? Upload else { return }
-//        UIApplication.shared.sendAction(
-//            #selector(ProjectFlowActions.showFullscreenMediaAction),
-//            to: nil,
-//            from: self,
-//            for: FlowEvent(upload)
-//        )
+        guard indexPath.section < statuses.count,
+              let collaborations = collaborationsByStatus[statuses[indexPath.section]],
+              indexPath.row < collaborations.count else { return }
+        let collaboration = collaborations[indexPath.row]
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.showCollaborationAction),
+            to: nil,
+            from: self,
+            for: FlowEvent(collaboration)
+        )
     }
 }

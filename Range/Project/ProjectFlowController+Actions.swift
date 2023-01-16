@@ -72,7 +72,7 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func showListViewAction() {
-        ListViewCardViewController(projectModel: model)
+        listViewVC = ListViewCardViewController(projectModel: model)
             .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 

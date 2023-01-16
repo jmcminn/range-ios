@@ -17,6 +17,8 @@ extension UserDefaults {
         case moreUpdatesInTheFeed
         /// the prefix to be used for storing recent tags for a project, will be followed by a project id
         case recentTagsPrefix = "recentTags_"
+        /// last user's choice if the tasks list shows all or only mine tasks, `false` by default
+        case showOnlyMineTasks
     }
 
     static var lastOpenProjectId: String? {
@@ -119,6 +121,15 @@ extension UserDefaults {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.moreUpdatesInTheFeed.rawValue)
+        }
+    }
+
+    static var showOnlyMineTasks: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: UserDefaultsConstants.showOnlyMineTasks.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.showOnlyMineTasks.rawValue)
         }
     }
 }

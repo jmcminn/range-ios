@@ -80,6 +80,10 @@ class ListViewCollaborationTableViewCell: UITableViewCell {
     private let detailsScrollView = UIScrollView()
     private let detailsStackView = UIStackView()
     private let bottomStroke = UIView()
+    /// details scroll view has user interaction enabled, so tapping on it will prevent didSelectRow callback, we need to add a separate handler
+    var onCollaborationTapped: ((String) -> Void)?
+    /// stored to be used for callback
+    private var collaborationId: String?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -142,11 +146,15 @@ class ListViewCollaborationTableViewCell: UITableViewCell {
             make.edges.equalToSuperview()
             make.height.equalTo(detailsScrollView)
         }
+        detailsStackView.isUserInteractionEnabled = false
+        detailsScrollView
+            .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(scrollViewTapped)))
 
         bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
     }
 
     func setCollaboration(_ collaboration: Collaboration, projectTimeZone: TimeZone) {
+        collaborationId = collaboration.id
         badgeView.backgroundColor = collaboration.status?.color
         nameLabel.text = collaboration.name.isEmpty
             ? (collaboration.status == nil
@@ -177,5 +185,10 @@ class ListViewCollaborationTableViewCell: UITableViewCell {
             detailsStackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
+    }
+
+    @objc private func scrollViewTapped() {
+        guard let collaborationId = collaborationId else { return }
+        onCollaborationTapped?(collaborationId)
     }
 }

@@ -26,6 +26,7 @@ final class ProjectFlowController: UIViewController {
     var canvasSelectorButton: RoundShadowButton!
     weak var mediaVC: MediaCardViewController?
     weak var fullscreenMediaVC: FullscreenMediaCardViewController?
+    weak var listViewVC: ListViewCardViewController?
 
     /// To observed changes in model.currentCanvas
     private var canvasObservation: NSKeyValueObservation?
@@ -185,6 +186,9 @@ final class ProjectFlowController: UIViewController {
         }
         if let mediaVC = mediaVC {
             mediaVC.dismissCard()
+        }
+        if let listViewVC = listViewVC {
+            listViewVC.dismissCard()
         }
         collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
     }
