@@ -65,7 +65,6 @@ class PDFPageTiledView: UIView {
 
         // Scale the context so that the PDF page is rendered at the correct size for the zoom level.
         con.scaleBy(x: scale, y: scale)
-        pdfPage.transform(con, for: .mediaBox)
         pdfPage.draw(with: .mediaBox, to: con)
         con.restoreGState()
     }

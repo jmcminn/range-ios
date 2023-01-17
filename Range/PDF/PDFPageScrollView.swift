@@ -31,14 +31,14 @@ class PDFPageScrollView: UIScrollView {
     init(frame: CGRect, pdfPage: PDFPage, autoCenter: Bool = false) {
         self.autoCenter = autoCenter
 
-        let originalPageRect = pdfPage.bounds(for: .mediaBox)
+        let originalPageSize = pdfPage._sizeAdjustedForRotation(for: .mediaBox)
         let scale = min(
-            frame.width / originalPageRect.width,
-            frame.height / originalPageRect.height
+            frame.width / originalPageSize.width,
+            frame.height / originalPageSize.height
         )
         let scaledPageRectSize = CGSize(
-            width: originalPageRect.width * scale,
-            height: originalPageRect.height * scale
+            width: originalPageSize.width * scale,
+            height: originalPageSize.height * scale
         )
 
         let contentViewSize = frame.size
