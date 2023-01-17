@@ -168,6 +168,9 @@ class ListViewCollaborationTableViewCell: UITableViewCell {
                 isRed: collaboration.isOverdue
             ))
         }
+        if let assignee = collaboration.assignee {
+            detailsStackView.addArrangedSubview(CollaborationPillView(iconName: "person", text: assignee.displayName))
+        }
         if let canvasName = collaboration.feature.first?.geometry.first?.canvas.first?.displayName {
             detailsStackView.addArrangedSubview(CollaborationPillView(iconName: "square.3.layers.3d", text: canvasName))
         }
