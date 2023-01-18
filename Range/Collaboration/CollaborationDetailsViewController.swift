@@ -330,8 +330,15 @@ extension CollaborationDetailsViewController {
 extension UIViewController {
     /// Creates a view containing CTA buttons, to be reused for the bottom collaboration card
     func _createCollaborationCTAs() -> UIView {
-        var blackButtonConfig = UIButton.Configuration.blackButton(imageTextStyle: .caption1, cornerRadius: 8)
-        blackButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
+        var titleAttributes = AttributeContainer()
+        titleAttributes.font = UIFont.preferredFont(forTextStyle: .subheadline)
+
+        var blackButtonConfig = UIButton.Configuration.blackButton(
+            imageTextStyle: .caption1,
+            imagePlacement: .leading,
+            cornerRadius: 8
+        )
+        blackButtonConfig.attributedTitle = AttributedString("Add Comment", attributes: titleAttributes)
         let addCommentButton = UIButton(
             configuration: blackButtonConfig,
             primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { [weak self] _ in
@@ -339,18 +346,16 @@ extension UIViewController {
                                                 to: nil, from: self, for: nil)
             }
         )
-        let addAttachmentButton = UIButton(
-            configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "paperclip")) { _ in }
-        )
+//        let addAttachmentButton = UIButton(
+//            configuration: blackButtonConfig,
+//            primaryAction: UIAction(image: UIImage(systemName: "paperclip")) { _ in }
+//        )
 
         var blueButtonConfig = UIButton.Configuration.blueButton(
             imageTextStyle: .caption1,
             imagePlacement: .leading,
             cornerRadius: 8
         )
-        var titleAttributes = AttributeContainer()
-        titleAttributes.font = UIFont.preferredFont(forTextStyle: .subheadline)
         blueButtonConfig.attributedTitle = AttributedString("Add Photos", attributes: titleAttributes)
         let addPhotosButton = UIButton(
             configuration: blueButtonConfig,
@@ -360,18 +365,13 @@ extension UIViewController {
             }
         )
         let ctas = UIView()
-        [addCommentButton, addAttachmentButton, addPhotosButton].forEach(ctas.addSubview)
+        [addCommentButton, addPhotosButton].forEach(ctas.addSubview)
         // layout buttons so addComment and addAttachment take 50% space and addPhotos another 50%
         // (+ there's 16 points space between each button, the leading and trailing spacing is already
         // include as the whole ctas view has margins)
         addCommentButton.snp.makeConstraints { make in
             make.leading.top.bottom.equalToSuperview()
-            make.width.equalTo(addPhotosButton.snp.width).multipliedBy(0.5).offset(-8)
-        }
-        addAttachmentButton.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.equalTo(addCommentButton.snp.trailing).offset(16)
-            make.width.equalTo(addCommentButton.snp.width)
+            make.width.equalTo(addPhotosButton)
         }
         addPhotosButton.snp.makeConstraints { make in
             make.trailing.top.bottom.equalToSuperview()
