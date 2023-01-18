@@ -19,6 +19,7 @@ extension RealmModel {
     private func apply<T: Decodable & FirestoreToRealmSyncable>(
         documentChangeType changeType: DocumentChangeType,
         snapshot: DocumentSnapshot,
+        fromCache: Bool,
         as type: T.Type,
         inRealm realm: Realm
     ) {
@@ -26,7 +27,9 @@ extension RealmModel {
 
         let collectionId = snapshot.reference.parent.collectionID
         let documentId = snapshot.documentID
-        Logger.firestore.debug("\(collectionId) \(changeType) \(documentId, privacy: .public)")
+        Logger.firestore.debug(
+            "\(collectionId) \(changeType) \(documentId, privacy: .public) \(fromCache ? "(fromCache)" : "")"
+        )
         do {
             let firestoreObject = try snapshot.data(as: type, decoder: decoder)
             try realm.write {
@@ -102,8 +105,9 @@ extension RealmModel {
                 }
 
                 // if we don't allow changes from cache then guard against changes being not from cache
+                let fromCache = snapshot.metadata.isFromCache
                 if !allowFromCache {
-                    guard !snapshot.metadata.isFromCache else {
+                    guard !fromCache else {
                         // we don't want data from cache. Firestore will report all local objects when the app
                         // is starting even in offline mode (because it has persistence enabled, see AppDelegate
                         // Firestore config comment for why it has to be enabled).
@@ -119,7 +123,13 @@ extension RealmModel {
                     return
                 }
                 let changeType: DocumentChangeType = .modified
-                self.apply(documentChangeType: changeType, snapshot: snapshot, as: type, inRealm: self.writeRealm)
+                self.apply(
+                    documentChangeType: changeType,
+                    snapshot: snapshot,
+                    fromCache: fromCache,
+                    as: type,
+                    inRealm: self.writeRealm
+                )
             }
         }
 
@@ -142,19 +152,51 @@ extension RealmModel {
                 )
                 return
             }
-            guard !snapshot.metadata.isFromCache else {
-                // we don't want data from cache. Firestore will report all local objects when the app
-                // is starting even in offline mode (because it has persistence enabled, see AppDelegate
-                // Firestore config comment for why it has to be enabled).
-                // This data from cache is not needed, because we have it in Realm and would override
-                // any local pending changes. So it would flicker but for a potentially very long time:
-                // From the time user restarted the app in offline after making local changes until the user is back online.
-                return
-            }
+
+            let fromCache = snapshot.metadata.isFromCache
             self.writeQueue.async {
                 snapshot.documentChanges.forEach { diff in
                     let document = diff.document
-                    self.apply(documentChangeType: diff.type, snapshot: document, as: type, inRealm: self.writeRealm)
+                    let changeType = diff.type
+
+                    if fromCache {
+                        // we don't want data from cache. Firestore will report all local objects when the app
+                        // is starting even in offline mode (because it has persistence enabled, see AppDelegate
+                        // Firestore config comment for why it has to be enabled).
+                        // This data from cache is not needed, because we have it in Realm and would override
+                        // any local pending changes. So it would flicker but for a potentially very long time:
+                        // From the time user restarted the app in offline after making local changes until the user is back online.
+                        //
+                        // There's one exception - we observed that sometimes deletes are reported
+                        // as "from cache" but shouldn't be. It looks like deletes are safe to
+                        // proceed no mater if from cache or not. Once deleted the object cannot have
+                        // local changes anyway
+                        if changeType == .removed {
+                            self.apply(
+                                documentChangeType: changeType,
+                                snapshot: document,
+                                fromCache: fromCache,
+                                as: type,
+                                inRealm: self.writeRealm
+                            )
+                            // uncomment to see logs about ignored changes from cache
+//                        } else {
+//                            let collectionId = document.reference.parent.collectionID
+//                            let documentId = document.documentID
+//                            Logger.firestore
+//                                .debug(
+//                                    "ignored fromCache \(collectionId) \(changeType) \(documentId, privacy: .public)"
+//                                )
+                        }
+                    } else {
+                        self.apply(
+                            documentChangeType: changeType,
+                            snapshot: document,
+                            fromCache: fromCache,
+                            as: type,
+                            inRealm: self.writeRealm
+                        )
+                    }
                 }
             }
         }
