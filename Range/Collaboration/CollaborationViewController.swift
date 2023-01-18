@@ -223,6 +223,7 @@ extension CollaborationViewController {
 
 extension CollaborationViewController {
     private func onCollaborationUpdated() {
+        guard !collaboration.isInvalidated else { return }
         badgeView.isUserInteractionEnabled = !collaboration.isArchived
 
         statusButton.isHidden = !isTaskWindow || collaboration.isArchived

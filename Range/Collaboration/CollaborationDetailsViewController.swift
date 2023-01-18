@@ -161,10 +161,12 @@ class CollaborationDetailsViewController: UIViewController {
 
     /// Do not show thumbnails for task collaboration or when they are empty
     private var hideThumbnails: Bool {
-        isTaskWindow || collaboration.uploads.isEmpty
+        guard !collaboration.isInvalidated else { return isTaskWindow }
+        return isTaskWindow || collaboration.uploads.isEmpty
     }
 
     private func onCollaborationUpdated() {
+        guard !collaboration.isInvalidated else { return }
         if isTaskWindow {
             descriptionTextView.text = collaboration.collaborationDescription
             assigneeButton.assignee = collaboration.assignee

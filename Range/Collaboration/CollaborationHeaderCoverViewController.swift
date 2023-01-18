@@ -95,6 +95,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
     }
 
     private func onCollaborationUpdated() {
+        guard !collaboration.isInvalidated else { return }
         badgeView.isUserInteractionEnabled = !collaboration.isArchived
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {

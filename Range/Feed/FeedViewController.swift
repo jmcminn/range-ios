@@ -19,6 +19,7 @@ class FeedViewController: UIViewController {
         var isMajor: Bool
 
         init?(asCollaborationCreated collaboration: Collaboration) {
+            guard !collaboration.isInvalidated else { return nil }
             guard collaboration.author != nil else { return nil }
             id = collaboration.id
             timestamp = collaboration.timestamp

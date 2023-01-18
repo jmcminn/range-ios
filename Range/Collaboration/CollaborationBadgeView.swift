@@ -61,6 +61,7 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
 
     /// Updates the number on the badge and shows/hides the flag
     private func updateBadge() {
+        guard !collaboration.isInvalidated else { return }
         let uploadsCount = collaboration.uploads.count
 
         if let status = collaboration.status {

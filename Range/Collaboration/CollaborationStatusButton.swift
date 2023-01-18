@@ -25,6 +25,7 @@ class CollaborationStatusButton: ButtonWithTapAreaInsets {
     }
 
     private func updateButton() {
+        guard !collaboration.isInvalidated else { return }
         setTitle(collaboration.status?.name ?? "", for: .normal)
         setNeedsUpdateConfiguration()
     }
