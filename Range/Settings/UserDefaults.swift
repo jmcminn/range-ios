@@ -1,6 +1,7 @@
 import Foundation
 import OrderedCollections
 
+/// Store implicit user preferences (not available in settings but based on recent user actions)
 extension UserDefaults {
     enum UserDefaultsConstants: String {
         /// last project open by the user (to automatically reopen when starting the app)

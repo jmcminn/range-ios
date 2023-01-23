@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SwiftUI
 import UIKit
 
 /// Handling projects selection and starting ProjectFlowController for selected project
@@ -8,6 +9,7 @@ class ProjectsFlowController: UINavigationController {
     private let userId: String
     let projectsModel: ProjectsModel
     let imageCaches = ImageCaches()
+    let userSettings = UserSettings()
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel = PendingActionsModelImpl()
 
@@ -78,11 +80,13 @@ class ProjectsFlowController: UINavigationController {
         return projectsVC
     }
 
-    private func buildSettingsViewController() -> ActionSelectorViewController {
-        let signOutAction = ActionItem(title: "Sign out", style: .destructive) { [weak self] in
+    private func buildSettingsViewController() -> UIViewController {
+        userSettings.signOutAction = { [weak self] in
             self?.signOut()
         }
-        return ActionSelectorViewController(actions: [signOutAction])
+        return UIHostingController(
+            rootView: UserSettingsView().environmentObject(userSettings)
+        )
     }
 
     /// Sets the root view controller of this navigation controller to be a tab bar with "My Projects" and "Settings" tabs

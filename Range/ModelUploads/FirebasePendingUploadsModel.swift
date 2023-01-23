@@ -6,6 +6,7 @@ import Network
 import OSLog
 import Realm
 import RealmSwift
+import UIKit
 
 /// Manages the PendingUploads and schedules them for upload to Firebase Storage using the `_maybePerformUpload` function.
 /// It performs uploads sequentially, always trying the oldest `PendingUpload`
@@ -92,6 +93,12 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     func addPendingUpload(key: String) async throws {
         let cachePath = imageCaches.localPhotosCache.cachePath(forKey: key)
         let imageData = try Data(contentsOf: URL(fileURLWithPath: cachePath))
+        if UserSettings().saveImagesToDevice {
+            guard let image = UIImage(data: imageData) else {
+                throw "Failed to save image to device"
+            }
+            try await image._writeToSavedPhotosAlbum()
+        }
         // store the thumbnail0, so it doesn;t have to be fetched and is ready in offline mode
         if let thumbnail0Data = resizeImage(imageData: imageData, maxResolution: 200) {
             let thumbnail0Key = thumbnailKey(forUploadKey: key, thumbnailNumber: 0)
