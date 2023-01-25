@@ -103,6 +103,8 @@
 		0A374DEA2927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */; };
 		0A374DEC2927DA550036C184 /* DeleteUploadCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */; };
 		0A374DEE2927DAC50036C184 /* DeleteUploadCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */; };
+		0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */; };
+		0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 0A376BC5298031EF004C9B6F /* FirebaseAppCheck */; };
 		0A37837A291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */; };
 		0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A37837D291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift */; };
 		0A3831D128E42CC4001AF38A /* FirestoreUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D028E42CC4001AF38A /* FirestoreUpdate.swift */; };
@@ -432,6 +434,7 @@
 		0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryArchivedCommandTest.swift; sourceTree = "<group>"; };
 		0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadCommand.swift; sourceTree = "<group>"; };
 		0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadCommandTest.swift; sourceTree = "<group>"; };
+		0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		0A378375291A71880018BF3C /* GoogleService-Info.demo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.demo.plist"; sourceTree = "<group>"; };
 		0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.dev.plist"; sourceTree = "<group>"; };
 		0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUploadsToCollaborationCommand.swift; sourceTree = "<group>"; };
@@ -670,6 +673,7 @@
 				0A4995D5286099D800E571FB /* Algorithms in Frameworks */,
 				0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */,
 				0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */,
+				0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */,
 				0A06241929534AA0004B6512 /* FirebaseFirestore in Frameworks */,
 				0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */,
 				0A06241D29534AA0004B6512 /* FirebaseStorage in Frameworks */,
@@ -1191,6 +1195,7 @@
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
+				0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */,
 			);
 			path = Range;
 			sourceTree = "<group>";
@@ -1543,6 +1548,7 @@
 				0A06241A29534AA0004B6512 /* FirebaseFirestoreSwift */,
 				0A06241C29534AA0004B6512 /* FirebaseStorage */,
 				0ACE1967296C7AD500D223EB /* Sentry */,
+				0A376BC5298031EF004C9B6F /* FirebaseAppCheck */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -1701,6 +1707,7 @@
 				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */,
+				0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */,
 				0A374DE42927B3490036C184 /* DeleteCollaborationCommand.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
 				0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */,
@@ -3446,6 +3453,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		0A376BC5298031EF004C9B6F /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
 		};
 		0A4995D4286099D800E571FB /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;

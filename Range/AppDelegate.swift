@@ -1,4 +1,5 @@
 import Firebase
+import FirebaseAppCheck
 import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
@@ -77,6 +78,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Firestore.firestore().settings = settings
         } else {
             Logger.firebase.debug("Using firebase project: \(FirebaseOptions.defaultOptions()?.projectID ?? "?")")
+
+            // use debug app check in simulator (https://firebase.google.com/docs/app-check/ios/debug-provider)
+            // and real provider in device builds (https://firebase.google.com/docs/app-check/ios/app-attest-provider#swift)
+            #if targetEnvironment(simulator)
+                AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
+            #else
+                AppCheck.setAppCheckProviderFactory(AppAttestAppCheckProviderFactory())
+            #endif
+
             FirebaseApp.configure()
             // ACHTUNG: isPersistenceEnabled must be true for Firestore. Otherwise it won't notify about
             // removed objects while the app was not running
