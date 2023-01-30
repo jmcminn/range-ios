@@ -33,7 +33,7 @@ class TagAddCollectionViewCell: UICollectionViewCell {
             make.edges.equalToSuperview().priority(.high)
         }
 
-        let font = UIFont.preferredFont(forTextStyle: .caption2)
+        let font = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
 
         let tagImageView = UIImageView(image: UIImage(
             systemName: TagAddCollectionViewCell.tagImageName,

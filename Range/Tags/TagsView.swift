@@ -151,7 +151,7 @@ extension TagsView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
         guard let collectionItem = dataSource.itemIdentifier(for: indexPath) else { return .zero }
 
         let contentWidth: CGFloat
-        let nameFont = UIFont.preferredFont(forTextStyle: .caption2)
+        let nameFont = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
         let nameWidth = collectionItem.name.size(withAttributes: [NSAttributedString.Key.font: nameFont]).width
         if collectionItem.addTag {
             // this is the last special "add" tag

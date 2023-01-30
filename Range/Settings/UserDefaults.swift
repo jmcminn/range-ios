@@ -115,10 +115,7 @@ extension UserDefaults {
 
     static var moreUpdatesInTheFeed: Bool {
         get {
-            if UserDefaults.standard.object(forKey: UserDefaultsConstants.moreUpdatesInTheFeed.rawValue) == nil {
-                return true
-            }
-            return UserDefaults.standard.bool(forKey: UserDefaultsConstants.moreUpdatesInTheFeed.rawValue)
+            UserDefaults.standard.bool(forKey: UserDefaultsConstants.moreUpdatesInTheFeed.rawValue)
         }
         set {
             UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.moreUpdatesInTheFeed.rawValue)

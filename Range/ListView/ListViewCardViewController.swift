@@ -30,7 +30,7 @@ class ListViewCardViewController: SheetCardViewController {
     /// was the first status expaned loaded and marked as expanded already?
     private var firstStatusInitiallyExpanded: Bool = false
 
-    private var headerFont: UIFont { .preferredFont(forTextStyle: .subheadline) }
+    private var headerFont: UIFont { ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold) }
 
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?

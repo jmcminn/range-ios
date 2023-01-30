@@ -22,7 +22,7 @@ class SelectedTagCollectionViewCell: UICollectionViewCell {
         }
 
         contentView.addSubview(label)
-        label.font = UIFont.preferredFont(forTextStyle: .caption2)
+        label.font = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
         label.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         label.adjustsFontForContentSizeCategory = true
         label.snp.makeConstraints { make in

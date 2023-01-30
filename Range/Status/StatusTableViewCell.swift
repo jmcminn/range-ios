@@ -8,7 +8,7 @@ class StatusTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in the view controller
 
-        statusView.font = .preferredFont(forTextStyle: .subheadline)
+        statusView.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
         statusView.contentInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         contentView.addSubview(statusView)
 

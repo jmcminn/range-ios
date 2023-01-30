@@ -267,7 +267,7 @@ extension CollaborationViewController {
             attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
         )
         nameField.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        nameField.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
+        nameField.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
         nameField.adjustsFontForContentSizeCategory = true
         nameField.tintColor = .Primary_Blue_04
         nameField.autocapitalizationType = .sentences

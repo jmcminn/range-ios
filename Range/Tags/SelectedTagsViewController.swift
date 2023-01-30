@@ -92,7 +92,7 @@ extension SelectedTagsViewController: UICollectionViewDataSource, UICollectionVi
     {
         let name = viewModel.selectedTags[indexPath.item].name
         let nameSize = name.size(withAttributes: [
-            NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2),
+            NSAttributedString.Key.font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
         ])
         return CGSize(
             width: nameSize.width + SelectedTagCollectionViewCell.leadingLabelInset + SelectedTagCollectionViewCell

@@ -301,21 +301,21 @@ extension CollaborationDetailsViewController {
 
         updatesToggle = SegmentedControl(items: [
             ActionItem(
-                title: String(localized: "More updates"),
-                handler: { [weak self] in
-                    UserDefaults.moreUpdatesInTheFeed = true
-                    self?.onToggleMoreUpdates?(true)
-                }
-            ),
-            ActionItem(
-                title: String(localized: "Less updates"),
+                title: String(localized: "Less Updates"),
                 handler: { [weak self] in
                     UserDefaults.moreUpdatesInTheFeed = false
                     self?.onToggleMoreUpdates?(false)
                 }
             ),
+            ActionItem(
+                title: String(localized: "More Updates"),
+                handler: { [weak self] in
+                    UserDefaults.moreUpdatesInTheFeed = true
+                    self?.onToggleMoreUpdates?(true)
+                }
+            ),
         ])
-        if UserDefaults.moreUpdatesInTheFeed == false {
+        if UserDefaults.moreUpdatesInTheFeed == true {
             updatesToggle.setSelectedSegmentIndex(1, animated: false)
         }
         updatesToggle.backgroundColor = view.backgroundColor
@@ -333,7 +333,7 @@ extension UIViewController {
     /// Creates a view containing CTA buttons, to be reused for the bottom collaboration card
     func _createCollaborationCTAs() -> UIView {
         var titleAttributes = AttributeContainer()
-        titleAttributes.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        titleAttributes.font = UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
 
         var blackButtonConfig = UIButton.Configuration.blackButton(
             imageTextStyle: .caption1,

@@ -38,7 +38,7 @@ class CollaborationStatusButton: ButtonWithTapAreaInsets {
         config.background.cornerRadius = 16
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
+            outgoing.font = UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
             return outgoing
         }
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)

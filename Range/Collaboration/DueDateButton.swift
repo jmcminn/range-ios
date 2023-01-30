@@ -93,7 +93,7 @@ class DueDateButton: UIButton {
                     .foregroundColor: markOverdue
                         ? UIColor.Red_03
                         : chooseColor(light: .Neutral_06, dark: .Neutral_05),
-                    .font: UIFont.preferredFont(forTextStyle: .caption2),
+                    .font: UIFont._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold),
                 ]
             )
             title
