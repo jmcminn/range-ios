@@ -40,8 +40,8 @@ final class FlowEvent: UIEvent {
     func editTagsAction(sender: Any?, event: FlowEvent)
     /// Show more menu for FlowEvent.object
     func moreAction(sender: Any?, event: FlowEvent)
-    /// show the List view card view controller with project tasks
-    func showListViewAction()
+    /// show the Task list card view controller with project tasks
+    func showTaskListAction()
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -71,8 +71,8 @@ extension ProjectFlowController: ProjectFlowActions {
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
-    func showListViewAction() {
-        listViewVC = ListViewCardViewController(projectModel: model)
+    func showTaskListAction() {
+        taskListVC = TaskListCardViewController(projectModel: model)
             .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 

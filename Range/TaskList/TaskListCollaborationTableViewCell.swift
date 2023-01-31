@@ -74,7 +74,7 @@ class CollaborationPillView: UIView {
 }
 
 /// Table cell for displaying collaboration data
-class ListViewCollaborationTableViewCell: UITableViewCell {
+class TaskListCollaborationTableViewCell: UITableViewCell {
     private let badgeView = UIView()
     private let nameLabel = UILabel()
     private let detailsScrollView = UIScrollView()

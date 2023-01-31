@@ -85,16 +85,16 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
                 )
             }
         )
-        let listViewAction = ActionItem(
-            title: String(localized: "List View"),
+        let taskListAction = ActionItem(
+            title: String(localized: "Task List"),
             imageName: "list.bullet",
             handler: { [weak self] in
                 UIApplication.shared.sendAction(
-                    #selector(ProjectFlowActions.showListViewAction), to: nil, from: self, for: nil
+                    #selector(ProjectFlowActions.showTaskListAction), to: nil, from: self, for: nil
                 )
             }
         )
-        actionSelectorVC = ActionSelectorViewController(actions: [allMediaAction, listViewAction] + actions)
+        actionSelectorVC = ActionSelectorViewController(actions: [allMediaAction, taskListAction] + actions)
         add(childController: actionSelectorVC, toView: containerView)
         actionSelectorVC.view.snp.makeConstraints { make in
             make.top.equalTo(photoButton.snp.bottom)

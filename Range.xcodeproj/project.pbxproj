@@ -310,8 +310,8 @@
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
-		0AF722AF296EE63400A18F75 /* ListViewCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* ListViewCardViewController.swift */; };
-		0AF722B1296EEC8D00A18F75 /* ListViewCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* ListViewCollaborationTableViewCell.swift */; };
+		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
+		0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */; };
 		0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC05294776AB002E7549 /* CanvasCollection.swift */; };
@@ -648,8 +648,8 @@
 		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
 		0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPinTypeCardViewController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
-		0AF722AE296EE63400A18F75 /* ListViewCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCardViewController.swift; sourceTree = "<group>"; };
-		0AF722B0296EEC8D00A18F75 /* ListViewCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCollaborationTableViewCell.swift; sourceTree = "<group>"; };
+		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
+		0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCollaborationTableViewCell.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasCollection.swift; sourceTree = "<group>"; };
@@ -1170,7 +1170,6 @@
 				0AFA1A47294A09F100491492 /* FullscreenMedia */,
 				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
 				0A2E04D128AC0F5D00E10503 /* ImageCache */,
-				0AF722AD296EE61900A18F75 /* ListView */,
 				0AF812B72840D52A00F7BD09 /* Logging */,
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A05312729378FC800738BA3 /* Media */,
@@ -1186,6 +1185,7 @@
 				0AC9E18928F56C1600C7185D /* Projects */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A797F67292BA3DE00D63567 /* Status */,
+				0AF722AD296EE61900A18F75 /* TaskList */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A30E8BA284A090000A50D54 /* Tags */,
 				0A6DB6A1292E08560017D511 /* TextCard */,
@@ -1489,13 +1489,13 @@
 			path = AddPin;
 			sourceTree = "<group>";
 		};
-		0AF722AD296EE61900A18F75 /* ListView */ = {
+		0AF722AD296EE61900A18F75 /* TaskList */ = {
 			isa = PBXGroup;
 			children = (
-				0AF722AE296EE63400A18F75 /* ListViewCardViewController.swift */,
-				0AF722B0296EEC8D00A18F75 /* ListViewCollaborationTableViewCell.swift */,
+				0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */,
+				0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */,
 			);
-			path = ListView;
+			path = TaskList;
 			sourceTree = "<group>";
 		};
 		0AF812B72840D52A00F7BD09 /* Logging */ = {
@@ -1929,7 +1929,7 @@
 				0A4ADD6429423AA8006DB186 /* ControlWithTapAreaInsets.swift in Sources */,
 				0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */,
 				0A4DC78327F4900600712518 /* ProjectFlowController.swift in Sources */,
-				0AF722B1296EEC8D00A18F75 /* ListViewCollaborationTableViewCell.swift in Sources */,
+				0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */,
 				0A130EB028DB04F300FF1368 /* LabelWithTextInsets.swift in Sources */,
 				0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */,
 				0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */,
@@ -1942,7 +1942,7 @@
 				0A7A537D293FB3690093D913 /* ProjectsViewController.swift in Sources */,
 				0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
-				0AF722AF296EE63400A18F75 /* ListViewCardViewController.swift in Sources */,
+				0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */,
 				0AB855832900040700491E20 /* AssigneeUpdateFeedItemCell.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,

@@ -4,10 +4,10 @@ import Realm
 import RealmSwift
 import UIKit
 
-/// Card view controller presenting a list of collaborations.
+/// Card view controller presenting a list of tasks.
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
-class ListViewCardViewController: SheetCardViewController {
+class TaskListCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
 
     private let headerView = UIView()
@@ -42,7 +42,7 @@ class ListViewCardViewController: SheetCardViewController {
     init(projectModel: ProjectModel) {
         self.projectModel = projectModel
 
-        super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "List View"))
+        super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "Task List"))
 
         showOnlyMine = UserDefaults.showOnlyMineTasks
     }
@@ -196,14 +196,14 @@ class ListViewCardViewController: SheetCardViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.register(ListViewCollaborationTableViewCell.self, forCellReuseIdentifier: "CollaborationCell")
+        tableView.register(TaskListCollaborationTableViewCell.self, forCellReuseIdentifier: "CollaborationCell")
         tableView.keyboardDismissMode = .onDrag
     }
 }
 
 // MARK: table view delegate
 
-extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource {
+extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         statuses.count
     }
@@ -217,7 +217,7 @@ extension ListViewCardViewController: UITableViewDelegate, UITableViewDataSource
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCell",
-                                                 for: indexPath) as! ListViewCollaborationTableViewCell
+                                                 for: indexPath) as! TaskListCollaborationTableViewCell
         if indexPath.section < statuses.count {
             let status = statuses[indexPath.section]
             if indexPath.row < collaborationsByStatus[status]?.count ?? 0,
