@@ -19,6 +19,15 @@ class Status: Object, WithPlaceholder {
     /// Couldn't add CustomPersistable for UIColor, so we store the `hexColor` in db and add `color` variable to store UIColor.
     lazy var color = UIColor(hexString: hexColor)
 
+    // initial first, completed last, otherwise keep the ordering
+    static var uiSortingOrder: (Status, Status) -> Bool = { s1, s2 in
+        if s1.isInitial { return true }
+        if s2.isInitial { return false }
+        if s2.isCompleted { return true }
+        if s1.isCompleted { return false }
+        return false
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

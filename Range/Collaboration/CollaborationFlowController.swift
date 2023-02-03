@@ -416,7 +416,7 @@ extension CollaborationFlowController {
     func editStatusAction() {
         guard let collaboration = collaboration else { return }
         guard collaboration.status != nil else { return } // not a task
-        let statuses = [Status](model.mainRealm.objects(Status.self))
+        let statuses = [Status](model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
         StatusPickerCardViewController(
             title: "Assign Status",
             statuses: statuses,

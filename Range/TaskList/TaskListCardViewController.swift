@@ -125,15 +125,8 @@ class TaskListCardViewController: SheetCardViewController {
                 }
             }
         statuses = [Status](projectModel.mainRealm.objects(Status.self)
-            .filter { self.collaborationsByStatus[$0] != nil })
-            .sorted(by: { s1, s2 in
-                // initial first, completed last, otherwise keep the ordering
-                if s1.isInitial { return true }
-                if s2.isInitial { return false }
-                if s2.isCompleted { return true }
-                if s1.isCompleted { return false }
-                return true
-            })
+            .filter { self.collaborationsByStatus[$0] != nil }
+            .sorted(by: Status.uiSortingOrder))
         if !firstStatusInitiallyExpanded, let firstStatus = statuses.first {
             // initiate so the first status is expanded
             firstStatusInitiallyExpanded = true
