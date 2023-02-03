@@ -49,6 +49,7 @@ class CollaborationStatusButton: ButtonWithTapAreaInsets {
         // more vertical tap area as button is only 32 points high
         configurationUpdateHandler = { [weak self] button in
             guard let self = self else { return }
+            guard !self.collaboration.isInvalidated else { return }
             var config = button.configuration
             config?.baseBackgroundColor = self.collaboration.status?.color ?? .Primary_Blue_04
             button.configuration = config
