@@ -229,7 +229,10 @@ extension CollaborationViewController {
         statusButton.isHidden = !isTaskWindow || collaboration.isArchived
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
-        nameField.text = name
+        if !nameField.isEditing {
+            // don't overwrite the name when user is editing it
+            nameField.text = name
+        }
     }
 }
 
