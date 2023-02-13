@@ -7,11 +7,19 @@ final class UserSettings: ObservableObject {
     var signOutAction: (() -> Void)?
 
     private enum Keys {
+        /// whether to upload on cellular (true) or only on wifi (when false)
+        static let uploadUsingCellular = "uploadUsingCellular"
         /// whether to save the images used for uploads to device (only for taken photos, not for the ones selected from camera roll)
         static let saveImagesToDevice = "saveImagesToDevice"
     }
 
     private let defaults: UserDefaults
+
+    @Published var uploadUsingCellular: Bool {
+        didSet {
+            defaults.set(uploadUsingCellular, forKey: Keys.uploadUsingCellular)
+        }
+    }
 
     @Published var saveImagesToDevice: Bool {
         didSet {
@@ -23,9 +31,11 @@ final class UserSettings: ObservableObject {
         self.defaults = defaults
 
         defaults.register(defaults: [
+            Keys.uploadUsingCellular: false,
             Keys.saveImagesToDevice: false,
         ])
 
+        _uploadUsingCellular = .init(initialValue: defaults.bool(forKey: Keys.uploadUsingCellular))
         _saveImagesToDevice = .init(initialValue: defaults.bool(forKey: Keys.saveImagesToDevice))
     }
 }

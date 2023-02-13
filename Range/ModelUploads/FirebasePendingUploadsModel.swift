@@ -1,3 +1,4 @@
+import Combine
 import FirebaseCore
 import FirebaseStorage
 import Foundation
@@ -26,6 +27,11 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
 
     unowned let imageCaches: ImageCaches
 
+    /// uploading depends on the cellular/wifi user settings
+    private let userSettings: UserSettings
+    /// for storing the userSettings observer
+    private var userSettingsUploadUsingCellularSubscriber: AnyCancellable?
+
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
     /// Main thread Realm
@@ -46,7 +52,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// - Parameters:
     ///     - inMemory:      optional parameter to create the Realm in memory (for tests), but default `false`
     /// - Warning: to be called on the Main thread
-    init(imageCaches: ImageCaches, inMemory: Bool = false) throws {
+    init(imageCaches: ImageCaches, userSettings: UserSettings, inMemory: Bool = false) throws {
         var config = Realm.Configuration.defaultConfiguration
         if inMemory {
             config.inMemoryIdentifier = "pendingUploads"
@@ -60,6 +66,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
         self.imageCaches = imageCaches
+        self.userSettings = userSettings
     }
 
     /// Starts synchronization - observes all relevant paths and updates the db.
@@ -80,10 +87,24 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             }
         }
         networkMonitor.start(queue: writeQueue)
+        observeUserSettings()
     }
 
     func stop() {
         networkMonitor.cancel()
+        userSettingsUploadUsingCellularSubscriber?.cancel()
+        userSettingsUploadUsingCellularSubscriber = nil
+    }
+
+    /// Observe user settings to detect change in uploadUsingCellular setting and potentially start uploads
+    private func observeUserSettings() {
+        userSettingsUploadUsingCellularSubscriber = userSettings.$uploadUsingCellular
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.writeQueue.async {
+                    self._maybePerformUpload()
+                }
+            }
     }
 
     /// Assumes the image is already in the Images.localPhotosCache
@@ -129,7 +150,13 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
 
     /// Return true if connected and the connection is not "expensive" (in terms of NWPath, which means it's not cellular)
     func _networkConditionsMet() -> Bool {
-        networkMonitor.currentPath.status == .satisfied && !networkMonitor.currentPath.isExpensive
+        if userSettings.uploadUsingCellular {
+            // any network is good
+            return networkMonitor.currentPath.status == .satisfied
+        } else {
+            // "wifi" only
+            return networkMonitor.currentPath.status == .satisfied && !networkMonitor.currentPath.isExpensive
+        }
     }
 
     /// Checks if there's a PendingUpload waiting to be uploaded and runs the `_performUpload` async method (not waiting for it)

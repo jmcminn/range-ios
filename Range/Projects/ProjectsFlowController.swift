@@ -20,7 +20,7 @@ class ProjectsFlowController: UINavigationController {
     init(userId: String) throws {
         self.userId = userId
         projectsModel = try ProjectsModel(userId: userId)
-        pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches)
+        pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches, userSettings: userSettings)
         super.init(rootViewController: LaunchScreenViewController())
     }
 

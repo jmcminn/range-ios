@@ -5,6 +5,15 @@ struct UserSettingsView: View {
 
     var body: some View {
         Form {
+            Section(header: Text("Uploads")) {
+                Toggle(isOn: $userSettings.uploadUsingCellular) {
+                    Text("Upload photos using cellular data")
+                        .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
+                    Text("If disabled, photos only upload over wifi")
+                        .font(.caption2)
+                        .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
+                }
+            }
             Section(header: Text("Camera")) {
                 Toggle(isOn: $userSettings.saveImagesToDevice) {
                     Text("Save Images to Device")
