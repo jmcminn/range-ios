@@ -7,9 +7,9 @@ struct UserSettingsView: View {
         Form {
             Section(header: Text("Uploads")) {
                 Toggle(isOn: $userSettings.uploadUsingCellular) {
-                    Text("Upload photos using cellular data")
+                    Text("Allow uploads using cellular data")
                         .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
-                    Text("If disabled, photos only upload over wifi")
+                    Text("If disabled, only upload over wifi")
                         .font(.caption2)
                         .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
                 }

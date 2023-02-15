@@ -31,7 +31,7 @@ final class UserSettings: ObservableObject {
         self.defaults = defaults
 
         defaults.register(defaults: [
-            Keys.uploadUsingCellular: false,
+            Keys.uploadUsingCellular: true,
             Keys.saveImagesToDevice: false,
         ])
 
