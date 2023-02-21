@@ -159,10 +159,16 @@ class CollaborationDetailsViewController: UIViewController {
         collaborationNotificationToken?.invalidate()
     }
 
+    private var collaborationImages: Results<Upload> {
+        collaboration.uploads
+            .where { $0.placeholder == false }
+            .where { $0.fileType == .jpeg || $0.fileType == .png }
+    }
+
     /// Do not show thumbnails for task collaboration or when they are empty
     private var hideThumbnails: Bool {
         guard !collaboration.isInvalidated else { return isTaskWindow }
-        return isTaskWindow || collaboration.uploads.isEmpty
+        return isTaskWindow || collaborationImages.isEmpty
     }
 
     private func onCollaborationUpdated() {
@@ -274,8 +280,12 @@ extension CollaborationDetailsViewController {
     }
 
     private func setupThumbnails() {
-        let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
-        thumbnailsVC = ThumbnailsViewController(mediaCache: mediaCache, projectModel: projectModel, uploads: uploads)
+        let imageUploads = collaborationImages.sorted(by: \Upload.timestamp, ascending: false)
+        thumbnailsVC = ThumbnailsViewController(
+            mediaCache: mediaCache,
+            projectModel: projectModel,
+            uploads: imageUploads
+        )
         thumbnailsVC.onUploadSelected = { [weak self] upload in
             self?.onThumbnailSelected?(upload)
         }

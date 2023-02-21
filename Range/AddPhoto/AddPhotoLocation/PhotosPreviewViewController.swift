@@ -12,10 +12,11 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     unowned let model: ProjectModel
     unowned let mediaCache: MediaCache
     unowned let confirmationVC: AddPhotoConfirmationViewController
-    let uploads: Results<Upload>
-
+    let imageUploads: Results<Upload>
+    let nonImageUploads: Results<Upload>
     /// Token for observing changes in uploads
-    private var notificationToken: NotificationToken?
+    private var imageUploadsNotificationToken: NotificationToken?
+    private var nonImageUploadsNotificationToken: NotificationToken?
 
     var imageAndText: UIStackView!
     var photoCountFont: UIFont {
@@ -46,12 +47,17 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         self.mediaCache = mediaCache
         self.confirmationVC = confirmationVC
         // find all uploads for geometry id
-        uploads = model.mainRealm.objects(Upload.self)
-            // TODO: 827             .where { $0.fileType == .jpeg || $0.fileType == .png }
+        imageUploads = model.mainRealm.objects(Upload.self)
             .where { $0.placeholder == false &&
                 $0.collaboration.feature.geometry.id.equals(geometryId)
             }
+            .where { $0.fileType == .jpeg || $0.fileType == .png }
             .sorted(by: \Upload.timestamp, ascending: false)
+        nonImageUploads = model.mainRealm.objects(Upload.self)
+            .where { $0.placeholder == false &&
+                $0.collaboration.feature.geometry.id.equals(geometryId)
+            }
+            .where { $0.fileType != .jpeg && $0.fileType != .png }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -88,16 +94,13 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     }
 
     override func viewWillAppear(_: Bool) {
-        notificationToken = uploads.observe { [weak self] (changes: RealmCollectionChange) in
+        imageUploadsNotificationToken = imageUploads.observe { [weak self] (_: RealmCollectionChange) in
             guard let self = self else { return }
-            switch changes {
-            case .initial:
-                self.updatePhotoCount()
-            case .update:
-                self.updatePhotoCount()
-            case let .error(error):
-                Logger.model.error("observing uploads failed: \(error.localizedDescription, privacy: .public)")
-            }
+            self.updatePhotoCount()
+        }
+        nonImageUploadsNotificationToken = nonImageUploads.observe { [weak self] (_: RealmCollectionChange) in
+            guard let self = self else { return }
+            self.updatePhotoCount()
         }
     }
 
@@ -145,12 +148,21 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     /// Update the label with photo count
     private func updatePhotoCount() {
         guard photoCountLabel != nil else { return }
-        photoCountLabel.text = String(uploads.count) + " " +
-            (uploads.count == 1 ? String(localized: "photo") : String(localized: "photos"))
+        var components: [String] = []
+
+        if imageUploads.count > 0 {
+            components.append(String(imageUploads.count) + " " +
+                (imageUploads.count == 1 ? String(localized: "photo") : String(localized: "photos")))
+        }
+        if nonImageUploads.count > 0 {
+            components.append(String(nonImageUploads.count) + " " +
+                (nonImageUploads.count == 1 ? String(localized: "document") : String(localized: "documents")))
+        }
+        photoCountLabel.text = components.joined(separator: " • ")
     }
 
     private func buildThumbnailsView() {
-        thumbnailsVC = ThumbnailsViewController(mediaCache: mediaCache, projectModel: model, uploads: uploads)
+        thumbnailsVC = ThumbnailsViewController(mediaCache: mediaCache, projectModel: model, uploads: imageUploads)
     }
 }
 
@@ -161,9 +173,15 @@ extension PhotosPreviewViewController: CardPresentable {
         }
 
         view.layoutIfNeeded()
-        let thumbnailsHeight: CGFloat = uploads.isEmpty
-            ? 0
-            : 8 + photoCountFont.lineHeight + 8 + ThumbnailsViewController.thumbnailHeight + 12
+        var thumbnailsHeight = 0.0
+        if !imageUploads.isEmpty || !nonImageUploads.isEmpty {
+            /// show the label
+            thumbnailsHeight += 8 + photoCountFont.lineHeight + 8
+            if !imageUploads.isEmpty {
+                /// also show thumbnails
+                thumbnailsHeight += ThumbnailsViewController.thumbnailHeight + 12
+            }
+        }
         return confirmationVC.height(forContainer: containerView, cardPosition: cardPosition)
             + thumbnailsHeight
     }
