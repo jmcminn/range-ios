@@ -10,7 +10,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
 
     unowned let model: ProjectModel
-    unowned let imageCaches: ImageCaches
+    unowned let mediaCache: MediaCache
     unowned let confirmationVC: AddPhotoConfirmationViewController
     let uploads: Results<Upload>
 
@@ -36,18 +36,18 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
 
     /// - Parameters:
     ///    - model: for accessing project data
-    ///    - imageCaches: for handling photos
+    ///    - mediaCache: for handling photos
     ///    - geometryId: display all uploads for collaborations for features for given geometry id
     ///    - confirmationVC: this view controller displays behing the `AddPhotoConfirmationViewController` and needs to know its height
-    init(model: ProjectModel, imageCaches: ImageCaches, geometryId: String,
+    init(model: ProjectModel, mediaCache: MediaCache, geometryId: String,
          confirmationVC: AddPhotoConfirmationViewController)
     {
         self.model = model
-        self.imageCaches = imageCaches
+        self.mediaCache = mediaCache
         self.confirmationVC = confirmationVC
         // find all uploads for geometry id
         uploads = model.mainRealm.objects(Upload.self)
-        // TODO: 827             .where { $0.fileType == .jpeg || $0.fileType == .png }
+            // TODO: 827             .where { $0.fileType == .jpeg || $0.fileType == .png }
             .where { $0.placeholder == false &&
                 $0.collaboration.feature.geometry.id.equals(geometryId)
             }
@@ -150,7 +150,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     }
 
     private func buildThumbnailsView() {
-        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: model, uploads: uploads)
+        thumbnailsVC = ThumbnailsViewController(mediaCache: mediaCache, projectModel: model, uploads: uploads)
     }
 }
 

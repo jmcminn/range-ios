@@ -1,4 +1,5 @@
 import Combine
+import Kingfisher
 import OSLog
 import Realm
 import RealmSwift
@@ -9,7 +10,8 @@ import UIKit
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
-    unowned let imageCaches: ImageCaches
+    unowned let localFiles: LocalFiles
+    unowned let mediaCache: MediaCache
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
 
@@ -54,15 +56,17 @@ final class ProjectFlowController: UIViewController {
         userId: String,
         projectId: String,
         canvasId: String?,
-        imageCaches: ImageCaches,
+        localFiles: LocalFiles,
+        mediaCache: MediaCache,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel
     ) async throws {
-        self.imageCaches = imageCaches
+        self.localFiles = localFiles
+        self.mediaCache = mediaCache
         model = try ProjectModel(
             userId: userId,
             projectId: projectId,
-            imageCaches: imageCaches,
+            localFiles: localFiles,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )
@@ -86,7 +90,8 @@ final class ProjectFlowController: UIViewController {
         canvasContainer = try await CanvasContainerViewController(model: model)
         collaborationFlow = CollaborationFlowController(
             model: model,
-            imageCaches: imageCaches,
+            localFiles: localFiles,
+            mediaCache: mediaCache,
             canvasContainer: canvasContainer
         )
 
@@ -343,7 +348,12 @@ extension ProjectFlowController {
     }
 
     private func startAddPhotoFlow() {
-        addPhotoFlow = AddPhotoFlowController(model: model, imageCaches: imageCaches, canvasContainer: canvasContainer)
+        addPhotoFlow = AddPhotoFlowController(
+            model: model,
+            localFiles: localFiles,
+            mediaCache: mediaCache,
+            canvasContainer: canvasContainer
+        )
         addPhotoFlow?.onStop = { [weak self] geometryId, newlyCreated in
             self?.showDefaultCanvasUI()
             self?.addPhotoFlow = nil

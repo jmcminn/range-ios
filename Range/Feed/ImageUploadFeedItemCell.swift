@@ -25,7 +25,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     private var uploadId: String?
     /// Required to fetch the upload for actions triggering
     private weak var model: ProjectModel?
-    var imageDataProvider: ImageDataProvider?
+    var imageDataProvider: RangeImageDataProvider?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -204,7 +204,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
             timestampLabel.text = Date.format1(upload.timestamp)
             possiblyUpdateUploadImageViewConstraints(upload: upload)
             guard let imageDataProvider = imageDataProvider else { return }
-            uploadImageView.kf.setImage(with: imageDataProvider)
+            uploadImageView.kf.setImage(with: imageDataProvider,
+                                        options: [.targetCache(imageDataProvider.cache)])
             tagsView.tags = upload.tags.where { $0.placeholder == false }
 
             let showDescription = !(upload.uploadDescription?.isEmpty ?? true)

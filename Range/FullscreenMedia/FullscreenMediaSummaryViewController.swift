@@ -6,13 +6,13 @@ class FullscreenMediaSummaryViewController: UIViewController {
     let scrollView = UIScrollView()
 
     private let projectModel: ProjectModel
-    private let imageCaches: ImageCaches
+    private let mediaCache: MediaCache
     private let showCollaborationButton: Bool
     private let upload: Upload
     private var uploadNotificationToken: NotificationToken?
 
     private let stackView = UIStackView()
-    private(set) var galleryVC: ImageGalleryViewController<String>!
+    private(set) var galleryVC: ImageGalleryViewController<MediaKey>?
     private(set) var collaborationButton: CollaborationButton!
     private(set) var descriptionHeader: UIView!
     private let descriptionLabel = LabelWithTextInsets()
@@ -24,11 +24,9 @@ class FullscreenMediaSummaryViewController: UIViewController {
     var onPhotoSelected: (() -> Void)?
 
     /// Initializer
-    init(projectModel: ProjectModel, imageCaches: ImageCaches, upload: Upload,
-         showCollaborationButton: Bool)
-    {
+    init(projectModel: ProjectModel, mediaCache: MediaCache, upload: Upload, showCollaborationButton: Bool) {
         self.projectModel = projectModel
-        self.imageCaches = imageCaches
+        self.mediaCache = mediaCache
         self.showCollaborationButton = showCollaborationButton
         self.upload = upload
         super.init(nibName: nil, bundle: nil)
@@ -91,14 +89,14 @@ class FullscreenMediaSummaryViewController: UIViewController {
         }
 
         setupGalleryVC()
-        stackView.addArrangedSubview(galleryVC.view)
+        stackView.addArrangedSubview(galleryVC!.view)
 
         // only add if there's a collaboration and it has a canvas (it should always have a canvas but
         // in case of placeholders or bad data just don't show the button)
         if showCollaborationButton, let collaboration = upload.collaboration.first,
            collaboration.feature.first?.geometry.first?.canvas.first != nil
         {
-            stackView.setCustomSpacing(12, after: galleryVC.view)
+            stackView.setCustomSpacing(12, after: galleryVC!.view)
             setupCollaborationButton(collaboration: collaboration)
             // put collaboration button in a wrapper view to have horizontal margin
             let collaborationButtonWrapper = UIView()
@@ -110,7 +108,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
             stackView.addArrangedSubview(collaborationButtonWrapper)
             stackView.setCustomSpacing(12, after: collaborationButtonWrapper)
         } else {
-            stackView.setCustomSpacing(20, after: galleryVC.view)
+            stackView.setCustomSpacing(20, after: galleryVC!.view)
         }
 
         descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
@@ -143,13 +141,13 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     private func setupGalleryVC() {
-        let uploadCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 1)
+        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
         let galleryHeightToWidth = upload.imageHeightToWidth ?? 4.0 / 3.0
-        galleryVC = ImageGalleryViewController(
-            imageDataProviderFactory: { [imageCaches] in
-                imageCaches.imageProvider(forPhotoWithCacheKey: $0)
+        let galleryVC = ImageGalleryViewController(
+            imageDataProviderFactory: { [mediaCache] in
+                mediaCache.imageProvider(forKey: $0)
             },
-            photoKeys: [uploadCacheKey],
+            photoKeys: [mediaKey],
             pageHeight2Width: galleryHeightToWidth
         )
         galleryVC.onPhotoSelected = { [weak self] in
@@ -162,6 +160,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
             make.height.equalTo(scrollView.snp.width).offset(-32.0 * galleryHeightToWidth)
                 .multipliedBy(galleryHeightToWidth)
         }
+        self.galleryVC = galleryVC
     }
 
     private func setupCollaborationButton(collaboration: Collaboration) {

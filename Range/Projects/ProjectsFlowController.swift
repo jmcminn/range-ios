@@ -8,7 +8,8 @@ import UIKit
 class ProjectsFlowController: UINavigationController {
     private let userId: String
     let projectsModel: ProjectsModel
-    let imageCaches = ImageCaches()
+    let localFiles: LocalFiles
+    let mediaCache: MediaCache
     let userSettings = UserSettings()
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel = PendingActionsModelImpl()
@@ -20,7 +21,13 @@ class ProjectsFlowController: UINavigationController {
     init(userId: String) throws {
         self.userId = userId
         projectsModel = try ProjectsModel(userId: userId)
-        pendingUploadsModel = try FirebasePendingUploadsModel(imageCaches: imageCaches, userSettings: userSettings)
+        localFiles = try LocalFiles()
+        mediaCache = MediaCache(localFiles: localFiles)
+        pendingUploadsModel = try FirebasePendingUploadsModel(
+            localFiles: localFiles,
+            mediaCache: mediaCache,
+            userSettings: userSettings
+        )
         super.init(rootViewController: LaunchScreenViewController())
     }
 
@@ -166,7 +173,8 @@ class ProjectsFlowController: UINavigationController {
             userId: userId,
             projectId: projectId,
             canvasId: UserDefaults.lastOpenCanvasId(forProjectId: projectId),
-            imageCaches: imageCaches,
+            localFiles: localFiles,
+            mediaCache: mediaCache,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )

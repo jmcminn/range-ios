@@ -4,11 +4,11 @@ import UIKit
 /// Header view with the photo and tags/description switch
 /// The layout supports collapsing the photo view
 class PhotoDetailsHeaderViewController: UIViewController {
-    private unowned let imageCaches: ImageCaches
+    private unowned let localFiles: LocalFiles
     /// The photo
     private let photosViewModel: PhotosToAddViewModel
 
-    var galleryVC: ImageGalleryViewController<String>!
+    var galleryVC: ImageGalleryViewController<MediaKey>!
     var tagsDescriptionSegmentedControl: SegmentedControl!
     /// Current photo tapped
     var onPhotoSelected: (() -> Void)?
@@ -16,8 +16,8 @@ class PhotoDetailsHeaderViewController: UIViewController {
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
 
-    init(imageCaches: ImageCaches, photosViewModel: PhotosToAddViewModel) {
-        self.imageCaches = imageCaches
+    init(localFiles: LocalFiles, photosViewModel: PhotosToAddViewModel) {
+        self.localFiles = localFiles
         self.photosViewModel = photosViewModel
         super.init(nibName: nil, bundle: nil)
         photosViewModel.addDelegate(self)
@@ -65,10 +65,10 @@ class PhotoDetailsHeaderViewController: UIViewController {
 
     private func buildGalleryView() {
         galleryVC = ImageGalleryViewController(
-            imageDataProviderFactory: { [imageCaches] in
-                imageCaches.imageProvider(forLocalPhotoWithCacheKey: $0)
+            imageDataProviderFactory: { [localFiles] in
+                localFiles.imageProvider(forKey: $0)
             },
-            photoKeys: photosViewModel.photos.map(\.cacheKey),
+            photoKeys: photosViewModel.photos.map(\.mediaKey),
             pageHeight2Width: photosViewModel.photos.map(\.height2Width).max() ?? 4.0 / 3.0
         )
         galleryVC.onPhotoSelected = { [weak self] in

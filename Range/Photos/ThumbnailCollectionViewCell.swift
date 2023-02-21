@@ -11,7 +11,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
     /// listen to changes in upload and reload the image
     private var notificationToken: NotificationToken?
 
-    var imageDataProvider: ImageDataProvider?
+    var imageDataProvider: RangeImageDataProvider?
     weak var upload: Upload? {
         didSet {
             reloadImage()
@@ -67,7 +67,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
     private func reloadImage() {
         if let imageDataProvider = imageDataProvider {
             imageView.kf.cancelDownloadTask()
-            imageView.kf.setImage(with: imageDataProvider)
+            imageView.kf.setImage(with: imageDataProvider, options: [.targetCache(imageDataProvider.cache)])
         } else {
             imageView.image = nil
         }

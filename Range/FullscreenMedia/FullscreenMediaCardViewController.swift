@@ -1,6 +1,14 @@
 import Foundation
+import QuickLook
 import RealmSwift
 import UIKit
+import WebKit
+
+/// Implementation of QLPreviewItem - required for previewing items with custom title
+class UploadPreviewItem: NSObject, QLPreviewItem {
+    var previewItemURL: URL?
+    var previewItemTitle: String?
+}
 
 class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinating, CardPresentable,
     CardDraggingDelegate
@@ -12,7 +20,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private weak var presentingView: UIView?
 
     private let projectModel: ProjectModel
-    private let imageCaches: ImageCaches
+    private let mediaCache: MediaCache
     private let showCollaborationButton: Bool
 
     /// The view containing the slider, icon, title, subtitle and close button
@@ -45,15 +53,17 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private let upload: Upload
     private var uploadNotificationToken: NotificationToken?
 
+    private var previewItem: UploadPreviewItem?
+
     /// Initializer
     init(projectModel: ProjectModel,
-         imageCaches: ImageCaches,
+         mediaCache: MediaCache,
          upload: Upload,
          showCollaborationButton: Bool,
          initialMode: Mode = .summary)
     {
         self.projectModel = projectModel
-        self.imageCaches = imageCaches
+        self.mediaCache = mediaCache
         self.showCollaborationButton = showCollaborationButton
         self.upload = upload
         self.initialMode = initialMode
@@ -524,7 +534,7 @@ extension FullscreenMediaCardViewController {
     private func setupSummaryVC() {
         summaryVC = FullscreenMediaSummaryViewController(
             projectModel: projectModel,
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             upload: upload,
             showCollaborationButton: showCollaborationButton
         )
@@ -532,13 +542,13 @@ extension FullscreenMediaCardViewController {
         summaryVC.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
         summaryVC.scrollView.delegate = self
         summaryVC.onPhotoSelected = { [weak self] in
-            self?.showFullScreenImageGallery()
+            self?.showPreview()
         }
     }
 
     private func setupCommentsVC() {
         commentsVC = FeedViewController(
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             projectModel: projectModel,
             comments: upload.comments.filter(NSPredicate(value: true))
         )
@@ -570,43 +580,40 @@ extension FullscreenMediaCardViewController {
     }
 }
 
-extension FullscreenMediaCardViewController {
-    /// Shows the fullscreen image view when the image is tapped in the summary tab
-    private func showFullScreenImageGallery() {
-        let uploadCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id)
-        let vc = FullscreenImageGalleryViewController(
-            imageDataProviderFactory: { [imageCaches] in
-                imageCaches.imageProvider(forPhotoWithCacheKey: $0)
-            },
-            photoKeys: [uploadCacheKey]
-        )
-        vc.onDone = { [weak vc] in
-            guard let vc = vc else { return }
-            vc.dismiss(animated: true)
+extension FullscreenMediaCardViewController: QLPreviewControllerDataSource, QLPreviewControllerDelegate {
+    /// Shows the media file in Quick Look QLPreviewController
+    private func showPreview() {
+        Task {
+            do {
+                let mediaURL = try await mediaCache
+                    .getCachedFileURL(forKey: MediaKey(projectId: projectModel.projectId, upload: upload))
+                let previewItem = UploadPreviewItem()
+                previewItem.previewItemURL = mediaURL
+                previewItem.previewItemTitle = upload.fileName
+                self.previewItem = previewItem
+                DispatchQueue.main.async {
+                    let vc = QLPreviewController()
+                    vc.dataSource = self
+                    vc.delegate = self
+                    self.present(vc, animated: true)
+                }
+            } catch {
+                ToastWindow.shared.showError(text: "Failed to load the file")
+            }
         }
+    }
 
-        guard let galleryVC = summaryVC.galleryVC else {
-            // no gallery vc? this shouldn't happen but if so present the fullscreen gallery in a standard way
-            vc.modalPresentationStyle = .fullScreen
-            present(vc, animated: true)
-            return
-        }
+    func numberOfPreviewItems(in _: QLPreviewController) -> Int {
+        previewItem != nil ? 1 : 0
+    }
 
-        // custom presentation animating from the image in the gallery view to the fullscreen gallery
-        vc.currentPage = galleryVC.currentPage
-        if let fullscreenImageView = vc.imageViewForCurrentPage {
-            // set the thumb image in the fullscreen gallery so it's initially visible while loading
-            // the full image after the gallery was presented (so there's no black screen)
-            fullscreenImageView.image = galleryVC.imageViewForCurrentPage?.image
-        }
-        let transitioningDelegate = FullscreenImageGalleryTransitioningDelegate(
-            fromGallery: galleryVC,
-            toFullscreenGallery: vc,
-            interactivePresentation: nil
-        )
-        vc.fullscreenTransitioningDelegate = transitioningDelegate
-        vc.transitioningDelegate = transitioningDelegate
-        vc.modalPresentationStyle = .custom
-        present(vc, animated: true)
+    func previewController(_: QLPreviewController, previewItemAt _: Int) -> QLPreviewItem {
+        previewItem!
+    }
+
+    func previewController(_: QLPreviewController, transitionViewFor _: QLPreviewItem) -> UIView? {
+        // only transition from image gallery, for docs use normal presentation (because the preview
+        // doesn't match the target full screen very well, so it doesn't look good)
+        summaryVC.galleryVC?.imageViewForCurrentPage
     }
 }

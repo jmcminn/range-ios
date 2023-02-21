@@ -6,8 +6,12 @@ import RealmSwift
 class PendingUpload: Object {
     /// ObjectId is used for id as it can be sorted
     @Persisted(primaryKey: true) var _id: ObjectId
-    /// For project uploads this is `projects/<projectId>/uploads/<uploadId>`
-    @Persisted var storagePath: String
+    /// project id
+    @Persisted var projectId: String
+    /// upload id
+    @Persisted var uploadId: String
+    /// File type
+    @Persisted var fileType: Upload.FileType
     /// Whether this PendingUpload is currently being uploaded
     @Persisted var isUploading: Bool = false
     /// How many times it was tried already
@@ -17,9 +21,11 @@ class PendingUpload: Object {
     /// If failed the error message is kept here for reference
     @Persisted var lastErrorMessage: String?
 
-    /// Init with given storagePath (which is also a cache key)
-    init(_ storagePath: String) {
-        self.storagePath = storagePath
+    /// Init with given mediaKey (which is also a cache key)
+    init(_ mediaKey: MediaKey) {
+        projectId = mediaKey.projectId
+        uploadId = mediaKey.uploadId
+        fileType = mediaKey.fileType
     }
 
     /// Default initializer required by Realm.

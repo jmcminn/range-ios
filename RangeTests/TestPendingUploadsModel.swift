@@ -3,5 +3,5 @@ import Foundation
 
 /// Test implementation of PendingUploadsModel that does nothing
 class TestPendingUploadsModel: PendingUploadsModel {
-    func addPendingUpload(key _: String) async throws {}
+    func addPendingUpload(forKey _: MediaKey) async throws {}
 }

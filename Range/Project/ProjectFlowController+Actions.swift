@@ -62,11 +62,9 @@ extension ProjectFlowController: ProjectFlowActions {
     func showMediaAction() {
         mediaVC = MediaCardViewController(
             projectModel: model,
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             title: String(localized: "Media"),
-            uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false && $0.fileType == .jpeg },
-            onUploadSelected: { _ in
-            }
+            uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false && $0.fileType == .jpeg }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
@@ -91,7 +89,7 @@ extension ProjectFlowController: ProjectFlowActions {
         let fromMedia = event.source == .media
         fullscreenMediaVC = FullscreenMediaCardViewController(
             projectModel: model,
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             upload: upload,
             // show button only from media, otherwise it's from collaboration so user can just close
             // the fullscreen media and be back in collaboration

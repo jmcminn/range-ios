@@ -6,7 +6,7 @@ import UIKit
 
 /// Support transitioning from a view controller with photo to FullscreenImageGalleryViewController
 class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    weak var galleryVC: ImageGalleryViewController<String>?
+    weak var galleryVC: ImageGalleryViewController<MediaKey>?
     weak var fullscreenGalleryVC: FullscreenImageGalleryViewController?
     weak var interactivePresentation: UIViewControllerInteractiveTransitioning?
     fileprivate var interactiveDismissal: UIPercentDrivenInteractiveTransition?
@@ -16,7 +16,7 @@ class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTra
     /// - parameter fullscreenGalleryVC: show this fullscreen gallery view controller
     /// - parameter interactivePresentation: optional controller for interactive presentation, if not provided then it's non interactive
     public init(
-        fromGallery galleryVC: ImageGalleryViewController<String>,
+        fromGallery galleryVC: ImageGalleryViewController<MediaKey>,
         toFullscreenGallery fullscreenGalleryVC: FullscreenImageGalleryViewController,
         interactivePresentation: UIViewControllerInteractiveTransitioning?
     ) {

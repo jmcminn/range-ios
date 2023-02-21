@@ -12,8 +12,8 @@ import UIKit
 /// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
 /// just like in the Photos app)
 class FullscreenImageGalleryViewController: UIViewController {
-    let imageDataProviderFactory: (String) -> RangeImageDataProvider
-    private var photoKeys: [String]
+    let imageDataProviderFactory: (MediaKey) -> RangeImageDataProvider
+    private var photoKeys: [MediaKey]
 
     var onDone: (() -> Void)?
     /// Handler that accepts removal of photo at given index by returning `true`
@@ -57,8 +57,8 @@ class FullscreenImageGalleryViewController: UIViewController {
     ///   - photoKeys:                            array of cache key for photos
     ///   - removePhotoHandler:           if provided then a button for removing photo will be shown. This vc will remove the photo from given photo keys and animate the changes iff the handler returns `true`
     ///
-    init(imageDataProviderFactory: @escaping (String) -> RangeImageDataProvider,
-         photoKeys: [String],
+    init(imageDataProviderFactory: @escaping (MediaKey) -> RangeImageDataProvider,
+         photoKeys: [MediaKey],
          removePhotoHandler: ((Int) -> Bool)? = nil)
     {
         self.imageDataProviderFactory = imageDataProviderFactory

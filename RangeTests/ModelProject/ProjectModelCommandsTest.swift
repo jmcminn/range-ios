@@ -20,7 +20,7 @@ class ProjectModelCommandsTest: XCTestCase {
         model = try ProjectModel(
             userId: "user1",
             projectId: UUID().uuidString,
-            imageCaches: ImageCaches(),
+            localFiles: LocalFiles(),
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
             inMemory: true
@@ -94,7 +94,7 @@ class ProjectModelCommandsTest: XCTestCase {
             [PhotoToAdd(
                 uploadId: "upload1",
                 timestamp: Date(timeIntervalSince1970: 1234),
-                cacheKey: "cacheKey",
+                mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg),
                 thumbnail: UIImage(),
                 height2Width: 1, fileSize: 1024
             )],
@@ -126,7 +126,9 @@ class ProjectModelCommandsTest: XCTestCase {
     func testAddPhotosToCollaboration_geometryNotFound() async throws {
         do {
             _ = try await model.addPhotos(
-                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now, cacheKey: "cacheKey", thumbnail: UIImage(),
+                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now,
+                            mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg),
+                            thumbnail: UIImage(),
                             height2Width: 1, fileSize: 1024)],
                 tags: [],
                 description: "",
@@ -155,7 +157,9 @@ class ProjectModelCommandsTest: XCTestCase {
         }
         do {
             _ = try await model.addPhotos(
-                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now, cacheKey: "cacheKey", thumbnail: UIImage(),
+                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now,
+                            mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg),
+                            thumbnail: UIImage(),
                             height2Width: 1, fileSize: 1024)],
                 tags: [], description: "", toCollaborationForGeometryId: "geometry1"
             )
@@ -186,7 +190,9 @@ class ProjectModelCommandsTest: XCTestCase {
         }
         do {
             _ = try await model.addPhotos(
-                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now, cacheKey: "cacheKey", thumbnail: UIImage(),
+                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now,
+                            mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg),
+                            thumbnail: UIImage(),
                             height2Width: 1, fileSize: 1024)],
                 tags: [],
                 description: "",
@@ -220,20 +226,21 @@ class ProjectModelCommandsTest: XCTestCase {
         }
         let command = try await model.addPhotos(
             [
-                PhotoToAdd(uploadId: "upload1", timestamp: Date(timeIntervalSince1970: 1234), cacheKey: "cacheKey1",
+                PhotoToAdd(uploadId: "upload1", timestamp: Date(timeIntervalSince1970: 1234),
+                           mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg),
                            thumbnail: UIImage(),
                            height2Width: 1, fileSize: 1024),
                 PhotoToAdd(
                     uploadId: "upload2",
                     timestamp: Date(timeIntervalSince1970: 1235),
-                    cacheKey: "cacheKey2",
+                    mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload2", fileType: .jpeg),
                     thumbnail: UIImage(),
                     height2Width: 1.2, fileSize: 1024
                 ),
                 PhotoToAdd(
                     uploadId: "upload3",
                     timestamp: Date(timeIntervalSince1970: 1236),
-                    cacheKey: "cacheKey3",
+                    mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload3", fileType: .jpeg),
                     thumbnail: UIImage(),
                     height2Width: 1.3, fileSize: 1024
                 ),

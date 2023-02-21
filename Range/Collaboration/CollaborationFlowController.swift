@@ -31,7 +31,8 @@ import UIKit
 /// All subviews and cards are added to this view controller view.
 class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     unowned let model: ProjectModel
-    unowned let imageCaches: ImageCaches
+    unowned let localFiles: LocalFiles
+    unowned let mediaCache: MediaCache
     unowned let canvasContainer: CanvasContainerViewController
 
     /// callback to notify that collaboration window is closing
@@ -58,11 +59,17 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     ///
     /// - Parameters:
     ///     - model: - the project model
-    ///     - images: - access to images
+    ///     - mediaCache: - access to images
     ///     - canvas: - the flow will operate on this canvas
-    init(model: ProjectModel, imageCaches: ImageCaches, canvasContainer: CanvasContainerViewController) {
+    init(
+        model: ProjectModel,
+        localFiles: LocalFiles,
+        mediaCache: MediaCache,
+        canvasContainer: CanvasContainerViewController
+    ) {
         self.model = model
-        self.imageCaches = imageCaches
+        self.localFiles = localFiles
+        self.mediaCache = mediaCache
         self.canvasContainer = canvasContainer
         super.init(nibName: nil, bundle: nil)
     }
@@ -97,7 +104,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         -> CollaborationViewController
     {
         let collaborationVC = CollaborationViewController(
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             projectModel: model,
             collaboration: collaboration
         )
@@ -350,7 +357,12 @@ extension CollaborationFlowController {
             // the collaboration should be selected and have a geometry... (this shouldn't really happen)
             return
         }
-        addPhotosFlow = AddPhotoFlowController(model: model, imageCaches: imageCaches, canvasContainer: canvasContainer)
+        addPhotosFlow = AddPhotoFlowController(
+            model: model,
+            localFiles: localFiles,
+            mediaCache: mediaCache,
+            canvasContainer: canvasContainer
+        )
         // preselect the geometryId as the add photos flow will not include pin placement
         // (we are adding to the currently showing collaboration window)
         addPhotosFlow?.geometryId = geometryId

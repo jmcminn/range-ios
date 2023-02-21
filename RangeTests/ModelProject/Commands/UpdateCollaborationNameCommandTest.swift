@@ -16,7 +16,7 @@ final class UpdateCollaborationNameCommandRealmTest: XCTestCase {
         model = try ProjectModel(
             userId: "user1",
             projectId: UUID().uuidString,
-            imageCaches: ImageCaches(),
+            localFiles: LocalFiles(),
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
             inMemory: true

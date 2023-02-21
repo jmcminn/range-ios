@@ -13,7 +13,7 @@ import UIKit
 class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
 
-    unowned let imageCaches: ImageCaches
+    unowned let mediaCache: MediaCache
     unowned let projectModel: ProjectModel
     let collaboration: Collaboration
 
@@ -58,15 +58,15 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     }
 
     /// - Parameters:
-    init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
-        self.imageCaches = imageCaches
+    init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
+        self.mediaCache = mediaCache
         self.projectModel = projectModel
         self.collaboration = collaboration
         isTaskWindow = collaboration.status != nil
         super.init(nibName: nil, bundle: nil)
 
         feedVC = FeedViewController(
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             projectModel: projectModel,
             collaboration: collaboration
         )
@@ -286,7 +286,7 @@ extension CollaborationViewController {
 
     private func setupDetailsVC() {
         detailsVC = CollaborationDetailsViewController(
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             projectModel: projectModel,
             collaboration: collaboration
         )

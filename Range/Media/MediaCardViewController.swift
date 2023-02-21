@@ -10,12 +10,10 @@ import UIKit
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class MediaCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
-    private let imageCaches: ImageCaches
+    private let mediaCache: MediaCache
 
     /// uploads to show
     private let uploads: Results<Upload>
-
-    var onUploadSelected: ((Upload) -> Void)?
 
     private let headerStroke = UIView()
     private let collectionView: UICollectionView
@@ -52,13 +50,12 @@ class MediaCardViewController: SheetCardViewController {
     ///     - users:                 users to show in the picker
     init(
         projectModel: ProjectModel,
-        imageCaches: ImageCaches,
+        mediaCache: MediaCache,
         title: String,
-        uploads: Results<Upload>,
-        onUploadSelected: ((Upload) -> Void)? = nil
+        uploads: Results<Upload>
     ) {
         self.projectModel = projectModel
-        self.imageCaches = imageCaches
+        self.mediaCache = mediaCache
         self.uploads = uploads
 
         let layout = UICollectionViewFlowLayout()
@@ -69,7 +66,6 @@ class MediaCardViewController: SheetCardViewController {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
 
         super.init(icon: UIImage(systemName: "photo"), title: title)
-        self.onUploadSelected = onUploadSelected
     }
 
     deinit {
@@ -290,8 +286,8 @@ extension MediaCardViewController {
                                                       for: indexPath) as! MediaCollectionViewCell
 
         let upload = collectionItem.upload
-        let uploadCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 1)
-        let imageDataProvider = imageCaches.imageProvider(forPhotoWithCacheKey: uploadCacheKey)
+        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
+        let imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
         cell.setUpload(upload, imageDataProvider: imageDataProvider)
 
         return cell
@@ -325,18 +321,18 @@ extension MediaCardViewController: UICollectionViewDataSourcePrefetching {
         guard let sectionId = dataSource.sectionIdentifier(for: indexPath.section) else { return nil }
         let sectionUploads = dataSource.snapshot(for: sectionId).items
         guard indexPath.item < sectionUploads.count else { return nil }
-        let uploadCacheKey = uploadKey(
-            projectId: projectModel.projectId,
-            uploadId: sectionUploads[indexPath.item].id,
-            thumbnailNumber: 1
-        )
-        return imageCaches.imageProvider(forPhotoWithCacheKey: uploadCacheKey)
+        let upload = sectionUploads[indexPath.item].upload
+        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
+
+        return mediaCache.imageProvider(forKey: mediaKey)
     }
 
     func collectionView(_: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        guard indexPaths.count > 0 else { return }
+        guard let firstImageDataProvider = imageProvider(forItemAt: indexPaths[0]) else { return }
         let sources = indexPaths
             .compactMap { imageProvider(forItemAt: $0) }
             .map { Source.provider($0) }
-        ImagePrefetcher(sources: sources).start()
+        ImagePrefetcher(sources: sources, options: [.targetCache(firstImageDataProvider.cache)]).start()
     }
 }

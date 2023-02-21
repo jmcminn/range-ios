@@ -13,8 +13,8 @@ struct PhotoToAdd {
     var fileName: String?
     /// when the photo was taken
     var timestamp: Date
-    /// key for images.cameraCache, matches the storage keys, so composed of projectId and uploadId
-    var cacheKey: String
+    /// key for LocalFiles or MediaCache
+    var mediaKey: MediaKey
     /// small 100x100 image (with proper aspect ratio)
     var thumbnail: UIImage
     /// to layout before fetching from cache
@@ -32,7 +32,7 @@ class PhotosToAddViewModel: NSObject {
     }
 
     private let projectId: String
-    unowned let imageCaches: ImageCaches
+    unowned let localFiles: LocalFiles
 
     /// photos
     private(set) var photos: [PhotoToAdd]
@@ -40,9 +40,9 @@ class PhotosToAddViewModel: NSObject {
     /// Allows for multiple delegates
     private var delegates = NSHashTable<PhotosToAddViewModelDelegate>.weakObjects()
 
-    init(projectId: String, imageCaches: ImageCaches) {
+    init(projectId: String, localFiles: LocalFiles) {
         self.projectId = projectId
-        self.imageCaches = imageCaches
+        self.localFiles = localFiles
         photos = []
         super.init()
     }
@@ -72,9 +72,8 @@ class PhotosToAddViewModel: NSObject {
         // remove the photos from local cache if we don't need them
         if removeFromCache {
             photos.forEach {
-                imageCaches.localPhotosCache.removeImage(forKey: $0.cacheKey)
+                localFiles.removeFile(forKey: $0.mediaKey)
             }
-            imageCaches.localPhotosCache.clearMemoryCache()
         }
         photos = []
     }
@@ -93,16 +92,16 @@ class PhotosToAddViewModel: NSObject {
             throw CameraRollError.thumbnailGenerationFailed
         }
         let uploadId = generateRealmId()
-        let cacheKey = uploadKey(projectId: projectId, uploadId: uploadId)
+        let mediaKey = MediaKey(projectId: projectId, uploadId: uploadId, fileType: .jpeg)
 
-        try await imageCaches.localPhotosCache._asyncStoreToDisk(data, forKey: cacheKey)
+        try await localFiles.store(data, forKey: mediaKey)
 
         return PhotoToAdd(
             uploadId: uploadId,
             assetIdentifier: result.assetIdentifier,
             fileName: itemProvider.suggestedName,
             timestamp: Date.now,
-            cacheKey: cacheKey,
+            mediaKey: mediaKey,
             thumbnail: thumbnail,
             height2Width: thumbnail.size.height / thumbnail.size.width,
             fileSize: Int64(data.count)

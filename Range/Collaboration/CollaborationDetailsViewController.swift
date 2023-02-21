@@ -29,7 +29,7 @@ class CollaborationDetailsViewController: UIViewController {
         static let updatesTogglePaddings = UIEdgeInsets(top: 16, left: 16, bottom: 12, right: 16)
     }
 
-    unowned let imageCaches: ImageCaches
+    unowned let mediaCache: MediaCache
     unowned let projectModel: ProjectModel
     let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
@@ -65,8 +65,8 @@ class CollaborationDetailsViewController: UIViewController {
     var updatesToggle: SegmentedControl!
 
     /// - Parameters:
-    init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
-        self.imageCaches = imageCaches
+    init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
+        self.mediaCache = mediaCache
         self.projectModel = projectModel
         self.collaboration = collaboration
         isTaskWindow = collaboration.status != nil
@@ -275,8 +275,7 @@ extension CollaborationDetailsViewController {
 
     private func setupThumbnails() {
         let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
-        thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: projectModel, uploads: uploads)
-        // TODO: 827 where isImage
+        thumbnailsVC = ThumbnailsViewController(mediaCache: mediaCache, projectModel: projectModel, uploads: uploads)
         thumbnailsVC.onUploadSelected = { [weak self] upload in
             self?.onThumbnailSelected?(upload)
         }

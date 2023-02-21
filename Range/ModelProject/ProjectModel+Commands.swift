@@ -84,7 +84,9 @@ extension ProjectModel {
         }
 
         for photoToAdd in photosToAdd {
-            try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
+            try await pendingUploadsModel
+                .addPendingUpload(forKey: MediaKey(projectId: projectId, uploadId: photoToAdd.uploadId,
+                                                   fileType: .jpeg))
         }
 
         return AddUploadsToCollaborationCommand(
@@ -122,7 +124,11 @@ extension ProjectModel {
         isTask: Bool
     ) async throws -> Command {
         for photoToAdd in photosToAdd {
-            try await pendingUploadsModel.addPendingUpload(key: photoToAdd.cacheKey)
+            try await pendingUploadsModel.addPendingUpload(forKey: MediaKey(
+                projectId: projectId,
+                uploadId: photoToAdd.uploadId,
+                fileType: .jpeg
+            ))
         }
 
         var status: Status?

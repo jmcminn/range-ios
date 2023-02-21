@@ -75,7 +75,7 @@ class FeedViewController: UIViewController {
         }
     }
 
-    unowned let imageCaches: ImageCaches
+    unowned let mediaCache: MediaCache
     unowned let projectModel: ProjectModel
     let collaboration: Collaboration?
     let uploads: Results<Upload>?
@@ -113,8 +113,8 @@ class FeedViewController: UIViewController {
     private var updateFeedItems = [FeedItem]()
 
     /// Initialize for the collaboration feed = show updates for given collaboration
-    init(imageCaches: ImageCaches, projectModel: ProjectModel, collaboration: Collaboration) {
-        self.imageCaches = imageCaches
+    init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
+        self.mediaCache = mediaCache
         self.projectModel = projectModel
         self.collaboration = collaboration
         // convert collections to results
@@ -128,8 +128,8 @@ class FeedViewController: UIViewController {
     }
 
     /// Initialize for the comments feed = show given comments only
-    init(imageCaches: ImageCaches, projectModel: ProjectModel, comments: Results<Comment>) {
-        self.imageCaches = imageCaches
+    init(mediaCache: MediaCache, projectModel: ProjectModel, comments: Results<Comment>) {
+        self.mediaCache = mediaCache
         self.projectModel = projectModel
         collaboration = nil
         uploads = nil
@@ -463,8 +463,8 @@ extension FeedViewController {
         } else if let upload = feedItem.item as? Upload, upload.isImage {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
                                                      for: indexPath) as! ImageUploadFeedItemCell
-            let imageCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 1)
-            cell.imageDataProvider = imageCaches.imageProvider(forPhotoWithCacheKey: imageCacheKey)
+            let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
+            cell.imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
             cell.set(upload: upload, model: projectModel)
             return cell
         } else if let comment = feedItem.item as? Comment {

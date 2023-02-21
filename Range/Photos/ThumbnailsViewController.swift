@@ -24,7 +24,7 @@ class ThumbnailsViewController: UIViewController {
     /// All thumbnails are rendered with this height and variable width depending on the image aspect ratio
     static let thumbnailHeight = 72.0
 
-    unowned let imageCaches: ImageCaches
+    unowned let mediaCache: MediaCache
     unowned let projectModel: ProjectModel
     let uploads: Results<Upload>
     var prefetcher: ImagePrefetcher?
@@ -38,8 +38,9 @@ class ThumbnailsViewController: UIViewController {
     var collectionView: UICollectionView!
     var dataSource: UICollectionViewDiffableDataSource<Int, CollectionItem>!
 
-    init(imageCaches: ImageCaches, projectModel: ProjectModel, uploads: Results<Upload>) {
-        self.imageCaches = imageCaches
+    /// it only displays image uploads
+    init(mediaCache: MediaCache, projectModel: ProjectModel, uploads: Results<Upload>) {
+        self.mediaCache = mediaCache
         self.projectModel = projectModel
         self.uploads = uploads
         super.init(nibName: nil, bundle: nil)
@@ -136,11 +137,11 @@ class ThumbnailsViewController: UIViewController {
     }
 
     /// Returns image data provider for given cell.
-    private func imageProvider(forItemAt indexPath: IndexPath) -> ImageDataProvider? {
+    private func imageProvider(forItemAt indexPath: IndexPath) -> RangeImageDataProvider? {
         guard indexPath.item < uploads.count else { return nil }
         let upload = uploads[indexPath.item]
-        let uploadCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 0)
-        return imageCaches.imageProvider(forPhotoWithCacheKey: uploadCacheKey)
+        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 0)
+        return mediaCache.imageProvider(forKey: mediaKey)
     }
 }
 
@@ -201,9 +202,11 @@ extension ThumbnailsViewController {
 /// Images prefetching
 extension ThumbnailsViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        guard indexPaths.count > 0 else { return }
+        guard let firstImageDataProvider = imageProvider(forItemAt: indexPaths[0]) else { return }
         let sources = indexPaths
             .compactMap { imageProvider(forItemAt: $0) }
             .map { Source.provider($0) }
-        ImagePrefetcher(sources: sources).start()
+        ImagePrefetcher(sources: sources, options: [.targetCache(firstImageDataProvider.cache)]).start()
     }
 }

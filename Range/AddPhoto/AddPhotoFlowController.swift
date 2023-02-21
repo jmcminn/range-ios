@@ -8,7 +8,8 @@ import UIKit
 /// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
 class AddPhotoFlowController {
     unowned let model: ProjectModel
-    unowned let imageCaches: ImageCaches
+    unowned let localFiles: LocalFiles
+    unowned let mediaCache: MediaCache
     unowned let canvasContainer: CanvasContainerViewController
 
     /// on Stop it returns the id of the geometry to which the photo(s) was added to (if not cancelled) and whether the
@@ -58,11 +59,17 @@ class AddPhotoFlowController {
     ///     - model: - the project model
     ///     - images: - access to images
     ///     - canvas: - the flow will operate on this canvas
-    init(model: ProjectModel, imageCaches: ImageCaches, canvasContainer: CanvasContainerViewController) {
+    init(
+        model: ProjectModel,
+        localFiles: LocalFiles,
+        mediaCache: MediaCache,
+        canvasContainer: CanvasContainerViewController
+    ) {
         self.model = model
-        self.imageCaches = imageCaches
+        self.localFiles = localFiles
+        self.mediaCache = mediaCache
         self.canvasContainer = canvasContainer
-        photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, imageCaches: imageCaches)
+        photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, localFiles: localFiles)
         tagsViewModel = TagsViewModel(model: model)
         photosToAddViewModel.addDelegate(self)
     }
@@ -142,37 +149,39 @@ class AddPhotoFlowController {
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         let uploadId = generateRealmId()
-        let cacheKey = uploadKey(projectId: model.projectId, uploadId: uploadId)
+        let mediaKey = MediaKey(projectId: model.projectId, uploadId: uploadId, fileType: .jpeg)
 
         let photoToAdd = PhotoToAdd(
             uploadId: uploadId,
             timestamp: Date.now,
-            cacheKey: cacheKey,
+            mediaKey: mediaKey,
             thumbnail: image.imageResized(toFill: 100),
             height2Width: image.size.height / image.size.width,
             fileSize: Int64(data.count)
         )
 
         // store the image in local cache
-        imageCaches.localPhotosCache
-            .storeToDisk(data, forKey: cacheKey, callbackQueue: .mainAsync) { [weak self] result in
-                guard let self = self else { return }
-                if case let .failure(error) = result.diskCacheResult {
+        Task {
+            do {
+                try await localFiles.store(data, forKey: mediaKey)
+                DispatchQueue.main.async {
+                    if !UserDefaults.multiPhotoSessionEnabled {
+                        // clear when not multi-photo session
+                        self.photosToAddViewModel.clear(removeFromCache: true)
+                    }
+                    self.photosToAddViewModel.add(photoToAdd)
+
+                    if !UserDefaults.multiPhotoSessionEnabled {
+                        self.nextStepAfterCamera()
+                    }
+                    completion(.success(()))
+                }
+            } catch {
+                DispatchQueue.main.async {
                     completion(.failure(error))
-                    return
                 }
-
-                if !UserDefaults.multiPhotoSessionEnabled {
-                    // clear when not multi-photo session
-                    self.photosToAddViewModel.clear(removeFromCache: true)
-                }
-                self.photosToAddViewModel.add(photoToAdd)
-
-                if !UserDefaults.multiPhotoSessionEnabled {
-                    self.nextStepAfterCamera()
-                }
-                completion(.success(()))
             }
+        }
     }
 
     private func selectPhotosFromCameraRoll(fromVC vc: UIViewController) {
@@ -228,10 +237,10 @@ class AddPhotoFlowController {
 
     private func createPhotosReviewViewController() -> FullscreenImageGalleryViewController {
         FullscreenImageGalleryViewController(
-            imageDataProviderFactory: { [imageCaches] in
-                imageCaches.imageProvider(forLocalPhotoWithCacheKey: $0)
+            imageDataProviderFactory: { [localFiles] in
+                localFiles.imageProvider(forKey: $0)
             },
-            photoKeys: photosToAddViewModel.photos.map(\.cacheKey),
+            photoKeys: photosToAddViewModel.photos.map(\.mediaKey),
             removePhotoHandler: { [weak self] photoIndex in
                 guard let self = self else { return false }
                 guard photoIndex < self.photosToAddViewModel.photos.count else { return false }
@@ -264,7 +273,7 @@ class AddPhotoFlowController {
     /// Creates the `PhotoDetailsViewController` and installs the flow callbacks
     private func createPhotoDetailsViewController() -> PhotoDetailsViewController {
         let vc = PhotoDetailsViewController(
-            imageCaches: imageCaches,
+            localFiles: localFiles,
             photosViewModel: photosToAddViewModel,
             tagsViewModel: tagsViewModel,
             initialDescription: photoDescription
@@ -686,7 +695,7 @@ extension AddPhotoFlowController {
         guard let confirmationCardVC = confirmationCardVC else { return }
         let photosPreviewVC = PhotosPreviewViewController(
             model: model,
-            imageCaches: imageCaches,
+            mediaCache: mediaCache,
             geometryId: geometryId,
             confirmationVC: confirmationCardVC
         )

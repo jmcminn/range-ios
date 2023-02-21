@@ -12,8 +12,8 @@ class ProjectModel: NSObject, RealmModel {
     let userId: String
     /// The UUID for the project
     let projectId: String
-    /// images...
-    unowned let imageCaches: ImageCaches
+    /// Local files
+    unowned let localFiles: LocalFiles
     /// global pending uploads
     unowned let pendingUploadsModel: PendingUploadsModel
     /// global pending actions
@@ -51,14 +51,14 @@ class ProjectModel: NSObject, RealmModel {
     init(
         userId: String,
         projectId: String,
-        imageCaches: ImageCaches,
+        localFiles: LocalFiles,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
         inMemory: Bool = false
     ) throws {
         self.userId = userId
         self.projectId = projectId.lowercased()
-        self.imageCaches = imageCaches
+        self.localFiles = localFiles
         self.pendingUploadsModel = pendingUploadsModel
         self.pendingActionsModel = pendingActionsModel
         var config = Realm.Configuration.defaultConfiguration

@@ -10,6 +10,8 @@ extension Logger {
     static let assets = Logger(subsystem: subsystem, category: "assets")
     /// authentication logs
     static let auth = Logger(subsystem: subsystem, category: "auth")
+    /// cache
+    static let cache = Logger(subsystem: subsystem, category: "cache")
     /// camera
     static let camera = Logger(subsystem: subsystem, category: "camera")
     /// Everything mapbox

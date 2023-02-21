@@ -14,7 +14,7 @@ import UIKit
 /// there is always 1 expander controlling the current header(s) height(s).
 class PhotoDetailsViewController: UIViewController {
     /// The photo
-    unowned let imageCaches: ImageCaches
+    unowned let localFiles: LocalFiles
     private let photosViewModel: PhotosToAddViewModel
     private let tagsViewModel: TagsViewModel
     private let initialDescription: String
@@ -88,16 +88,16 @@ class PhotoDetailsViewController: UIViewController {
     var viewsBuilt: Bool = false
 
     /// - Parameters:
-    ///   - images:                access to images
+    ///   - localFiles:            access to local files
     ///   - photosToAdd:           array of images to show
     ///   - initialSelectedTags:   preselected tags
     ///   - initialDescription:    initial contents of the description text view
-    init(imageCaches: ImageCaches,
+    init(localFiles: LocalFiles,
          photosViewModel: PhotosToAddViewModel,
          tagsViewModel: TagsViewModel,
          initialDescription: String)
     {
-        self.imageCaches = imageCaches
+        self.localFiles = localFiles
         self.photosViewModel = photosViewModel
         self.tagsViewModel = tagsViewModel
         self.initialDescription = initialDescription
@@ -405,7 +405,7 @@ extension PhotoDetailsViewController {
     }
 
     private func buildHeaderView() {
-        headerVC = PhotoDetailsHeaderViewController(imageCaches: imageCaches, photosViewModel: photosViewModel)
+        headerVC = PhotoDetailsHeaderViewController(localFiles: localFiles, photosViewModel: photosViewModel)
         headerVC.onPhotoSelected = { [weak self] in
             self?.onPhotoSelected?(nil)
         }
