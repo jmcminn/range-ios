@@ -2,6 +2,7 @@ import Foundation
 import OSLog
 import RealmSwift
 import UIKit
+import UniformTypeIdentifiers
 
 /// Protocol defining actions that collaboration flow can perform.
 /// Required by the views sending actions, so they can use selectors for these functions.
@@ -11,6 +12,8 @@ import UIKit
     func addPhotosAction()
     /// When "Add comment" button in the Collaboration window header or CTA was tapped
     func addCommentAction()
+    /// When "Add attachment" button in the Collaboration window header or CTA was tapped
+    func addAttachmentAction()
     /// Toggle the complete state of the Note
     func toggleCompleteAction(sender: Any?, event: FlowEvent)
     /// Edit due date for collaboration
@@ -417,6 +420,47 @@ extension CollaborationFlowController {
                 ToastWindow.shared.showError(text: "Failed to add the comment")
             } else {
                 self.lastCancelledCommentText = ""
+            }
+        }
+    }
+}
+
+// MARK: - add attachment to current collaboration
+
+extension CollaborationFlowController: UIDocumentPickerDelegate {
+    func addAttachmentAction() {
+        var contentTypes = [UTType.jpeg, UTType.png, UTType.pdf]
+        if let docxType = UTType(mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+            contentTypes.append(docxType)
+        }
+        if let xlsxType = UTType(mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+            contentTypes.append(xlsxType)
+        }
+        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: contentTypes, asCopy: true)
+        documentPicker.delegate = self
+        present(documentPicker, animated: true)
+    }
+
+    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let collaboration = collaboration else { return }
+        guard let url = urls.first else { return }
+        guard let fileExtension = url._preferredFilenameExtension(),
+              let fileType = Upload.FileType(fromExtension: fileExtension)
+        else {
+            ToastWindow.shared.showError(text: "File type not supported")
+            return
+        }
+        let fileName = url.deletingPathExtension().lastPathComponent
+        Task {
+            do {
+                let data = try Data(contentsOf: url)
+                try await model.run(model.addMedia(data,
+                                                   name: fileName,
+                                                   fileType: fileType,
+                                                   toCollaboration: collaboration))
+            } catch {
+                Logger.model.error("Adding attachment error \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to add the attachment")
             }
         }
     }

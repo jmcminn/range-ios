@@ -98,6 +98,24 @@ extension ProjectModel {
         )
     }
 
+    @MainActor
+    func addMedia(_ data: Data, name: String, fileType: Upload.FileType,
+                  toCollaboration collaboration: Collaboration) async throws -> Command
+    {
+        let uploadId = generateRealmId()
+        let mediaKey = MediaKey(projectId: projectId, uploadId: uploadId, fileType: fileType)
+
+        try await localFiles.store(data, forKey: mediaKey)
+        try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
+
+        return AddUploadsToCollaborationCommand(
+            authorId: userId,
+            collaborationId: collaboration.id,
+            tags: [],
+            uploads: [CommandUpload(id: uploadId, fileType: fileType, fileSize: Int64(data.count), name: name)]
+        )
+    }
+
     /// Adds given photos to pending uploads and returns command for:
     /// - creating a new geometry of photoMarker type and adding it to given canvas.
     /// - creating a feature attached to this geometry and the collaboration attached to the feature.
