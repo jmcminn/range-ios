@@ -186,7 +186,9 @@ extension ThumbnailsViewController {
                 withReuseIdentifier: "ThumbnailCell",
                 for: indexPath
             ) as! ThumbnailCollectionViewCell
-            cell.imageDataProvider = imageProvider(forItemAt: indexPath)
+            if upload.isImage {
+                cell.imageDataProvider = imageProvider(forItemAt: indexPath)
+            }
             cell.upload = upload
             return cell
         } else {

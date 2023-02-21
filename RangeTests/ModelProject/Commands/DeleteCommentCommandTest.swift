@@ -58,6 +58,7 @@ final class DeleteCommentCommandFirestoreTest: XCTestCase {
         let context = TestFirestoreCommandContext(docs: [])
 
         let command = DeleteCommentCommand(commentId: "comment1")
+        try command.apply(inFirestore: context)
         XCTAssertEqual(context.operations.count, 0)
     }
 

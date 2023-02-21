@@ -42,7 +42,7 @@ final class DeleteUploadCommandRealmTest: XCTestCase {
             name: nil,
             description: nil,
             correlationId: "upload1",
-            fileType: .image,
+            fileType: .jpeg,
             imageHeightToWidth: 1
         )
         try realm.write {
@@ -65,6 +65,7 @@ final class DeleteUploadCommandFirestoreTest: XCTestCase {
         let context = TestFirestoreCommandContext(docs: [])
 
         let command = DeleteUploadCommand(uploadId: "upload1")
+        try command.apply(inFirestore: context)
         XCTAssertEqual(context.operations.count, 0)
     }
 

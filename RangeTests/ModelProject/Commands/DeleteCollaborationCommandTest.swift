@@ -83,7 +83,7 @@ final class DeleteCollaborationCommandRealmTest: XCTestCase {
             name: nil,
             description: nil,
             correlationId: "upload1",
-            fileType: .image,
+            fileType: .jpeg,
             imageHeightToWidth: 1
         )
         let update = Update(id: "update1", timestamp: Date(), field: .name, oldValue: .none, newValue: .string("name"))
@@ -127,6 +127,7 @@ final class DeleteCollaborationCommandFirestoreTest: XCTestCase {
         let context = TestFirestoreCommandContext(docs: [])
 
         let command = DeleteCollaborationCommand(geometryId: "geometry1", collaborationId: "collaboration1")
+        try command.apply(inFirestore: context)
         XCTAssertEqual(context.operations.count, 0)
     }
 

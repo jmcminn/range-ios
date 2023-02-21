@@ -47,6 +47,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         self.confirmationVC = confirmationVC
         // find all uploads for geometry id
         uploads = model.mainRealm.objects(Upload.self)
+        // TODO: 827             .where { $0.fileType == .jpeg || $0.fileType == .png }
             .where { $0.placeholder == false &&
                 $0.collaboration.feature.geometry.id.equals(geometryId)
             }

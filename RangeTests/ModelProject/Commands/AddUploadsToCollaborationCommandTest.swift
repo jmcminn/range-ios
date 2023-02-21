@@ -87,7 +87,7 @@ final class AddUploadsToCollaborationCommandRealmTest: XCTestCase {
             XCTAssertEqual(upload.uploadDescription, "upload description")
             XCTAssertEqual(upload.collaboration.first, collaboration1)
             XCTAssertEqual(upload.correlationId, upload.id)
-            XCTAssertEqual(upload.fileType, .image)
+            XCTAssertEqual(upload.fileType, .jpeg)
             XCTAssertEqual(upload.tags.map(\.id), ["tag1", "tag2"])
         }
         XCTAssertEqual(upload1.imageHeightToWidth, 1)
@@ -160,7 +160,7 @@ final class AddUploadsToCollaborationCommandFirestoreTest: XCTestCase {
                 "parent": "collaboration1", "parentType": "Collaboration",
                 "correlation": "upload1", "author": "user1", "timestamp": FieldValue.serverTimestamp(),
                 "tags": ["tag1", "tag2"], "description": "upload description",
-                "fileType": "image", "imageHeightToWidth": 1.0,
+                "fileType": "jpeg", "imageHeightToWidth": 1.0,
             ])
         )
         AssertOperationsEqual(
@@ -169,7 +169,7 @@ final class AddUploadsToCollaborationCommandFirestoreTest: XCTestCase {
                 "parent": "collaboration1", "parentType": "Collaboration",
                 "correlation": "upload2", "author": "user1", "timestamp": FieldValue.serverTimestamp(),
                 "tags": ["tag1", "tag2"], "description": "upload description",
-                "fileType": "image", "imageHeightToWidth": 2.0,
+                "fileType": "jpeg", "imageHeightToWidth": 2.0,
             ])
         )
     }

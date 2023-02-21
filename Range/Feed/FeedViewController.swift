@@ -284,7 +284,7 @@ class FeedViewController: UIViewController {
     private func observeUploads() {
         guard let uploads = uploads else { return }
         uploadsNotificationToken = uploads
-            .where { $0.placeholder == false && $0.fileType == .image }
+            .where { $0.placeholder == false && $0.fileType == .jpeg }
             .sorted(by: \Upload.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
@@ -460,7 +460,7 @@ extension FeedViewController {
                                                      for: indexPath) as! CollaborationCreatedFeedItemCell
             cell.set(collaboration: collaboration)
             return cell
-        } else if let upload = feedItem.item as? Upload, upload.fileType == .image {
+        } else if let upload = feedItem.item as? Upload, upload.isImage {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
                                                      for: indexPath) as! ImageUploadFeedItemCell
             let imageCacheKey = uploadKey(projectId: projectModel.projectId, uploadId: upload.id, thumbnailNumber: 1)

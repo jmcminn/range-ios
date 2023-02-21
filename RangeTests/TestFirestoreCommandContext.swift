@@ -97,7 +97,11 @@ func AssertOperationsEqual(
         switch v1 {
         case let v as String: XCTAssertEqual(v, try XCTUnwrap(v2 as? String), "key: \(key)", file: file, line: line)
         case let v as Double:
-            if let v2Bool = v2 as? Bool {
+            if let v2Int = v2 as? Int {
+                // for Ints, the v1 is being recognized as Double, so if v2 is an Int convert it
+                // to Double for comparison
+                XCTAssertEqual(v, Double(v2Int), "key: \(key)", file: file, line: line)
+            } else if let v2Bool = v2 as? Bool {
                 // for bools, the v1 is being recognized as Double, so if v2 is a bool convert it
                 // do Double for comparison
                 XCTAssertEqual(v, v2Bool ? 1.0 : 0.0, "key: \(key)", file: file, line: line)

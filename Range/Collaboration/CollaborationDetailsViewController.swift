@@ -276,6 +276,7 @@ extension CollaborationDetailsViewController {
     private func setupThumbnails() {
         let uploads = collaboration.uploads.sorted(by: \Upload.timestamp, ascending: false)
         thumbnailsVC = ThumbnailsViewController(imageCaches: imageCaches, projectModel: projectModel, uploads: uploads)
+        // TODO: 827 where isImage
         thumbnailsVC.onUploadSelected = { [weak self] upload in
             self?.onThumbnailSelected?(upload)
         }

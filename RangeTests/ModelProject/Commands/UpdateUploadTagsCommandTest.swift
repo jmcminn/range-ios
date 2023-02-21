@@ -40,7 +40,7 @@ final class UpdateUploadTagsCommandRealmTest: XCTestCase {
             name: "upload 1",
             description: nil,
             correlationId: "upload1",
-            fileType: .image,
+            fileType: .jpeg,
             imageHeightToWidth: 1
         )
         let tag1 = Tag(id: "tag1", name: "tag 1")

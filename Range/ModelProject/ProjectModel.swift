@@ -65,10 +65,13 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 7
+            config.schemaVersion = 8
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent(self.projectId)
             config.fileURL!.appendPathExtension("realm")
+            config.migrationBlock = { migration, oldSchemaVersion in
+                ProjectModel.migrate(migration, oldSchemaVersion)
+            }
             Logger.model.info("project realm file url: \(config.fileURL?.path ?? "")")
         }
         config.objectTypes = [

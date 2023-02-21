@@ -1,12 +1,24 @@
 import RealmSwift
 import UIKit
+import UniformTypeIdentifiers
 
 /// Realm object for `project/details/uploads/<id>`.
 class Upload: Object, WithPlaceholder {
     /// Supported file types, all others are ignored by Range iOS app
     enum FileType: String, Codable, PersistableEnum {
-        case image
-        case pdf
+        case jpeg, png, pdf, docx, xlsx
+
+        init?(fromExtension: String) {
+            if let type = FileType.allCases.first(where: { $0.rawValue == fromExtension }) {
+                self = type
+            } else { return nil }
+        }
+
+        var mimeType: String {
+            UTType(filenameExtension: rawValue)?.preferredMIMEType ?? "application/octet-stream"
+        }
+
+        var isImage: Bool { self == .jpeg || self == .png }
     }
 
     /// Primary key, UUID
@@ -36,6 +48,19 @@ class Upload: Object, WithPlaceholder {
     @Persisted var storageVersion: Map<String, String>
     /// comments, the order doesn't matter so it's a set (the order is controlled by the comment timestamp when displaying in the UI)
     @Persisted var comments: MutableSet<Comment>
+
+    /// Derived from fileType
+    var isImage: Bool { fileType.isImage }
+
+    /// Full file name with extension, derived from name and fileType
+    var fileName: String {
+        let ext = fileType.rawValue
+        if let name = name, !name.isEmpty {
+            return "\(name).\(ext)"
+        } else {
+            return "\(id).\(ext)"
+        }
+    }
 
     /// Default initializer required by Realm.
     override init() {
@@ -77,7 +102,7 @@ class Upload: Object, WithPlaceholder {
             name: "",
             description: nil,
             correlationId: id,
-            fileType: .image,
+            fileType: .jpeg,
             imageHeightToWidth: nil,
             storageVersion: nil,
             placeholder: true

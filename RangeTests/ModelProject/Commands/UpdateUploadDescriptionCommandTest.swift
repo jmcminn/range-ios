@@ -44,7 +44,7 @@ final class UpdateUploadDescriptionCommandRealmTest: XCTestCase {
             name: nil,
             description: "description",
             correlationId: "upload1",
-            fileType: .image,
+            fileType: .jpeg,
             imageHeightToWidth: nil
         )
         // setup collaboration1 with tag1 and tag2

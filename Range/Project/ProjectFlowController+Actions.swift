@@ -64,8 +64,7 @@ extension ProjectFlowController: ProjectFlowActions {
             projectModel: model,
             imageCaches: imageCaches,
             title: String(localized: "Media"),
-            uploads: model.mainRealm.objects(Upload.self).where
-                { $0.placeholder == false && $0.fileType == .image },
+            uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false && $0.fileType == .jpeg },
             onUploadSelected: { _ in
             }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
@@ -308,9 +307,14 @@ extension ProjectFlowController {
                 icon: UIImage(systemName: "ellipsis"),
                 title: "More Menu",
                 actions: [
-                    ActionItem(title: "Delete Photo", imageName: "trash", style: .destructive, handler: {
-                        self.confirmAndDeleteUpload(upload)
-                    }),
+                    ActionItem(
+                        title: upload.isImage ? "Delete Photo" : "Delete File",
+                        imageName: "trash",
+                        style: .destructive,
+                        handler: {
+                            self.confirmAndDeleteUpload(upload)
+                        }
+                    ),
                 ]
             ).installAndShowCard(in: canvasContainer)
         } else if let comment = event.object as? Comment {
@@ -419,11 +423,14 @@ extension ProjectFlowController {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
-            subtitle: "This photo will be deleted permanently. It can’t be recovered.",
+            subtitle: "This \(upload.isImage ? "photo" : "file") will be deleted permanently. It can’t be recovered.",
             actions: [
-                ActionItem(title: "Delete Photo", imageName: "trash", style: .destructive, handler: {
-                    self.deleteUpload(upload)
-                }),
+                ActionItem(
+                    title: upload.isImage ? "Delete Photo" : "Delete File",
+                    imageName: "trash", style: .destructive, handler: {
+                        self.deleteUpload(upload)
+                    }
+                ),
                 ActionItem(title: "Cancel", imageName: "xmark"),
             ]
         ).installAndShowCard(in: canvasContainer)
@@ -431,7 +438,8 @@ extension ProjectFlowController {
 
     func deleteUpload(_ upload: Upload) {
         model.run(model.delete(upload: upload)) { error in
-            if error != nil { ToastWindow.shared.showError(text: "Failed to delete the photo") }
+            if error !=
+                nil { ToastWindow.shared.showError(text: "Failed to delete the \(upload.isImage ? "photo" : "file")") }
         }
     }
 

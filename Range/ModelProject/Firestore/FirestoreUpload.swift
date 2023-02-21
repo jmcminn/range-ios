@@ -42,10 +42,15 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
     func upsert(withId id: String, inRealm realm: Realm) throws {
         let fileType: Upload.FileType
         if let fileTypeString = fileTypeString {
-            fileType = try Upload.FileType.allCases.first { $0.rawValue == fileTypeString }
-                .or(error: ModelError.fileTypeNotSupported(fileTypeString))
+            // backward compatibility
+            if fileTypeString == "image" {
+                fileType = .jpeg
+            } else {
+                fileType = try Upload.FileType(fromExtension: fileTypeString)
+                    .or(error: ModelError.fileTypeNotSupported(fileTypeString))
+            }
         } else {
-            fileType = .image
+            fileType = .jpeg
         }
         guard parentType == "Collaboration" else {
             throw "parentType not supported: \(parentType)"
