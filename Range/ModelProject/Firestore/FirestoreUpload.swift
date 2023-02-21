@@ -61,6 +61,12 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
             existingObject.cleanupOldTags(newTagIds: tagIds)
         }
 
+        // if the upload has local imageHeightToWidth then keep it
+        var imageHeightToWidth = imageHeightToWidth
+        if imageHeightToWidth == nil, let existingUpload = realm.object(ofType: Upload.self, forPrimaryKey: id) {
+            imageHeightToWidth = existingUpload.imageHeightToWidth
+        }
+
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
         let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
         let upload = Upload(

@@ -13,6 +13,10 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
     private let stackView = UIStackView()
     private(set) var galleryVC: ImageGalleryViewController<MediaKey>?
+    private var previewWrapperView: UIView?
+    private var previewBox: UIView?
+    private var fileNameLabel: UILabel?
+    private(set) var previewVC: UploadPreviewViewController?
     private(set) var collaborationButton: CollaborationButton!
     private(set) var descriptionHeader: UIView!
     private let descriptionLabel = LabelWithTextInsets()
@@ -47,6 +51,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         setupViews()
+        updateColors()
 
         onUploadUpdated()
 
@@ -62,6 +67,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         let hasDescription = !(upload.uploadDescription ?? "").isEmpty
         let hasTags = !upload.tags.isEmpty
 
+        fileNameLabel?.text = upload.fileName
         descriptionLabel.text = upload.uploadDescription
         tagsView.tags = upload.tags.where { $0.placeholder == false }
 
@@ -71,6 +77,17 @@ class FullscreenMediaSummaryViewController: UIViewController {
         tagsHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasTags }
         tagsView.isHidden = !hasTags
         addTagsButton.isHidden = hasTags
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColors()
+        }
+    }
+
+    private func updateColors() {
+        previewBox?.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
     private func setupViews() {
@@ -88,15 +105,22 @@ class FullscreenMediaSummaryViewController: UIViewController {
             make.edges.equalToSuperview()
         }
 
-        setupGalleryVC()
-        stackView.addArrangedSubview(galleryVC!.view)
+        let mediaView: UIView
+        if upload.isImage {
+            setupGalleryVC()
+            mediaView = galleryVC!.view
+        } else {
+            setupPreviewView()
+            mediaView = previewWrapperView!
+        }
+        stackView.addArrangedSubview(mediaView)
 
         // only add if there's a collaboration and it has a canvas (it should always have a canvas but
         // in case of placeholders or bad data just don't show the button)
         if showCollaborationButton, let collaboration = upload.collaboration.first,
            collaboration.feature.first?.geometry.first?.canvas.first != nil
         {
-            stackView.setCustomSpacing(12, after: galleryVC!.view)
+            stackView.setCustomSpacing(12, after: mediaView)
             setupCollaborationButton(collaboration: collaboration)
             // put collaboration button in a wrapper view to have horizontal margin
             let collaborationButtonWrapper = UIView()
@@ -108,7 +132,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
             stackView.addArrangedSubview(collaborationButtonWrapper)
             stackView.setCustomSpacing(12, after: collaborationButtonWrapper)
         } else {
-            stackView.setCustomSpacing(20, after: galleryVC!.view)
+            stackView.setCustomSpacing(20, after: mediaView)
         }
 
         descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
@@ -161,6 +185,79 @@ class FullscreenMediaSummaryViewController: UIViewController {
                 .multipliedBy(galleryHeightToWidth)
         }
         self.galleryVC = galleryVC
+    }
+
+    private func setupPreviewView() {
+        let previewWrapperView = UIView()
+        previewWrapperView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        stackView.addSubview(previewWrapperView)
+        previewWrapperView.snp.makeConstraints { make in
+            make.width.equalTo(scrollView)
+//            make.height.equalTo(276)
+        }
+        self.previewWrapperView = previewWrapperView
+
+        let previewBox = UIView()
+        previewBox.layer.cornerRadius = 13
+        previewBox.layer.borderWidth = 1
+        previewBox.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        previewBox.clipsToBounds = true
+        previewWrapperView.addSubview(previewBox)
+        previewBox.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+        self.previewBox = previewBox
+        previewBox.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(previewTapped)))
+
+        let previewVC = UploadPreviewViewController(
+            projectModel: projectModel,
+            mediaCache: mediaCache
+        )
+        // safe to cache web kit generated thumbnails, this view is always fully visible when generating thumbnail
+        previewVC.cacheWebKitGeneratedThumbnails = true
+        add(childController: previewVC, toView: previewBox)
+        let initialAspectRatio = 0.68 // as in the design
+        previewVC.view.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(previewVC.view.snp.width).multipliedBy(initialAspectRatio)
+            make.bottom.equalToSuperview().offset(-42)
+        }
+        previewVC.onAspectRatioLoaded = { heightToWidth in
+            previewVC.view.snp.remakeConstraints { make in
+                make.top.leading.trailing.equalToSuperview()
+                make.height.equalTo(previewVC.view.snp.width).multipliedBy(heightToWidth)
+                make.bottom.equalToSuperview().offset(-42)
+            }
+        }
+        previewVC.upload = upload
+        self.previewVC = previewVC
+
+        let separator = UIView()
+        separator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        previewBox.addSubview(separator)
+        separator.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(1)
+            make.bottom.equalToSuperview().offset(-41)
+        }
+
+        let fileNameLabel = UILabel()
+        fileNameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        fileNameLabel.adjustsFontForContentSizeCategory = true
+        fileNameLabel.lineBreakMode = .byTruncatingTail
+        fileNameLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
+        previewBox.addSubview(fileNameLabel)
+        fileNameLabel.snp.makeConstraints { make in
+            make.top.equalTo(separator.snp.bottom)
+            make.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(10)
+        }
+        self.fileNameLabel = fileNameLabel
+    }
+
+    @objc private func previewTapped() {
+        onPhotoSelected?()
     }
 
     private func setupCollaborationButton(collaboration: Collaboration) {

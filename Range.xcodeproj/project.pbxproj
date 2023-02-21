@@ -160,6 +160,8 @@
 		0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC7A327F7618D00712518 /* RoundShadowView.swift */; };
 		0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		0A58DDB9299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */; };
+		0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */; };
+		0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
 		0A632EB527E49638001A019B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB427E49638001A019B /* Assets.xcassets */; };
@@ -499,6 +501,8 @@
 		0A4DC7A327F7618D00712518 /* RoundShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowView.swift; sourceTree = "<group>"; };
 		0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentMediaCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPreviewViewController.swift; sourceTree = "<group>"; };
+		0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentThumbnailGenerator.swift; sourceTree = "<group>"; };
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632EAB27E49636001A019B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A632EAD27E49636001A019B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -1394,6 +1398,7 @@
 				0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */,
 				0A36CDFA299C0E2A0004758E /* RangeLocalFileImageDataProvider.swift */,
 				0A36CDFC299C11B50004758E /* RangeMediaCacheImageDataProvider.swift */,
+				0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */,
 			);
 			path = MediaStore;
 			sourceTree = "<group>";
@@ -1530,6 +1535,7 @@
 				0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */,
 				0AFA1A4A294B19E100491492 /* FullscreenMediaSummaryViewController.swift */,
 				0A147E7D294C5CB700B5833A /* CollaborationButton.swift */,
+				0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */,
 			);
 			path = FullscreenMedia;
 			sourceTree = "<group>";
@@ -1720,6 +1726,7 @@
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
+				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
@@ -1848,6 +1855,7 @@
 				0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A4995BF2858D00100E571FB /* Tag.swift in Sources */,
+				0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
 				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
