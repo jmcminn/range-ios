@@ -218,7 +218,15 @@ class UploadPreviewViewController: UIViewController {
 
     private func generateThumbnail() {
         guard let mediaKey = mediaKey, let thumbnailKey = thumbnailKey else { return }
-        let generator = DocumentThumbnailGenerator(mediaCache: mediaCache, containerView: view)
+        // it is safe to remove the webView from view when generating thumbnail if we decide
+        // it's safe to cache the webkit generated thumbnails (meaning they will be produced correctly)
+        // in this case the resulting thumbnail image will be shown and there's no point
+        // in keeping the web view in view hierarchy
+        let generator = DocumentThumbnailGenerator(
+            mediaCache: mediaCache,
+            containerView: view,
+            removeWebViewFromContainerViewWhenDone: cacheWebKitGeneratedThumbnails
+        )
         setActivityIndicator(hidden: false)
         Task {
             do {

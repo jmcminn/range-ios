@@ -3,9 +3,11 @@ import QuickLook
 import UIKit
 import WebKit
 
+/// Generates thumbnails for documents using either QuickLook (preferred method) or WebKit (fallback)
 class DocumentThumbnailGenerator {
     private unowned let mediaCache: MediaCache
     private unowned let containerView: UIView
+    private let removeWebViewFromContainerViewWhenDone: Bool
 
     enum ThumbnailSource {
         // thumbnail generated using QuickLook, doesn't require the containerView
@@ -17,9 +19,17 @@ class DocumentThumbnailGenerator {
 
     private var generator: WebViewImageGenerator?
 
-    init(mediaCache: MediaCache, containerView: UIView) {
+    /// - Parameters:
+    ///   - mediaCache: to obtain the original file which needs the thumbnail
+    ///   - containerView: when falling back to webKit generation the web view will be added to containerView
+    ///   - removeWebViewFromContainerViewWhenDone: by default the web view is removed from the containerView after screenshot was taken,
+    ///             but sometimes web view screenshot doesn't work well (when it cannot be guaranteed that containerView is
+    ///             visible on screen when taking the snapshot). In this case if web view is left in the container view it'll just render
+    ///             the content (acting as a thumbnail...) THIS IS A HACK, as w whole WebKit based thumbnailing...
+    init(mediaCache: MediaCache, containerView: UIView, removeWebViewFromContainerViewWhenDone: Bool = true) {
         self.mediaCache = mediaCache
         self.containerView = containerView
+        self.removeWebViewFromContainerViewWhenDone = removeWebViewFromContainerViewWhenDone
     }
 
     /// Generates jpeg thumbnail.1 for given (non-thumbnail) key of a document (not an image)
@@ -59,13 +69,16 @@ class DocumentThumbnailGenerator {
             generator.webView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
-            generator.generate { [generator] image, error in
+            generator.generate { [weak self, generator] image, error in
+                guard let self = self else { return }
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else {
                     continuation.resume(returning: image!)
                 }
-                generator.webView.removeFromSuperview()
+                if self.removeWebViewFromContainerViewWhenDone {
+                    generator.webView.removeFromSuperview()
+                }
             }
         } as UIImage
     }
@@ -82,6 +95,7 @@ class DocumentThumbnailGenerator {
         ///   - fileURL - the url of a local file to be converted to thumbnail
         init(imageSize: CGSize, fileURL: URL) {
             webView = WKWebView(frame: CGRect(origin: .zero, size: imageSize))
+            webView.isUserInteractionEnabled = false
             self.fileURL = fileURL
             super.init()
             webView.navigationDelegate = self

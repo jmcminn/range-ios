@@ -139,6 +139,8 @@
 		0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4995DA2861DBE600E571FB /* Kingfisher */; };
 		0A4ADD6429423AA8006DB186 /* ControlWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */; };
 		0A4D0D352805B618007A249F /* CardDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D0D342805B618007A249F /* CardDragging.swift */; };
+		0A4D11B529A392EF00D681E7 /* UploadFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D11B429A392EF00D681E7 /* UploadFeedItemCell.swift */; };
+		0A4D11BB29A5242500D681E7 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D11BA29A5242400D681E7 /* URL+Extensions.swift */; };
 		0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */; };
 		0A4DC76827EDCD1700712518 /* MapboxZoomConverterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */; };
 		0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */; };
@@ -481,7 +483,8 @@
 		0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A4B043B28CA21AE006E8630 /* Range.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Range.entitlements; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDragging.swift; sourceTree = "<group>"; };
-		0A4D11B829A51D9900D681E7 /* URL+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+Extensions.swift"; sourceTree = "<group>"; };
+		0A4D11B429A392EF00D681E7 /* UploadFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFeedItemCell.swift; sourceTree = "<group>"; };
+		0A4D11BA29A5242400D681E7 /* URL+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+Extensions.swift"; sourceTree = "<group>"; };
 		0A4DC76427EDCACA00712518 /* MapboxZoomConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverter.swift; sourceTree = "<group>"; };
 		0A4DC76727EDCD1700712518 /* MapboxZoomConverterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxZoomConverterTest.swift; sourceTree = "<group>"; };
 		0A4DC76A27EE0ED600712518 /* PDFPageSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageSize.swift; sourceTree = "<group>"; };
@@ -849,6 +852,7 @@
 				0A8924A22907D02F008C0A42 /* FeedItemCells.swift */,
 				0A130EA028D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift */,
 				0A966F9D28DDEAF100E50284 /* CommentFeedItemCell.swift */,
+				0A4D11B429A392EF00D681E7 /* UploadFeedItemCell.swift */,
 				0A130EA828D74F3300FF1368 /* ImageUploadFeedItemCell.swift */,
 				0A3831DC28E467B2001AF38A /* NameUpdateFeedItemCell.swift */,
 				0AB8557E28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift */,
@@ -1078,7 +1082,7 @@
 				0A18126E28339EC800A8515B /* UIView+Shadow.swift */,
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
 				0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */,
-				0A98E45B29910E2E004F0112 /* URL+Extensions.swift */,
+				0A4D11BA29A5242400D681E7 /* URL+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1867,6 +1871,7 @@
 				0A4DC78527F490CA00712518 /* PDFCanvas.swift in Sources */,
 				0AFCD61A2939285F004843AA /* String+Size.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
+				0A4D11BB29A5242500D681E7 /* URL+Extensions.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
 				0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */,
@@ -1882,7 +1887,6 @@
 				0A34C1872845FB7800BEDC7C /* FirestoreParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */,
-				0A4D11B929A51D9900D681E7 /* URL+Extensions.swift in Sources */,
 				0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */,
 				0A130EA728D7409800FF1368 /* Date+Formatting.swift in Sources */,
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */,
@@ -1916,7 +1920,6 @@
 				0A0E2066296311A8001782A5 /* PinType.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A7A5377293E49800093D913 /* ModelError.swift in Sources */,
-				0A98E45C29910E2E004F0112 /* URL+Extensions.swift in Sources */,
 				0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
@@ -1947,6 +1950,7 @@
 				0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */,
 				0A881987291D17060050FC41 /* CommandTypes.swift in Sources */,
 				0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */,
+				0A4D11B529A392EF00D681E7 /* UploadFeedItemCell.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */,

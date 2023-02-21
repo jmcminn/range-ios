@@ -183,6 +183,7 @@ class FeedViewController: UIViewController {
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.register(CollaborationCreatedFeedItemCell.self, forCellReuseIdentifier: "CollaborationCreated")
+        tableView.register(UploadFeedItemCell.self, forCellReuseIdentifier: "Upload")
         tableView.register(ImageUploadFeedItemCell.self, forCellReuseIdentifier: "ImageUpload")
         tableView.register(CommentFeedItemCell.self, forCellReuseIdentifier: "Comment")
         tableView.register(NameUpdateFeedItemCell.self, forCellReuseIdentifier: "NameUpdate")
@@ -284,7 +285,7 @@ class FeedViewController: UIViewController {
     private func observeUploads() {
         guard let uploads = uploads else { return }
         uploadsNotificationToken = uploads
-            .where { $0.placeholder == false && $0.fileType == .jpeg }
+            .where { $0.placeholder == false }
             .sorted(by: \Upload.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
@@ -466,6 +467,20 @@ extension FeedViewController {
             let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
             cell.imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
             cell.set(upload: upload, model: projectModel)
+            return cell
+        } else if let upload = feedItem.item as? Upload {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Upload",
+                                                     for: indexPath) as! UploadFeedItemCell
+            if let currentPreviewVC = cell.uploadPreviewVC {
+                remove(childController: currentPreviewVC)
+            }
+            let uploadPreviewVC = UploadPreviewViewController(projectModel: projectModel, mediaCache: mediaCache)
+            // don't cache web kit thumbnails, they may be blank as the cell is actually rendering
+            // the preview even before (fully) visible
+            uploadPreviewVC.cacheWebKitGeneratedThumbnails = false
+            addChild(uploadPreviewVC)
+            cell.set(upload: upload, model: projectModel, previewVC: uploadPreviewVC, tableView: tableView)
+            uploadPreviewVC.didMove(toParent: self)
             return cell
         } else if let comment = feedItem.item as? Comment {
             let cell = tableView.dequeueReusableCell(withIdentifier: "Comment",
