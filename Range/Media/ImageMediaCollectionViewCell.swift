@@ -2,7 +2,8 @@ import Foundation
 import Kingfisher
 import UIKit
 
-class MediaCollectionViewCell: UICollectionViewCell {
+/// collection cell for image media
+class ImageMediaCollectionViewCell: UICollectionViewCell {
     let imageView = UIImageView(frame: .zero)
     let avatarView = AvatarView()
 
@@ -40,7 +41,7 @@ class MediaCollectionViewCell: UICollectionViewCell {
 
     func setUpload(_ upload: Upload, imageDataProvider: RangeImageDataProvider) {
         imageView.kf.cancelDownloadTask()
-        imageView.kf.setImage(with: imageDataProvider)
+        imageView.kf.setImage(with: imageDataProvider, options: [.targetCache(imageDataProvider.cache)])
         avatarView.setUser(upload.author)
     }
 }

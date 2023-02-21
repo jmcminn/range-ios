@@ -4,7 +4,7 @@ import UIKit
 /// For now this view shows user initials in a gray circle.
 /// Later it'll support showing user avatar.
 class AvatarView: UIView {
-    private let label = UILabel()
+    let label = UILabel()
     private var height: Double = 0
 
     init() {

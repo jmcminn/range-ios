@@ -58,7 +58,7 @@ class MediaCardViewController: SheetCardViewController {
         self.mediaCache = mediaCache
         self.uploads = uploads
 
-        let layout = UICollectionViewFlowLayout()
+        let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 8
         layout.minimumLineSpacing = 16
@@ -131,9 +131,23 @@ class MediaCardViewController: SheetCardViewController {
         let appendSection = {
             if !sectionItems.isEmpty {
                 // add number of photos to section name (after all photos were collected for given section)
-                let photosString = sectionItems.count > 1 ? "photos" : "photo"
-                snapshot.appendSections(["\(sectionName) • \(sectionItems.count) \(photosString)"])
-                snapshot.appendItems(sectionItems)
+                let photosCount = sectionItems.filter(\.upload.isImage).count
+                if photosCount > 0 {
+                    let photosString = photosCount > 1 ? "photos" : "photo"
+                    snapshot.appendSections(["\(sectionName) • \(photosCount) \(photosString)"])
+                } else {
+                    snapshot.appendSections([sectionName])
+                }
+                // re-sort section items so images are first and documents next
+                let sortedSectionItems = sectionItems.sorted { item1, item2 in
+                    let u1 = item1.upload
+                    let u2 = item2.upload
+                    if u1.isImage != u2.isImage {
+                        return u1.isImage
+                    }
+                    return u1.timestamp > u2.timestamp
+                }
+                snapshot.appendItems(sortedSectionItems)
             }
         }
 
@@ -175,7 +189,8 @@ class MediaCardViewController: SheetCardViewController {
     private func setupCollectionView() {
         collectionView.prefetchDataSource = self
         collectionView.delegate = self
-        collectionView.register(MediaCollectionViewCell.self, forCellWithReuseIdentifier: "MediaCell")
+        collectionView.register(ImageMediaCollectionViewCell.self, forCellWithReuseIdentifier: "ImageCell")
+        collectionView.register(DocumentMediaCollectionViewCell.self, forCellWithReuseIdentifier: "DocumentCell")
         collectionView.register(
             MediaCollectionViewHeader.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -230,15 +245,23 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt _: IndexPath
+        sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         guard let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout else { return .zero }
         let availableWidth = collectionView.bounds.width - flowLayout.sectionInset.left - flowLayout.sectionInset.right
 
-        let itemWidth = floor((availableWidth + flowLayout.minimumInteritemSpacing) / 3 - flowLayout
-            .minimumInteritemSpacing)
+        guard let sectionId = dataSource.sectionIdentifier(for: indexPath.section) else { return .zero }
+        let sectionUploads = dataSource.snapshot(for: sectionId).items
+        guard indexPath.item < sectionUploads.count else { return .zero }
+        let upload = sectionUploads[indexPath.item].upload
 
-        return CGSize(width: itemWidth, height: itemWidth)
+        if upload.isImage {
+            let itemWidth = floor((availableWidth + flowLayout.minimumInteritemSpacing) / 3 - flowLayout
+                .minimumInteritemSpacing)
+            return CGSize(width: itemWidth, height: itemWidth)
+        } else {
+            return CGSize(width: availableWidth, height: 66)
+        }
     }
 
     /// Calculated the header height based on the header name and font
@@ -282,15 +305,20 @@ extension MediaCardViewController {
     func cell(forCollectionView collectionView: UICollectionView, indexPath: IndexPath,
               collectionItem: CollectionItem) -> UICollectionViewCell?
     {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MediaCell",
-                                                      for: indexPath) as! MediaCollectionViewCell
-
         let upload = collectionItem.upload
-        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
-        let imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
-        cell.setUpload(upload, imageDataProvider: imageDataProvider)
-
-        return cell
+        if upload.isImage {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell",
+                                                          for: indexPath) as! ImageMediaCollectionViewCell
+            let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
+            let imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
+            cell.setUpload(upload, imageDataProvider: imageDataProvider)
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DocumentCell",
+                                                          for: indexPath) as! DocumentMediaCollectionViewCell
+            cell.setUpload(upload)
+            return cell
+        }
     }
 
     func supplementaryView(forCollectionView collectionView: UICollectionView, elementKind: String,
