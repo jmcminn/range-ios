@@ -84,7 +84,8 @@ final class DeleteCollaborationCommandRealmTest: XCTestCase {
             description: nil,
             correlationId: "upload1",
             fileType: .jpeg,
-            imageHeightToWidth: 1
+            imageHeightToWidth: 1,
+            fileSize: 1024
         )
         let update = Update(id: "update1", timestamp: Date(), field: .name, oldValue: .none, newValue: .string("name"))
         let tag = Tag(id: "tag1", name: "tag 1")

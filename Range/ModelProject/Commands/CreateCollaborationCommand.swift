@@ -83,11 +83,12 @@ extension CreateCollaborationCommand: LocalCommand {
             let upload = Upload(
                 id: $0.id,
                 timestamp: Date.now,
-                name: nil,
+                name: $0.name,
                 description: uploadDescription,
                 correlationId: $0.id,
                 fileType: .jpeg,
-                imageHeightToWidth: $0.imageHeightToWidth
+                imageHeightToWidth: $0.imageHeightToWidth,
+                fileSize: $0.fileSize
             )
             upload.author = author
             // add new upload
@@ -171,12 +172,13 @@ extension CreateCollaborationCommand: FirestoreCommand {
                 parentType: "Collaboration",
                 authorId: authorId,
                 timestamp: Timestamp(), // doesn't matter, updated to server timestamp after encoding
-                name: nil,
+                name: $0.name,
                 uploadDescription: uploadDescription,
                 correlationId: $0.id,
                 tagIds: tagIds,
                 fileTypeString: Upload.FileType.jpeg.rawValue,
-                imageHeightToWidth: $0.imageHeightToWidth
+                imageHeightToWidth: $0.imageHeightToWidth,
+                fileSize: $0.fileSize
             )
             var data = try Firestore.Encoder().encode(firestoreObject)
             data[FirestoreUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()

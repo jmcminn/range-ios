@@ -43,7 +43,8 @@ final class DeleteUploadCommandRealmTest: XCTestCase {
             description: nil,
             correlationId: "upload1",
             fileType: .jpeg,
-            imageHeightToWidth: 1
+            imageHeightToWidth: 1,
+            fileSize: 1024
         )
         try realm.write {
             realm.add(upload)

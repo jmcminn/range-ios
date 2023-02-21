@@ -45,7 +45,8 @@ final class UpdateUploadDescriptionCommandRealmTest: XCTestCase {
             description: "description",
             correlationId: "upload1",
             fileType: .jpeg,
-            imageHeightToWidth: nil
+            imageHeightToWidth: nil,
+            fileSize: 1024
         )
         // setup collaboration1 with tag1 and tag2
         try realm.write {

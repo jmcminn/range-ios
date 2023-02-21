@@ -26,15 +26,30 @@ struct CommandTag: Codable, Equatable {
 /// `Upload` data required for upload creation
 struct CommandUpload: Codable, Equatable {
     var id: String
-    var imageHeightToWidth: Double
+    var fileType: Upload.FileType
+    var fileSize: Int64
+    var name: String?
+    var imageHeightToWidth: Double?
 
-    init(id: String, imageHeightToWidth: Double) {
+    init(
+        id: String,
+        fileType: Upload.FileType,
+        fileSize: Int64,
+        name: String? = nil,
+        imageHeightToWidth: Double? = nil
+    ) {
         self.id = id
+        self.fileType = fileType
+        self.fileSize = fileSize
+        self.name = name
         self.imageHeightToWidth = imageHeightToWidth
     }
 
     init(fromPhotoToAdd photoToAdd: PhotoToAdd) {
         id = photoToAdd.uploadId
+        fileType = .jpeg
+        fileSize = photoToAdd.fileSize
+        name = photoToAdd.fileName
         imageHeightToWidth = photoToAdd.height2Width
     }
 }

@@ -96,7 +96,7 @@ class ProjectModelCommandsTest: XCTestCase {
                 timestamp: Date(timeIntervalSince1970: 1234),
                 cacheKey: "cacheKey",
                 thumbnail: UIImage(),
-                height2Width: 1
+                height2Width: 1, fileSize: 1024
             )],
             tags: [TagViewModel(id: "tag1", name: "tag 1", usageCount: 0)],
             description: "upload description",
@@ -117,7 +117,7 @@ class ProjectModelCommandsTest: XCTestCase {
             coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
             tags: [.init(id: "tag1", name: "tag 1")],
             uploadDescription: "upload description",
-            uploads: [.init(id: "upload1", imageHeightToWidth: 1)]
+            uploads: [.init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1)]
         ))
     }
 
@@ -127,7 +127,7 @@ class ProjectModelCommandsTest: XCTestCase {
         do {
             _ = try await model.addPhotos(
                 [PhotoToAdd(uploadId: "upload1", timestamp: Date.now, cacheKey: "cacheKey", thumbnail: UIImage(),
-                            height2Width: 1)],
+                            height2Width: 1, fileSize: 1024)],
                 tags: [],
                 description: "",
                 toCollaborationForGeometryId: "geometry1"
@@ -156,7 +156,7 @@ class ProjectModelCommandsTest: XCTestCase {
         do {
             _ = try await model.addPhotos(
                 [PhotoToAdd(uploadId: "upload1", timestamp: Date.now, cacheKey: "cacheKey", thumbnail: UIImage(),
-                            height2Width: 1)],
+                            height2Width: 1, fileSize: 1024)],
                 tags: [], description: "", toCollaborationForGeometryId: "geometry1"
             )
             XCTFail("should throw error")
@@ -187,7 +187,7 @@ class ProjectModelCommandsTest: XCTestCase {
         do {
             _ = try await model.addPhotos(
                 [PhotoToAdd(uploadId: "upload1", timestamp: Date.now, cacheKey: "cacheKey", thumbnail: UIImage(),
-                            height2Width: 1)],
+                            height2Width: 1, fileSize: 1024)],
                 tags: [],
                 description: "",
                 toCollaborationForGeometryId: "geometry1"
@@ -222,20 +222,20 @@ class ProjectModelCommandsTest: XCTestCase {
             [
                 PhotoToAdd(uploadId: "upload1", timestamp: Date(timeIntervalSince1970: 1234), cacheKey: "cacheKey1",
                            thumbnail: UIImage(),
-                           height2Width: 1),
+                           height2Width: 1, fileSize: 1024),
                 PhotoToAdd(
                     uploadId: "upload2",
                     timestamp: Date(timeIntervalSince1970: 1235),
                     cacheKey: "cacheKey2",
                     thumbnail: UIImage(),
-                    height2Width: 1.2
+                    height2Width: 1.2, fileSize: 1024
                 ),
                 PhotoToAdd(
                     uploadId: "upload3",
                     timestamp: Date(timeIntervalSince1970: 1236),
                     cacheKey: "cacheKey3",
                     thumbnail: UIImage(),
-                    height2Width: 1.3
+                    height2Width: 1.3, fileSize: 1024
                 ),
             ],
             tags: [TagViewModel(id: "tag1", name: "tag 1", usageCount: 0)],
@@ -248,9 +248,9 @@ class ProjectModelCommandsTest: XCTestCase {
             tags: [.init(id: "tag1", name: "tag 1")],
             uploadDescription: "upload description",
             uploads: [
-                .init(id: "upload1", imageHeightToWidth: 1),
-                .init(id: "upload2", imageHeightToWidth: 1.2),
-                .init(id: "upload3", imageHeightToWidth: 1.3),
+                .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1),
+                .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.2),
+                .init(id: "upload3", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.3),
             ]
         ))
     }

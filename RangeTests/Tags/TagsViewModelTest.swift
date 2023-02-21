@@ -126,7 +126,8 @@ class TagsViewModelTest: XCTestCase {
             description: "",
             correlationId: "upload1",
             fileType: .jpeg,
-            imageHeightToWidth: 0.75
+            imageHeightToWidth: 0.75,
+            fileSize: 1024
         )
         let upload2 = Upload(
             id: "upload2",
@@ -135,7 +136,8 @@ class TagsViewModelTest: XCTestCase {
             description: "",
             correlationId: "upload1",
             fileType: .jpeg,
-            imageHeightToWidth: 1.2
+            imageHeightToWidth: 1.0,
+            fileSize: 1024
         )
         try realm.write {
             realm.add([upload1, upload2])

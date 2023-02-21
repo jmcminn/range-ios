@@ -149,7 +149,8 @@ class AddPhotoFlowController {
             timestamp: Date.now,
             cacheKey: cacheKey,
             thumbnail: image.imageResized(toFill: 100),
-            height2Width: image.size.height / image.size.width
+            height2Width: image.size.height / image.size.width,
+            fileSize: Int64(data.count)
         )
 
         // store the image in local cache

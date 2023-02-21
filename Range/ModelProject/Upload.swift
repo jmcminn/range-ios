@@ -44,6 +44,8 @@ class Upload: Object, WithPlaceholder {
     @Persisted var imageHeightToWidth: Double?
     /// File type
     @Persisted var fileType: FileType
+    /// Size of file in bytes, optional until data migrated
+    @Persisted var fileSize: Int64?
     /// The storage versions (map of type, for example, "main", "thumbnail0" to version string)
     @Persisted var storageVersion: Map<String, String>
     /// comments, the order doesn't matter so it's a set (the order is controlled by the comment timestamp when displaying in the UI)
@@ -76,6 +78,7 @@ class Upload: Object, WithPlaceholder {
         correlationId: String,
         fileType: FileType,
         imageHeightToWidth: Double?,
+        fileSize: Int64?,
         storageVersion: [String: String]? = nil,
         placeholder: Bool = false
     ) {
@@ -87,6 +90,7 @@ class Upload: Object, WithPlaceholder {
         self.correlationId = correlationId
         self.fileType = fileType
         self.imageHeightToWidth = imageHeightToWidth
+        self.fileSize = fileSize
         if let storageVersion = storageVersion {
             // merge overwriting with new values
             self.storageVersion.merge(storageVersion) { _, new in new }
@@ -104,6 +108,7 @@ class Upload: Object, WithPlaceholder {
             correlationId: id,
             fileType: .jpeg,
             imageHeightToWidth: nil,
+            fileSize: nil,
             storageVersion: nil,
             placeholder: true
         )

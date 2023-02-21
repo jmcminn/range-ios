@@ -9,6 +9,8 @@ struct PhotoToAdd {
     var uploadId: String
     /// Identifier of the asset selected from the camera roll (only present if the photo was selected using photo picker)
     var assetIdentifier: String?
+    /// Suggested file name when asset selected frmo the camera roll
+    var fileName: String?
     /// when the photo was taken
     var timestamp: Date
     /// key for images.cameraCache, matches the storage keys, so composed of projectId and uploadId
@@ -17,6 +19,8 @@ struct PhotoToAdd {
     var thumbnail: UIImage
     /// to layout before fetching from cache
     var height2Width: Double
+    /// size of the file
+    var fileSize: Int64
 }
 
 /// View model for list of `PhotoToAdd`s
@@ -96,10 +100,12 @@ class PhotosToAddViewModel: NSObject {
         return PhotoToAdd(
             uploadId: uploadId,
             assetIdentifier: result.assetIdentifier,
+            fileName: itemProvider.suggestedName,
             timestamp: Date.now,
             cacheKey: cacheKey,
             thumbnail: thumbnail,
-            height2Width: thumbnail.size.height / thumbnail.size.width
+            height2Width: thumbnail.size.height / thumbnail.size.width,
+            fileSize: Int64(data.count)
         )
     }
 

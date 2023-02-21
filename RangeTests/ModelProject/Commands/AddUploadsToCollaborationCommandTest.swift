@@ -16,8 +16,8 @@ final class AddUploadsToCollaborationCommandRealmTest: XCTestCase {
         tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
         uploadDescription: "upload description",
         uploads: [
-            .init(id: "upload1", imageHeightToWidth: 1.0),
-            .init(id: "upload2", imageHeightToWidth: 2.0),
+            .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
+            .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
         ]
     )
 
@@ -107,8 +107,8 @@ final class AddUploadsToCollaborationCommandFirestoreTest: XCTestCase {
         tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
         uploadDescription: "upload description",
         uploads: [
-            .init(id: "upload1", imageHeightToWidth: 1.0),
-            .init(id: "upload2", imageHeightToWidth: 2.0),
+            .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
+            .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
         ]
     )
 
@@ -160,7 +160,7 @@ final class AddUploadsToCollaborationCommandFirestoreTest: XCTestCase {
                 "parent": "collaboration1", "parentType": "Collaboration",
                 "correlation": "upload1", "author": "user1", "timestamp": FieldValue.serverTimestamp(),
                 "tags": ["tag1", "tag2"], "description": "upload description",
-                "fileType": "jpeg", "imageHeightToWidth": 1.0,
+                "fileType": "jpeg", "imageHeightToWidth": 1.0, "fileSize": 1024,
             ])
         )
         AssertOperationsEqual(
@@ -169,7 +169,7 @@ final class AddUploadsToCollaborationCommandFirestoreTest: XCTestCase {
                 "parent": "collaboration1", "parentType": "Collaboration",
                 "correlation": "upload2", "author": "user1", "timestamp": FieldValue.serverTimestamp(),
                 "tags": ["tag1", "tag2"], "description": "upload description",
-                "fileType": "jpeg", "imageHeightToWidth": 2.0,
+                "fileType": "jpeg", "imageHeightToWidth": 2.0, "fileSize": 1024,
             ])
         )
     }
