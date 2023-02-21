@@ -32,7 +32,7 @@ extension UIButton.Configuration {
     /// Configuration used for the "back" button in the bottom navigation
     static func grayButton() -> UIButton.Configuration {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)
-            .applying(UIImage.SymbolConfiguration(weight: .regular))
+            .applying(UIImage.SymbolConfiguration(weight: .semibold))
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(
             top: 14,
@@ -58,7 +58,7 @@ extension UIButton.Configuration {
         cornerRadius: CGFloat = 12
     ) -> UIButton.Configuration {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: imageTextStyle)
-            .applying(UIImage.SymbolConfiguration(weight: .regular))
+            .applying(UIImage.SymbolConfiguration(weight: .semibold))
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(
             top: 14,
@@ -84,7 +84,7 @@ extension UIButton.Configuration {
         cornerRadius: CGFloat = 12
     ) -> UIButton.Configuration {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: imageTextStyle)
-            .applying(UIImage.SymbolConfiguration(weight: .regular))
+            .applying(UIImage.SymbolConfiguration(weight: .semibold))
         var config = UIButton.Configuration.filled()
 
         config.contentInsets = NSDirectionalEdgeInsets(

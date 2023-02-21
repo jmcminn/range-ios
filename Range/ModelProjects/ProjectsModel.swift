@@ -108,7 +108,6 @@ class ProjectsModel: NSObject, RealmModel {
         }
 
         // 2. start listening to new projects
-        let currentProjectIds = Set<String>(currentProjects.map(\.id))
         for newProjectId in newProjectIds {
             if listeners[newProjectId] == nil {
                 Logger.model.debug("user has permissions for project \(newProjectId), syncing.")
