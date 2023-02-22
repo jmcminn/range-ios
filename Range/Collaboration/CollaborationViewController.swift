@@ -28,6 +28,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var bottomView = UIView()
     var badgeView: CollaborationBadgeView!
     var statusButton: CollaborationStatusButton!
+    /// shown for archived collaboration (for tasks it replaces the status button)
+    var archivedLabel: LabelWithTextInsets!
     var moreButton: UIButton!
     var closeButton: UIButton!
     var nameField: UITextField!
@@ -110,6 +112,14 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         statusButton.addTarget(self, action: #selector(statusTapped), for: .touchUpInside)
         containerView.addSubview(statusButton)
         statusButton.snp.makeConstraints { make in
+            make.height.equalTo(32)
+            make.centerY.equalTo(badgeView)
+            make.leading.equalTo(badgeView.snp.trailing).offset(10)
+        }
+
+        setupArchivedLabel()
+        containerView.addSubview(archivedLabel)
+        archivedLabel.snp.makeConstraints { make in
             make.height.equalTo(32)
             make.centerY.equalTo(badgeView)
             make.leading.equalTo(badgeView.snp.trailing).offset(10)
@@ -227,6 +237,7 @@ extension CollaborationViewController {
         badgeView.isUserInteractionEnabled = !collaboration.isArchived
 
         statusButton.isHidden = !isTaskWindow || collaboration.isArchived
+        archivedLabel.isHidden = !collaboration.isArchived
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         if !nameField.isEditing {
@@ -251,6 +262,17 @@ extension CollaborationViewController {
             }
         )
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
+    }
+
+    private func setupArchivedLabel() {
+        archivedLabel = LabelWithTextInsets()
+        archivedLabel.textInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        archivedLabel.font = UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        archivedLabel.textColor = .Neutral_01
+        archivedLabel.adjustsFontForContentSizeCategory = true
+        archivedLabel.backgroundColor = .Neutral_05
+        archivedLabel.text = String(localized: "Archived")
+        archivedLabel.autoround = true
     }
 
     private func setupCloseButton() {

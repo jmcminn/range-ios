@@ -8,7 +8,14 @@ class LabelWithTextInsets: UILabel {
         didSet { invalidateIntrinsicContentSize() }
     }
 
-    /// if configured it adds a border with given color and radius appropriate for the height
+    /// add rounded corner based on the view heigh
+    var autoround: Bool = false {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+
+    /// if configured it adds a border with given color
     var borderColor: UIColor? {
         didSet {
             updateBorderColor()
@@ -42,19 +49,19 @@ class LabelWithTextInsets: UILabel {
         if let borderColor = borderColor {
             layer.borderColor = borderColor.cgColor
             layer.borderWidth = 1
-            clipsToBounds = true
         } else {
             layer.borderColor = nil
-            clipsToBounds = false
         }
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        if borderColor != nil {
+        if autoround {
             layer.cornerRadius = frame.height / 2
+            clipsToBounds = true
         } else {
             layer.cornerRadius = 0
+            clipsToBounds = false
         }
     }
 }

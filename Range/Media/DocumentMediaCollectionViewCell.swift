@@ -40,6 +40,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
 
         fileSizeLabel.textInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
         fileSizeLabel.borderColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        fileSizeLabel.autoround = true
         fileSizeLabel.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
         fileSizeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         fileSizeLabel.adjustsFontForContentSizeCategory = true
