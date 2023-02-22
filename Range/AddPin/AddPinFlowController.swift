@@ -163,6 +163,7 @@ class AddPinFlowController {
                 selectionEnabled: false,
                 deselectOnCanvasTap: false,
                 ignoredGeometryId: ignoredGeometryId,
+                showArchivedPins: UserSettings().showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
             )
             : GeometriesAnnotationPinsDisplay(
@@ -171,6 +172,7 @@ class AddPinFlowController {
                 selectionEnabled: false,
                 deselectOnCanvasTap: false,
                 ignoredGeometryId: ignoredGeometryId,
+                showArchivedPins: UserSettings().showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
             )
     }

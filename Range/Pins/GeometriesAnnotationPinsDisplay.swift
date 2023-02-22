@@ -17,6 +17,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
     private let ignoredGeometryId: String?
+    private let showArchivedPins: Bool
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
     /// Token for notifications about changes in the canvas geometries
@@ -45,6 +46,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
         ignoredGeometryId: String? = nil,
+        showArchivedPins: Bool,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
@@ -52,6 +54,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         self.selectionEnabled = selectionEnabled
         self.deselectOnCanvasTap = deselectOnCanvasTap
         self.ignoredGeometryId = ignoredGeometryId
+        self.showArchivedPins = showArchivedPins
         self.geometryPinDisplayOptionsProvider = geometryPinDisplayOptionsProvider
     }
 
@@ -120,12 +123,16 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
 extension GeometriesAnnotationPinsDisplay {
     /// observe the geometries and reload pins when the change is observed
     private func loadAndDisplayPins(onInitialLoad: (() -> Void)?) {
-        geometriesNotificationToken = canvas.geometries
+        var geometries = canvas.geometries
             .where { $0.placeholder == false &&
                 $0.annotationType == .photoMarker &&
                 // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
                 ($0.features.collaborations.count > 0).count > 0
             }
+        if !showArchivedPins {
+            geometries = geometries.where { $0.archivedTimestamp == nil }
+        }
+        geometriesNotificationToken = geometries
             .observe { [weak self] changes in
                 guard let self = self else { return }
                 switch changes {

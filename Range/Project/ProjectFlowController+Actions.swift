@@ -28,6 +28,8 @@ final class FlowEvent: UIEvent {
     func showMediaAction()
     /// Select and change the current canvas for project
     func selectCanvasAction()
+    /// Select canvas filters
+    func selectCanvasFiltersAction()
     /// Show fullscreen media view for given upload
     func showFullscreenMediaAction(sender: Any?, event: FlowEvent)
     /// Show fullscreen media view and open comments tab for given upload
@@ -57,6 +59,11 @@ extension ProjectFlowController: ProjectFlowActions {
                 self.model.currentCanvas = canvas
             }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    func selectCanvasFiltersAction() {
+        CanvasFiltersCardViewController(userSettings: userSettings)
+            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     func showMediaAction() {
@@ -112,7 +119,10 @@ extension ProjectFlowController: ProjectFlowActions {
         // update the canvas
         model.currentCanvas = canvas
         // reload the pins (it only reloads if canvas has changed)
-        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
+        reloadGeometriesPinsDisplay(
+            useNativeViews: debugSettings.nativeViewsForPins,
+            showArchivedCollaborations: userSettings.showArchivedCollaborations
+        ) {
             guard let pinsDisplay = self.pinsDisplay else { return }
             if let pin = pinsDisplay.pinForGeometryId(geometry.id) {
                 // select the pin (which will trigger showing the collaboration window)

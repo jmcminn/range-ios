@@ -11,6 +11,8 @@ final class UserSettings: ObservableObject {
         static let uploadUsingCellular = "uploadUsingCellular"
         /// whether to save the images used for uploads to device (only for taken photos, not for the ones selected from camera roll)
         static let saveImagesToDevice = "saveImagesToDevice"
+        /// show archived collaborations
+        static let showArchivedCollaborations = "showArchivedCollaborations"
     }
 
     private let defaults: UserDefaults
@@ -27,15 +29,23 @@ final class UserSettings: ObservableObject {
         }
     }
 
+    @Published var showArchivedCollaborations: Bool {
+        didSet {
+            defaults.set(showArchivedCollaborations, forKey: Keys.showArchivedCollaborations)
+        }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
 
         defaults.register(defaults: [
             Keys.uploadUsingCellular: true,
             Keys.saveImagesToDevice: false,
+            Keys.showArchivedCollaborations: false,
         ])
 
         _uploadUsingCellular = .init(initialValue: defaults.bool(forKey: Keys.uploadUsingCellular))
         _saveImagesToDevice = .init(initialValue: defaults.bool(forKey: Keys.saveImagesToDevice))
+        _showArchivedCollaborations = .init(initialValue: defaults.bool(forKey: Keys.showArchivedCollaborations))
     }
 }

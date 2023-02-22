@@ -240,6 +240,7 @@
 		0A88198F291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */; };
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
+		0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */; };
 		0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */; };
 		0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */; };
 		0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */; };
@@ -588,6 +589,7 @@
 		0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDueDateCommandTest.swift; sourceTree = "<group>"; };
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
+		0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableViewCell.swift; sourceTree = "<group>"; };
 		0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeView.swift; sourceTree = "<group>"; };
@@ -880,6 +882,7 @@
 				0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */,
 				0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */,
 				0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */,
+				0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -1727,6 +1730,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
+				0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */,
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,

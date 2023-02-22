@@ -18,6 +18,9 @@ final class ProjectFlowController: UIViewController {
     let canvasContainer: CanvasContainerViewController
     let collaborationFlow: CollaborationFlowController
 
+    let userSettings: UserSettings
+    /// for storing the userSettings observer
+    private var userSettingsShowArchivedPinsSubscriber: AnyCancellable?
     let debugSettings = DebugSettings()
     /// for storing the debugSettings observer(s)
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
@@ -26,6 +29,7 @@ final class ProjectFlowController: UIViewController {
     lazy var actionCardVC = setupActionCardVC()
     var pinsDisplay: GeometriesPinsDisplay?
     var canvasSelectorButton: RoundShadowButton!
+    var canvasFiltersButton: RoundShadowButton!
     weak var mediaVC: MediaCardViewController?
     weak var fullscreenMediaVC: FullscreenMediaCardViewController?
     weak var taskListVC: TaskListCardViewController?
@@ -59,7 +63,8 @@ final class ProjectFlowController: UIViewController {
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         pendingUploadsModel: PendingUploadsModel,
-        pendingActionsModel: PendingActionsModel
+        pendingActionsModel: PendingActionsModel,
+        userSettings: UserSettings
     ) async throws {
         self.localFiles = localFiles
         self.mediaCache = mediaCache
@@ -94,6 +99,7 @@ final class ProjectFlowController: UIViewController {
             mediaCache: mediaCache,
             canvasContainer: canvasContainer
         )
+        self.userSettings = userSettings
 
         super.init(nibName: nil, bundle: nil)
 
@@ -117,7 +123,10 @@ final class ProjectFlowController: UIViewController {
     private func start() {
         guard started == false else { return }
         started = true
-        createGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins)
+        createGeometriesPinsDisplay(
+            useNativeViews: debugSettings.nativeViewsForPins,
+            showArchivedCollaborations: userSettings.showArchivedCollaborations
+        )
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -126,15 +135,21 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.layoutIfNeeded()
         showTopViewController(animated: false)
 
+        setupCanvasFiltersButton()
         setupCanvasSelectorButton()
 
         showDefaultCanvasUI(animated: false)
         collaborationFlow.start()
+        observeUserSettings()
         observeDebugSettings()
 
         canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
-            self.reloadGeometriesPinsDisplay(useNativeViews: self.debugSettings.nativeViewsForPins, onReloaded: nil)
+            self.reloadGeometriesPinsDisplay(
+                useNativeViews: self.debugSettings.nativeViewsForPins,
+                showArchivedCollaborations: self.userSettings.showArchivedCollaborations,
+                onReloaded: nil
+            )
         }
 
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
@@ -143,10 +158,17 @@ final class ProjectFlowController: UIViewController {
     /// Reload the geometries pins display.
     /// It stops the current pins display, creates a new one and starts it if the previous one was started (maybe it was temporarily stopped,
     /// then we need the new one to be stopped too)
-    func reloadGeometriesPinsDisplay(useNativeViews: Bool, onReloaded: (() -> Void)?) {
+    func reloadGeometriesPinsDisplay(
+        useNativeViews: Bool,
+        showArchivedCollaborations: Bool,
+        onReloaded: (() -> Void)?
+    ) {
         let start = pinsDisplay?.started ?? false
         pinsDisplay?.stop()
-        createGeometriesPinsDisplay(useNativeViews: useNativeViews)
+        createGeometriesPinsDisplay(
+            useNativeViews: useNativeViews,
+            showArchivedCollaborations: showArchivedCollaborations
+        )
         if start {
             pinsDisplay?.start(onInitialLoad: onReloaded)
         }
@@ -155,22 +177,42 @@ final class ProjectFlowController: UIViewController {
     private func observeDebugSettings() {
         debugSettingsNativeViewsForPinsSubscriber = debugSettings.$nativeViewsForPins
             .sink { [weak self] useNativeViews in
-                self?.reloadGeometriesPinsDisplay(useNativeViews: useNativeViews, onReloaded: nil)
+                guard let self = self else { return }
+                self.reloadGeometriesPinsDisplay(
+                    useNativeViews: useNativeViews,
+                    showArchivedCollaborations: self.userSettings.showArchivedCollaborations,
+                    onReloaded: nil
+                )
             }
     }
 
-    private func createGeometriesPinsDisplay(useNativeViews: Bool) {
+    /// Observe user settings to detect change in showArchivedCollaborations
+    private func observeUserSettings() {
+        userSettingsShowArchivedPinsSubscriber = userSettings.$showArchivedCollaborations
+            .sink { [weak self] showArchivedCollaborations in
+                guard let self = self else { return }
+                self.reloadGeometriesPinsDisplay(
+                    useNativeViews: self.debugSettings.nativeViewsForPins,
+                    showArchivedCollaborations: showArchivedCollaborations,
+                    onReloaded: nil
+                )
+            }
+    }
+
+    private func createGeometriesPinsDisplay(useNativeViews: Bool, showArchivedCollaborations: Bool) {
         pinsDisplay = useNativeViews
             ? GeometriesViewAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: true,
+                showArchivedPins: showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
             )
             : GeometriesAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
                 canvasViewController: canvasContainer.pdfCanvasViewController,
                 deselectOnCanvasTap: true,
+                showArchivedPins: showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
             )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
@@ -208,6 +250,8 @@ final class ProjectFlowController: UIViewController {
         remove(childController: canvasContainer)
         debugSettingsNativeViewsForPinsSubscriber?.cancel()
         debugSettingsNativeViewsForPinsSubscriber = nil
+        userSettingsShowArchivedPinsSubscriber?.cancel()
+        userSettingsShowArchivedPinsSubscriber = nil
         canvasObservation?.invalidate()
         canvasObservation = nil
     }
@@ -256,6 +300,7 @@ final class ProjectFlowController: UIViewController {
     func showDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.showCard(animated: animated)
         canvasSelectorButton.isHidden = false
+        canvasFiltersButton.isHidden = false
         pinsDisplay?.start(onInitialLoad: nil)
     }
 
@@ -263,7 +308,19 @@ final class ProjectFlowController: UIViewController {
     func hideDefaultCanvasUI(animated: Bool = true) {
         actionCardVC.hideCard(animated: animated)
         canvasSelectorButton.isHidden = true
+        canvasFiltersButton.isHidden = true
         pinsDisplay?.stop()
+    }
+
+    fileprivate func setupCanvasFiltersButton() {
+        canvasFiltersButton =
+            RoundShadowButton(image: UIImage(systemName: "line.3.horizontal.decrease.circle") ?? UIImage())
+        canvasFiltersButton.addTarget(self, action: #selector(selectCanvasFiltersAction), for: .touchUpInside)
+        canvasContainer.controls.addSubview(canvasFiltersButton)
+        canvasFiltersButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(actionCardVC.view.snp.top).offset(-12)
+        }
     }
 
     fileprivate func setupCanvasSelectorButton() {
@@ -272,7 +329,7 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.controls.addSubview(canvasSelectorButton)
         canvasSelectorButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(12)
-            make.bottom.equalTo(actionCardVC.view.snp.top).offset(-12)
+            make.bottom.equalTo(canvasFiltersButton.snp.top).offset(-12)
         }
     }
 
@@ -399,7 +456,10 @@ extension ProjectFlowController {
     }
 
     private func selectCollaborationAndEditName(forGeometryId geometryId: String) {
-        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
+        reloadGeometriesPinsDisplay(
+            useNativeViews: debugSettings.nativeViewsForPins,
+            showArchivedCollaborations: userSettings.showArchivedCollaborations
+        ) {
             if let pinsDisplay = self.pinsDisplay, let pin = pinsDisplay.pinForGeometryId(geometryId) {
                 // select the pin (which will trigger showing the collaboration window)
                 pinsDisplay.setSelectedPin(pin)

@@ -176,7 +176,8 @@ class ProjectsFlowController: UINavigationController {
             localFiles: localFiles,
             mediaCache: mediaCache,
             pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel
+            pendingActionsModel: pendingActionsModel,
+            userSettings: userSettings
         )
         projectFC.onBack = { [weak self] in
             _ = self?.popViewController(animated: true)
