@@ -9,18 +9,22 @@ struct UserSettingsView: View {
                 Toggle(isOn: $userSettings.uploadUsingCellular) {
                     Text("Allow uploads using cellular data")
                         .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
+                        .padding(.top, 6)
                     Text("If disabled, only upload over wifi")
                         .font(.caption2)
                         .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
+                        .padding(.bottom, 6)
                 }
             }
             Section(header: Text("Camera")) {
                 Toggle(isOn: $userSettings.saveImagesToDevice) {
-                    Text("Save Images to Device")
+                    Text("Save images to device")
+                        .padding(.top, 6)
                         .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
                     Text("Photos are saved to the cloud and your device")
                         .font(.caption2)
                         .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
+                        .padding(.bottom, 6)
                 }
             }
             Section {
@@ -29,6 +33,7 @@ struct UserSettingsView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
                         .contentShape(Rectangle()) // Hack to make the button trigger on the whole width and not only where the text is
+                        .padding(.vertical, 6)
                 }.buttonStyle(.plain)
             }
         }
