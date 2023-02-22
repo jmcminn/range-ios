@@ -313,6 +313,7 @@ class AddPhotoFlowController {
         showConfirmationCard()
         showPanAndZoomIndicatorView()
         showCanvasSelectorButton()
+        showPinTypeSelector()
         showPins()
     }
 
