@@ -299,7 +299,6 @@ extension GeometriesAnnotationPinsDisplay {
             with: point,
             options: RenderedQueryOptions(layerIds: [annotationsId], filter: nil)
         ) { result in
-            // TODO: 666 here
             // take any of the selected features with "pins" source
             guard case let .success(queriedFeatures) = result else { completion(nil); return }
             let feature = queriedFeatures

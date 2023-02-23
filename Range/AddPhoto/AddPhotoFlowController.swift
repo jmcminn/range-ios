@@ -2,6 +2,8 @@ import AVFoundation
 import Kingfisher
 import OSLog
 import PhotosUI
+import Realm
+import RealmSwift
 import Turf
 import UIKit
 
@@ -40,9 +42,10 @@ class AddPhotoFlowController {
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
     var geometryId: String?
     /// whether to create photo or task collaboration
-    var pinType: PinType = .photo {
+    var pinTypeOption: PinTypeOption = .pinType(.photo) {
         didSet {
-            pinsDisplay?.photoPinView?.pinType = pinType
+            pinsDisplay?.photoPinView?.pinType = pinTypeOption.pinType
+            confirmationCardVC?.showNextButton = pinTypeOption == .copyTask
         }
     }
 
@@ -461,7 +464,7 @@ class AddPhotoFlowController {
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: model.currentCanvas,
                 withGeometryId: geometryId,
-                isTask: pinType == .task
+                isTask: pinTypeOption.pinType == .task
             ))
             resultGeometryId = geometryId
             newCollaborationCreated = true
@@ -588,6 +591,7 @@ extension AddPhotoFlowController {
             self?.onPhotoLocationBack()
         }
         confirmationCardVC!.onDone = { [weak self] in
+            // TODO: 859 handle copy task
             self?.finalizeFromConfirmationCard()
         }
         canvasContainer.installCard(
@@ -636,9 +640,20 @@ extension AddPhotoFlowController {
     private func showPinTypeSelector() {
         guard let confirmationCardVC = confirmationCardVC else { return }
         if switchPinTypeCardVC == nil {
-            let pinTypeVC = SwitchPinTypeCardViewController(confirmationVC: confirmationCardVC)
-            pinTypeVC.onPinTypeChange = { [weak self] pinType in
-                self?.pinType = pinType
+            let collaborationsCreatedByUser = model.mainRealm.objects(Collaboration.self)
+                .where { (c: Query<Collaboration>) -> Query<Bool> in
+                    c.author == model.currentUser && c.status != nil
+                }
+            // only show option to copy one of the last tasks if this user created any tasks
+            let showCopyTask = !collaborationsCreatedByUser.isEmpty
+            let pinTypeVC = SwitchPinTypeCardViewController(
+                availableTypes: showCopyTask
+                    ? [.pinType(.photo), .pinType(.task), .copyTask]
+                    : [.pinType(.photo), .pinType(.task)],
+                confirmationVC: confirmationCardVC
+            )
+            pinTypeVC.onPinTypeChange = { [weak self] pinTypeOption in
+                self?.pinTypeOption = pinTypeOption
             }
             canvasContainer.installCard(
                 cardViewController: pinTypeVC,

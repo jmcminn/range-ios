@@ -42,6 +42,14 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         }
     }
 
+    /// By default a 'done' button is shown. If this flag is switched to `true` it changes the icon and copy to "Next"
+    var showNextButton: Bool = false {
+        didSet {
+            doneButton.setTitle(showNextButton ? String(localized: "Next") : String(localized: "Done"), for: .normal)
+            doneButton.setImage(UIImage(systemName: showNextButton ? "arrow.forward" : "checkmark"), for: .normal)
+        }
+    }
+
     override func loadView() {
         view = RoundShadowView(cornerRadius: 24)
     }
@@ -58,7 +66,7 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
             }
         )
         doneButton = UIButton(
-            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
+            configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
                 self?.onDone?()
             }

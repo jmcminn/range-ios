@@ -6,7 +6,8 @@ import UIKit
 class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
     weak var confirmationVC: AddPhotoConfirmationViewController?
-    var onPinTypeChange: ((PinType) -> Void)?
+    private let availableTypes: [PinTypeOption]
+    var onPinTypeChange: ((PinTypeOption) -> Void)?
 
     private var headerView: UIView!
     private var pinTypeToggle: SegmentedControl!
@@ -20,7 +21,8 @@ class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinatin
     }
 
     /// Initializer
-    init(confirmationVC: AddPhotoConfirmationViewController) {
+    init(availableTypes: [PinTypeOption], confirmationVC: AddPhotoConfirmationViewController) {
+        self.availableTypes = availableTypes
         self.confirmationVC = confirmationVC
         super.init(nibName: nil, bundle: nil)
     }
@@ -119,20 +121,12 @@ extension SwitchPinTypeCardViewController {
     }
 
     private func setupPinTypeToggle() {
-        pinTypeToggle = SegmentedControl(items: [
-            ActionItem(
-                title: String(localized: "Photo Pin"),
-                handler: { [weak self] in
-                    self?.onPinTypeChange?(.photo)
-                }
-            ),
-            ActionItem(
-                title: String(localized: "Task Pin"),
-                handler: { [weak self] in
-                    self?.onPinTypeChange?(.task)
-                }
-            ),
-        ])
+        let actionItems = availableTypes.map { option in
+            ActionItem(title: option.uiName) { [weak self] in
+                self?.onPinTypeChange?(option)
+            }
+        }
+        pinTypeToggle = SegmentedControl(items: actionItems)
         pinTypeToggle.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
     }
 }
