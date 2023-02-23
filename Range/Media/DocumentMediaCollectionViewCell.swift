@@ -91,8 +91,20 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         fileTypeLabel.text = ".\(upload.fileType.rawValue.lowercased())"
         if let fileSize = upload.fileSize {
             fileSizeLabel.text = ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file)
+            fileSizeLabel.isHidden = false
+            fileNameLabel.snp.remakeConstraints { make in
+                make.leading.equalTo(fileTypeBox.snp.trailing).offset(8)
+                make.trailing.equalToSuperview().inset(12)
+                make.top.equalTo(fileTypeBox).offset(1)
+            }
         } else {
             fileSizeLabel.text = nil
+            fileSizeLabel.isHidden = true
+            fileNameLabel.snp.remakeConstraints { make in
+                make.leading.equalTo(fileTypeBox.snp.trailing).offset(8)
+                make.trailing.equalToSuperview().inset(12)
+                make.centerY.equalToSuperview()
+            }
         }
         fileNameLabel.text = upload.fileName
         avatarView.setUser(upload.author)
