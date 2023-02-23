@@ -15,6 +15,7 @@ class PinView: UIImageView {
     weak var delegate: PinViewDelegate?
     /// the id of the collaboration's geometry
     let id: String
+    private(set) var archived: Bool
     private(set) var point: Turf.Point
     private(set) var collaboration: Collaboration
 
@@ -37,6 +38,7 @@ class PinView: UIImageView {
         id = geometry.id
         self.point = point
         self.collaboration = collaboration
+        archived = geometry.archivedTimestamp != nil
         super.init(frame: .zero)
         isUserInteractionEnabled = true
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
@@ -62,6 +64,7 @@ class PinView: UIImageView {
         }
         self.point = point
         self.collaboration = collaboration
+        archived = geometry.archivedTimestamp != nil
     }
 
     @available(*, unavailable)

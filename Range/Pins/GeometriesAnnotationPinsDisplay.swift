@@ -38,6 +38,9 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     /// id used for annotations manager, layer, etc...
     private let annotationsId = "pins"
 
+    /// map of geometry id => PointAnnotation for fast lookup
+    private var pointAnnotationsById = [String: PointAnnotation]()
+
     /// - Parameters:
     ///   - canvasViewController:    will add pins to this canvas
     required init(
@@ -86,7 +89,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
             height: searchSquareSize
         )
         canvasVC.mapView.mapboxMap.queryRenderedFeatures(
-            in: pinsSearchRect,
+            with: pinsSearchRect,
             options: RenderedQueryOptions(layerIds: [annotationsId], filter: nil)
         ) { result in
             guard case let .success(queriedFeatures) = result else {
@@ -95,7 +98,16 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
             }
             let closestPin = queriedFeatures
                 .filter { $0.source == self.annotationsId }
-                .compactMap { PinPoint(fromFeature: $0.feature) }
+                .compactMap { self.convertFeatureToPin($0.feature) }
+                .filter {
+                    // skip archived pins
+                    guard let archived = $0.userInfo?["archived"] as? Bool else { return false }
+                    if !self.showArchivedPins, archived {
+                        return false
+                    }
+                    return true
+                }
+                .compactMap(PinPoint.init(fromPointAnnotation:))
                 .filter {
                     // only points in the search rectangle
                     pinsSearchRect.contains(self.canvasVC.mapView.mapboxMap
@@ -123,16 +135,12 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
 extension GeometriesAnnotationPinsDisplay {
     /// observe the geometries and reload pins when the change is observed
     private func loadAndDisplayPins(onInitialLoad: (() -> Void)?) {
-        var geometries = canvas.geometries
+        geometriesNotificationToken = canvas.geometries
             .where { $0.placeholder == false &&
                 $0.annotationType == .photoMarker &&
                 // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
                 ($0.features.collaborations.count > 0).count > 0
             }
-        if !showArchivedPins {
-            geometries = geometries.where { $0.archivedTimestamp == nil }
-        }
-        geometriesNotificationToken = geometries
             .observe { [weak self] changes in
                 guard let self = self else { return }
                 switch changes {
@@ -162,6 +170,7 @@ extension GeometriesAnnotationPinsDisplay {
 
     private func initiatePointAnnotations(forGeometries geometries: Results<Geometry>) {
         pinsAnnotationManager.annotations = Array(geometries.compactMap(convertGeometryToPin))
+        updatePointAnnotationsById()
     }
 
     private func updatePointAnnotations(
@@ -178,6 +187,15 @@ extension GeometriesAnnotationPinsDisplay {
             modifications: modifications,
             convert: convertGeometryToPin
         )
+        updatePointAnnotationsById()
+    }
+
+    /// This function updates the lookup dictionary pointAnnotationsById.
+    /// Should be called after every update to pinsAnnotationManager.annotations
+    private func updatePointAnnotationsById() {
+        pointAnnotationsById =
+            Dictionary(uniqueKeysWithValues: zip(pinsAnnotationManager.annotations.map(\.id),
+                                                 pinsAnnotationManager.annotations))
     }
 
     /// Converts the geometry to a PointAnnotation for presenting the pin.
@@ -201,9 +219,15 @@ extension GeometriesAnnotationPinsDisplay {
         var pin = PointAnnotation(id: geometry.id, point: point)
         pin.userInfo = [
             "collaboration": collaboration,
+            "archived": geometry.archivedTimestamp != nil,
         ]
         setPointAnnotationSelection(&pin)
         return pin
+    }
+
+    private func convertFeatureToPin(_ feature: Turf.Feature) -> PointAnnotation? {
+        guard case let .string(featureId) = feature.identifier else { return nil }
+        return pointAnnotationsById[featureId]
     }
 
     /// Updates the visuals of currently presented PointAnnotation pins based on `self.selectedPinId`
@@ -218,10 +242,19 @@ extension GeometriesAnnotationPinsDisplay {
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPointAnnotationSelection(_ pin: inout PointAnnotation) {
         guard let collaboration = pin.userInfo?["collaboration"] as? Collaboration else { return }
+        guard let archived = pin.userInfo?["archived"] as? Bool else { return }
         let selected = pin.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
         let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
         let pinImage = pinOptions.pinImage
+        let visible: Bool
+        if !selected, !showArchivedPins {
+            // hide the pin if the pins display is configured to not show archived pins and this pin is archived
+            // BUT: only if it is not selected. So even if it's archived, still show it if it's selected
+            visible = !archived
+        } else {
+            visible = true
+        }
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
         // add the image to the style
@@ -229,7 +262,11 @@ extension GeometriesAnnotationPinsDisplay {
         pin.iconImage = pinImage.id
         pin.iconOffset = [0, -pinOptions.offsetY]
         pin.iconAnchor = pinOptions.anchor._asIconAnchor()
-        pin.iconOpacity = pinOptions.alpha
+        if visible {
+            pin.iconOpacity = pinOptions.alpha
+        } else {
+            pin.iconOpacity = 0
+        }
     }
 
     /// Create (if not already created) and return a Mapbox PointAnnotationManager for pins
@@ -259,13 +296,25 @@ extension GeometriesAnnotationPinsDisplay {
     ///     - completion: callback to be called with the resulting pin
     private func findPin(at point: CGPoint, completion: @escaping (PinPoint?) -> Void) {
         canvasVC.mapView.mapboxMap.queryRenderedFeatures(
-            at: point,
+            with: point,
             options: RenderedQueryOptions(layerIds: [annotationsId], filter: nil)
         ) { result in
+            // TODO: 666 here
             // take any of the selected features with "pins" source
             guard case let .success(queriedFeatures) = result else { completion(nil); return }
-            guard let feature = queriedFeatures.first?.feature else { completion(nil); return }
-            completion(PinPoint(fromFeature: feature))
+            let feature = queriedFeatures
+                .compactMap { self.convertFeatureToPin($0.feature) }
+                .filter {
+                    // skip archived pins
+                    guard let archived = $0.userInfo?["archived"] as? Bool else { return false }
+                    if !self.showArchivedPins, archived {
+                        return false
+                    }
+                    return true
+                }
+                .first
+                .map(PinPoint.init(fromPointAnnotation:))
+            completion(feature ?? nil)
         }
     }
 }

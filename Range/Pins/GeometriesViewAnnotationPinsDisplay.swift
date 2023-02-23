@@ -119,16 +119,12 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
 extension GeometriesViewAnnotationPinsDisplay {
     /// observe the geometries and reload pins when the change is observed
     private func loadAndDisplayPins(onInitialLoad: (() -> Void)?) {
-        var geometries = canvas.geometries
+        geometriesNotificationToken = canvas.geometries
             .where { $0.placeholder == false &&
                 $0.annotationType == .photoMarker &&
                 // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
                 ($0.features.collaborations.count > 0).count > 0
             }
-        if !showArchivedPins {
-            geometries = geometries.where { $0.archivedTimestamp == nil }
-        }
-        geometriesNotificationToken = geometries
             .observe { [weak self] changes in
                 guard let self = self else { return }
                 switch changes {
@@ -200,6 +196,12 @@ extension GeometriesViewAnnotationPinsDisplay {
         let selected = pinView.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
         let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
+        var visible = pinView.id != ignoredGeometryId
+        if !selected, !showArchivedPins {
+            // hide the pin if the pins display is configured to not show archived pins and this pin is archived
+            // BUT: only if it is not selected. So even if it's archived, still show it if it's selected
+            visible = visible && !pinView.archived
+        }
         // The pinView doesn't animate the image properly when this code is run withing animation block, so disable
         // animations for pinView updates.
         UIView.performWithoutAnimation {
@@ -225,7 +227,7 @@ extension GeometriesViewAnnotationPinsDisplay {
                 width: pinView.bounds.width,
                 height: pinView.bounds.height,
                 allowOverlap: true,
-                visible: pinView.id != ignoredGeometryId,
+                visible: visible,
                 anchor: pinOptions.anchor,
                 offsetY: pinOptions.offsetY,
                 selected: selected
