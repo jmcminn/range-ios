@@ -125,18 +125,29 @@ extension ProjectModel {
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     ///
     /// - Parameters:
-    ///     - photosToAdd: the data for the images to add
-    ///     - tags: array of tags, existing or new ones
-    ///     - description: upload description
     ///     - coordinates: the coordinates for the photo marker
     ///     - canvas: should be from the `mainRealm`
     ///     - geometryId: this id will be used for the newly created geometry
+    ///     - isTask: whether it is a task or photo collaboration. If task it'll assign the initial status
+    ///     - name: collaboration name
+    ///     - collaborationDescription: collaboration description
+    ///     - assignee: assignee for the task
+    ///     - dueDate:  due date for the task
+    ///     - tags: tags for the task
+    ///     - photosToAdd: the data for the images to add
+    ///     - uploadTags: array of tags, existing or new ones, will be attached to each uploaded photo
+    ///     - uploadDescription: upload description, will be attached to each uploaded photo
     @MainActor
     func createCollaboration(
         at coordinates: CLLocationCoordinate2D,
         in canvas: PDFCanvas,
         withGeometryId geometryId: String,
         isTask: Bool,
+        name: String? = nil,
+        collaborationDescription: String? = nil,
+        assignee: Participant? = nil,
+        dueDate: Date? = nil,
+        tags: [TagViewModel] = [],
         photosToAdd: [PhotoToAdd] = [],
         uploadTags: [TagViewModel] = [],
         uploadDescription: String? = nil
@@ -161,10 +172,15 @@ extension ProjectModel {
             canvasId: canvas.id,
             geometryId: geometryId,
             coordinates: coordinates,
+            statusId: status?.id,
+            name: name,
+            collaborationDescription: collaborationDescription,
+            assigneeId: assignee?.id,
+            dueDateTimestamp: dueDate,
+            tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadTags: uploadTags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: uploadDescription,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
-            statusId: status?.id
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
         )
     }
 

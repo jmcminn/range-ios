@@ -15,10 +15,15 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
     var featureId: String // generated in init
     var collaborationId: String // generated in initializer
     var coordinates: LocationCoordinate2DCodable // no CLLocationCoordinate2D as it needs to be codable
+    var statusId: String? // optional status to create a task collaboration
+    var name: String?
+    var collaborationDescription: String?
+    var assigneeId: String?
+    var dueDateTimestamp: Date?
+    var tags: [CommandTag]
     var uploadTags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
-    var statusId: String? // optional status to create a task collaboration
 
     init(
         authorId: String,
@@ -27,10 +32,15 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         featureId: String = generateRealmId(),
         collaborationId: String = generateRealmId(),
         coordinates: CLLocationCoordinate2D,
-        uploadTags: [CommandTag],
-        uploadDescription: String?,
-        uploads: [CommandUpload],
-        statusId: String? = nil
+        statusId: String? = nil,
+        name: String? = nil,
+        collaborationDescription: String? = nil,
+        assigneeId: String? = nil,
+        dueDateTimestamp: Date? = nil,
+        tags: [CommandTag] = [],
+        uploadTags: [CommandTag] = [],
+        uploadDescription: String? = nil,
+        uploads: [CommandUpload] = []
     ) {
         self.authorId = authorId
         self.canvasId = canvasId
@@ -38,10 +48,15 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         self.featureId = featureId
         self.collaborationId = collaborationId
         self.coordinates = .init(coordinates)
+        self.statusId = statusId
+        self.name = name
+        self.collaborationDescription = collaborationDescription
+        self.assigneeId = assigneeId
+        self.dueDateTimestamp = dueDateTimestamp
+        self.tags = tags
         self.uploadTags = uploadTags
         self.uploadDescription = uploadDescription
         self.uploads = uploads
-        self.statusId = statusId
     }
 }
 
@@ -52,6 +67,13 @@ extension CreateCollaborationCommand: LocalCommand {
             .or(error: ModelError.canvasNotFound)
         let author = try realm.object(ofType: Participant.self, forPrimaryKey: authorId)
             .or(error: ModelError.userNotFound)
+        let assignee: Participant?
+        if let assigneeId = assigneeId {
+            assignee = try realm.object(ofType: Participant.self, forPrimaryKey: assigneeId)
+                .or(error: ModelError.userNotFound)
+        } else {
+            assignee = nil
+        }
 
         let geometry = Geometry(
             id: geometryId,
@@ -68,12 +90,18 @@ extension CreateCollaborationCommand: LocalCommand {
         let collaboration = Collaboration(
             id: collaborationId,
             timestamp: Date.now,
-            name: "",
-            description: nil
+            name: name ?? "",
+            description: collaborationDescription,
+            dueDateTimestamp: dueDateTimestamp
         )
         realm.add(collaboration, update: .modified)
         collaboration.author = author
+        collaboration.assignee = assignee
         feature.collaborations.insert(collaboration)
+        let tags = tags.map(\.asTag)
+        tags.forEach { realm.add($0, update: .modified) }
+        collaboration.tags.append(objectsIn: tags)
+        tags.forEach { t in t.collaborations.insert(collaboration) }
 
         // add or update tags
         let uploadTags = uploadTags.map(\.asTag)
@@ -121,12 +149,19 @@ extension CreateCollaborationCommand: FirestoreCommand {
         guard try ctx.exists(.participant(authorId)) else {
             throw FirestoreCommandError.obsolete("user doesn't exist")
         }
+        if let assigneeId = assigneeId {
+            guard try ctx.exists(.participant(assigneeId)) else {
+                throw FirestoreCommandError.obsolete("user doesn't exist")
+            }
+        }
         let createGeometry = try !ctx.exists(.geometry(geometryId))
         let createFeature = try !ctx.exists(.feature(featureId))
         let createCollaboration = try !ctx.exists(.collaboration(collaborationId))
 
+        let newTags = try tags.filter { try !ctx.exists(.tagName($0.id)) }
+
         // only add new tags... don't touch the existing ones
-        let newTags = try uploadTags.filter { try !ctx.exists(.tagName($0.id)) }
+        let newUploadTags = try uploadTags.filter { try !ctx.exists(.tagName($0.id)) }
 
         // make it idempotent, only upload if not uploaded yet (this check is too granular, as
         // if any upload is there it means all are there but still it's correct)
@@ -144,23 +179,27 @@ extension CreateCollaborationCommand: FirestoreCommand {
             let firestoreFeature = FirestoreFeature(geometryId: geometryId, name: "", description: nil)
             try ctx.setData(from: firestoreFeature, forDocument: .feature(featureId))
         }
+        try newTags.forEach {
+            try ctx.setData(from: $0.asFirestoreTagName, forDocument: .tagName($0.id))
+        }
+        let tagIds = tags.map(\.id)
         if createCollaboration {
             let firestoreObject = FirestoreCollaboration(
                 featureId: featureId,
                 authorId: authorId,
                 timestamp: Timestamp(),
                 statusId: statusId,
-                name: "",
-                collaborationDescription: nil,
-                tagIds: [],
-                assigneeId: nil,
-                dueDateTimestamp: nil
+                name: name ?? "",
+                collaborationDescription: collaborationDescription,
+                tagIds: tagIds,
+                assigneeId: assigneeId,
+                dueDateTimestamp: dueDateTimestamp != nil ? Timestamp(date: dueDateTimestamp!) : nil
             )
             var data = try Firestore.Encoder().encode(firestoreObject)
             data[FirestoreUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()
             ctx.setData(data, forDocument: .collaboration(collaborationId))
         }
-        try newTags.forEach {
+        try newUploadTags.forEach {
             try ctx.setData(from: $0.asFirestoreTagName, forDocument: .tagName($0.id))
         }
 
