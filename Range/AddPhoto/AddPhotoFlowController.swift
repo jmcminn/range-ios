@@ -591,8 +591,14 @@ extension AddPhotoFlowController {
             self?.onPhotoLocationBack()
         }
         confirmationCardVC!.onDone = { [weak self] in
-            // TODO: 859 handle copy task
-            self?.finalizeFromConfirmationCard()
+            guard let self = self else { return }
+            if self.pinTypeOption == .copyTask {
+                // TODO: 859 handle copy task
+                CopyTaskCardViewController(projectModel: self.model)
+                    .installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
+            } else {
+                self.finalizeFromConfirmationCard()
+            }
         }
         canvasContainer.installCard(
             cardViewController: confirmationCardVC!,

@@ -122,7 +122,7 @@ extension SwitchPinTypeCardViewController {
 
     private func setupPinTypeToggle() {
         let actionItems = availableTypes.map { option in
-            ActionItem(title: option.uiName) { [weak self] in
+            ActionItem(title: option.uiShortName) { [weak self] in
                 self?.onPinTypeChange?(option)
             }
         }

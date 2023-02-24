@@ -1,78 +1,6 @@
 import Foundation
 import UIKit
 
-/// A pill view displaying one of the collaboration details
-class CollaborationPillView: UIView {
-    private var font: UIFont {
-        ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
-    }
-
-    private let borderView = UIView()
-    private let iconView = UIImageView()
-    private let label = UILabel()
-    private let isRed: Bool
-
-    init(iconName: String, text: String, isRed: Bool = false) {
-        self.isRed = isRed
-        super.init(frame: .zero)
-
-        borderView.layer.borderWidth = 1
-        borderView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-
-        iconView.image = UIImage(systemName: iconName, withConfiguration: UIImage.SymbolConfiguration(font: font))
-        iconView.tintColor = isRed ? .Red_03 : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-
-        label.text = text
-        label.font = font
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = iconView.tintColor
-
-        updateColors()
-
-        addSubview(borderView)
-        borderView.addSubview(iconView)
-        borderView.addSubview(label)
-        borderView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(8)
-            make.leading.trailing.equalToSuperview()
-        }
-        iconView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().inset(8)
-        }
-        label.snp.makeConstraints { make in
-            make.leading.equalTo(iconView.snp.trailing).offset(6)
-            make.trailing.equalToSuperview().inset(8)
-            make.top.bottom.equalToSuperview().inset(4)
-        }
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        borderView.layer.cornerRadius = borderView.frame.height / 2
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateColors()
-        }
-    }
-
-    private func updateColors() {
-        borderView.layer.borderColor = (isRed
-            ? UIColor.Red_03
-            : UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07))
-            .cgColor
-    }
-}
-
 /// Table cell for displaying collaboration data
 class TaskListCollaborationTableViewCell: UITableViewCell {
     private let badgeView = UIView()
@@ -162,24 +90,22 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
                 : String(localized: "Untitled task..."))
             : collaboration.name
         if let dueDateTimestamp = collaboration.dueDateTimestamp {
-            detailsStackView.addArrangedSubview(CollaborationPillView(
+            detailsStackView.addArrangedSubview(PillView(
                 iconName: "calendar",
                 text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectTimeZone),
-                isRed: collaboration.isOverdue
+                style: collaboration.isOverdue ? .red : .default
             ))
         }
         if let assignee = collaboration.assignee {
-            detailsStackView.addArrangedSubview(CollaborationPillView(iconName: "person", text: assignee.displayName))
+            detailsStackView.addArrangedSubview(PillView(iconName: "person", text: assignee.displayName))
         }
         if let canvasName = collaboration.feature.first?.geometry.first?.canvas.first?.displayName {
-            detailsStackView.addArrangedSubview(CollaborationPillView(iconName: "square.3.layers.3d", text: canvasName))
+            detailsStackView.addArrangedSubview(PillView(iconName: "square.3.layers.3d", text: canvasName))
         }
-        detailsStackView.addArrangedSubview(
-            CollaborationPillView(iconName: "tag", text: String(collaboration.tags.count))
-        )
-        detailsStackView.addArrangedSubview(
-            CollaborationPillView(iconName: "clock", text: Date.format1Ago(collaboration.lastUpdatedTimestamp))
-        )
+        detailsStackView.addArrangedSubview(PillView(iconName: "tag", text: String(collaboration.tags.count)))
+        detailsStackView.addArrangedSubview(PillView(
+            iconName: "clock", text: Date.format1Ago(collaboration.lastUpdatedTimestamp)
+        ))
     }
 
     override func prepareForReuse() {

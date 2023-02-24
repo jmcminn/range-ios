@@ -241,6 +241,9 @@
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
 		0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */; };
+		0A9341C229A7D4B9006166C1 /* CopyTaskCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C129A7D4B9006166C1 /* CopyTaskCardViewController.swift */; };
+		0A9341C429A8A464006166C1 /* CopyTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C329A8A464006166C1 /* CopyTaskTableViewCell.swift */; };
+		0A9341C629A8A50D006166C1 /* PillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C529A8A50D006166C1 /* PillView.swift */; };
 		0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */; };
 		0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */; };
 		0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */; };
@@ -590,6 +593,9 @@
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
 		0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersCardViewController.swift; sourceTree = "<group>"; };
+		0A9341C129A7D4B9006166C1 /* CopyTaskCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyTaskCardViewController.swift; sourceTree = "<group>"; };
+		0A9341C329A8A464006166C1 /* CopyTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyTaskTableViewCell.swift; sourceTree = "<group>"; };
+		0A9341C529A8A50D006166C1 /* PillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillView.swift; sourceTree = "<group>"; };
 		0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableViewCell.swift; sourceTree = "<group>"; };
 		0A94E8D428CE24CF00A09616 /* CollaborationBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeView.swift; sourceTree = "<group>"; };
@@ -1123,10 +1129,12 @@
 				0AC89D7D290980DD00D3CCA1 /* GradientView.swift */,
 				0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */,
 				0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */,
+				0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */,
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
 				0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */,
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
+				0A9341C529A8A50D006166C1 /* PillView.swift */,
 				0A2F330D283CE8C800D04A1C /* RoundShadowButton.swift */,
 				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
 				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
@@ -1136,7 +1144,6 @@
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
 				0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */,
-				0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1178,6 +1185,7 @@
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0ABFD8B528F00A46008CDA74 /* Comment */,
+				0A9341C029A7D41C006166C1 /* CopyTask */,
 				0A7121B0290BB8330013E2F8 /* DatePicker */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0A147E81294E268100B5833A /* Feed */,
@@ -1380,6 +1388,15 @@
 				0A7A537A293E4E540093D913 /* ProjectsModel.swift */,
 			);
 			path = ModelProjects;
+			sourceTree = "<group>";
+		};
+		0A9341C029A7D41C006166C1 /* CopyTask */ = {
+			isa = PBXGroup;
+			children = (
+				0A9341C129A7D4B9006166C1 /* CopyTaskCardViewController.swift */,
+				0A9341C329A8A464006166C1 /* CopyTaskTableViewCell.swift */,
+			);
+			path = CopyTask;
 			sourceTree = "<group>";
 		};
 		0A97232327FC507200D744F4 /* Camera */ = {
@@ -1765,6 +1782,7 @@
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */,
+				0A9341C229A7D4B9006166C1 /* CopyTaskCardViewController.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
 				0A36CDFD299C11B50004758E /* RangeMediaCacheImageDataProvider.swift in Sources */,
@@ -1798,6 +1816,7 @@
 				0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */,
 				0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */,
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
+				0A9341C429A8A464006166C1 /* CopyTaskTableViewCell.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
@@ -1864,6 +1883,7 @@
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
 				0A4995BF2858D00100E571FB /* Tag.swift in Sources */,
 				0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */,
+				0A9341C629A8A50D006166C1 /* PillView.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
 				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,

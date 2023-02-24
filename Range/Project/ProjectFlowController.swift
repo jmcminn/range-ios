@@ -444,8 +444,8 @@ extension ProjectFlowController {
     private func startAddPinFlow(pinTypeOption: PinTypeOption) {
         if pinTypeOption == .copyTask {
             // TODO: 859 handle copy task
-//            CopyTaskCardViewController(projectModel: model)
-//                .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+            CopyTaskCardViewController(projectModel: model)
+                .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
         } else {
             // TODO: 859 here
             addPinFlow = AddPinFlowController(
