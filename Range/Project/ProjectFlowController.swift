@@ -444,10 +444,9 @@ extension ProjectFlowController {
     private func startAddPinFlow(pinTypeOption: PinTypeOption) {
         let mode: AddPinFlowController.Mode
         switch pinTypeOption {
-        case let .pinType(pinType):
-            mode = .add(pinType)
-        case .copyTask:
-            mode = .copyTask
+        case .createPhoto: mode = .add(.photo)
+        case .createTask: mode = .add(.task)
+        case .copyTask: mode = .copyTask
         }
         addPinFlow = AddPinFlowController(
             model: model,

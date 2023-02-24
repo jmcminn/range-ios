@@ -5,8 +5,8 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down, tap on the close button or choosing any action.
 class SelectPinTypeCardViewController: SheetCardViewController {
-    private let photoPinButton = SelectPinTypeButton(type: .pinType(.photo))
-    private let taskPinButton = SelectPinTypeButton(type: .pinType(.task))
+    private let photoPinButton = SelectPinTypeButton(type: .createPhoto)
+    private let taskPinButton = SelectPinTypeButton(type: .createTask)
     private let copyTaskPinButton: SelectPinTypeButton?
 
     /// Callback for pin selected, optional = nil when the selector was dismissed
@@ -70,12 +70,12 @@ class SelectPinTypeCardViewController: SheetCardViewController {
 
     @objc private func photoPinSelected() {
         dismissCard()
-        onPinTypeSelected?(.pinType(.photo))
+        onPinTypeSelected?(.createPhoto)
     }
 
     @objc private func taskPinSelected() {
         dismissCard()
-        onPinTypeSelected?(.pinType(.task))
+        onPinTypeSelected?(.createTask)
     }
 
     @objc private func copyTaskPinSelected() {

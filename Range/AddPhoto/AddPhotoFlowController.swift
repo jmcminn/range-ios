@@ -44,7 +44,7 @@ class AddPhotoFlowController {
     /// task to copy data from when in .copyTask mode
     var taskToCopy: Collaboration?
     /// whether to create photo or task collaboration
-    var pinTypeOption: PinTypeOption = .pinType(.photo) {
+    var pinTypeOption: PinTypeOption = .createPhoto {
         didSet {
             pinsDisplay?.photoPinView?.pinType = pinTypeOption.pinType
             confirmationCardVC?.showNextButton = pinTypeOption == .copyTask
@@ -79,6 +79,8 @@ class AddPhotoFlowController {
         photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, localFiles: localFiles)
         tagsViewModel = TagsViewModel(model: model)
         photosToAddViewModel.addDelegate(self)
+
+        pinTypeOption = UserDefaults.lastPinTypeOption ?? .createPhoto
     }
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
@@ -480,6 +482,7 @@ class AddPhotoFlowController {
             newCollaborationCreated = true
             shouldEditCollaboration = pinTypeOption != .copyTask
             UserDefaults.lastPhotoPinId = geometryId
+            UserDefaults.lastPinTypeOption = pinTypeOption
         }
         UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)
     }
@@ -577,6 +580,7 @@ extension AddPhotoFlowController {
     private func showPins() {
         createAddPhotoPinsDisplay()
         pinsDisplay?.start()
+        pinsDisplay?.photoPinView?.pinType = pinTypeOption.pinType
         canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             self?.reloadGeometriesPinsDisplay()
             self?.hidePhotosPreview(animated: true)
@@ -592,6 +596,7 @@ extension AddPhotoFlowController {
         createAddPhotoPinsDisplay()
         if start {
             pinsDisplay?.start()
+            pinsDisplay?.photoPinView?.pinType = pinTypeOption.pinType
         }
     }
 
@@ -628,6 +633,7 @@ extension AddPhotoFlowController {
             cardConfig: CardConfiguration(interactive: false, showSafeAreaBlur: true)
         )
         confirmationCardVC!.showCard(animated: true)
+        confirmationCardVC!.showNextButton = pinTypeOption == .copyTask
     }
 
     private func showPanAndZoomIndicatorView() {
@@ -676,8 +682,8 @@ extension AddPhotoFlowController {
             let showCopyTask = !collaborationsCreatedByUser.isEmpty
             let pinTypeVC = SwitchPinTypeCardViewController(
                 availableTypes: showCopyTask
-                    ? [.pinType(.photo), .pinType(.task), .copyTask]
-                    : [.pinType(.photo), .pinType(.task)],
+                    ? [.createPhoto, .createTask, .copyTask]
+                    : [.createPhoto, .createTask],
                 confirmationVC: confirmationCardVC
             )
             pinTypeVC.onPinTypeChange = { [weak self] pinTypeOption in

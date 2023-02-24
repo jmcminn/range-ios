@@ -20,6 +20,8 @@ extension UserDefaults {
         case recentTagsPrefix = "recentTags_"
         /// last user's choice if the tasks list shows all or only mine tasks, `false` by default
         case showOnlyMineTasks
+        /// remember the last option selected by user when creating a new collaboration in the photo flow
+        case lastPinTypeOption
     }
 
     static var lastOpenProjectId: String? {
@@ -128,6 +130,22 @@ extension UserDefaults {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.showOnlyMineTasks.rawValue)
+        }
+    }
+
+    /// remember the last option selected by user when creating a new collaboration in the photo flow
+    static var lastPinTypeOption: PinTypeOption? {
+        get {
+            guard let rawValue = UserDefaults.standard.string(forKey: UserDefaultsConstants.lastPinTypeOption.rawValue)
+            else { return nil }
+            return PinTypeOption.allCases.first { $0.rawValue == rawValue }
+        }
+        set {
+            if let option = newValue {
+                UserDefaults.standard.set(option.rawValue, forKey: UserDefaultsConstants.lastPinTypeOption.rawValue)
+            } else {
+                UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastPinTypeOption.rawValue)
+            }
         }
     }
 }

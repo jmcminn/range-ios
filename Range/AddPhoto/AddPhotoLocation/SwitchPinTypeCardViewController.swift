@@ -127,6 +127,11 @@ extension SwitchPinTypeCardViewController {
             }
         }
         pinTypeToggle = SegmentedControl(items: actionItems)
+        if let initialOption = UserDefaults.lastPinTypeOption,
+           let index = availableTypes.firstIndex(of: initialOption)
+        {
+            pinTypeToggle.setSelectedSegmentIndex(index, animated: false)
+        }
         pinTypeToggle.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
     }
 }

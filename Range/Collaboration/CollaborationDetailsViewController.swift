@@ -347,7 +347,7 @@ extension UIViewController {
         var titleAttributes = AttributeContainer()
         titleAttributes.font = UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
 
-        var blackButtonConfig = UIButton.Configuration.blackButton(
+        let blackButtonConfig = UIButton.Configuration.blackButton(
             imageTextStyle: .caption1,
             imagePlacement: .leading,
             cornerRadius: 8
