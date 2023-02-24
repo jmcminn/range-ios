@@ -3,12 +3,15 @@ import UIKit
 
 /// Manages the flow of adding new pin or moving an existing collaboration
 class AddPinFlowController {
-    enum Mode {
+    enum Mode: Equatable {
         case add(PinType)
+        case copyTask
         case move(Collaboration)
     }
 
     private let mode: Mode
+    /// in .copyTask mode this is the collaboration that we want to copy data from:
+    private var taskToCopy: Collaboration?
     unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
@@ -40,6 +43,27 @@ class AddPinFlowController {
 
     /// Show the UI for pin selection
     func start() {
+        if mode == .copyTask {
+            // select a task to copy first
+            CopyTaskCardViewController(
+                projectModel: model,
+                onTaskSelected: { [weak self] task in
+                    guard let self = self else { return }
+                    if let task = task {
+                        self.taskToCopy = task
+                        self.showPinPlacementUI()
+                    } else {
+                        self.onStop?(nil)
+                    }
+                }
+            )
+            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        } else {
+            showPinPlacementUI()
+        }
+    }
+
+    private func showPinPlacementUI() {
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
         showTopViewController()
         showConfirmationCard()
@@ -76,6 +100,7 @@ class AddPinFlowController {
         switch mode {
         case .add(.photo): title = String(localized: "Add Photo Pin")
         case .add(.task): title = String(localized: "Add Task Pin")
+        case .copyTask: title = String(localized: "Add Task Pin")
         case .move: title = String(localized: "Update Pin Location")
         }
         let topViewController = TopViewController(iconName: "mappin.and.ellipse", title: title)
@@ -221,7 +246,7 @@ class AddPinFlowController {
         case .add(.photo):
             // empty collaboration
             collaboration = Collaboration(placeholderId: "")
-        case .add(.task):
+        case .add(.task), .copyTask:
             // empty collaboration with initial status
             collaboration = Collaboration(placeholderId: "")
             collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
@@ -247,42 +272,54 @@ class AddPinFlowController {
 
     private func createCollaborationAndStop() {
         let geometryId = generateRealmId()
-        let command: Command
-        do {
-            let coordinates = canvasContainer.annotationsMapView.cameraState.center
-            let canvas = model.currentCanvas!
+        let coordinates = canvasContainer.annotationsMapView.cameraState.center
+        let canvas = model.currentCanvas!
 
-            switch mode {
-            case .add(.photo):
-                command = try model.createCollaboration(
-                    at: coordinates,
-                    in: canvas,
-                    withGeometryId: geometryId,
-                    isTask: false
-                )
-            case .add(.task):
-                command = try model.createCollaboration(
-                    at: coordinates,
-                    in: canvas,
-                    withGeometryId: geometryId,
-                    isTask: true
-                )
-            case let .move(c):
-                command = try model.update(coordinates: coordinates, andCanvas: canvas, forCollaboration: c)
-            }
-        } catch {
-            ToastWindow.shared.showError(text: "Failed to create the collaboration")
-            return
-        }
-        model.run(command) { [weak self] error in
-            guard let self = self else { return }
-            if error != nil {
-                ToastWindow.shared.showError(text: "Failed to create the collaboration")
-            } else {
+        Task {
+            do {
+                defer {
+                    DispatchQueue.main.async {
+                        self.stop()
+                        self.onStop?(geometryId)
+                    }
+                }
+
+                let command: Command
+                switch mode {
+                case .add(.photo):
+                    command = try await model.createCollaboration(
+                        at: coordinates,
+                        in: canvas,
+                        withGeometryId: geometryId,
+                        isTask: false
+                    )
+                case .add(.task):
+                    command = try await model.createCollaboration(
+                        at: coordinates,
+                        in: canvas,
+                        withGeometryId: geometryId,
+                        isTask: true
+                    )
+                case .copyTask:
+                    // TODO: 859 add data from the selected task
+                    command = try await model.createCollaboration(
+                        at: coordinates,
+                        in: canvas,
+                        withGeometryId: geometryId,
+                        isTask: true
+                    )
+                case let .move(c):
+                    command = try model.update(coordinates: coordinates, andCanvas: canvas, forCollaboration: c)
+                }
+                try await model.run(command)
+
                 UserDefaults.lastPhotoPinId = geometryId
+
+            } catch {
+                DispatchQueue.main.async {
+                    ToastWindow.shared.showError(text: "Failed to create the collaboration")
+                }
             }
-            self.stop()
-            self.onStop?(geometryId)
         }
     }
 }

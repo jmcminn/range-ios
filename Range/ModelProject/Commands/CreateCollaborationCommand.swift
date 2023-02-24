@@ -15,7 +15,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
     var featureId: String // generated in init
     var collaborationId: String // generated in initializer
     var coordinates: LocationCoordinate2DCodable // no CLLocationCoordinate2D as it needs to be codable
-    var tags: [CommandTag]
+    var uploadTags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
     var statusId: String? // optional status to create a task collaboration
@@ -27,7 +27,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         featureId: String = generateRealmId(),
         collaborationId: String = generateRealmId(),
         coordinates: CLLocationCoordinate2D,
-        tags: [CommandTag],
+        uploadTags: [CommandTag],
         uploadDescription: String?,
         uploads: [CommandUpload],
         statusId: String? = nil
@@ -38,7 +38,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         self.featureId = featureId
         self.collaborationId = collaborationId
         self.coordinates = .init(coordinates)
-        self.tags = tags
+        self.uploadTags = uploadTags
         self.uploadDescription = uploadDescription
         self.uploads = uploads
         self.statusId = statusId
@@ -76,8 +76,8 @@ extension CreateCollaborationCommand: LocalCommand {
         feature.collaborations.insert(collaboration)
 
         // add or update tags
-        let tags = tags.map(\.asTag)
-        tags.forEach { realm.add($0, update: .modified) }
+        let uploadTags = uploadTags.map(\.asTag)
+        uploadTags.forEach { realm.add($0, update: .modified) }
 
         uploads.forEach {
             let upload = Upload(
@@ -93,8 +93,8 @@ extension CreateCollaborationCommand: LocalCommand {
             upload.author = author
             // add new upload
             realm.add(upload, update: .error)
-            upload.tags.append(objectsIn: tags)
-            tags.forEach { t in t.uploads.insert(upload) }
+            upload.tags.append(objectsIn: uploadTags)
+            uploadTags.forEach { t in t.uploads.insert(upload) }
             collaboration.uploads.insert(upload)
         }
 
@@ -126,7 +126,7 @@ extension CreateCollaborationCommand: FirestoreCommand {
         let createCollaboration = try !ctx.exists(.collaboration(collaborationId))
 
         // only add new tags... don't touch the existing ones
-        let newTags = try tags.filter { try !ctx.exists(.tagName($0.id)) }
+        let newTags = try uploadTags.filter { try !ctx.exists(.tagName($0.id)) }
 
         // make it idempotent, only upload if not uploaded yet (this check is too granular, as
         // if any upload is there it means all are there but still it's correct)
@@ -164,7 +164,7 @@ extension CreateCollaborationCommand: FirestoreCommand {
             try ctx.setData(from: $0.asFirestoreTagName, forDocument: .tagName($0.id))
         }
 
-        let tagIds = tags.map(\.id)
+        let uploadTagIds = uploadTags.map(\.id)
         // add uploads
         try newUploads.forEach {
             let firestoreObject = FirestoreUpload(
@@ -175,7 +175,7 @@ extension CreateCollaborationCommand: FirestoreCommand {
                 name: $0.name,
                 uploadDescription: uploadDescription,
                 correlationId: $0.id,
-                tagIds: tagIds,
+                tagIds: uploadTagIds,
                 fileTypeString: Upload.FileType.jpeg.rawValue,
                 imageHeightToWidth: $0.imageHeightToWidth,
                 fileSize: $0.fileSize

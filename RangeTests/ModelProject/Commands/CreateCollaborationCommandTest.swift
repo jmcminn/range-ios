@@ -19,7 +19,7 @@ final class CreateCollaborationCommandRealmTest: XCTestCase {
         featureId: "feature1",
         collaborationId: "collaboration1",
         coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-        tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
+        uploadTags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
         uploadDescription: "upload description",
         uploads: [
             .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
@@ -151,7 +151,7 @@ final class CreateCollaborationCommandFirestoreTest: XCTestCase {
         featureId: "feature1",
         collaborationId: "collaboration1",
         coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-        tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
+        uploadTags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
         uploadDescription: "upload description",
         uploads: [
             .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),

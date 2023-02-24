@@ -458,13 +458,13 @@ class AddPhotoFlowController {
         } else {
             let geometryId = generateRealmId()
             try await model.run(model.createCollaboration(
-                photosToAddViewModel.photos,
-                tags: tagsViewModel.selectedTags,
-                description: photoDescription,
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: model.currentCanvas,
                 withGeometryId: geometryId,
-                isTask: pinTypeOption.pinType == .task
+                isTask: pinTypeOption.pinType == .task,
+                photosToAdd: photosToAddViewModel.photos,
+                uploadTags: tagsViewModel.selectedTags,
+                uploadDescription: photoDescription
             ))
             resultGeometryId = geometryId
             newCollaborationCreated = true
@@ -593,9 +593,13 @@ extension AddPhotoFlowController {
         confirmationCardVC!.onDone = { [weak self] in
             guard let self = self else { return }
             if self.pinTypeOption == .copyTask {
-                // TODO: 859 handle copy task
-                CopyTaskCardViewController(projectModel: self.model)
-                    .installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
+                CopyTaskCardViewController(
+                    projectModel: self.model,
+                    onTaskSelected: { _ in
+                        // TODO: 859 handle copy task
+                    }
+                )
+                .installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
             } else {
                 self.finalizeFromConfirmationCard()
             }

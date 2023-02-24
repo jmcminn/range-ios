@@ -133,13 +133,13 @@ extension ProjectModel {
     ///     - geometryId: this id will be used for the newly created geometry
     @MainActor
     func createCollaboration(
-        _ photosToAdd: [PhotoToAdd],
-        tags: [TagViewModel],
-        description: String,
         at coordinates: CLLocationCoordinate2D,
         in canvas: PDFCanvas,
         withGeometryId geometryId: String,
-        isTask: Bool
+        isTask: Bool,
+        photosToAdd: [PhotoToAdd] = [],
+        uploadTags: [TagViewModel] = [],
+        uploadDescription: String? = nil
     ) async throws -> Command {
         for photoToAdd in photosToAdd {
             try await pendingUploadsModel.addPendingUpload(forKey: MediaKey(
@@ -161,34 +161,9 @@ extension ProjectModel {
             canvasId: canvas.id,
             geometryId: geometryId,
             coordinates: coordinates,
-            tags: tags.map(CommandTag.init(fromViewModel:)),
-            uploadDescription: description,
+            uploadTags: uploadTags.map(CommandTag.init(fromViewModel:)),
+            uploadDescription: uploadDescription,
             uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
-            statusId: status?.id
-        )
-    }
-
-    /// Creates an empty collaboration. If `isTask` is `true` it creates a task, otherwise a photo collaboration
-    func createCollaboration(at coordinates: CLLocationCoordinate2D,
-                             in canvas: PDFCanvas,
-                             withGeometryId geometryId: String,
-                             isTask: Bool) throws -> CreateCollaborationCommand
-    {
-        var status: Status?
-        if isTask {
-            guard let initialStatus = mainRealm.objects(Status.self).first(where: { $0.isInitial }) else {
-                throw ModelError.statusNotFound
-            }
-            status = initialStatus
-        }
-        return CreateCollaborationCommand(
-            authorId: userId,
-            canvasId: canvas.id,
-            geometryId: geometryId,
-            coordinates: coordinates,
-            tags: [],
-            uploadDescription: nil,
-            uploads: [],
             statusId: status?.id
         )
     }

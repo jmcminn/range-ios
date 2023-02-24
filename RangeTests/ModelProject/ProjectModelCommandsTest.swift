@@ -91,19 +91,19 @@ class ProjectModelCommandsTest: XCTestCase {
     @MainActor
     func testCreatePhotoCollaboration() async throws {
         guard let command = try await model.createCollaboration(
-            [PhotoToAdd(
+            at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
+            in: canvas,
+            withGeometryId: "geometry1",
+            isTask: false,
+            photosToAdd: [PhotoToAdd(
                 uploadId: "upload1",
                 timestamp: Date(timeIntervalSince1970: 1234),
                 mediaKey: MediaKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg),
                 thumbnail: UIImage(),
                 height2Width: 1, fileSize: 1024
             )],
-            tags: [TagViewModel(id: "tag1", name: "tag 1", usageCount: 0)],
-            description: "upload description",
-            at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-            in: canvas,
-            withGeometryId: "geometry1",
-            isTask: false
+            uploadTags: [TagViewModel(id: "tag1", name: "tag 1", usageCount: 0)],
+            uploadDescription: "upload description"
         ) as? CreateCollaborationCommand else {
             XCTFail("addPhotos failed")
             return
@@ -115,7 +115,7 @@ class ProjectModelCommandsTest: XCTestCase {
             featureId: command.featureId,
             collaborationId: command.collaborationId,
             coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-            tags: [.init(id: "tag1", name: "tag 1")],
+            uploadTags: [.init(id: "tag1", name: "tag 1")],
             uploadDescription: "upload description",
             uploads: [.init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1)]
         ))

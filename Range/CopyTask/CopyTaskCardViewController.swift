@@ -18,18 +18,25 @@ class CopyTaskCardViewController: SheetCardViewController {
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
 
+    /// Callback for task selected, optional = nil when the selector was dismissed
+    var onTaskSelected: ((Collaboration?) -> Void)?
+
+    private var selectedTask: Collaboration?
+
     /// Initializer
     ///
     /// - Parameters:
     ///     - projectModel:               model to read collaborations from
-    init(projectModel: ProjectModel) {
+    init(projectModel: ProjectModel, onTaskSelected: ((Collaboration?) -> Void)?) {
         self.projectModel = projectModel
+        self.onTaskSelected = onTaskSelected
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.author == projectModel.currentUser && c.status != nil
             }
             .sorted(by: \Collaboration.timestamp, ascending: false)
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Copy Task Pin"))
+        onDismiss = { [weak self] in self?.onTaskSelected?(self?.selectedTask) }
     }
 
     deinit {
@@ -177,8 +184,8 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
                 ofType: Collaboration.self,
                 forPrimaryKey: collaborationId
             ) else { return }
-            // TODO: 859
-            print("TODO: 859 \(collaboration)")
+            self.selectedTask = collaboration
+            self.dismissCard()
         }
         return cell
     }
@@ -186,9 +193,8 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let collaboration = uniqueCollaborations[indexPath.row]
-        // TODO: 859 next step
-        print("TODO: 859 \(collaboration)")
+        selectedTask = uniqueCollaborations[indexPath.row]
+        dismissCard()
     }
 
     func scrollViewDidScroll(_: UIScrollView) {
