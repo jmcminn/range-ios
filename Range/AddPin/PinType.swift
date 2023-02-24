@@ -17,18 +17,39 @@ enum PinTypeOption: Equatable {
             return .task
         }
     }
+}
 
-    var uiName: String {
+/// UI properties
+extension PinTypeOption {
+    var uiShortName: String {
         switch self {
-        case let .pinType(pinType):
-            switch pinType {
-            case .photo:
-                return String(localized: "Photo Pin")
-            case .task:
-                return String(localized: "Task Pin")
-            }
-        case .copyTask:
-            return String(localized: "Copy Task")
+        case .pinType(.photo): return String(localized: "Photo Pin")
+        case .pinType(.task): return String(localized: "Task Pin")
+        case .copyTask: return String(localized: "Copy Task")
+        }
+    }
+
+    var uiLongName: String {
+        switch self {
+        case .pinType(.photo): return String(localized: "Photo Pin")
+        case .pinType(.task): return String(localized: "Task Pin")
+        case .copyTask: return String(localized: "Copy Task Pin")
+        }
+    }
+
+    var uiDescription: String {
+        switch self {
+        case .pinType(.photo): return String(localized: "Document conditions and progress over time.")
+        case .pinType(.task): return String(localized: "Assign work to people and monitor progress.")
+        case .copyTask: return String(localized: "Copy data from an existing task.")
+        }
+    }
+
+    var uiImageName: String {
+        switch self {
+        case .pinType(.photo): return "add_photo_pin"
+        case .pinType(.task): return "add_task_pin"
+        case .copyTask: return "add_task_pin"
         }
     }
 }

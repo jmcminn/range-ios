@@ -7,18 +7,12 @@ class SelectPinTypeButton: UIControl {
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
 
-    init(type: PinType) {
+    init(type: PinTypeOption) {
         super.init(frame: .zero)
 
-        if type == .photo {
-            imageView.image = UIImage(named: "add_photo_pin")
-            titleLabel.text = String(localized: "Photo Pin")
-            subtitleLabel.text = String(localized: "Document conditions and progress over time.")
-        } else {
-            imageView.image = UIImage(named: "add_task_pin")
-            titleLabel.text = String(localized: "Task Pin")
-            subtitleLabel.text = String(localized: "Assign work to people and monitor progress.")
-        }
+        imageView.image = UIImage(named: type.uiImageName)
+        titleLabel.text = type.uiLongName
+        subtitleLabel.text = type.uiDescription
 
         setupViews()
 
@@ -35,21 +29,25 @@ class SelectPinTypeButton: UIControl {
         layer.cornerRadius = 12
         layer.borderWidth = 1
 
+        setupImageView()
         setupTitleLabel()
         setupSubtitleLabel()
 
         [imageView, titleLabel, subtitleLabel].forEach(addSubview)
         imageView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(13)
-            make.centerX.equalToSuperview()
+            make.bottom.lessThanOrEqualToSuperview().inset(13)
+            make.leading.equalToSuperview().inset(12)
         }
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(imageView.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(12)
+            make.top.equalToSuperview().inset(13)
+            make.leading.equalTo(imageView.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().inset(12)
         }
         subtitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
-            make.leading.trailing.equalToSuperview().inset(12)
+            make.leading.equalTo(imageView.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().inset(12)
             make.bottom.equalToSuperview().inset(13)
         }
     }
@@ -81,19 +79,21 @@ class SelectPinTypeButton: UIControl {
 // MARK: - views
 
 extension SelectPinTypeButton {
+    private func setupImageView() {
+        imageView.setContentHuggingPriority(.required, for: .horizontal)
+    }
+
     private func setupTitleLabel() {
         titleLabel.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
         titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        titleLabel.textAlignment = .center
     }
 
     private func setupSubtitleLabel() {
-        subtitleLabel.font = .preferredFont(forTextStyle: .caption1)
+        subtitleLabel.font = .preferredFont(forTextStyle: .footnote)
         subtitleLabel.adjustsFontForContentSizeCategory = true
         subtitleLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         subtitleLabel.numberOfLines = 0
-        subtitleLabel.textAlignment = .center
         subtitleLabel.lineBreakMode = .byWordWrapping
     }
 }

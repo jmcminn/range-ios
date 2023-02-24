@@ -433,26 +433,37 @@ extension ProjectFlowController {
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
         // select pin type
-        SelectPinTypeCardViewController(onPinTypeSelected: { [weak self] pinType in
-            if let pinType = pinType {
-                self?.startAddPinFlow(pinType: pinType)
+        SelectPinTypeCardViewController(model: model, onPinTypeSelected: { [weak self] pinTypeOption in
+            if let pinTypeOption = pinTypeOption {
+                self?.startAddPinFlow(pinTypeOption: pinTypeOption)
             }
         })
         .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
-    private func startAddPinFlow(pinType: PinType) {
-        addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer, mode: .add(pinType))
-        addPinFlow?.onStop = { [weak self] geometryId in
-            guard let self = self else { return }
-            self.showDefaultCanvasUI()
-            if let geometryId = geometryId {
-                self.selectCollaborationAndEditName(forGeometryId: geometryId)
+    private func startAddPinFlow(pinTypeOption: PinTypeOption) {
+        if pinTypeOption == .copyTask {
+            // TODO: 859 handle copy task
+//            CopyTaskCardViewController(projectModel: model)
+//                .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        } else {
+            // TODO: 859 here
+            addPinFlow = AddPinFlowController(
+                model: model,
+                canvasContainer: canvasContainer,
+                mode: .add(pinTypeOption.pinType)
+            )
+            addPinFlow?.onStop = { [weak self] geometryId in
+                guard let self = self else { return }
+                self.showDefaultCanvasUI()
+                if let geometryId = geometryId {
+                    self.selectCollaborationAndEditName(forGeometryId: geometryId)
+                }
+                self.addPinFlow = nil
             }
-            self.addPinFlow = nil
+            hideDefaultCanvasUI()
+            addPinFlow?.start()
         }
-        hideDefaultCanvasUI()
-        addPinFlow?.start()
     }
 
     private func selectCollaborationAndEditName(forGeometryId geometryId: String) {

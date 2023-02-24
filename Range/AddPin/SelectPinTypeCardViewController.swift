@@ -5,15 +5,23 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down, tap on the close button or choosing any action.
 class SelectPinTypeCardViewController: SheetCardViewController {
-    private let photoPinButton = SelectPinTypeButton(type: .photo)
-    private let taskPinButton = SelectPinTypeButton(type: .task)
+    private let photoPinButton = SelectPinTypeButton(type: .pinType(.photo))
+    private let taskPinButton = SelectPinTypeButton(type: .pinType(.task))
+    private let copyTaskPinButton: SelectPinTypeButton?
 
     /// Callback for pin selected, optional = nil when the selector was dismissed
-    var onPinTypeSelected: ((PinType?) -> Void)?
+    var onPinTypeSelected: ((PinTypeOption?) -> Void)?
 
     /// Initializer
-    init(onPinTypeSelected: ((PinType?) -> Void)? = nil) {
+    init(model: ProjectModel, onPinTypeSelected: ((PinTypeOption?) -> Void)? = nil) {
         self.onPinTypeSelected = onPinTypeSelected
+
+        if model.currentUser.tasksCreatedByUser.isEmpty {
+            copyTaskPinButton = nil
+        } else {
+            copyTaskPinButton = SelectPinTypeButton(type: .copyTask)
+        }
+
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Add Pin"))
         onDismiss = { [weak self] in self?.onPinTypeSelected?(nil) }
     }
@@ -29,33 +37,49 @@ class SelectPinTypeCardViewController: SheetCardViewController {
 
         photoPinButton.snp.makeConstraints { make in
             make.top.equalTo(sheetHeaderView.snp.bottom)
-            make.leading.equalTo(16)
-            make.width.equalToSuperview().multipliedBy(0.5).offset(-24)
+            make.leading.trailing.equalToSuperview().inset(16)
         }
 
         taskPinButton.snp.makeConstraints { make in
-            make.top.height.width.equalTo(photoPinButton)
-            make.trailing.equalTo(-16)
+            make.top.equalTo(photoPinButton.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+
+        if let copyTaskPinButton = copyTaskPinButton {
+            copyTaskPinButton.addTarget(self, action: #selector(copyTaskPinSelected), for: .touchUpInside)
+            containerView.addSubview(copyTaskPinButton)
+            copyTaskPinButton.snp.makeConstraints { make in
+                make.top.equalTo(taskPinButton.snp.bottom).offset(12)
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
         }
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
-        let baseHeight = super.height(forContainer: cardContainerView, cardPosition: cardPosition)
+        var baseHeight = super.height(forContainer: cardContainerView, cardPosition: cardPosition)
 
         if cardPosition == .max {
             view.layoutIfNeeded()
-            return baseHeight + photoPinButton.frame.height + 16.0
+            baseHeight += photoPinButton.frame.height + 16.0 + taskPinButton.frame.height
+            if let copyTaskPinButton = copyTaskPinButton {
+                baseHeight += 16.0 + copyTaskPinButton.frame.height
+            }
         }
         return baseHeight
     }
 
     @objc private func photoPinSelected() {
         dismissCard()
-        onPinTypeSelected?(.photo)
+        onPinTypeSelected?(.pinType(.photo))
     }
 
     @objc private func taskPinSelected() {
         dismissCard()
-        onPinTypeSelected?(.task)
+        onPinTypeSelected?(.pinType(.task))
+    }
+
+    @objc private func copyTaskPinSelected() {
+        dismissCard()
+        onPinTypeSelected?(.copyTask)
     }
 }

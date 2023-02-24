@@ -18,20 +18,6 @@ class Participant: Object, WithPlaceholder {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
-    /// The value to display in the UI
-    var displayName: String {
-        var components: [String] = []
-        if !firstName.isEmpty { components.append(firstName) }
-        if !lastName.isEmpty { components.append(lastName) }
-        return components.joined(separator: " ")
-    }
-
-    var initials: String {
-        if let firstNameLetter = firstName.first { return String(firstNameLetter) }
-        if let lastNameLetter = lastName.first { return String(lastNameLetter) }
-        return ""
-    }
-
     /// Default initializer required by Realm.
     override init() {
         super.init()
@@ -68,5 +54,30 @@ class Participant: Object, WithPlaceholder {
             projectIds: [],
             placeholder: true
         )
+    }
+}
+
+/// UI properties
+extension Participant {
+    /// The value to display in the UI
+    var displayName: String {
+        var components: [String] = []
+        if !firstName.isEmpty { components.append(firstName) }
+        if !lastName.isEmpty { components.append(lastName) }
+        return components.joined(separator: " ")
+    }
+
+    var initials: String {
+        if let firstNameLetter = firstName.first { return String(firstNameLetter) }
+        if let lastNameLetter = lastName.first { return String(lastNameLetter) }
+        return ""
+    }
+
+    var tasksCreatedByUser: Results<Collaboration> {
+        guard let realm = realm else { fatalError("user is unmanaged") }
+        return realm.objects(Collaboration.self)
+            .where { (c: Query<Collaboration>) -> Query<Bool> in
+                c.author == self && c.status != nil
+            }
     }
 }
