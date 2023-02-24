@@ -11,6 +11,7 @@ class CopyTaskCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
 
     private let collaborations: Results<Collaboration>
+    private var uniqueCollaborations = [Collaboration]()
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
 
@@ -67,12 +68,36 @@ class CopyTaskCardViewController: SheetCardViewController {
             guard let self = self else { return }
             switch changes {
             case .initial:
+                self.updateUniqueCollaborations()
                 self.tableView.reloadData()
             case .update:
+                self.updateUniqueCollaborations()
                 self.tableView.reloadData()
             case let .error(error):
                 Logger.model.error("observing collaborations failed: \(error.localizedDescription, privacy: .public)")
             }
+        }
+    }
+
+    /// Out of all collaborations select the ones that are unique with respect to name, description, dueDate, assignee and tags.
+    /// The uniqueness is based on the values of all the fields combined to a one long string (to use the built-in uniqued function)
+    private func updateUniqueCollaborations() {
+        uniqueCollaborations = collaborations.uniqued { c in
+            var values = [String]()
+            values.append(c.name)
+            if let description = c.collaborationDescription {
+                values.append(description)
+            }
+            if let dueDate = c.dueDateTimestamp {
+                values.append(String(dueDate.timeIntervalSince1970))
+            }
+            if let assignee = c.assignee {
+                values.append(assignee.id)
+            }
+            for tag in c.tags {
+                values.append(tag.id)
+            }
+            return String(values.joined(by: "_"))
         }
     }
 
@@ -137,14 +162,23 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        collaborations.count
+        uniqueCollaborations.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! CopyTaskTableViewCell
         let index = indexPath.row
-        if index < collaborations.count {
-            cell.setCollaboration(collaborations[index], projectTimeZone: projectModel.projectSummary.timeZone)
+        if index < uniqueCollaborations.count {
+            cell.setCollaboration(uniqueCollaborations[index], projectTimeZone: projectModel.projectSummary.timeZone)
+        }
+        cell.onCollaborationTapped = { [weak self] collaborationId in
+            guard let self = self else { return }
+            guard let collaboration = self.projectModel.mainRealm.object(
+                ofType: Collaboration.self,
+                forPrimaryKey: collaborationId
+            ) else { return }
+            // TODO: 859
+            print("TODO: 859 \(collaboration)")
         }
         return cell
     }
@@ -152,13 +186,9 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-//        let collaboration = collaborations[indexPath.row]
-//        UIApplication.shared.sendAction(
-//            #selector(ProjectFlowActions.showCollaborationAction),
-//            to: nil,
-//            from: self,
-//            for: FlowEvent(collaboration)
-//        )
+        let collaboration = uniqueCollaborations[indexPath.row]
+        // TODO: 859 next step
+        print("TODO: 859 \(collaboration)")
     }
 
     func scrollViewDidScroll(_: UIScrollView) {
