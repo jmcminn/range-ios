@@ -415,7 +415,7 @@ extension ProjectFlowController {
             self?.showDefaultCanvasUI()
             self?.addPhotoFlow = nil
             if let geometryId = geometryId, newlyCreated ?? false == true {
-                self?.selectCollaborationAndEditName(forGeometryId: geometryId)
+                self?.selectCollaboration(forGeometryId: geometryId, andEditName: true)
             }
         }
         addPhotoFlow?.start { [weak self] started in
@@ -458,8 +458,8 @@ extension ProjectFlowController {
             guard let self = self else { return }
             self.showDefaultCanvasUI()
             if let geometryId = geometryId {
-                // TODO: 859 don't edit name if it was .taskCopy
-                self.selectCollaborationAndEditName(forGeometryId: geometryId)
+                // don't edit name if it was .taskCopy
+                self.selectCollaboration(forGeometryId: geometryId, andEditName: pinTypeOption != .copyTask)
             }
             self.addPinFlow = nil
         }
@@ -467,7 +467,7 @@ extension ProjectFlowController {
         addPinFlow?.start()
     }
 
-    private func selectCollaborationAndEditName(forGeometryId geometryId: String) {
+    private func selectCollaboration(forGeometryId geometryId: String, andEditName editName: Bool) {
         reloadGeometriesPinsDisplay(
             useNativeViews: debugSettings.nativeViewsForPins,
             showArchivedCollaborations: userSettings.showArchivedCollaborations
@@ -475,8 +475,10 @@ extension ProjectFlowController {
             if let pinsDisplay = self.pinsDisplay, let pin = pinsDisplay.pinForGeometryId(geometryId) {
                 // select the pin (which will trigger showing the collaboration window)
                 pinsDisplay.setSelectedPin(pin)
-                DispatchQueue.main.async {
-                    self.collaborationFlow.editNameAction()
+                if editName {
+                    DispatchQueue.main.async {
+                        self.collaborationFlow.editNameAction()
+                    }
                 }
             }
         }

@@ -272,9 +272,6 @@ class AddPinFlowController {
 
     private func createCollaborationAndStop() {
         let geometryId = generateRealmId()
-        let coordinates = canvasContainer.annotationsMapView.cameraState.center
-        let canvas = model.currentCanvas!
-
         Task {
             do {
                 defer {
@@ -283,44 +280,55 @@ class AddPinFlowController {
                         self.onStop?(geometryId)
                     }
                 }
-
-                let command: Command
-                switch mode {
-                case .add(.photo):
-                    command = try await model.createCollaboration(
-                        at: coordinates,
-                        in: canvas,
-                        withGeometryId: geometryId,
-                        isTask: false
-                    )
-                case .add(.task):
-                    command = try await model.createCollaboration(
-                        at: coordinates,
-                        in: canvas,
-                        withGeometryId: geometryId,
-                        isTask: true
-                    )
-                case .copyTask:
-                    // TODO: 859 add data from the selected task
-                    command = try await model.createCollaboration(
-                        at: coordinates,
-                        in: canvas,
-                        withGeometryId: geometryId,
-                        isTask: true
-                    )
-                case let .move(c):
-                    command = try model.update(coordinates: coordinates, andCanvas: canvas, forCollaboration: c)
-                }
-                try await model.run(command)
-
+                try await runCommand(geometryId: geometryId)
                 UserDefaults.lastPhotoPinId = geometryId
-
             } catch {
                 DispatchQueue.main.async {
                     ToastWindow.shared.showError(text: "Failed to create the collaboration")
                 }
             }
         }
+    }
+
+    @MainActor
+    private func runCommand(geometryId: String) async throws {
+        let coordinates = canvasContainer.annotationsMapView.cameraState.center
+        let canvas = model.currentCanvas!
+        let command: Command
+        switch mode {
+        case .add(.photo):
+            command = try await model.createCollaboration(
+                at: coordinates,
+                in: canvas,
+                withGeometryId: geometryId,
+                isTask: false
+            )
+        case .add(.task):
+            command = try await model.createCollaboration(
+                at: coordinates,
+                in: canvas,
+                withGeometryId: geometryId,
+                isTask: true
+            )
+        case .copyTask:
+            guard let taskToCopy = taskToCopy else {
+                fatalError("task to copy not selected")
+            }
+            command = try await model.createCollaboration(
+                at: coordinates,
+                in: canvas,
+                withGeometryId: geometryId,
+                isTask: true,
+                name: taskToCopy.name,
+                collaborationDescription: taskToCopy.collaborationDescription,
+                assignee: taskToCopy.assignee,
+                dueDate: taskToCopy.dueDateTimestamp,
+                tags: taskToCopy.tags.map(TagViewModel.init(fromTag:))
+            )
+        case let .move(c):
+            command = try model.update(coordinates: coordinates, andCanvas: canvas, forCollaboration: c)
+        }
+        try await model.run(command)
     }
 }
 
