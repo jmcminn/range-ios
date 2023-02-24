@@ -15,8 +15,8 @@ class AddPhotoFlowController {
     unowned let canvasContainer: CanvasContainerViewController
 
     /// on Stop it returns the id of the geometry to which the photo(s) was added to (if not cancelled) and whether the
-    /// collaboration was created (`true`) or existing one was used (`false`)
-    var onStop: ((String?, Bool?) -> Void)?
+    /// collaboration was created (`true`) or existing one was used (`false`) and whether the collaboration should be edited after creation
+    var onStop: ((String?, Bool?, Bool?) -> Void)?
     var cameraVC: CameraViewController?
     var detailsVC: PhotoDetailsViewController?
     var pinsDisplay: AddPhotoPinsDisplay?
@@ -41,6 +41,8 @@ class AddPhotoFlowController {
     var photoDescription: String = ""
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
     var geometryId: String?
+    /// task to copy data from when in .copyTask mode
+    var taskToCopy: Collaboration?
     /// whether to create photo or task collaboration
     var pinTypeOption: PinTypeOption = .pinType(.photo) {
         didSet {
@@ -53,6 +55,8 @@ class AddPhotoFlowController {
     private var resultGeometryId: String?
     /// whether the photos were added to newly created collaboration (`true`) or to an existing one (`false`)
     private var newCollaborationCreated: Bool?
+    /// should edit collaboration
+    private var shouldEditCollaboration: Bool?
 
     /// When set to `true` the photo flow will exclude photo placement on the canvas and will use the provided geometryId
     var skipPhotoLocationSelection: Bool = false
@@ -89,7 +93,7 @@ class AddPhotoFlowController {
 
     func stop(removeCurrentPhotosToAddFromCache: Bool) {
         photosToAddViewModel.clear(removeFromCache: removeCurrentPhotosToAddFromCache)
-        onStop?(resultGeometryId, newCollaborationCreated)
+        onStop?(resultGeometryId, newCollaborationCreated, shouldEditCollaboration)
     }
 
     /// Returns `true` if camera was shown.
@@ -454,6 +458,7 @@ class AddPhotoFlowController {
             ))
             resultGeometryId = geometryId
             newCollaborationCreated = false
+            shouldEditCollaboration = false
             UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
@@ -462,12 +467,18 @@ class AddPhotoFlowController {
                 in: model.currentCanvas,
                 withGeometryId: geometryId,
                 isTask: pinTypeOption.pinType == .task,
+                name: taskToCopy?.name,
+                collaborationDescription: taskToCopy?.collaborationDescription,
+                assignee: taskToCopy?.assignee,
+                dueDate: taskToCopy?.dueDateTimestamp,
+                tags: taskToCopy?.tags.map(TagViewModel.init(fromTag:)) ?? [],
                 photosToAdd: photosToAddViewModel.photos,
                 uploadTags: tagsViewModel.selectedTags,
                 uploadDescription: photoDescription
             ))
             resultGeometryId = geometryId
             newCollaborationCreated = true
+            shouldEditCollaboration = pinTypeOption != .copyTask
             UserDefaults.lastPhotoPinId = geometryId
         }
         UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)
@@ -595,8 +606,15 @@ extension AddPhotoFlowController {
             if self.pinTypeOption == .copyTask {
                 CopyTaskCardViewController(
                     projectModel: self.model,
-                    onTaskSelected: { _ in
-                        // TODO: 859 handle copy task
+                    onTaskSelected: { [weak self] task in
+                        guard let self = self else { return }
+                        if let task = task {
+                            // handle copy task
+                            self.taskToCopy = task
+                            self.finalizeFromConfirmationCard()
+                        } else {
+                            // nothing, user closed the task selector
+                        }
                     }
                 )
                 .installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)

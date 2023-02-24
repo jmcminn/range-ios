@@ -411,11 +411,11 @@ extension ProjectFlowController {
             mediaCache: mediaCache,
             canvasContainer: canvasContainer
         )
-        addPhotoFlow?.onStop = { [weak self] geometryId, newlyCreated in
+        addPhotoFlow?.onStop = { [weak self] geometryId, newlyCreated, shouldEdit in
             self?.showDefaultCanvasUI()
             self?.addPhotoFlow = nil
             if let geometryId = geometryId, newlyCreated ?? false == true {
-                self?.selectCollaboration(forGeometryId: geometryId, andEditName: true)
+                self?.selectCollaboration(forGeometryId: geometryId, andEditName: shouldEdit ?? false)
             }
         }
         addPhotoFlow?.start { [weak self] started in
