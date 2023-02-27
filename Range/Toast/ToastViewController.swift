@@ -4,7 +4,7 @@ import UIKit
 /// The root view controller for the `ToastWindow`.
 /// Capable of displaying toast views.
 class ToastViewController: UIViewController {
-    unowned let keyWindow: UIWindow
+    weak var keyWindow: UIWindow?
     private var currentToastView: ToastView?
     /// Currently scheduled toast hiding
     private var hideToastWorkItem: DispatchWorkItem?
@@ -27,11 +27,11 @@ class ToastViewController: UIViewController {
 
     /// Override status bar related properties to read from the current top view controller in the key window
     override dynamic var preferredStatusBarStyle: UIStatusBarStyle {
-        keyWindow.rootViewController?._topViewController().preferredStatusBarStyle ?? .default
+        keyWindow?.rootViewController?._topViewController().preferredStatusBarStyle ?? .default
     }
 
     override var childForStatusBarStyle: UIViewController? {
-        keyWindow.rootViewController?._topViewController().childForStatusBarStyle
+        keyWindow?.rootViewController?._topViewController().childForStatusBarStyle
     }
 
     /// Show toast with given text and color.
