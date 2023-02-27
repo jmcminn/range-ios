@@ -6,11 +6,12 @@ class TopViewController: UIViewController {
     private let onBack: (() -> Void)?
 
     private var backButton: UIButton?
+    private let imageAndTitle = UIStackView()
     private var imageView: UIImageView?
     private let titleLabel = UILabel()
 
     private var font: UIFont {
-        ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
+        ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
     }
 
     init(iconName: String? = nil, title: String, onBack: (() -> Void)? = nil) {
@@ -40,7 +41,6 @@ class TopViewController: UIViewController {
             make.height.equalTo(1)
         }
 
-        let imageAndTitle = UIStackView()
         imageAndTitle.axis = .horizontal
         imageAndTitle.distribution = .equalSpacing
         imageAndTitle.spacing = 8
@@ -67,6 +67,43 @@ class TopViewController: UIViewController {
                 make.width.height.equalTo(40)
                 make.leading.equalToSuperview()
                 make.centerY.equalTo(imageAndTitle.snp.centerY)
+            }
+        }
+    }
+
+    // Make sure that image/label is centered horizontally but not when if the text is long and
+    // there's a back button, then we need to take the whole horizontal space
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        if let backButton = backButton {
+            var availableSpace = view.frame.width - 80 // 40 on each side (because of the back button on the left)
+            imageAndTitle.layoutIfNeeded()
+            if imageAndTitle.frame.width <= availableSpace {
+                // center
+                imageAndTitle.snp.remakeConstraints { make in
+                    make.centerX.equalToSuperview()
+                    make.bottom.equalToSuperview().offset(-10)
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                }
+            } else {
+                // align to back button on the leading side and superview on the trailing (it doesn't
+                // have to be centered anymore as the text will be ellipsed anyway
+                imageAndTitle.snp.remakeConstraints { make in
+                    make.leading.equalTo(backButton.snp.trailing)
+                    make.trailing.equalToSuperview().offset(-12)
+                    make.bottom.equalToSuperview().offset(-10)
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                }
+            }
+        } else {
+            // no back button, center but limit to leading/trailing
+            imageAndTitle.snp.remakeConstraints { make in
+                make.leading.greaterThanOrEqualToSuperview().offset(12)
+                make.trailing.lessThanOrEqualToSuperview().offset(-12)
+                make.centerX.equalToSuperview()
+                make.bottom.equalToSuperview().offset(-10)
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
             }
         }
     }
@@ -107,6 +144,7 @@ class TopViewController: UIViewController {
             systemName: iconName,
             withConfiguration: UIImage.SymbolConfiguration(font: font)
         ))
+        imageView?.setContentCompressionResistancePriority(.required, for: .horizontal)
         imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
     }
 
