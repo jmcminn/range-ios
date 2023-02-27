@@ -288,7 +288,7 @@ extension CollaborationViewController {
     private func setupNameField() {
         nameField = UITextField()
         nameField.attributedPlaceholder = NSAttributedString(
-            string: isTaskWindow ? "Add a task name..." : "Add a photo collection name...",
+            string: isTaskWindow ? "Add task pin name..." : "Add photo pin name...",
             attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
         )
         nameField.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)

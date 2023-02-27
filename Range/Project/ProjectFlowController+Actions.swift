@@ -281,7 +281,7 @@ extension ProjectFlowController {
     func moreAction(sender _: Any?, event: FlowEvent) {
         if let collaboration = event.object as? Collaboration {
             var actions: [ActionItem] = collaboration.status == nil
-                ? [ActionItem(title: "Convert to Task", imageName: "checkmark.circle", handler: {
+                ? [ActionItem(title: "Convert to Task Pin", imageName: "checkmark.circle", handler: {
                     self.confirmAndConvertPhotoCollaborationToTask(collaboration)
                 })]
                 : []
@@ -299,7 +299,8 @@ extension ProjectFlowController {
                     }
                 ),
                 ActionItem(
-                    title: "Delete", imageName: "trash", style: .destructive,
+                    title: collaboration.status != nil ? "Delete Task Pin" : "Delete Photo Pin",
+                    imageName: "trash", style: .destructive,
                     handler: { [weak self] in
                         self?.confirmAndDeleteCollaboration(collaboration)
                     }
@@ -375,7 +376,7 @@ extension ProjectFlowController {
             title: "Are you sure?",
             subtitle: "Doing this means you can add a description, tags and assign a status, due date and assignee. The style of the map pin will also change. ",
             actions: [
-                ActionItem(title: "Convert to Task", imageName: "checkmark.circle", handler: {
+                ActionItem(title: "Convert to Task Pin", imageName: "checkmark.circle", handler: {
                     self.convertPhotoCollaborationToTask(collaboration)
                 }),
                 ActionItem(title: "Cancel", imageName: "xmark"),
@@ -392,7 +393,7 @@ extension ProjectFlowController {
                 self.collaborationFlow.showCollaborationWindow(collaboration, animated: true)
             } catch {
                 Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to convert to task")
+                ToastWindow.shared.showError(text: "Failed to convert to task pin")
             }
         }
     }
@@ -401,11 +402,16 @@ extension ProjectFlowController {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
-            subtitle: "This collection will be deleted permanently. It can’t be recovered.",
+            subtitle: collaboration.status != nil
+                ? "This task pin will be deleted permanently. It can’t be recovered."
+                : "This photo pin will be deleted permanently. It can’t be recovered.",
             actions: [
-                ActionItem(title: "Delete Collaboration", imageName: "trash", style: .destructive, handler: {
-                    self.deleteCollaboration(collaboration)
-                }),
+                ActionItem(
+                    title: collaboration.status != nil ? "Delete Task Pin" : "Delete Photo Pin",
+                    imageName: "trash", style: .destructive, handler: {
+                        self.deleteCollaboration(collaboration)
+                    }
+                ),
                 ActionItem(title: "Cancel", imageName: "xmark"),
             ]
         ).installAndShowCard(in: canvasContainer)
@@ -421,7 +427,7 @@ extension ProjectFlowController {
                     try await self.model.run(self.model.delete(collaboration: collaboration))
                 } catch {
                     Logger.model.error("command error: \(error.localizedDescription, privacy: .public)")
-                    ToastWindow.shared.showError(text: "Failed to delete the collaboration")
+                    ToastWindow.shared.showError(text: "Failed to delete the pin")
                 }
             }
         }
