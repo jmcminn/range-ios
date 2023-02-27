@@ -321,7 +321,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     private func onUploadUpdated() {
         authorLabel.text = upload.author?.displayName
-        timestampLabel.text = "(" + Date.formatMediaTitle(upload.timestamp) + ")"
+        timestampLabel.text = Date.format1(upload.timestamp)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -473,12 +473,12 @@ extension FullscreenMediaCardViewController {
         avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
 
         authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        authorLabel.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        authorLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
         authorLabel.adjustsFontForContentSizeCategory = true
         authorLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
         timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
-        timestampLabel.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
+        timestampLabel.font = .preferredFont(forTextStyle: .footnote)
         timestampLabel.adjustsFontForContentSizeCategory = true
         timestampLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
