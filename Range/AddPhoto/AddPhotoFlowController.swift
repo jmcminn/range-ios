@@ -481,18 +481,20 @@ extension AddPhotoFlowController {
         if let switchPinTypeCardVC = switchPinTypeCardVC {
             switchPinTypeCardVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: switchPinTypeCardVC)
-                self.switchPinTypeCardVC = nil
             }
+            self.switchPinTypeCardVC = nil
         }
         if let photosPreviewCardVC = photosPreviewCardVC {
             photosPreviewCardVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: photosPreviewCardVC)
             }
+            self.photosPreviewCardVC = nil
         }
         if let confirmationCardVC = confirmationCardVC {
             confirmationCardVC.hideCard(animated: true) {
                 self.canvasContainer.removeCard(cardViewController: confirmationCardVC)
             }
+            self.confirmationCardVC = nil
         }
         hideTopViewController()
         pinsDisplay?.stop()

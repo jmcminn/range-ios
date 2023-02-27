@@ -5,7 +5,7 @@ import UIKit
 /// To be presented above the confirmation card
 class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
-    unowned let confirmationVC: AddPhotoConfirmationViewController
+    weak var confirmationVC: AddPhotoConfirmationViewController?
     var onPinTypeChange: ((PinType) -> Void)?
 
     private var headerView: UIView!
@@ -83,6 +83,7 @@ class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinatin
 
 extension SwitchPinTypeCardViewController: CardPresentable {
     func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
+        guard let confirmationVC = confirmationVC else { return 0 }
         view.layoutIfNeeded()
 
         let cardHeight = 8.0 + headerView.frame.height + 10.0 + pinTypeToggle.frame.height + 16.0
