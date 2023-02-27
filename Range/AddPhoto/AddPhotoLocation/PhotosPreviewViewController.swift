@@ -152,11 +152,11 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
 
         if imageUploads.count > 0 {
             components.append(String(imageUploads.count) + " " +
-                (imageUploads.count == 1 ? String(localized: "photo") : String(localized: "photos")))
+                (imageUploads.count == 1 ? String(localized: "Photo") : String(localized: "Photos")))
         }
         if nonImageUploads.count > 0 {
             components.append(String(nonImageUploads.count) + " " +
-                (nonImageUploads.count == 1 ? String(localized: "document") : String(localized: "documents")))
+                (nonImageUploads.count == 1 ? String(localized: "Document") : String(localized: "Documents")))
         }
         photoCountLabel.text = components.joined(separator: " • ")
     }
