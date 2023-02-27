@@ -24,21 +24,31 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     /// For now it's a constant set in init, so no support for switching the type of view
     let isTaskWindow: Bool
 
-    /// a view below content to cover the space visible when dragging up past the max height
-    var bottomView = UIView()
     var badgeView: CollaborationBadgeView!
     var statusButton: CollaborationStatusButton!
     /// shown for archived collaboration (for tasks it replaces the status button)
     var archivedLabel: LabelWithTextInsets!
     var moreButton: UIButton!
     var closeButton: UIButton!
-    var nameField: UITextField!
+    var nameTextView: UITextViewWithPlaceholder!
 
     var detailsVC: CollaborationDetailsViewController!
     var feedVC: FeedViewController!
 
     /// how high is the currently visible part of the keyboard
     private var keyboardHeightInWindow: CGFloat = 0
+
+    /// handle for observing text view properties
+    private var textViewObservation: NSKeyValueObservation?
+
+    /// text view height changes with its content size
+    private var textViewHeightConstraint: Constraint?
+    /// textViewHeightConstraint does not expose the constant, so we need to keep it separately
+    private var textViewHeight: CGFloat = 20.0 {
+        didSet {
+            textViewHeightConstraint?.update(offset: textViewHeight)
+        }
+    }
 
     /// callbacks for actions triggered from collaboration window
     var onClose: (() -> Void)?
@@ -85,20 +95,10 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         containerView.installSliderView()
-
-        bottomView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
-        // added to view (rounded view) as the containerView has a layer mask
-        // and bottom view is added outside of its bounds
-        view.addSubview(bottomView)
-        bottomView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(view.snp.bottom)
-            // magic number, just enough so the user won't drag higher than that (beyond the max height)
-            make.height.equalTo(500)
-        }
 
         badgeView = CollaborationBadgeView(collaboration)
         badgeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(statusTapped)))
@@ -140,18 +140,18 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.trailing.equalTo(closeButton.snp.leading).offset(-8)
         }
 
-        setupNameField()
-        containerView.addSubview(nameField)
-        nameField.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(16)
-            make.trailing.equalToSuperview().offset(-16).priority(.required)
+        setupNameTextView()
+        containerView.addSubview(nameTextView)
+        nameTextView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
             make.top.equalTo(badgeView.snp.bottom).offset(Constants.verticalSpacing)
+            textViewHeightConstraint = make.height.equalTo(textViewHeight).priority(.high).constraint
         }
 
         setupFeedVC()
         add(childController: feedVC, toView: containerView)
         feedVC.view.snp.makeConstraints { make in
-            make.top.equalTo(nameField.snp.bottom)
+            make.top.equalTo(nameTextView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
@@ -178,10 +178,20 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         )
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // once it's layed out
+        setupTextViewObservers()
+
+        animateTextViewHeightIfChanged()
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         collaborationNotificationToken?.invalidate()
         geometryNotificationToken?.invalidate()
+        removeTextViewObservers()
         // remove keyboard observers
         NotificationCenter.default.removeObserver(self)
     }
@@ -240,9 +250,9 @@ extension CollaborationViewController {
         archivedLabel.isHidden = !collaboration.isArchived
 
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !nameField.isEditing {
+        if !nameTextView.isFirstResponder {
             // don't overwrite the name when user is editing it
-            nameField.text = name
+            nameTextView.text = name
         }
     }
 }
@@ -285,21 +295,20 @@ extension CollaborationViewController {
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 
-    private func setupNameField() {
-        nameField = UITextField()
-        nameField.attributedPlaceholder = NSAttributedString(
-            string: isTaskWindow ? "Add task pin name..." : "Add photo pin name...",
-            attributes: [.foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05)]
+    private func setupNameTextView() {
+        nameTextView = UITextViewWithPlaceholder(
+            placeholderText: isTaskWindow ? "Add task pin name..." : "Add photo pin name..."
         )
-        nameField.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        nameField.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
-        nameField.adjustsFontForContentSizeCategory = true
-        nameField.tintColor = .Primary_Blue_04
-        nameField.autocapitalizationType = .sentences
-        nameField.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        nameField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        nameField.returnKeyType = .done
-        nameField.delegate = self
+        let font = UIFont._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
+        nameTextView.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        nameTextView.placeholderLabel.font = font
+        nameTextView.font = font
+        nameTextView.tintColor = .Primary_Blue_04
+        // left/right = 12 to achieve the visual 16 margin...
+        nameTextView.textContainerInset = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+        nameTextView.returnKeyType = .done
+        nameTextView.adjustsFontForContentSizeCategory = true
+        nameTextView.delegate = self
     }
 
     private func setupFeedVC() {
@@ -349,20 +358,22 @@ extension CollaborationViewController {
 // MARK: Card presentable
 
 extension CollaborationViewController: CardPresentable {
+    // subtract bottom safe area insets from keyboard as card dragging adds it to the card anyway
+    func extraSpaceForKeyboard(cardContainer: UIView) -> CGFloat {
+        max(keyboardHeightInWindow - cardContainer.safeAreaInsets.bottom, 0)
+    }
+
     func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .min {
             return 0 // will be hidden when minimized
         }
-
-        // +2 is a hack for nameField being bigger than line height
-        let nameHeight = ceil(nameField.font?.lineHeight ?? 22.0) + 2.0
 
         if cardPosition == .medium {
             // what's shown above the keyboard if keyboard visible, "header" height + avaiable spacing in the details view (so no content is shown)
             // The spacing available in details view is actually dependent on the type of collaboration and whether
             // there's a description, but it's at least `descriptionTopSpacing`
             let detailsTopSpace = CollaborationDetailsViewController.Constants.descriptionTopSpacing
-            let baseHeight = Constants.heightToName + nameHeight + detailsTopSpace
+            let baseHeight = Constants.heightToName + textViewHeight + detailsTopSpace
 
             // what's visible in the .medium card position but not when showing keyboard
             let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true)
@@ -379,7 +390,7 @@ extension CollaborationViewController: CardPresentable {
             let fullHeight = cardContainerView.bounds.height
             // the height of the collaboration view header that we want to hide
             // behind the header cover
-            var headerHeight = Constants.heightToName + nameHeight
+            var headerHeight = Constants.heightToName + textViewHeight
             if isTaskWindow {
                 // for task we present all the details
             } else {
@@ -405,7 +416,7 @@ extension CollaborationViewController {
     @objc func keyboardWillChangeFrame(notification: NSNotification) {
         // only update the layout if name is being edited (and not when some presented
         // views, like 'add comment' present the keyboard)
-        guard nameField.isEditing else { return }
+        guard nameTextView.isFirstResponder else { return }
         // Get required info out of the notification
         if let window = view.window,
            let cardDragging = cardDragging,
@@ -417,9 +428,14 @@ extension CollaborationViewController {
             // Calculate the height of the visible part of the keyboard
             keyboardHeightInWindow = window.frame.height - endRect.origin.y
 
+            let textViewHeightUpdated = updateTextViewHeight()
+
             let duration = (durationValue as AnyObject).doubleValue
             let options = UIView.AnimationOptions(rawValue: UInt((curveValue as AnyObject).integerValue << 16))
             UIView.animate(withDuration: duration!, delay: 0, options: options, animations: {
+                if textViewHeightUpdated {
+                    self.view.layoutIfNeeded()
+                }
                 // update the card height
                 cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: false)
             }, completion: nil)
@@ -427,11 +443,65 @@ extension CollaborationViewController {
     }
 }
 
+// MARK: - text view expanding
+
+extension CollaborationViewController {
+    /// Observe the text view properties
+    private func setupTextViewObservers() {
+        textViewObservation = nameTextView.observe(\.contentSize) { [weak self] _, _ in
+            self?.animateTextViewHeightIfChanged()
+        }
+    }
+
+    private func removeTextViewObservers() {
+        textViewObservation?.invalidate()
+        textViewObservation = nil
+    }
+
+    /// Update the size of the text view based on its content. But not go above the full screen size for the whole view + the keyboard.
+    /// Animate the text view and card height if changed.
+    private func animateTextViewHeightIfChanged() {
+        guard let cardDragging = cardDragging else { return }
+
+        if updateTextViewHeight() {
+            UIView.animate(withDuration: 0.1) {
+                self.view.layoutIfNeeded()
+                cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: false)
+            }
+        }
+    }
+
+    /// Update the textViewHeight and returns `true` if it has changed
+    private func updateTextViewHeight() -> Bool {
+        guard let cardDragging = cardDragging else { return false }
+        let cardContainer = cardDragging.containerView
+
+        // 20 is the height for the default font size, we just need some more less correct value here so the text view height is not initially 0
+        let minTextViewHeight = 10.0
+
+        // it cannot grow above the screen height (also taking into account the keyboard height)
+        let availableSpaceInContainer = cardContainer.frame.height - cardContainer.safeAreaInsets.top
+            - cardContainer.safeAreaInsets.bottom
+        let contentHeight = Constants.heightToName
+        // HACK: this could be calculated but is controlled on the CollaborationFlowController level
+        // It's here so when editing a long name we limit the text view height so it doesn't trigger
+        // showing the collaboration view header cover (which also displays the name)
+        let extraSpaceForTopHeaderCover = 50.0
+        let maxTextViewHeight = availableSpaceInContainer - contentHeight - extraSpaceForTopHeaderCover -
+            extraSpaceForKeyboard(cardContainer: cardContainer)
+
+        let newTextViewHeight = min(max(nameTextView.contentSize.height, minTextViewHeight), maxTextViewHeight)
+
+        guard newTextViewHeight != textViewHeight else { return false }
+        textViewHeight = newTextViewHeight
+        return true
+    }
+}
+
 // MARK: - name text field delegate
 
-extension CollaborationViewController: UITextFieldDelegate {
-    /// when text field did end editing update the keyboard height.
-    func textFieldDidEndEditing(_: UITextField, reason _: UITextField.DidEndEditingReason) {
+extension CollaborationViewController: UITextViewDelegate {
+    func textViewDidEndEditing(_: UITextView) {
         // this is needed as user could switch to another field with keyboard still visible. In this
         // case we want to update this card immediately (and not wait for the keyboard to be hidden)
         keyboardHeightInWindow = 0
@@ -439,9 +509,12 @@ extension CollaborationViewController: UITextFieldDelegate {
         cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
     }
 
-    /// Notify about name updated
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        onNameUpdated?((textField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+    func textView(_ textView: UITextView, shouldChangeTextIn _: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            onNameUpdated?((textView.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+            textView.resignFirstResponder()
+            return false
+        }
         return true
     }
 }

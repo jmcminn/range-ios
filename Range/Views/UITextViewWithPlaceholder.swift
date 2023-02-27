@@ -3,7 +3,7 @@ import UIKit
 
 /// Subclass UITextView to add support for the placeholder text
 class UITextViewWithPlaceholder: UITextView {
-    private let placeholderLabel = UILabel()
+    let placeholderLabel = UILabel()
 
     var placeholderText: String? {
         didSet {
@@ -68,7 +68,7 @@ class UITextViewWithPlaceholder: UITextView {
     /// UITextView doesn't support placeholder, create a label for placeholder
     private func setupPlaceholderLabel() {
         placeholderLabel.font = UIFont.preferredFont(forTextStyle: .body)
-        placeholderLabel.textColor = .dynamicColor(light: .Neutral_05, dark: .Neutral_05)
+        placeholderLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         placeholderLabel.backgroundColor = .clear
         placeholderLabel.adjustsFontForContentSizeCategory = true
         placeholderLabel.text = placeholderText

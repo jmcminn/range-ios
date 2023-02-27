@@ -307,7 +307,7 @@ extension CollaborationFlowController: UIScrollViewDelegate {
         let ctas: UIView = collaborationVC.detailsVC.ctas
 
         let headerCoverBottom = headerCoverVC.view.frame.maxY
-        let ctasTop = headerCoverVC.view.convert(ctas.frame, from: collaborationVC.detailsVC.view).minY
+        let ctasTop = round(headerCoverVC.view.convert(ctas.frame, from: collaborationVC.detailsVC.view).minY)
 
         // once the collaboration view CTAs get behind the cover let's show the bottom card
         if headerCoverBottom - ctasTop >= ctas.frame.height {
@@ -500,10 +500,10 @@ extension CollaborationFlowController {
         // name label is tapped in the header cover), so the nameField is visible and can become first
         // responder
         cardDragging.setPosition(.medium, withVelocity: 0, animated: true)
-        // make the nameField first responder, the rest is handler by CollaborationViewController
+        // make the name first responder, the rest is handled by CollaborationViewController
         // that is a delegate of the text field. So editing the name can also be started directly
-        // by tapping on the nameField.
-        collaborationVC?.nameField.becomeFirstResponder()
+        // by tapping on the name view.
+        collaborationVC?.nameTextView.becomeFirstResponder()
     }
 }
 

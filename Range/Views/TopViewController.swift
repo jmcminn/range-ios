@@ -77,7 +77,7 @@ class TopViewController: UIViewController {
         super.viewWillLayoutSubviews()
 
         if let backButton = backButton {
-            var availableSpace = view.frame.width - 80 // 40 on each side (because of the back button on the left)
+            let availableSpace = view.frame.width - 80 // 40 on each side (because of the back button on the left)
             imageAndTitle.layoutIfNeeded()
             if imageAndTitle.frame.width <= availableSpace {
                 // center

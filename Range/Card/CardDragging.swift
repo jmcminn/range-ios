@@ -93,6 +93,15 @@ extension CardDragging {
         }
         set {
             presentedViewController.view.frame.origin.y = containerView.bounds.height - newValue
+            /// when the card is handling the fullscreen it's responsible for it's max height (which can be bigger than the
+            /// screen height). The height can also change so update it if needed.
+            /// This can be considered a hack now, but this also guarantees that the card is always touching the bottom of the
+            /// screen, so no need to add some bottom covering views to be visible when card is dragged up.
+            /// Maybe all cards should work in the "allowsFullScreen" "mode"?
+            if config.allowsFullScreen, newValue > presentedViewController.view.frame.height {
+                presentedViewController.view.frame.size.height = newValue
+                presentedViewController.view.setNeedsUpdateConstraints()
+            }
             delegate?.cardHeightUpdated(newValue)
         }
     }
