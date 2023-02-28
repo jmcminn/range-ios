@@ -176,7 +176,7 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! CopyTaskTableViewCell
         let index = indexPath.row
         if index < uniqueCollaborations.count {
-            cell.setCollaboration(uniqueCollaborations[index], projectTimeZone: projectModel.projectSummary.timeZone)
+            cell.setCollaboration(uniqueCollaborations[index], projectModel: projectModel)
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in
             guard let self = self else { return }

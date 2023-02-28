@@ -122,9 +122,13 @@ class CopyTaskTableViewCell: UITableViewCell {
         bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
     }
 
-    func setCollaboration(_ collaboration: Collaboration, projectTimeZone: TimeZone) {
+    func setCollaboration(_ collaboration: Collaboration, projectModel: ProjectModel) {
         collaborationId = collaboration.id
-        badgeView.backgroundColor = collaboration.status?.color
+
+        let initialStatusColor = projectModel.mainRealm.objects(Status.self).first(where: { $0.isInitial })?
+            .color ?? .Primary_Blue_04
+
+        badgeView.backgroundColor = initialStatusColor
         nameLabel.text = collaboration.name.isEmpty
             ? (collaboration.status == nil
                 ? String(localized: "Untitled photos...")
@@ -154,8 +158,10 @@ class CopyTaskTableViewCell: UITableViewCell {
         }
         if let dueDateTimestamp = collaboration.dueDateTimestamp {
             detailsStackView.addArrangedSubview(PillView(
-                iconName: "calendar", text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectTimeZone),
-                verticalPadding: 4, backgroundColor: detailsBgColor
+                iconName: "calendar",
+                text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectModel.projectSummary.timeZone),
+                verticalPadding: 4, backgroundColor: detailsBgColor,
+                style: collaboration.isOverdue ? .red : .default
             ))
         } else {
             detailsStackView.addArrangedSubview(PillView(
