@@ -346,6 +346,19 @@ final class ProjectFlowController: UIViewController {
         let additionalCardActions = showDebugOptions
             ? [
                 ActionItem(
+                    title: "Toggle pdf/map mode",
+                    imageName: "map",
+                    handler: { [weak self] in
+                        guard let self = self else { return }
+                        self.canvasContainer.pdfCanvasViewController.toggleCanvasType()
+                        self.reloadGeometriesPinsDisplay(
+                            useNativeViews: self.debugSettings.nativeViewsForPins,
+                            showArchivedCollaborations: self.userSettings.showArchivedCollaborations,
+                            onReloaded: nil
+                        )
+                    }
+                ),
+                ActionItem(
                     title: "Toggle Light/Dark mode",
                     imageName: "lightbulb",
                     handler: { [weak self] in

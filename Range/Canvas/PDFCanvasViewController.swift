@@ -44,6 +44,14 @@ protocol CanvasViewControllerDelegate {
  The mapbox map is receiving the user interactions and controls the PDF zoom/offset
  */
 class PDFCanvasViewController: UIViewController {
+    // Should the canvas display PDF or mapbox map
+    enum CanvasType {
+        case pdf
+        case mapbox
+    }
+
+    private var canvasType: CanvasType
+
     let maxMapboxZoom = 25.5
 
     /// observers for pdf/mapbox views. They're being activated/deactivated when switching who drives the interactions
@@ -68,7 +76,7 @@ class PDFCanvasViewController: UIViewController {
     let zoomConverter: MapboxZoomConverter
 
     var mapView: MapView!
-    var pdfScrollView: PDFPageScrollView!
+    var pdfScrollView: PDFPageScrollView?
 
     /// Initial mapbox zoom matching the pdf page fitting the view
     private var initialZoom: Double = 0.0
@@ -86,19 +94,21 @@ class PDFCanvasViewController: UIViewController {
 
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
-        guard let fontsPath = Bundle.main.path(forResource: "fonts", ofType: nil) else {
-            Logger.assets.fault("Couldn't find fonts, Mapbox will be broken")
-            return "{}"
-        }
-        return
-            """
-            {
-            "glyphs": "file://\(fontsPath)/{fontstack}/{range}.pbf"
-            }
-            """
+        "{}"
+//        guard let fontsPath = Bundle.main.path(forResource: "fonts", ofType: nil) else {
+//            Logger.assets.fault("Couldn't find fonts, Mapbox will be broken")
+//            return "{}"
+//        }
+//        return
+//            """
+//            {
+//            "glyphs": "file://\(fontsPath)/{fontstack}/{range}.pbf"
+//            }
+//            """
     }
 
     init(model: ProjectModel) async throws {
+        canvasType = .pdf
         self.model = model
         pdfCanvas = model.currentCanvas
         pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: pdfCanvas, projectId: model.projectId)
@@ -112,8 +122,33 @@ class PDFCanvasViewController: UIViewController {
                 // update the pdfCanvas
                 self.pdfCanvas = self.model.currentCanvas
                 self.observeCanvasCollection()
-                await self.reloadPDFScrollView()
+                if self.canvasType == .pdf {
+                    await self.reloadPDFScrollView()
+                }
             }
+        }
+    }
+
+    /// toggle canvas type to switch between mapbox / pdf background - just for prototyping. The production solution will have a
+    /// separate canvas for mapbox
+    func toggleCanvasType() {
+        if canvasType == .mapbox {
+            // Switch to pdf
+            canvasType = .pdf
+            setupPDFScrollView()
+            mapView.removeFromSuperview()
+            mapView = nil
+            setupMapView()
+            setupSyncAnnotationViews()
+        } else {
+            // Switch to mapbox
+            canvasType = .mapbox
+            tearDownSyncAnnotationViews()
+            pdfScrollView?.removeFromSuperview()
+            pdfScrollView = nil
+            mapView.removeFromSuperview()
+            mapView = nil
+            setupMapView()
         }
     }
 
@@ -142,11 +177,13 @@ class PDFCanvasViewController: UIViewController {
     /// update the canvas collection observation
     private func observeCanvasCollection() {
         canvasCollectionNotificationToken?.invalidate()
-        if let collection = pdfCanvas.collection.first {
-            canvasCollectionNotificationToken = collection.observe { [weak self] _ in
-                Task { @MainActor in
-                    // update the pdfCanvas
-                    await self?.reloadPDFScrollView()
+        if canvasType == .pdf {
+            if let collection = pdfCanvas.collection.first {
+                canvasCollectionNotificationToken = collection.observe { [weak self] _ in
+                    Task { @MainActor in
+                        // update the pdfCanvas
+                        await self?.reloadPDFScrollView()
+                    }
                 }
             }
         }
@@ -157,7 +194,9 @@ class PDFCanvasViewController: UIViewController {
         view.backgroundColor = .white
 
         // 1. setup scroll view with given pdf page
-        setupPDFScrollView()
+        if canvasType == .pdf {
+            setupPDFScrollView()
+        }
 
         // 2. calculate the initialMetersPerPoint given the pdf page, view size and user defined scale
         setupInitialZoom()
@@ -166,7 +205,9 @@ class PDFCanvasViewController: UIViewController {
         setupMapView()
 
         // 4. setup annotation views
-        setupSyncAnnotationViews()
+        if canvasType == .pdf {
+            setupSyncAnnotationViews()
+        }
 
 //        setupDebugViews()
     }
@@ -176,7 +217,7 @@ class PDFCanvasViewController: UIViewController {
     @MainActor
     private func reloadPDFScrollView() async {
         // first hide the previous pdf view
-        pdfScrollView.removeFromSuperview()
+        pdfScrollView?.removeFromSuperview()
         do {
             // load the page
             pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: pdfCanvas, projectId: model.projectId)
@@ -191,7 +232,7 @@ class PDFCanvasViewController: UIViewController {
     }
 
     private func setupPDFScrollView() {
-        pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
+        let pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
         view.insertSubview(pdfScrollView, at: 0)
         pdfScrollView.scrollsToTop = false // we don't want scroll to top on top bar touch
         pdfScrollView.showsVerticalScrollIndicator = false
@@ -213,6 +254,7 @@ class PDFCanvasViewController: UIViewController {
             bottom: pdfInset,
             right: pdfInset
         )
+        self.pdfScrollView = pdfScrollView
     }
 
     /// Calculates initial zoom for mapbox, so it matches the zoom scale of PDFPage when it fits the view
@@ -225,27 +267,38 @@ class PDFCanvasViewController: UIViewController {
     }
 
     private func setupMapView() {
-        // TODO: it seems that we don't need Mapbox accessToken for annotations
-//        ResourceOptionsManager.default.resourceOptions.accessToken =
         // set initial mapbox zoom level and position
         let cameraOptions = CameraOptions(center: model.projectSummary.center, zoom: initialZoom)
-        mapView = MapView(frame: view.bounds, mapInitOptions: MapInitOptions(cameraOptions: cameraOptions))
-
-        // hack to make the Metal subview of the mapView transparent
-        // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
-        // by default it's black even if there's no layers). The trick is to make
-        // the MTKView used by Mapbox non opaque
-        mapView.subviews.forEach { subview in
-            if subview is MTKView {
-                subview.isOpaque = false
-            }
+        let mapInitOptions: MapInitOptions
+        if canvasType == .pdf {
+            mapInitOptions = MapInitOptions(cameraOptions: cameraOptions)
+        } else {
+            // We only need the access token if using mapbox resources, so it's not needed when displaying
+            // the PDF background
+            ResourceOptionsManager.default.resourceOptions.accessToken =
+                "pk.eyJ1IjoicmFuZ2UtbWFwYm94IiwiYSI6ImNsZXBkbmZycTA3aGYzcm1qZmtsZmFxaGoifQ.Tf0zWjw79qKgcFLh7XCTRQ"
+            mapInitOptions = MapInitOptions(cameraOptions: cameraOptions, styleURI: StyleURI.satelliteStreets)
         }
-        mapView.mapboxMap.loadStyleJSON(annotationsStyle) { result in
-            switch result {
-            case .success:
-                Logger.mapbox.debug("annotations style loaded successfully")
-            case let .failure(error):
-                Logger.mapbox.error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
+        mapView = MapView(frame: view.bounds, mapInitOptions: mapInitOptions)
+
+        if canvasType == .pdf {
+            // hack to make the Metal subview of the mapView transparent
+            // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
+            // by default it's black even if there's no layers). The trick is to make
+            // the MTKView used by Mapbox non opaque
+            mapView.subviews.forEach { subview in
+                if subview is MTKView {
+                    subview.isOpaque = false
+                }
+            }
+            mapView.mapboxMap.loadStyleJSON(annotationsStyle) { result in
+                switch result {
+                case .success:
+                    Logger.mapbox.debug("annotations style loaded successfully")
+                case let .failure(error):
+                    Logger.mapbox
+                        .error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
+                }
             }
         }
         do {
@@ -256,8 +309,11 @@ class PDFCanvasViewController: UIViewController {
 
         mapView.ornaments.options.attributionButton.visibility = .hidden
         mapView.ornaments.options.scaleBar.visibility = .hidden
-        mapView.gestures.options.rotateEnabled = false
-        mapView.gestures.options.pitchEnabled = false
+        if canvasType == .pdf {
+            // rotations and pitch change is not supported for PDF
+            mapView.gestures.options.rotateEnabled = false
+            mapView.gestures.options.pitchEnabled = false
+        }
         mapView.isUserInteractionEnabled = true
 
         view.addSubview(mapView)
@@ -273,6 +329,9 @@ class PDFCanvasViewController: UIViewController {
 
     /// Add special mapbox annotation views that are transparent and act as a map -> pdf sync driver.
     private func setupSyncAnnotationViews() {
+        guard let pdfScrollView = pdfScrollView else {
+            fatalError("setupSyncAnnotationViews called when pdfScrollView is nil")
+        }
         do {
             let pdfFrame = mapView.convert(pdfScrollView.pdfView.frame, from: pdfScrollView)
             let topLeft = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100_001, height: 100_001)))
@@ -354,6 +413,9 @@ class PDFCanvasViewController: UIViewController {
     /// match the top-left and bottom-right corners of the PDF, so the PDF scale and offset can be inferred directly
     /// from current on screen positions of the annotation views, without doing any mapbox camera/zoom or geocoordinates calculations.
     private func syncPDFViewWithAnnotationViews() {
+        guard let pdfScrollView = pdfScrollView else {
+            fatalError("syncPDFViewWithAnnotationViews called when pdfScrollView is nil")
+        }
         guard let topLeftCenter = topLeftSyncAnnotationView?.center,
               let bottomRightCenter = bottomRightSyncAnnotationView?.center else { return }
         let syncViewsCenter = CGPoint(
