@@ -88,7 +88,7 @@ class PDFCanvasViewController: UIViewController {
     private var delegates: [UUID: CanvasViewControllerDelegate] = [:]
 
     /// To observed changes in model.currentCanvas
-    private var canvasObservation: NSKeyValueObservation?
+    private var currentCanvasObservation: NSKeyValueObservation?
     /// Observe canvas collection for pdf storage version change to reload the pdf
     private var canvasCollectionNotificationToken: NotificationToken?
 
@@ -116,7 +116,7 @@ class PDFCanvasViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
 
         observeCanvasCollection()
-        canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
+        currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
             Task { @MainActor in
                 // update the pdfCanvas
@@ -158,7 +158,7 @@ class PDFCanvasViewController: UIViewController {
     }
 
     deinit {
-        canvasObservation?.invalidate()
+        currentCanvasObservation?.invalidate()
         canvasCollectionNotificationToken?.invalidate()
     }
 
@@ -216,6 +216,7 @@ class PDFCanvasViewController: UIViewController {
     /// We keep the zoom/offset, so there's no recalculation of initial zoom.
     @MainActor
     private func reloadPDFScrollView() async {
+        guard !pdfCanvas.isInvalidated else { return }
         // first hide the previous pdf view
         pdfScrollView?.removeFromSuperview()
         do {

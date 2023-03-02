@@ -35,7 +35,9 @@ final class ProjectFlowController: UIViewController {
     weak var taskListVC: TaskListCardViewController?
 
     /// To observed changes in model.currentCanvas
-    private var canvasObservation: NSKeyValueObservation?
+    private var currentCanvasObservation: NSKeyValueObservation?
+    /// Observe the currently selected model.currentCanvas
+    private var canvasNotificationToken: NotificationToken?
 
     /// id of registered canvas delegate
     var canvasDelegateId: UUID?
@@ -142,9 +144,12 @@ final class ProjectFlowController: UIViewController {
         collaborationFlow.start()
         observeUserSettings()
         observeDebugSettings()
+        observeCanvas()
 
-        canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
+        currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
+            guard !self.model.currentCanvas.isInvalidated else { return }
+            self.observeCanvas()
             self.reloadGeometriesPinsDisplay(
                 useNativeViews: self.debugSettings.nativeViewsForPins,
                 showArchivedCollaborations: self.userSettings.showArchivedCollaborations,
@@ -153,6 +158,17 @@ final class ProjectFlowController: UIViewController {
         }
 
         canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
+    }
+
+    private func observeCanvas() {
+        canvasNotificationToken?.invalidate()
+        canvasNotificationToken = model.currentCanvas.observe { [weak self] change in
+            if case .deleted = change {
+                // if the currently open canvas is removed just go back to projects
+                self?.onBack?()
+                ToastWindow.shared.showWarning(text: "Canvas removed")
+            }
+        }
     }
 
     /// Reload the geometries pins display.
@@ -252,8 +268,10 @@ final class ProjectFlowController: UIViewController {
         debugSettingsNativeViewsForPinsSubscriber = nil
         userSettingsShowArchivedPinsSubscriber?.cancel()
         userSettingsShowArchivedPinsSubscriber = nil
-        canvasObservation?.invalidate()
-        canvasObservation = nil
+        currentCanvasObservation?.invalidate()
+        currentCanvasObservation = nil
+        canvasNotificationToken?.invalidate()
+        canvasNotificationToken = nil
     }
 
     /// shows the view controller covering the top of of the screen
