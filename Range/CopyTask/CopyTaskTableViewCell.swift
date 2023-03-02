@@ -79,15 +79,17 @@ class CopyTaskTableViewCell: UITableViewCell {
             make.center.equalToSuperview()
         }
 
-        nameLabel.font = .preferredFont(forTextStyle: .subheadline)
+        nameLabel.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
         nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
+        nameLabel.numberOfLines = 1
+        nameLabel.lineBreakMode = .byTruncatingTail
 
-        descriptionLabel.font = .preferredFont(forTextStyle: .footnote)
+        descriptionLabel.font = .preferredFont(forTextStyle: .subheadline)
         descriptionLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         descriptionLabel.adjustsFontForContentSizeCategory = true
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.lineBreakMode = .byWordWrapping
+        descriptionLabel.numberOfLines = 2
+        descriptionLabel.lineBreakMode = .byTruncatingTail
 
         detailsScrollView.alwaysBounceHorizontal = true
         detailsScrollView.showsHorizontalScrollIndicator = false
@@ -171,9 +173,10 @@ class CopyTaskTableViewCell: UITableViewCell {
             ))
         }
 
+        let tagsBgColor = UIColor.Primary_Blue_01
         for tag in collaboration.tags {
             tagsStackView.addArrangedSubview(PillView(
-                iconName: "tag", text: tag.name, verticalPadding: 4, style: .tag
+                iconName: "tag", text: tag.name, verticalPadding: 4, backgroundColor: tagsBgColor, style: .tag
             ))
         }
     }
