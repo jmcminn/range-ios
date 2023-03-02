@@ -181,6 +181,8 @@ class ProjectsFlowController: UINavigationController {
         )
         projectFC.onBack = { [weak self] in
             _ = self?.popViewController(animated: true)
+            self?.projectFC?.stop()
+            self?.projectFC = nil
             UserDefaults.lastOpenProjectId = nil
         }
         return projectFC
@@ -198,8 +200,6 @@ class ProjectsFlowController: UINavigationController {
     }
 
     private func signOut() {
-        projectFC?.stop()
-        projectFC = nil
         // TODO: delete all realm files on sign in when the user is different from the previous one?
         // We need to delete all projects, so Realm.deleteFiles(for: config) is not enough, manual removal
         // like describe here https://github.com/realm/realm-swift/issues/4625 needed
