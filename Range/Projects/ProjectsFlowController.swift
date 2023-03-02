@@ -1,5 +1,7 @@
 import Foundation
 import OSLog
+import Realm
+import RealmSwift
 import SwiftUI
 import UIKit
 
@@ -17,6 +19,7 @@ class ProjectsFlowController: UINavigationController {
     var onSignedOut: (() -> Void)?
 
     var projectFC: ProjectFlowController?
+    var currentProjectNotificationToken: NotificationToken?
 
     init(userId: String) throws {
         self.userId = userId
@@ -60,6 +63,7 @@ class ProjectsFlowController: UINavigationController {
                     projectFC!.model.currentCanvas.id,
                     forProjectId: projectFC!.model.projectId
                 )
+                observeCurrentProject()
             } catch {
                 Logger.model
                     .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
@@ -76,6 +80,7 @@ class ProjectsFlowController: UINavigationController {
         projectsModel.stop()
         pendingUploadsModel.stop()
         pendingActionsModel.stop()
+        currentProjectNotificationToken?.invalidate()
     }
 
     private func buildProjectsViewController() -> ProjectsViewController {
@@ -157,6 +162,7 @@ class ProjectsFlowController: UINavigationController {
                         self.projectFC!.model.currentCanvas.id,
                         forProjectId: self.projectFC!.model.projectId
                     )
+                    self.observeCurrentProject()
                 }
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
@@ -180,12 +186,33 @@ class ProjectsFlowController: UINavigationController {
             userSettings: userSettings
         )
         projectFC.onBack = { [weak self] in
-            _ = self?.popViewController(animated: true)
-            self?.projectFC?.stop()
-            self?.projectFC = nil
-            UserDefaults.lastOpenProjectId = nil
+            self?.closeCurrentProject()
         }
         return projectFC
+    }
+
+    private func closeCurrentProject() {
+        _ = popViewController(animated: true)
+        projectFC?.stop()
+        projectFC = nil
+        UserDefaults.lastOpenProjectId = nil
+        currentProjectNotificationToken?.invalidate()
+        currentProjectNotificationToken = nil
+    }
+
+    private func observeCurrentProject() {
+        guard let projectId = projectFC?.model.projectId else {
+            fatalError("observeCurrentProject called when no project is open")
+        }
+        guard let project = projectsModel.mainRealm.object(ofType: ProjectSummary.self, forPrimaryKey: projectId)
+        else { return }
+        currentProjectNotificationToken?.invalidate()
+        currentProjectNotificationToken = project.observe { [weak self] change in
+            if case .deleted = change {
+                ToastWindow.shared.showWarning(text: "Project removed")
+                self?.closeCurrentProject()
+            }
+        }
     }
 
     /// Present alert controller with project loading error message
