@@ -23,7 +23,7 @@ class CopyTaskTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
 
         setupViews()
 
@@ -145,7 +145,7 @@ class CopyTaskTableViewCell: UITableViewCell {
             descriptionLabel.textInsets = .zero
         }
 
-        let detailsBgColor = UIColor.dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        let detailsBgColor = UIColor.dynamicColor(light: .Neutral_02, dark: .Neutral_09)
         if let assignee = collaboration.assignee {
             detailsStackView.addArrangedSubview(PillView(
                 iconName: "person", text: assignee.displayName,

@@ -59,7 +59,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             make.center.equalToSuperview()
         }
 
-        nameLabel.font = .preferredFont(forTextStyle: .subheadline)
+        nameLabel.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
         nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
 
