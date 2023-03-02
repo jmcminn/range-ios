@@ -280,6 +280,7 @@ extension ProjectFlowController {
 extension ProjectFlowController {
     func moreAction(sender _: Any?, event: FlowEvent) {
         if let collaboration = event.object as? Collaboration {
+            guard !collaboration.isInvalidated else { return }
             var actions: [ActionItem] = collaboration.status == nil
                 ? [ActionItem(title: "Convert to Task Pin", imageName: "checkmark.circle", handler: {
                     self.confirmAndConvertPhotoCollaborationToTask(collaboration)
@@ -312,6 +313,7 @@ extension ProjectFlowController {
             )
             .installAndShowCard(in: canvasContainer)
         } else if let upload = event.object as? Upload {
+            guard !upload.isInvalidated else { return }
             ActionSelectorCardViewController(
                 icon: UIImage(systemName: "ellipsis"),
                 title: "More Menu",
@@ -327,6 +329,7 @@ extension ProjectFlowController {
                 ]
             ).installAndShowCard(in: canvasContainer)
         } else if let comment = event.object as? Comment {
+            guard !comment.isInvalidated else { return }
             let commentOrNote = comment.isNote ? "Note" : "Comment"
             ActionSelectorCardViewController(
                 icon: UIImage(systemName: "ellipsis"),
@@ -344,6 +347,7 @@ extension ProjectFlowController {
     }
 
     func editComment(_ comment: Comment) {
+        guard !comment.isInvalidated else { return }
         let commentVC = CommentViewController(mode: .edit)
         commentVC.commentText = comment.text
         commentVC.isNote = comment.isNote
@@ -371,6 +375,7 @@ extension ProjectFlowController {
     }
 
     func confirmAndConvertPhotoCollaborationToTask(_ collaboration: Collaboration) {
+        guard !collaboration.isInvalidated else { return }
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
@@ -385,6 +390,7 @@ extension ProjectFlowController {
     }
 
     func convertPhotoCollaborationToTask(_ collaboration: Collaboration) {
+        guard !collaboration.isInvalidated else { return }
         Task {
             do {
                 try await self.model.run(self.model.convertPhotoCollaborationToTask(collaboration))
@@ -399,6 +405,7 @@ extension ProjectFlowController {
     }
 
     func confirmAndDeleteCollaboration(_ collaboration: Collaboration) {
+        guard !collaboration.isInvalidated else { return }
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
@@ -418,6 +425,7 @@ extension ProjectFlowController {
     }
 
     func deleteCollaboration(_ collaboration: Collaboration) {
+        guard !collaboration.isInvalidated else { return }
         // hide the window first so all collaboration change listeners are unregistered
         collaborationFlow.hideCollaborationWindow(animated: true) {
             // unselect the pin
@@ -434,6 +442,7 @@ extension ProjectFlowController {
     }
 
     func confirmAndDeleteUpload(_ upload: Upload) {
+        guard !upload.isInvalidated else { return }
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
@@ -451,6 +460,11 @@ extension ProjectFlowController {
     }
 
     func deleteUpload(_ upload: Upload) {
+        guard !upload.isInvalidated else { return }
+        // hide media/fullscreen
+        if let fullscreenMediaVC = fullscreenMediaVC, fullscreenMediaVC.upload == upload {
+            fullscreenMediaVC.dismissCard()
+        }
         model.run(model.delete(upload: upload)) { error in
             if error !=
                 nil { ToastWindow.shared.showError(text: "Failed to delete the \(upload.isImage ? "photo" : "file")") }
@@ -458,6 +472,7 @@ extension ProjectFlowController {
     }
 
     func toggleCollaborationArchived(_ collaboration: Collaboration) {
+        guard !collaboration.isInvalidated else { return }
         Task {
             do {
                 try await self.model.run(self.model.toggleCollaborationArchived(collaboration: collaboration))
@@ -470,6 +485,7 @@ extension ProjectFlowController {
     }
 
     func confirmAndDeleteComment(_ comment: Comment) {
+        guard !comment.isInvalidated else { return }
         let commentOrNote = comment.isNote ? "Note" : "Comment"
         ActionSelectorCardViewController(
             icon: nil,
@@ -485,6 +501,7 @@ extension ProjectFlowController {
     }
 
     func deleteComment(_ comment: Comment) {
+        guard !comment.isInvalidated else { return }
         model.run(model.delete(comment: comment)) { error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to delete the \(comment.isNote ? "note" : "comment")")
@@ -494,6 +511,7 @@ extension ProjectFlowController {
 
     /// Update the location of the collaboration
     func moveCollaboration(_ collaboration: Collaboration) {
+        guard !collaboration.isInvalidated else { return }
         pinsDisplay?.setSelectedPin(nil)
         addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer, mode: .move(collaboration))
         addPinFlow?.onStop = { [weak self] _ in

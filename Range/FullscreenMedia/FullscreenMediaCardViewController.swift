@@ -50,7 +50,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
 
-    private let upload: Upload
+    let upload: Upload
     private var uploadNotificationToken: NotificationToken?
 
     private var previewItem: UploadPreviewItem?
@@ -164,12 +164,12 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             make.height.equalTo(500)
         }
         updateColors()
-    }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         uploadNotificationToken = upload.observe { [weak self] change in
             if case .deleted = change {
+                if let cardDragging = self?.cardDragging, cardDragging.isCardHidden == false {
+                    ToastWindow.shared.showWarning(text: "Upload removed")
+                }
                 self?.dismissCard()
             } else {
                 self?.onUploadUpdated()
@@ -250,11 +250,6 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
         presentingView.layoutIfNeeded()
         updateCommentsContentScrollInsets()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        uploadNotificationToken?.invalidate()
     }
 
     override func viewDidLayoutSubviews() {
@@ -389,6 +384,8 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller
     func dismissCard() {
+        uploadNotificationToken?.invalidate()
+        uploadNotificationToken = nil
         tabBar.removeFromSuperview()
         safeAreaCoverView.removeFromSuperview()
         if let addCommentVC = addCommentVC {
