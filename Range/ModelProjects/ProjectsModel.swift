@@ -26,7 +26,7 @@ class ProjectsModel: NSObject, RealmModel {
     /// Firestore listeners, map of firestore id => listener
     var listeners: [String: ListenerRegistration] = [:]
 
-    private var currentUser: Participant?
+    private(set) var currentUser: Participant?
     /// token for observing the current user in the realm
     private var userNotificationToken: NotificationToken?
 

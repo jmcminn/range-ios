@@ -18,6 +18,7 @@ class ProjectsFlowController: UINavigationController {
 
     var onSignedOut: (() -> Void)?
 
+    var currentUserNotificationToken: NotificationToken?
     var projectFC: ProjectFlowController?
     var currentProjectNotificationToken: NotificationToken?
 
@@ -74,12 +75,14 @@ class ProjectsFlowController: UINavigationController {
         } else {
             setViewControllers([tabBarVC], animated: false)
         }
+        observeCurrentUser()
     }
 
     func stop() {
         projectsModel.stop()
         pendingUploadsModel.stop()
         pendingActionsModel.stop()
+        currentUserNotificationToken?.invalidate()
         currentProjectNotificationToken?.invalidate()
     }
 
@@ -198,6 +201,20 @@ class ProjectsFlowController: UINavigationController {
         UserDefaults.lastOpenProjectId = nil
         currentProjectNotificationToken?.invalidate()
         currentProjectNotificationToken = nil
+    }
+
+    private func observeCurrentUser() {
+        guard let currentUser = projectsModel.currentUser else {
+            fatalError("observeCurrentUser called when there's no current user")
+        }
+        currentUserNotificationToken = currentUser.observe { [weak self] change in
+            if case .deleted = change {
+                self?.onSignedOut?()
+                // it is important that toast is shown after 'onSignedOut' as the sign out
+                // reloads the ToastWindow
+                ToastWindow.shared.showWarning(text: "User removed")
+            }
+        }
     }
 
     private func observeCurrentProject() {
