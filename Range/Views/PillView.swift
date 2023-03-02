@@ -28,7 +28,7 @@ class PillView: UIView {
     }
 
     private var font: UIFont {
-        ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
     }
 
     private let style: Style
