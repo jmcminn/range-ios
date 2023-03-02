@@ -1,4 +1,3 @@
-
 import Foundation
 import UIKit
 
@@ -52,5 +51,10 @@ class ToastWindow: UIWindow {
     /// Helper function for showing toast with predefined color for error.
     func showError(text: String) {
         showToast(text: text, color: .Red_03, borderColor: .Red_04)
+    }
+
+    /// Helper function for showing toast with predefined color for warning.
+    func showWarning(text: String) {
+        showToast(text: text, color: .Orange_03, borderColor: .Orange_04)
     }
 }

@@ -43,6 +43,8 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
 
     /// Currently shown collaboration
     var collaboration: Collaboration?
+    /// listen to collaboration removed (but better to geometry as it's reported sooner)
+    private var geometryNotificationToken: NotificationToken?
     /// currently shown collaboration window
     var collaborationVC: CollaborationViewController?
     /// the view covering the collaboration window in full screen mode (when the collaboration window card is in max position)
@@ -98,6 +100,9 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
 
     /// Cleanup after showing collaboration windows. The flow controller is not usable after a call to this function
     func stop() {
+        collaboration = nil
+        geometryNotificationToken?.invalidate()
+        geometryNotificationToken = nil
         removeBottomCard()
         canvasContainer.remove(childController: self)
     }
@@ -143,6 +148,15 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
 
     func showCollaborationWindow(_ collaboration: Collaboration, animated: Bool) {
         self.collaboration = collaboration
+        geometryNotificationToken?.invalidate()
+        if let geometry = collaboration.feature.first?.geometry.first {
+            geometryNotificationToken = geometry.observe { [weak self] change in
+                if case .deleted = change {
+                    ToastWindow.shared.showWarning(text: String(localized: "Pin removed"))
+                    self?.hideCollaborationWindow(animated: true)
+                }
+            }
+        }
         let collaborationVC = createCollaborationViewController(forCollaboration: collaboration)
 
         installCard(
@@ -178,6 +192,9 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
 
     /// Hide the currently shown collaboration window (and the header cover)
     func hideCollaborationWindow(animated: Bool, completion: (() -> Void)? = nil) {
+        collaboration = nil
+        geometryNotificationToken?.invalidate()
+        geometryNotificationToken = nil
         if let collaborationVC = collaborationVC {
             collaborationVC.cardDragging?.delegate = nil
             collaborationVC.hideCard(animated: animated) {
