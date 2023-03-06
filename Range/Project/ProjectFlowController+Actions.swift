@@ -70,7 +70,7 @@ extension ProjectFlowController: ProjectFlowActions {
         mediaVC = MediaCardViewController(
             projectModel: model,
             mediaCache: mediaCache,
-            title: String(localized: "Media"),
+            title: String(localized: "All Media"),
             uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }

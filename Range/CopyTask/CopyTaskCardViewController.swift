@@ -35,7 +35,7 @@ class CopyTaskCardViewController: SheetCardViewController {
                 c.author == projectModel.currentUser && c.status != nil
             }
             .sorted(by: \Collaboration.timestamp, ascending: false)
-        super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Copy Task Pin"))
+        super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Select Task to Copy"))
         onDismiss = { [weak self] in self?.onTaskSelected?(self?.selectedTask) }
     }
 
