@@ -97,9 +97,24 @@ class ProjectModelFirestoreSync {
                 let canvasCollection = try $0.data(as: FirestoreCanvasCollection.self)
                 try canvasCollection.upsert(withId: $0.documentID, inRealm: realm)
             }
-            try canvases.documents.forEach {
-                let canvas = try $0.data(as: FirestorePDFCanvas.self)
-                try canvas.upsert(withId: $0.documentID, inRealm: realm)
+            canvases.documents.forEach {
+                // failing to load some canvas collections shouldn't fail the whole initial sync
+                do {
+                    let canvas = try $0.data(as: FirestorePDFCanvas.self)
+                    try canvas.upsert(withId: $0.documentID, inRealm: realm)
+                } catch let DecodingError.dataCorrupted(context),
+                            let DecodingError.keyNotFound(_, context),
+                            let DecodingError.valueNotFound(_, context),
+                            let DecodingError.typeMismatch(_, context)
+                {
+                    Logger.firestore.error(
+                        "canvases initial sync decode failed [\($0.documentID, privacy: .public)]: \(context.debugDescription, privacy: .public)"
+                    )
+                } catch {
+                    Logger.firestore.error(
+                        "canvases initial upsert failed [\($0.documentID, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
+                    )
+                }
             }
             try user.upsert(withId: self.model.userId, inRealm: realm)
             try statuses.documents.forEach {
