@@ -30,7 +30,7 @@ extension UpdateGeometryLocationCommand: LocalCommand {
         }
 
         if geometry.canvas.first?.id != canvasId {
-            guard let canvas = realm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId) else {
+            guard let canvas = realm.object(ofType: Canvas.self, forPrimaryKey: canvasId) else {
                 throw ModelError.canvasNotFound
             }
             // switch canvas

@@ -48,7 +48,9 @@ final class FlowEvent: UIEvent {
 
 extension ProjectFlowController: ProjectFlowActions {
     func selectCanvasAction() {
-        let canvases = [PDFCanvas](model.mainRealm.objects(PDFCanvas.self).sorted(by: \PDFCanvas.pageNumber))
+        // TODO: 930 sort canvases
+//        let canvases = [Canvas](model.mainRealm.objects(Canvas.self).sorted(by: \Canvas.pageNumber))
+        let canvases = [Canvas](model.mainRealm.objects(Canvas.self))
         CanvasSelectorCardViewController(
             title: String(localized: "Source Selector"),
             canvases: canvases,

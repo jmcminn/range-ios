@@ -39,11 +39,13 @@ protocol CanvasViewControllerDelegate {
     func canvasTapRecognized(at: CGPoint)
 }
 
+// TODO: 930 rename to CanvasViewController
 /**
  Displays background PDF with Mapbox map view on top.
  The mapbox map is receiving the user interactions and controls the PDF zoom/offset
  */
 class PDFCanvasViewController: UIViewController {
+    // TODO: 930 remove it
     // Should the canvas display PDF or mapbox map
     enum CanvasType {
         case pdf
@@ -70,7 +72,7 @@ class PDFCanvasViewController: UIViewController {
     private var currentCameraChangeReason: CanvasCameraChangeReason?
 
     unowned let model: ProjectModel
-    private var pdfCanvas: PDFCanvas
+    private var canvas: Canvas
     private var pdfPage: PDFPage
 
     let zoomConverter: MapboxZoomConverter
@@ -110,8 +112,8 @@ class PDFCanvasViewController: UIViewController {
     init(model: ProjectModel) async throws {
         canvasType = .pdf
         self.model = model
-        pdfCanvas = model.currentCanvas
-        pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: pdfCanvas, projectId: model.projectId)
+        canvas = model.currentCanvas
+        pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: canvas, projectId: model.projectId)
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
 
@@ -120,7 +122,7 @@ class PDFCanvasViewController: UIViewController {
             guard let self = self else { return }
             Task { @MainActor in
                 // update the pdfCanvas
-                self.pdfCanvas = self.model.currentCanvas
+                self.canvas = self.model.currentCanvas
                 self.observeCanvasCollection()
                 if self.canvasType == .pdf {
                     await self.reloadPDFScrollView()
@@ -178,7 +180,7 @@ class PDFCanvasViewController: UIViewController {
     private func observeCanvasCollection() {
         canvasCollectionNotificationToken?.invalidate()
         if canvasType == .pdf {
-            if let collection = pdfCanvas.collection.first {
+            if let collection = canvas.collection.first {
                 canvasCollectionNotificationToken = collection.observe { [weak self] _ in
                     Task { @MainActor in
                         // update the pdfCanvas
@@ -216,12 +218,12 @@ class PDFCanvasViewController: UIViewController {
     /// We keep the zoom/offset, so there's no recalculation of initial zoom.
     @MainActor
     private func reloadPDFScrollView() async {
-        guard !pdfCanvas.isInvalidated else { return }
+        guard !canvas.isInvalidated else { return }
         // first hide the previous pdf view
         pdfScrollView?.removeFromSuperview()
         do {
             // load the page
-            pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: pdfCanvas, projectId: model.projectId)
+            pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: canvas, projectId: model.projectId)
             // build new view
             setupPDFScrollView()
             // sync with current zoom/offset from mapbox
@@ -260,11 +262,13 @@ class PDFCanvasViewController: UIViewController {
 
     /// Calculates initial zoom for mapbox, so it matches the zoom scale of PDFPage when it fits the view
     private func setupInitialZoom() {
-        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / pdfCanvas.userDefinedScale)
-        let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
-        let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
-        let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
-        initialZoom = zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
+        // TODO: 930 depends on the source, maybe it's not pdf
+//        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / canvas.userDefinedScale)
+//        let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
+//        let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
+//        let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
+//        initialZoom = zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
+        initialZoom = 17.0
     }
 
     private func setupMapView() {

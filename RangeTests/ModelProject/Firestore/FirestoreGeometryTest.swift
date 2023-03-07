@@ -119,26 +119,14 @@ class FirestoreGeometryTest: XCTestCase {
         try realm.write {
             try firestoreGeometry.upsert(withId: "geometry1", inRealm: realm)
         }
-        let canvas = try XCTUnwrap(realm.object(ofType: PDFCanvas.self, forPrimaryKey: "canvas1"), "canvas1 not found")
+        let canvas = try XCTUnwrap(realm.object(ofType: Canvas.self, forPrimaryKey: "canvas1"), "canvas1 not found")
         XCTAssertTrue(canvas.placeholder)
     }
 
     func testUpsert() throws {
         // 1. create 2 empty canvases
-        let canvas1 = PDFCanvas(
-            id: "canvas1",
-            name: "",
-            pageNumber: 0,
-            sheetNumber: nil,
-            userDefinedScale: 1
-        )
-        let canvas2 = PDFCanvas(
-            id: "canvas2",
-            name: "",
-            pageNumber: 0,
-            sheetNumber: nil,
-            userDefinedScale: 1
-        )
+        let canvas1 = Canvas(id: "canvas1", name: "")
+        let canvas2 = Canvas(id: "canvas2", name: "")
         try realm.write {
             realm.add([canvas1, canvas2])
         }

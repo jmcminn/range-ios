@@ -12,7 +12,7 @@ import UIKit
 /// #Reference
 /// [Mapbox annotations](https://docs.mapbox.com/ios/maps/guides/annotations/annotations/)
 class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
-    private let canvas: PDFCanvas
+    private let canvas: Canvas
     unowned let canvasVC: PDFCanvasViewController
     private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
@@ -44,7 +44,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     /// - Parameters:
     ///   - canvasViewController:    will add pins to this canvas
     required init(
-        canvas: PDFCanvas,
+        canvas: Canvas,
         canvasViewController: PDFCanvasViewController,
         selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,

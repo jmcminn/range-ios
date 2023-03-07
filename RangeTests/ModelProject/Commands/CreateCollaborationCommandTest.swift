@@ -55,13 +55,7 @@ final class CreateCollaborationCommandRealmTest: XCTestCase {
     }
 
     func testApply_noUser() throws {
-        let canvas1 = PDFCanvas(
-            id: "canvas1",
-            name: "",
-            pageNumber: 0,
-            sheetNumber: nil,
-            userDefinedScale: 1
-        )
+        let canvas1 = Canvas(id: "canvas1", name: "")
         try realm.write {
             realm.add(canvas1)
         }
@@ -73,13 +67,7 @@ final class CreateCollaborationCommandRealmTest: XCTestCase {
     }
 
     func testApply_noStatus() throws {
-        let canvas1 = PDFCanvas(
-            id: "canvas1",
-            name: "",
-            pageNumber: 0,
-            sheetNumber: nil,
-            userDefinedScale: 1
-        )
+        let canvas1 = Canvas(id: "canvas1", name: "")
         let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
         let user2 = Participant(id: "user2", firstName: "", lastName: "", avatarUrl: nil, email: "")
         try realm.write {
@@ -98,13 +86,7 @@ final class CreateCollaborationCommandRealmTest: XCTestCase {
     }
 
     func testApply_noAssignee() throws {
-        let canvas1 = PDFCanvas(
-            id: "canvas1",
-            name: "",
-            pageNumber: 0,
-            sheetNumber: nil,
-            userDefinedScale: 1
-        )
+        let canvas1 = Canvas(id: "canvas1", name: "")
         let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
         try realm.write {
             realm.add([canvas1, user1])
@@ -120,13 +102,7 @@ final class CreateCollaborationCommandRealmTest: XCTestCase {
     }
 
     func testApply_successful() throws {
-        let canvas1 = PDFCanvas(
-            id: "canvas1",
-            name: "",
-            pageNumber: 0,
-            sheetNumber: nil,
-            userDefinedScale: 1
-        )
+        let canvas1 = Canvas(id: "canvas1", name: "")
         let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
         let user2 = Participant(id: "user2", firstName: "", lastName: "", avatarUrl: nil, email: "")
         try realm.write {

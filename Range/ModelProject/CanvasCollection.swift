@@ -7,7 +7,7 @@ class CanvasCollection: Object, WithPlaceholder {
     @Persisted(primaryKey: true) var id: String
 
     /// canvases for this collection, the order doesn't matter so it's a set
-    @Persisted var canvases: MutableSet<PDFCanvas>
+    @Persisted var canvases: MutableSet<Canvas>
     /// The name of canvas collection
     @Persisted var name: String
     /// The storage version of the PDF file

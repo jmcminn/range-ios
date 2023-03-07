@@ -44,7 +44,7 @@ class AddPhotoPinsDisplay {
     ///   - canvas:             handler will add pins for this canvas
     ///   - canvasContainer:    handler will add pins to this canvas view
     ///   - image:              image to be displayed on the new photo pin
-    init(canvas: PDFCanvas, canvasContainer: CanvasContainerViewController, model: ProjectModel, image: UIImage) {
+    init(canvas: Canvas, canvasContainer: CanvasContainerViewController, model: ProjectModel, image: UIImage) {
         self.canvasContainer = canvasContainer
         canvasVC = canvasContainer.pdfCanvasViewController
         self.model = model

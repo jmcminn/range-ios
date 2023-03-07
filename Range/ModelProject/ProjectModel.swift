@@ -29,7 +29,7 @@ class ProjectModel: NSObject, RealmModel {
     private(set) var currentUser: Participant!
 
     /// The current canvas for the project, @objc dynamic so it can be observed
-    @objc dynamic var currentCanvas: PDFCanvas! {
+    @objc dynamic var currentCanvas: Canvas! {
         didSet {
             UserDefaults.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
         }
@@ -65,7 +65,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 9
+            config.schemaVersion = 10
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent(self.projectId)
             config.fileURL!.appendPathExtension("realm")
@@ -76,7 +76,7 @@ class ProjectModel: NSObject, RealmModel {
         }
         config.objectTypes = [
             ProjectSummary.self, Status.self, Tag.self, Participant.self, CanvasCollection.self,
-            PDFCanvas.self, Geometry.self, Feature.self, Collaboration.self, Comment.self,
+            Canvas.self, CanvasSource.self, Geometry.self, Feature.self, Collaboration.self, Comment.self,
             Update.self, Upload.self, Location.self,
         ]
         realmConfig = config
@@ -104,12 +104,14 @@ class ProjectModel: NSObject, RealmModel {
         }
         currentUser = user
         if let initialCanvasId = initialCanvasId {
-            guard let initialCanvas = mainRealm.object(ofType: PDFCanvas.self, forPrimaryKey: initialCanvasId) else {
+            guard let initialCanvas = mainRealm.object(ofType: Canvas.self, forPrimaryKey: initialCanvasId) else {
                 throw ModelError.canvasNotFound
             }
             currentCanvas = initialCanvas
         } else {
-            guard let firstCanvas = mainRealm.objects(PDFCanvas.self).sorted(by: \PDFCanvas.pageNumber).first else {
+            // TODO: 930 sort by sources properties?
+//            guard let firstCanvas = mainRealm.objects(Canvas.self).sorted(by: \Canvas.pageNumber).first else {
+            guard let firstCanvas = mainRealm.objects(Canvas.self).first else {
                 throw ModelError.canvasNotFound
             }
             currentCanvas = firstCanvas

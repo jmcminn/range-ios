@@ -5,11 +5,11 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class CanvasSelectorCardViewController: SheetCardViewController {
-    let canvases: [PDFCanvas]
-    private let selectedCanvas: PDFCanvas?
+    let canvases: [Canvas]
+    private let selectedCanvas: Canvas?
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    var onCanvasSelected: ((PDFCanvas) -> Void)?
+    var onCanvasSelected: ((Canvas) -> Void)?
 
     /// Initializer
     ///
@@ -18,9 +18,9 @@ class CanvasSelectorCardViewController: SheetCardViewController {
     ///     - canvases:               canvases to show in the selector
     init(
         title: String,
-        canvases: [PDFCanvas],
-        selectedCanvas: PDFCanvas?,
-        onCanvasSelected: ((PDFCanvas) -> Void)? = nil
+        canvases: [Canvas],
+        selectedCanvas: Canvas?,
+        onCanvasSelected: ((Canvas) -> Void)? = nil
     ) {
         self.canvases = canvases
         self.selectedCanvas = selectedCanvas

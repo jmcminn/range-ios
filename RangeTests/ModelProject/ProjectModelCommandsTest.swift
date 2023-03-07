@@ -11,7 +11,7 @@ class ProjectModelCommandsTest: XCTestCase {
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
     var realm: Realm!
-    var canvas: PDFCanvas!
+    var canvas: Canvas!
     let coordinates = CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)
 
     @MainActor
@@ -26,13 +26,7 @@ class ProjectModelCommandsTest: XCTestCase {
             inMemory: true
         )
         realm = model.mainRealm
-        canvas = PDFCanvas(
-            id: "canvas1",
-            name: "",
-            pageNumber: 0,
-            sheetNumber: nil,
-            userDefinedScale: 1
-        )
+        canvas = Canvas(id: "canvas1", name: "")
         try realm.write {
             realm.add(canvas)
         }

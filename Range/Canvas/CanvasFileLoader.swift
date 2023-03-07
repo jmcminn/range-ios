@@ -42,8 +42,9 @@ class CanvasFileLoader {
     }
 
     @MainActor
+    // TODO: 930 this will be "for pdf canvas source"?
     /// Loads PDFPage for given canvas. If the file exists locally it is used, otherwise it's downloaded from the Storage.
-    func loadPDFPage(forCanvas pdfCanvas: PDFCanvas, projectId: String) async throws -> PDFPage {
+    func loadPDFPage(forCanvas pdfCanvas: Canvas, projectId: String) async throws -> PDFPage {
         guard let canvasCollection = pdfCanvas.collection.first else {
             throw ModelError.canvasCollectionNotFound
         }
@@ -63,7 +64,9 @@ class CanvasFileLoader {
         if fileManager.fileExists(atPath: localPdfFileURL.path) {
             Logger.storage.debug("Loading canvas from local file: \(localPdfFileURL)")
             do {
-                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: pdfCanvas.pageNumber)
+                // TODO: 930 needs pdf source
+//                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: pdfCanvas.pageNumber)
+                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: 0)
             } catch {
                 // cannot load, try download again
                 Logger.storage
@@ -98,7 +101,9 @@ class CanvasFileLoader {
 
         // use downloaded file
         Logger.storage.debug("Loading canvas from local file: \(localPdfFileURL)")
-        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: pdfCanvas.pageNumber)
+        // TODO: 930 needs pdf source
+//        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: pdfCanvas.pageNumber)
+        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: 0)
     }
 
     /// Loads PDFPage with given number (zero based) from given local file

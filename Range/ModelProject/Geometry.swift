@@ -13,7 +13,7 @@ class Geometry: Object, WithId, WithPlaceholder {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Backlink to the canvas. This is automatically updated whenever this geometry is added to or removed from a canvas
-    @Persisted(originProperty: "geometries") var canvas: LinkingObjects<PDFCanvas>
+    @Persisted(originProperty: "geometries") var canvas: LinkingObjects<Canvas>
     /// annotation type
     @Persisted var annotationType: AnnotationType
     /// the geometry shape is stored as Turf.Geometry as this is what Mapbox uses for representing geometries in their SDK

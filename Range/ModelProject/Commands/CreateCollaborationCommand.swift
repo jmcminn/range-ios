@@ -63,7 +63,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
 /// Apply in local Realm db
 extension CreateCollaborationCommand: LocalCommand {
     func apply(inRealm realm: Realm) throws {
-        let canvas = try realm.object(ofType: PDFCanvas.self, forPrimaryKey: canvasId)
+        let canvas = try realm.object(ofType: Canvas.self, forPrimaryKey: canvasId)
             .or(error: ModelError.canvasNotFound)
         let author = try realm.object(ofType: Participant.self, forPrimaryKey: authorId)
             .or(error: ModelError.userNotFound)

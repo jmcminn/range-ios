@@ -67,8 +67,8 @@ final class UpdateGeometryLocationCommandRealmTest: XCTestCase {
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
-        let canvas1 = PDFCanvas(placeholderId: "canvas1")
-        let canvas2 = PDFCanvas(placeholderId: "canvas2")
+        let canvas1 = Canvas(placeholderId: "canvas1")
+        let canvas2 = Canvas(placeholderId: "canvas2")
         try realm.write {
             realm.add([geometry, canvas1, canvas2])
             canvas1.geometries.insert(geometry)

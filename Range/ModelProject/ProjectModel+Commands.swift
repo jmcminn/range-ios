@@ -140,7 +140,7 @@ extension ProjectModel {
     @MainActor
     func createCollaboration(
         at coordinates: CLLocationCoordinate2D,
-        in canvas: PDFCanvas,
+        in canvas: Canvas,
         withGeometryId geometryId: String,
         isTask: Bool,
         name: String? = nil,
@@ -346,7 +346,7 @@ extension ProjectModel {
         )
     }
 
-    func update(coordinates: CLLocationCoordinate2D, andCanvas canvas: PDFCanvas,
+    func update(coordinates: CLLocationCoordinate2D, andCanvas canvas: Canvas,
                 forCollaboration collaboration: Collaboration) throws -> Command
     {
         guard let geometry = collaboration.feature.first?.geometry.first else {

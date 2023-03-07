@@ -90,7 +90,7 @@ struct FirestoreGeometry: Codable, FirestoreToRealmSyncable {
     }
 
     func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
-        let canvas = realm.objectOrPlaceholder(ofType: PDFCanvas.self, forPrimaryKey: canvasId)
+        let canvas = realm.objectOrPlaceholder(ofType: Canvas.self, forPrimaryKey: canvasId)
         let geometry = Geometry(
             id: id,
             annotationType: annotationType,

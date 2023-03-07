@@ -11,7 +11,7 @@ protocol GeometriesPinsDisplay: AnyObject {
     ///   - ignoredGeometryId:                 don't display given pin (useful when moving a pin, in which case it's displayed outside of GeometriesPinsDisplay)
     ///   - showArchivedPins:                  if true it shows geometries with archived = true
     ///   - geometryPinDisplayOptionsProvider: the function providing pin display options given geometry and selection state
-    init(canvas: PDFCanvas,
+    init(canvas: Canvas,
          canvasViewController: PDFCanvasViewController,
          selectionEnabled: Bool,
          deselectOnCanvasTap: Bool,

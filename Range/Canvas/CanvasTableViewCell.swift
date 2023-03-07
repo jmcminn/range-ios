@@ -43,7 +43,7 @@ class CanvasTableViewCell: UITableViewCell {
         pinkDot.layer.cornerRadius = 4
     }
 
-    func setCanvas(_ canvas: PDFCanvas, selected: Bool) {
+    func setCanvas(_ canvas: Canvas, selected: Bool) {
         nameLabel.text = canvas.displayName
 
         selectedIconView.isHidden = !selected
