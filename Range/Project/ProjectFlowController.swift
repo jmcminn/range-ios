@@ -397,6 +397,10 @@ final class ProjectFlowController: UIViewController {
         present(debugSettingsVC, animated: true)
     }
 
+    @objc func showTypeScaleAction() {
+        TypeScaleCardViewController().installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
     fileprivate func setupActionCardVC() -> ProjectActionCardViewController {
         let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
         let additionalCardActions = showDebugOptions
@@ -415,6 +419,13 @@ final class ProjectFlowController: UIViewController {
                     imageName: "gearshape",
                     handler: { [weak self] in
                         self?.showDebugSettingsAction()
+                    }
+                ),
+                ActionItem(
+                    title: "Type Scale",
+                    imageName: "textformat.size",
+                    handler: { [weak self] in
+                        self?.showTypeScaleAction()
                     }
                 ),
             ]

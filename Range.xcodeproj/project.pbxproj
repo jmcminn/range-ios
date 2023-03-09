@@ -80,6 +80,10 @@
 		0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */; };
 		0A34072A29C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */; };
 		0A34072C29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072B29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift */; };
+		0A34072F29C8617F007299A7 /* TypeScaleCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072E29C8617F007299A7 /* TypeScaleCardViewController.swift */; };
+		0A34073129C8674F007299A7 /* UIContentSizeCategory+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073029C8674F007299A7 /* UIContentSizeCategory+Extensions.swift */; };
+		0A34073329C86907007299A7 /* TypeScaleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073229C86907007299A7 /* TypeScaleTableViewCell.swift */; };
+		0A34073529C89E41007299A7 /* UIFont.TextStyle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073429C89E41007299A7 /* UIFont.TextStyle+Extensions.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A34C17F284551F500BEDC7C /* FirestoreStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */; };
 		0A34C181284552AC00BEDC7C /* FirestoreFeatureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */; };
@@ -431,6 +435,10 @@
 		0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasTest.swift; sourceTree = "<group>"; };
 		0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0A34072B29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceTableViewCell.swift; sourceTree = "<group>"; };
+		0A34072E29C8617F007299A7 /* TypeScaleCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeScaleCardViewController.swift; sourceTree = "<group>"; };
+		0A34073029C8674F007299A7 /* UIContentSizeCategory+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIContentSizeCategory+Extensions.swift"; sourceTree = "<group>"; };
+		0A34073229C86907007299A7 /* TypeScaleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeScaleTableViewCell.swift; sourceTree = "<group>"; };
+		0A34073429C89E41007299A7 /* UIFont.TextStyle+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont.TextStyle+Extensions.swift"; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreStatusNameTest.swift; sourceTree = "<group>"; };
 		0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeatureTest.swift; sourceTree = "<group>"; };
@@ -982,6 +990,17 @@
 			path = Tags;
 			sourceTree = "<group>";
 		};
+		0A34072D29C8616A007299A7 /* TypeScale */ = {
+			isa = PBXGroup;
+			children = (
+				0A34072E29C8617F007299A7 /* TypeScaleCardViewController.swift */,
+				0A34073229C86907007299A7 /* TypeScaleTableViewCell.swift */,
+				0A34073029C8674F007299A7 /* UIContentSizeCategory+Extensions.swift */,
+				0A34073429C89E41007299A7 /* UIFont.TextStyle+Extensions.swift */,
+			);
+			path = TypeScale;
+			sourceTree = "<group>";
+		};
 		0A374DD6292418070036C184 /* Toast */ = {
 			isa = PBXGroup;
 			children = (
@@ -1230,6 +1249,7 @@
 				0AF722AD296EE61900A18F75 /* TaskList */,
 				0A6DB6A1292E08560017D511 /* TextCard */,
 				0A374DD6292418070036C184 /* Toast */,
+				0A34072D29C8616A007299A7 /* TypeScale */,
 				0A797F70292BDA6D00D63567 /* UserPicker */,
 				0A05312229375BDF00738BA3 /* Utils */,
 				0A4DC7A227F7615700712518 /* Views */,
@@ -1828,6 +1848,7 @@
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
 				0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */,
 				0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */,
+				0A34072F29C8617F007299A7 /* TypeScaleCardViewController.swift in Sources */,
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,
 				0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
@@ -1876,6 +1897,7 @@
 				0A7FC4192844E6A80097888A /* FirestoreStatusName.swift in Sources */,
 				0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */,
 				0A36CDFB299C0E2B0004758E /* RangeLocalFileImageDataProvider.swift in Sources */,
+				0A34073329C86907007299A7 /* TypeScaleTableViewCell.swift in Sources */,
 				0AD9B771286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift in Sources */,
 				0ACE1972296D68DD00D223EB /* AppConfiguration.swift in Sources */,
 				0A99BF1B28C0BC5400DB3F96 /* FullscreenImageGalleryViewController.swift in Sources */,
@@ -1904,11 +1926,13 @@
 				0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */,
 				0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */,
 				0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */,
+				0A34073129C8674F007299A7 /* UIContentSizeCategory+Extensions.swift in Sources */,
 				0A4995BF2858D00100E571FB /* Tag.swift in Sources */,
 				0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */,
 				0A9341C629A8A50D006166C1 /* PillView.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
 				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
+				0A34073529C89E41007299A7 /* UIFont.TextStyle+Extensions.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
 				0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
