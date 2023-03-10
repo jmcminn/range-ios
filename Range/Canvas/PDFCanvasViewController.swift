@@ -276,9 +276,12 @@ class PDFCanvasViewController: UIViewController {
         } else {
             // We only need the access token if using mapbox resources, so it's not needed when displaying
             // the PDF background
-            ResourceOptionsManager.default.resourceOptions.accessToken =
-                "pk.eyJ1IjoicmFuZ2UtbWFwYm94IiwiYSI6ImNsZXBkbmZycTA3aGYzcm1qZmtsZmFxaGoifQ.Tf0zWjw79qKgcFLh7XCTRQ"
-            mapInitOptions = MapInitOptions(cameraOptions: cameraOptions, styleURI: StyleURI.satelliteStreets)
+            mapInitOptions = MapInitOptions(
+                resourceOptions: ResourceOptions(
+                    accessToken: "pk.eyJ1IjoicmFuZ2UtbWFwYm94IiwiYSI6ImNsZXBkbmZycTA3aGYzcm1qZmtsZmFxaGoifQ.Tf0zWjw79qKgcFLh7XCTRQ"
+                ),
+                cameraOptions: cameraOptions
+            )
         }
         mapView = MapView(frame: view.bounds, mapInitOptions: mapInitOptions)
 
@@ -300,6 +303,44 @@ class PDFCanvasViewController: UIViewController {
                     Logger.mapbox
                         .error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
                 }
+            }
+        } else {
+//            let styleURI = StyleURI.satelliteStreets
+            if let styleURI = StyleURI(rawValue: "mapbox://styles/range-mapbox/clf1ibv5q000o01o5ugllamev") {
+                mapView.mapboxMap.loadStyleURI(styleURI) { [weak self] _ in
+                    guard let self = self else { return }
+                    // Update the drone deploy layer source with drone deploy
+                    let droneDeployLayerId = "Custom endpoint layer"
+                    do {
+                        let droneDeployLayer = try self.mapView.mapboxMap.style.layer(withId: droneDeployLayerId)
+                        let newDroneDeploySourceId = "droneDeploySource"
+                        var droneDeploySource = RasterSource()
+                        droneDeploySource.tiles = [
+                            "https://public_tiles.dronedeploy.com/v1/tiles_images/63e6bd7ebe8b4129e27df01b/orthomosaic/{z}/{x}/{y}?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjIxNDU5MTY4MDAwMDAsInVzZXJuYW1lIjoiam1jbWlubkBnbWFpbC5jb20iLCJwbGFuX2lkIjoiNjNlNmJkN2ViZThiNDEyOWUyN2RmMDFiIiwibGF5ZXIiOiJvcnRob21vc2FpYyJ9.U_CnGA-3bU7KBlqkq40ViRGDShGmO1guR1QYbBF0IT9ypWc7uPghsT8E6OXp-LhDSSbzcPLH2YQaKAiwlP4c4w",
+                        ]
+                        droneDeploySource.tileSize = 256
+                        try self.mapView.mapboxMap.style.addSource(droneDeploySource, id: newDroneDeploySourceId)
+//                        try self.mapView.mapboxMap.style.updateLayer(
+//                            withId: droneDeployLayerId,
+//                            type: RasterLayer.self
+//                        ) { layer in
+//                            layer.source = newDroneDeploySourceId
+//                        }
+                        var newDroneDeployLayer = RasterLayer(id: "droneDeployLayer")
+                        newDroneDeployLayer.source = newDroneDeploySourceId
+                        newDroneDeployLayer.minZoom = droneDeployLayer.minZoom
+                        newDroneDeployLayer.maxZoom = droneDeployLayer.maxZoom
+                        try self.mapView.mapboxMap.style.addLayer(
+                            newDroneDeployLayer,
+                            layerPosition: LayerPosition.above(droneDeployLayerId)
+                        )
+                        try self.mapView.mapboxMap.style.removeLayer(withId: droneDeployLayerId)
+                    } catch {
+                        Logger.mapbox.error("Couldn't update the drone deploy layer \(droneDeployLayerId), \(error)")
+                    }
+                }
+            } else {
+                Logger.mapbox.error("incorrect styleUrl")
             }
         }
         do {
