@@ -29,11 +29,7 @@ class ProjectModel: NSObject, RealmModel {
     private(set) var currentUser: Participant!
 
     /// The current canvas for the project, @objc dynamic so it can be observed
-    @objc dynamic var currentCanvas: Canvas! {
-        didSet {
-            UserDefaults.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
-        }
-    }
+    @objc private(set) dynamic var currentCanvas: Canvas!
 
     /// Background serial queue to perform write operations.
     let writeQueue = DispatchQueue(label: "model-write-queue")
@@ -107,14 +103,40 @@ class ProjectModel: NSObject, RealmModel {
             guard let initialCanvas = mainRealm.object(ofType: Canvas.self, forPrimaryKey: initialCanvasId) else {
                 throw ModelError.canvasNotFound
             }
-            currentCanvas = initialCanvas
+            try setCurrentCanvas(initialCanvas)
         } else {
             // TODO: 930 sort by sources properties?
 //            guard let firstCanvas = mainRealm.objects(Canvas.self).sorted(by: \Canvas.pageNumber).first else {
             guard let firstCanvas = mainRealm.objects(Canvas.self).first else {
                 throw ModelError.canvasNotFound
             }
-            currentCanvas = firstCanvas
+            try setCurrentCanvas(firstCanvas)
+        }
+    }
+
+    /// Updates current canvas and loads the last open source for it (or the first source if it wasn't opened yet)
+    func setCurrentCanvas(_ canvas: Canvas) throws {
+        // only if it's a different canvas
+        guard currentCanvas == nil || currentCanvas.id != canvas.id else { return }
+
+        currentCanvas = canvas
+
+        UserDefaults.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
+
+        // preselect the last canvas source for this canvas or use the first one otherwise
+        if let initialCanvasSourceId = UserDefaults.lastOpenCanvasSourceId(forCanvasId: currentCanvas.id),
+           let initialCanvasSource = currentCanvas.canvasSources.first(where: { $0.id == initialCanvasSourceId })
+        {
+            currentCanvas.currentCanvasSource = initialCanvasSource
+        }
+        // If no last canvas then select the first one
+        if currentCanvas.currentCanvasSource == nil {
+            // TODO: 930 first from sorted
+            currentCanvas.currentCanvasSource = currentCanvas.canvasSources.first
+        }
+        // if still no canvas then it's an error (canvas has no sources)
+        if currentCanvas.currentCanvasSource == nil {
+            throw ModelError.canvasSourceNotFound
         }
     }
 

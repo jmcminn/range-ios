@@ -18,10 +18,17 @@ class Canvas: Object, WithPlaceholder {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
+    /// The current canvas source for the currentCanvas, @objc dynamic so it can be observed
+    @objc dynamic var currentCanvasSource: CanvasSource! {
+        didSet {
+            UserDefaults.setLastOpenCanvasSourceId(currentCanvasSource.id, forCanvasId: id)
+        }
+    }
+
     /// The value to display in the UI
     var displayName: String {
         // TODO: 930 if there's only 1 source prepend it's name to canvas.name
-        "TODO: 930"
+        name
 //        var components: [String] = []
 //        if let sheetNumber = sheetNumber, !sheetNumber.isEmpty { components.append(sheetNumber) }
 //        if !name.isEmpty { components.append(name) }

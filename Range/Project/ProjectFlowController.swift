@@ -149,6 +149,7 @@ final class ProjectFlowController: UIViewController {
         currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
             guard !self.model.currentCanvas.isInvalidated else { return }
+            // observe if the current canvas is removed
             self.observeCanvas()
             self.reloadGeometriesPinsDisplay(
                 useNativeViews: self.debugSettings.nativeViewsForPins,
@@ -363,19 +364,6 @@ final class ProjectFlowController: UIViewController {
         let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
         let additionalCardActions = showDebugOptions
             ? [
-                ActionItem(
-                    title: "Toggle pdf/map mode",
-                    imageName: "map",
-                    handler: { [weak self] in
-                        guard let self = self else { return }
-                        self.canvasContainer.pdfCanvasViewController.toggleCanvasType()
-                        self.reloadGeometriesPinsDisplay(
-                            useNativeViews: self.debugSettings.nativeViewsForPins,
-                            showArchivedCollaborations: self.userSettings.showArchivedCollaborations,
-                            onReloaded: nil
-                        )
-                    }
-                ),
                 ActionItem(
                     title: "Toggle Light/Dark mode",
                     imageName: "lightbulb",

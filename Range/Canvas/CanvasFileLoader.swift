@@ -42,10 +42,9 @@ class CanvasFileLoader {
     }
 
     @MainActor
-    // TODO: 930 this will be "for pdf canvas source"?
-    /// Loads PDFPage for given canvas. If the file exists locally it is used, otherwise it's downloaded from the Storage.
-    func loadPDFPage(forCanvas pdfCanvas: Canvas, projectId: String) async throws -> PDFPage {
-        guard let canvasCollection = pdfCanvas.collection.first else {
+    /// Loads PDFPage for given canvas source. If the file exists locally it is used, otherwise it's downloaded from the Storage.
+    func loadPDFPage(forSource source: PdfCanvasSourceData, canvas: Canvas, projectId: String) async throws -> PDFPage {
+        guard let canvasCollection = canvas.collection.first else {
             throw ModelError.canvasCollectionNotFound
         }
         let storagePath = "projects/\(projectId)/canvasCollections/\(canvasCollection.id)"
@@ -64,9 +63,7 @@ class CanvasFileLoader {
         if fileManager.fileExists(atPath: localPdfFileURL.path) {
             Logger.storage.debug("Loading canvas from local file: \(localPdfFileURL)")
             do {
-                // TODO: 930 needs pdf source
-//                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: pdfCanvas.pageNumber)
-                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: 0)
+                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: source.pageNumber)
             } catch {
                 // cannot load, try download again
                 Logger.storage
@@ -101,9 +98,7 @@ class CanvasFileLoader {
 
         // use downloaded file
         Logger.storage.debug("Loading canvas from local file: \(localPdfFileURL)")
-        // TODO: 930 needs pdf source
-//        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: pdfCanvas.pageNumber)
-        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: 0)
+        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: source.pageNumber)
     }
 
     /// Loads PDFPage with given number (zero based) from given local file

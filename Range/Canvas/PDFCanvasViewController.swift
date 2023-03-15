@@ -45,27 +45,23 @@ protocol CanvasViewControllerDelegate {
  The mapbox map is receiving the user interactions and controls the PDF zoom/offset
  */
 class PDFCanvasViewController: UIViewController {
-    // TODO: 930 remove it
-    // Should the canvas display PDF or mapbox map
-    enum CanvasType {
-        case pdf
-        case mapbox
-    }
-
-    private var canvasType: CanvasType
-
     let maxMapboxZoom = 25.5
+
+    let zoomConverter: MapboxZoomConverter
 
     /// observers for pdf/mapbox views. They're being activated/deactivated when switching who drives the interactions
     private var canvasTapGestureRecognizer: UITapGestureRecognizer?
     private var mapboxCameraChangedObserver: Cancelable?
+    /// Size of an imaginary square that helps synchronize pdf zoom/offset with mapbox map (and actually with 2 mapbox annotations
+    /// placed at the corners of this square). See `setupSyncAnnotationViews` for more details
+    private let syncSquareSize: Double = 200
+    /// For setting up the pdf sync we need mapbox started with some reference zoom (defined by this property)
+    private let initialMapboxZoom: Double = 19.0
     // 2 annotation views used for .mapAnnotations pdf<->map sync
     private var topLeftSyncAnnotationView: UIView?
     private var bottomRightSyncAnnotationView: UIView?
     // observe the bottom right sync view
     private var bottomRightSyncAnnotationViewObservation: NSKeyValueObservation?
-    // the horizontal distance between topLeft and bottomRight when initially rendered
-    private var initialSyncViewsDistance: CGFloat?
 
     /// For case when mapbox drives the interactions we need to store the current gesture (for example 'pan') to continuously
     /// report panning when the camera changes. (the mapbox gestures delegate only reports start/end of gesture)
@@ -73,15 +69,17 @@ class PDFCanvasViewController: UIViewController {
 
     unowned let model: ProjectModel
     private var canvas: Canvas
-    private var pdfPage: PDFPage
+    // only when displaying pdf source
+    private var pdfPage: PDFPage?
 
-    let zoomConverter: MapboxZoomConverter
-
-    var mapView: MapView!
+    /// Mapbox for rendering the background mapview for .mapbox and .dronedeploy sources and for rendering the pins for all sources
+    /// Achtung: reloading mapView instance when switching sources is not supported now. So when switching sources the initial
+    /// mapView instance needs to be used instead of creating a new one, because pins are already added to it, and are only reloaded
+    /// if the canvas changes. If we wanted to reload map view on canvas/canvasSource change we would need to "notify" pins to reload
+    /// **after** the new mapView instance is created.
+    private(set) var mapView: MapView!
     var pdfScrollView: PDFPageScrollView?
-
-    /// Initial mapbox zoom matching the pdf page fitting the view
-    private var initialZoom: Double = 0.0
+    var initialPdfScale: Double!
 
     /// when animating the pdf and mapview together, we need to disable the sync of zoom/center between them
     private var programmaticAnimationInProgress = false
@@ -110,47 +108,78 @@ class PDFCanvasViewController: UIViewController {
     }
 
     init(model: ProjectModel) async throws {
-        canvasType = .pdf
         self.model = model
         canvas = model.currentCanvas
-        pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: canvas, projectId: model.projectId)
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
 
+        if canvas.currentCanvasSource.type == .pdf {
+            try await reloadPdfPage()
+        }
         observeCanvasCollection()
         currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
             Task { @MainActor in
-                // update the pdfCanvas
-                self.canvas = self.model.currentCanvas
-                self.observeCanvasCollection()
-                if self.canvasType == .pdf {
-                    await self.reloadPDFScrollView()
-                }
+                await self.onCanvasChange()
             }
         }
     }
 
-    /// toggle canvas type to switch between mapbox / pdf background - just for prototyping. The production solution will have a
-    /// separate canvas for mapbox
-    func toggleCanvasType() {
-        if canvasType == .mapbox {
-            // Switch to pdf
-            canvasType = .pdf
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+
+        // initiate mapview
+        setupMapView()
+
+        // setup annotation views
+        setupSyncAnnotationViews()
+
+        // update the style, etc. for current canvas/source
+        updateMapViewForCanvasSource()
+
+        // setup scroll view with given pdf page (if it's a pdf source)
+        setupPDFScrollView()
+
+        // this needs to be done after pdf view was set up as the zoom logic for pdfs is based on
+        // pdf frame size
+        updateCameraForCanvasSource()
+
+//        setupDebugViews()
+    }
+
+    /// Canvas was changed, reload the canvas view
+    private func onCanvasChange() async {
+        guard canvas.id != model.currentCanvas.id else { return }
+        let previousCanvas = canvas
+        canvas = model.currentCanvas
+        observeCanvasCollection()
+        await onCanvasSourceChange(previousCanvasSource: previousCanvas.currentCanvasSource)
+    }
+
+    /// Canvas source changed, reload the view
+    private func onCanvasSourceChange(previousCanvasSource: CanvasSource) async {
+        // TODO: 930 store zoom/center and reuse when switching back to same canvas source
+        let fromPdfToPdf = previousCanvasSource.type == .pdf && canvas.currentCanvasSource.type == .pdf
+        if !fromPdfToPdf {
+            // if switching from pdf to other pdf the map view remains the same (empty style and configuration for pdf background)
+            // TODO: 930 handle pdf => pdf (no zoom/center reset in this case)
+            updateMapViewForCanvasSource()
+        }
+        if canvas.currentCanvasSource.type == .pdf {
+            do {
+                try await reloadPdfPage()
+            } catch {
+                // TODO: 930 error toast and what?
+            }
             setupPDFScrollView()
-            mapView.removeFromSuperview()
-            mapView = nil
-            setupMapView()
-            setupSyncAnnotationViews()
+            updateCameraForCanvasSource()
+            // TODO: 930, not needed, will be handled by the camera update? or this vs pdfToPdf and reset zoom/etc.
+//            syncPDFViewWithAnnotationViews()
         } else {
-            // Switch to mapbox
-            canvasType = .mapbox
-            tearDownSyncAnnotationViews()
+            updateCameraForCanvasSource()
             pdfScrollView?.removeFromSuperview()
             pdfScrollView = nil
-            mapView.removeFromSuperview()
-            mapView = nil
-            setupMapView()
         }
     }
 
@@ -179,39 +208,15 @@ class PDFCanvasViewController: UIViewController {
     /// update the canvas collection observation
     private func observeCanvasCollection() {
         canvasCollectionNotificationToken?.invalidate()
-        if canvasType == .pdf {
-            if let collection = canvas.collection.first {
-                canvasCollectionNotificationToken = collection.observe { [weak self] _ in
-                    Task { @MainActor in
-                        // update the pdfCanvas
-                        await self?.reloadPDFScrollView()
-                    }
+        guard canvas.currentCanvasSource.type == .pdf else { return }
+        if let collection = canvas.collection.first {
+            canvasCollectionNotificationToken = collection.observe { [weak self] _ in
+                Task { @MainActor in
+                    // update the pdfCanvas
+                    await self?.reloadPDFScrollView()
                 }
             }
         }
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-
-        // 1. setup scroll view with given pdf page
-        if canvasType == .pdf {
-            setupPDFScrollView()
-        }
-
-        // 2. calculate the initialMetersPerPoint given the pdf page, view size and user defined scale
-        setupInitialZoom()
-
-        // 3. initiate mapview with initial zoom
-        setupMapView()
-
-        // 4. setup annotation views
-        if canvasType == .pdf {
-            setupSyncAnnotationViews()
-        }
-
-//        setupDebugViews()
     }
 
     /// This is called when canvas changes after loading the initial canvas.
@@ -221,9 +226,13 @@ class PDFCanvasViewController: UIViewController {
         guard !canvas.isInvalidated else { return }
         // first hide the previous pdf view
         pdfScrollView?.removeFromSuperview()
+        pdfScrollView = nil
+
+        guard canvas.currentCanvasSource.type == .pdf else { return }
+
         do {
             // load the page
-            pdfPage = try await CanvasFileLoader().loadPDFPage(forCanvas: canvas, projectId: model.projectId)
+            try await reloadPdfPage()
             // build new view
             setupPDFScrollView()
             // sync with current zoom/offset from mapbox
@@ -234,7 +243,26 @@ class PDFCanvasViewController: UIViewController {
         }
     }
 
+    @MainActor
+    private func reloadPdfPage() async throws {
+        guard case let .pdf(pdfSource) = canvas.currentCanvasSource.data else {
+            fatalError("reloadPdfPage called when canvas source is not a PDF")
+        }
+        pdfPage = try await CanvasFileLoader()
+            .loadPDFPage(forSource: pdfSource, canvas: canvas, projectId: model.projectId)
+    }
+
+    /// Setup the PDF scroll view appropriately for current canvas source. (if not needed then removes the current one)
     private func setupPDFScrollView() {
+        pdfScrollView?.removeFromSuperview()
+        pdfScrollView = nil
+
+        guard canvas.currentCanvasSource.type == .pdf else { return }
+
+        guard let pdfPage = pdfPage else {
+            fatalError("setupPDFScrollView called when pdfPage is nil")
+        }
+
         let pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
         view.insertSubview(pdfScrollView, at: 0)
         pdfScrollView.scrollsToTop = false // we don't want scroll to top on top bar touch
@@ -258,95 +286,80 @@ class PDFCanvasViewController: UIViewController {
             right: pdfInset
         )
         self.pdfScrollView = pdfScrollView
+
+        let pdfMetersPerPoint = getInitialMetersPerPointForPdf()
+        let initialMapboxMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: initialMapboxZoom)
+        initialPdfScale = pdfMetersPerPoint / initialMapboxMetersPerPoint
     }
 
-    /// Calculates initial zoom for mapbox, so it matches the zoom scale of PDFPage when it fits the view
-    private func setupInitialZoom() {
-        // TODO: 930 depends on the source, maybe it's not pdf
-//        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / canvas.userDefinedScale)
-//        let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
-//        let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
-//        let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
-//        initialZoom = zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
-        initialZoom = 17.0
+    /// Returns the center for the current canvas source.
+    /// - for pdf it uses the project center
+    /// - otherwise it uses the zoom defined in the canvas source
+    private func getCenterForCurrentCanvasSource() -> CLLocationCoordinate2D {
+        switch canvas.currentCanvasSource.data {
+        case .pdf:
+            return model.projectSummary.center
+        case let .mapbox(mapboxData):
+            return mapboxData.center.decodedCoordinates
+        case let .droneDeploy(droneDeployData):
+            return droneDeployData.center.decodedCoordinates
+        }
     }
 
+    /// Based on the pdf properties and current pdf view size calculate what's the ratio of real world meters per screen point for pdf
+    private func getInitialMetersPerPointForPdf() -> Double {
+        guard case let .pdf(pdfData) = canvas.currentCanvasSource.data else {
+            fatalError("getInitialMetersPerPointForPdf called when canvas source is not pdf")
+        }
+        guard let pdfPage = pdfPage else {
+            fatalError("getInitialMetersPerPointForPdf called when pdfPage is nil")
+        }
+        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / pdfData.userDefinedScale)
+        let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
+        let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
+        let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
+        return initialMetersPerPoint
+    }
+
+    /// Returns the zoom based on the current canvas/canvasSource
+    /// - for pdf it matches the zoom scale of PDFPage when it fits the view
+    /// - otherwise it uses the zoom defined in the source
+    private func getZoomForCurrentCanvasSource() -> Double {
+        switch canvas.currentCanvasSource.data {
+        case .pdf:
+            let initialMetersPerPoint = getInitialMetersPerPointForPdf()
+            /// Initial mapbox zoom matching the pdf page fitting the view
+            return zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
+        case let .mapbox(mapboxData):
+            return mapboxData.zoom
+        case let .droneDeploy(droneDeployData):
+            return droneDeployData.zoom
+        }
+    }
+
+    // initial setup of map view
     private func setupMapView() {
+        guard mapView == nil else {
+            fatalError("setupMapView called when mapView is not nil")
+        }
         // set initial mapbox zoom level and position
-        let cameraOptions = CameraOptions(center: model.projectSummary.center, zoom: initialZoom)
-        let mapInitOptions: MapInitOptions
-        if canvasType == .pdf {
-            mapInitOptions = MapInitOptions(cameraOptions: cameraOptions)
-        } else {
-            // We only need the access token if using mapbox resources, so it's not needed when displaying
-            // the PDF background
-            mapInitOptions = MapInitOptions(
-                resourceOptions: ResourceOptions(
-                    accessToken: "pk.eyJ1IjoicmFuZ2UtbWFwYm94IiwiYSI6ImNsZXBkbmZycTA3aGYzcm1qZmtsZmFxaGoifQ.Tf0zWjw79qKgcFLh7XCTRQ"
-                ),
-                cameraOptions: cameraOptions
-            )
-        }
-        mapView = MapView(frame: view.bounds, mapInitOptions: mapInitOptions)
+        let cameraOptions = CameraOptions(
+            //            center: getCenterForCurrentCanvasSource(),
+//            zoom: getZoomForCurrentCanvasSource()
+            center: model.projectSummary.center,
+            zoom: initialMapboxZoom
+        )
+        // We only need the access token if using mapbox resources, so it's not needed when displaying
+        // the PDF background but we always provide the token as the mapView is reused when switching canvases/sources
+        let resourceOptions = ResourceOptions(
+            accessToken: "pk.eyJ1IjoicmFuZ2UtbWFwYm94IiwiYSI6ImNsZXBkbmZycTA3aGYzcm1qZmtsZmFxaGoifQ.Tf0zWjw79qKgcFLh7XCTRQ"
+        )
+        mapView = MapView(
+            frame: view.bounds,
+            mapInitOptions: MapInitOptions(resourceOptions: resourceOptions, cameraOptions: cameraOptions)
+//            mapInitOptions: MapInitOptions(resourceOptions: resourceOptions)
+        )
 
-        if canvasType == .pdf {
-            // hack to make the Metal subview of the mapView transparent
-            // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
-            // by default it's black even if there's no layers). The trick is to make
-            // the MTKView used by Mapbox non opaque
-            mapView.subviews.forEach { subview in
-                if subview is MTKView {
-                    subview.isOpaque = false
-                }
-            }
-            mapView.mapboxMap.loadStyleJSON(annotationsStyle) { result in
-                switch result {
-                case .success:
-                    Logger.mapbox.debug("annotations style loaded successfully")
-                case let .failure(error):
-                    Logger.mapbox
-                        .error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
-                }
-            }
-        } else {
-//            let styleURI = StyleURI.satelliteStreets
-            if let styleURI = StyleURI(rawValue: "mapbox://styles/range-mapbox/clf1ibv5q000o01o5ugllamev") {
-                mapView.mapboxMap.loadStyleURI(styleURI) { [weak self] _ in
-                    guard let self = self else { return }
-                    // Update the drone deploy layer source with drone deploy
-                    let droneDeployLayerId = "Custom endpoint layer"
-                    do {
-                        let droneDeployLayer = try self.mapView.mapboxMap.style.layer(withId: droneDeployLayerId)
-                        let newDroneDeploySourceId = "droneDeploySource"
-                        var droneDeploySource = RasterSource()
-                        droneDeploySource.tiles = [
-                            "https://public_tiles.dronedeploy.com/v1/tiles_images/63e6bd7ebe8b4129e27df01b/orthomosaic/{z}/{x}/{y}?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjIxNDU5MTY4MDAwMDAsInVzZXJuYW1lIjoiam1jbWlubkBnbWFpbC5jb20iLCJwbGFuX2lkIjoiNjNlNmJkN2ViZThiNDEyOWUyN2RmMDFiIiwibGF5ZXIiOiJvcnRob21vc2FpYyJ9.U_CnGA-3bU7KBlqkq40ViRGDShGmO1guR1QYbBF0IT9ypWc7uPghsT8E6OXp-LhDSSbzcPLH2YQaKAiwlP4c4w",
-                        ]
-                        droneDeploySource.tileSize = 256
-                        try self.mapView.mapboxMap.style.addSource(droneDeploySource, id: newDroneDeploySourceId)
-//                        try self.mapView.mapboxMap.style.updateLayer(
-//                            withId: droneDeployLayerId,
-//                            type: RasterLayer.self
-//                        ) { layer in
-//                            layer.source = newDroneDeploySourceId
-//                        }
-                        var newDroneDeployLayer = RasterLayer(id: "droneDeployLayer")
-                        newDroneDeployLayer.source = newDroneDeploySourceId
-                        newDroneDeployLayer.minZoom = droneDeployLayer.minZoom
-                        newDroneDeployLayer.maxZoom = droneDeployLayer.maxZoom
-                        try self.mapView.mapboxMap.style.addLayer(
-                            newDroneDeployLayer,
-                            layerPosition: LayerPosition.above(droneDeployLayerId)
-                        )
-                        try self.mapView.mapboxMap.style.removeLayer(withId: droneDeployLayerId)
-                    } catch {
-                        Logger.mapbox.error("Couldn't update the drone deploy layer \(droneDeployLayerId), \(error)")
-                    }
-                }
-            } else {
-                Logger.mapbox.error("incorrect styleUrl")
-            }
-        }
         do {
             try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom: maxMapboxZoom))
         } catch {
@@ -355,13 +368,8 @@ class PDFCanvasViewController: UIViewController {
 
         mapView.ornaments.options.attributionButton.visibility = .hidden
         mapView.ornaments.options.scaleBar.visibility = .hidden
-        if canvasType == .pdf {
-            // rotations and pitch change is not supported for PDF
-            mapView.gestures.options.rotateEnabled = false
-            mapView.gestures.options.pitchEnabled = false
-        }
-        mapView.isUserInteractionEnabled = true
 
+        mapView.isUserInteractionEnabled = true
         view.addSubview(mapView)
 
         canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
@@ -373,27 +381,163 @@ class PDFCanvasViewController: UIViewController {
         })
     }
 
-    /// Add special mapbox annotation views that are transparent and act as a map -> pdf sync driver.
-    private func setupSyncAnnotationViews() {
-        guard let pdfScrollView = pdfScrollView else {
-            fatalError("setupSyncAnnotationViews called when pdfScrollView is nil")
+    /// Reload the style and do other changes when canvas source changes
+    private func updateMapViewForCanvasSource() {
+        if canvas.currentCanvasSource.type == .pdf {
+            // hack to make the Metal subview of the mapView transparent
+            // (Mapbox iOS SDK doesn't expose any official way for making the map view transparent,
+            // by default it's black even if there's no layers). The trick is to make
+            // the MTKView used by Mapbox non opaque
+            mapView.subviews.forEach { subview in
+                if subview is MTKView {
+                    subview.isOpaque = false
+                }
+            }
+            // rotations and pitch change is not supported for PDF
+            mapView.gestures.options.rotateEnabled = false
+            mapView.gestures.options.pitchEnabled = false
+        } else {
+            mapView.subviews.forEach { subview in
+                if subview is MTKView {
+                    subview.isOpaque = true
+                }
+            }
+            mapView.gestures.options.rotateEnabled = true
+            mapView.gestures.options.pitchEnabled = true
         }
+
+        switch canvas.currentCanvasSource.data {
+        case let .pdf(pdfSource):
+            loadMapboxStyle(forPdfSource: pdfSource)
+        case let .mapbox(mapboxSource):
+            loadMapboxStyle(forMapboxSource: mapboxSource)
+        case let .droneDeploy(droneDeploySource):
+            loadMapboxStyle(forDroneDeploySource: droneDeploySource)
+        }
+    }
+
+    /// resets the camera for given canvas source
+    private func updateCameraForCanvasSource() {
+        mapView.mapboxMap.setCamera(to: CameraOptions(
+            center: getCenterForCurrentCanvasSource(),
+            zoom: getZoomForCurrentCanvasSource(),
+            bearing: 0,
+            pitch: 0
+        ))
+    }
+
+    /// For current mapView load style appropriate for pdf canvas source
+    private func loadMapboxStyle(forPdfSource _: PdfCanvasSourceData) {
+        mapView.mapboxMap.loadStyleJSON(annotationsStyle) { result in
+            switch result {
+            case .success:
+                Logger.mapbox.debug("annotations style loaded successfully")
+            case let .failure(error):
+                Logger.mapbox
+                    .error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
+    }
+
+    private func loadMapboxStyle(forMapboxSource source: MapboxCanvasSourceData) {
+        guard let styleURI = StyleURI(rawValue: source.styleUrl) else {
+            Logger.mapbox.error("invalid mapbox style \(source.styleUrl)")
+            return
+        }
+        mapView.mapboxMap.loadStyleURI(styleURI) { result in
+            switch result {
+            case .success:
+                Logger.mapbox.debug("mapbox style \(source.styleUrl) loaded successfully")
+            case let .failure(error):
+                Logger.mapbox.error(
+                    "failed to load mapbox style \(source.styleUrl) load failed: \(error.localizedDescription, privacy: .public)"
+                )
+            }
+        }
+    }
+
+    private func loadMapboxStyle(forDroneDeploySource source: DroneDeployCanvasSourceData) {
+        guard let styleURI = StyleURI(rawValue: source.styleUrl) else {
+            Logger.mapbox.error("invalid mapbox style \(source.styleUrl)")
+            return
+        }
+        mapView.mapboxMap.loadStyleURI(styleURI) { [weak self] result in
+            if case let .failure(error) = result {
+                Logger.mapbox.error(
+                    "failed to load mapbox style \(source.styleUrl) load failed: \(error.localizedDescription, privacy: .public)"
+                )
+                return
+            }
+            Logger.mapbox.debug("mapbox style \(source.styleUrl) loaded successfully")
+
+            guard let self = self else { return }
+            // Update the drone deploy layer source with drone deploy
+            let droneDeployLayerId = "Custom endpoint layer"
+            do {
+                let droneDeployLayer = try self.mapView.mapboxMap.style.layer(withId: droneDeployLayerId)
+                let newDroneDeploySourceId = "droneDeploySource"
+                var droneDeploySource = RasterSource()
+                droneDeploySource.tiles = [source.tilesetUrl]
+                droneDeploySource.tileSize = 256
+                try self.mapView.mapboxMap.style.addSource(droneDeploySource, id: newDroneDeploySourceId)
+                var newDroneDeployLayer = RasterLayer(id: "droneDeployLayer")
+                newDroneDeployLayer.source = newDroneDeploySourceId
+                newDroneDeployLayer.minZoom = droneDeployLayer.minZoom
+                newDroneDeployLayer.maxZoom = droneDeployLayer.maxZoom
+                try self.mapView.mapboxMap.style.addLayer(
+                    newDroneDeployLayer,
+                    layerPosition: LayerPosition.above(droneDeployLayerId)
+                )
+                try self.mapView.mapboxMap.style.removeLayer(withId: droneDeployLayerId)
+            } catch {
+                Logger.mapbox.error("Couldn't update the drone deploy layer \(droneDeployLayerId), \(error)")
+            }
+        }
+    }
+
+    /// Add special mapbox annotation views that are transparent and act as a map -> pdf sync driver. Does nothing when canvas source is not pdf.
+    /// These are just to special annotations placed in the top left and bottom right corners of a square that has a side length = `syncSquareSize` points (in screen coordiantes)
+    /// and is centered at the mapView center
+    private func setupSyncAnnotationViews() {
         do {
-            let pdfFrame = mapView.convert(pdfScrollView.pdfView.frame, from: pdfScrollView)
-            let topLeft = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100_001, height: 100_001)))
+            // this is the size in screen coordiantes. It needs to be very big as mapbox only tracks
+            // annotations that are currently on screen. Such big size guarantess that no matter
+            // what zoom and center this annotation view is partially on screen (but still not visible
+            // as it's an empty view with alpha = 0)
+            let annotationViewSize = CGSize(width: 100_001, height: 100_001)
+
+            let topLeft = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
             topLeft.backgroundColor = .clear
             try mapView.viewAnnotations.add(topLeft, options: ViewAnnotationOptions(
-                geometry: Turf.Point(mapView.mapboxMap.coordinate(for: pdfFrame.origin)),
-                allowOverlap: true
-            ))
-            let bottomRight = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100_001, height: 100_001)))
-            bottomRight.backgroundColor = .clear
-            try mapView.viewAnnotations.add(bottomRight, options: ViewAnnotationOptions(
-                geometry: Turf.Point(mapView.mapboxMap.coordinate(for: CGPoint(x: pdfFrame.maxX, y: pdfFrame.maxY))),
+                geometry: Turf.Point(mapView.mapboxMap.coordinate(for: CGPoint(
+                    x: mapView.center.x - syncSquareSize / 2,
+                    y: mapView.center.y - syncSquareSize / 2
+                ))),
                 allowOverlap: true
             ))
             topLeftSyncAnnotationView = topLeft
+
+            let bottomRight = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
+            bottomRight.backgroundColor = .clear
+            try mapView.viewAnnotations.add(bottomRight, options: ViewAnnotationOptions(
+                geometry: Turf.Point(mapView.mapboxMap.coordinate(for: CGPoint(
+                    x: mapView.center.x + syncSquareSize / 2,
+                    y: mapView.center.y + syncSquareSize / 2
+                ))),
+                allowOverlap: true
+            ))
             bottomRightSyncAnnotationView = bottomRight
+
+            // show topLeft/bottomRight dots to help debug
+//            let dotFrame = CGRect(origin: CGPoint(x: 50000 - 3, y: 50000 - 3), size: CGSize(width: 7, height: 7))
+//            let topLeftDot = UIView(frame: dotFrame)
+//            topLeftDot.layer.cornerRadius = 3.5
+//            topLeftDot.backgroundColor = .Red_03
+//            topLeft.addSubview(topLeftDot)
+//            let bottomRightDot = UIView(frame: dotFrame)
+//            bottomRightDot.layer.cornerRadius = 3.5
+//            bottomRightDot.backgroundColor = .Green_03
+//            bottomRight.addSubview(bottomRightDot)
 
             bottomRightSyncAnnotationViewObservation = bottomRight.observe(\.frame) { [weak self] _, _ in
                 self?.syncPDFViewWithAnnotationViews()
@@ -459,29 +603,25 @@ class PDFCanvasViewController: UIViewController {
     /// match the top-left and bottom-right corners of the PDF, so the PDF scale and offset can be inferred directly
     /// from current on screen positions of the annotation views, without doing any mapbox camera/zoom or geocoordinates calculations.
     private func syncPDFViewWithAnnotationViews() {
-        guard let pdfScrollView = pdfScrollView else {
-            fatalError("syncPDFViewWithAnnotationViews called when pdfScrollView is nil")
-        }
-        guard let topLeftCenter = topLeftSyncAnnotationView?.center,
+        guard let pdfScrollView = pdfScrollView,
+              let topLeftCenter = topLeftSyncAnnotationView?.center,
               let bottomRightCenter = bottomRightSyncAnnotationView?.center else { return }
+
+        let syncViewsDistance = bottomRightCenter.x - topLeftCenter.x
+        guard syncViewsDistance > 0 else { return }
+
+        // a scale for a view that has scale = 1 when the mapbox zoom is `initialMapboxZoom`
+        let referenceScale: CGFloat = syncViewsDistance / syncSquareSize
+        // Adjust the reference scale by the pdf scale at reference zoom
+        let pdfScale = initialPdfScale * referenceScale
+        pdfScrollView.zoomScale = pdfScale
+
         let syncViewsCenter = CGPoint(
             x: (topLeftCenter.x + bottomRightCenter.x) / 2,
             y: (topLeftCenter.y + bottomRightCenter.y) / 2
         )
-        let syncViewsDistance = bottomRightCenter.x - topLeftCenter.x
-        let scale: CGFloat
-        // when the sync is run for the first time, read the current annotations distance
-        // and this is the initial width (the reference for scaling)
-        if let initialWidth = initialSyncViewsDistance {
-            scale = syncViewsDistance / initialWidth
-        } else {
-            initialSyncViewsDistance = syncViewsDistance
-            scale = pdfScrollView.zoomScale
-        }
-        pdfScrollView.zoomScale = scale
-
-        let xOffset = -(syncViewsCenter.x - pdfScrollView.center.x * scale)
-        let yOffset = -(syncViewsCenter.y - pdfScrollView.center.y * scale)
+        let xOffset = -(syncViewsCenter.x - pdfScrollView.center.x * pdfScale)
+        let yOffset = -(syncViewsCenter.y - pdfScrollView.center.y * pdfScale)
         pdfScrollView.contentOffset = CGPoint(x: xOffset, y: yOffset)
     }
 }

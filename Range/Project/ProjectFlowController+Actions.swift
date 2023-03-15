@@ -52,13 +52,17 @@ extension ProjectFlowController: ProjectFlowActions {
 //        let canvases = [Canvas](model.mainRealm.objects(Canvas.self).sorted(by: \Canvas.pageNumber))
         let canvases = [Canvas](model.mainRealm.objects(Canvas.self))
         CanvasSelectorCardViewController(
-            title: String(localized: "Source Selector"),
+            title: String(localized: "Canvas Selector"),
             canvases: canvases,
             selectedCanvas: model.currentCanvas,
             onCanvasSelected: { [weak self] canvas in
                 guard let self = self else { return }
                 guard self.model.currentCanvas != canvas else { return }
-                self.model.currentCanvas = canvas
+                do {
+                    try self.model.setCurrentCanvas(canvas)
+                } catch {
+                    ToastWindow.shared.showError(text: "Canvas failed to load")
+                }
             }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
@@ -119,7 +123,11 @@ extension ProjectFlowController: ProjectFlowActions {
               let canvas = geometry.canvas.first
         else { return }
         // update the canvas
-        model.currentCanvas = canvas
+        do {
+            try model.setCurrentCanvas(canvas)
+        } catch {
+            ToastWindow.shared.showError(text: "Canvas failed to load")
+        }
         // reload the pins (it only reloads if canvas has changed)
         reloadGeometriesPinsDisplay(
             useNativeViews: debugSettings.nativeViewsForPins,

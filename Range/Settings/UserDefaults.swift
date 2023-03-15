@@ -8,6 +8,8 @@ extension UserDefaults {
         case lastOpenProjectId
         /// the prefix to be used for storing last open canvas for a project, will be followed by a project id
         case lastOpenCanvasIdPrefix = "lastOpenCanvasId_"
+        /// the prefix to be used for storing last open canvas source for a canvas, will be followed by a canvas id
+        case lastOpenCanvasSourceIdPrefix = "lastOpenCanvasSourceId_"
         /// last select geometry id for a photo to use it as a default for the next photo
         case lastPhotoPinId
         /// last user's choice if annotation (tags/description) is enabled in the photo flow, `false` by default
@@ -54,6 +56,25 @@ extension UserDefaults {
 
     static func setLastOpenCanvasId(_ canvasId: String, forProjectId projectId: String) {
         UserDefaults.standard.set(canvasId, forKey: lastOpenCanvasIdKey(forProjectId: projectId))
+    }
+
+    /// construct key used for storing last open canvas source id for given canvas
+    private static func lastOpenCanvasSourceIdKey(forCanvasId canvasId: String) -> String {
+        UserDefaultsConstants.lastOpenCanvasSourceIdPrefix.rawValue + canvasId
+    }
+
+    /// Returns the last open canvas source id for given canvas or nil if nothing yet
+    static func lastOpenCanvasSourceId(forCanvasId canvasId: String) -> String? {
+        guard let sourceId = UserDefaults.standard
+            .object(forKey: lastOpenCanvasSourceIdKey(forCanvasId: canvasId)) as? String
+        else {
+            return nil
+        }
+        return sourceId
+    }
+
+    static func setLastOpenCanvasSourceId(_ canvasSourceId: String, forCanvasId canvasId: String) {
+        UserDefaults.standard.set(canvasSourceId, forKey: lastOpenCanvasSourceIdKey(forCanvasId: canvasId))
     }
 
     /// stores the last select geometry id for a photo to use it as a default for the next photo

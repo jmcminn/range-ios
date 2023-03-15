@@ -64,6 +64,10 @@ class ProjectsFlowController: UINavigationController {
                     projectFC!.model.currentCanvas.id,
                     forProjectId: projectFC!.model.projectId
                 )
+                UserDefaults.setLastOpenCanvasSourceId(
+                    projectFC!.model.currentCanvas.currentCanvasSource.id,
+                    forCanvasId: projectFC!.model.currentCanvas.id
+                )
                 observeCurrentProject()
             } catch {
                 Logger.model
@@ -164,6 +168,10 @@ class ProjectsFlowController: UINavigationController {
                     UserDefaults.setLastOpenCanvasId(
                         self.projectFC!.model.currentCanvas.id,
                         forProjectId: self.projectFC!.model.projectId
+                    )
+                    UserDefaults.setLastOpenCanvasSourceId(
+                        self.projectFC!.model.currentCanvas.currentCanvasSource.id,
+                        forCanvasId: self.projectFC!.model.currentCanvas.id
                     )
                     self.observeCurrentProject()
                 }

@@ -4,6 +4,7 @@ import Foundation
 enum ModelError: Error, Equatable {
     case canvasCollectionNotFound
     case canvasNotFound
+    case canvasSourceNotFound
     case canvasSourceTypeNotSupported(_ type: String)
     case collaborationNotFound
     case commentNotFound
@@ -26,6 +27,7 @@ extension ModelError: LocalizedError {
         switch self {
         case .canvasCollectionNotFound: return "Canvas collection not found"
         case .canvasNotFound: return "Canvas not found"
+        case .canvasSourceNotFound: return "Canvas source not found"
         case let .canvasSourceTypeNotSupported(type): return "\(type) canvas source type not supported"
         case .collaborationNotFound: return "Collaboration not found"
         case .commentNotFound: return "Comment not found"
