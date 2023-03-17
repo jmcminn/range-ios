@@ -28,6 +28,8 @@ final class FlowEvent: UIEvent {
     func showMediaAction()
     /// Select and change the current canvas for project
     func selectCanvasAction()
+    /// Select and change the current canvas source for canvas
+    func selectCanvasSourceAction()
     /// Select canvas filters
     func selectCanvasFiltersAction()
     /// Show fullscreen media view for given upload
@@ -61,6 +63,20 @@ extension ProjectFlowController: ProjectFlowActions {
                 } catch {
                     ToastWindow.shared.showError(text: "Canvas failed to load")
                 }
+            }
+        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    func selectCanvasSourceAction() {
+        let canvasSources = [CanvasSource](model.currentCanvas.canvasSources).sorted(by: CanvasSource.sortingOrder)
+        CanvasSourceSelectorCardViewController(
+            title: String(localized: "Map Layers"),
+            canvasSources: canvasSources,
+            selectedCanvasSource: model.currentCanvas.currentCanvasSource,
+            onCanvasSourceSelected: { [weak self] canvasSource in
+                guard let self = self else { return }
+                guard self.model.currentCanvas.currentCanvasSource != canvasSource else { return }
+                self.model.currentCanvas.currentCanvasSource = canvasSource
             }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }

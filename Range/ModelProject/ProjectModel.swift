@@ -129,8 +129,7 @@ class ProjectModel: NSObject, RealmModel {
         }
         // If no last canvas then select the first one
         if currentCanvas.currentCanvasSource == nil {
-            // TODO: 930 first from sorted
-            currentCanvas.currentCanvasSource = currentCanvas.canvasSources.first
+            currentCanvas.currentCanvasSource = currentCanvas.canvasSources.sorted(by: CanvasSource.sortingOrder).first
         }
         // if still no canvas then it's an error (canvas has no sources)
         if currentCanvas.currentCanvasSource == nil {

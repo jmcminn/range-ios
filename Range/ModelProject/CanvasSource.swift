@@ -24,6 +24,19 @@ class CanvasSource: Object, WithPlaceholder {
     /// Hack to get pdf.sheetNumber displayed in the canvas selector
     var canvasNamePrefix: String? { data.canvasNamePrefix }
 
+    // order: mapbox, dronedeploy, pdf
+    // Otherwise sort by id asc
+    static var sortingOrder: (CanvasSource, CanvasSource) -> Bool = { cs1, cs2 -> Bool in
+        if cs1.type == cs2.type {
+            return cs1.id < cs2.id
+        }
+        switch cs1.type {
+        case .mapbox: return true // first
+        case .droneDeploy: return cs2.type == .pdf // dronedeploy before pdf
+        case .pdf: return false // last
+        }
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

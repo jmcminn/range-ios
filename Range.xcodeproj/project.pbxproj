@@ -78,6 +78,8 @@
 		0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072329C077E7007299A7 /* CanvasSourceData.swift */; };
 		0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */; };
 		0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */; };
+		0A34072A29C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */; };
+		0A34072C29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072B29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A34C17F284551F500BEDC7C /* FirestoreStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */; };
 		0A34C181284552AC00BEDC7C /* FirestoreFeatureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */; };
@@ -427,6 +429,8 @@
 		0A34072329C077E7007299A7 /* CanvasSourceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceData.swift; sourceTree = "<group>"; };
 		0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSourceTest.swift; sourceTree = "<group>"; };
 		0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasTest.swift; sourceTree = "<group>"; };
+		0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceSelectorCardViewController.swift; sourceTree = "<group>"; };
+		0A34072B29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceTableViewCell.swift; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreStatusNameTest.swift; sourceTree = "<group>"; };
 		0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeatureTest.swift; sourceTree = "<group>"; };
@@ -900,6 +904,8 @@
 				0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */,
 				0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */,
 				0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */,
+				0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */,
+				0A34072B29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift */,
 				0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */,
 			);
 			path = Canvas;
@@ -1856,6 +1862,7 @@
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
+				0A34072C29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift in Sources */,
 				0A374DEC2927DA550036C184 /* DeleteUploadCommand.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
 				0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */,
@@ -1961,6 +1968,7 @@
 				0A0E2066296311A8001782A5 /* PinType.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A7A5377293E49800093D913 /* ModelError.swift in Sources */,
+				0A34072A29C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift in Sources */,
 				0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,

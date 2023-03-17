@@ -91,8 +91,10 @@ class CanvasViewController: UIViewController {
     /// dictionary of delegates stored per id
     private var delegates: [UUID: CanvasViewControllerDelegate] = [:]
 
-    /// To observed changes in model.currentCanvas
+    /// To observe changes in model.currentCanvas
     private var currentCanvasObservation: NSKeyValueObservation?
+    /// To observe changes in model.currentCanvas.currentCanvasSource
+    private var currentCanvasSourceObservation: NSKeyValueObservation?
     /// Observe canvas collection for pdf storage version change to reload the pdf
     private var canvasCollectionNotificationToken: NotificationToken?
 
@@ -121,6 +123,7 @@ class CanvasViewController: UIViewController {
             try await reloadPdfPage()
         }
         observeCanvasCollection()
+        observeCanvasSource()
         currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
             Task { @MainActor in
@@ -158,6 +161,7 @@ class CanvasViewController: UIViewController {
         let previousCanvas = canvas
         canvas = model.currentCanvas
         observeCanvasCollection()
+        observeCanvasSource()
         await onCanvasSourceChange(previousCanvasSource: previousCanvas.currentCanvasSource)
     }
 
@@ -201,6 +205,7 @@ class CanvasViewController: UIViewController {
 
     deinit {
         currentCanvasObservation?.invalidate()
+        currentCanvasSourceObservation?.invalidate()
         canvasCollectionNotificationToken?.invalidate()
     }
 
@@ -228,6 +233,20 @@ class CanvasViewController: UIViewController {
                 }
             }
         }
+    }
+
+    private func observeCanvasSource() {
+        currentCanvasSourceObservation?.invalidate()
+        currentCanvasSourceObservation = model.currentCanvas
+            .observe(\.currentCanvasSource, options: [.old]) { [weak self] _, change in
+                guard let self = self else { return }
+                guard let previousCanvasSource = change.oldValue ?? nil else {
+                    return
+                }
+                Task { @MainActor in
+                    await self.onCanvasSourceChange(previousCanvasSource: previousCanvasSource)
+                }
+            }
     }
 
     /// This is called when canvas changes after loading the initial canvas.

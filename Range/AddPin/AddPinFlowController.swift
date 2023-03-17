@@ -23,6 +23,7 @@ class AddPinFlowController {
     private var pinsDisplay: GeometriesPinsDisplay?
     private var panAndZoomIndicatorView: ToastView?
     private var canvasSelectorButton: RoundShadowButton?
+    private var canvasSourceSelectorButton: RoundShadowButton?
     /// the pin shown in the center to indicate where the pin is being placed
     private var pinView: UIView?
 
@@ -69,6 +70,7 @@ class AddPinFlowController {
         showConfirmationCard()
         showPanAndZoomIndicatorView()
         showCanvasSelectorButton()
+        showCanvasSourceSelectorButton()
         showPins()
         showPinView()
     }
@@ -90,6 +92,7 @@ class AddPinFlowController {
         canvasObservation?.invalidate()
         canvasObservation = nil
         hideCanvasSelectorButton()
+        hideCanvasSourceSelectorButton()
         pinView?.removeFromSuperview()
         pinView = nil
     }
@@ -156,7 +159,13 @@ class AddPinFlowController {
         createPinsDisplay()
         pinsDisplay?.start(onInitialLoad: nil)
         canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
-            self?.reloadGeometriesPinsDisplay()
+            guard let self = self else { return }
+            if self.model.currentCanvas.canvasSources.count <= 1 {
+                self.hideCanvasSourceSelectorButton()
+            } else {
+                self.showCanvasSourceSelectorButton()
+            }
+            self.reloadGeometriesPinsDisplay()
         }
     }
 
@@ -235,6 +244,32 @@ class AddPinFlowController {
         // responder chain (it's not UIView or UIViewController)
         UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
                                         to: nil, from: canvasSelectorButton, for: nil)
+    }
+
+    private func showCanvasSourceSelectorButton() {
+        canvasSourceSelectorButton = RoundShadowButton(image: UIImage(systemName: "map") ?? UIImage())
+        canvasSourceSelectorButton!.addTarget(
+            self,
+            action: #selector(canvasSourceSelectorButtonTapped),
+            for: .touchUpInside
+        )
+        canvasContainer.controls.addSubview(canvasSourceSelectorButton!)
+        canvasSourceSelectorButton!.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(canvasSelectorButton!.snp.top).offset(-12)
+        }
+    }
+
+    private func hideCanvasSourceSelectorButton() {
+        canvasSourceSelectorButton?.removeFromSuperview()
+        canvasSourceSelectorButton = nil
+    }
+
+    @objc private func canvasSourceSelectorButtonTapped() {
+        // send from canvasSelectorButton and not self, as AddPhotoFlowController is not in the
+        // responder chain (it's not UIView or UIViewController)
+        UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasSourceAction),
+                                        to: nil, from: canvasSourceSelectorButton, for: nil)
     }
 
     /// shows the pin view in the center of the screen
