@@ -3,15 +3,15 @@ import MapboxMaps
 import UIKit
 
 /// View controller responsible for displaying background canvas (PDF, mapbox, ... background) +
-/// foreground mapbox annotations mapView + container views displayed on top of the canvas
+/// container views displayed on top of the canvas
 class CanvasContainerViewController: UIViewController {
     /// 2in1 canvas for displaying pdf(background) + mapbox(foreground).
-    /// Will be refactored when we have option to present mapbox(background + foreground)
-    let pdfCanvasViewController: PDFCanvasViewController
+    /// Displays the canvas (with mapview or pdf background)
+    let canvasViewController: CanvasViewController
 
     /// shortcut to access the annotations map view
     var annotationsMapView: MapView {
-        pdfCanvasViewController.mapView
+        canvasViewController.mapView
     }
 
     /// for presenting map content
@@ -22,7 +22,7 @@ class CanvasContainerViewController: UIViewController {
     let overlays = PassthroughView()
 
     init(model: ProjectModel) async throws {
-        pdfCanvasViewController = try await PDFCanvasViewController(model: model)
+        canvasViewController = try await CanvasViewController(model: model)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -57,8 +57,8 @@ class CanvasContainerViewController: UIViewController {
     }
 
     fileprivate func showPDF() {
-        add(childController: pdfCanvasViewController, toView: content)
-        pdfCanvasViewController.view.snp.makeConstraints { make in
+        add(childController: canvasViewController, toView: content)
+        canvasViewController.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }

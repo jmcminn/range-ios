@@ -137,7 +137,7 @@ extension ProjectFlowController: ProjectFlowActions {
             if let pin = pinsDisplay.pinForGeometryId(geometry.id) {
                 // select the pin (which will trigger showing the collaboration window)
                 pinsDisplay.setSelectedPin(pin)
-                let canvasVC = self.canvasContainer.pdfCanvasViewController
+                let canvasVC = self.canvasContainer.canvasViewController
                 // pan the canvas to center on the pin
                 canvasVC.animatePanAndZoom(
                     cameraCenter: pin.point.coordinates,

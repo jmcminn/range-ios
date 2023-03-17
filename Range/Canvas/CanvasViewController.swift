@@ -39,12 +39,13 @@ protocol CanvasViewControllerDelegate {
     func canvasTapRecognized(at: CGPoint)
 }
 
-// TODO: 930 rename to CanvasViewController
-/**
- Displays background PDF with Mapbox map view on top.
- The mapbox map is receiving the user interactions and controls the PDF zoom/offset
- */
-class PDFCanvasViewController: UIViewController {
+/// Displays a mapbox map view for canvas.
+///
+/// - For PDF canvas sources it shows the PDF view behind the map view (with an empty style so there's no map visible).  In this case
+/// the mapbox map is receiving the user interactions and controls the PDF zoom/offset.
+///
+/// - For mapbox and drone deploy sources it just displays the style defined in the source.
+class CanvasViewController: UIViewController {
     let maxMapboxZoom = 25.5
 
     let zoomConverter: MapboxZoomConverter
@@ -627,7 +628,7 @@ class PDFCanvasViewController: UIViewController {
 }
 
 /// Delegate for Mapbox driving gestures
-extension PDFCanvasViewController: GestureManagerDelegate {
+extension CanvasViewController: GestureManagerDelegate {
     func gestureManager(_: MapboxMaps.GestureManager, didBegin gesture: MapboxMaps.GestureType) {
         guard gesture != .singleTap else {
             // taps are not handled as camera changes, but rather forwarded to delegates via canvasTapRecognized
@@ -664,7 +665,7 @@ extension PDFCanvasViewController: GestureManagerDelegate {
 }
 
 /// Delegate for canvas taps
-extension PDFCanvasViewController {
+extension CanvasViewController {
     /// Recognize taps in the pdf view or mapView, translate to mapbox view and forward to delegates using canvasTapRecognized.
     @objc func didTapCanvasView(_ sender: UITapGestureRecognizer) {
         let point = sender.location(in: sender.view)

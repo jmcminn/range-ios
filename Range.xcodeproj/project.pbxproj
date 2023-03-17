@@ -178,7 +178,7 @@
 		0A632EDD27E4DA66001A019B /* PDFPageTiledView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */; };
 		0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EDE27E4DC2C001A019B /* PDFPageScrollView.swift */; };
 		0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */; };
-		0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */; };
+		0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EE727E516B7001A019B /* CanvasViewController.swift */; };
 		0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */; };
 		0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */; };
 		0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A671F9428E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift */; };
@@ -533,7 +533,7 @@
 		0A632EDC27E4DA66001A019B /* PDFPageTiledView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageTiledView.swift; sourceTree = "<group>"; };
 		0A632EDE27E4DC2C001A019B /* PDFPageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageScrollView.swift; sourceTree = "<group>"; };
 		0A632EE027E4E3C1001A019B /* PDFPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFPageViewController.swift; sourceTree = "<group>"; };
-		0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFCanvasViewController.swift; sourceTree = "<group>"; };
+		0A632EE727E516B7001A019B /* CanvasViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewController.swift; sourceTree = "<group>"; };
 		0A671F9028E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesViewAnnotationPinsDisplay.swift; sourceTree = "<group>"; };
 		0A671F9228E992FB00F78B34 /* GeometriesPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesPinsDisplay.swift; sourceTree = "<group>"; };
 		0A671F9428E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometriesAnnotationPinsDisplay.swift; sourceTree = "<group>"; };
@@ -896,7 +896,7 @@
 			isa = PBXGroup;
 			children = (
 				0A48ACDE281C117D0044E06E /* CanvasContainerViewController.swift */,
-				0A632EE727E516B7001A019B /* PDFCanvasViewController.swift */,
+				0A632EE727E516B7001A019B /* CanvasViewController.swift */,
 				0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */,
 				0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */,
 				0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */,
@@ -1878,7 +1878,7 @@
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirestoreCanvas.swift in Sources */,
 				0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */,
-				0A632EE827E516B7001A019B /* PDFCanvasViewController.swift in Sources */,
+				0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,

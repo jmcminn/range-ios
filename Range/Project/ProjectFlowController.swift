@@ -158,7 +158,7 @@ final class ProjectFlowController: UIViewController {
             )
         }
 
-        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
+        canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
     }
 
     private func observeCanvas() {
@@ -220,14 +220,14 @@ final class ProjectFlowController: UIViewController {
         pinsDisplay = useNativeViews
             ? GeometriesViewAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.pdfCanvasViewController,
+                canvasViewController: canvasContainer.canvasViewController,
                 deselectOnCanvasTap: true,
                 showArchivedPins: showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
             )
             : GeometriesAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.pdfCanvasViewController,
+                canvasViewController: canvasContainer.canvasViewController,
                 deselectOnCanvasTap: true,
                 showArchivedPins: showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
@@ -261,7 +261,7 @@ final class ProjectFlowController: UIViewController {
         collaborationFlow.stop()
         pinsDisplay?.stop()
         if let canvasDelegateId = canvasDelegateId {
-            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
+            canvasContainer.canvasViewController.removeDelegate(id: canvasDelegateId)
         }
         canvasContainer.removeCard(cardViewController: actionCardVC)
         remove(childController: canvasContainer)

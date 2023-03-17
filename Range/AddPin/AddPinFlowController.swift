@@ -64,7 +64,7 @@ class AddPinFlowController {
     }
 
     private func showPinPlacementUI() {
-        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
+        canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
         showTopViewController()
         showConfirmationCard()
         showPanAndZoomIndicatorView()
@@ -76,7 +76,7 @@ class AddPinFlowController {
     /// remove the photo location selection views/handlers
     private func stop() {
         if let canvasDelegateId = canvasDelegateId {
-            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
+            canvasContainer.canvasViewController.removeDelegate(id: canvasDelegateId)
         }
         if let confirmationCardVC = confirmationCardVC {
             confirmationCardVC.hideCard(animated: true) {
@@ -184,7 +184,7 @@ class AddPinFlowController {
         pinsDisplay = DebugSettings().nativeViewsForPins
             ? GeometriesViewAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.pdfCanvasViewController,
+                canvasViewController: canvasContainer.canvasViewController,
                 selectionEnabled: false,
                 deselectOnCanvasTap: false,
                 ignoredGeometryId: ignoredGeometryId,
@@ -193,7 +193,7 @@ class AddPinFlowController {
             )
             : GeometriesAnnotationPinsDisplay(
                 canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.pdfCanvasViewController,
+                canvasViewController: canvasContainer.canvasViewController,
                 selectionEnabled: false,
                 deselectOnCanvasTap: false,
                 ignoredGeometryId: ignoredGeometryId,

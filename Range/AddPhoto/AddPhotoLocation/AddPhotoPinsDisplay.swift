@@ -12,7 +12,7 @@ import UIKit
 /// It also listen for map interaction events and auto select pins that are closest to the screen center (and within the `pinsSearchRectSize`)
 class AddPhotoPinsDisplay {
     unowned let canvasContainer: CanvasContainerViewController
-    unowned let canvasVC: PDFCanvasViewController
+    unowned let canvasVC: CanvasViewController
     unowned let model: ProjectModel
     let geometriesPinsDisplay: GeometriesPinsDisplay
     let image: UIImage
@@ -46,20 +46,20 @@ class AddPhotoPinsDisplay {
     ///   - image:              image to be displayed on the new photo pin
     init(canvas: Canvas, canvasContainer: CanvasContainerViewController, model: ProjectModel, image: UIImage) {
         self.canvasContainer = canvasContainer
-        canvasVC = canvasContainer.pdfCanvasViewController
+        canvasVC = canvasContainer.canvasViewController
         self.model = model
         self.image = image
         geometriesPinsDisplay = DebugSettings().nativeViewsForPins
             ? GeometriesViewAnnotationPinsDisplay(
                 canvas: canvas,
-                canvasViewController: canvasContainer.pdfCanvasViewController,
+                canvasViewController: canvasContainer.canvasViewController,
                 deselectOnCanvasTap: false,
                 showArchivedPins: UserSettings().showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider
             )
             : GeometriesAnnotationPinsDisplay(
                 canvas: canvas,
-                canvasViewController: canvasContainer.pdfCanvasViewController,
+                canvasViewController: canvasContainer.canvasViewController,
                 deselectOnCanvasTap: false,
                 showArchivedPins: UserSettings().showArchivedCollaborations,
                 geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider

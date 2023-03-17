@@ -317,7 +317,7 @@ class AddPhotoFlowController {
 
     /// Adapt the UI for the location selection
     private func selectPhotoLocation() {
-        canvasDelegateId = canvasContainer.pdfCanvasViewController.addDelegate(self)
+        canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
         showTopViewController()
         showConfirmationCard()
         showPanAndZoomIndicatorView()
@@ -494,7 +494,7 @@ extension AddPhotoFlowController {
     /// remove the photo location selection views/handlers
     private func dismissPhotoLocationSelectionUI() {
         if let canvasDelegateId = canvasDelegateId {
-            canvasContainer.pdfCanvasViewController.removeDelegate(id: canvasDelegateId)
+            canvasContainer.canvasViewController.removeDelegate(id: canvasDelegateId)
         }
         if let switchPinTypeCardVC = switchPinTypeCardVC {
             switchPinTypeCardVC.hideCard(animated: true) {
