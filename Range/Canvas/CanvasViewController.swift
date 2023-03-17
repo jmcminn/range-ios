@@ -82,6 +82,9 @@ class CanvasViewController: UIViewController {
     var pdfScrollView: PDFPageScrollView?
     var initialPdfScale: Double!
 
+    /// Remember the camera state when switching canvas sources. A dictionary of CanvasSource.id => CameraState
+    private var cameraStateCache = [String: CameraState]()
+
     /// when animating the pdf and mapview together, we need to disable the sync of zoom/center between them
     private var programmaticAnimationInProgress = false
 
@@ -160,23 +163,30 @@ class CanvasViewController: UIViewController {
 
     /// Canvas source changed, reload the view
     private func onCanvasSourceChange(previousCanvasSource: CanvasSource) async {
-        // TODO: 930 store zoom/center and reuse when switching back to same canvas source
+        // store the camera state so it can be reused when switching back to same canvas source
+        cameraStateCache[previousCanvasSource.id] = mapView.cameraState
         let fromPdfToPdf = previousCanvasSource.type == .pdf && canvas.currentCanvasSource.type == .pdf
         if !fromPdfToPdf {
             // if switching from pdf to other pdf the map view remains the same (empty style and configuration for pdf background)
-            // TODO: 930 handle pdf => pdf (no zoom/center reset in this case)
             updateMapViewForCanvasSource()
         }
         if canvas.currentCanvasSource.type == .pdf {
             do {
                 try await reloadPdfPage()
             } catch {
-                // TODO: 930 error toast and what?
+                let sourceId = canvas.currentCanvasSource.id
+                Logger.model.error(
+                    "Failed to load pdf for canvas source \(sourceId, privacy: .public), \(error.localizedDescription, privacy: .public)"
+                )
+                ToastWindow.shared.showError(text: "Canvas failed to load")
             }
             setupPDFScrollView()
-            updateCameraForCanvasSource()
-            // TODO: 930, not needed, will be handled by the camera update? or this vs pdfToPdf and reset zoom/etc.
-//            syncPDFViewWithAnnotationViews()
+            if fromPdfToPdf {
+                // keep the camera state unchanged when switching between pdfs
+                syncPDFViewWithAnnotationViews()
+            } else {
+                updateCameraForCanvasSource()
+            }
         } else {
             updateCameraForCanvasSource()
             pdfScrollView?.removeFromSuperview()
@@ -419,12 +429,15 @@ class CanvasViewController: UIViewController {
 
     /// resets the camera for given canvas source
     private func updateCameraForCanvasSource() {
-        mapView.mapboxMap.setCamera(to: CameraOptions(
-            center: getCenterForCurrentCanvasSource(),
-            zoom: getZoomForCurrentCanvasSource(),
-            bearing: 0,
-            pitch: 0
-        ))
+        let cameraState = cameraStateCache[canvas.currentCanvasSource.id]
+            ?? CameraState(
+                center: getCenterForCurrentCanvasSource(),
+                padding: .zero,
+                zoom: getZoomForCurrentCanvasSource(),
+                bearing: 0,
+                pitch: 0
+            )
+        mapView.mapboxMap.setCamera(to: CameraOptions(cameraState: cameraState))
     }
 
     /// For current mapView load style appropriate for pdf canvas source

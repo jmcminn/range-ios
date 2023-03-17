@@ -20,15 +20,9 @@ class CanvasSource: Object, WithPlaceholder {
     /// CanvasSource type, based on the CanvasSourceData.type
     var type: CanvasSourceType { data.type }
 
-    /// The value to display in the UI
-    var displayName: String {
-        // TODO: 930 if there's only 1 source prepend it's name to canvas.name
-        "TODO: 930"
-//        var components: [String] = []
-//        if let sheetNumber = sheetNumber, !sheetNumber.isEmpty { components.append(sheetNumber) }
-//        if !name.isEmpty { components.append(name) }
-//        return components.joined(separator: " • ")
-    }
+    /// Added to canvas name when there's only one canvas source for canvas
+    /// Hack to get pdf.sheetNumber displayed in the canvas selector
+    var canvasNamePrefix: String? { data.canvasNamePrefix }
 
     /// Default initializer required by Realm.
     override init() {

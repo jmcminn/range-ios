@@ -105,9 +105,7 @@ class ProjectModel: NSObject, RealmModel {
             }
             try setCurrentCanvas(initialCanvas)
         } else {
-            // TODO: 930 sort by sources properties?
-//            guard let firstCanvas = mainRealm.objects(Canvas.self).sorted(by: \Canvas.pageNumber).first else {
-            guard let firstCanvas = mainRealm.objects(Canvas.self).first else {
+            guard let firstCanvas = mainRealm.objects(Canvas.self).sorted(by: Canvas.sortingOrder).first else {
                 throw ModelError.canvasNotFound
             }
             try setCurrentCanvas(firstCanvas)

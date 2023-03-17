@@ -33,6 +33,13 @@ enum CanvasSourceData: Equatable {
             return data.type
         }
     }
+
+    var canvasNamePrefix: String? {
+        switch self {
+        case let .pdf(data): return data.sheetNumber
+        default: return nil
+        }
+    }
 }
 
 /// PDF Canvas Source definition
