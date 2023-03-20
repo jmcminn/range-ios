@@ -7,21 +7,14 @@ import UIKit
 class SelectPinTypeCardViewController: SheetCardViewController {
     private let photoPinButton = SelectPinTypeButton(type: .createPhoto)
     private let taskPinButton = SelectPinTypeButton(type: .createTask)
-    private let copyTaskPinButton: SelectPinTypeButton?
+    private let copyTaskPinButton = SelectPinTypeButton(type: .copyTask)
 
     /// Callback for pin selected, optional = nil when the selector was dismissed
     var onPinTypeSelected: ((PinTypeOption?) -> Void)?
 
     /// Initializer
-    init(model: ProjectModel, onPinTypeSelected: ((PinTypeOption?) -> Void)? = nil) {
+    init(onPinTypeSelected: ((PinTypeOption?) -> Void)? = nil) {
         self.onPinTypeSelected = onPinTypeSelected
-
-        if model.currentUser.tasksCreatedByUser.isEmpty {
-            copyTaskPinButton = nil
-        } else {
-            copyTaskPinButton = SelectPinTypeButton(type: .copyTask)
-        }
-
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Add Pin"))
         onDismiss = { [weak self] in self?.onPinTypeSelected?(nil) }
     }
@@ -45,13 +38,11 @@ class SelectPinTypeCardViewController: SheetCardViewController {
             make.leading.trailing.equalToSuperview().inset(16)
         }
 
-        if let copyTaskPinButton = copyTaskPinButton {
-            copyTaskPinButton.addTarget(self, action: #selector(copyTaskPinSelected), for: .touchUpInside)
-            containerView.addSubview(copyTaskPinButton)
-            copyTaskPinButton.snp.makeConstraints { make in
-                make.top.equalTo(taskPinButton.snp.bottom).offset(12)
-                make.leading.trailing.equalToSuperview().inset(16)
-            }
+        copyTaskPinButton.addTarget(self, action: #selector(copyTaskPinSelected), for: .touchUpInside)
+        containerView.addSubview(copyTaskPinButton)
+        copyTaskPinButton.snp.makeConstraints { make in
+            make.top.equalTo(taskPinButton.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(16)
         }
     }
 
@@ -61,9 +52,7 @@ class SelectPinTypeCardViewController: SheetCardViewController {
         if cardPosition == .max {
             view.layoutIfNeeded()
             baseHeight += photoPinButton.frame.height + 16.0 + taskPinButton.frame.height
-            if let copyTaskPinButton = copyTaskPinButton {
-                baseHeight += 16.0 + copyTaskPinButton.frame.height
-            }
+                + 16.0 + copyTaskPinButton.frame.height
         }
         return baseHeight
     }

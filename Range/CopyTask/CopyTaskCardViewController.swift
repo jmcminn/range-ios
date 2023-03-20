@@ -32,7 +32,7 @@ class CopyTaskCardViewController: SheetCardViewController {
         self.onTaskSelected = onTaskSelected
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
-                c.author == projectModel.currentUser && c.status != nil
+                c.status != nil
             }
             .sorted(by: \Collaboration.timestamp, ascending: false)
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Select Task to Copy"))

@@ -706,16 +706,8 @@ extension AddPhotoFlowController {
     private func showPinTypeSelector() {
         guard let confirmationCardVC = confirmationCardVC else { return }
         if switchPinTypeCardVC == nil {
-            let collaborationsCreatedByUser = model.mainRealm.objects(Collaboration.self)
-                .where { (c: Query<Collaboration>) -> Query<Bool> in
-                    c.author == model.currentUser && c.status != nil
-                }
-            // only show option to copy one of the last tasks if this user created any tasks
-            let showCopyTask = !collaborationsCreatedByUser.isEmpty
             let pinTypeVC = SwitchPinTypeCardViewController(
-                availableTypes: showCopyTask
-                    ? [.createPhoto, .createTask, .copyTask]
-                    : [.createPhoto, .createTask],
+                availableTypes: [.createPhoto, .createTask, .copyTask],
                 confirmationVC: confirmationCardVC
             )
             pinTypeVC.onPinTypeChange = { [weak self] pinTypeOption in

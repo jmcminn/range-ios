@@ -500,7 +500,7 @@ extension ProjectFlowController {
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
         // select pin type
-        SelectPinTypeCardViewController(model: model, onPinTypeSelected: { [weak self] pinTypeOption in
+        SelectPinTypeCardViewController(onPinTypeSelected: { [weak self] pinTypeOption in
             if let pinTypeOption = pinTypeOption {
                 self?.startAddPinFlow(pinTypeOption: pinTypeOption)
             }
