@@ -21,6 +21,7 @@ class Canvas: Object, WithPlaceholder {
     /// The current canvas source for the currentCanvas, @objc dynamic so it can be observed
     @objc dynamic var currentCanvasSource: CanvasSource! {
         didSet {
+            guard currentCanvasSource != nil else { return }
             UserDefaults.setLastOpenCanvasSourceId(currentCanvasSource.id, forCanvasId: id)
         }
     }
