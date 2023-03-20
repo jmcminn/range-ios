@@ -81,7 +81,8 @@ extension UIButton.Configuration {
     static func blueButton(
         imageTextStyle: UIFont.TextStyle = .footnote,
         imagePlacement: NSDirectionalRectEdge = .trailing,
-        cornerRadius: CGFloat = 12
+        cornerRadius: CGFloat = 12,
+        horizontalInsets: CGFloat = 0
     ) -> UIButton.Configuration {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: imageTextStyle)
             .applying(UIImage.SymbolConfiguration(weight: .semibold))
@@ -89,9 +90,9 @@ extension UIButton.Configuration {
 
         config.contentInsets = NSDirectionalEdgeInsets(
             top: 14,
-            leading: 0,
+            leading: horizontalInsets,
             bottom: 14,
-            trailing: 0
+            trailing: horizontalInsets
         )
         config.baseBackgroundColor = .Primary_Blue_04
         config.baseForegroundColor = .Neutral_01

@@ -17,6 +17,7 @@ class CopyTaskCardViewController: SheetCardViewController {
 
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
+    private var noTasksView: UIView?
 
     /// Callback for task selected, optional = nil when the selector was dismissed
     var onTaskSelected: ((Collaboration?) -> Void)?
@@ -61,6 +62,7 @@ class CopyTaskCardViewController: SheetCardViewController {
         }
 
         observeCollaborations()
+        updateNoTasksViewVisibility()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -106,14 +108,21 @@ class CopyTaskCardViewController: SheetCardViewController {
             }
             return String(values.joined(by: "_"))
         }
+        updateNoTasksViewVisibility()
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
+        let baseHeight = super.height(forContainer: cardContainerView, cardPosition: cardPosition)
         if cardPosition == .max {
-            // just make it max, so it doesn't depend on the content height
-            return Double.greatestFiniteMagnitude
+            if uniqueCollaborations.isEmpty {
+                view.layoutIfNeeded()
+                return baseHeight + (noTasksView?.frame.height ?? 0.0)
+            } else {
+                // just make it max, so it doesn't depend on the content height
+                return Double.greatestFiniteMagnitude
+            }
         } else {
-            return super.height(forContainer: cardContainerView, cardPosition: cardPosition)
+            return baseHeight
         }
     }
 
@@ -199,5 +208,91 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
 
     func scrollViewDidScroll(_: UIScrollView) {
         updateHeaderShadow()
+    }
+}
+
+// MARK: - no tasks view
+
+extension CopyTaskCardViewController {
+    private func updateNoTasksViewVisibility() {
+        let showNoTasks = uniqueCollaborations.isEmpty
+        if showNoTasks {
+            if noTasksView == nil {
+                setupNoTasksView()
+            }
+            noTasksView?.isHidden = false
+        } else {
+            noTasksView?.isHidden = true
+        }
+        if let cardDragging = cardDragging {
+            // animate the card to adjust for no tasks visibility
+            cardDragging.setPosition(cardDragging.position, withVelocity: 0)
+        }
+    }
+
+    private func setupNoTasksView() {
+        let view = UIView()
+        view.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+
+        let questionPin = UIImageView(image: UIImage(named: "large_question_pin"))
+        view.addSubview(questionPin)
+        questionPin.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(58)
+            make.centerX.equalToSuperview()
+        }
+        let titleLabel = UILabel()
+        titleLabel.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+        titleLabel.text = String(localized: "There are no tasks to copy...")
+        view.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(questionPin.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(36)
+        }
+        let descriptionLabel = UILabel()
+        descriptionLabel.font = .preferredFont(forTextStyle: .body)
+        descriptionLabel.adjustsFontForContentSizeCategory = true
+        descriptionLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.textAlignment = .center
+        descriptionLabel
+            .text = String(localized: "In order to copy an existing task, you need to add a task pin first.")
+        view.addSubview(descriptionLabel)
+        descriptionLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(36)
+        }
+
+        let addTaskPinButton = UIButton(
+            configuration: UIButton.Configuration.blueButton(horizontalInsets: 32),
+            primaryAction: UIAction(title: String(localized: "Add Task Pin")) { [weak self] _ in
+                // TODO: 938
+            }
+        )
+        view.addSubview(addTaskPinButton)
+        addTaskPinButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(descriptionLabel.snp.bottom).offset(24)
+            make.bottom.equalToSuperview().inset(58)
+        }
+
+        let bottomStroke = UIView()
+        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        view.addSubview(bottomStroke)
+        bottomStroke.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
+
+        containerView.addSubview(view)
+        view.snp.makeConstraints { make in
+            make.top.equalTo(sheetHeaderView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+        }
+
+        noTasksView = view
     }
 }
