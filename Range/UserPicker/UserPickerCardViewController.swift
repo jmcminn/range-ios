@@ -16,7 +16,7 @@ class UserPickerCardViewController: SheetCardViewController {
     // background view for searchView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the users
     private let headerView = UIView()
-    private let searchView = SearchView(placeholderText: "Search for an assignee...")
+    private let searchView = SearchView(placeholderText: "Search for an assignee...", showClearButton: true)
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
 

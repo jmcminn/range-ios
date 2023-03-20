@@ -20,16 +20,21 @@ class SearchView: UIView {
     /// Force unwrapped - don't use before `setupIcon`
     private var iconView: UIImageView!
     var textField: UITextField!
+    private var clearButton: UIButton?
 
     /// Allows for multiple delegates
     private var delegates = NSHashTable<SearchViewDelegate>.weakObjects()
 
-    init(placeholderText: String) {
+    init(placeholderText: String, showClearButton: Bool) {
         super.init(frame: .zero)
 
         setupView()
         setupIcon()
+        if showClearButton {
+            setupClearButton()
+        }
         setupTextField(placeholderText: placeholderText)
+        updateClearButtonVisibility()
         updateColors()
     }
 
@@ -70,7 +75,7 @@ class SearchView: UIView {
         iconView.setContentHuggingPriority(.required, for: .vertical)
         addSubview(iconView)
         iconView.snp.makeConstraints { make in
-            make.left.equalTo(12)
+            make.leading.equalTo(12)
             make.centerY.equalToSuperview()
         }
     }
@@ -86,13 +91,34 @@ class SearchView: UIView {
         textField.adjustsFontForContentSizeCategory = true
         textField.tintColor = .Primary_Blue_04
         textField.autocapitalizationType = .none
+        // don't show the default clear button
+        textField.clearButtonMode = .never
         textField.delegate = self
         textField.addTarget(self, action: #selector(textChangedAction), for: .editingChanged)
         addSubview(textField)
         textField.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.left.equalTo(iconView.snp.right).offset(12)
-            make.right.equalToSuperview()
+            make.leading.equalTo(iconView.snp.trailing).offset(12)
+            if let clearButton = clearButton {
+                make.trailing.equalTo(clearButton.snp.leading)
+            } else {
+                make.trailing.equalToSuperview()
+            }
+        }
+    }
+
+    /// Custom clear button as we need the custom color
+    private func setupClearButton() {
+        clearButton = UIButton(type: .custom)
+        clearButton?.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
+        clearButton?.imageView?.tintColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        clearButton?.addTarget(self, action: #selector(clearAction), for: .touchUpInside)
+        addSubview(clearButton!)
+        clearButton!.snp.makeConstraints { make in
+            make.height.equalToSuperview()
+            make.width.equalTo(clearButton!.snp.height)
+            make.trailing.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
     }
 
@@ -108,9 +134,22 @@ class SearchView: UIView {
         layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
     }
 
+    private func updateClearButtonVisibility() {
+        clearButton?.isHidden = (textField.text == nil || textField.text!.isEmpty)
+    }
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - actions
+
+extension SearchView {
+    @objc func clearAction() {
+        textField.text = ""
+        textChangedAction()
     }
 }
 
@@ -118,6 +157,7 @@ class SearchView: UIView {
 
 extension SearchView {
     @objc func textChangedAction() {
+        updateClearButtonVisibility()
         delegates.allObjects.forEach { $0.searchView?(self, textDidChange: textField.text ?? "") }
     }
 }

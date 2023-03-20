@@ -8,7 +8,7 @@ class TagsSearchView: SearchView {
 
     init(placeholderText: String, viewModel: TagsViewModel) {
         self.viewModel = viewModel
-        super.init(placeholderText: placeholderText)
+        super.init(placeholderText: placeholderText, showClearButton: true)
 
         addDelegate(self)
     }
