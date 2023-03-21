@@ -222,21 +222,14 @@ final class ProjectFlowController: UIViewController {
     }
 
     private func createGeometriesPinsDisplay(useNativeViews: Bool, showArchivedCollaborations: Bool) {
-        pinsDisplay = useNativeViews
-            ? GeometriesViewAnnotationPinsDisplay(
-                canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.canvasViewController,
-                deselectOnCanvasTap: true,
-                showArchivedPins: showArchivedCollaborations,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
-            )
-            : GeometriesAnnotationPinsDisplay(
-                canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.canvasViewController,
-                deselectOnCanvasTap: true,
-                showArchivedPins: showArchivedCollaborations,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
-            )
+        pinsDisplay = _createGeometriesPinsDisplay(
+            usingNativeViews: useNativeViews,
+            canvas: model.currentCanvas,
+            canvasViewController: canvasContainer.canvasViewController,
+            deselectOnCanvasTap: true,
+            showArchivedPins: showArchivedCollaborations,
+            geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
+        )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
             if let geometryId = pinPoint?.id {
                 self?.showCollaborationWindow(forGeometry: geometryId)

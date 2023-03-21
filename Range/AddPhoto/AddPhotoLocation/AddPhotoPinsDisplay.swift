@@ -49,21 +49,14 @@ class AddPhotoPinsDisplay {
         canvasVC = canvasContainer.canvasViewController
         self.model = model
         self.image = image
-        geometriesPinsDisplay = DebugSettings().nativeViewsForPins
-            ? GeometriesViewAnnotationPinsDisplay(
-                canvas: canvas,
-                canvasViewController: canvasContainer.canvasViewController,
-                deselectOnCanvasTap: false,
-                showArchivedPins: UserSettings().showArchivedCollaborations,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider
-            )
-            : GeometriesAnnotationPinsDisplay(
-                canvas: canvas,
-                canvasViewController: canvasContainer.canvasViewController,
-                deselectOnCanvasTap: false,
-                showArchivedPins: UserSettings().showArchivedCollaborations,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider
-            )
+        geometriesPinsDisplay = _createGeometriesPinsDisplay(
+            usingNativeViews: DebugSettings().nativeViewsForPins,
+            canvas: canvas,
+            canvasViewController: canvasContainer.canvasViewController,
+            deselectOnCanvasTap: false,
+            showArchivedPins: UserSettings().showArchivedCollaborations,
+            geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider
+        )
         geometriesPinsDisplay.onSelectedPinChange = { [weak self] pinPoint in
             self?.onSelectedPinChanged(pinPoint: pinPoint)
         }

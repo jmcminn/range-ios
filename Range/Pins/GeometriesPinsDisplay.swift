@@ -49,3 +49,37 @@ protocol GeometriesPinsDisplay: AnyObject {
     /// A way for listener to register for user pin selection
     var onSelectedPinChange: ((PinPoint?) -> Void)? { get set }
 }
+
+/// Factory for creating pins display instances (either of native or mapbox annotation type)
+/// Creates a proper geometries pins display depending on the `nativeViews` flag
+/// It cannot be a static func on the protocol, as Swift doesn't allow to call functions on protocols
+func _createGeometriesPinsDisplay(
+    usingNativeViews: Bool,
+    canvas: Canvas,
+    canvasViewController: CanvasViewController,
+    selectionEnabled: Bool = true,
+    deselectOnCanvasTap: Bool,
+    ignoredGeometryId: String? = nil,
+    showArchivedPins: Bool,
+    geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
+) -> GeometriesPinsDisplay {
+    usingNativeViews
+        ? GeometriesViewAnnotationPinsDisplay(
+            canvas: canvas,
+            canvasViewController: canvasViewController,
+            selectionEnabled: selectionEnabled,
+            deselectOnCanvasTap: deselectOnCanvasTap,
+            ignoredGeometryId: ignoredGeometryId,
+            showArchivedPins: showArchivedPins,
+            geometryPinDisplayOptionsProvider: geometryPinDisplayOptionsProvider
+        )
+        : GeometriesAnnotationPinsDisplay(
+            canvas: canvas,
+            canvasViewController: canvasViewController,
+            selectionEnabled: selectionEnabled,
+            deselectOnCanvasTap: deselectOnCanvasTap,
+            ignoredGeometryId: ignoredGeometryId,
+            showArchivedPins: showArchivedPins,
+            geometryPinDisplayOptionsProvider: geometryPinDisplayOptionsProvider
+        )
+}

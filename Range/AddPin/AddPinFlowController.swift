@@ -190,25 +190,16 @@ class AddPinFlowController {
         } else {
             ignoredGeometryId = nil
         }
-        pinsDisplay = DebugSettings().nativeViewsForPins
-            ? GeometriesViewAnnotationPinsDisplay(
-                canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.canvasViewController,
-                selectionEnabled: false,
-                deselectOnCanvasTap: false,
-                ignoredGeometryId: ignoredGeometryId,
-                showArchivedPins: UserSettings().showArchivedCollaborations,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
-            )
-            : GeometriesAnnotationPinsDisplay(
-                canvas: model.currentCanvas,
-                canvasViewController: canvasContainer.canvasViewController,
-                selectionEnabled: false,
-                deselectOnCanvasTap: false,
-                ignoredGeometryId: ignoredGeometryId,
-                showArchivedPins: UserSettings().showArchivedCollaborations,
-                geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
-            )
+        pinsDisplay = _createGeometriesPinsDisplay(
+            usingNativeViews: DebugSettings().nativeViewsForPins,
+            canvas: model.currentCanvas,
+            canvasViewController: canvasContainer.canvasViewController,
+            selectionEnabled: false,
+            deselectOnCanvasTap: false,
+            ignoredGeometryId: ignoredGeometryId,
+            showArchivedPins: UserSettings().showArchivedCollaborations,
+            geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
+        )
     }
 
     private func showPanAndZoomIndicatorView() {
