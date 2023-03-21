@@ -22,8 +22,6 @@ class CopyTaskCardViewController: SheetCardViewController {
     /// Callback for task selected, optional = nil when the selector was dismissed
     var onTaskSelected: ((Collaboration?) -> Void)?
 
-    private var selectedTask: Collaboration?
-
     /// Initializer
     ///
     /// - Parameters:
@@ -37,7 +35,7 @@ class CopyTaskCardViewController: SheetCardViewController {
             }
             .sorted(by: \Collaboration.timestamp, ascending: false)
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Select Task to Copy"))
-        onDismiss = { [weak self] in self?.onTaskSelected?(self?.selectedTask) }
+        onCancel = { [weak self] in self?.onTaskSelected?(nil) }
     }
 
     deinit {
@@ -193,7 +191,7 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
                 ofType: Collaboration.self,
                 forPrimaryKey: collaborationId
             ) else { return }
-            self.selectedTask = collaboration
+            self.onTaskSelected?(collaboration)
             self.dismissCard()
         }
         return cell
@@ -202,7 +200,8 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        selectedTask = uniqueCollaborations[indexPath.row]
+        let selectedTask = uniqueCollaborations[indexPath.row]
+        onTaskSelected?(selectedTask)
         dismissCard()
     }
 

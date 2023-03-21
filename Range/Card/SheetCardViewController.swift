@@ -20,14 +20,14 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
 
-    /// Invoked when the sheet will be dismissed
-    var onDismiss: (() -> Void)?
+    /// Invoked when the sheet is dismissed by tapping close button, the overlay or dragging the card down to min position
+    var onCancel: (() -> Void)?
 
     /// Initializer
-    init(icon: UIImage?, title: String?, subtitle: String? = nil, onDismiss: (() -> Void)? = nil) {
+    init(icon: UIImage?, title: String?, subtitle: String? = nil, onCancel: (() -> Void)? = nil) {
         super.init(nibName: nil, bundle: nil)
 
-        self.onDismiss = onDismiss
+        self.onCancel = onCancel
 
         if let icon = icon {
             setupTitleIcon(image: icon)
@@ -179,6 +179,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         closeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
+                self?.onCancel?()
                 self?.dismissCard()
             }
         )
@@ -236,7 +237,6 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller
     func dismissCard() {
-        onDismiss?()
         hideCard(animated: true) {
             self.cardDragging?.delegate = nil
             self.presentingVC?.removeCard(cardViewController: self)
@@ -247,11 +247,13 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     // MARK: - dragging delegate to automatically close on overlay tap or minimize
 
     func cardOverlayTapped() {
+        onCancel?()
         dismissCard()
     }
 
     func cardWillChangePosition(_ position: CardPosition) {
         if position == .min {
+            onCancel?()
             dismissCard()
         }
     }
