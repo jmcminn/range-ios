@@ -25,12 +25,9 @@ final class ProjectFlowController: UIViewController {
     /// for storing the debugSettings observer(s)
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
 
-    var topViewController: TopViewController?
     lazy var actionCardVC = setupActionCardVC()
     var pinsDisplay: GeometriesPinsDisplay?
-    var canvasSelectorButton: RoundShadowButton!
-    var canvasSourceSelectorButton: RoundShadowButton!
-    var canvasFiltersButton: RoundShadowButton!
+    private let controls: ProjectCanvasControls
     weak var mediaVC: MediaCardViewController?
     weak var fullscreenMediaVC: FullscreenMediaCardViewController?
     weak var taskListVC: TaskListCardViewController?
@@ -105,6 +102,7 @@ final class ProjectFlowController: UIViewController {
             canvasContainer: canvasContainer
         )
         self.userSettings = userSettings
+        controls = ProjectCanvasControls(canvasContainer: canvasContainer)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -138,11 +136,13 @@ final class ProjectFlowController: UIViewController {
         }
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
-        showTopViewController(animated: false)
 
-        setupCanvasSelectorButton()
-        setupCanvasSourceSelectorButton()
-        setupCanvasFiltersButton()
+        controls.showTopViewController(title: model.projectSummary.name, onBack: onBack, animated: false)
+
+        controls.showCanvasSelectorButton(aboveView: actionCardVC.view)
+        controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
+        controls.showCanvasFiltersButton(aboveView: controls.canvasSourceSelectorButton!)
+        updateCanvasSourceSelectorVisibility()
 
         showDefaultCanvasUI(animated: false)
         collaborationFlow.start()
@@ -273,53 +273,13 @@ final class ProjectFlowController: UIViewController {
         canvasNotificationToken = nil
     }
 
-    /// shows the view controller covering the top of of the screen
-    private func showTopViewController(animated: Bool) {
-        let topViewController = TopViewController(title: model.projectSummary.name, onBack: onBack)
-        canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
-        if animated {
-            topViewController.view.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.bottom.equalTo(canvasContainer.controls.snp.top)
-            }
-            canvasContainer.controls.layoutIfNeeded()
-            UIView.animate(withDuration: 0.2) {
-                topViewController.view.snp.remakeConstraints { make in
-                    make.leading.trailing.equalToSuperview()
-                    make.top.equalToSuperview()
-                }
-                self.canvasContainer.controls.layoutIfNeeded()
-            }
-        } else {
-            topViewController.view.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.top.equalToSuperview()
-            }
-            canvasContainer.controls.layoutIfNeeded()
-        }
-        self.topViewController = topViewController
-    }
-
-    /// hides the top view controller
-    private func hideTopViewController() {
-        if let topViewController = topViewController {
-            UIView.animate(withDuration: 0.2) {
-                topViewController.view.snp.remakeConstraints { make in
-                    make.leading.trailing.equalToSuperview()
-                    make.bottom.equalTo(self.canvasContainer.controls.snp.top)
-                }
-                self.canvasContainer.controls.layoutIfNeeded()
-            }
-        }
-    }
-
     /// Show the default UI elements when viewing the canvas
     func showDefaultCanvasUI(animated: Bool = true) {
         defaultCanvasUIHidden = false
         actionCardVC.showCard(animated: animated)
-        canvasSelectorButton.isHidden = false
-        canvasSourceSelectorButton.isHidden = canvasSourceSelectorHidden
-        canvasFiltersButton.isHidden = false
+        controls.canvasSelectorButton?.isHidden = false
+        controls.canvasSourceSelectorButton?.isHidden = canvasSourceSelectorHidden
+        controls.canvasFiltersButton?.isHidden = false
         pinsDisplay?.start(onInitialLoad: nil)
     }
 
@@ -327,54 +287,22 @@ final class ProjectFlowController: UIViewController {
     func hideDefaultCanvasUI(animated: Bool = true) {
         defaultCanvasUIHidden = true
         actionCardVC.hideCard(animated: animated)
-        canvasSelectorButton.isHidden = true
-        canvasSourceSelectorButton.isHidden = true
-        canvasFiltersButton.isHidden = true
+        controls.canvasSelectorButton?.isHidden = true
+        controls.canvasSourceSelectorButton?.isHidden = true
+        controls.canvasFiltersButton?.isHidden = true
         pinsDisplay?.stop()
-    }
-
-    fileprivate func setupCanvasSelectorButton() {
-        canvasSelectorButton = RoundShadowButton(image: UIImage(systemName: "square.3.layers.3d") ?? UIImage())
-        canvasSelectorButton.addTarget(self, action: #selector(selectCanvasAction), for: .touchUpInside)
-        canvasContainer.controls.addSubview(canvasSelectorButton)
-        canvasSelectorButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(12)
-            make.bottom.equalTo(actionCardVC.view.snp.top).offset(-12)
-        }
-    }
-
-    fileprivate func setupCanvasSourceSelectorButton() {
-        canvasSourceSelectorButton = RoundShadowButton(image: UIImage(systemName: "map") ?? UIImage())
-        canvasSourceSelectorButton.addTarget(self, action: #selector(selectCanvasSourceAction), for: .touchUpInside)
-        canvasContainer.controls.addSubview(canvasSourceSelectorButton)
-        canvasSourceSelectorButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(12)
-            make.bottom.equalTo(canvasSelectorButton.snp.top).offset(-12)
-        }
     }
 
     var canvasSourceSelectorHidden: Bool { model.currentCanvas.canvasSources.count <= 1 }
 
     fileprivate func updateCanvasSourceSelectorVisibility() {
+        guard let canvasSourceSelectorButton = controls.canvasSourceSelectorButton else { return }
         canvasSourceSelectorButton.isHidden = canvasSourceSelectorHidden || defaultCanvasUIHidden
+
+        guard let canvasFiltersButton = controls.canvasFiltersButton else { return }
         canvasFiltersButton.snp.remakeConstraints { make in
             make.trailing.equalToSuperview().inset(12)
-            if canvasSourceSelectorHidden {
-                make.bottom.equalTo(canvasSelectorButton.snp.top).offset(-12)
-            } else {
-                make.bottom.equalTo(canvasSourceSelectorButton.snp.top).offset(-12)
-            }
-        }
-    }
-
-    fileprivate func setupCanvasFiltersButton() {
-        canvasFiltersButton =
-            RoundShadowButton(image: UIImage(systemName: "line.3.horizontal.decrease.circle") ?? UIImage())
-        canvasFiltersButton.addTarget(self, action: #selector(selectCanvasFiltersAction), for: .touchUpInside)
-        canvasContainer.controls.addSubview(canvasFiltersButton)
-        canvasFiltersButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(12)
-            if canvasSourceSelectorHidden {
+            if canvasSourceSelectorHidden, let canvasSelectorButton = controls.canvasSelectorButton {
                 make.bottom.equalTo(canvasSelectorButton.snp.top).offset(-12)
             } else {
                 make.bottom.equalTo(canvasSourceSelectorButton.snp.top).offset(-12)

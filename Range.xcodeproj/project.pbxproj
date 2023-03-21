@@ -84,6 +84,7 @@
 		0A34073129C8674F007299A7 /* UIContentSizeCategory+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073029C8674F007299A7 /* UIContentSizeCategory+Extensions.swift */; };
 		0A34073329C86907007299A7 /* TypeScaleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073229C86907007299A7 /* TypeScaleTableViewCell.swift */; };
 		0A34073529C89E41007299A7 /* UIFont.TextStyle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073429C89E41007299A7 /* UIFont.TextStyle+Extensions.swift */; };
+		0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073729CA1570007299A7 /* ProjectCanvasControls.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A34C17F284551F500BEDC7C /* FirestoreStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */; };
 		0A34C181284552AC00BEDC7C /* FirestoreFeatureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */; };
@@ -439,6 +440,7 @@
 		0A34073029C8674F007299A7 /* UIContentSizeCategory+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIContentSizeCategory+Extensions.swift"; sourceTree = "<group>"; };
 		0A34073229C86907007299A7 /* TypeScaleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeScaleTableViewCell.swift; sourceTree = "<group>"; };
 		0A34073429C89E41007299A7 /* UIFont.TextStyle+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont.TextStyle+Extensions.swift"; sourceTree = "<group>"; };
+		0A34073729CA1570007299A7 /* ProjectCanvasControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCanvasControls.swift; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreStatusNameTest.swift; sourceTree = "<group>"; };
 		0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeatureTest.swift; sourceTree = "<group>"; };
@@ -1154,6 +1156,7 @@
 				0A4DC78227F4900600712518 /* ProjectFlowController.swift */,
 				0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
+				0A34073729CA1570007299A7 /* ProjectCanvasControls.swift */,
 			);
 			path = Project;
 			sourceTree = "<group>";
@@ -1969,6 +1972,7 @@
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
+				0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,
 				0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */,
 				0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */,

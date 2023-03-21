@@ -14,19 +14,17 @@ class AddPhotoFlowController {
     unowned let mediaCache: MediaCache
     unowned let canvasContainer: CanvasContainerViewController
 
+    private let controls: ProjectCanvasControls
+
     /// on Stop it returns the id of the geometry to which the photo(s) was added to (if not cancelled) and whether the
     /// collaboration was created (`true`) or existing one was used (`false`) and whether the collaboration should be edited after creation
     var onStop: ((String?, Bool?, Bool?) -> Void)?
     var cameraVC: CameraViewController?
     var detailsVC: PhotoDetailsViewController?
     var pinsDisplay: AddPhotoPinsDisplay?
-    var topViewController: TopViewController?
     var confirmationCardVC: AddPhotoConfirmationViewController?
     var photosPreviewCardVC: PhotosPreviewViewController?
     var switchPinTypeCardVC: SwitchPinTypeCardViewController?
-    var panAndZoomIndicatorView: ToastView?
-    var canvasSelectorButton: RoundShadowButton?
-    var canvasSourceSelectorButton: RoundShadowButton?
 
     /// id of registered delegate
     var canvasDelegateId: UUID?
@@ -77,6 +75,7 @@ class AddPhotoFlowController {
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.canvasContainer = canvasContainer
+        controls = ProjectCanvasControls(canvasContainer: canvasContainer)
         photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, localFiles: localFiles)
         tagsViewModel = TagsViewModel(model: model)
         photosToAddViewModel.addDelegate(self)
@@ -95,6 +94,7 @@ class AddPhotoFlowController {
     }
 
     func stop(removeCurrentPhotosToAddFromCache: Bool) {
+        controls.removeFromSuperview()
         photosToAddViewModel.clear(removeFromCache: removeCurrentPhotosToAddFromCache)
         onStop?(resultGeometryId, newCollaborationCreated, shouldEditCollaboration)
     }
@@ -319,11 +319,15 @@ class AddPhotoFlowController {
     /// Adapt the UI for the location selection
     private func selectPhotoLocation() {
         canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
-        showTopViewController()
+        controls.showTopViewController(
+            iconName: "mappin.and.ellipse", title: String(localized: "Add Location"),
+            animated: true
+        )
         showConfirmationCard()
-        showPanAndZoomIndicatorView()
-        showCanvasSelectorButton()
-        showCanvasSourceSelectorButton()
+        controls.showPanAndZoomIndicatorView(aboveView: confirmationCardVC!.view)
+        controls.showCanvasSelectorButton(aboveView: confirmationCardVC!.view)
+        controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
+        controls.canvasSourceSelectorButton?.isHidden = model.currentCanvas.canvasSources.count <= 1
         showPinTypeSelector()
         showPins()
     }
@@ -516,49 +520,14 @@ extension AddPhotoFlowController {
             }
             self.confirmationCardVC = nil
         }
-        hideTopViewController()
+        controls.hideTopViewController(animated: false)
+        controls.hidePanAndZoomIndicatorView(animated: false)
         pinsDisplay?.stop()
-        panAndZoomIndicatorView?.removeFromSuperview()
         pinsDisplay = nil
         canvasObservation?.invalidate()
         canvasObservation = nil
-        hideCanvasSelectorButton()
-        hideCanvasSourceSelectorButton()
-    }
-
-    /// shows the view controller covering the top of of the screen
-    private func showTopViewController() {
-        let topViewController = TopViewController(
-            iconName: "mappin.and.ellipse",
-            title: String(localized: "Add Location")
-        )
-        canvasContainer.add(childController: topViewController, toView: canvasContainer.controls)
-        topViewController.view.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(canvasContainer.controls.snp.top)
-        }
-        canvasContainer.controls.layoutIfNeeded()
-        UIView.animate(withDuration: 0.2) {
-            topViewController.view.snp.remakeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.top.equalToSuperview()
-            }
-            self.canvasContainer.controls.layoutIfNeeded()
-        }
-        self.topViewController = topViewController
-    }
-
-    /// hides the top view controller
-    private func hideTopViewController() {
-        if let topViewController = topViewController {
-            UIView.animate(withDuration: 0.2) {
-                topViewController.view.snp.remakeConstraints { make in
-                    make.leading.trailing.equalToSuperview()
-                    make.bottom.equalTo(self.canvasContainer.controls.snp.top)
-                }
-                self.canvasContainer.controls.layoutIfNeeded()
-            }
-        }
+        controls.hideCanvasSelectorButton()
+        controls.hideCanvasSourceSelectorButton()
     }
 
     private func createAddPhotoPinsDisplay() {
@@ -586,7 +555,7 @@ extension AddPhotoFlowController {
         pinsDisplay?.photoPinView?.pinType = pinTypeOption.pinType
         canvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
-            self.canvasSourceSelectorButton?.isHidden = self.model.currentCanvas.canvasSources.count <= 1
+            self.controls.canvasSourceSelectorButton?.isHidden = self.model.currentCanvas.canvasSources.count <= 1
             self.reloadGeometriesPinsDisplay()
             self.hidePhotosPreview(animated: true)
         }
@@ -641,68 +610,6 @@ extension AddPhotoFlowController {
         confirmationCardVC!.showNextButton = pinTypeOption == .copyTask
     }
 
-    private func showPanAndZoomIndicatorView() {
-        panAndZoomIndicatorView = ToastView(
-            iconName: "hand.point.up.left",
-            text: "Pan and zoom to adjust the location",
-            backgroundColor: .Neutral_10
-        )
-        canvasContainer.controls.addSubview(panAndZoomIndicatorView!)
-        panAndZoomIndicatorView!.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(12)
-            make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
-        }
-    }
-
-    private func showCanvasSelectorButton() {
-        canvasSelectorButton = RoundShadowButton(image: UIImage(systemName: "square.3.layers.3d") ?? UIImage())
-        canvasSelectorButton!.addTarget(self, action: #selector(canvasSelectorButtonTapped), for: .touchUpInside)
-        canvasContainer.controls.addSubview(canvasSelectorButton!)
-        canvasSelectorButton!.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(12)
-            make.bottom.equalTo(confirmationCardVC!.view.snp.top).offset(-12)
-        }
-    }
-
-    private func hideCanvasSelectorButton() {
-        canvasSelectorButton?.removeFromSuperview()
-        canvasSelectorButton = nil
-    }
-
-    @objc private func canvasSelectorButtonTapped() {
-        // send from canvasSelectorButton and not self, as AddPhotoFlowController is not in the
-        // responder chain (it's not UIView or UIViewController)
-        UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
-                                        to: nil, from: canvasSelectorButton, for: nil)
-    }
-
-    private func showCanvasSourceSelectorButton() {
-        canvasSourceSelectorButton = RoundShadowButton(image: UIImage(systemName: "map") ?? UIImage())
-        canvasSourceSelectorButton!.addTarget(
-            self,
-            action: #selector(canvasSourceSelectorButtonTapped),
-            for: .touchUpInside
-        )
-        canvasSourceSelectorButton!.isHidden = model.currentCanvas.canvasSources.count <= 1
-        canvasContainer.controls.addSubview(canvasSourceSelectorButton!)
-        canvasSourceSelectorButton!.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(12)
-            make.bottom.equalTo(canvasSelectorButton!.snp.top).offset(-12)
-        }
-    }
-
-    private func hideCanvasSourceSelectorButton() {
-        canvasSourceSelectorButton?.removeFromSuperview()
-        canvasSourceSelectorButton = nil
-    }
-
-    @objc private func canvasSourceSelectorButtonTapped() {
-        // send from canvasSelectorButton and not self, as AddPhotoFlowController is not in the
-        // responder chain (it's not UIView or UIViewController)
-        UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasSourceAction),
-                                        to: nil, from: canvasSourceSelectorButton, for: nil)
-    }
-
     private func showPinTypeSelector() {
         guard let confirmationCardVC = confirmationCardVC else { return }
         if switchPinTypeCardVC == nil {
@@ -726,44 +633,16 @@ extension AddPhotoFlowController {
         guard let switchPinTypeCardVC = switchPinTypeCardVC else { return }
 
         confirmationCardVC.showDarkBorder = true
-        if let panAndZoomIndicatorView = panAndZoomIndicatorView {
-            // anchor to photos preview
-            panAndZoomIndicatorView.snp.remakeConstraints { make in
-                make.leading.equalToSuperview().offset(12)
-                make.bottom.equalTo(switchPinTypeCardVC.view.snp.top).offset(-12)
-            }
-        }
-        if let canvasSelectorButton = canvasSelectorButton {
-            // anchor to photos preview
-            canvasSelectorButton.snp.remakeConstraints { make in
-                make.trailing.equalToSuperview().inset(12)
-                make.bottom.equalTo(switchPinTypeCardVC.view.snp.top).offset(-12)
-            }
-        }
         switchPinTypeCardVC.showCard(animated: true)
+        updateBottomViewsConstraints()
     }
 
     private func hidePinTypeSelector() {
-        if let confirmationCardVC = confirmationCardVC {
-            if let panAndZoomIndicatorView = panAndZoomIndicatorView {
-                // anchor back to confirmation
-                panAndZoomIndicatorView.snp.remakeConstraints { make in
-                    make.leading.equalToSuperview().offset(12)
-                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
-                }
-            }
-            if let canvasSelectorButton = canvasSelectorButton {
-                // anchor to photos preview
-                canvasSelectorButton.snp.remakeConstraints { make in
-                    make.trailing.equalToSuperview().inset(12)
-                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
-                }
-            }
-        }
         confirmationCardVC?.showDarkBorder = false
         if let switchPinTypeCardVC = switchPinTypeCardVC {
             switchPinTypeCardVC.hideCard(animated: true)
         }
+        updateBottomViewsConstraints()
     }
 
     /// shows the photos for given geometryId
@@ -792,46 +671,55 @@ extension AddPhotoFlowController {
         }
         photosPreviewCardVC = photosPreviewVC
         confirmationCardVC.showDarkBorder = true
-        if let panAndZoomIndicatorView = panAndZoomIndicatorView {
-            // anchor to photos preview
-            panAndZoomIndicatorView.snp.remakeConstraints { make in
-                make.leading.equalToSuperview().offset(12)
-                make.bottom.equalTo(photosPreviewVC.view.snp.top).offset(-12)
-            }
-        }
-        if let canvasSelectorButton = canvasSelectorButton {
-            // anchor to photos preview
-            canvasSelectorButton.snp.remakeConstraints { make in
-                make.trailing.equalToSuperview().inset(12)
-                make.bottom.equalTo(photosPreviewVC.view.snp.top).offset(-12)
-            }
-        }
+        updateBottomViewsConstraints()
     }
 
-    /// Hide the currently shown collaboration window
+    /// Hide the currently shown photos preview
     private func hidePhotosPreview(animated: Bool) {
-        if let confirmationCardVC = confirmationCardVC {
-            if let panAndZoomIndicatorView = panAndZoomIndicatorView {
-                // anchor back to confirmation
-                panAndZoomIndicatorView.snp.remakeConstraints { make in
-                    make.leading.equalToSuperview().offset(12)
-                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
-                }
-            }
-            if let canvasSelectorButton = canvasSelectorButton {
-                // anchor to photos preview
-                canvasSelectorButton.snp.remakeConstraints { make in
-                    make.trailing.equalToSuperview().inset(12)
-                    make.bottom.equalTo(confirmationCardVC.view.snp.top).offset(-12)
-                }
-            }
-        }
         confirmationCardVC?.showDarkBorder = false
         if let photosPreviewCardVC = photosPreviewCardVC {
             photosPreviewCardVC.hideCard(animated: animated) {
                 self.canvasContainer.removeCard(cardViewController: photosPreviewCardVC)
             }
             self.photosPreviewCardVC = nil
+        }
+        updateBottomViewsConstraints()
+    }
+
+    /// Update constraints for views attached to the bottom card (panAndZoomIndicatorView and canvasSelectorButton).
+    /// They are attached to confirmation card, but if photos preview or pin type selector is shown above confirmation they should be
+    /// reattached one of them (only one is shown at a time)
+    private func updateBottomViewsConstraints() {
+        let bottomViewToAttachControls: UIView?
+        if let switchPinTypeCardVC = switchPinTypeCardVC,
+           let card = switchPinTypeCardVC.cardDragging,
+           !card.isCardHidden
+        {
+            bottomViewToAttachControls = switchPinTypeCardVC.view
+        } else if let photosPreviewCardVC = photosPreviewCardVC,
+                  let card = photosPreviewCardVC.cardDragging,
+                  !card.isCardHidden
+        {
+            bottomViewToAttachControls = photosPreviewCardVC.view
+        } else if let confirmationCardVC = confirmationCardVC {
+            bottomViewToAttachControls = confirmationCardVC.view
+        } else {
+            bottomViewToAttachControls = nil
+        }
+        guard let bottomViewToAttachControls = bottomViewToAttachControls else { return }
+        if let panAndZoomIndicatorView = controls.panAndZoomIndicatorView {
+            // anchor back to confirmation
+            panAndZoomIndicatorView.snp.remakeConstraints { make in
+                make.leading.equalToSuperview().offset(12)
+                make.bottom.equalTo(bottomViewToAttachControls.snp.top).offset(-12)
+            }
+        }
+        if let canvasSelectorButton = controls.canvasSelectorButton {
+            // anchor to photos preview
+            canvasSelectorButton.snp.remakeConstraints { make in
+                make.trailing.equalToSuperview().inset(12)
+                make.bottom.equalTo(bottomViewToAttachControls.snp.top).offset(-12)
+            }
         }
     }
 }
@@ -840,14 +728,7 @@ extension AddPhotoFlowController {
 extension AddPhotoFlowController: CanvasViewControllerDelegate {
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
         if reason == .pan || reason == .zoom {
-            guard let panAndZoomIndicator = panAndZoomIndicatorView else { return }
-            UIView.animate(withDuration: 0.2,
-                           animations: {
-                               panAndZoomIndicator.alpha = 0
-                           }, completion: { _ in
-                               panAndZoomIndicator.removeFromSuperview()
-                               self.panAndZoomIndicatorView = nil
-                           })
+            controls.hidePanAndZoomIndicatorView(animated: true)
         }
     }
 
