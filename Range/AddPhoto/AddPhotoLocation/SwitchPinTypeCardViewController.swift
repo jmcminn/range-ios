@@ -81,6 +81,17 @@ class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinatin
     }
 }
 
+// MARK: - programmatic update of selected option
+
+extension SwitchPinTypeCardViewController {
+    /// Select the option in the UI and notify about change
+    func selectPinTypeOption(_ option: PinTypeOption, animated: Bool) {
+        guard let index = availableTypes.firstIndex(of: option) else { return }
+        pinTypeToggle.setSelectedSegmentIndex(index, animated: animated)
+        onPinTypeChange?(option)
+    }
+}
+
 // MARK: - card
 
 extension SwitchPinTypeCardViewController: CardPresentable {

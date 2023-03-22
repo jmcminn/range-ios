@@ -591,7 +591,9 @@ extension AddPhotoFlowController {
                     self.finalizeFromConfirmationCard()
                 }
                 copyTaskCardVC.onAddTaskPin = {
-                    // TODO: 938
+                    if let switchPinTypeCardVC = self.switchPinTypeCardVC {
+                        switchPinTypeCardVC.selectPinTypeOption(.createTask, animated: true)
+                    }
                 }
                 copyTaskCardVC.installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
             } else {
