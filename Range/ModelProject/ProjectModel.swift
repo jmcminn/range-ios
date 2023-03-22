@@ -105,7 +105,11 @@ class ProjectModel: NSObject, RealmModel {
             }
             try setCurrentCanvas(initialCanvas)
         } else {
-            guard let firstCanvas = mainRealm.objects(Canvas.self).sorted(by: Canvas.sortingOrder).first else {
+            guard let firstCanvas = [Canvas](mainRealm.objects(Canvas.self))
+                .filter({ !$0.canvasSources.isEmpty })
+                .sorted(by: Canvas.sortingOrder)
+                .first
+            else {
                 throw ModelError.canvasNotFound
             }
             try setCurrentCanvas(firstCanvas)
@@ -116,6 +120,7 @@ class ProjectModel: NSObject, RealmModel {
     func setCurrentCanvas(_ canvas: Canvas) throws {
         // only if it's a different canvas
         guard currentCanvas == nil || currentCanvas.id != canvas.id else { return }
+        guard !canvas.canvasSources.isEmpty else { throw ModelError.canvasSourceNotFound }
 
         currentCanvas = canvas
 

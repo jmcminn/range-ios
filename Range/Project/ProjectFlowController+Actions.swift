@@ -50,7 +50,9 @@ final class FlowEvent: UIEvent {
 
 extension ProjectFlowController: ProjectFlowActions {
     func selectCanvasAction() {
-        let canvases = [Canvas](model.mainRealm.objects(Canvas.self)).sorted(by: Canvas.sortingOrder)
+        let canvases = [Canvas](model.mainRealm.objects(Canvas.self))
+            .filter { !$0.canvasSources.isEmpty }
+            .sorted(by: Canvas.sortingOrder)
         CanvasSelectorCardViewController(
             title: String(localized: "Canvas Selector"),
             canvases: canvases,
