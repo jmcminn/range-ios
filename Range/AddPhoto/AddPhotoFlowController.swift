@@ -583,20 +583,17 @@ extension AddPhotoFlowController {
         confirmationCardVC!.onDone = { [weak self] in
             guard let self = self else { return }
             if self.pinTypeOption == .copyTask {
-                CopyTaskCardViewController(
-                    projectModel: self.model,
-                    onTaskSelected: { [weak self] task in
-                        guard let self = self else { return }
-                        if let task = task {
-                            // handle copy task
-                            self.taskToCopy = task
-                            self.finalizeFromConfirmationCard()
-                        } else {
-                            // nothing, user closed the task selector
-                        }
-                    }
-                )
-                .installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
+                let copyTaskCardVC = CopyTaskCardViewController(projectModel: self.model)
+                copyTaskCardVC.onTaskSelected = { [weak self] task in
+                    guard let self = self else { return }
+                    // handle copy task
+                    self.taskToCopy = task
+                    self.finalizeFromConfirmationCard()
+                }
+                copyTaskCardVC.onAddTaskPin = {
+                    // TODO: 938
+                }
+                copyTaskCardVC.installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
             } else {
                 self.finalizeFromConfirmationCard()
             }

@@ -19,23 +19,23 @@ class CopyTaskCardViewController: SheetCardViewController {
     private let tableView = UITableView(frame: .zero, style: .plain)
     private var noTasksView: UIView?
 
-    /// Callback for task selected, optional = nil when the selector was dismissed
-    var onTaskSelected: ((Collaboration?) -> Void)?
+    /// Callback for task selected
+    var onTaskSelected: ((Collaboration) -> Void)?
+    /// Callback when there were no tasks to copy and user selected "Add Task Pin" instead
+    var onAddTaskPin: (() -> Void)?
 
     /// Initializer
     ///
     /// - Parameters:
     ///     - projectModel:               model to read collaborations from
-    init(projectModel: ProjectModel, onTaskSelected: ((Collaboration?) -> Void)?) {
+    init(projectModel: ProjectModel) {
         self.projectModel = projectModel
-        self.onTaskSelected = onTaskSelected
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.status != nil
             }
             .sorted(by: \Collaboration.timestamp, ascending: false)
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Select Task to Copy"))
-        onCancel = { [weak self] in self?.onTaskSelected?(nil) }
     }
 
     deinit {
@@ -268,7 +268,8 @@ extension CopyTaskCardViewController {
         let addTaskPinButton = UIButton(
             configuration: UIButton.Configuration.blueButton(horizontalInsets: 32),
             primaryAction: UIAction(title: String(localized: "Add Task Pin")) { [weak self] _ in
-                // TODO: 938
+                self?.onAddTaskPin?()
+                self?.dismissCard()
             }
         )
         view.addSubview(addTaskPinButton)

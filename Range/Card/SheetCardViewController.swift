@@ -179,8 +179,8 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         closeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
-                self?.onCancel?()
                 self?.dismissCard()
+                self?.onCancel?()
             }
         )
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
@@ -247,14 +247,14 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     // MARK: - dragging delegate to automatically close on overlay tap or minimize
 
     func cardOverlayTapped() {
-        onCancel?()
         dismissCard()
+        onCancel?()
     }
 
     func cardWillChangePosition(_ position: CardPosition) {
         if position == .min {
-            onCancel?()
             dismissCard()
+            onCancel?()
         }
     }
 }

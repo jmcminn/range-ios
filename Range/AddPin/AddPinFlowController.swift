@@ -35,6 +35,10 @@ class AddPinFlowController {
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
     }
 
+    deinit {
+        controls.removeFromSuperview()
+    }
+
     /// Show the UI for pin selection
     func start() {
         selectPinTypeOption()
@@ -45,7 +49,11 @@ class AddPinFlowController {
             guard let self = self else { return }
             if let pinTypeOption = pinTypeOption {
                 self.pinTypeOption = pinTypeOption
-                self.onPinTypeOptionSelected()
+                if pinTypeOption == .copyTask {
+                    self.selectTaskToCopy()
+                } else {
+                    self.showPinPlacementUI()
+                }
             } else {
                 self.onStop?(nil, nil)
             }
@@ -53,25 +61,22 @@ class AddPinFlowController {
         .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
-    private func onPinTypeOptionSelected() {
-        if pinTypeOption == .copyTask {
-            // select a task to copy first
-            CopyTaskCardViewController(
-                projectModel: model,
-                onTaskSelected: { [weak self] task in
-                    guard let self = self else { return }
-                    if let task = task {
-                        self.taskToCopy = task
-                        self.showPinPlacementUI()
-                    } else {
-                        self.onStop?(nil, nil)
-                    }
-                }
-            )
-            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
-        } else {
-            showPinPlacementUI()
+    private func selectTaskToCopy() {
+        let copyTaskCardVC = CopyTaskCardViewController(projectModel: model)
+        copyTaskCardVC.onTaskSelected = { [weak self] task in
+            guard let self = self else { return }
+            self.taskToCopy = task
+            self.showPinPlacementUI()
         }
+        copyTaskCardVC.onAddTaskPin = { [weak self] in
+            guard let self = self else { return }
+            self.pinTypeOption = .createTask
+            self.showPinPlacementUI()
+        }
+        copyTaskCardVC.onCancel = { [weak self] in
+            self?.onStop?(nil, nil)
+        }
+        copyTaskCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     private func showPinPlacementUI() {
@@ -111,7 +116,6 @@ class AddPinFlowController {
         controls.hideCanvasSourceSelectorButton()
         pinView?.removeFromSuperview()
         pinView = nil
-        controls.removeFromSuperview()
     }
 
     /// shows the view controller covering the top of of the screen
