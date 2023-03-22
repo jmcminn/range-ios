@@ -3,20 +3,17 @@ import UIKit
 
 /// Manages the flow of adding new pin or moving an existing collaboration
 class AddPinFlowController {
-    enum Mode: Equatable {
-        case add(PinType)
-        case copyTask
-    }
-
-    private let mode: Mode
-    /// in .copyTask mode this is the collaboration that we want to copy data from:
-    private var taskToCopy: Collaboration?
     unowned let model: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
     private let controls: ProjectCanvasControls
 
+    private var pinTypeOption: PinTypeOption?
+
+    /// in .copyTask mode this is the collaboration that we want to copy data from:
+    private var taskToCopy: Collaboration?
+
     /// called when the flow finishes, if pin was added the id of the created geometry is returned. If cancelled nil is passed
-    var onStop: ((String?) -> Void)?
+    var onStop: ((String?, PinTypeOption?) -> Void)?
 
     private var confirmationCardVC: AddPinConfirmationViewController?
     private var pinsDisplay: GeometriesPinsDisplay?
@@ -32,16 +29,32 @@ class AddPinFlowController {
     /// - Parameters:
     ///     - model: - the project model
     ///     - canvas: - the flow will operate on this canvas
-    init(model: ProjectModel, canvasContainer: CanvasContainerViewController, mode: Mode) {
+    init(model: ProjectModel, canvasContainer: CanvasContainerViewController) {
         self.model = model
         self.canvasContainer = canvasContainer
-        self.mode = mode
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
     }
 
     /// Show the UI for pin selection
     func start() {
-        if mode == .copyTask {
+        selectPinTypeOption()
+    }
+
+    private func selectPinTypeOption() {
+        SelectPinTypeCardViewController(onPinTypeSelected: { [weak self] pinTypeOption in
+            guard let self = self else { return }
+            if let pinTypeOption = pinTypeOption {
+                self.pinTypeOption = pinTypeOption
+                self.onPinTypeOptionSelected()
+            } else {
+                self.onStop?(nil, nil)
+            }
+        })
+        .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    private func onPinTypeOptionSelected() {
+        if pinTypeOption == .copyTask {
             // select a task to copy first
             CopyTaskCardViewController(
                 projectModel: model,
@@ -51,7 +64,7 @@ class AddPinFlowController {
                         self.taskToCopy = task
                         self.showPinPlacementUI()
                     } else {
-                        self.onStop?(nil)
+                        self.onStop?(nil, nil)
                     }
                 }
             )
@@ -103,10 +116,14 @@ class AddPinFlowController {
 
     /// shows the view controller covering the top of of the screen
     private func showTopViewController() {
+        guard let pinTypeOption = pinTypeOption else {
+            fatalError("showTopViewController called when pinTypeOption is nil")
+        }
+
         let title: String
-        switch mode {
-        case .add(.photo): title = String(localized: "Add Photo Pin")
-        case .add(.task): title = String(localized: "Add Task Pin")
+        switch pinTypeOption {
+        case .createPhoto: title = String(localized: "Add Photo Pin")
+        case .createTask: title = String(localized: "Add Task Pin")
         case .copyTask: title = String(localized: "Add Task Pin")
         }
         controls.showTopViewController(iconName: "mappin.and.ellipse", title: title, animated: true)
@@ -117,7 +134,7 @@ class AddPinFlowController {
         confirmationCardVC = AddPinConfirmationViewController()
         confirmationCardVC!.onCancel = { [weak self] in
             self?.stop()
-            self?.onStop?(nil)
+            self?.onStop?(nil, nil)
         }
         confirmationCardVC!.onConfirm = { [weak self] in
             self?.createCollaborationAndStop()
@@ -163,14 +180,17 @@ class AddPinFlowController {
 
     /// shows the pin view in the center of the screen
     private func showPinView() {
-        // prepare collaboration depending on the mode, so we can use PinDisplayOptions to get the
-        // pin for given collaboration
+        guard let pinTypeOption = pinTypeOption else {
+            fatalError("showPinView called when pinTypeOption is nil")
+        }
+        // prepare collaboration depending on the pin type option, so we can use PinDisplayOptions
+        // to get the pin for given collaboration
         let collaboration: Collaboration
-        switch mode {
-        case .add(.photo):
+        switch pinTypeOption {
+        case .createPhoto:
             // empty collaboration
             collaboration = Collaboration(placeholderId: "")
-        case .add(.task), .copyTask:
+        case .createTask, .copyTask:
             // empty collaboration with initial status
             collaboration = Collaboration(placeholderId: "")
             collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
@@ -199,7 +219,7 @@ class AddPinFlowController {
                 defer {
                     DispatchQueue.main.async {
                         self.stop()
-                        self.onStop?(geometryId)
+                        self.onStop?(geometryId, self.pinTypeOption)
                     }
                 }
                 try await runCommand(geometryId: geometryId)
@@ -214,18 +234,21 @@ class AddPinFlowController {
 
     @MainActor
     private func runCommand(geometryId: String) async throws {
+        guard let pinTypeOption = pinTypeOption else {
+            fatalError("runCommand called when pinTypeOption is nil")
+        }
         let coordinates = canvasContainer.annotationsMapView.cameraState.center
         let canvas = model.currentCanvas!
         let command: Command
-        switch mode {
-        case .add(.photo):
+        switch pinTypeOption {
+        case .createPhoto:
             command = try await model.createCollaboration(
                 at: coordinates,
                 in: canvas,
                 withGeometryId: geometryId,
                 isTask: false
             )
-        case .add(.task):
+        case .createTask:
             command = try await model.createCollaboration(
                 at: coordinates,
                 in: canvas,

@@ -357,7 +357,7 @@ final class ProjectFlowController: UIViewController {
             self?.startAddPhotoFlow()
         }
         vc.onAddPin = { [weak self] in
-            self?.selectPinTypeAndStartAddPinFlow()
+            self?.startAddPinFlow()
         }
 
         canvasContainer.installCard(cardViewController: vc,
@@ -417,32 +417,12 @@ extension ProjectFlowController {
         }
     }
 
-    private func selectPinTypeAndStartAddPinFlow() {
+    private func startAddPinFlow() {
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
-        // select pin type
-        SelectPinTypeCardViewController(onPinTypeSelected: { [weak self] pinTypeOption in
-            if let pinTypeOption = pinTypeOption {
-                self?.startAddPinFlow(pinTypeOption: pinTypeOption)
-            }
-        })
-        .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
-    }
-
-    private func startAddPinFlow(pinTypeOption: PinTypeOption) {
-        let mode: AddPinFlowController.Mode
-        switch pinTypeOption {
-        case .createPhoto: mode = .add(.photo)
-        case .createTask: mode = .add(.task)
-        case .copyTask: mode = .copyTask
-        }
-        addPinFlow = AddPinFlowController(
-            model: model,
-            canvasContainer: canvasContainer,
-            mode: mode
-        )
-        addPinFlow?.onStop = { [weak self] geometryId in
+        addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer)
+        addPinFlow?.onStop = { [weak self] geometryId, pinTypeOption in
             guard let self = self else { return }
             self.showDefaultCanvasUI()
             if let geometryId = geometryId {
