@@ -6,7 +6,6 @@ class AddPinFlowController {
     enum Mode: Equatable {
         case add(PinType)
         case copyTask
-        case move(Collaboration)
     }
 
     private let mode: Mode
@@ -109,7 +108,6 @@ class AddPinFlowController {
         case .add(.photo): title = String(localized: "Add Photo Pin")
         case .add(.task): title = String(localized: "Add Task Pin")
         case .copyTask: title = String(localized: "Add Task Pin")
-        case .move: title = String(localized: "Update Pin Location")
         }
         controls.showTopViewController(iconName: "mappin.and.ellipse", title: title, animated: true)
     }
@@ -151,21 +149,13 @@ class AddPinFlowController {
     }
 
     private func createPinsDisplay() {
-        // When moving a collaboration we display it's pin using the separate `pinView` so we need
-        // to hide the pin on canvas
-        let ignoredGeometryId: String?
-        if case let .move(c) = mode {
-            ignoredGeometryId = c.feature.first?.geometry.first?.id
-        } else {
-            ignoredGeometryId = nil
-        }
         pinsDisplay = _createGeometriesPinsDisplay(
             usingNativeViews: DebugSettings().nativeViewsForPins,
             canvas: model.currentCanvas,
             canvasViewController: canvasContainer.canvasViewController,
             selectionEnabled: false,
             deselectOnCanvasTap: false,
-            ignoredGeometryId: ignoredGeometryId,
+            ignoredGeometryId: nil,
             showArchivedPins: UserSettings().showArchivedCollaborations,
             geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
         )
@@ -184,8 +174,6 @@ class AddPinFlowController {
             // empty collaboration with initial status
             collaboration = Collaboration(placeholderId: "")
             collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
-        case let .move(c):
-            collaboration = c
         }
         let pinDisplayOptions = PinDisplayOptions.regularPinDisplayOptionsProvider(
             collaboration: collaboration,
@@ -259,8 +247,6 @@ class AddPinFlowController {
                 dueDate: taskToCopy.dueDateTimestamp,
                 tags: taskToCopy.tags.map(TagViewModel.init(fromTag:))
             )
-        case let .move(c):
-            command = try model.update(coordinates: coordinates, andCanvas: canvas, forCollaboration: c)
         }
         try await model.run(command)
     }

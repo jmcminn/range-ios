@@ -45,6 +45,7 @@ final class ProjectFlowController: UIViewController {
 
     var addPhotoFlow: AddPhotoFlowController?
     var addPinFlow: AddPinFlowController?
+    var movePinFlow: MovePinFlowController?
 
     var started = false
     var onBack: (() -> Void)?

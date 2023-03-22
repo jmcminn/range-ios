@@ -539,13 +539,17 @@ extension ProjectFlowController {
     func moveCollaboration(_ collaboration: Collaboration) {
         guard !collaboration.isInvalidated else { return }
         pinsDisplay?.setSelectedPin(nil)
-        addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer, mode: .move(collaboration))
-        addPinFlow?.onStop = { [weak self] _ in
+        movePinFlow = MovePinFlowController(
+            model: model,
+            collaboration: collaboration,
+            canvasContainer: canvasContainer
+        )
+        movePinFlow?.onStop = { [weak self] _ in
             guard let self = self else { return }
             self.showDefaultCanvasUI()
-            self.addPinFlow = nil
+            self.movePinFlow = nil
         }
         hideDefaultCanvasUI()
-        addPinFlow?.start()
+        movePinFlow?.start()
     }
 }
