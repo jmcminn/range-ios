@@ -308,7 +308,7 @@ extension ProjectFlowController {
         if let collaboration = event.object as? Collaboration {
             guard !collaboration.isInvalidated else { return }
             var actions: [ActionItem] = collaboration.status == nil
-                ? [ActionItem(title: "Convert to Task Pin", imageName: "checkmark.circle", handler: {
+                ? [ActionItem(title: String(localized: "Convert to Task Pin"), imageName: "checkmark.circle", handler: {
                     self.confirmAndConvertPhotoCollaborationToTask(collaboration)
                 })]
                 : []
@@ -320,22 +320,25 @@ extension ProjectFlowController {
                     }
                 ),
                 ActionItem(
-                    title: collaboration.isArchived ? "Unarchive" : "Archive", imageName: "archivebox",
+                    title: collaboration.isArchived ? String(localized: "Unarchive") : String(localized: "Archive"),
+                    imageName: "archivebox",
                     handler: { [weak self] in
                         self?.toggleCollaborationArchived(collaboration)
                     }
                 ),
                 ActionItem(
-                    title: collaboration.status != nil ? "Delete Task Pin" : "Delete Photo Pin",
-                    imageName: "trash", style: .destructive,
+                    title: String(localized: "Delete"), imageName: "trash", style: .destructive,
                     handler: { [weak self] in
                         self?.confirmAndDeleteCollaboration(collaboration)
                     }
                 ),
             ])
+            let menuTitle = collaboration.status == nil
+                ? String(localized: "Photo Pin Menu")
+                : String(localized: "Task Pin Menu")
 
             ActionSelectorCardViewController(
-                icon: UIImage(systemName: "ellipsis"), title: "More Menu", actions: actions
+                icon: UIImage(systemName: "ellipsis"), title: menuTitle, actions: actions
             )
             .installAndShowCard(in: canvasContainer)
         } else if let upload = event.object as? Upload {
