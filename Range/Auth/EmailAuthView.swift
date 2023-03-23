@@ -16,6 +16,7 @@ struct EmailAuthView: View {
     @ObservedObject var viewModel: EmailAuthViewModel
     let authenticateAction: () -> Void
     @FocusState private var focusedField: String?
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         // GeometryReader is added as a hack to avoid the whole view moving up when
@@ -25,10 +26,12 @@ struct EmailAuthView: View {
                 // background that stays in place and ignores safe areas
                 Group {
                     Color(.dynamicColor(light: .Neutral_01, dark: .Neutral_10))
-                    Image("topglow")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: geometry.size.width)
+                    if colorScheme == .dark {
+                        Image("topglow")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: geometry.size.width)
+                    }
                 }.edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 0) {
@@ -47,21 +50,27 @@ struct EmailAuthView: View {
                         .padding(EdgeInsets(top: 5, leading: 0, bottom: 20, trailing: 0))
 
                     Group {
-                        TextField("Your e-mail", text: $viewModel.email) {
-                            focusedField = "password"
-                        }
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .submitLabel(.next)
+                        TextField("Your email", text: $viewModel.email,
+                                  prompt: Text("Your email")
+                                      .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05)))
+                            .onSubmit {
+                                focusedField = "password"
+                            }
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .textContentType(.emailAddress)
+                            .keyboardType(.emailAddress)
+                            .submitLabel(.next)
 
-                        SecureField("Your password", text: $viewModel.password) {
-                            focusedField = nil
-                            authenticateAction()
-                        }
-                        .textContentType(.password)
-                        .focused($focusedField, equals: "password")
+                        SecureField("Your password", text: $viewModel.password,
+                                    prompt: Text("Your password")
+                                        .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05)))
+                            .onSubmit {
+                                focusedField = nil
+                                authenticateAction()
+                            }
+                            .textContentType(.password)
+                            .focused($focusedField, equals: "password")
                     }
                     .padding(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0))
                     .font(.title3)
