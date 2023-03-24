@@ -54,7 +54,7 @@ class PDFPageScrollView: UIScrollView {
         pdfView = PDFPageTiledView(frame: scaledPageRect, scale: scale, pdfPage: pdfPage)
 
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .clear
 
         let targetRect = bounds.insetBy(dx: 0, dy: 0)
         let zoomScale = zoomScaleThatFits(targetRect.size, source: bounds.size)

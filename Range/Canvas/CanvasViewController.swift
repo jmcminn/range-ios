@@ -79,6 +79,8 @@ class CanvasViewController: UIViewController {
     /// if the canvas changes. If we wanted to reload map view on canvas/canvasSource change we would need to "notify" pins to reload
     /// **after** the new mapView instance is created.
     private(set) var mapView: MapView!
+    /// view shown behind the pdf view
+    var gridView: GridView?
     var pdfScrollView: PDFPageScrollView?
     var initialPdfScale: Double!
 
@@ -193,6 +195,8 @@ class CanvasViewController: UIViewController {
             }
         } else {
             updateCameraForCanvasSource()
+            gridView?.removeFromSuperview()
+            gridView = nil
             pdfScrollView?.removeFromSuperview()
             pdfScrollView = nil
         }
@@ -255,6 +259,8 @@ class CanvasViewController: UIViewController {
     private func reloadPDFScrollView() async {
         guard !canvas.isInvalidated else { return }
         // first hide the previous pdf view
+        gridView?.removeFromSuperview()
+        gridView = nil
         pdfScrollView?.removeFromSuperview()
         pdfScrollView = nil
 
@@ -284,6 +290,8 @@ class CanvasViewController: UIViewController {
 
     /// Setup the PDF scroll view appropriately for current canvas source. (if not needed then removes the current one)
     private func setupPDFScrollView() {
+        gridView?.removeFromSuperview()
+        gridView = nil
         pdfScrollView?.removeFromSuperview()
         pdfScrollView = nil
 
@@ -293,8 +301,11 @@ class CanvasViewController: UIViewController {
             fatalError("setupPDFScrollView called when pdfPage is nil")
         }
 
+        gridView = GridView(frame: view.bounds)
+        view.insertSubview(gridView!, at: 0)
+
         let pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
-        view.insertSubview(pdfScrollView, at: 0)
+        view.insertSubview(pdfScrollView, at: 1)
         pdfScrollView.scrollsToTop = false // we don't want scroll to top on top bar touch
         pdfScrollView.showsVerticalScrollIndicator = false
         pdfScrollView.showsHorizontalScrollIndicator = false
