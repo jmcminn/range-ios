@@ -54,7 +54,7 @@ class ProjectsFlowController: UINavigationController {
         let tabBarVC = setupTabBarViewController()
 
         // reopen last project
-        if let lastOpenProjectId = UserDefaults.lastOpenProjectId {
+        if DebugSettings().openLastProjectOnStart, let lastOpenProjectId = UserDefaults.lastOpenProjectId {
             // try load the last open project
             do {
                 projectFC = try await buildProjectFlowController(projectId: lastOpenProjectId)

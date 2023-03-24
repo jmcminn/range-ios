@@ -4,6 +4,8 @@ import Foundation
 /// Storage for hidden debug settings for prototyping new features, etc.
 final class DebugSettings: ObservableObject {
     private enum Keys {
+        /// open last opened project when starting the app (if false then start with projects screen)
+        static let openLastProjectOnStart = "opeanLastProjectOnStart"
         /// should the pins use the mapbox view annotations (native views) or annotations (mapbox layer views)
         static let nativeViewsForPins = "nativeViewsForPins"
         /// should the canvas animate to center on the pin when photo pin snapped to pink pin by user pan gesture
@@ -18,6 +20,12 @@ final class DebugSettings: ObservableObject {
     }
 
     private let defaults: UserDefaults
+
+    @Published var openLastProjectOnStart: Bool {
+        didSet {
+            defaults.set(openLastProjectOnStart, forKey: Keys.openLastProjectOnStart)
+        }
+    }
 
     @Published var nativeViewsForPins: Bool {
         didSet {
@@ -55,6 +63,7 @@ final class DebugSettings: ObservableObject {
         self.defaults = defaults
 
         defaults.register(defaults: [
+            Keys.openLastProjectOnStart: false,
             Keys.nativeViewsForPins: true,
             Keys.centerCanvasOnPinSnap: true,
             Keys.hapticFeedbackOnPinTapSelection: true,
@@ -65,6 +74,7 @@ final class DebugSettings: ObservableObject {
         let releaseVersionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
         let buildVersionNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
         appVersion = releaseVersionNumber + " (" + buildVersionNumber + ")"
+        _openLastProjectOnStart = .init(initialValue: defaults.bool(forKey: Keys.openLastProjectOnStart))
         _nativeViewsForPins = .init(initialValue: defaults.bool(forKey: Keys.nativeViewsForPins))
         _centerCanvasOnPinSnap = .init(initialValue: defaults.bool(forKey: Keys.centerCanvasOnPinSnap))
         _hapticFeedbackOnPinTapSelection = .init(initialValue: defaults

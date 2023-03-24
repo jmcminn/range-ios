@@ -5,6 +5,11 @@ struct DebugSettingsView: View {
 
     var body: some View {
         Form {
+            Section(header: Text("App Start")) {
+                Toggle(isOn: $debugSettings.openLastProjectOnStart) {
+                    Text("Open last project on start")
+                }
+            }
             Section(header: Text("Canvas")) {
                 Toggle(isOn: $debugSettings.nativeViewsForPins) {
                     Text("Use native views for pins")
