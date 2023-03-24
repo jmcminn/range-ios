@@ -213,6 +213,7 @@
 		0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */; };
 		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
 		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
+		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
 		0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */; };
 		0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */; };
@@ -577,6 +578,7 @@
 		0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_portrait.jpg; sourceTree = "<group>"; };
 		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
+		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommand.swift; sourceTree = "<group>"; };
@@ -1193,6 +1195,7 @@
 				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
 				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
 				0A4995B42854C28200E571FB /* TextView.swift */,
+				0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */,
 				0ADC183C29633E70007A59CA /* TopViewController.swift */,
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
@@ -1837,6 +1840,7 @@
 				0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */,
 				0A010C9F29913AFD0066D35A /* ProjectModel+RealmMigration.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift in Sources */,
+				0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */,
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */,

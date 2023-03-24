@@ -6,11 +6,12 @@ import UIKit
 class ProjectCanvasControls: PassthroughView {
     /// Tag for uniquely identifying subviews of canvas container (assuming that each view is only added once to the canvas container)
     fileprivate enum ViewTag: Int {
-        case topView = 11111
-        case panAndZoomIndicatorView = 22222
-        case canvasSelectorButton = 33333
-        case canvasSourceSelectorButton = 44444
-        case canvasFiltersButton = 55555
+        case topView = 1001
+        case topIndicatorView = 1002
+        case panAndZoomIndicatorView = 1003
+        case canvasSelectorButton = 1004
+        case canvasSourceSelectorButton = 1005
+        case canvasFiltersButton = 1006
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -82,6 +83,92 @@ extension ProjectCanvasControls {
             })
         } else {
             canvasContainer.remove(childController: viewController)
+        }
+    }
+}
+
+// MARK: - topIndicatorView
+
+extension ProjectCanvasControls {
+    /// Access to currently showing topIndicatorView, or nil if not showing
+    var topIndicatorView: TopIndicatorView? {
+        subviews.first { $0.tag == ViewTag.topIndicatorView.rawValue } as? TopIndicatorView
+    }
+
+    /// Adds the indicator view to controls and displays below the topViewController
+    func showTopIndicatorView(text: String, animated: Bool) {
+        guard let topView = topViewController?.view else { return }
+
+        let newlyCreated: Bool
+        if self.topIndicatorView == nil {
+            let topIndicatorView = TopIndicatorView()
+            topIndicatorView.tag = ViewTag.topIndicatorView.rawValue
+            insertSubview(topIndicatorView, belowSubview: topView)
+            newlyCreated = true
+        } else {
+            newlyCreated = false
+        }
+        guard let topIndicatorView = topIndicatorView else { return }
+        topIndicatorView.text = text
+
+        if animated {
+            if newlyCreated {
+                // avoid resetting the constraints if the top indicator is already there and we're
+                // just potentially resetting the text
+                topIndicatorView.snp.makeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(topView)
+                }
+                layoutIfNeeded()
+            }
+            slideDownTopIndicatorView()
+        } else {
+            topIndicatorView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.top.equalTo(topView.snp.bottom)
+            }
+        }
+    }
+
+    /// Slides the indicator view behind the topViewController
+    func slideUpTopIndicatorView(completion: (() -> Void)? = nil) {
+        guard let topIndicatorView = topIndicatorView,
+              let topView = topViewController?.view else { return }
+        topIndicatorView.snp.remakeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(topView)
+        }
+        UIView.animate(withDuration: 0.2, animations: {
+            self.layoutIfNeeded()
+        }) { _ in
+            completion?()
+        }
+    }
+
+    /// Slides the indicator view down so it's visible again
+    func slideDownTopIndicatorView(completion: (() -> Void)? = nil) {
+        guard let topIndicatorView = topIndicatorView,
+              let topView = topViewController?.view else { return }
+        topIndicatorView.snp.remakeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(topView.snp.bottom)
+        }
+        UIView.animate(withDuration: 0.2, animations: {
+            self.layoutIfNeeded()
+        }) { _ in
+            completion?()
+        }
+    }
+
+    /// Hides (and removes) the `TopViewController` in an animated way
+    func hideTopIndicatorView(animated: Bool) {
+        guard let topIndicatorView = topIndicatorView else { return }
+        if animated {
+            slideUpTopIndicatorView {
+                topIndicatorView.removeFromSuperview()
+            }
+        } else {
+            topIndicatorView.removeFromSuperview()
         }
     }
 }

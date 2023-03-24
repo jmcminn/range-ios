@@ -122,24 +122,25 @@ class ProjectModel: NSObject, RealmModel {
         guard currentCanvas == nil || currentCanvas.id != canvas.id else { return }
         guard !canvas.canvasSources.isEmpty else { throw ModelError.canvasSourceNotFound }
 
-        currentCanvas = canvas
-
-        UserDefaults.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
-
         // preselect the last canvas source for this canvas or use the first one otherwise
-        if let initialCanvasSourceId = UserDefaults.lastOpenCanvasSourceId(forCanvasId: currentCanvas.id),
-           let initialCanvasSource = currentCanvas.canvasSources.first(where: { $0.id == initialCanvasSourceId })
+        if let initialCanvasSourceId = UserDefaults.lastOpenCanvasSourceId(forCanvasId: canvas.id),
+           let initialCanvasSource = canvas.canvasSources.first(where: { $0.id == initialCanvasSourceId })
         {
-            currentCanvas.currentCanvasSource = initialCanvasSource
+            canvas.currentCanvasSource = initialCanvasSource
         }
         // If no last canvas then select the first one
-        if currentCanvas.currentCanvasSource == nil {
-            currentCanvas.currentCanvasSource = currentCanvas.canvasSources.sorted(by: CanvasSource.sortingOrder).first
+        if canvas.currentCanvasSource == nil {
+            canvas.currentCanvasSource = canvas.canvasSources.sorted(by: CanvasSource.sortingOrder).first
         }
         // if still no canvas then it's an error (canvas has no sources)
-        if currentCanvas.currentCanvasSource == nil {
+        if canvas.currentCanvasSource == nil {
             throw ModelError.canvasSourceNotFound
         }
+
+        // set currentCanvas after its currentCanvasSource is set, so we have fully set object before
+        // notifying the listeners
+        currentCanvas = canvas
+        UserDefaults.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
     }
 
     /// Loads the project summary for this project.

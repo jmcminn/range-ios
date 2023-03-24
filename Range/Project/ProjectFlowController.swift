@@ -139,6 +139,7 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.layoutIfNeeded()
 
         controls.showTopViewController(title: model.projectSummary.name, onBack: onBack, animated: false)
+        updateTopIndicatorView()
 
         controls.showCanvasSelectorButton(aboveView: actionCardVC.view)
         controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
@@ -155,6 +156,7 @@ final class ProjectFlowController: UIViewController {
             guard let self = self else { return }
             guard !self.model.currentCanvas.isInvalidated else { return }
             self.updateCanvasSourceSelectorVisibility()
+            self.updateTopIndicatorView()
             // observe if the current canvas is removed
             self.observeCanvas()
             self.reloadGeometriesPinsDisplay(
@@ -294,6 +296,15 @@ final class ProjectFlowController: UIViewController {
         pinsDisplay?.stop()
     }
 
+    // Update for current canvas. Hide if not a pdf.
+    fileprivate func updateTopIndicatorView() {
+        if model.currentCanvas.currentCanvasSource.type == .pdf {
+            controls.showTopIndicatorView(text: model.currentCanvas.displayName, animated: true)
+        } else {
+            controls.hideTopIndicatorView(animated: true)
+        }
+    }
+
     var canvasSourceSelectorHidden: Bool { model.currentCanvas.canvasSources.count <= 1 }
 
     fileprivate func updateCanvasSourceSelectorVisibility() {
@@ -374,6 +385,11 @@ final class ProjectFlowController: UIViewController {
 
 extension ProjectFlowController: CanvasViewControllerDelegate {
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
+        if reason == .pan || reason == .zoom {
+            controls.slideUpTopIndicatorView()
+        } else if reason == .panEnd || reason == .zoomEnd {
+            controls.slideDownTopIndicatorView()
+        }
         if reason == .panEnd || reason == .zoomEnd || reason == .programmatic {
             reportPresenceThrottler.throttle { [weak self] in
                 self?.reportPresence()
