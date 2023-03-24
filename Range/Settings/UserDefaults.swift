@@ -12,11 +12,11 @@ extension UserDefaults {
         case lastOpenCanvasSourceIdPrefix = "lastOpenCanvasSourceId_"
         /// last select geometry id for a photo to use it as a default for the next photo
         case lastPhotoPinId
-        /// last user's choice if annotation (tags/description) is enabled in the photo flow, `false` by default
+        /// last user's choice if annotation (tags/description) is enabled in the photo flow, `true` by default
         case annotationEnabled
-        /// last user's choice if multi photo session is enabled in the photo flow, `false` by default
+        /// last user's choice if multi photo session is enabled in the photo flow, `true` by default
         case multiPhotoSessionEnabled
-        /// last user's choice if the feed has more or less update, `true` by default
+        /// last user's choice if the feed has more or less update, `false` by default
         case moreUpdatesInTheFeed
         /// the prefix to be used for storing recent tags for a project, will be followed by a project id
         case recentTagsPrefix = "recentTags_"
@@ -120,7 +120,10 @@ extension UserDefaults {
 
     static var annotationEnabled: Bool {
         get {
-            UserDefaults.standard.bool(forKey: UserDefaultsConstants.annotationEnabled.rawValue)
+            if UserDefaults.standard.object(forKey: UserDefaultsConstants.annotationEnabled.rawValue) == nil {
+                return true
+            }
+            return UserDefaults.standard.bool(forKey: UserDefaultsConstants.annotationEnabled.rawValue)
         }
         set {
             UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.annotationEnabled.rawValue)
@@ -129,7 +132,10 @@ extension UserDefaults {
 
     static var multiPhotoSessionEnabled: Bool {
         get {
-            UserDefaults.standard.bool(forKey: UserDefaultsConstants.multiPhotoSessionEnabled.rawValue)
+            if UserDefaults.standard.object(forKey: UserDefaultsConstants.multiPhotoSessionEnabled.rawValue) == nil {
+                return true
+            }
+            return UserDefaults.standard.bool(forKey: UserDefaultsConstants.multiPhotoSessionEnabled.rawValue)
         }
         set {
             UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.multiPhotoSessionEnabled.rawValue)
