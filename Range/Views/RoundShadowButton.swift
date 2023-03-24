@@ -24,7 +24,7 @@ class RoundShadowButton: UIControl {
         setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
         isHighlighted = false
 
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .subheadline)
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 19)
             .applying(UIImage.SymbolConfiguration(weight: style == .black ? .regular : .bold))
         let imageView = UIImageView(image: image.withConfiguration(imageConfig))
         imageView.tintColor = style == .black ? .Neutral_04 : .Neutral_01
