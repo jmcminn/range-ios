@@ -154,13 +154,13 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         titleIcon = UIImageView(image: image.withConfiguration(imageConfig))
-        titleIcon!.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleIcon!.tintColor = .dynamic(.Neutral_04)
     }
 
     private func setupTitleLabel(title: String) {
         titleLabel = UILabel()
         titleLabel!.text = title
-        titleLabel!.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleLabel!.textColor = .dynamic(.Neutral_04)
         titleLabel!.font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
         titleLabel!.adjustsFontForContentSizeCategory = true
     }

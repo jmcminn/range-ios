@@ -300,7 +300,7 @@ extension CollaborationViewController {
             placeholderText: isTaskWindow ? "Add task pin name..." : "Add photo pin name..."
         )
         let font = UIFont._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
-        nameTextView.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        nameTextView.textColor = .dynamic(.Neutral_04)
         nameTextView.placeholderLabel.font = font
         nameTextView.font = font
         nameTextView.tintColor = .Primary_Blue_04

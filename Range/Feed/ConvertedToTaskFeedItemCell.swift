@@ -50,7 +50,7 @@ class ConvertedToTaskFeedItemCell: UITableViewCell {
         let messageString = NSMutableAttributedString(
             string: update.user?.displayName ?? "",
             attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
+                .foregroundColor: chooseColor(.Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
             ]
         )

@@ -41,7 +41,7 @@ class ActionItemTableViewCell: UITableViewCell {
             if let actionItem = actionItem {
                 let actionColor: UIColor = actionItem.style == .destructive
                     ? .Red_03
-                    : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+                    : .dynamic(.Neutral_04)
                 iconView.tintColor = actionColor
                 iconView.contentMode = .scaleAspectFit
                 titleView.textColor = actionColor

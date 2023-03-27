@@ -41,7 +41,7 @@ extension UIButton.Configuration {
             trailing: 0
         )
         config.baseBackgroundColor = .dynamic(.Neutral_09)
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
         config.cornerStyle = .fixed
         config.background.cornerRadius = 12
         config.background.strokeColor = .dynamic(.Neutral_07)
@@ -67,7 +67,7 @@ extension UIButton.Configuration {
             trailing: 0
         )
         config.baseBackgroundColor = .dynamic(.Neutral_09)
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
         config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
         config.background.strokeColor = .dynamic(.Neutral_07)

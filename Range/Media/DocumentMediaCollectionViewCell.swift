@@ -51,7 +51,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
             make.bottom.equalTo(fileTypeBox).offset(-1)
         }
 
-        fileNameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        fileNameLabel.textColor = .dynamic(.Neutral_04)
         fileNameLabel.adjustsFontForContentSizeCategory = true
         fileNameLabel.lineBreakMode = .byTruncatingTail
         fileNameLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)

@@ -60,7 +60,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
         }
 
         nameLabel.font = .preferredFont(forTextStyle: .headline)
-        nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
 
         detailsScrollView.alwaysBounceHorizontal = true

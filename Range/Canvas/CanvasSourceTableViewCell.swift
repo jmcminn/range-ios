@@ -8,7 +8,7 @@ class CanvasSourceTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
 
-        iconView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        iconView.tintColor = .dynamic(.Neutral_04)
         nameLabel.textColor = iconView.tintColor
         nameLabel.adjustsFontForContentSizeCategory = true
         nameLabel.font = .preferredFont(forTextStyle: .body)

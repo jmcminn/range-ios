@@ -42,7 +42,7 @@ struct EmailAuthView: View {
                         .padding(EdgeInsets(top: 12, leading: 0, bottom: 40, trailing: 0))
 
                     Text("Let's get started")
-                        .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
+                        .foregroundColor(.dynamic(.Neutral_04))
                         .font(.title3.bold())
                     Text("Please enter your email and password to continue")
                         .foregroundColor(.dynamic(.Neutral_05))

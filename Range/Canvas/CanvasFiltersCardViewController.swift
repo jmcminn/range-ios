@@ -47,7 +47,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         boxView.layer.borderWidth = 1
         boxView.backgroundColor = .dynamic(.Neutral_09)
 
-        showArchivedPinsLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        showArchivedPinsLabel.textColor = .dynamic(.Neutral_04)
         showArchivedPinsLabel.font = .preferredFont(forTextStyle: .body)
         showArchivedPinsLabel.adjustsFontForContentSizeCategory = true
         showArchivedPinsLabel.text = String(localized: "Show Archived Pins")

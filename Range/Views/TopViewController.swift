@@ -128,7 +128,7 @@ class TopViewController: UIViewController {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
         config.preferredSymbolConfigurationForImage = imageConfig
         backButton = UIButton(
             configuration: config,
@@ -145,11 +145,11 @@ class TopViewController: UIViewController {
             withConfiguration: UIImage.SymbolConfiguration(font: font)
         ))
         imageView?.setContentCompressionResistancePriority(.required, for: .horizontal)
-        imageView?.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        imageView?.tintColor = .dynamic(.Neutral_04)
     }
 
     private func setupTitleLabel() {
-        titleLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleLabel.textColor = .dynamic(.Neutral_04)
         titleLabel.font = font
         titleLabel.adjustsFontForContentSizeCategory = true
     }

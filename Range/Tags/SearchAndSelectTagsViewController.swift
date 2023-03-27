@@ -156,7 +156,7 @@ extension SearchAndSelectTagsViewController {
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         let image = UIImage(systemName: "tag", withConfiguration: imageConfig)
         titleIcon = UIImageView(image: image)
-        titleIcon.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleIcon.tintColor = .dynamic(.Neutral_04)
 
         titleLabel = UILabel()
         titleLabel.text = "Tags"

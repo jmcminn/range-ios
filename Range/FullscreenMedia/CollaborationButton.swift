@@ -91,7 +91,7 @@ class CollaborationButton: UIControl {
             systemName: "arrow.forward",
             withConfiguration: UIImage.SymbolConfiguration(font: .systemFont(ofSize: 12, weight: .semibold))
         )?
-            .withTintColor(chooseColor(light: .Neutral_07, dark: .Neutral_04), renderingMode: .alwaysTemplate)
+            .withTintColor(chooseColor(.Neutral_04), renderingMode: .alwaysTemplate)
             .addCircleBackground(
                 bgSize: CGSize(width: 32, height: 32),
                 bgColor: chooseColor(.Neutral_10),
@@ -113,7 +113,7 @@ extension CollaborationButton {
     private func setupCollaborationNameLabel() {
         collaborationNameLabel.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
         collaborationNameLabel.adjustsFontForContentSizeCategory = true
-        collaborationNameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        collaborationNameLabel.textColor = .dynamic(.Neutral_04)
     }
 
     private func setupCanvasNameLabel() {

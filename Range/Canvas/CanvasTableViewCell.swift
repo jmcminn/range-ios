@@ -36,7 +36,7 @@ class CanvasTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
-        nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)
 
         pinkDot.backgroundColor = .Pink_03

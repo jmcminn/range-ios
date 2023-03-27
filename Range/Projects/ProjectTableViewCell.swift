@@ -38,7 +38,7 @@ class ProjectTableViewCell: UITableViewCell {
 
     private func setupViews() {
         nameLabel.numberOfLines = 0
-        nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
 
         descriptionLabel.numberOfLines = 0

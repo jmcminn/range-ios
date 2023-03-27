@@ -101,7 +101,7 @@ class ProjectsViewController: UIViewController {
 
     private func updateTitleLabel() {
         let title = NSMutableAttributedString(string: "My Projects", attributes: [
-            .foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04),
+            .foregroundColor: UIColor.dynamic(.Neutral_04),
             // .body in the design, but it gets too large when scaling font
             .font: UIFont._preferredFont(forTextStyle: .headline, symbolicTraits: .traitBold),
         ])

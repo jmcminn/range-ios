@@ -10,7 +10,7 @@ class TagSelectionTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in willDisplay:
 
-        iconView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        iconView.tintColor = .dynamic(.Neutral_04)
         titleView.textColor = iconView.tintColor
         titleView.adjustsFontForContentSizeCategory = true
 
@@ -51,7 +51,7 @@ class TagSelectionTableViewCell: UITableViewCell {
                     NSMutableAttributedString(
                         string: "\(tagViewModel.name) \(countText)",
                         attributes: [
-                            .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
+                            .foregroundColor: chooseColor(.Neutral_04),
                             .font: UIFont.preferredFont(forTextStyle: .body),
                         ]
                     )
@@ -83,7 +83,7 @@ class TagSelectionTableViewCell: UITableViewCell {
         if let range = attributedText.string.range(of: "'\(name)'") {
             let nsRange = NSRange(range, in: attributedText.string)
             attributedText.setAttributes([
-                .foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04),
+                .foregroundColor: UIColor.dynamic(.Neutral_04),
                 .font: UIFont.preferredFont(forTextStyle: .body),
             ], range: nsRange)
         }

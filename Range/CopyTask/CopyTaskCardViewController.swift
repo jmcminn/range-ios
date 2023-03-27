@@ -242,7 +242,7 @@ extension CopyTaskCardViewController {
         let titleLabel = UILabel()
         titleLabel.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
         titleLabel.adjustsFontForContentSizeCategory = true
-        titleLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleLabel.textColor = .dynamic(.Neutral_04)
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
         titleLabel.text = String(localized: "There are no tasks to copy...")

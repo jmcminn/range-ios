@@ -115,7 +115,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamic(.Neutral_07)
 
-        authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        authorLabel.textColor = .dynamic(.Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
 
         timestampLabel.textColor = .dynamic(.Neutral_05)

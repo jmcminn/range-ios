@@ -243,7 +243,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         }
 
         let fileNameLabel = UILabel()
-        fileNameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        fileNameLabel.textColor = .dynamic(.Neutral_04)
         fileNameLabel.adjustsFontForContentSizeCategory = true
         fileNameLabel.lineBreakMode = .byTruncatingTail
         fileNameLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -277,7 +277,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
     private func setupDescriptionLabel() {
         descriptionLabel.font = .preferredFont(forTextStyle: .subheadline)
-        descriptionLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        descriptionLabel.textColor = .dynamic(.Neutral_04)
         descriptionLabel.adjustsFontForContentSizeCategory = true
         descriptionLabel.textInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         descriptionLabel.numberOfLines = 0
@@ -325,7 +325,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         editLabel.borderColor = .dynamic(.Neutral_07)
         editLabel.autoround = true
         editLabel.font = .preferredFont(forTextStyle: .subheadline)
-        editLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        editLabel.textColor = .dynamic(.Neutral_04)
         editLabel.adjustsFontForContentSizeCategory = true
         editLabel.text = String(localized: "Edit")
         editLabel.backgroundColor = .dynamic(.Neutral_09)

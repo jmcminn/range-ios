@@ -46,7 +46,7 @@ class TypeScaleTableViewCell: UITableViewCell {
         textStyleLabel.adjustsFontForContentSizeCategory = true
         textStyleLabel.numberOfLines = 0
 
-        sampleTextLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        sampleTextLabel.textColor = .dynamic(.Neutral_04)
         sampleTextLabel.adjustsFontForContentSizeCategory = true
         sampleTextLabel.numberOfLines = 0
 

@@ -87,7 +87,7 @@ class UploadPreviewViewController: UIViewController {
             make.edges.equalToSuperview()
         }
 
-        activityIndicator.color = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        activityIndicator.color = .dynamic(.Neutral_04)
         view.addSubview(activityIndicator)
         activityIndicator.snp.makeConstraints { make in
             make.center.equalTo(downloadButton)

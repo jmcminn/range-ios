@@ -130,7 +130,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         let imageConfig = UIImage.SymbolConfiguration(font: photoCountFont)
         let image = UIImage(systemName: "photo.on.rectangle.angled", withConfiguration: imageConfig)
         let imageView = UIImageView(image: image)
-        imageView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        imageView.tintColor = .dynamic(.Neutral_04)
 
         photoCountLabel = UILabel()
         photoCountLabel.textColor = imageView.tintColor

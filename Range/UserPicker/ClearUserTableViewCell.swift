@@ -41,7 +41,7 @@ class ClearUserTableViewCell: UITableViewCell {
         avatarView.backgroundColor = .dynamic(.Neutral_07)
         updateAvatarImage()
 
-        nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)
         nameLabel.text = "No Assignee"
     }

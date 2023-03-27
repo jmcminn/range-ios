@@ -104,7 +104,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
                 ? "Add task pin name..."
                 : "Add photo pin name..."
         } else {
-            nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+            nameLabel.textColor = .dynamic(.Neutral_04)
             nameLabel.text = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         }
     }
@@ -139,7 +139,7 @@ extension CollaborationHeaderCoverViewController {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .callout)
             .applying(UIImage.SymbolConfiguration(weight: .regular))
         var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
         config.preferredSymbolConfigurationForImage = imageConfig
         moreButton = UIButton(
             configuration: config,
@@ -157,7 +157,7 @@ extension CollaborationHeaderCoverViewController {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .callout)
             .applying(UIImage.SymbolConfiguration(weight: .regular))
         var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
         config.preferredSymbolConfigurationForImage = imageConfig
         closeButton = UIButton(
             configuration: config,
@@ -171,7 +171,7 @@ extension CollaborationHeaderCoverViewController {
         let font = UIFont.preferredFont(forTextStyle: .body)
         let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
         nameLabel = UILabel()
-        nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = boldFont
         nameLabel.adjustsFontForContentSizeCategory = true
         nameLabel.isUserInteractionEnabled = true

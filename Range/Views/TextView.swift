@@ -60,7 +60,7 @@ class TextView: UIView {
         textView.automaticallyAdjustsScrollIndicatorInsets = false
         textView.contentInsetAdjustmentBehavior = .always
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-        textView.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        textView.textColor = .dynamic(.Neutral_04)
         textView.font = UIFont.preferredFont(forTextStyle: .body)
         textView.adjustsFontForContentSizeCategory = true
         textView.inputAccessoryView = setupInputAccessoryView()

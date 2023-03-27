@@ -80,7 +80,7 @@ class AssigneeButton: UIButton {
                 ]
             )
             title.append(NSAttributedString(string: assignee.displayName, attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_07, dark: .Neutral_04),
+                .foregroundColor: chooseColor(.Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
             ]))
             setAttributedTitle(title, for: .normal)
@@ -107,7 +107,7 @@ class AssigneeButton: UIButton {
                 .SymbolConfiguration(font: UIFont
                     ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold))
         )?
-            .withTintColor(chooseColor(light: .Neutral_07, dark: .Neutral_04),
+            .withTintColor(chooseColor(.Neutral_04),
                            renderingMode: .alwaysTemplate)
         let imageWithBackground = image?.addCircleBackground(
             bgSize: CGSize(width: 32, height: 32),

@@ -28,9 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithDefaultBackground()
         tabBarAppearance.backgroundColor = .dynamic(.Neutral_10)
-        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = .dynamic(.Neutral_04)
         tabBarAppearance.stackedLayoutAppearance.normal
-            .titleTextAttributes = [.foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04)]
+            .titleTextAttributes = [.foregroundColor: UIColor.dynamic(.Neutral_04)]
         UITabBar.appearance().standardAppearance = tabBarAppearance
 //        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         UITabBar.appearance().tintColor = .Primary_Blue_04

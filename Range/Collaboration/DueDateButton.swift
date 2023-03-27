@@ -101,7 +101,7 @@ class DueDateButton: UIButton {
                                            attributes: [
                                                .foregroundColor: markOverdue
                                                    ? UIColor.Red_03
-                                                   : chooseColor(light: .Neutral_07, dark: .Neutral_04),
+                                                   : chooseColor(.Neutral_04),
                                                .font: UIFont._preferredFont(
                                                    forTextStyle: .subheadline,
                                                    symbolicTraits: .traitBold
@@ -130,7 +130,7 @@ class DueDateButton: UIButton {
                 .SymbolConfiguration(font: UIFont
                     ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold))
         )?
-            .withTintColor(markOverdue ? .Red_03 : chooseColor(light: .Neutral_07, dark: .Neutral_04),
+            .withTintColor(markOverdue ? .Red_03 : chooseColor(.Neutral_04),
                            renderingMode: .alwaysTemplate)
         let imageWithBackground = image?.addCircleBackground(
             bgSize: CGSize(width: 32, height: 32),

@@ -220,7 +220,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
 extension CommentViewController {
     private func setupTextView() {
         textView.placeholderText = placeholderText
-        textView.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        textView.textColor = .dynamic(.Neutral_04)
         textView.font = UIFont.preferredFont(forTextStyle: .body)
         textView.adjustsFontForContentSizeCategory = true
         textView.delegate = self
@@ -254,7 +254,7 @@ extension CommentViewController {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         config.baseBackgroundColor = .dynamic(.Neutral_09)
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
         config.background.strokeColor = .dynamic(.Neutral_07)
         config.cornerStyle = .fixed
         config.background.cornerRadius = 8

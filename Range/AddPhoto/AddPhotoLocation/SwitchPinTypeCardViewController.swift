@@ -114,7 +114,7 @@ extension SwitchPinTypeCardViewController {
         let imageConfig = UIImage.SymbolConfiguration(font: font)
         let image = UIImage(systemName: "mappin.and.ellipse", withConfiguration: imageConfig)
         let imageView = UIImageView(image: image)
-        imageView.tintColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        imageView.tintColor = .dynamic(.Neutral_04)
 
         let label = UILabel()
         label.textColor = imageView.tintColor

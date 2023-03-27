@@ -65,7 +65,7 @@ class SegmentedControlButton: ControlWithTapAreaInsets {
         let color: UIColor = isSelected
             ? (isHighlighted
                 ? .dynamic(.Neutral_06) // selected, highlighted
-                : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)) // selected, not highlighted
+                : .dynamic(.Neutral_04)) // selected, not highlighted
             : (isHighlighted
                 ? .dynamic(.Neutral_07) // not selected, highlighted
                 : .dynamic(.Neutral_05)) // not selected, not highlighted

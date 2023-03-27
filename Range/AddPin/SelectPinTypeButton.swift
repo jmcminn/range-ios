@@ -86,7 +86,7 @@ extension SelectPinTypeButton {
     private func setupTitleLabel() {
         titleLabel.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
         titleLabel.adjustsFontForContentSizeCategory = true
-        titleLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
+        titleLabel.textColor = .dynamic(.Neutral_04)
     }
 
     private func setupSubtitleLabel() {
