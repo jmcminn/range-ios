@@ -474,7 +474,7 @@ extension FullscreenMediaCardViewController {
         authorLabel.adjustsFontForContentSizeCategory = true
         authorLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
-        timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        timestampLabel.textColor = .dynamic(.Neutral_05)
         timestampLabel.font = .preferredFont(forTextStyle: .footnote)
         timestampLabel.adjustsFontForContentSizeCategory = true
         timestampLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -558,7 +558,7 @@ extension FullscreenMediaCardViewController {
         let image = UIImageView(image: UIImage(named: "comments"))
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .subheadline)
-        label.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        label.textColor = .dynamic(.Neutral_05)
         label.adjustsFontForContentSizeCategory = true
         label.text = String(localized: "There are no comments...")
         noCommentsView.addSubview(image)

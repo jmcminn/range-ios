@@ -13,7 +13,7 @@ class FeedItemCells {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .callout)
             .applying(UIImage.SymbolConfiguration(weight: .regular))
         var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        config.baseForegroundColor = .dynamic(.Neutral_05)
         config.preferredSymbolConfigurationForImage = imageConfig
         return UIButton(
             configuration: config,

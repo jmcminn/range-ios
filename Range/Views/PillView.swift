@@ -21,7 +21,7 @@ class PillView: UIView {
         var tintColor: UIColor {
             switch self {
             case .default, .tag: return .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-            case .disabled: return .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+            case .disabled: return .dynamic(.Neutral_05)
             case .red: return .Red_03
             }
         }

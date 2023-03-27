@@ -128,7 +128,7 @@ class UploadFeedItemCell: UITableViewCell {
         authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
 
-        timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        timestampLabel.textColor = .dynamic(.Neutral_05)
         timestampLabel.font = .preferredFont(forTextStyle: .footnote)
 
         moreButton = FeedItemCells.createMoreButton(handler: { [weak self] _ in

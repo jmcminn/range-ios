@@ -254,7 +254,7 @@ extension CopyTaskCardViewController {
         let descriptionLabel = UILabel()
         descriptionLabel.font = .preferredFont(forTextStyle: .body)
         descriptionLabel.adjustsFontForContentSizeCategory = true
-        descriptionLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        descriptionLabel.textColor = .dynamic(.Neutral_05)
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textAlignment = .center
         descriptionLabel

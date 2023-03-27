@@ -107,7 +107,7 @@ class ProjectsViewController: UIViewController {
         ])
 
         title.append(NSAttributedString(string: " (\(projects.count))", attributes: [
-            .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05),
+            .foregroundColor: UIColor.dynamic(.Neutral_05),
             .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
         ]))
 

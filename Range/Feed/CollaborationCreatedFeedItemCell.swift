@@ -50,7 +50,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
         )
         let messageText = " created this pin " + Date.format3(collaboration.timestamp)
         messageString.append(NSAttributedString(string: messageText, attributes: [
-            .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+            .foregroundColor: chooseColor(.Neutral_05),
             .font: UIFont.preferredFont(forTextStyle: .footnote),
         ]))
         messageLabel.attributedText = messageString

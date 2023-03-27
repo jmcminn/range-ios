@@ -115,7 +115,7 @@ class UploadPreviewViewController: UIViewController {
         boxView.layer.borderWidth = 1
         boxView.backgroundColor = .dynamic(.Neutral_09)
 
-        fileTypeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        fileTypeLabel.textColor = .dynamic(.Neutral_05)
         fileTypeLabel.adjustsFontForContentSizeCategory = true
         fileTypeLabel.adjustsFontSizeToFitWidth = true
         fileTypeLabel.textAlignment = .center
@@ -127,7 +127,7 @@ class UploadPreviewViewController: UIViewController {
         }
 
         fileSizeLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
-        fileSizeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        fileSizeLabel.textColor = .dynamic(.Neutral_05)
         fileSizeLabel.adjustsFontForContentSizeCategory = true
         fileSizeLabel.adjustsFontSizeToFitWidth = true
         fileSizeLabel.textAlignment = .center

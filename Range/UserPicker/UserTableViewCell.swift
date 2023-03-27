@@ -51,7 +51,7 @@ class UserTableViewCell: UITableViewCell {
         nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)
 
-        emailLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        emailLabel.textColor = .dynamic(.Neutral_05)
         emailLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
     }
 

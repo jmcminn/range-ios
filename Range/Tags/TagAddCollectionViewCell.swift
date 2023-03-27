@@ -39,7 +39,7 @@ class TagAddCollectionViewCell: UICollectionViewCell {
             systemName: TagAddCollectionViewCell.tagImageName,
             withConfiguration: UIImage.SymbolConfiguration(font: font)
         ))
-        tagImageView.tintColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        tagImageView.tintColor = .dynamic(.Neutral_05)
         contentView.addSubview(tagImageView)
         tagImageView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
@@ -50,7 +50,7 @@ class TagAddCollectionViewCell: UICollectionViewCell {
         label.text = TagAddCollectionViewCell.labelText
         label.textAlignment = .center
         label.font = font
-        label.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        label.textColor = .dynamic(.Neutral_05)
         label.adjustsFontForContentSizeCategory = true
         label.snp.makeConstraints { make in
             make.centerY.equalToSuperview()

@@ -44,7 +44,7 @@ class StatusUpdateFeedItemCell: UITableViewCell {
             ]
         )
         let textAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+            .foregroundColor: chooseColor(.Neutral_05),
             .font: UIFont.preferredFont(forTextStyle: .footnote),
         ]
         // There are 2 spaces between and after the status attachment - we want more distance there

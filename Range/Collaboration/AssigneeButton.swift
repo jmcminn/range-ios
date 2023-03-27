@@ -75,7 +75,7 @@ class AssigneeButton: UIButton {
             let title = NSMutableAttributedString(
                 string: "Assigned to\n",
                 attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                    .foregroundColor: chooseColor(.Neutral_05),
                     .font: UIFont._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold),
                 ]
             )
@@ -88,7 +88,7 @@ class AssigneeButton: UIButton {
             let title = NSMutableAttributedString(
                 string: "Assignee",
                 attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                    .foregroundColor: chooseColor(.Neutral_05),
                     .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
                 ]
             )

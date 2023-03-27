@@ -111,7 +111,7 @@ class SearchView: UIView {
     private func setupClearButton() {
         clearButton = UIButton(type: .custom)
         clearButton?.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
-        clearButton?.imageView?.tintColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        clearButton?.imageView?.tintColor = .dynamic(.Neutral_05)
         clearButton?.addTarget(self, action: #selector(clearAction), for: .touchUpInside)
         addSubview(clearButton!)
         clearButton!.snp.makeConstraints { make in

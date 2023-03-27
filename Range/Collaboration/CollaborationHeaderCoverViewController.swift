@@ -99,7 +99,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
         badgeView.isUserInteractionEnabled = !collaboration.isArchived
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
-            nameLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+            nameLabel.textColor = .dynamic(.Neutral_05)
             nameLabel.text = collaboration.status != nil
                 ? "Add task pin name..."
                 : "Add photo pin name..."

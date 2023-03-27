@@ -12,7 +12,7 @@ struct UserSettingsView: View {
                         .padding(.top, 6)
                     Text("If disabled, only upload over wifi")
                         .font(.caption2)
-                        .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
+                        .foregroundColor(.dynamic(.Neutral_05))
                         .padding(.bottom, 6)
                 }
             }
@@ -23,7 +23,7 @@ struct UserSettingsView: View {
                         .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
                     Text("Photos are saved to the cloud and your device")
                         .font(.caption2)
-                        .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
+                        .foregroundColor(.dynamic(.Neutral_05))
                         .padding(.bottom, 6)
                 }
             }

@@ -27,7 +27,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
             make.width.equalTo(41)
         }
 
-        fileTypeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        fileTypeLabel.textColor = .dynamic(.Neutral_05)
         fileTypeLabel.adjustsFontForContentSizeCategory = true
         fileTypeLabel.adjustsFontSizeToFitWidth = true
         fileTypeLabel.textAlignment = .center
@@ -42,7 +42,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         fileSizeLabel.borderColor = .dynamic(.Neutral_07)
         fileSizeLabel.autoround = true
         fileSizeLabel.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
-        fileSizeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        fileSizeLabel.textColor = .dynamic(.Neutral_05)
         fileSizeLabel.adjustsFontForContentSizeCategory = true
         fileSizeLabel.backgroundColor = .dynamic(.Neutral_10)
         contentView.addSubview(fileSizeLabel)

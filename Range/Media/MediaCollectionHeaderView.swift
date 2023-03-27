@@ -8,7 +8,7 @@ class MediaCollectionViewHeader: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        label.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        label.textColor = .dynamic(.Neutral_05)
         label.numberOfLines = 0
         addSubview(label)
         label.snp.makeConstraints { make in

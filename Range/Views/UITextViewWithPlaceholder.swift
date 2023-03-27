@@ -68,7 +68,7 @@ class UITextViewWithPlaceholder: UITextView {
     /// UITextView doesn't support placeholder, create a label for placeholder
     private func setupPlaceholderLabel() {
         placeholderLabel.font = UIFont.preferredFont(forTextStyle: .body)
-        placeholderLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        placeholderLabel.textColor = .dynamic(.Neutral_05)
         placeholderLabel.backgroundColor = .clear
         placeholderLabel.adjustsFontForContentSizeCategory = true
         placeholderLabel.text = placeholderText

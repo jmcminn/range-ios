@@ -84,7 +84,7 @@ class CommentFeedItemCell: UITableViewCell {
         authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
 
-        timestampLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        timestampLabel.textColor = .dynamic(.Neutral_05)
         timestampLabel.font = .preferredFont(forTextStyle: .footnote)
 
         moreButton = FeedItemCells.createMoreButton(handler: { [weak self] _ in
@@ -187,7 +187,7 @@ class CommentFeedItemCell: UITableViewCell {
         completeButton.setImage(
             UIImage(named: "tick.small")?.withTintColor(isCompleted
                 ? .Neutral_01
-                : .dynamicColor(light: .Neutral_06, dark: .Neutral_05)),
+                : .dynamic(.Neutral_05)),
             for: .normal
         )
         completeButton.setNeedsUpdateConfiguration()
@@ -201,13 +201,13 @@ class CommentFeedItemCell: UITableViewCell {
             let messageString = NSMutableAttributedString(
                 string: comment.completedBy?.displayName ?? "",
                 attributes: [
-                    .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                    .foregroundColor: chooseColor(.Neutral_05),
                     .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                 ]
             )
             let messageText = " completed this note " + Date.format3(completedTimestamp)
             messageString.append(NSAttributedString(string: messageText, attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_05),
+                .foregroundColor: chooseColor(.Neutral_05),
                 .font: UIFont.preferredFont(forTextStyle: .caption2),
             ]))
 

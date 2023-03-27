@@ -50,7 +50,7 @@ class ClearUserTableViewCell: UITableViewCell {
         // SF symbol is not used here as we need the one that is properly centered (and sf symbol
         // for person.crop.circle.fill.badge.xmark is not centered at the person center horizontally)
         avatarView.image = UIImage(named: "no_assignee")?
-            .withTintColor(chooseColor(light: .Neutral_06, dark: .Neutral_05),
+            .withTintColor(chooseColor(.Neutral_05),
                            renderingMode: .alwaysTemplate)
             .addCircleBackground(
                 bgSize: CGSize(width: 32, height: 32),

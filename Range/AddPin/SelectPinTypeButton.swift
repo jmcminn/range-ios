@@ -92,7 +92,7 @@ extension SelectPinTypeButton {
     private func setupSubtitleLabel() {
         subtitleLabel.font = .preferredFont(forTextStyle: .footnote)
         subtitleLabel.adjustsFontForContentSizeCategory = true
-        subtitleLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        subtitleLabel.textColor = .dynamic(.Neutral_05)
         subtitleLabel.numberOfLines = 0
         subtitleLabel.lineBreakMode = .byWordWrapping
     }

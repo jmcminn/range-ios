@@ -42,7 +42,7 @@ class TypeScaleTableViewCell: UITableViewCell {
 
     private func setupViews() {
         textStyleLabel.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
-        textStyleLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        textStyleLabel.textColor = .dynamic(.Neutral_05)
         textStyleLabel.adjustsFontForContentSizeCategory = true
         textStyleLabel.numberOfLines = 0
 

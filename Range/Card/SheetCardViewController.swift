@@ -168,7 +168,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private func setupSubtitleLabel(subtitle: String) {
         subtitleLabel = UILabel()
         subtitleLabel!.text = subtitle
-        subtitleLabel!.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        subtitleLabel!.textColor = .dynamic(.Neutral_05)
         subtitleLabel!.font = UIFont.preferredFont(forTextStyle: .subheadline)
         subtitleLabel!.numberOfLines = 0
         subtitleLabel!.lineBreakMode = .byWordWrapping

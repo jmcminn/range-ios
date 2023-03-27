@@ -244,7 +244,7 @@ extension CommentViewController {
             var config = button.configuration
             config?.baseForegroundColor = self.isNote
                 ? .Orange_03
-                : .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+                : .dynamic(.Neutral_05)
             button.configuration = config
         }
         flagButton.setNeedsUpdateConfiguration()

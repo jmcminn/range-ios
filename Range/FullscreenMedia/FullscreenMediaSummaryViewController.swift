@@ -310,7 +310,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         let iconView =
             UIImageView(image: UIImage(systemName: iconName,
                                        withConfiguration: UIImage.SymbolConfiguration(font: font)))
-        iconView.tintColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        iconView.tintColor = .dynamic(.Neutral_05)
         iconView.setContentHuggingPriority(.required, for: .horizontal)
         iconView.setContentCompressionResistancePriority(.required, for: .horizontal)
 

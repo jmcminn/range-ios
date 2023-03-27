@@ -45,14 +45,14 @@ struct EmailAuthView: View {
                         .foregroundColor(.dynamicColor(light: .Neutral_07, dark: .Neutral_04))
                         .font(.title3.bold())
                     Text("Please enter your email and password to continue")
-                        .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05))
+                        .foregroundColor(.dynamic(.Neutral_05))
                         .font(.subheadline)
                         .padding(EdgeInsets(top: 5, leading: 0, bottom: 20, trailing: 0))
 
                     Group {
                         TextField("Your email", text: $viewModel.email,
                                   prompt: Text("Your email")
-                                      .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05)))
+                                      .foregroundColor(.dynamic(.Neutral_05)))
                             .onSubmit {
                                 focusedField = "password"
                             }
@@ -64,7 +64,7 @@ struct EmailAuthView: View {
 
                         SecureField("Your password", text: $viewModel.password,
                                     prompt: Text("Your password")
-                                        .foregroundColor(.dynamicColor(light: .Neutral_06, dark: .Neutral_05)))
+                                        .foregroundColor(.dynamic(.Neutral_05)))
                             .onSubmit {
                                 focusedField = nil
                                 authenticateAction()

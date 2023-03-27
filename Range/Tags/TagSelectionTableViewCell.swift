@@ -58,7 +58,7 @@ class TagSelectionTableViewCell: UITableViewCell {
                 if let range = attributedText.string.range(of: countText) {
                     let nsRange = NSRange(range, in: attributedText.string)
                     attributedText.setAttributes([
-                        .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05),
+                        .foregroundColor: UIColor.dynamic(.Neutral_05),
                         .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                     ],
                     range: nsRange)
@@ -76,7 +76,7 @@ class TagSelectionTableViewCell: UITableViewCell {
             NSMutableAttributedString(
                 string: "Create '\(name)' tag",
                 attributes: [
-                    .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_05),
+                    .foregroundColor: UIColor.dynamic(.Neutral_05),
                     .font: UIFont.preferredFont(forTextStyle: .body),
                 ]
             )

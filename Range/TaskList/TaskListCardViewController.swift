@@ -249,7 +249,7 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
             UIImageView(image: UIImage(systemName: "chevron.right",
                                        withConfiguration: UIImage.SymbolConfiguration(pointSize: 18)))
         chevron.contentMode = .center
-        chevron.tintColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        chevron.tintColor = .dynamic(.Neutral_05)
         chevron.tag = 999
         if expandedStatuses.contains(status) {
             chevron.transform = CGAffineTransform.identity.rotated(by: CGFloat.pi / 2)

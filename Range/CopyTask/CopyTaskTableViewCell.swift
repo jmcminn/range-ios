@@ -86,7 +86,7 @@ class CopyTaskTableViewCell: UITableViewCell {
         nameLabel.lineBreakMode = .byTruncatingTail
 
         descriptionLabel.font = .preferredFont(forTextStyle: .subheadline)
-        descriptionLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
+        descriptionLabel.textColor = .dynamic(.Neutral_05)
         descriptionLabel.adjustsFontForContentSizeCategory = true
         descriptionLabel.numberOfLines = 2
         descriptionLabel.lineBreakMode = .byTruncatingTail

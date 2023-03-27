@@ -68,7 +68,7 @@ class SegmentedControlButton: ControlWithTapAreaInsets {
                 : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)) // selected, not highlighted
             : (isHighlighted
                 ? .dynamic(.Neutral_07) // not selected, highlighted
-                : .dynamicColor(light: .Neutral_06, dark: .Neutral_05)) // not selected, not highlighted
+                : .dynamic(.Neutral_05)) // not selected, not highlighted
         let font: UIFont = isSelected
             ? ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
             : .preferredFont(forTextStyle: .footnote)
