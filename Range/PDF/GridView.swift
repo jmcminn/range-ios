@@ -8,7 +8,7 @@ class GridView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .Neutral_01
+        backgroundColor = .dynamic(.Neutral_09)
     }
 
     @available(*, unavailable)
@@ -62,11 +62,11 @@ class GridView: UIView {
 
         // Close the and draw the paths
         path.close()
-        UIColor.Neutral_03.setStroke()
+        UIColor.dynamic(.Neutral_08).setStroke()
         path.stroke()
 
         prominentPath.close()
-        UIColor.Neutral_04.setStroke()
+        UIColor.dynamic(.Neutral_07).setStroke()
         prominentPath.stroke()
     }
 }
