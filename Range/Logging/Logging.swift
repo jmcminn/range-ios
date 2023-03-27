@@ -14,16 +14,18 @@ extension Logger {
     static let cache = Logger(subsystem: subsystem, category: "cache")
     /// camera
     static let camera = Logger(subsystem: subsystem, category: "camera")
+    /// Firebase sync related logs
+    static let firebase = Logger(subsystem: subsystem, category: "firebase")
+    /// Firestore sync related logs
+    static let firestore = Logger(subsystem: subsystem, category: "firestore")
     /// Everything mapbox
     static let mapbox = Logger(subsystem: subsystem, category: "mapbox")
     /// Internal model (Realm based) logs
     static let model = Logger(subsystem: subsystem, category: "model")
     /// pending actions related logs
     static let pendingActions = Logger(subsystem: subsystem, category: "actions")
-    /// Firebase sync related logs
-    static let firebase = Logger(subsystem: subsystem, category: "firebase")
-    /// Firestore sync related logs
-    static let firestore = Logger(subsystem: subsystem, category: "firestore")
+    /// push notifications related logs
+    static let pushNotifications = Logger(subsystem: subsystem, category: "notifications")
     /// Logs related to sentry configuration
     static let sentry = Logger(subsystem: subsystem, category: "sentry")
     /// Cloud Storage sync related logs

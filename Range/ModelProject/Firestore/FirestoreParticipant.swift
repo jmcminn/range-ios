@@ -19,7 +19,7 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case firstName, lastName, avatarUrlString = "avatarUrl", email, permissions
+        case firstName, lastName, avatarUrlString = "avatarUrl", email, permissions, fcmTokens
     }
 
     var firstName: String
@@ -27,6 +27,7 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
     var avatarUrlString: String?
     var email: String
     var permissions: [String: [String]]?
+    var fcmTokens: [String]?
 
     /// Add or update the status.
     /// Ignores not well formed avatarUrl

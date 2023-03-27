@@ -3,6 +3,7 @@ import FirebaseAppCheck
 import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
+import FirebaseMessaging
 import FirebaseStorage
 import OSLog
 import Sentry
@@ -10,8 +11,10 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    let gcmMessageIDKey = "gcm.message_id"
+
     func application(
-        _: UIApplication,
+        _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         setupAppearance()
@@ -19,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         initiateSentry()
 
         initiateFirebase()
+
+        registerForNotifications(application)
 
         return true
     }
@@ -93,6 +98,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    private func registerForNotifications(_ application: UIApplication) {
+        Messaging.messaging().delegate = self
+
+        // Register for remote notifications. This shows a permission dialog on first run, to
+        // show the dialog at a more appropriate time move this registration accordingly.
+        UNUserNotificationCenter.current().delegate = self
+
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: { _, _ in }
+        )
+
+        application.registerForRemoteNotifications()
+    }
+
     // MARK: UISceneSession Lifecycle
 
     func application(
@@ -106,5 +127,81 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             name: "Default Configuration",
             sessionRole: connectingSceneSession.role
         )
+    }
+
+    func application(_: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any])
+    {
+        // If you are receiving a notification message while your app is in the background,
+        // this callback will not be fired till the user taps on the notification launching the application.
+        // TODO: 1011 handle notification
+        // With swizzling disabled you must let Messaging know about the message, for Analytics
+        // Messaging.messaging().appDidReceiveMessage(userInfo)
+        // Print message ID.
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+
+        // Print full message.
+        print(userInfo)
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    // Receive displayed notifications for iOS 10 devices.
+    func userNotificationCenter(_: UNUserNotificationCenter,
+                                willPresent notification: UNNotification) async
+        -> UNNotificationPresentationOptions
+    {
+        let userInfo = notification.request.content.userInfo
+
+        // TODO: 1011 handle notification
+        // With swizzling disabled you must let Messaging know about the message, for Analytics
+        // Messaging.messaging().appDidReceiveMessage(userInfo)
+        // [START_EXCLUDE]
+        // Print message ID.
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+        // [END_EXCLUDE]
+        // Print full message.
+        print(userInfo)
+
+        // Change this to your preferred presentation option
+        return [[.alert, .sound]]
+    }
+
+    func userNotificationCenter(_: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse) async
+    {
+        let userInfo = response.notification.request.content.userInfo
+
+        // TODO: 1011 handle notification
+        // [START_EXCLUDE]
+        // Print message ID.
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+        // [END_EXCLUDE]
+        // With swizzling disabled you must let Messaging know about the message, for Analytics
+        // Messaging.messaging().appDidReceiveMessage(userInfo)
+        // Print full message.
+        print(userInfo)
+    }
+}
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let fcmToken = fcmToken else { return }
+        Logger.pushNotifications.debug("didReceiveRegistrationToken: \(fcmToken)")
+
+//        let dataDict: [String: String] = ["token": fcmToken ?? ""]
+//        NotificationCenter.default.post(
+//            name: Notification.Name("FCMToken"),
+//            object: nil,
+//            userInfo: dataDict
+//        )
+        // Note: This callback is fired at each app startup and whenever a new token is generated.
+        // TODO: 1012 react to this callback or just handle token on ProjectsModel start?
     }
 }

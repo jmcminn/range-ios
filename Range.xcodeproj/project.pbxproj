@@ -214,6 +214,7 @@
 		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
 		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
 		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
+		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
 		0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */; };
 		0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */; };
@@ -740,6 +741,7 @@
 				0A06241729534AA0004B6512 /* FirebaseAuth in Frameworks */,
 				0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */,
 				0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */,
+				0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */,
 				0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */,
 				0A06241529534AA0004B6512 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 			);
@@ -1662,6 +1664,7 @@
 				0A06241C29534AA0004B6512 /* FirebaseStorage */,
 				0ACE1967296C7AD500D223EB /* Sentry */,
 				0A376BC5298031EF004C9B6F /* FirebaseAppCheck */,
+				0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -3765,6 +3768,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */ = {
 			isa = XCSwiftPackageProductDependency;

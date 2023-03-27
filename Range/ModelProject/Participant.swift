@@ -15,6 +15,8 @@ class Participant: Object, WithPlaceholder {
     @Persisted var email: String
     /// array of projects ids this user has permission to access
     @Persisted var projectIds: List<String>
+    /// array of user fcmTokens (Firebase Cloud Messaging Tokens)
+    @Persisted var fcmTokens: List<String>
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -31,6 +33,7 @@ class Participant: Object, WithPlaceholder {
         avatarUrl: URL?,
         email: String,
         projectIds: [String] = [],
+        fcmTokens: [String] = [],
         placeholder: Bool = false
     ) {
         super.init()
@@ -40,6 +43,7 @@ class Participant: Object, WithPlaceholder {
         self.avatarUrl = avatarUrl
         self.email = email
         self.projectIds.append(objectsIn: projectIds)
+        self.fcmTokens.append(objectsIn: fcmTokens)
         self.placeholder = placeholder
     }
 
@@ -52,6 +56,7 @@ class Participant: Object, WithPlaceholder {
             avatarUrl: nil,
             email: "",
             projectIds: [],
+            fcmTokens: [],
             placeholder: true
         )
     }

@@ -1,5 +1,6 @@
 import Firebase
 import FirebaseAuth
+import FirebaseMessaging
 import OSLog
 import UIKit
 
@@ -20,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 case .failure:
                     self.showAuth()
                 case let .success(userId):
-                    self.showProjects(forUser: userId)
+                    self.startMainFlow(forUser: userId, newlySignedIn: false)
                 }
             }
         } else {
@@ -32,7 +33,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func showAuth() {
         let authFlowController = AuthFlowController { [weak self] userId in
             Analytics.logEvent(AnalyticsEventLogin, parameters: [AnalyticsParameterMethod: "email"])
-            self?.showProjects(forUser: userId)
+            self?.startMainFlow(forUser: userId, newlySignedIn: true)
         }
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
@@ -43,26 +44,44 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     /// Show the main flow for the app (which currently is the projects listing)
-    private func showProjects(forUser userId: String) {
+    /// - Parameters:
+    ///    - userId: Firestore user id
+    ///    - newlySignedIn: true if main flow is starting after user went through authentication (and false if user was already authenticated when the app started)
+    private func startMainFlow(forUser userId: String, newlySignedIn: Bool) {
         Analytics.setUserID(userId)
-        Task {
-            do {
-                let projectsFlowController = try ProjectsFlowController(userId: userId)
-                projectsFlowController.onSignedOut = { [weak self, weak projectsFlowController] in
-                    projectsFlowController?.stop()
-                    self?.onSignedOut()
-                }
-                window!.rootViewController = projectsFlowController
-                window!.makeKeyAndVisible()
+        Task { @MainActor in
+            if newlySignedIn {
+                await self.initializePushNotifications()
+            }
+            await self.showProjects(forUserId: userId)
+        }
+    }
 
-                ToastWindow.shared.showForKeyWindow(window!)
+    private func initializePushNotifications() async {
+        do {
+            try await Messaging.messaging().deleteToken()
+        } catch {
+            Logger.pushNotifications.debug("Failed to delete FCM token: \(error)")
+        }
+    }
 
-                try await projectsFlowController.start()
-            } catch {
-                DispatchQueue.main.async {
-                    self.onSignedOut()
-                    self.showProjectsOpenError(withMessage: error.localizedDescription)
-                }
+    private func showProjects(forUserId userId: String) async {
+        do {
+            let projectsFlowController = try ProjectsFlowController(userId: userId)
+            projectsFlowController.onSignedOut = { [weak self, weak projectsFlowController] in
+                projectsFlowController?.stop()
+                self?.onSignedOut()
+            }
+            window!.rootViewController = projectsFlowController
+            window!.makeKeyAndVisible()
+
+            ToastWindow.shared.showForKeyWindow(window!)
+
+            try await projectsFlowController.start()
+        } catch {
+            DispatchQueue.main.async {
+                self.onSignedOut()
+                self.showProjectsOpenError(withMessage: error.localizedDescription)
             }
         }
     }
@@ -78,6 +97,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func onSignedOut() {
+        // 1. Stop receiving the notifications when signed out (the token is being invalidated on sign out
+        // but it will not work if user is offline, so there might still be a valid fcm token
+        // after the user has signed out)
+        UIApplication.shared.unregisterForRemoteNotifications()
+        // 2. Delete the FCM token from Firebase, when it succeeds the push notifications sent to
+        // this token will fail. This will fail if user is offline (so notifications sent using this
+        // token will still be delivered to this device, even after sign out)
+        Messaging.messaging().deleteToken { error in
+            if let error = error {
+                Logger.pushNotifications.debug("Failed to delete FCM token: \(error)")
+            }
+        }
+        // 3. Remove the token from Firestore (try to cleanup so the server side does not even attempt
+        // to send notifications to this device.
+        // TODO: 1012 remove from Firestore (this should block before calling sign out, but do not prevent signOut)
+
         do {
             try Auth.auth().signOut()
         } catch {

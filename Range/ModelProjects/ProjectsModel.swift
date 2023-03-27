@@ -1,8 +1,10 @@
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseMessaging
 import Foundation
 import OSLog
 import RealmSwift
+import UIKit
 
 /// Responsible for configuring the Realm for all projects for given user
 /// Contains all the business methods for project (like adding photo, etc.)
@@ -34,7 +36,7 @@ class ProjectsModel: NSObject, RealmModel {
         self.userId = userId
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        config.schemaVersion = 1
+        config.schemaVersion = 2
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("projects")
         config.fileURL!.appendPathExtension("realm")
@@ -84,6 +86,9 @@ class ProjectsModel: NSObject, RealmModel {
 
         // 4. sync the projects that user has permissions to
         syncCurrentUserProjects()
+
+        // 5. Check current fcm token and update in firestore if changed
+        await refreshFCMToken()
     }
 
     /// The list of projects to sync depends on the user permissions, so based on user changes this function maintains the listeners
@@ -130,5 +135,50 @@ class ProjectsModel: NSObject, RealmModel {
         userNotificationToken = nil
         listeners.values.forEach { $0.remove() }
         listeners.removeAll()
+    }
+
+    @MainActor
+    private func refreshFCMToken() async {
+        do {
+            let fcmToken = try await Messaging.messaging().token()
+            Logger.pushNotifications.info("FCM token: \(fcmToken)")
+            updateFCMToken(fcmToken)
+
+            // TODO: 1012 update if not there yet (in Firestore), remove previous (so remember previous)
+            if !UIApplication.shared.isRegisteredForRemoteNotifications {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        } catch {
+            Logger.pushNotifications.debug("Failed to obtain FCM token: \(error)")
+        }
+    }
+
+    // TODO: 1012 add offline support and actions for user updates? (or is it enough to do it on app start?)
+    func updateFCMToken(_ token: String) {
+        guard let user = currentUser else { return }
+        guard !user.fcmTokens.contains(token) else { return }
+
+        let userRef = firestore.document("users/\(user.id)")
+        firestore.runTransaction { tx, _ in
+            var newTokens: [String]
+            do {
+                let userDoc = try tx.getDocument(userRef)
+                if let tokens = userDoc.data()?["fcmTokens"] as? [String] {
+                    if tokens.contains(token) { return true }
+                    newTokens = tokens
+                    newTokens.append(token)
+                } else {
+                    newTokens = [token]
+                }
+                tx.updateData(["fcmTokens": newTokens], forDocument: userRef)
+                return true
+            } catch {
+                return error
+            }
+        } completion: { _, error in
+            if let error = error {
+                Logger.firestore.debug("update FCM token failed: \(error.localizedDescription)")
+            }
+        }
     }
 }
