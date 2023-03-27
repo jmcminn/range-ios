@@ -15,7 +15,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
 
         contentView.layer.cornerRadius = 12
         contentView.layer.borderWidth = 1
-        contentView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        contentView.backgroundColor = .dynamic(.Neutral_09)
 
         fileTypeBox.backgroundColor = .dynamic(.Neutral_10)
         fileTypeBox.layer.cornerRadius = 6

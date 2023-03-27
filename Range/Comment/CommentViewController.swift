@@ -253,7 +253,7 @@ extension CommentViewController {
     private func setupCancelButton() {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
-        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
         config.cornerStyle = .fixed

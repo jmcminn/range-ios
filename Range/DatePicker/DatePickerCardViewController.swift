@@ -87,7 +87,7 @@ extension DatePickerCardViewController {
     private func setupDatePicker() {
         datePickerBackground.layer.cornerRadius = 13
         datePickerBackground.layer.borderWidth = 1
-        datePickerBackground.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        datePickerBackground.backgroundColor = .dynamic(.Neutral_09)
 
         datePicker.datePickerMode = .date
         if let selectedDate = selectedDate {
@@ -96,7 +96,7 @@ extension DatePickerCardViewController {
         datePicker.timeZone = timeZone
         datePicker.preferredDatePickerStyle = .inline
         datePicker.tintColor = .Pink_03
-        datePicker.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        datePicker.backgroundColor = .dynamic(.Neutral_09)
         datePicker.clipsToBounds = true
         datePicker.addTarget(self, action: #selector(handleDateSelection), for: .valueChanged)
     }

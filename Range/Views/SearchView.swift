@@ -60,7 +60,7 @@ class SearchView: UIView {
     private func setupView() {
         layer.cornerRadius = 12
         layer.borderWidth = 1
-        backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        backgroundColor = .dynamic(.Neutral_09)
     }
 
     /// Add the magnifying glass icon

@@ -38,7 +38,7 @@ class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinatin
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        containerView.backgroundColor = .dynamic(.Neutral_09)
 
         setupHeaderView()
         containerView.addSubview(headerView)

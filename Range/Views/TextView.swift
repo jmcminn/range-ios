@@ -42,7 +42,7 @@ class TextView: UIView {
     }
 
     private func setupBackgroundView() {
-        backgroundView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        backgroundView.backgroundColor = .dynamic(.Neutral_09)
         backgroundView.layer.cornerRadius = 16
         backgroundView.layer.borderWidth = 1
         addSubview(backgroundView)

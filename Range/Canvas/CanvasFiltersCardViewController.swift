@@ -45,7 +45,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private func setupViews() {
         boxView.layer.cornerRadius = 13
         boxView.layer.borderWidth = 1
-        boxView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        boxView.backgroundColor = .dynamic(.Neutral_09)
 
         showArchivedPinsLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         showArchivedPinsLabel.font = .preferredFont(forTextStyle: .body)

@@ -293,7 +293,7 @@ extension CollaborationDetailsViewController {
 
     private func setupUpdatesToggle() {
         let updatesToggleBackground = UIView()
-        updatesToggleBackground.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        updatesToggleBackground.backgroundColor = .dynamic(.Neutral_09)
         view.addSubview(updatesToggleBackground)
         updatesToggleBackground.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()

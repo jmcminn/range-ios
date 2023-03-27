@@ -200,7 +200,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         let previewBox = UIView()
         previewBox.layer.cornerRadius = 13
         previewBox.layer.borderWidth = 1
-        previewBox.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        previewBox.backgroundColor = .dynamic(.Neutral_09)
         previewBox.clipsToBounds = true
         previewWrapperView.addSubview(previewBox)
         previewBox.snp.makeConstraints { make in
@@ -328,7 +328,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         editLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         editLabel.adjustsFontForContentSizeCategory = true
         editLabel.text = String(localized: "Edit")
-        editLabel.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        editLabel.backgroundColor = .dynamic(.Neutral_09)
         editLabel.setContentHuggingPriority(.required, for: .horizontal)
         editLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         editLabel.tag = 66 // mark it so it can be later hidden

@@ -159,7 +159,7 @@ class UploadFeedItemCell: UITableViewCell {
         commentsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(commentsTapped)))
 
         tagsView.showAddTagCell = true
-        tagsView.collectionView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        tagsView.collectionView.backgroundColor = .dynamic(.Neutral_09)
         tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
 
         leftTagsViewGradient.backgroundColor = .clear
@@ -180,7 +180,7 @@ class UploadFeedItemCell: UITableViewCell {
     /// Update colors that doesn't automatically adapt to appearance change
     private func updateColors() {
         imageAndDescriptionView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
-        let gradientColor = chooseColor(light: .Neutral_02, dark: .Neutral_09)
+        let gradientColor = chooseColor(.Neutral_09)
         leftTagsViewGradient.gradientLayer.colors = [
             gradientColor.cgColor,
             gradientColor.withAlphaComponent(0).cgColor,

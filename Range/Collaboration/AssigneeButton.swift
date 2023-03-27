@@ -30,7 +30,7 @@ class AssigneeButton: UIButton {
         didSet {
             backgroundColor = isHighlighted
                 ? .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
-                : .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+                : .dynamic(.Neutral_09)
         }
     }
 
@@ -48,7 +48,7 @@ class AssigneeButton: UIButton {
         titleLabel?.numberOfLines = 2
         titleLabel?.lineBreakMode = .byTruncatingTail
 
-        backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        backgroundColor = .dynamic(.Neutral_09)
         layer.cornerRadius = 8
         layer.borderWidth = 1
 

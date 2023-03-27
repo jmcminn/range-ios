@@ -78,7 +78,7 @@ class CollaborationButton: UIControl {
     private func updateHighlightedColor() {
         backgroundColor = isHighlighted
             ? .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
-            : .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+            : .dynamic(.Neutral_09)
     }
 
     private func updateColors() {

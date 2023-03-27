@@ -27,7 +27,7 @@ class TagAddCollectionViewCell: UICollectionViewCell {
 
         tagBackgroundView.layer.borderWidth = 1
         tagBackgroundView.layer.cornerRadius = 16
-        tagBackgroundView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        tagBackgroundView.backgroundColor = .dynamic(.Neutral_09)
         contentView.addSubview(tagBackgroundView)
         tagBackgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview().priority(.high)

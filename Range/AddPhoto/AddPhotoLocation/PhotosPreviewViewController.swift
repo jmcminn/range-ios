@@ -72,7 +72,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        containerView.backgroundColor = .dynamic(.Neutral_09)
 
         buildPhotoCountView()
         containerView.addSubview(imageAndText)

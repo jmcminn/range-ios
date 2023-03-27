@@ -14,7 +14,7 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
 
         contentView.addSubview(imageView)
         imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        imageView.backgroundColor = .dynamic(.Neutral_09)
         imageView.layer.cornerRadius = contentView.layer.cornerRadius
         imageView.clipsToBounds = true
         imageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())

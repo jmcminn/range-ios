@@ -13,7 +13,7 @@ extension UIButton.Configuration {
             bottom: 14,
             trailing: 0
         )
-        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
         config.baseForegroundColor = .Red_03
         config.cornerStyle = .fixed
         config.background.cornerRadius = 12
@@ -40,7 +40,7 @@ extension UIButton.Configuration {
             bottom: 14,
             trailing: 0
         )
-        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         config.cornerStyle = .fixed
         config.background.cornerRadius = 12
@@ -66,7 +66,7 @@ extension UIButton.Configuration {
             bottom: 14,
             trailing: 0
         )
-        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
@@ -128,7 +128,7 @@ extension UIButton.Configuration {
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         var config = UIButton.Configuration.filled()
 
-        config.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
         config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius

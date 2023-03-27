@@ -113,7 +113,7 @@ class UploadPreviewViewController: UIViewController {
     private func setupBoxView() {
         boxView.layer.cornerRadius = 10
         boxView.layer.borderWidth = 1
-        boxView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        boxView.backgroundColor = .dynamic(.Neutral_09)
 
         fileTypeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         fileTypeLabel.adjustsFontForContentSizeCategory = true

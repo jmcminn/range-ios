@@ -140,7 +140,7 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.addBackgroundWithBorder(
             forCell: cell,
             forRowAt: indexPath,
-            backgroundColor: .dynamicColor(light: .Neutral_02, dark: .Neutral_09),
+            backgroundColor: .dynamic(.Neutral_09),
             borderColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_07),
             selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
         )

@@ -154,7 +154,7 @@ class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        view.backgroundColor = .dynamic(.Neutral_09)
 
         setupTableView()
         view.addSubview(tableView)

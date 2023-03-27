@@ -40,7 +40,7 @@ class PillView: UIView {
         iconName: String,
         text: String,
         verticalPadding: Double = 8.0,
-        backgroundColor: UIColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09),
+        backgroundColor: UIColor = .dynamic(.Neutral_09),
         style: Style = .default
     ) {
         self.style = style

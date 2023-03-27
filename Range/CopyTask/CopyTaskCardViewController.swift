@@ -231,7 +231,7 @@ extension CopyTaskCardViewController {
 
     private func setupNoTasksView() {
         let view = UIView()
-        view.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        view.backgroundColor = .dynamic(.Neutral_09)
 
         let questionPin = UIImageView(image: UIImage(named: "large_question_pin"))
         view.addSubview(questionPin)

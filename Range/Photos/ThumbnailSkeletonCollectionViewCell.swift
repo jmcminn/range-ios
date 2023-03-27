@@ -10,7 +10,7 @@ class ThumbnailSkeletonCollectionViewCell: UICollectionViewCell {
         super.init(frame: .zero)
 
         contentView.layer.cornerRadius = 7
-        contentView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
+        contentView.backgroundColor = .dynamic(.Neutral_09)
     }
 
     @available(*, unavailable)
