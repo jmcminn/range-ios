@@ -244,7 +244,7 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
         let status = statuses[section]
 
         let view = UIView()
-        view.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
+        view.backgroundColor = .dynamic(.Neutral_08)
         let chevron =
             UIImageView(image: UIImage(systemName: "chevron.right",
                                        withConfiguration: UIImage.SymbolConfiguration(pointSize: 18)))

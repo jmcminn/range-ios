@@ -44,7 +44,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
         previousValueLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitItalic)
         previousValueLabel.numberOfLines = 0
         previousValueLabel.lineBreakMode = .byWordWrapping
-        previousValueLabel.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
+        previousValueLabel.backgroundColor = .dynamic(.Neutral_08)
         previousValueLabel.layer.borderWidth = 1
         previousValueLabel.layer.cornerRadius = 16
         previousValueLabel.clipsToBounds = true

@@ -138,7 +138,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         descriptionLabel.numberOfLines = 2
         descriptionLabel.lineBreakMode = .byTruncatingTail
 
-        descriptionBackground.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
+        descriptionBackground.backgroundColor = .dynamic(.Neutral_08)
         descriptionSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
 
         commentsLabel.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)

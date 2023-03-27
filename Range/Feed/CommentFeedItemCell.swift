@@ -91,7 +91,7 @@ class CommentFeedItemCell: UITableViewCell {
             self?.moreAction()
         })
 
-        noteBackground.backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
+        noteBackground.backgroundColor = .dynamic(.Neutral_08)
 
         completeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.iconButton(
@@ -255,7 +255,7 @@ class NoteBackgroundView: UIView {
 
     init() {
         super.init(frame: .zero)
-        backgroundColor = .dynamicColor(light: .Neutral_03, dark: .Neutral_08)
+        backgroundColor = .dynamic(.Neutral_08)
         addSubview(statusView)
         statusView.snp.makeConstraints { make in
             make.leading.top.bottom.equalToSuperview()
