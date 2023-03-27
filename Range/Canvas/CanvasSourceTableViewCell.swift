@@ -39,7 +39,7 @@ class CanvasSourceTableViewCell: UITableViewCell {
             ? UIImage(named: "checkmark_checked")
             : UIImage().addCircleBackground(bgSize: CGSize(width: 20, height: 20),
                                             bgColor: .dynamic(.Neutral_10),
-                                            strokeColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_07))
+                                            strokeColor: .dynamic(.Neutral_07))
     }
 
     override func prepareForReuse() {

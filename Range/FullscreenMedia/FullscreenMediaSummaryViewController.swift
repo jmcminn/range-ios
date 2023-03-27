@@ -87,7 +87,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     private func updateColors() {
-        previewBox?.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        previewBox?.layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 
     private func setupViews() {
@@ -234,7 +234,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         self.previewVC = previewVC
 
         let separator = UIView()
-        separator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        separator.backgroundColor = .dynamic(.Neutral_07)
         previewBox.addSubview(separator)
         separator.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -322,7 +322,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
         let editLabel = LabelWithTextInsets()
         editLabel.textInsets = UIEdgeInsets(top: 6, left: 10, bottom: 6, right: 10)
-        editLabel.borderColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        editLabel.borderColor = .dynamic(.Neutral_07)
         editLabel.autoround = true
         editLabel.font = .preferredFont(forTextStyle: .subheadline)
         editLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)

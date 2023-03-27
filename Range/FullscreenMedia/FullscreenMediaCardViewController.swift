@@ -458,7 +458,7 @@ extension FullscreenMediaCardViewController {
         headerView.backgroundColor = containerView.backgroundColor
         headerView.setContentHuggingPriority(.required, for: .vertical)
 
-        headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        headerStroke.backgroundColor = .dynamic(.Neutral_07)
         headerView.addSubview(headerStroke)
         headerStroke.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
@@ -467,7 +467,7 @@ extension FullscreenMediaCardViewController {
         headerStroke.isHidden = true
 
         avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        avatarView.backgroundColor = .dynamic(.Neutral_07)
 
         authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         authorLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -520,7 +520,7 @@ extension FullscreenMediaCardViewController {
         tabBar.clipsToBounds = true
         // HACK - add separator to tab bar (maybe not even a hack??)
         let separator = UIView()
-        separator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        separator.backgroundColor = .dynamic(.Neutral_07)
         tabBar.addSubview(separator)
         separator.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()

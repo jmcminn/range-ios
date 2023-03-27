@@ -132,7 +132,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
 
     /// Update colors that doesn't automatically adapt to appearance change
     private func updateColors() {
-        previousValueLabel.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        previousValueLabel.layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 
     override func prepareForReuse() {

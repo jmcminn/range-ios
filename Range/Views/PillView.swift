@@ -12,7 +12,7 @@ class PillView: UIView {
         var borderColor: UIColor {
             switch self {
             case .default, .disabled:
-                return .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+                return .dynamic(.Neutral_07)
             case .red: return .Red_03
             case .tag: return .Primary_Blue_04
             }

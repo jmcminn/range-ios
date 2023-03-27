@@ -13,7 +13,7 @@ class ConvertedToTaskFeedItemCell: UITableViewCell {
         selectionStyle = .none
 
         checkView.layer.cornerRadius = 16
-        checkView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        checkView.backgroundColor = .dynamic(.Neutral_07)
         contentView.addSubview(checkView)
         checkView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview()

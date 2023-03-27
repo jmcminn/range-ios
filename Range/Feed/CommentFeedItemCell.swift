@@ -79,7 +79,7 @@ class CommentFeedItemCell: UITableViewCell {
 
     private func setupViews() {
         avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        avatarView.backgroundColor = .dynamic(.Neutral_07)
 
         authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -116,7 +116,7 @@ class CommentFeedItemCell: UITableViewCell {
                 config?.background.strokeColor = .Green_04
             } else {
                 config?.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_10)
-                config?.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+                config?.background.strokeColor = .dynamic(.Neutral_07)
             }
 
             button.configuration = config
@@ -284,7 +284,7 @@ class NoteBackgroundView: UIView {
 
     /// Update colors that doesn't automatically adapt to appearance change
     private func updateColors() {
-        backgroundLayer.strokeColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        backgroundLayer.strokeColor = chooseColor(.Neutral_07).cgColor
     }
 
     private func updateCorners() {

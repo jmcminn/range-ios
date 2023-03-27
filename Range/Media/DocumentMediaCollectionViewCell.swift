@@ -39,7 +39,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         }
 
         fileSizeLabel.textInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
-        fileSizeLabel.borderColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        fileSizeLabel.borderColor = .dynamic(.Neutral_07)
         fileSizeLabel.autoround = true
         fileSizeLabel.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
         fileSizeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
@@ -84,7 +84,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
     }
 
     func setUpload(_ upload: Upload) {
-        let borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        let borderColor = chooseColor(.Neutral_07).cgColor
         contentView.layer.borderColor = borderColor
         fileTypeBox.layer.borderColor = borderColor
         avatarView.layer.borderColor = borderColor

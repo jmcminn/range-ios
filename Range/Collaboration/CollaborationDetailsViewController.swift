@@ -302,7 +302,7 @@ extension CollaborationDetailsViewController {
         }
 
         let updatesToggleSeparator = UIView()
-        updatesToggleSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        updatesToggleSeparator.backgroundColor = .dynamic(.Neutral_07)
         updatesToggleBackground.addSubview(updatesToggleSeparator)
         updatesToggleSeparator.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()

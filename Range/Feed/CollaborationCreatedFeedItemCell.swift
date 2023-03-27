@@ -13,7 +13,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
         selectionStyle = .none
 
         avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        avatarView.backgroundColor = .dynamic(.Neutral_07)
         contentView.addSubview(avatarView)
         avatarView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview()

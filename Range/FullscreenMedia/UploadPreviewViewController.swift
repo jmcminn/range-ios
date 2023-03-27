@@ -107,7 +107,7 @@ class UploadPreviewViewController: UIViewController {
     }
 
     private func updateColors() {
-        boxView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        boxView.layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 
     private func setupBoxView() {

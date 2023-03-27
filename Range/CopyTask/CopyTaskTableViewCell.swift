@@ -121,7 +121,7 @@ class CopyTaskTableViewCell: UITableViewCell {
         tagsScrollView
             .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(scrollViewTapped)))
 
-        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        bottomStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
     func setCollaboration(_ collaboration: Collaboration, projectModel: ProjectModel) {

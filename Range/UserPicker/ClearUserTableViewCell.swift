@@ -38,7 +38,7 @@ class ClearUserTableViewCell: UITableViewCell {
 
     private func setupViews() {
         avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        avatarView.backgroundColor = .dynamic(.Neutral_07)
         updateAvatarImage()
 
         nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
@@ -55,7 +55,7 @@ class ClearUserTableViewCell: UITableViewCell {
             .addCircleBackground(
                 bgSize: CGSize(width: 32, height: 32),
                 bgColor: chooseColor(.Neutral_10),
-                strokeColor: chooseColor(light: .Neutral_04, dark: .Neutral_07)
+                strokeColor: chooseColor(.Neutral_07)
             )
     }
 }

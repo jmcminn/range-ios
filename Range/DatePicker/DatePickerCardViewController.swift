@@ -64,7 +64,7 @@ class DatePickerCardViewController: SheetCardViewController {
     override func updateColors() {
         super.updateColors()
 
-        datePickerBackground.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        datePickerBackground.layer.borderColor = UIColor.dynamic(.Neutral_07).cgColor
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {

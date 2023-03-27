@@ -50,7 +50,7 @@ class TypeScaleTableViewCell: UITableViewCell {
         sampleTextLabel.adjustsFontForContentSizeCategory = true
         sampleTextLabel.numberOfLines = 0
 
-        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        bottomStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
     func setTextStyle(_ textStyle: UIFont.TextStyle, bold: Bool) {

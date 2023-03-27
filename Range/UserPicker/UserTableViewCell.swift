@@ -46,7 +46,7 @@ class UserTableViewCell: UITableViewCell {
 
     private func setupViews() {
         avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        avatarView.backgroundColor = .dynamic(.Neutral_07)
 
         nameLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)

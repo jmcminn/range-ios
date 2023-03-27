@@ -157,7 +157,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
         } else {
             view.setShadowWithFigmaValues(y: -3, blur: 6, opacity: 0.05)
         }
-        roundedShadowView.topStrokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        roundedShadowView.topStrokeColor = .dynamic(.Neutral_07)
     }
 
     private func isNoteDidSet() {
@@ -255,7 +255,7 @@ extension CommentViewController {
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         config.baseBackgroundColor = .dynamic(.Neutral_09)
         config.baseForegroundColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
-        config.background.strokeColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        config.background.strokeColor = .dynamic(.Neutral_07)
         config.cornerStyle = .fixed
         config.background.cornerRadius = 8
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in

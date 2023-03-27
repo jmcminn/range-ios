@@ -212,7 +212,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
             forRowAt: indexPath,
             // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
             backgroundColor: chooseColor(.Neutral_09),
-            borderColor: chooseColor(light: .Neutral_04, dark: .Neutral_07),
+            borderColor: chooseColor(.Neutral_07),
             selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
         )
     }

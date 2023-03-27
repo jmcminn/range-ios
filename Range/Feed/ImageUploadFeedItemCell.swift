@@ -113,7 +113,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
     private func setupViews() {
         avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        avatarView.backgroundColor = .dynamic(.Neutral_07)
 
         authorLabel.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -139,7 +139,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         descriptionLabel.lineBreakMode = .byTruncatingTail
 
         descriptionBackground.backgroundColor = .dynamic(.Neutral_08)
-        descriptionSeparator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        descriptionSeparator.backgroundColor = .dynamic(.Neutral_07)
 
         commentsLabel.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
         commentsLabel.textColor = .Primary_Blue_04
@@ -167,7 +167,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
     /// Update colors that doesn't automatically adapt to appearance change
     private func updateColors() {
-        imageAndDescriptionView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        imageAndDescriptionView.layer.borderColor = chooseColor(.Neutral_07).cgColor
         let gradientColor = chooseColor(.Neutral_09)
         leftTagsViewGradient.gradientLayer.colors = [
             gradientColor.cgColor,

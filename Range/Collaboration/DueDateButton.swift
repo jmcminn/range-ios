@@ -42,7 +42,7 @@ class DueDateButton: UIButton {
     override open var isHighlighted: Bool {
         didSet {
             backgroundColor = isHighlighted
-                ? .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+                ? .dynamic(.Neutral_07)
                 : .dynamic(.Neutral_09)
         }
     }
@@ -78,7 +78,7 @@ class DueDateButton: UIButton {
     private func updateColors() {
         layer.borderColor = markOverdue
             ? UIColor.Red_03.cgColor
-            : chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+            : chooseColor(.Neutral_07).cgColor
     }
 
     /// Updates the title (both, the content and colors)
@@ -137,7 +137,7 @@ class DueDateButton: UIButton {
             bgColor: chooseColor(.Neutral_10),
             strokeColor: markOverdue
                 ? .Red_03
-                : chooseColor(light: .Neutral_04, dark: .Neutral_07)
+                : chooseColor(.Neutral_07)
         )
         setImage(imageWithBackground, for: .normal)
         setImage(imageWithBackground, for: .highlighted)

@@ -129,7 +129,7 @@ class CopyTaskCardViewController: SheetCardViewController {
     }
 
     private func setupHeaderStroke() {
-        headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        headerStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
     private func setupTableView() {
@@ -280,7 +280,7 @@ extension CopyTaskCardViewController {
         }
 
         let bottomStroke = UIView()
-        bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        bottomStroke.backgroundColor = .dynamic(.Neutral_07)
         view.addSubview(bottomStroke)
         bottomStroke.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()

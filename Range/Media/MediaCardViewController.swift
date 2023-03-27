@@ -183,7 +183,7 @@ class MediaCardViewController: SheetCardViewController {
     }
 
     private func setupHeaderStroke() {
-        headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        headerStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
     private func setupCollectionView() {

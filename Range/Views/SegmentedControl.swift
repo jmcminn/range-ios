@@ -67,7 +67,7 @@ class SegmentedControlButton: ControlWithTapAreaInsets {
                 ? .dynamicColor(light: .Neutral_05, dark: .Neutral_06) // selected, highlighted
                 : .dynamicColor(light: .Neutral_07, dark: .Neutral_04)) // selected, not highlighted
             : (isHighlighted
-                ? .dynamicColor(light: .Neutral_04, dark: .Neutral_07) // not selected, highlighted
+                ? .dynamic(.Neutral_07) // not selected, highlighted
                 : .dynamicColor(light: .Neutral_06, dark: .Neutral_05)) // not selected, not highlighted
         let font: UIFont = isSelected
             ? ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
@@ -264,7 +264,7 @@ class SegmentedControl: UIView {
     private func buildSelectedSegmentIndicator() {
         selectedSegmentIndicator = UIView()
         selectedSegmentIndicator.layer.cornerRadius = 7
-        selectedSegmentIndicator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        selectedSegmentIndicator.backgroundColor = .dynamic(.Neutral_07)
         insertSubview(selectedSegmentIndicator, at: 0)
     }
 
@@ -278,6 +278,6 @@ class SegmentedControl: UIView {
     /// Adapt CG colors to interface style change
     private func updateColors() {
         // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
-        layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 }

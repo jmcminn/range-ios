@@ -106,7 +106,7 @@ class TypeScaleCardViewController: SheetCardViewController {
             make.height.equalTo(SegmentedControl.height)
         }
 
-        headerStroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        headerStroke.backgroundColor = .dynamic(.Neutral_07)
         headerView.addSubview(headerStroke)
         headerStroke.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()

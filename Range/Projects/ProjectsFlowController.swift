@@ -133,7 +133,7 @@ class ProjectsFlowController: UINavigationController {
 
         // HACK - add separator to tab bar (maybe not even a hack??)
         let separator = UIView()
-        separator.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+        separator.backgroundColor = .dynamic(.Neutral_07)
         tabBarVC.tabBar.addSubview(separator)
         separator.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()

@@ -77,12 +77,12 @@ class CollaborationButton: UIControl {
 
     private func updateHighlightedColor() {
         backgroundColor = isHighlighted
-            ? .dynamicColor(light: .Neutral_04, dark: .Neutral_07)
+            ? .dynamic(.Neutral_07)
             : .dynamic(.Neutral_09)
     }
 
     private func updateColors() {
-        layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 
     /// when color appearance changes the image needs to be updated too as it has the stroke color
@@ -95,7 +95,7 @@ class CollaborationButton: UIControl {
             .addCircleBackground(
                 bgSize: CGSize(width: 32, height: 32),
                 bgColor: chooseColor(.Neutral_10),
-                strokeColor: chooseColor(light: .Neutral_04, dark: .Neutral_07)
+                strokeColor: chooseColor(.Neutral_07)
             )
         disclosureIndicator.image = image
     }

@@ -96,7 +96,7 @@ extension CanvasSelectorCardViewController: UITableViewDelegate, UITableViewData
             forCell: cell,
             forRowAt: indexPath,
             backgroundColor: .dynamic(.Neutral_09),
-            borderColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_07),
+            borderColor: .dynamic(.Neutral_07),
             selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
         )
     }

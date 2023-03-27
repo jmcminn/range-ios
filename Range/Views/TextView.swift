@@ -38,7 +38,7 @@ class TextView: UIView {
     /// Adapt CG colors to interface style change
     private func updateColors() {
         // UIColor.dynamicColor didn't work for overrideUserInterfaceStyle = .dark
-        backgroundView.layer.borderColor = chooseColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        backgroundView.layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 
     private func setupBackgroundView() {

@@ -73,6 +73,6 @@ class TagAddCollectionViewCell: UICollectionViewCell {
 
     /// Update colors that doesn't automatically adapt to appearance change
     private func updateColors() {
-        tagBackgroundView.layer.borderColor = UIColor.dynamicColor(light: .Neutral_04, dark: .Neutral_07).cgColor
+        tagBackgroundView.layer.borderColor = UIColor.dynamic(.Neutral_07).cgColor
     }
 }
