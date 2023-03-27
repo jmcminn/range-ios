@@ -1,6 +1,12 @@
 import SwiftUI
 import UIKit
 
+/// The applications uses Neutral_01 ... Neutral_10 colors which are white to black, but defined separately
+/// for light and dark mode (see the color resources for the exact values).
+/// But in both, light and dark, Neutral_01 is still the brightest color, so this color scheme still needs to be inverted when using for light/dark mode.
+/// The code uses the dark colors from Figma. So whenever something is set in Figma to be Neutral_10, it'll use Neutral_10 in dark mode
+/// and Neutral_01 in light (09 vs 02, 08 vs 03, 07 vs 04, 06 vs 05, ...)
+
 extension Color {
     static let Green_03 = Color("Green_03")
     static let Green_04 = Color("Green_04")
@@ -57,10 +63,33 @@ extension UIColor {
     static let Secondary_03 = UIColor(named: "Secondary_03")!
 }
 
+/// Dynamic colors
 extension UIColor {
-    /// Color that automatically adapts to light/dark
+    /// Color that automatically adapts to light/dark and specifies both values
     static func dynamicColor(light: UIColor, dark: UIColor) -> UIColor {
         UIColor { $0.userInterfaceStyle == .dark ? dark : light }
+    }
+
+    /// Color that adapts to light/dark and specifies dark only. For light appearance it uses `invertedColor(color)`
+    static func dynamic(_ dark: UIColor) -> UIColor {
+        dynamicColor(light: dark._inverted, dark: dark)
+    }
+
+    /// To translate Neutral colors between light and dark appearances
+    fileprivate var _inverted: UIColor {
+        switch self {
+        case .Neutral_10: return .Neutral_01
+        case .Neutral_09: return .Neutral_02
+        case .Neutral_08: return .Neutral_03
+        case .Neutral_07: return .Neutral_04
+        case .Neutral_06: return .Neutral_05
+        case .Neutral_05: return .Neutral_06
+        case .Neutral_04: return .Neutral_07
+        case .Neutral_03: return .Neutral_08
+        case .Neutral_02: return .Neutral_09
+        case .Neutral_01: return .Neutral_10
+        default: fatalError("Neutral colors range from 1 to 10")
+        }
     }
 }
 
@@ -68,6 +97,11 @@ extension Color {
     /// Color that automatically adapts to light/dark
     static func dynamicColor(light: UIColor, dark: UIColor) -> Color {
         Color(UIColor.dynamicColor(light: light, dark: dark))
+    }
+
+    /// Color that adapts to light/dark and specifies dark only. For light appearance it uses `invertedColor(color)`
+    static func dynamic(_ dark: UIColor) -> Color {
+        dynamicColor(light: dark._inverted, dark: dark)
     }
 }
 
@@ -79,5 +113,10 @@ extension UITraitEnvironment {
     /// - Warning: Doesn't automatically change color!!!
     func chooseColor(light: UIColor, dark: UIColor) -> UIColor {
         traitCollection.userInterfaceStyle == .dark ? dark : light
+    }
+
+    /// - Warning: Doesn't automatically change color!!!
+    func chooseColor(_ dark: UIColor) -> UIColor {
+        traitCollection.userInterfaceStyle == .dark ? dark : dark._inverted
     }
 }
