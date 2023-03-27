@@ -259,7 +259,7 @@ extension CollaborationDetailsViewController {
 extension CollaborationDetailsViewController {
     private func setupDescriptionTextView() {
         descriptionTextView = UITextViewWithPlaceholder(placeholderText: "Add a description...")
-        descriptionTextView.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        descriptionTextView.textColor = .dynamic(.Neutral_04)
         descriptionTextView.font = .preferredFont(forTextStyle: .subheadline)
         // left/right = 12 to achieve the visual 16 margin...
         // bottom = 10 so when there's an actual text we have 16 points to next view, if not, we have total 16 point space to top (see Constants)

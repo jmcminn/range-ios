@@ -428,7 +428,7 @@ extension PhotoDetailsViewController {
         bottomBar.backgroundColor = .dynamic(.Neutral_10)
 
         let stroke = UIView()
-        stroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)
+        stroke.backgroundColor = .dynamic(.Neutral_07)
         bottomBar.addSubview(stroke)
         stroke.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()

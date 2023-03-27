@@ -140,12 +140,12 @@ class UploadFeedItemCell: UITableViewCell {
         imageAndDescriptionView.layer.cornerRadius = 16
         imageAndDescriptionView.clipsToBounds = true
 
-        fileNameLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        fileNameLabel.textColor = .dynamic(.Neutral_04)
         fileNameLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
         fileNameLabel.numberOfLines = 2
         fileNameLabel.lineBreakMode = .byTruncatingTail
 
-        descriptionLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        descriptionLabel.textColor = .dynamic(.Neutral_04)
         descriptionLabel.font = .preferredFont(forTextStyle: .subheadline)
         descriptionLabel.numberOfLines = 2
         descriptionLabel.lineBreakMode = .byTruncatingTail

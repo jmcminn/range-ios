@@ -223,7 +223,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
         label.text = self.tableView(tableView, titleForHeaderInSection: section)
         label.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
         label.adjustsFontForContentSizeCategory = true
-        label.textColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_05)
+        label.textColor = .dynamic(.Neutral_05)
         label.sizeToFit()
         label.frame.origin.x = 16
         view.addSubview(label)

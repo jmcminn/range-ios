@@ -39,7 +39,7 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
         let messageString = NSMutableAttributedString(
             string: update.user?.displayName ?? "",
             attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
+                .foregroundColor: chooseColor(.Neutral_05),
                 .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
             ]
         )

@@ -133,7 +133,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         uploadImageView.contentMode = .scaleAspectFit
         uploadImageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())
 
-        descriptionLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        descriptionLabel.textColor = .dynamic(.Neutral_04)
         descriptionLabel.font = .preferredFont(forTextStyle: .subheadline)
         descriptionLabel.numberOfLines = 2
         descriptionLabel.lineBreakMode = .byTruncatingTail

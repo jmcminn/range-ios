@@ -115,7 +115,7 @@ class CommentFeedItemCell: UITableViewCell {
                 config?.baseBackgroundColor = .Green_04
                 config?.background.strokeColor = .Green_04
             } else {
-                config?.baseBackgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_10)
+                config?.baseBackgroundColor = .dynamic(.Neutral_10)
                 config?.background.strokeColor = .dynamic(.Neutral_07)
             }
 
@@ -125,7 +125,7 @@ class CommentFeedItemCell: UITableViewCell {
         completedLabel.numberOfLines = 0
         completedLabel.lineBreakMode = .byWordWrapping
 
-        commentTextLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        commentTextLabel.textColor = .dynamic(.Neutral_04)
         commentTextLabel.font = .preferredFont(forTextStyle: .subheadline)
         commentTextLabel.numberOfLines = 0
         commentTextLabel.lineBreakMode = .byWordWrapping
@@ -155,7 +155,7 @@ class CommentFeedItemCell: UITableViewCell {
         let textString = NSMutableAttributedString(
             string: comment.text,
             attributes: [
-                .foregroundColor: UIColor.dynamicColor(light: .Neutral_06, dark: .Neutral_04),
+                .foregroundColor: UIColor.dynamic(.Neutral_04),
                 .font: UIFont.preferredFont(forTextStyle: .subheadline),
             ]
         )

@@ -40,7 +40,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
         }
 
         previousValueLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        previousValueLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        previousValueLabel.textColor = .dynamic(.Neutral_04)
         previousValueLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitItalic)
         previousValueLabel.numberOfLines = 0
         previousValueLabel.lineBreakMode = .byWordWrapping
@@ -73,7 +73,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
         let messageString = NSMutableAttributedString(
             string: update.user?.displayName ?? "",
             attributes: [
-                .foregroundColor: chooseColor(light: .Neutral_06, dark: .Neutral_04),
+                .foregroundColor: chooseColor(.Neutral_05),
                 .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
             ]
         )

@@ -129,7 +129,7 @@ extension UIButton.Configuration {
         var config = UIButton.Configuration.filled()
 
         config.baseBackgroundColor = .dynamic(.Neutral_09)
-        config.baseForegroundColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_04)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
         config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
         config.background.strokeColor = .dynamic(.Neutral_07)

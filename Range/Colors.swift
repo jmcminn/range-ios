@@ -111,7 +111,8 @@ extension UITraitEnvironment {
     /// For cases where UIColor.dynamicColor doesn't work - observed that it doesn't work when manually overriding userInterfaceStyle
     ///
     /// - Warning: Doesn't automatically change color!!!
-    func chooseColor(light: UIColor, dark: UIColor) -> UIColor {
+    /// private for now, can be made public if we need it for other colors than Neutral (which is covered by chooseColor(_ dark:))
+    private func chooseColor(light: UIColor, dark: UIColor) -> UIColor {
         traitCollection.userInterfaceStyle == .dark ? dark : light
     }
 
