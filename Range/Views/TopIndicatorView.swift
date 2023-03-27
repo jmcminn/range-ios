@@ -22,9 +22,6 @@ class TopIndicatorView: UIView {
     }
 
     private func setupViews() {
-        // 60% opacity for the whole view
-        layer.opacity = 0.6
-
         backgroundColor = .Neutral_10
 
         label.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)

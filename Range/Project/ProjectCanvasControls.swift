@@ -95,66 +95,48 @@ extension ProjectCanvasControls {
         subviews.first { $0.tag == ViewTag.topIndicatorView.rawValue } as? TopIndicatorView
     }
 
+    /// topIndicatorView is always partially transparent
+    private var topIndicatorViewFullOpacity: CGFloat { 0.6 }
+
     /// Adds the indicator view to controls and displays below the topViewController
     func showTopIndicatorView(text: String, animated: Bool) {
         guard let topView = topViewController?.view else { return }
 
-        let newlyCreated: Bool
         if self.topIndicatorView == nil {
             let topIndicatorView = TopIndicatorView()
             topIndicatorView.tag = ViewTag.topIndicatorView.rawValue
             insertSubview(topIndicatorView, belowSubview: topView)
-            newlyCreated = true
-        } else {
-            newlyCreated = false
-        }
-        guard let topIndicatorView = topIndicatorView else { return }
-        topIndicatorView.text = text
-
-        if animated {
-            if newlyCreated {
-                // avoid resetting the constraints if the top indicator is already there and we're
-                // just potentially resetting the text
-                topIndicatorView.snp.makeConstraints { make in
-                    make.leading.trailing.equalToSuperview()
-                    make.bottom.equalTo(topView)
-                }
-                layoutIfNeeded()
-            }
-            slideDownTopIndicatorView()
-        } else {
             topIndicatorView.snp.makeConstraints { make in
                 make.leading.trailing.equalToSuperview()
                 make.top.equalTo(topView.snp.bottom)
             }
         }
+        guard let topIndicatorView = topIndicatorView else { return }
+        topIndicatorView.text = text
+
+        if animated {
+            topIndicatorView.alpha = 0.0
+            fadeInTopIndicatorView()
+        } else {
+            topIndicatorView.alpha = topIndicatorViewFullOpacity
+        }
     }
 
     /// Slides the indicator view behind the topViewController
-    func slideUpTopIndicatorView(completion: (() -> Void)? = nil) {
-        guard let topIndicatorView = topIndicatorView,
-              let topView = topViewController?.view else { return }
-        topIndicatorView.snp.remakeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(topView)
-        }
+    func fadeOutTopIndicatorView(completion: (() -> Void)? = nil) {
+        guard let topIndicatorView = topIndicatorView else { return }
         UIView.animate(withDuration: 0.2, animations: {
-            self.layoutIfNeeded()
+            topIndicatorView.alpha = 0.0
         }) { _ in
             completion?()
         }
     }
 
     /// Slides the indicator view down so it's visible again
-    func slideDownTopIndicatorView(completion: (() -> Void)? = nil) {
-        guard let topIndicatorView = topIndicatorView,
-              let topView = topViewController?.view else { return }
-        topIndicatorView.snp.remakeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(topView.snp.bottom)
-        }
+    func fadeInTopIndicatorView(completion: (() -> Void)? = nil) {
+        guard let topIndicatorView = topIndicatorView else { return }
         UIView.animate(withDuration: 0.2, animations: {
-            self.layoutIfNeeded()
+            topIndicatorView.alpha = self.topIndicatorViewFullOpacity
         }) { _ in
             completion?()
         }
@@ -164,7 +146,7 @@ extension ProjectCanvasControls {
     func hideTopIndicatorView(animated: Bool) {
         guard let topIndicatorView = topIndicatorView else { return }
         if animated {
-            slideUpTopIndicatorView {
+            fadeOutTopIndicatorView {
                 topIndicatorView.removeFromSuperview()
             }
         } else {

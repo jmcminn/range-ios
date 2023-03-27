@@ -43,6 +43,10 @@ final class ProjectFlowController: UIViewController {
     /// throttle the presence reporting when canvas camera changes, report no more frequently than every 0.5 seconds
     var reportPresenceThrottler = Throttler(throttleTime: 0.5)
 
+    /// throttle the fading in/out the canvas indicator view so it doesn't react immediatly to user interaction (so when user performs quick
+    /// and short gestures, there will be no fading)
+    var canvasIndicatorViewFadeThrottler = Throttler(throttleTime: 1)
+
     var addPhotoFlow: AddPhotoFlowController?
     var addPinFlow: AddPinFlowController?
     var movePinFlow: MovePinFlowController?
@@ -386,9 +390,13 @@ final class ProjectFlowController: UIViewController {
 extension ProjectFlowController: CanvasViewControllerDelegate {
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
         if reason == .pan || reason == .zoom {
-            controls.slideUpTopIndicatorView()
+            canvasIndicatorViewFadeThrottler.throttle { [weak self] in
+                self?.controls.fadeOutTopIndicatorView()
+            }
         } else if reason == .panEnd || reason == .zoomEnd {
-            controls.slideDownTopIndicatorView()
+            canvasIndicatorViewFadeThrottler.throttle { [weak self] in
+                self?.controls.fadeInTopIndicatorView()
+            }
         }
         if reason == .panEnd || reason == .zoomEnd || reason == .programmatic {
             reportPresenceThrottler.throttle { [weak self] in
