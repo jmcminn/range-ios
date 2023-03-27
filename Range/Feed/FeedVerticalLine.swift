@@ -44,7 +44,7 @@ class FeedVerticalLine: UIView {
     }
 
     private func updateColor() {
-        dashedLayer?.strokeColor = chooseColor(light: .Neutral_05, dark: .Neutral_06).cgColor
+        dashedLayer?.strokeColor = chooseColor(.Neutral_06).cgColor
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {

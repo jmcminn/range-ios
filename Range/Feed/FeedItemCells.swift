@@ -25,7 +25,7 @@ class FeedItemCells {
     static func minorItemDotView() -> UIView {
         let view = UIView()
         view.layer.cornerRadius = 4
-        view.backgroundColor = .dynamicColor(light: .Neutral_05, dark: .Neutral_06)
+        view.backgroundColor = .dynamic(.Neutral_06)
         view.snp.makeConstraints { make in
             make.width.height.equalTo(8)
         }
