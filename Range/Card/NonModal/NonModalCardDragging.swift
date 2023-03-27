@@ -18,7 +18,7 @@ class NonModalCardDragging: CardDragging {
 
         if config.showOverlay {
             let overlayView = UIView()
-            overlayView.backgroundColor = .dynamicColor(light: .Neutral_10, dark: .Neutral_01).withAlphaComponent(0.4)
+            overlayView.backgroundColor = .dynamic(.Neutral_01).withAlphaComponent(0.4)
             overlayView.isHidden = true
             containerView.insertSubview(overlayView, belowSubview: presentedViewController.view)
             overlayView.snp.makeConstraints { make in make.edges.equalToSuperview() }
