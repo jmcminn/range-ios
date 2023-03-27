@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setupAppearance() {
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithDefaultBackground()
-        tabBarAppearance.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        tabBarAppearance.backgroundColor = .dynamic(.Neutral_10)
         tabBarAppearance.stackedLayoutAppearance.normal.iconColor = .dynamicColor(light: .Neutral_07, dark: .Neutral_04)
         tabBarAppearance.stackedLayoutAppearance.normal
             .titleTextAttributes = [.foregroundColor: UIColor.dynamicColor(light: .Neutral_07, dark: .Neutral_04)]

@@ -135,7 +135,7 @@ class UploadFeedItemCell: UITableViewCell {
             self?.moreAction()
         })
 
-        imageAndDescriptionView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        imageAndDescriptionView.backgroundColor = .dynamic(.Neutral_10)
         imageAndDescriptionView.layer.borderWidth = 1
         imageAndDescriptionView.layer.cornerRadius = 16
         imageAndDescriptionView.clipsToBounds = true

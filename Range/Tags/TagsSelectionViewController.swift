@@ -57,7 +57,7 @@ class TagsSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_10)
 
         tableView.backgroundColor = view.backgroundColor
         tableView.sectionHeaderTopPadding = 0

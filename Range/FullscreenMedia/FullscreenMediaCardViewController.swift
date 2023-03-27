@@ -91,7 +91,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        containerView.backgroundColor = .dynamic(.Neutral_10)
 
         setupHeaderView()
         containerView.addSubview(headerView)
@@ -153,7 +153,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
         setMode(initialMode)
 
-        bottomView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        bottomView.backgroundColor = .dynamic(.Neutral_10)
         // added to view (rounded view) as the containerView has a layer mask
         // and bottom view is added outside of its bounds
         view.addSubview(bottomView)

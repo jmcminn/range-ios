@@ -30,7 +30,7 @@ class TopViewController: UIViewController {
         super.viewDidLoad()
         updateShadow()
 
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_10)
 
         let bottomStroke = UIView()
         bottomStroke.backgroundColor = .dynamicColor(light: .Neutral_04,

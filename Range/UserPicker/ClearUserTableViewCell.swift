@@ -54,7 +54,7 @@ class ClearUserTableViewCell: UITableViewCell {
                            renderingMode: .alwaysTemplate)
             .addCircleBackground(
                 bgSize: CGSize(width: 32, height: 32),
-                bgColor: chooseColor(light: .Neutral_01, dark: .Neutral_10),
+                bgColor: chooseColor(.Neutral_10),
                 strokeColor: chooseColor(light: .Neutral_04, dark: .Neutral_07)
             )
     }

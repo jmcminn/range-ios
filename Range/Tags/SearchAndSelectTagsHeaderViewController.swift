@@ -33,7 +33,7 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         selectedTagsState = viewModel.selectedTags.isEmpty ? .hidden : .visible
         super.init(nibName: nil, bundle: nil)
 
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_10)
         buildViews()
 
         updateBottomStroke()

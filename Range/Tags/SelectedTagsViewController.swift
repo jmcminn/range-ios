@@ -15,7 +15,7 @@ class SelectedTagsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_10)
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal

@@ -143,6 +143,6 @@ extension SwitchPinTypeCardViewController {
         {
             pinTypeToggle.setSelectedSegmentIndex(index, animated: false)
         }
-        pinTypeToggle.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        pinTypeToggle.backgroundColor = .dynamic(.Neutral_10)
     }
 }

@@ -15,7 +15,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        backgroundColor = .dynamic(.Neutral_10)
 
         setupViews()
 

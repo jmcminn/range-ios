@@ -66,7 +66,7 @@ class TagsView: UIView {
     }
 
     func setupView() {
-        backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        backgroundColor = .dynamic(.Neutral_10)
 
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 8

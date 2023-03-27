@@ -98,7 +98,7 @@ class TagSelectionTableViewCell: UITableViewCell {
             iconView.image = tagViewModel.selected
                 ? UIImage(named: "checkmark_checked")
                 : UIImage().addCircleBackground(bgSize: CGSize(width: 20, height: 20),
-                                                bgColor: .dynamicColor(light: .Neutral_01, dark: .Neutral_10),
+                                                bgColor: .dynamic(.Neutral_10),
                                                 strokeColor: .dynamicColor(light: .Neutral_04, dark: .Neutral_07))
         } else {
             iconView.image = nil

@@ -113,8 +113,8 @@ class PhotoDetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         overrideUserInterfaceStyle = .dark
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
-        contentView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_10)
+        contentView.backgroundColor = .dynamic(.Neutral_10)
         navigationController?.isNavigationBarHidden = true
     }
 
@@ -425,7 +425,7 @@ extension PhotoDetailsViewController {
 
     private func buildBottomBar() {
         bottomBar = UIView()
-        bottomBar.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        bottomBar.backgroundColor = .dynamic(.Neutral_10)
 
         let stroke = UIView()
         stroke.backgroundColor = .dynamicColor(light: .Neutral_04, dark: .Neutral_08)

@@ -94,7 +94,7 @@ class CollaborationButton: UIControl {
             .withTintColor(chooseColor(light: .Neutral_07, dark: .Neutral_04), renderingMode: .alwaysTemplate)
             .addCircleBackground(
                 bgSize: CGSize(width: 32, height: 32),
-                bgColor: chooseColor(light: .Neutral_01, dark: .Neutral_10),
+                bgColor: chooseColor(.Neutral_10),
                 strokeColor: chooseColor(light: .Neutral_04, dark: .Neutral_07)
             )
         disclosureIndicator.image = image

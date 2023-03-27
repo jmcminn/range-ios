@@ -104,7 +104,7 @@ class UserPickerCardViewController: SheetCardViewController {
     }
 
     private func setupHeaderVew() {
-        headerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        headerView.backgroundColor = .dynamic(.Neutral_10)
     }
 
     private func setupSearchView() {

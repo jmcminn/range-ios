@@ -134,7 +134,7 @@ class DueDateButton: UIButton {
                            renderingMode: .alwaysTemplate)
         let imageWithBackground = image?.addCircleBackground(
             bgSize: CGSize(width: 32, height: 32),
-            bgColor: chooseColor(light: .Neutral_01, dark: .Neutral_10),
+            bgColor: chooseColor(.Neutral_10),
             strokeColor: markOverdue
                 ? .Red_03
                 : chooseColor(light: .Neutral_04, dark: .Neutral_07)

@@ -22,7 +22,7 @@ class TextView: UIView {
 
         super.init(frame: .zero)
 
-        backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        backgroundColor = .dynamic(.Neutral_10)
 
         setupBackgroundView()
         setupTextView()
@@ -74,7 +74,7 @@ class TextView: UIView {
     private func setupInputAccessoryView() -> UIView {
         // the width doesn't matter, it'll be equal to the keyboard(screen) width
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 80))
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_10)
         let doneButton = UIButton(
             configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(title: doneText) { [weak self] _ in self?.onDone?() }

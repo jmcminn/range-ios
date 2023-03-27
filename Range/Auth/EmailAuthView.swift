@@ -25,7 +25,7 @@ struct EmailAuthView: View {
             ZStack(alignment: .top) {
                 // background that stays in place and ignores safe areas
                 Group {
-                    Color(.dynamicColor(light: .Neutral_01, dark: .Neutral_10))
+                    Color(.dynamic(.Neutral_10))
                     if colorScheme == .dark {
                         Image("topglow")
                             .resizable()

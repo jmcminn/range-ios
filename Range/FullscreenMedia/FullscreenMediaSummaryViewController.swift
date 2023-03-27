@@ -48,7 +48,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_10)
 
         setupViews()
         updateColors()
@@ -189,7 +189,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
     private func setupPreviewView() {
         let previewWrapperView = UIView()
-        previewWrapperView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        previewWrapperView.backgroundColor = .dynamic(.Neutral_10)
         stackView.addSubview(previewWrapperView)
         previewWrapperView.snp.makeConstraints { make in
             make.width.equalTo(scrollView)

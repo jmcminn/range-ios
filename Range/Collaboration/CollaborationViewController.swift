@@ -96,7 +96,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        containerView.backgroundColor = .dynamic(.Neutral_10)
 
         containerView.installSliderView()
 

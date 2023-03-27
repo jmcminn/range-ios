@@ -17,7 +17,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         contentView.layer.borderWidth = 1
         contentView.backgroundColor = .dynamicColor(light: .Neutral_02, dark: .Neutral_09)
 
-        fileTypeBox.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        fileTypeBox.backgroundColor = .dynamic(.Neutral_10)
         fileTypeBox.layer.cornerRadius = 6
         fileTypeBox.layer.borderWidth = 1
         contentView.addSubview(fileTypeBox)
@@ -44,7 +44,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         fileSizeLabel.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
         fileSizeLabel.textColor = .dynamicColor(light: .Neutral_06, dark: .Neutral_05)
         fileSizeLabel.adjustsFontForContentSizeCategory = true
-        fileSizeLabel.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        fileSizeLabel.backgroundColor = .dynamic(.Neutral_10)
         contentView.addSubview(fileSizeLabel)
         fileSizeLabel.snp.makeConstraints { make in
             make.leading.equalTo(fileTypeBox.snp.trailing).offset(8)
@@ -62,7 +62,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(fileTypeBox).offset(1)
         }
 
-        avatarView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        avatarView.backgroundColor = .dynamic(.Neutral_10)
         avatarView.layer.borderWidth = 1
         avatarView.label.textColor = fileTypeLabel.textColor
         contentView.addSubview(avatarView)

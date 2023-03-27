@@ -34,7 +34,7 @@ class AddPinConfirmationViewController: UIViewController, NonModalCardCoordinati
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = .dynamicColor(light: .Neutral_01, dark: .Neutral_10)
+        containerView.backgroundColor = .dynamic(.Neutral_10)
         updateColors()
 
         cancelButton = UIButton(
