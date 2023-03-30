@@ -6,8 +6,8 @@ import UIKit
 class ToastViewController: UIViewController {
     weak var keyWindow: UIWindow?
     private var currentToastView: ToastView?
-    /// Currently scheduled toast hiding
-    private var hideToastWorkItem: DispatchWorkItem?
+    /// automatically hides the toast after 5 seconds
+    private var hideToastDelayer = Delayer(delayTime: 5)
 
     /// Initialize with the key window. It's needed to synchronize the status bar appearance from.
     init(keyWindow: UIWindow) {
@@ -46,10 +46,7 @@ class ToastViewController: UIViewController {
 
     private func _hideCurrentToastView(completion: (() -> Void)? = nil) {
         // cancel the current scheduled toast hiding
-        if let hideToastWorkItem = hideToastWorkItem {
-            hideToastWorkItem.cancel()
-            self.hideToastWorkItem = nil
-        }
+        hideToastDelayer.cancel()
         if let currentToastView = currentToastView {
             UIView.animate(withDuration: 0.2, animations: {
                 currentToastView.alpha = 0
@@ -79,12 +76,10 @@ class ToastViewController: UIViewController {
         }
         currentToastView = toastView
 
-        // schedule hiding toast in 10 seconds
-        let newHideToastWorkItem = DispatchWorkItem { [weak self] in
+        // schedule hiding toast
+        hideToastDelayer.delay { [weak self] in
             self?._hideCurrentToastView()
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: newHideToastWorkItem)
-        hideToastWorkItem = newHideToastWorkItem
     }
 
     @objc func toastTapped() {

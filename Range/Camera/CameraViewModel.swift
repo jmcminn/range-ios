@@ -22,8 +22,8 @@ class CameraViewModel: ObservableObject {
     @Published var bannerIcon: String? = nil
     /// Whether the banner is for enabled or disabled state
     @Published var bannerForEnabled: Bool = false
-    /// Currently scheduled banner cleanup
-    private var cleanWorkItem: DispatchWorkItem?
+    /// Delay for hiding the banner
+    private var hideBannerDelayer = Delayer(delayTime: 2)
 
     /// Callbacks for the controller
     var closeAction: (() -> Void)?
@@ -83,16 +83,10 @@ class CameraViewModel: ObservableObject {
         bannerIcon = icon
         bannerText = text
         bannerForEnabled = forEnabled
-        // cancel the current cleanWorkItem to prolong banner showing
-        if let cleanWorkItem = cleanWorkItem {
-            cleanWorkItem.cancel()
-        }
-        // schedule `cleanBanner` in 2 seconds
-        let newCleanWorkItem = DispatchWorkItem { [weak self] in
+        // new delay for banner hiding after text set/update
+        hideBannerDelayer.delay { [weak self] in
             self?.cleanBanner()
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: newCleanWorkItem)
-        cleanWorkItem = newCleanWorkItem
     }
 
     /// Cleans the banner data

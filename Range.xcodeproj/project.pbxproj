@@ -243,6 +243,7 @@
 		0A82A8EC292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */; };
 		0A82A8EE292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */; };
 		0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */; };
+		0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A859CF729D5F49000CCAEC5 /* Delayer.swift */; };
 		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197E291C24A60050FC41 /* PendingActionsModel.swift */; };
 		0A881981291C25630050FC41 /* TestPendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881980291C25630050FC41 /* TestPendingActionsModel.swift */; };
@@ -610,6 +611,7 @@
 		0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollaborationCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCommentTextCommandTest.swift; sourceTree = "<group>"; };
+		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
 		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
 		0A881980291C25630050FC41 /* TestPendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingActionsModel.swift; sourceTree = "<group>"; };
@@ -762,6 +764,7 @@
 		0A05312229375BDF00738BA3 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				0A859CF729D5F49000CCAEC5 /* Delayer.swift */,
 				0A05312329375BEC00738BA3 /* Throttler.swift */,
 			);
 			path = Utils;
@@ -2037,6 +2040,7 @@
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A374DE0292786530036C184 /* DeleteCommentCommand.swift in Sources */,
 				0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */,
+				0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0ABFD8B728F00A98008CDA74 /* CommentViewController.swift in Sources */,
 				0A130EA928D74F3300FF1368 /* ImageUploadFeedItemCell.swift in Sources */,
