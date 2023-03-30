@@ -650,6 +650,7 @@
 		0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoViewModel.swift; sourceTree = "<group>"; };
 		0A99BF2A28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryTransition.swift; sourceTree = "<group>"; };
 		0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanDirectionGestureRecognizer.swift; sourceTree = "<group>"; };
+		0A9E5EFB29D5FFC000E7737D /* GoogleService-Info.custom.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.custom.plist"; sourceTree = "<group>"; };
 		0A9E861D297E96CC0099F22F /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		0A9E861F297E97F10099F22F /* UserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsView.swift; sourceTree = "<group>"; };
 		0AA424312913C6F40088E2B1 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
@@ -1057,6 +1058,7 @@
 			isa = PBXGroup;
 			children = (
 				0A632EB927E49638001A019B /* Info.plist */,
+				0A9E5EFB29D5FFC000E7737D /* GoogleService-Info.custom.plist */,
 				0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */,
 				0A378375291A71880018BF3C /* GoogleService-Info.demo.plist */,
 				0ACE1973296D71AE00D223EB /* GoogleService-Info.staging.plist */,
@@ -1801,7 +1803,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "RESOURCE_PATH=$SRCROOT/Range\n\nBUILD_APP_DIR=${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\n\n# if configuration name contains...\nif [[ \"$CONFIGURATION\" == *\"dev\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.dev.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"demo\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.demo.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"staging\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.staging.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"production\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.production.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nfi\n";
+			shellScript = "RESOURCE_PATH=$SRCROOT/Range\n\nBUILD_APP_DIR=${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}\n\n# if configuration name contains...\nif [[ \"$CONFIGURATION\" == *\"custom\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.custom.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"dev\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.dev.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"demo\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.demo.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"staging\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.staging.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nelif [[ \"$CONFIGURATION\" == *\"production\"* ]]; then\n    cp \"$RESOURCE_PATH/GoogleService-Info.production.plist\" \"$BUILD_APP_DIR/GoogleService-Info.plist\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2870,6 +2872,147 @@
 			};
 			name = "Debug firebase emulator";
 		};
+		0A859CF929D5FCC900CCAEC5 /* Debug custom */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = "Debug custom";
+		};
+		0A859CFA29D5FCC900CCAEC5 /* Debug custom */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 635N8CQN8T;
+				FIREBASE_PROJECT = "";
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Range/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Range custom";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-custom";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SENTRY_ENV = "";
+				SHOW_DEBUG_OPTIONS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = "Debug custom";
+		};
+		0A859CFB29D5FCC900CCAEC5 /* Debug custom */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 635N8CQN8T;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.range.RangeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Range.app/Range";
+			};
+			name = "Debug custom";
+		};
+		0A859CFC29D5FCC900CCAEC5 /* Debug custom */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6J9775C8Y5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.range.RangeUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Range;
+			};
+			name = "Debug custom";
+		};
 		0A99BF2E28C88C4E00DB3F96 /* Release dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3430,6 +3573,7 @@
 			buildConfigurations = (
 				0A632ED027E49639001A019B /* Debug production */,
 				0A99BF3228C890B700DB3F96 /* Debug dev */,
+				0A859CF929D5FCC900CCAEC5 /* Debug custom */,
 				0A37836B291A62320018BF3C /* Debug demo */,
 				0ACE1969296C7E0F00D223EB /* Debug staging */,
 				0A724F32288806DF00708C6B /* Debug firebase emulator */,
@@ -3446,6 +3590,7 @@
 			buildConfigurations = (
 				0A632ED327E49639001A019B /* Debug production */,
 				0A99BF3328C890B700DB3F96 /* Debug dev */,
+				0A859CFA29D5FCC900CCAEC5 /* Debug custom */,
 				0A37836C291A62320018BF3C /* Debug demo */,
 				0ACE196A296C7E0F00D223EB /* Debug staging */,
 				0A724F33288806DF00708C6B /* Debug firebase emulator */,
@@ -3462,6 +3607,7 @@
 			buildConfigurations = (
 				0A632ED627E49639001A019B /* Debug production */,
 				0A99BF3428C890B700DB3F96 /* Debug dev */,
+				0A859CFB29D5FCC900CCAEC5 /* Debug custom */,
 				0A37836D291A62320018BF3C /* Debug demo */,
 				0ACE196B296C7E0F00D223EB /* Debug staging */,
 				0A724F34288806DF00708C6B /* Debug firebase emulator */,
@@ -3478,6 +3624,7 @@
 			buildConfigurations = (
 				0A632ED927E49639001A019B /* Debug production */,
 				0A99BF3528C890B700DB3F96 /* Debug dev */,
+				0A859CFC29D5FCC900CCAEC5 /* Debug custom */,
 				0A37836E291A62320018BF3C /* Debug demo */,
 				0ACE196C296C7E0F00D223EB /* Debug staging */,
 				0A724F35288806DF00708C6B /* Debug firebase emulator */,
