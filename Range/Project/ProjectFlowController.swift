@@ -52,6 +52,10 @@ final class ProjectFlowController: UIViewController {
     var movePinFlow: MovePinFlowController?
 
     var started = false
+    /// A Future that gets resolved when the ProjectFlowController is started. Before it's started it makes no sense to call any of it's actions.
+    private(set) var startedFuture: Future<Void, Never>?
+    /// The promise used internally for resolving the `startedFuture`
+    private var startedFuturePromise: Future<Void, Never>.Promise?
     var onBack: (() -> Void)?
 
     private var defaultCanvasUIHidden = false
@@ -111,6 +115,9 @@ final class ProjectFlowController: UIViewController {
 
         super.init(nibName: nil, bundle: nil)
 
+        startedFuture = Future { [weak self] promise in
+            self?.startedFuturePromise = promise
+        }
         collaborationFlow.onCollaborationClose = { [weak self] in
             // unselect pin, this will result also in hiding the collaboration window
             self?.pinsDisplay?.setSelectedPin(nil)
@@ -171,6 +178,8 @@ final class ProjectFlowController: UIViewController {
         }
 
         canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
+
+        startedFuturePromise?(.success(()))
     }
 
     private func observeCanvas() {

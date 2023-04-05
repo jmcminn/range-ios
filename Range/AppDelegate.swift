@@ -128,70 +128,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             sessionRole: connectingSceneSession.role
         )
     }
-
-    func application(_: UIApplication,
-                     didReceiveRemoteNotification userInfo: [AnyHashable: Any])
-    {
-        // If you are receiving a notification message while your app is in the background,
-        // this callback will not be fired till the user taps on the notification launching the application.
-        // TODO: 1011 handle notification
-        // With swizzling disabled you must let Messaging know about the message, for Analytics
-        // Messaging.messaging().appDidReceiveMessage(userInfo)
-        // Print message ID.
-        if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
-        }
-
-        // Print full message.
-        print(userInfo)
-    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    // Receive displayed notifications for iOS 10 devices.
+    /// Notification received when the app is open, decide how to present it
     func userNotificationCenter(_: UNUserNotificationCenter,
-                                willPresent notification: UNNotification) async
-        -> UNNotificationPresentationOptions
+                                willPresent _: UNNotification) async -> UNNotificationPresentationOptions
     {
-        let userInfo = notification.request.content.userInfo
-
-        // TODO: 1011 handle notification
-        // With swizzling disabled you must let Messaging know about the message, for Analytics
-        // Messaging.messaging().appDidReceiveMessage(userInfo)
-        // [START_EXCLUDE]
-        // Print message ID.
-        if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
-        }
-        // [END_EXCLUDE]
-        // Print full message.
-        print(userInfo)
-
-        // Change this to your preferred presentation option
-        return [[.alert, .sound]]
+        // show the banner in the app, do not add to notification center (would require .list option)
+        [[.banner, .sound]]
     }
 
-    func userNotificationCenter(_: UNUserNotificationCenter,
-                                didReceive response: UNNotificationResponse) async
-    {
+    /// User tapped on the notification when the app was open
+    func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
 
-        // TODO: 1011 handle notification
-        // [START_EXCLUDE]
-        // Print message ID.
-        if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
+        guard let projectId = userInfo["p"] as? String else {
+            Logger.pushNotifications.warning("no projectId (p) in notification")
+            return
         }
-        // [END_EXCLUDE]
-        // With swizzling disabled you must let Messaging know about the message, for Analytics
-        // Messaging.messaging().appDidReceiveMessage(userInfo)
-        // Print full message.
-        print(userInfo)
+
+        Logger.pushNotifications.debug("open project \(projectId) from notification")
+
+        // take the first scene delegage, we only have one
+        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
+            return
+        }
+        sceneDelegate.showProjectTaskList(projectId: projectId)
     }
 }
 
 extension AppDelegate: MessagingDelegate {
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        // TODO: 1012 react to this callback or just handle token on ProjectsModel start?
         guard let fcmToken = fcmToken else { return }
         Logger.pushNotifications.debug("didReceiveRegistrationToken: \(fcmToken)")
 
@@ -202,6 +171,5 @@ extension AppDelegate: MessagingDelegate {
 //            userInfo: dataDict
 //        )
         // Note: This callback is fired at each app startup and whenever a new token is generated.
-        // TODO: 1012 react to this callback or just handle token on ProjectsModel start?
     }
 }

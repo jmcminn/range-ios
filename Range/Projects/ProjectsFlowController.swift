@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import OSLog
 import Realm
@@ -20,7 +21,12 @@ class ProjectsFlowController: UINavigationController {
 
     var currentUserNotificationToken: NotificationToken?
     var projectFC: ProjectFlowController?
+    /// to observe the state of project flow controller `started`
+    var projectFCStarted: AnyCancellable?
     var currentProjectNotificationToken: NotificationToken?
+
+    /// if present show this project and it's task list when user signs in
+    var showTaskListOnLoginForProjectId: String?
 
     init(userId: String) throws {
         self.userId = userId
@@ -53,29 +59,28 @@ class ProjectsFlowController: UINavigationController {
 
         let tabBarVC = setupTabBarViewController()
 
-        // reopen last project
-        if DebugSettings().openLastProjectOnStart, let lastOpenProjectId = UserDefaults.lastOpenProjectId {
-            // try load the last open project
+        let tryLoadProject: (String) async -> Void = { projectId in
             do {
-                projectFC = try await buildProjectFlowController(projectId: lastOpenProjectId)
-                setViewControllers([tabBarVC, projectFC!], animated: false)
-                UserDefaults.lastOpenProjectId = lastOpenProjectId
-                UserDefaults.setLastOpenCanvasId(
-                    projectFC!.model.currentCanvas.id,
-                    forProjectId: projectFC!.model.projectId
-                )
-                UserDefaults.setLastOpenCanvasSourceId(
-                    projectFC!.model.currentCanvas.currentCanvasSource.id,
-                    forCanvasId: projectFC!.model.currentCanvas.id
-                )
-                observeCurrentProject()
+                self.projectFC = try await self.buildProjectFlowController(projectId: projectId)
+                self.setViewControllers([tabBarVC, self.projectFC!], animated: false)
+                self.updateLastOpenProjectAndCanvas()
+                self.observeCurrentProject()
             } catch {
-                Logger.model
-                    .error("loading last open project failed: \(error.localizedDescription, privacy: .public)")
+                Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
                 // fallback to projects list only
-                setViewControllers([tabBarVC], animated: false)
+                self.setViewControllers([tabBarVC], animated: false)
                 UserDefaults.lastOpenProjectId = nil
             }
+        }
+
+        // open some project on start?
+        if let showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId {
+            // open project from push notification and open it's task list
+            await tryLoadProject(showTaskListOnLoginForProjectId)
+            showTaskListAfterProjectFlowStarted()
+        } else if DebugSettings().openLastProjectOnStart, let lastOpenProjectId = UserDefaults.lastOpenProjectId {
+            // reopen last project
+            await tryLoadProject(lastOpenProjectId)
         } else {
             setViewControllers([tabBarVC], animated: false)
         }
@@ -144,7 +149,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
-    private func loadAndPushProjectFlowController(projectId: String) {
+    private func loadAndPushProjectFlowController(projectId: String, completion: (() -> Void)? = nil) {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
@@ -153,7 +158,7 @@ class ProjectsFlowController: UINavigationController {
             make.edges.equalToSuperview()
         }
         activityView.startAnimating()
-        Task {
+        Task { @MainActor in
             do {
                 // hide the spinner when data store call is finished
                 defer {
@@ -164,16 +169,9 @@ class ProjectsFlowController: UINavigationController {
                 self.projectFC = try await buildProjectFlowController(projectId: projectId)
                 DispatchQueue.main.async {
                     self.pushViewController(self.projectFC!, animated: true)
-                    UserDefaults.lastOpenProjectId = projectId
-                    UserDefaults.setLastOpenCanvasId(
-                        self.projectFC!.model.currentCanvas.id,
-                        forProjectId: self.projectFC!.model.projectId
-                    )
-                    UserDefaults.setLastOpenCanvasSourceId(
-                        self.projectFC!.model.currentCanvas.currentCanvasSource.id,
-                        forCanvasId: self.projectFC!.model.currentCanvas.id
-                    )
+                    self.updateLastOpenProjectAndCanvas()
                     self.observeCurrentProject()
+                    completion?()
                 }
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
@@ -182,6 +180,19 @@ class ProjectsFlowController: UINavigationController {
                 }
             }
         }
+    }
+
+    private func updateLastOpenProjectAndCanvas() {
+        guard let projectModel = projectFC?.model else { return }
+        UserDefaults.lastOpenProjectId = projectModel.projectId
+        UserDefaults.setLastOpenCanvasId(
+            projectModel.currentCanvas.id,
+            forProjectId: projectModel.projectId
+        )
+        UserDefaults.setLastOpenCanvasSourceId(
+            projectModel.currentCanvas.currentCanvasSource.id,
+            forCanvasId: projectModel.currentCanvas.id
+        )
     }
 
     /// Build and configure project flow controller
@@ -256,5 +267,33 @@ class ProjectsFlowController: UINavigationController {
         // We need to delete all projects, so Realm.deleteFiles(for: config) is not enough, manual removal
         // like describe here https://github.com/realm/realm-swift/issues/4625 needed
         onSignedOut?()
+    }
+
+    func showProjectTaskList(projectId: String) {
+        if let projectFC = projectFC {
+            if projectId == projectFC.model.projectId {
+                // this project is already open
+                // TODO: 1011 what if user has some flow in progress? can we close the flow/window?
+//                projectFC.showTaskListAction()
+            } else {
+                // a different project is open
+                // TODO: 1011 what if user has some flow in progress? can we close the flow and project
+            }
+        } else {
+            // no project is currently shown, navigate to a project
+            loadAndPushProjectFlowController(projectId: projectId) { [weak self] in
+                self?.projectFCStarted = self?.projectFC?.startedFuture?.sink { _ in
+                    self?.showTaskListAfterProjectFlowStarted()
+                }
+            }
+        }
+    }
+
+    private func showTaskListAfterProjectFlowStarted() {
+        projectFCStarted = projectFC?.startedFuture?.sink { [weak self] _ in
+            self?.projectFC?.showTaskListAction()
+            self?.projectFCStarted?.cancel()
+            self?.projectFCStarted = nil
+        }
     }
 }

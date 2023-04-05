@@ -69,3 +69,15 @@ To do this
 2. use its `/bin/build-glyphs` providing the `ttf`/`otf` as an input
 3. drag the new font directory to the `fonts` in Xcode project (make sure that the newly added directory is a "blue" folder)
 4. from now on the font can be referenced in Mapbox layers (using the name of the font directory)
+
+## Push notifications
+
+To test how the app handles incoming push notifications, there's a test notification in `RangeTests/statusNotification.aps`. It's a simple notification with a sample project id (the Preserve project).
+
+To send this notification to the app running in simulator (or installed but killed on the simulator) run
+
+```
+xcrun simctl push booted io.range.App-custom RangeTests/statusNotification.aps
+```
+
+This command sends a push notification to currently booted simulator to the `io.range.App-custom` app (change for different app)

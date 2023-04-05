@@ -6,6 +6,8 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    /// if present show this project and it's task list when user signs in
+    var showTaskListOnLoginForProjectId: String?
 
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -68,6 +70,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func showProjects(forUserId userId: String) async {
         do {
             let projectsFlowController = try ProjectsFlowController(userId: userId)
+            projectsFlowController.showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId
+            showTaskListOnLoginForProjectId = nil
             projectsFlowController.onSignedOut = { [weak self, weak projectsFlowController] in
                 projectsFlowController?.stop()
                 self?.onSignedOut()
@@ -119,5 +123,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
         }
         showAuth()
+    }
+
+    /// Used when responding to push notifications.
+    /// Opens given project (if not open yet) and shows the task list (closes other views / cancels flows when tapped)
+    /// When signed out, it does it after the user signs in
+    func showProjectTaskList(projectId: String) {
+        if let projectsFlowController = window?.rootViewController as? ProjectsFlowController {
+            projectsFlowController.showProjectTaskList(projectId: projectId)
+        } else {
+            // open when the user logs in, or when the projects flow is there (the app can be just starting)
+            showTaskListOnLoginForProjectId = projectId
+        }
     }
 }
