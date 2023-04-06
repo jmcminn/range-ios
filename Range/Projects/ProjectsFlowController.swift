@@ -87,8 +87,12 @@ class ProjectsFlowController: UINavigationController {
         observeCurrentUser()
     }
 
-    func stop() {
-        projectsModel.stop()
+    func stop() async {
+        do {
+            try await projectsModel.stop()
+        } catch {
+            Logger.model.error("Failed to stop the projectsModel: \(error)s")
+        }
         pendingUploadsModel.stop()
         pendingActionsModel.stop()
         currentUserNotificationToken?.invalidate()

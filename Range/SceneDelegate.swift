@@ -72,8 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let projectsFlowController = try ProjectsFlowController(userId: userId)
             projectsFlowController.showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId
             showTaskListOnLoginForProjectId = nil
-            projectsFlowController.onSignedOut = { [weak self, weak projectsFlowController] in
-                projectsFlowController?.stop()
+            projectsFlowController.onSignedOut = { [weak self] in
                 self?.onSignedOut()
             }
             window!.rootViewController = projectsFlowController
@@ -101,28 +100,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func onSignedOut() {
-        // 1. Stop receiving the notifications when signed out (the token is being invalidated on sign out
-        // but it will not work if user is offline, so there might still be a valid fcm token
-        // after the user has signed out)
-        UIApplication.shared.unregisterForRemoteNotifications()
-        // 2. Delete the FCM token from Firebase, when it succeeds the push notifications sent to
-        // this token will fail. This will fail if user is offline (so notifications sent using this
-        // token will still be delivered to this device, even after sign out)
-        Messaging.messaging().deleteToken { error in
-            if let error = error {
-                Logger.pushNotifications.debug("Failed to delete FCM token: \(error)")
+        Task { @MainActor in
+            if let projectsFC = window?.rootViewController as? ProjectsFlowController {
+                await projectsFC.stop()
             }
+            do {
+                try Auth.auth().signOut()
+            } catch {
+                Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
+            }
+            showAuth()
         }
-        // 3. Remove the token from Firestore (try to cleanup so the server side does not even attempt
-        // to send notifications to this device.
-        // TODO: 1012 remove from Firestore (this should block before calling sign out, but do not prevent signOut)
-
-        do {
-            try Auth.auth().signOut()
-        } catch {
-            Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
-        }
-        showAuth()
     }
 
     /// Used when responding to push notifications.

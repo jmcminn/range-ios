@@ -46,10 +46,6 @@ class ProjectsModel: NSObject, RealmModel {
         mainRealm = try Realm(configuration: realmConfig)
     }
 
-    deinit {
-        stop()
-    }
-
     /// Initiates the writeRealm
     @MainActor
     func start() async throws {
@@ -89,6 +85,9 @@ class ProjectsModel: NSObject, RealmModel {
 
         // 5. Check current fcm token and update in firestore if changed
         await refreshFCMToken()
+
+        // 6. Register for fcm token updates
+        Messaging.messaging().delegate = self
     }
 
     /// The list of projects to sync depends on the user permissions, so based on user changes this function maintains the listeners
@@ -128,13 +127,32 @@ class ProjectsModel: NSObject, RealmModel {
         }
     }
 
+    func tearDownNotifications() async throws {
+        // 1. Stop receiving the notifications when signed out (the token is being invalidated on sign out
+        // but it will not work if user is offline, so there might still be a valid fcm token
+        // after the user has signed out)
+        await UIApplication.shared.unregisterForRemoteNotifications()
+        // 2. Delete the FCM token from Firebase, when it succeeds the push notifications sent to
+        // this token will fail. This will fail if user is offline (so notifications sent using this
+        // token will still be delivered to this device, even after sign out)
+        do {
+            try await Messaging.messaging().deleteToken()
+        } catch {
+            Logger.pushNotifications.debug("Failed to delete FCM token: \(error)")
+        }
+        // 3. Remove the token from Firestore (try to cleanup so the server side does not even attempt
+        // to send notifications to this device)
+        await updateFCMToken(nil)
+    }
+
     /// Deregisters all observers.
     /// Will be called on deinit
-    func stop() {
+    func stop() async throws {
         userNotificationToken?.invalidate()
         userNotificationToken = nil
         listeners.values.forEach { $0.remove() }
         listeners.removeAll()
+        try await tearDownNotifications()
     }
 
     @MainActor
@@ -142,43 +160,62 @@ class ProjectsModel: NSObject, RealmModel {
         do {
             let fcmToken = try await Messaging.messaging().token()
             Logger.pushNotifications.info("FCM token: \(fcmToken)")
-            updateFCMToken(fcmToken)
-
-            // TODO: 1012 update if not there yet (in Firestore), remove previous (so remember previous)
-            if !UIApplication.shared.isRegisteredForRemoteNotifications {
-                UIApplication.shared.registerForRemoteNotifications()
-            }
+            await updateFCMToken(fcmToken)
         } catch {
             Logger.pushNotifications.debug("Failed to obtain FCM token: \(error)")
         }
     }
 
-    // TODO: 1012 add offline support and actions for user updates? (or is it enough to do it on app start?)
-    func updateFCMToken(_ token: String) {
+    /// Updates fcm token in Firestore
+    /// It adds a new token if provided
+    /// If the token is different than a previous token (stored in UserDefaults.lastFCMToken) then the previous token is removed from
+    /// Firestore (so the server side doesn't send push notifications to invalid tokens)
+    @MainActor
+    func updateFCMToken(_ token: String?) async {
+        // register if not yet registered for notifications
+        if !UIApplication.shared.isRegisteredForRemoteNotifications {
+            UIApplication.shared.registerForRemoteNotifications()
+        }
         guard let user = currentUser else { return }
-        guard !user.fcmTokens.contains(token) else { return }
+
+        let previousFCMToken = UserDefaults.lastFCMToken
+        guard previousFCMToken != token else { return }
 
         let userRef = firestore.document("users/\(user.id)")
-        firestore.runTransaction { tx, _ in
-            var newTokens: [String]
-            do {
-                let userDoc = try tx.getDocument(userRef)
-                if let tokens = userDoc.data()?["fcmTokens"] as? [String] {
-                    if tokens.contains(token) { return true }
-                    newTokens = tokens
-                    newTokens.append(token)
-                } else {
-                    newTokens = [token]
+        do {
+            _ = try await firestore.runTransaction { tx, errorPointer in
+                do {
+                    let userDoc = try tx.getDocument(userRef)
+                    var newTokens: [String] = userDoc.data()?["fcmTokens"] as? [String] ?? []
+
+                    if let previousFCMToken = previousFCMToken {
+                        // remove previous token
+                        newTokens.removeAll { $0 == previousFCMToken }
+                    }
+                    if let token = token {
+                        // add new token
+                        newTokens.append(token)
+                    }
+                    tx.updateData(["fcmTokens": newTokens], forDocument: userRef)
+                } catch let error as NSError {
+                    errorPointer?.pointee = error
                 }
-                tx.updateData(["fcmTokens": newTokens], forDocument: userRef)
                 return true
-            } catch {
-                return error
             }
-        } completion: { _, error in
-            if let error = error {
-                Logger.firestore.debug("update FCM token failed: \(error.localizedDescription)")
-            }
+        } catch {
+            Logger.firestore.debug("update FCM token failed: \(error.localizedDescription)")
+        }
+        UserDefaults.lastFCMToken = token
+    }
+}
+
+extension ProjectsModel: MessagingDelegate {
+    /// Note: This callback is fired at each app startup and whenever a new token is generated.
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let fcmToken = fcmToken else { return }
+        Logger.pushNotifications.debug("didReceiveRegistrationToken: \(fcmToken)")
+        Task { @MainActor in
+            await updateFCMToken(fcmToken)
         }
     }
 }

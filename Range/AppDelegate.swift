@@ -98,9 +98,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    private func registerForNotifications(_ application: UIApplication) {
-        Messaging.messaging().delegate = self
-
+    private func registerForNotifications(_: UIApplication) {
         // Register for remote notifications. This shows a permission dialog on first run, to
         // show the dialog at a more appropriate time move this registration accordingly.
         UNUserNotificationCenter.current().delegate = self
@@ -110,8 +108,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             options: authOptions,
             completionHandler: { _, _ in }
         )
-
-        application.registerForRemoteNotifications()
     }
 
     // MARK: UISceneSession Lifecycle
@@ -155,21 +151,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             return
         }
         sceneDelegate.showProjectTaskList(projectId: projectId)
-    }
-}
-
-extension AppDelegate: MessagingDelegate {
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        // TODO: 1012 react to this callback or just handle token on ProjectsModel start?
-        guard let fcmToken = fcmToken else { return }
-        Logger.pushNotifications.debug("didReceiveRegistrationToken: \(fcmToken)")
-
-//        let dataDict: [String: String] = ["token": fcmToken ?? ""]
-//        NotificationCenter.default.post(
-//            name: Notification.Name("FCMToken"),
-//            object: nil,
-//            userInfo: dataDict
-//        )
-        // Note: This callback is fired at each app startup and whenever a new token is generated.
     }
 }

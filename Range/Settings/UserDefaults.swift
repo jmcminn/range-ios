@@ -24,6 +24,8 @@ extension UserDefaults {
         case showOnlyMineTasks
         /// remember the last option selected by user when creating a new collaboration in the photo flow
         case lastPinTypeOption
+        /// remember last fcm token, so it can be removed when a new one is obtained
+        case lastFCMToken
     }
 
     static var lastOpenProjectId: String? {
@@ -172,6 +174,20 @@ extension UserDefaults {
                 UserDefaults.standard.set(option.rawValue, forKey: UserDefaultsConstants.lastPinTypeOption.rawValue)
             } else {
                 UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastPinTypeOption.rawValue)
+            }
+        }
+    }
+
+    /// stores the last Firebase Cloud Messaging Token
+    static var lastFCMToken: String? {
+        get {
+            UserDefaults.standard.string(forKey: UserDefaultsConstants.lastFCMToken.rawValue)
+        }
+        set {
+            if let id = newValue {
+                UserDefaults.standard.set(id, forKey: UserDefaultsConstants.lastFCMToken.rawValue)
+            } else {
+                UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastFCMToken.rawValue)
             }
         }
     }
