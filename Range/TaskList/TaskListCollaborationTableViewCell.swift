@@ -7,6 +7,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     private let nameLabel = UILabel()
     private let detailsScrollView = UIScrollView()
     private let detailsStackView = UIStackView()
+    private let lastUpdatedLabel = UILabel()
     private let bottomStroke = UIView()
     /// details scroll view has user interaction enabled, so tapping on it will prevent didSelectRow callback, we need to add a separate handler
     var onCollaborationTapped: ((String) -> Void)?
@@ -19,7 +20,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [badgeView, nameLabel, detailsScrollView, bottomStroke].forEach(contentView.addSubview)
+        [badgeView, nameLabel, detailsScrollView, lastUpdatedLabel, bottomStroke].forEach(contentView.addSubview)
 
         badgeView.snp.makeConstraints { make in
             make.width.height.equalTo(20)
@@ -37,7 +38,13 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             make.top.greaterThanOrEqualTo(nameLabel.snp.bottom)
             make.top.greaterThanOrEqualTo(badgeView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(6)
+        }
+
+        lastUpdatedLabel.snp.makeConstraints { make in
+            make.top.equalTo(detailsScrollView.snp.bottom).offset(2)
+            make.leading.equalTo(badgeView.snp.trailing).offset(8)
+            make.trailing.equalToSuperview().inset(14)
+            make.bottom.equalToSuperview().inset(14)
         }
 
         bottomStroke.snp.makeConstraints { make in
@@ -78,6 +85,10 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
         detailsScrollView
             .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(scrollViewTapped)))
 
+        lastUpdatedLabel.font = .preferredFont(forTextStyle: .caption2)
+        lastUpdatedLabel.textColor = .dynamic(.Neutral_05)
+        lastUpdatedLabel.adjustsFontForContentSizeCategory = true
+
         bottomStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
@@ -103,9 +114,9 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             detailsStackView.addArrangedSubview(PillView(iconName: "square.3.layers.3d", text: canvasName))
         }
         detailsStackView.addArrangedSubview(PillView(iconName: "tag", text: String(collaboration.tags.count)))
-        detailsStackView.addArrangedSubview(PillView(
-            iconName: "clock", text: Date.format1Ago(collaboration.lastUpdatedTimestamp)
-        ))
+
+        lastUpdatedLabel.text = String(localized: "Last updated") + " " + Date
+            .format1Ago(collaboration.lastUpdatedTimestamp)
     }
 
     override func prepareForReuse() {
