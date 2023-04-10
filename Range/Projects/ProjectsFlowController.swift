@@ -28,9 +28,9 @@ class ProjectsFlowController: UINavigationController {
     /// if present show this project and it's task list when user signs in
     var showTaskListOnLoginForProjectId: String?
 
-    init(userId: String) throws {
+    init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
-        projectsModel = try ProjectsModel(userId: userId)
+        projectsModel = try ProjectsModel(userId: userId, newlySignedIn: newlySignedIn)
         localFiles = try LocalFiles()
         mediaCache = MediaCache(localFiles: localFiles)
         pendingUploadsModel = try FirebasePendingUploadsModel(

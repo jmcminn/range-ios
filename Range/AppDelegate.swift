@@ -102,12 +102,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Register for remote notifications. This shows a permission dialog on first run, to
         // show the dialog at a more appropriate time move this registration accordingly.
         UNUserNotificationCenter.current().delegate = self
-
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: authOptions,
-            completionHandler: { _, _ in }
-        )
     }
 
     // MARK: UISceneSession Lifecycle
@@ -139,6 +133,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
 
+        Logger.pushNotifications.debug("notification: \(response.notification.request.content)")
         guard let projectId = userInfo["p"] as? String else {
             Logger.pushNotifications.warning("no projectId (p) in notification")
             return

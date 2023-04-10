@@ -52,24 +52,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func startMainFlow(forUser userId: String, newlySignedIn: Bool) {
         Analytics.setUserID(userId)
         Task { @MainActor in
-            if newlySignedIn {
-                await self.initializePushNotifications()
-            }
-            await self.showProjects(forUserId: userId)
+            await self.showProjects(forUserId: userId, newlySignedIn: newlySignedIn)
         }
     }
 
-    private func initializePushNotifications() async {
+    private func showProjects(forUserId userId: String, newlySignedIn: Bool) async {
         do {
-            try await Messaging.messaging().deleteToken()
-        } catch {
-            Logger.pushNotifications.debug("Failed to delete FCM token: \(error)")
-        }
-    }
-
-    private func showProjects(forUserId userId: String) async {
-        do {
-            let projectsFlowController = try ProjectsFlowController(userId: userId)
+            let projectsFlowController = try ProjectsFlowController(userId: userId, newlySignedIn: newlySignedIn)
             projectsFlowController.showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId
             showTaskListOnLoginForProjectId = nil
             projectsFlowController.onSignedOut = { [weak self] in

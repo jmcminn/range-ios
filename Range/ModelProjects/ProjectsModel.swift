@@ -12,6 +12,8 @@ class ProjectsModel: NSObject, RealmModel {
     /// The Range id of the current logged in user
     let userId: String
 
+    private let newlySignedIn: Bool
+
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
     /// Main thread Realm
@@ -32,8 +34,9 @@ class ProjectsModel: NSObject, RealmModel {
     /// token for observing the current user in the realm
     private var userNotificationToken: NotificationToken?
 
-    init(userId: String) throws {
+    init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
+        self.newlySignedIn = newlySignedIn
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
         config.schemaVersion = 2
@@ -83,11 +86,8 @@ class ProjectsModel: NSObject, RealmModel {
         // 4. sync the projects that user has permissions to
         syncCurrentUserProjects()
 
-        // 5. Check current fcm token and update in firestore if changed
-        await refreshFCMToken()
-
-        // 6. Register for fcm token updates
-        Messaging.messaging().delegate = self
+        // 5. setup push notifications
+        await setupNotifications()
     }
 
     /// The list of projects to sync depends on the user permissions, so based on user changes this function maintains the listeners
@@ -127,7 +127,30 @@ class ProjectsModel: NSObject, RealmModel {
         }
     }
 
-    func tearDownNotifications() async throws {
+    /// Request authorization for notifications, update the fcm token and listen for token changes
+    private func setupNotifications() async {
+        if newlySignedIn {
+            /// clear the previous token if not cleared yet (so this newly signed in user gets a fresh new token)
+            do {
+                try await Messaging.messaging().deleteToken()
+            } catch {
+                Logger.pushNotifications.debug("Failed to delete FCM token: \(error)")
+            }
+        }
+
+        // receive fcm token updates
+        Messaging.messaging().delegate = self
+
+        do {
+            try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+            await UIApplication.shared.registerForRemoteNotifications()
+            await refreshFCMToken()
+        } catch {
+            Logger.pushNotifications.error("Failed to requestAuthorization: \(error)")
+        }
+    }
+
+    private func tearDownNotifications() async throws {
         // 1. Stop receiving the notifications when signed out (the token is being invalidated on sign out
         // but it will not work if user is offline, so there might still be a valid fcm token
         // after the user has signed out)
@@ -172,10 +195,6 @@ class ProjectsModel: NSObject, RealmModel {
     /// Firestore (so the server side doesn't send push notifications to invalid tokens)
     @MainActor
     func updateFCMToken(_ token: String?) async {
-        // register if not yet registered for notifications
-        if !UIApplication.shared.isRegisteredForRemoteNotifications {
-            UIApplication.shared.registerForRemoteNotifications()
-        }
         guard let user = currentUser else { return }
 
         let previousFCMToken = UserDefaults.lastFCMToken
@@ -192,7 +211,7 @@ class ProjectsModel: NSObject, RealmModel {
                         // remove previous token
                         newTokens.removeAll { $0 == previousFCMToken }
                     }
-                    if let token = token {
+                    if let token = token, !newTokens.contains(token) {
                         // add new token
                         newTokens.append(token)
                     }
