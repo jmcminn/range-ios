@@ -294,6 +294,8 @@ class ProjectsFlowController: UINavigationController {
     }
 
     private func showTaskListAfterProjectFlowStarted() {
+        /// when opening tasks list from notification default to "Only Mine"
+        UserDefaults.showOnlyMineTasks = true
         projectFCStarted = projectFC?.startedFuture?.sink { [weak self] _ in
             self?.projectFC?.showTaskListAction()
             self?.projectFCStarted?.cancel()
