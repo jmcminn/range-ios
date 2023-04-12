@@ -103,7 +103,7 @@ class ProjectsFlowController: UINavigationController {
         let projects = projectsModel.mainRealm.objects(ProjectSummary.self).sorted(by: \.name)
         let projectsVC = ProjectsViewController(projects: projects)
         projectsVC.onProjectSelected = { [weak self] project in
-            self?.loadAndPushProjectFlowController(projectId: project.id)
+            self?.loadAndPushProjectFlowController(projectId: project.id, animated: true)
         }
         return projectsVC
     }
@@ -153,7 +153,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
-    private func loadAndPushProjectFlowController(projectId: String, completion: (() -> Void)? = nil) {
+    private func loadAndPushProjectFlowController(projectId: String, animated: Bool, completion: (() -> Void)? = nil) {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
@@ -170,9 +170,20 @@ class ProjectsFlowController: UINavigationController {
                         activityView.removeFromSuperview()
                     }
                 }
+                let previousProjectFC = self.projectFC
                 self.projectFC = try await buildProjectFlowController(projectId: projectId)
                 DispatchQueue.main.async {
-                    self.pushViewController(self.projectFC!, animated: true)
+                    if let previousProjectFC = previousProjectFC {
+                        // replace if some project flow controller is already showing
+                        previousProjectFC.stop()
+                        guard let tabBarVC = self.viewControllers.first else {
+                            fatalError("no view controller in ProjectFlowController navigation stack")
+                        }
+
+                        self.setViewControllers([tabBarVC, self.projectFC!], animated: animated)
+                    } else {
+                        self.pushViewController(self.projectFC!, animated: animated)
+                    }
                     self.updateLastOpenProjectAndCanvas()
                     self.observeCurrentProject()
                     completion?()
@@ -274,22 +285,43 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func showProjectTaskList(projectId: String) {
-        if let projectFC = projectFC {
-            if projectId == projectFC.model.projectId {
-                // this project is already open
-                // TODO: 1011 what if user has some flow in progress? can we close the flow/window?
-//                projectFC.showTaskListAction()
-            } else {
-                // a different project is open
-                // TODO: 1011 what if user has some flow in progress? can we close the flow and project
-            }
-        } else {
-            // no project is currently shown, navigate to a project
-            loadAndPushProjectFlowController(projectId: projectId) { [weak self] in
+        let showProjectTaskListAnimated: ((Bool) -> Void) = { [weak self] animated in
+            self?.loadAndPushProjectFlowController(projectId: projectId, animated: animated) {
                 self?.projectFCStarted = self?.projectFC?.startedFuture?.sink { _ in
                     self?.showTaskListAfterProjectFlowStarted()
                 }
             }
+        }
+
+        if let projectFC = projectFC {
+            let reloadProject = {
+                if projectId == projectFC.model.projectId {
+                    // this project is already open, reload the project flow controller with no animations
+                    // We reload instead of reusing the current projectFC to avoid cleaning up its UI
+                    // state (open views, etc.)
+                    showProjectTaskListAnimated(false)
+                } else {
+                    // a different project is open, replace animated
+                    showProjectTaskListAnimated(true)
+                }
+            }
+            if projectFC.isUserEditingProject {
+                let alert = UIAlertController(
+                    title: "View notification",
+                    message: "It looks like you're in the middle of something, are you sure you want to view this notification?",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "Cancel", style: .default))
+                alert.addAction(UIAlertAction(title: "View", style: .destructive, handler: { _ in
+                    reloadProject()
+                }))
+                _topViewController().present(alert, animated: true)
+            } else {
+                reloadProject()
+            }
+        } else {
+            // no project is currently shown, navigate to a project
+            showProjectTaskListAnimated(true)
         }
     }
 

@@ -291,6 +291,8 @@ final class ProjectFlowController: UIViewController {
             canvasContainer.canvasViewController.removeDelegate(id: canvasDelegateId)
         }
         canvasContainer.removeCard(cardViewController: actionCardVC)
+        // dismiss any presented modally VCs
+        canvasContainer.dismiss(animated: false)
         remove(childController: canvasContainer)
         debugSettingsNativeViewsForPinsSubscriber?.cancel()
         debugSettingsNativeViewsForPinsSubscriber = nil
