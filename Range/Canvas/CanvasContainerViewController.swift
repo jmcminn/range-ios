@@ -18,8 +18,6 @@ class CanvasContainerViewController: UIViewController {
     let content = PassthroughView()
     /// for presenting cards and other controls (on top of content)
     let controls = PassthroughView()
-    /// for presenting views on top of controls
-    let overlays = PassthroughView()
 
     init(model: ProjectModel) async throws {
         canvasViewController = try await CanvasViewController(model: model)
@@ -41,17 +39,12 @@ class CanvasContainerViewController: UIViewController {
     fileprivate func setupContainers() {
         view.addSubview(content)
         view.addSubview(controls)
-        view.addSubview(overlays)
         controls.backgroundColor = .clear
-        overlays.backgroundColor = .clear
 
         content.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         controls.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        overlays.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
