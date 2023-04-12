@@ -324,6 +324,7 @@
 		0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */; };
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
+		0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */; };
 		0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */; };
 		0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */; };
 		0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75728621782005ACFD7 /* Result+Throws.swift */; };
@@ -693,6 +694,7 @@
 		0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsHeaderViewController.swift; sourceTree = "<group>"; };
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
+		0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FirstResponder.swift"; sourceTree = "<group>"; };
 		0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Commands.swift"; sourceTree = "<group>"; };
 		0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelCommandsTest.swift; sourceTree = "<group>"; };
 		0AD9B75728621782005ACFD7 /* Result+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Throws.swift"; sourceTree = "<group>"; };
@@ -1149,6 +1151,7 @@
 				0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */,
 				0A1812742834CFBB00A8515B /* UITableView+Borders.swift */,
 				0AB8557A28FF276500491E20 /* UIView+AsImage.swift */,
+				0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */,
 				0A18126E28339EC800A8515B /* UIView+Shadow.swift */,
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
 				0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */,
@@ -1878,6 +1881,7 @@
 				0A374DE82927D0200036C184 /* UpdateGeometryArchivedCommand.swift in Sources */,
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
 				0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */,
+				0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */,
 				0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */,
 				0A34072F29C8617F007299A7 /* TypeScaleCardViewController.swift in Sources */,
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,

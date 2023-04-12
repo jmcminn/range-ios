@@ -60,6 +60,19 @@ final class ProjectFlowController: UIViewController {
 
     private var defaultCanvasUIHidden = false
 
+    /// Arbitrary way of deciding whether user is currently editing the project (so in the middle of some meaningful action that should not
+    /// be aborted without confirmation)
+    var isUserEditingProject: Bool {
+        // some flow is running:
+        addPhotoFlow != nil || addPinFlow != nil || movePinFlow != nil
+            // any field is editing, so user is in the middle of name update for example:
+            || view._firstResponder != nil
+            // collaboration says it's being edited:
+            || collaborationFlow.isUserEditingCollaboration
+            // tags are being edited:
+            || canvasContainer.children.contains(where: { $0 is SearchAndSelectTagsViewController })
+    }
+
     /// Initialize ProjectFlowController
     /// This can throw if project model cannot be loaded or started
     ///

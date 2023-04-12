@@ -61,6 +61,13 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     /// for the same collaboration use this text. It's reset when the current collaboration changes
     var lastCancelledCommentText: String! = ""
 
+    /// Arbitrary way of deciding whether user is currently editing the collaboration (so in the middle of some meaningful action that should not
+    /// be aborted without confirmation)
+    var isUserEditingCollaboration: Bool {
+        addPhotosFlow != nil // some flow is running
+            || view._firstResponder != nil // any field is editing, so user is in the middle of name update for example
+    }
+
     ///
     /// - Parameters:
     ///     - model: - the project model
