@@ -110,12 +110,9 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
                 .filter { $0.source == self.annotationsId }
                 .compactMap { self.convertFeatureToPin($0.feature) }
                 .filter {
-                    // skip archived pins
-                    guard let archived = $0.userInfo?["archived"] as? Bool else { return false }
-                    if !self.canvasFilters.showArchivedPins, archived {
-                        return false
-                    }
-                    return true
+                    // skip pins not matching filters
+                    guard let collaboration = $0.userInfo?["collaboration"] as? Collaboration else { return false }
+                    return self.canvasFilters.match(collaboration)
                 }
                 .compactMap(PinPoint.init(fromPointAnnotation:))
                 .filter {
@@ -229,7 +226,6 @@ extension GeometriesAnnotationPinsDisplay {
         var pin = PointAnnotation(id: geometry.id, point: point)
         pin.userInfo = [
             "collaboration": collaboration,
-            "archived": geometry.archivedTimestamp != nil,
         ]
         setPointAnnotationSelection(&pin)
         return pin
@@ -252,16 +248,15 @@ extension GeometriesAnnotationPinsDisplay {
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPointAnnotationSelection(_ pin: inout PointAnnotation) {
         guard let collaboration = pin.userInfo?["collaboration"] as? Collaboration else { return }
-        guard let archived = pin.userInfo?["archived"] as? Bool else { return }
         let selected = pin.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
         let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
         let pinImage = pinOptions.pinImage
         let visible: Bool
-        if !selected, !canvasFilters.showArchivedPins {
-            // hide the pin if the pins display is configured to not show archived pins and this pin is archived
+        if !selected, !canvasFilters.match(collaboration) {
+            // hide the pin if it doesn't match filters
             // BUT: only if it is not selected. So even if it's archived, still show it if it's selected
-            visible = !archived
+            visible = false
         } else {
             visible = true
         }
@@ -314,12 +309,9 @@ extension GeometriesAnnotationPinsDisplay {
             let feature = queriedFeatures
                 .compactMap { self.convertFeatureToPin($0.feature) }
                 .filter {
-                    // skip archived pins
-                    guard let archived = $0.userInfo?["archived"] as? Bool else { return false }
-                    if !self.canvasFilters.showArchivedPins, archived {
-                        return false
-                    }
-                    return true
+                    // skip pins not matching filters
+                    guard let collaboration = $0.userInfo?["collaboration"] as? Collaboration else { return false }
+                    return self.canvasFilters.match(collaboration)
                 }
                 .first
                 .map(PinPoint.init(fromPointAnnotation:))

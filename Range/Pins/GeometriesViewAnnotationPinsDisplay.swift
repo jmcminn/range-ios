@@ -207,10 +207,10 @@ extension GeometriesViewAnnotationPinsDisplay {
         let anythingSelected = selectedPin != nil
         let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
         var visible = pinView.id != ignoredGeometryId
-        if !selected, !canvasFilters.showArchivedPins {
-            // hide the pin if the pins display is configured to not show archived pins and this pin is archived
-            // BUT: only if it is not selected. So even if it's archived, still show it if it's selected
-            visible = visible && !pinView.archived
+        if !selected, !canvasFilters.match(collaboration) {
+            // hide the pin if it doesn't match filters
+            // BUT: only if it is not selected. So even if its filtered out, still show it if it's selected
+            visible = false
         }
         // The pinView doesn't animate the image properly when this code is run withing animation block, so disable
         // animations for pinView updates.

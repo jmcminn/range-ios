@@ -9,7 +9,9 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private let canvasFilters: CanvasFilters
 
     private let boxView = UIView()
-//    private let showPhotoPinsSwitch = UISwitch()
+
+    private let showPhotoPinsSwitch = UISwitch()
+    private let showTaskPinsSwitch = UISwitch()
     private let showArchivedPinsSwitch = UISwitch()
 
     /// Initializer
@@ -36,7 +38,15 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             make.top.equalTo(sheetHeaderView.snp.bottom)
         }
 
-//        showPhotoPinsSwitch.setOn(canvasFilters.showPhotoPins, animated: false)
+        showPhotoPinsSwitch.setOn(canvasFilters.showPhotoPins, animated: false)
+        showPhotoPinsSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.canvasFilters.showPhotoPins.toggle()
+        }), for: .valueChanged)
+
+        showTaskPinsSwitch.setOn(canvasFilters.showTaskPins, animated: false)
+        showTaskPinsSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.canvasFilters.showTaskPins.toggle()
+        }), for: .valueChanged)
 
         showArchivedPinsSwitch.setOn(canvasFilters.showArchivedPins, animated: false)
         showArchivedPinsSwitch.addAction(.init(handler: { [weak self] _ in
@@ -49,25 +59,37 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         boxView.layer.borderWidth = 1
         boxView.backgroundColor = .dynamic(.Neutral_09)
 
-//        let showPhotoPinsLabel = createLabel(text: String(localized: "Show Photo Pins"))
-//        boxView.addSubview(showPhotoPinsLabel)
-//        showPhotoPinsLabel.snp.makeConstraints { make in
-//            make.leading.equalToSuperview().inset(16)
-//            make.top.equalToSuperview().inset(18)
-//        }
-//
-//        boxView.addSubview(showPhotoPinsSwitch)
-//        showPhotoPinsSwitch.snp.makeConstraints { make in
-//            make.centerY.equalTo(showPhotoPinsLabel)
-//            make.trailing.equalToSuperview().inset(16)
-//        }
+        let showPhotoPinsLabel = createLabel(text: String(localized: "Show Photo Pins"))
+        boxView.addSubview(showPhotoPinsLabel)
+        showPhotoPinsLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16)
+            make.top.equalToSuperview().inset(18)
+        }
+
+        boxView.addSubview(showPhotoPinsSwitch)
+        showPhotoPinsSwitch.snp.makeConstraints { make in
+            make.centerY.equalTo(showPhotoPinsLabel)
+            make.trailing.equalToSuperview().inset(16)
+        }
+
+        let showTaskPinsLabel = createLabel(text: String(localized: "Show Task Pins"))
+        boxView.addSubview(showTaskPinsLabel)
+        showTaskPinsLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16)
+            make.top.equalTo(showPhotoPinsLabel.snp.bottom).offset(30)
+        }
+
+        boxView.addSubview(showTaskPinsSwitch)
+        showTaskPinsSwitch.snp.makeConstraints { make in
+            make.centerY.equalTo(showTaskPinsLabel)
+            make.trailing.equalToSuperview().inset(16)
+        }
 
         let showArchivedPinsLabel = createLabel(text: String(localized: "Show Archived Pins"))
         boxView.addSubview(showArchivedPinsLabel)
         showArchivedPinsLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(18)
-//            make.top.equalTo(showPhotoPinsLabel.snp.bottom).offset(30)
+            make.top.equalTo(showTaskPinsLabel.snp.bottom).offset(30)
             make.bottom.equalToSuperview().inset(18)
         }
 
