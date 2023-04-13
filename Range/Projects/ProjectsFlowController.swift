@@ -307,12 +307,12 @@ class ProjectsFlowController: UINavigationController {
             }
             if projectFC.isUserEditingProject {
                 let alert = UIAlertController(
-                    title: "View notification",
+                    title: "View Task List",
                     message: "It looks like you're in the middle of something, are you sure you want to view this notification?",
                     preferredStyle: .alert
                 )
-                alert.addAction(UIAlertAction(title: "Cancel", style: .default))
-                alert.addAction(UIAlertAction(title: "View", style: .destructive, handler: { _ in
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                alert.addAction(UIAlertAction(title: "View", style: .default, handler: { _ in
                     reloadProject()
                 }))
                 _topViewController().present(alert, animated: true)
