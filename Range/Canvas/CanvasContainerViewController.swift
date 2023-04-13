@@ -9,6 +9,8 @@ class CanvasContainerViewController: UIViewController {
     /// Displays the canvas (with mapview or pdf background)
     let canvasViewController: CanvasViewController
 
+    let canvasFilters: CanvasFilters
+
     /// shortcut to access the annotations map view
     var annotationsMapView: MapView {
         canvasViewController.mapView
@@ -19,8 +21,9 @@ class CanvasContainerViewController: UIViewController {
     /// for presenting cards and other controls (on top of content)
     let controls = PassthroughView()
 
-    init(model: ProjectModel) async throws {
+    init(model: ProjectModel, canvasFilters: CanvasFilters) async throws {
         canvasViewController = try await CanvasViewController(model: model)
+        self.canvasFilters = canvasFilters
         super.init(nibName: nil, bundle: nil)
     }
 

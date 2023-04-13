@@ -17,7 +17,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
     private let ignoredGeometryId: String?
-    private let showArchivedPins: Bool
+    private let canvasFilters: CanvasFilters
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
     /// Token for notifications about changes in the canvas geometries
@@ -49,7 +49,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
         ignoredGeometryId: String? = nil,
-        showArchivedPins: Bool,
+        canvasFilters: CanvasFilters,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
@@ -57,7 +57,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         self.selectionEnabled = selectionEnabled
         self.deselectOnCanvasTap = deselectOnCanvasTap
         self.ignoredGeometryId = ignoredGeometryId
-        self.showArchivedPins = showArchivedPins
+        self.canvasFilters = canvasFilters
         self.geometryPinDisplayOptionsProvider = geometryPinDisplayOptionsProvider
     }
 
@@ -65,15 +65,25 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         started = true
         loadAndDisplayPins(onInitialLoad: onInitialLoad)
         canvasDelegateId = canvasVC.addDelegate(self)
+
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(canvasFiltersUpdated),
+            name: CanvasFilters.UpdateNotificationName, object: nil
+        )
     }
 
     func stop() {
         started = false
+        NotificationCenter.default.removeObserver(self)
         if let id = canvasDelegateId {
             canvasVC.removeDelegate(id: id)
         }
         geometriesNotificationToken?.invalidate()
         canvasVC.mapView.annotations.removeAnnotationManager(withId: annotationsId)
+    }
+
+    @objc func canvasFiltersUpdated() {
+        updatePointAnnotations()
     }
 
     func pinForGeometryId(_ geometryId: String) -> PinPoint? {
@@ -102,7 +112,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
                 .filter {
                     // skip archived pins
                     guard let archived = $0.userInfo?["archived"] as? Bool else { return false }
-                    if !self.showArchivedPins, archived {
+                    if !self.canvasFilters.showArchivedPins, archived {
                         return false
                     }
                     return true
@@ -164,7 +174,7 @@ extension GeometriesAnnotationPinsDisplay {
     func setSelectedPin(_ pinPoint: PinPoint?) {
         guard pinPoint?.id != selectedPin?.id else { return }
         selectedPin = pinPoint
-        updatePointAnnotationSelection()
+        updatePointAnnotations()
         onSelectedPinChange?(pinPoint)
     }
 
@@ -230,8 +240,8 @@ extension GeometriesAnnotationPinsDisplay {
         return pointAnnotationsById[featureId]
     }
 
-    /// Updates the visuals of currently presented PointAnnotation pins based on `self.selectedPinId`
-    private func updatePointAnnotationSelection() {
+    /// Updates the visuals of currently presented PointAnnotation pins.
+    private func updatePointAnnotations() {
         pinsAnnotationManager.annotations = pinsAnnotationManager.annotations.map { pin in
             var updatedPin = pin
             setPointAnnotationSelection(&updatedPin)
@@ -248,7 +258,7 @@ extension GeometriesAnnotationPinsDisplay {
         let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
         let pinImage = pinOptions.pinImage
         let visible: Bool
-        if !selected, !showArchivedPins {
+        if !selected, !canvasFilters.showArchivedPins {
             // hide the pin if the pins display is configured to not show archived pins and this pin is archived
             // BUT: only if it is not selected. So even if it's archived, still show it if it's selected
             visible = !archived
@@ -306,7 +316,7 @@ extension GeometriesAnnotationPinsDisplay {
                 .filter {
                     // skip archived pins
                     guard let archived = $0.userInfo?["archived"] as? Bool else { return false }
-                    if !self.showArchivedPins, archived {
+                    if !self.canvasFilters.showArchivedPins, archived {
                         return false
                     }
                     return true

@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import UIKit
 
@@ -5,23 +6,25 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class CanvasFiltersCardViewController: SheetCardViewController {
-    private let userSettings: UserSettings
+    private let canvasFilters: CanvasFilters
 
     private let boxView = UIView()
-    private let showArchivedPinsLabel = UILabel()
+//    private let showPhotoPinsSwitch = UISwitch()
     private let showArchivedPinsSwitch = UISwitch()
 
     /// Initializer
     ///
     /// - Parameters:
-    ///     - userSettings:                         UserSettings
-    init(userSettings: UserSettings) {
-        self.userSettings = userSettings
+    ///     - canvasFilters:                         CanvasFilters
+    init(canvasFilters: CanvasFilters) {
+        self.canvasFilters = canvasFilters
         super.init(
             icon: UIImage(systemName: "line.3.horizontal.decrease.circle"),
             title: String(localized: "Canvas Filters")
         )
     }
+
+    var _Subscriber: AnyCancellable?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,13 +36,12 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             make.top.equalTo(sheetHeaderView.snp.bottom)
         }
 
-        showArchivedPinsSwitch.setOn(userSettings.showArchivedCollaborations, animated: false)
-        showArchivedPinsSwitch.addTarget(self, action: #selector(toggleShowArchivedPins), for: .valueChanged)
-    }
+//        showPhotoPinsSwitch.setOn(canvasFilters.showPhotoPins, animated: false)
 
-    @objc
-    private func toggleShowArchivedPins() {
-        userSettings.showArchivedCollaborations = !userSettings.showArchivedCollaborations
+        showArchivedPinsSwitch.setOn(canvasFilters.showArchivedPins, animated: false)
+        showArchivedPinsSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.canvasFilters.showArchivedPins.toggle()
+        }), for: .valueChanged)
     }
 
     private func setupViews() {
@@ -47,22 +49,42 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         boxView.layer.borderWidth = 1
         boxView.backgroundColor = .dynamic(.Neutral_09)
 
-        showArchivedPinsLabel.textColor = .dynamic(.Neutral_04)
-        showArchivedPinsLabel.font = .preferredFont(forTextStyle: .body)
-        showArchivedPinsLabel.adjustsFontForContentSizeCategory = true
-        showArchivedPinsLabel.text = String(localized: "Show Archived Pins")
+//        let showPhotoPinsLabel = createLabel(text: String(localized: "Show Photo Pins"))
+//        boxView.addSubview(showPhotoPinsLabel)
+//        showPhotoPinsLabel.snp.makeConstraints { make in
+//            make.leading.equalToSuperview().inset(16)
+//            make.top.equalToSuperview().inset(18)
+//        }
+//
+//        boxView.addSubview(showPhotoPinsSwitch)
+//        showPhotoPinsSwitch.snp.makeConstraints { make in
+//            make.centerY.equalTo(showPhotoPinsLabel)
+//            make.trailing.equalToSuperview().inset(16)
+//        }
 
+        let showArchivedPinsLabel = createLabel(text: String(localized: "Show Archived Pins"))
         boxView.addSubview(showArchivedPinsLabel)
         showArchivedPinsLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
-            make.top.bottom.equalToSuperview().inset(18)
+            make.top.equalToSuperview().inset(18)
+//            make.top.equalTo(showPhotoPinsLabel.snp.bottom).offset(30)
+            make.bottom.equalToSuperview().inset(18)
         }
 
         boxView.addSubview(showArchivedPinsSwitch)
         showArchivedPinsSwitch.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+            make.centerY.equalTo(showArchivedPinsLabel)
             make.trailing.equalToSuperview().inset(16)
         }
+    }
+
+    private func createLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.textColor = .dynamic(.Neutral_04)
+        label.font = .preferredFont(forTextStyle: .body)
+        label.adjustsFontForContentSizeCategory = true
+        label.text = text
+        return label
     }
 
     override func updateColors() {

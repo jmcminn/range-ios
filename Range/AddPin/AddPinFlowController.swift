@@ -177,7 +177,7 @@ class AddPinFlowController {
             selectionEnabled: false,
             deselectOnCanvasTap: false,
             ignoredGeometryId: nil,
-            showArchivedPins: UserSettings().showArchivedCollaborations,
+            canvasFilters: canvasContainer.canvasFilters,
             geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
         )
     }

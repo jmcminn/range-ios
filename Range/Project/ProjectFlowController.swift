@@ -19,8 +19,6 @@ final class ProjectFlowController: UIViewController {
     let collaborationFlow: CollaborationFlowController
 
     let userSettings: UserSettings
-    /// for storing the userSettings observer
-    private var userSettingsShowArchivedPinsSubscriber: AnyCancellable?
     let debugSettings = DebugSettings()
     /// for storing the debugSettings observer(s)
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
@@ -59,6 +57,9 @@ final class ProjectFlowController: UIViewController {
     var onBack: (() -> Void)?
 
     private var defaultCanvasUIHidden = false
+
+    // Canvas filters for this project
+    let canvasFilters: CanvasFilters
 
     /// Arbitrary way of deciding whether user is currently editing the project (so in the middle of some meaningful action that should not
     /// be aborted without confirmation)
@@ -115,8 +116,9 @@ final class ProjectFlowController: UIViewController {
                 throw error
             }
         }
+        canvasFilters = UserDefaults.canvasFilters(forProjectId: projectId)
 
-        canvasContainer = try await CanvasContainerViewController(model: model)
+        canvasContainer = try await CanvasContainerViewController(model: model, canvasFilters: canvasFilters)
         collaborationFlow = CollaborationFlowController(
             model: model,
             localFiles: localFiles,
@@ -151,10 +153,7 @@ final class ProjectFlowController: UIViewController {
     private func start() {
         guard started == false else { return }
         started = true
-        createGeometriesPinsDisplay(
-            useNativeViews: debugSettings.nativeViewsForPins,
-            showArchivedCollaborations: userSettings.showArchivedCollaborations
-        )
+        createGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins)
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -172,7 +171,6 @@ final class ProjectFlowController: UIViewController {
 
         showDefaultCanvasUI(animated: false)
         collaborationFlow.start()
-        observeUserSettings()
         observeDebugSettings()
         observeCanvas()
 
@@ -185,7 +183,6 @@ final class ProjectFlowController: UIViewController {
             self.observeCanvas()
             self.reloadGeometriesPinsDisplay(
                 useNativeViews: self.debugSettings.nativeViewsForPins,
-                showArchivedCollaborations: self.userSettings.showArchivedCollaborations,
                 onReloaded: nil
             )
         }
@@ -209,17 +206,10 @@ final class ProjectFlowController: UIViewController {
     /// Reload the geometries pins display.
     /// It stops the current pins display, creates a new one and starts it if the previous one was started (maybe it was temporarily stopped,
     /// then we need the new one to be stopped too)
-    func reloadGeometriesPinsDisplay(
-        useNativeViews: Bool,
-        showArchivedCollaborations: Bool,
-        onReloaded: (() -> Void)?
-    ) {
+    func reloadGeometriesPinsDisplay(useNativeViews: Bool, onReloaded: (() -> Void)?) {
         let start = pinsDisplay?.started ?? false
         pinsDisplay?.stop()
-        createGeometriesPinsDisplay(
-            useNativeViews: useNativeViews,
-            showArchivedCollaborations: showArchivedCollaborations
-        )
+        createGeometriesPinsDisplay(useNativeViews: useNativeViews)
         if start {
             pinsDisplay?.start(onInitialLoad: onReloaded)
         }
@@ -229,34 +219,17 @@ final class ProjectFlowController: UIViewController {
         debugSettingsNativeViewsForPinsSubscriber = debugSettings.$nativeViewsForPins
             .sink { [weak self] useNativeViews in
                 guard let self = self else { return }
-                self.reloadGeometriesPinsDisplay(
-                    useNativeViews: useNativeViews,
-                    showArchivedCollaborations: self.userSettings.showArchivedCollaborations,
-                    onReloaded: nil
-                )
+                self.reloadGeometriesPinsDisplay(useNativeViews: useNativeViews, onReloaded: nil)
             }
     }
 
-    /// Observe user settings to detect change in showArchivedCollaborations
-    private func observeUserSettings() {
-        userSettingsShowArchivedPinsSubscriber = userSettings.$showArchivedCollaborations
-            .sink { [weak self] showArchivedCollaborations in
-                guard let self = self else { return }
-                self.reloadGeometriesPinsDisplay(
-                    useNativeViews: self.debugSettings.nativeViewsForPins,
-                    showArchivedCollaborations: showArchivedCollaborations,
-                    onReloaded: nil
-                )
-            }
-    }
-
-    private func createGeometriesPinsDisplay(useNativeViews: Bool, showArchivedCollaborations: Bool) {
+    private func createGeometriesPinsDisplay(useNativeViews: Bool) {
         pinsDisplay = _createGeometriesPinsDisplay(
             usingNativeViews: useNativeViews,
             canvas: model.currentCanvas,
             canvasViewController: canvasContainer.canvasViewController,
             deselectOnCanvasTap: true,
-            showArchivedPins: showArchivedCollaborations,
+            canvasFilters: canvasFilters,
             geometryPinDisplayOptionsProvider: PinDisplayOptions.regularPinDisplayOptionsProvider
         )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
@@ -296,12 +269,11 @@ final class ProjectFlowController: UIViewController {
         remove(childController: canvasContainer)
         debugSettingsNativeViewsForPinsSubscriber?.cancel()
         debugSettingsNativeViewsForPinsSubscriber = nil
-        userSettingsShowArchivedPinsSubscriber?.cancel()
-        userSettingsShowArchivedPinsSubscriber = nil
         currentCanvasObservation?.invalidate()
         currentCanvasObservation = nil
         canvasNotificationToken?.invalidate()
         canvasNotificationToken = nil
+        UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
     }
 
     /// Show the default UI elements when viewing the canvas
@@ -484,10 +456,7 @@ extension ProjectFlowController {
     }
 
     private func selectCollaboration(forGeometryId geometryId: String, andEditName editName: Bool) {
-        reloadGeometriesPinsDisplay(
-            useNativeViews: debugSettings.nativeViewsForPins,
-            showArchivedCollaborations: userSettings.showArchivedCollaborations
-        ) {
+        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
             if let pinsDisplay = self.pinsDisplay, let pin = pinsDisplay.pinForGeometryId(geometryId) {
                 // select the pin (which will trigger showing the collaboration window)
                 pinsDisplay.setSelectedPin(pin)

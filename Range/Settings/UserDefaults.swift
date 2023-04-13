@@ -1,5 +1,6 @@
 import Foundation
 import OrderedCollections
+import OSLog
 
 /// Store implicit user preferences (not available in settings but based on recent user actions)
 extension UserDefaults {
@@ -26,6 +27,8 @@ extension UserDefaults {
         case lastPinTypeOption
         /// remember last fcm token, so it can be removed when a new one is obtained
         case lastFCMToken
+        /// the prefix used for storing canvasFilters for a project, will be followed by a project id
+        case canvasFiltersPrefix = "canvasFilters_"
     }
 
     static var lastOpenProjectId: String? {
@@ -192,6 +195,41 @@ extension UserDefaults {
             } else {
                 UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastFCMToken.rawValue)
             }
+        }
+    }
+
+    /// construct key used for storing canvas filters for given project
+    private static func canvasFiltersKey(forProjectId projectId: String) -> String {
+        UserDefaultsConstants.canvasFiltersPrefix.rawValue + projectId
+    }
+
+    /// Returns the canvas filters for given project or default CanvasFilters if not set yet
+    static func canvasFilters(forProjectId projectId: String) -> CanvasFilters {
+        guard let canvasFiltersString = UserDefaults.standard
+            .object(forKey: canvasFiltersKey(forProjectId: projectId)) as? String
+        else {
+            return CanvasFilters()
+        }
+        do {
+            let canvasFiltersData = try canvasFiltersString.data(using: .utf8)
+                .or(error: "Failed to get data from canvas filters string")
+            let jsonDecoder = JSONDecoder()
+            return try jsonDecoder.decode(CanvasFilters.self, from: canvasFiltersData)
+        } catch {
+            Logger.settings.error("Failed to load canvas filters: \(error)")
+            return CanvasFilters()
+        }
+    }
+
+    static func setCanvasFilters(_ canvasFilters: CanvasFilters, forProjectId projectId: String) {
+        do {
+            let jsonEncoder = JSONEncoder()
+            let canvasFiltersData = try jsonEncoder.encode(canvasFilters)
+            let canvasFiltersString = try String(data: canvasFiltersData, encoding: .utf8)
+                .or(error: "Failed to create String from canvas filters data")
+            UserDefaults.standard.set(canvasFiltersString, forKey: canvasFiltersKey(forProjectId: projectId))
+        } catch {
+            Logger.settings.error("Failed to save canvas filters: \(error)")
         }
     }
 }

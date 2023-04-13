@@ -9,14 +9,14 @@ protocol GeometriesPinsDisplay: AnyObject {
     ///   - selectionEnabled:                  whether pin selection is enabled
     ///   - deselectOnCanvasTap:               should the display deselect the currently selected pin if user taps on the canvas outside of any pin
     ///   - ignoredGeometryId:                 don't display given pin (useful when moving a pin, in which case it's displayed outside of GeometriesPinsDisplay)
-    ///   - showArchivedPins:                  if true it shows geometries with archived = true
+    ///   - canvasFilters:                     filters to define what pins are visible
     ///   - geometryPinDisplayOptionsProvider: the function providing pin display options given geometry and selection state
     init(canvas: Canvas,
          canvasViewController: CanvasViewController,
          selectionEnabled: Bool,
          deselectOnCanvasTap: Bool,
          ignoredGeometryId: String?,
-         showArchivedPins: Bool,
+         canvasFilters: CanvasFilters,
          geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider)
 
     /// Display the pins and listen for changes
@@ -60,7 +60,7 @@ func _createGeometriesPinsDisplay(
     selectionEnabled: Bool = true,
     deselectOnCanvasTap: Bool,
     ignoredGeometryId: String? = nil,
-    showArchivedPins: Bool,
+    canvasFilters: CanvasFilters,
     geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
 ) -> GeometriesPinsDisplay {
     usingNativeViews
@@ -70,7 +70,7 @@ func _createGeometriesPinsDisplay(
             selectionEnabled: selectionEnabled,
             deselectOnCanvasTap: deselectOnCanvasTap,
             ignoredGeometryId: ignoredGeometryId,
-            showArchivedPins: showArchivedPins,
+            canvasFilters: canvasFilters,
             geometryPinDisplayOptionsProvider: geometryPinDisplayOptionsProvider
         )
         : GeometriesAnnotationPinsDisplay(
@@ -79,7 +79,7 @@ func _createGeometriesPinsDisplay(
             selectionEnabled: selectionEnabled,
             deselectOnCanvasTap: deselectOnCanvasTap,
             ignoredGeometryId: ignoredGeometryId,
-            showArchivedPins: showArchivedPins,
+            canvasFilters: canvasFilters,
             geometryPinDisplayOptionsProvider: geometryPinDisplayOptionsProvider
         )
 }

@@ -84,7 +84,7 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func selectCanvasFiltersAction() {
-        CanvasFiltersCardViewController(userSettings: userSettings)
+        CanvasFiltersCardViewController(canvasFilters: canvasFilters)
             .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
@@ -145,10 +145,7 @@ extension ProjectFlowController: ProjectFlowActions {
             ToastWindow.shared.showError(text: "Canvas failed to load")
         }
         // reload the pins (it only reloads if canvas has changed)
-        reloadGeometriesPinsDisplay(
-            useNativeViews: debugSettings.nativeViewsForPins,
-            showArchivedCollaborations: userSettings.showArchivedCollaborations
-        ) {
+        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
             guard let pinsDisplay = self.pinsDisplay else { return }
             if let pin = pinsDisplay.pinForGeometryId(geometry.id) {
                 // select the pin (which will trigger showing the collaboration window)

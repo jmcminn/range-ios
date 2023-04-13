@@ -325,6 +325,7 @@
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */; };
+		0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */; };
 		0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */; };
 		0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */; };
 		0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75728621782005ACFD7 /* Result+Throws.swift */; };
@@ -695,6 +696,7 @@
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FirstResponder.swift"; sourceTree = "<group>"; };
+		0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFilters.swift; sourceTree = "<group>"; };
 		0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Commands.swift"; sourceTree = "<group>"; };
 		0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelCommandsTest.swift; sourceTree = "<group>"; };
 		0AD9B75728621782005ACFD7 /* Result+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Throws.swift"; sourceTree = "<group>"; };
@@ -938,6 +940,7 @@
 				0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */,
 				0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */,
 				0A34072B29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift */,
+				0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */,
 				0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */,
 			);
 			path = Canvas;
@@ -2015,6 +2018,7 @@
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
+				0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */,
 				0ABFD8A628EC85C9008CDA74 /* TagAddCollectionViewCell.swift in Sources */,
 				0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,

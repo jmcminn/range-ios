@@ -120,7 +120,7 @@ class MovePinFlowController {
             selectionEnabled: false,
             deselectOnCanvasTap: false,
             ignoredGeometryId: ignoredGeometryId,
-            showArchivedPins: UserSettings().showArchivedCollaborations,
+            canvasFilters: canvasContainer.canvasFilters,
             geometryPinDisplayOptionsProvider: PinDisplayOptions.addPinDisplayOptionsProvider
         )
     }

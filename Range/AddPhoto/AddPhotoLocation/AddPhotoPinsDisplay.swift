@@ -54,7 +54,7 @@ class AddPhotoPinsDisplay {
             canvas: canvas,
             canvasViewController: canvasContainer.canvasViewController,
             deselectOnCanvasTap: false,
-            showArchivedPins: UserSettings().showArchivedCollaborations,
+            canvasFilters: canvasContainer.canvasFilters,
             geometryPinDisplayOptionsProvider: PinDisplayOptions.addPhotoDisplayOptionsProvider
         )
         geometriesPinsDisplay.onSelectedPinChange = { [weak self] pinPoint in

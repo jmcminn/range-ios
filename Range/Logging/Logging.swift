@@ -28,6 +28,8 @@ extension Logger {
     static let pushNotifications = Logger(subsystem: subsystem, category: "notifications")
     /// Logs related to sentry configuration
     static let sentry = Logger(subsystem: subsystem, category: "sentry")
+    /// Logs related to settings
+    static let settings = Logger(subsystem: subsystem, category: "settings")
     /// Cloud Storage sync related logs
     static let storage = Logger(subsystem: subsystem, category: "storage")
     /// anything UI related
