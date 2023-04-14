@@ -84,7 +84,7 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func selectCanvasFiltersAction() {
-        CanvasFiltersCardViewController(canvasFilters: canvasFilters)
+        CanvasFiltersCardViewController(model: model, canvasFilters: canvasFilters)
             .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
