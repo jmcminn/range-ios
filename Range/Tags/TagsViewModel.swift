@@ -87,6 +87,12 @@ class TagsViewModel: NSObject {
         }
     }
 
+    /// Unselect all selected tags
+    func clearSelection() {
+        let selectedTagsIds = selectedTags.map(\.id)
+        selectedTagsIds.forEach { self.set(tagWithId: $0, selected: false) }
+    }
+
     /// filter `allTags` by given String and store results in `filteredTags`
     func filter(by filterString: String) {
         self.filterString = filterString

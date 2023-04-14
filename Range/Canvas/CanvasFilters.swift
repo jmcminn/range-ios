@@ -7,7 +7,7 @@ class CanvasFilters: Codable {
     static let UpdateNotificationName = Notification.Name("io.range.App.CanvasFiltersUpdated")
 
     private enum CodingKeys: String, CodingKey {
-        case showPhotoPins, showTaskPins, hiddenStatuses, showOnlyCreatedByUser, showArchivedPins
+        case showPhotoPins, showTaskPins, hiddenStatuses, tagsFilter, showOnlyCreatedByUser, showArchivedPins
     }
 
     weak var model: ProjectModel?
@@ -35,6 +35,10 @@ class CanvasFilters: Codable {
     func show(_ status: Status) -> Bool {
         !hiddenStatuses.contains(status.id)
     }
+
+    /// This is not nil when user enabled filtering by tags.
+    /// If not nil and not empty then only match the collaborations that have (or their upload have) any of given tags (tag ids).
+    var tagsFilter: [String]? = nil
 
     /// Whether to show only the pins created by the current user
     var showOnlyCreatedByUser: Bool = false { didSet { postUpdate() } }

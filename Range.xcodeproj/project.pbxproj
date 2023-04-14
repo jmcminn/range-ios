@@ -99,6 +99,7 @@
 		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
+		0A3680D929ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680D829ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift */; };
 		0A36CDF7299BD2260004758E /* LocalFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDF6299BD2260004758E /* LocalFiles.swift */; };
 		0A36CDF9299BD2350004758E /* MediaKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDF8299BD2350004758E /* MediaKey.swift */; };
 		0A36CDFB299C0E2B0004758E /* RangeLocalFileImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDFA299C0E2A0004758E /* RangeLocalFileImageDataProvider.swift */; };
@@ -462,6 +463,7 @@
 		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
+		0A3680D829ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagEditCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A36CDF6299BD2260004758E /* LocalFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFiles.swift; sourceTree = "<group>"; };
 		0A36CDF8299BD2350004758E /* MediaKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKey.swift; sourceTree = "<group>"; };
 		0A36CDFA299C0E2A0004758E /* RangeLocalFileImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeLocalFileImageDataProvider.swift; sourceTree = "<group>"; };
@@ -1008,6 +1010,7 @@
 				0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */,
 				0A4995C7285A0A8000E571FB /* SelectedTagsView.swift */,
 				0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */,
+				0A3680D829ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift */,
 				0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */,
 				0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */,
 				0A130EB128DB1AB000FF1368 /* TagsView.swift */,
@@ -1838,6 +1841,7 @@
 				0A3831D128E42CC4001AF38A /* FirestoreUpdate.swift in Sources */,
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A7A537B293E4E540093D913 /* ProjectsModel.swift in Sources */,
+				0A3680D929ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift in Sources */,
 				0AFDFA972952106D00F64D62 /* CreateUploadCommentCommand.swift in Sources */,
 				0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */,
 				0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */,
