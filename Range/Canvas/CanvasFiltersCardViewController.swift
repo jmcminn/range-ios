@@ -132,7 +132,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         let wrapper = UIView()
         let labelAndControl = UIStackView()
         labelAndControl.axis = .horizontal
-        labelAndControl.spacing = 16
+        labelAndControl.alignment = .center
         labelAndControl.addArrangedSubview(label)
         labelAndControl.addArrangedSubview(control)
         wrapper.addSubview(labelAndControl)
@@ -157,10 +157,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
     private func createLabel(text: String) -> UILabel {
         let label = UILabel()
+        label.text = text
         label.textColor = .dynamic(.Neutral_04)
         label.font = .preferredFont(forTextStyle: .body)
         label.adjustsFontForContentSizeCategory = true
-        label.text = text
+        label.numberOfLines = 0
         return label
     }
 
