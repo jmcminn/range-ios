@@ -6,16 +6,36 @@ class CanvasFilters: Codable {
     /// The name for the notification posted in NotificationCenter when the filters change
     static let UpdateNotificationName = Notification.Name("io.range.App.CanvasFiltersUpdated")
 
-    var showPhotoPins: Bool = true {
-        didSet { NotificationCenter.default.post(name: CanvasFilters.UpdateNotificationName, object: self) }
+    /// Whether to show photo pins
+    var showPhotoPins: Bool = true { didSet { postUpdate() } }
+
+    /// Whether to show task pins
+    var showTaskPins: Bool = true { didSet { postUpdate() } }
+
+    /// Keep the hidden status (and not shown) so if new status is added it is shown by default
+    private var hiddenStatuses = Set<String>()
+
+    /// Set given status as shown or hidden
+    func set(_ status: Status, shown: Bool) {
+        if shown {
+            hiddenStatuses.remove(status.id)
+        } else {
+            hiddenStatuses.insert(status.id)
+        }
+        postUpdate()
     }
 
-    var showTaskPins: Bool = true {
-        didSet { NotificationCenter.default.post(name: CanvasFilters.UpdateNotificationName, object: self) }
+    /// Return if given status is shown
+    func show(_ status: Status) -> Bool {
+        !hiddenStatuses.contains(status.id)
     }
 
-    var showArchivedPins: Bool = false {
-        didSet { NotificationCenter.default.post(name: CanvasFilters.UpdateNotificationName, object: self) }
+    /// Whether to show archived pins
+    var showArchivedPins: Bool = false { didSet { postUpdate() } }
+
+    /// Use notification center to post the notification about update in filters
+    private func postUpdate() {
+        NotificationCenter.default.post(name: CanvasFilters.UpdateNotificationName, object: self)
     }
 }
 
@@ -25,6 +45,7 @@ extension CanvasFilters {
         if !showArchivedPins, collaboration.isArchived { return false }
         if !showPhotoPins, collaboration.status == nil { return false }
         if !showTaskPins, collaboration.status != nil { return false }
+        if let status = collaboration.status, !show(status) { return false }
         return true
     }
 }
