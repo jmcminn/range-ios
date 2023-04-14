@@ -1,7 +1,7 @@
 import UIKit
 
 /// Header view for search and select tags view controller.
-/// Contains a search view (`TagsSearchView`) and selected tags (`SelectedTagsViewController`) below.
+/// Contains a search view (`TagsSearchView`) and selected tags (`SelectedTagsView`) below.
 /// The layout supports collapsing the search view.
 class SearchAndSelectTagsHeaderViewController: UIViewController {
     /// The header can show or hide the selected tags. But for layout purposes it is important to know about 2 more states:
@@ -15,7 +15,7 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
 
     unowned let viewModel: TagsViewModel
     var searchView: TagsSearchView!
-    var selectedTagsVC: SelectedTagsViewController!
+    var selectedTagsView: SelectedTagsView!
     private var bottomStroke: UIView!
 
     /// current state of selected tags
@@ -56,16 +56,16 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         guard (visible == true && selectedTagsState != .visible) ||
             (visible == false && selectedTagsState != .hidden) else { return }
 
-        selectedTagsVC.view.isHidden = false
+        selectedTagsView.isHidden = false
         if visible {
-            selectedTagsVC.view.alpha = 0.0 // prepare for show
+            selectedTagsView.alpha = 0.0 // prepare for show
         } else {
-            selectedTagsVC.view.alpha = 1.0 // prepare for hide
+            selectedTagsView.alpha = 1.0 // prepare for hide
         }
         updateSearchViewFrame()
         let applyChange = {
-            self.selectedTagsVC.view.alpha = visible ? 1.0 : 0.0
-            self.selectedTagsVC.view.isHidden = !visible
+            self.selectedTagsView.alpha = visible ? 1.0 : 0.0
+            self.selectedTagsView.isHidden = !visible
             self.selectedTagsState = visible ? .visible : .hidden
         }
         if animated {
@@ -85,14 +85,14 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         buildBottomStroke()
 
         view.addSubview(searchView)
-        add(childController: selectedTagsVC)
+        view.addSubview(selectedTagsView)
         view.addSubview(bottomStroke)
 
         // hidden by default
-        selectedTagsVC.view.isHidden = viewModel.selectedTags.isEmpty
-        selectedTagsVC.view.snp.makeConstraints { make in
+        selectedTagsView.isHidden = viewModel.selectedTags.isEmpty
+        selectedTagsView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(48) // make this view higher than in the design to have bigger buttons
+            make.bottom.equalToSuperview().offset(-12)
         }
         bottomStroke.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
@@ -117,7 +117,7 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         // only if tags are hidden the search view can take the whole height
         let searchViewHeight = selectedTagsState == .hidden
             ? min(40, max(0, height - margin))
-            : min(40, max(0, height - selectedTagsVC.view.frame.height - margin))
+            : min(40, max(0, height - selectedTagsView.frame.height - margin))
 
         searchView.frame = CGRect(
             x: margin,
@@ -151,7 +151,7 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
     }
 
     private func buildSelectedTagsView() {
-        selectedTagsVC = SelectedTagsViewController(viewModel: viewModel)
+        selectedTagsView = SelectedTagsView(viewModel: viewModel)
     }
 
     private func buildBottomStroke() {

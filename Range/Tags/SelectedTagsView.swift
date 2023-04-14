@@ -1,21 +1,26 @@
 import UIKit
 
 /// Displays a horizontally scrollable collection of TagViewModel(s).
-class SelectedTagsViewController: UIViewController {
+class SelectedTagsView: UIView {
     unowned let viewModel: TagsViewModel
     var collectionView: UICollectionView!
 
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init(frame: .zero)
 
         viewModel.addDelegate(self)
+
+        setupView()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    /// This view is 40 points high, even though the visible height of the cells is 32 (but we want the bigger tap area)
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: 40)
+    }
 
-        view.backgroundColor = .dynamic(.Neutral_10)
+    private func setupView() {
+        backgroundColor = .dynamic(.Neutral_10)
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -23,13 +28,14 @@ class SelectedTagsViewController: UIViewController {
         layout.minimumLineSpacing = 8
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(SelectedTagCollectionViewCell.self, forCellWithReuseIdentifier: "SelectedTagCell")
 
-        view.addSubview(collectionView)
+        addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -48,7 +54,7 @@ class SelectedTagsViewController: UIViewController {
 
 // MARK: - TagsViewModel delegate
 
-extension SelectedTagsViewController: TagsViewModelDelegate {
+extension SelectedTagsView: TagsViewModelDelegate {
     /// update selected tags when view model changes
     func tagsViewModel(_: TagsViewModel, tag _: TagViewModel, selected: Bool, indexInSelectedTags: Int) {
         let indexPath = IndexPath(item: indexInSelectedTags, section: 0)
@@ -63,7 +69,7 @@ extension SelectedTagsViewController: TagsViewModelDelegate {
 
 // MARK: - UICollectionView data source & delegate
 
-extension SelectedTagsViewController: UICollectionViewDataSource, UICollectionViewDelegate,
+extension SelectedTagsView: UICollectionViewDataSource, UICollectionViewDelegate,
     UICollectionViewDelegateFlowLayout
 {
     func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
@@ -97,7 +103,7 @@ extension SelectedTagsViewController: UICollectionViewDataSource, UICollectionVi
         return CGSize(
             width: nameSize.width + SelectedTagCollectionViewCell.leadingLabelInset + SelectedTagCollectionViewCell
                 .trailingLabelInset + 1.0, // +1 to handle any rounding issues
-            height: 48 // higher than in design as we want to respond to bigger tap area
+            height: 40 // higher than in design as we want to respond to bigger tap area
         )
     }
 }

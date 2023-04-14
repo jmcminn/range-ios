@@ -15,10 +15,12 @@ class SelectedTagCollectionViewCell: UICollectionViewCell {
         backgroundView.layer.borderWidth = 1
         backgroundView.layer.cornerRadius = 16
         backgroundView.layer.borderColor = UIColor.Primary_Blue_04.cgColor
-        backgroundView.backgroundColor = .Primary_Blue_02
+        backgroundView.backgroundColor = .Primary_Blue_01
         contentView.addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0))
+            // the visible cell is lower than touchable area
+            make.leading.trailing.centerY.equalToSuperview()
+            make.height.equalTo(32)
         }
 
         contentView.addSubview(label)
@@ -26,7 +28,7 @@ class SelectedTagCollectionViewCell: UICollectionViewCell {
         label.textColor = .dynamic(.Neutral_04)
         label.adjustsFontForContentSizeCategory = true
         label.snp.makeConstraints { make in
-            make.centerY.equalToSuperview().offset(-8)
+            make.centerY.equalToSuperview()
             make.leading.equalToSuperview().inset(SelectedTagCollectionViewCell.leadingLabelInset)
             make.trailing.equalToSuperview().inset(SelectedTagCollectionViewCell.trailingLabelInset)
         }
@@ -34,7 +36,7 @@ class SelectedTagCollectionViewCell: UICollectionViewCell {
         var unselectButtonConfig = UIButton.Configuration.plain()
         // adjust content insets so the 'x' is place properly in the tag cell but also has
         // as biggest area as possible (but not symmetric to the center of x)
-        unselectButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 10, bottom: 19, trailing: 6)
+        unselectButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 9, leading: 10, bottom: 9, trailing: 6)
         unselectButtonConfig.baseForegroundColor = .Primary_Blue_04
 
         let unselectButton = UIButton(

@@ -143,7 +143,7 @@
 		0A4995BF2858D00100E571FB /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995BE2858D00100E571FB /* Tag.swift */; };
 		0A4995C12858D05D00E571FB /* FirestoreTagName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C02858D05D00E571FB /* FirestoreTagName.swift */; };
 		0A4995C32859D8C900E571FB /* FirestoreTagNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C22859D8C900E571FB /* FirestoreTagNameTest.swift */; };
-		0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */; };
+		0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C7285A0A8000E571FB /* SelectedTagsView.swift */; };
 		0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */; };
 		0A4995CE285B264C00E571FB /* TagSelectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */; };
 		0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4995CF285B647600E571FB /* TagsViewModel.swift */; };
@@ -510,7 +510,7 @@
 		0A4995BE2858D00100E571FB /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		0A4995C02858D05D00E571FB /* FirestoreTagName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreTagName.swift; sourceTree = "<group>"; };
 		0A4995C22859D8C900E571FB /* FirestoreTagNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreTagNameTest.swift; sourceTree = "<group>"; };
-		0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagsViewController.swift; sourceTree = "<group>"; };
+		0A4995C7285A0A8000E571FB /* SelectedTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagsView.swift; sourceTree = "<group>"; };
 		0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagSelectionTableViewCell.swift; sourceTree = "<group>"; };
 		0A4995CF285B647600E571FB /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
@@ -1006,7 +1006,7 @@
 				0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */,
 				0AD02556284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift */,
 				0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */,
-				0A4995C7285A0A8000E571FB /* SelectedTagsViewController.swift */,
+				0A4995C7285A0A8000E571FB /* SelectedTagsView.swift */,
 				0A4995C9285A26BB00E571FB /* SelectedTagCollectionViewCell.swift */,
 				0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */,
 				0A4995CD285B264C00E571FB /* TagSelectionTableViewCell.swift */,
@@ -2002,7 +2002,7 @@
 				0A4DC79627F572CF00712518 /* ActionSelectorViewController.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
-				0A4995C8285A0A8000E571FB /* SelectedTagsViewController.swift in Sources */,
+				0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */,
 				0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
