@@ -6,6 +6,12 @@ class CanvasFilters: Codable {
     /// The name for the notification posted in NotificationCenter when the filters change
     static let UpdateNotificationName = Notification.Name("io.range.App.CanvasFiltersUpdated")
 
+    private enum CodingKeys: String, CodingKey {
+        case showPhotoPins, showTaskPins, hiddenStatuses, showOnlyCreatedByUser, showArchivedPins
+    }
+
+    weak var model: ProjectModel?
+
     /// Whether to show photo pins
     var showPhotoPins: Bool = true { didSet { postUpdate() } }
 
@@ -30,6 +36,9 @@ class CanvasFilters: Codable {
         !hiddenStatuses.contains(status.id)
     }
 
+    /// Whether to show only the pins created by the current user
+    var showOnlyCreatedByUser: Bool = false { didSet { postUpdate() } }
+
     /// Whether to show archived pins
     var showArchivedPins: Bool = false { didSet { postUpdate() } }
 
@@ -46,6 +55,7 @@ extension CanvasFilters {
         if !showPhotoPins, collaboration.status == nil { return false }
         if !showTaskPins, collaboration.status != nil { return false }
         if let status = collaboration.status, !show(status) { return false }
+        if showOnlyCreatedByUser, collaboration.author?.id != model?.userId { return false }
         return true
     }
 }

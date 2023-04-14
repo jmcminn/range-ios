@@ -15,9 +15,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
     private let showPhotoPinsSwitch = UISwitch()
     private let showTaskPinsSwitch = UISwitch()
-    private let showArchivedPinsSwitch = UISwitch()
     private var statusLabels = [Status: UILabel]()
     private var statusSwitches = [Status: UISwitch]()
+
+    private let showOnlyCreatedByUserSwitch = UISwitch()
+    private let showArchivedPinsSwitch = UISwitch()
 
     /// Initializer
     ///
@@ -60,6 +62,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         showTaskPinsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.canvasFilters.showTaskPins.toggle()
             self?.updateTaskPinsEnabled()
+        }), for: .valueChanged)
+
+        showOnlyCreatedByUserSwitch.setOn(canvasFilters.showOnlyCreatedByUser, animated: false)
+        showOnlyCreatedByUserSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.canvasFilters.showOnlyCreatedByUser.toggle()
         }), for: .valueChanged)
 
         showArchivedPinsSwitch.setOn(canvasFilters.showArchivedPins, animated: false)
@@ -110,6 +117,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
                     bottomInset: index == (statuses.count - 1) ? 13 : 5)
             }
         }
+        addSeparator()
+        add(
+            label: createLabel(text: String(localized: "Only Show Pins I've Created")),
+            control: showOnlyCreatedByUserSwitch
+        )
         addSeparator()
         add(label: createLabel(text: String(localized: "Show Archived Pins")), control: showArchivedPinsSwitch)
     }

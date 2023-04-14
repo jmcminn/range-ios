@@ -117,6 +117,7 @@ final class ProjectFlowController: UIViewController {
             }
         }
         canvasFilters = UserDefaults.canvasFilters(forProjectId: projectId)
+        canvasFilters.model = model
 
         canvasContainer = try await CanvasContainerViewController(model: model, canvasFilters: canvasFilters)
         collaborationFlow = CollaborationFlowController(
