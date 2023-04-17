@@ -17,11 +17,12 @@ class SelectedTagsView: UIView {
     private(set) var visibleState: VisibleState
 
     /// Should it always show a special cell saying "edit" at the beginning of tags (even if there's no selected tags)
-    var showEditTagCell: Bool = false
+    private let showEditTagCell: Bool
 
-    init(viewModel: TagsViewModel) {
+    init(viewModel: TagsViewModel, showEditTagCell: Bool = false) {
         self.viewModel = viewModel
-        visibleState = viewModel.selectedTags.isEmpty ? .hidden : .visible
+        self.showEditTagCell = showEditTagCell
+        visibleState = viewModel.selectedTags.isEmpty && !showEditTagCell ? .hidden : .visible
         super.init(frame: .zero)
 
         viewModel.addDelegate(self)

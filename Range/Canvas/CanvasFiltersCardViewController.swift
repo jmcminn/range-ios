@@ -37,7 +37,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         let tagsViewModel = TagsViewModel(model: model)
         // preselect tags from the filter
         canvasFilters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
-        tagsView = SelectedTagsView(viewModel: tagsViewModel)
+        tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
         super.init(
             icon: UIImage(systemName: "line.3.horizontal.decrease.circle"),
@@ -208,7 +208,6 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     }
 
     private func addTagsView() {
-        tagsView.showEditTagCell = true
         tagsView.backgroundColor = stackView.backgroundColor
         stackView.addArrangedSubview(tagsView)
         tagsView.snp.makeConstraints { make in
