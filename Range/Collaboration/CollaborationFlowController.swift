@@ -560,15 +560,15 @@ extension CollaborationFlowController {
     func editAssigneeAction() {
         let users = [Participant](model.mainRealm.objects(Participant.self))
         guard let collaboration = collaboration else { return }
-        UserPickerCardViewController(
-            title: "Assignee",
+        let userPicker = UserPickerCardViewController(
+            singleSelectWithTitle: "Assignee",
             users: users,
             selectedUser: collaboration.assignee,
             onUserPicked: { [weak self] newAssignee in
                 self?.updateAssignee(newAssignee)
             }
         )
-        .installAndShowCard(in: self)
+        userPicker.installAndShowCard(in: self)
     }
 
     private func updateAssignee(_ assignee: Participant?) {
