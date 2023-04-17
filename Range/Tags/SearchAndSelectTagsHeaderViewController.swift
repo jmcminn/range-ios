@@ -4,22 +4,10 @@ import UIKit
 /// Contains a search view (`TagsSearchView`) and selected tags (`SelectedTagsView`) below.
 /// The layout supports collapsing the search view.
 class SearchAndSelectTagsHeaderViewController: UIViewController {
-    /// The header can show or hide the selected tags. But for layout purposes it is important to know about 2 more states:
-    /// showing and hiding which are temporary states when animating between visible and hidden
-    enum TagsState {
-        case visible // selected tags are shown
-        case showing // selected tags are being animated in
-        case hiding // selected tags are being animated out
-        case hidden // selected tags are hidden
-    }
-
     unowned let viewModel: TagsViewModel
     var searchView: TagsSearchView!
-    var selectedTagsView: SelectedTagsView!
+    private(set) var selectedTagsView: SelectedTagsView!
     private var bottomStroke: UIView!
-
-    /// current state of selected tags
-    private var selectedTagsState: TagsState
 
     /// shows/hides the bottom stroke (+ the shadow)
     var bottomStrokeVisible: Bool = false {
@@ -30,7 +18,6 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
 
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
-        selectedTagsState = viewModel.selectedTags.isEmpty ? .hidden : .visible
         super.init(nibName: nil, bundle: nil)
 
         view.backgroundColor = .dynamic(.Neutral_10)
@@ -39,43 +26,13 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         updateBottomStroke()
     }
 
-    func selectedTagsWillShow() {
-        selectedTagsState = .showing
-    }
-
-    func selectedTagsWillHide() {
-        selectedTagsState = .hiding
-    }
-
     /// animate the change in header height to show/hide the selected tags
     func setSelectedTagsVisible(_ visible: Bool,
                                 animated: Bool = true,
                                 completion: (() -> Void)? = nil)
     {
-        // only animate if it's not visible and showing or visible and hiding
-        guard (visible == true && selectedTagsState != .visible) ||
-            (visible == false && selectedTagsState != .hidden) else { return }
-
-        selectedTagsView.isHidden = false
-        if visible {
-            selectedTagsView.alpha = 0.0 // prepare for show
-        } else {
-            selectedTagsView.alpha = 1.0 // prepare for hide
-        }
         updateSearchViewFrame()
-        let applyChange = {
-            self.selectedTagsView.alpha = visible ? 1.0 : 0.0
-            self.selectedTagsView.isHidden = !visible
-            self.selectedTagsState = visible ? .visible : .hidden
-        }
-        if animated {
-            UIView.animate(withDuration: 0.1) { applyChange() } completion: { _ in
-                completion?()
-            }
-        } else {
-            applyChange()
-            completion?()
-        }
+        selectedTagsView.setVisible(visible, animated: animated, completion: completion)
     }
 
     /// Creates views, adds them to header and configure the layout
@@ -115,7 +72,7 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         let height = view.bounds.height
 
         // only if tags are hidden the search view can take the whole height
-        let searchViewHeight = selectedTagsState == .hidden
+        let searchViewHeight = selectedTagsView.visibleState == .hidden
             ? min(40, max(0, height - margin))
             : min(40, max(0, height - selectedTagsView.frame.height - margin))
 

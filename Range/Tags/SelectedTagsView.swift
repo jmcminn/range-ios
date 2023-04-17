@@ -5,8 +5,20 @@ class SelectedTagsView: UIView {
     unowned let viewModel: TagsViewModel
     var collectionView: UICollectionView!
 
+    /// The view can be shown or hidden. But for layout purposes it is important to know about 1 more state - `transitioning`,
+    /// which is a temporary state when animating between visible and hidden
+    enum VisibleState {
+        case visible // selected tags are shown
+        case transitioning // selected tags are being animated in or out
+        case hidden // selected tags are hidden
+    }
+
+    /// current state
+    private(set) var visibleState: VisibleState
+
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
+        visibleState = viewModel.selectedTags.isEmpty ? .hidden : .visible
         super.init(frame: .zero)
 
         viewModel.addDelegate(self)
@@ -49,6 +61,44 @@ class SelectedTagsView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - showing/hiding
+
+extension SelectedTagsView {
+    func visibleStateWillTransition() {
+        visibleState = .transitioning
+    }
+
+    /// animate the visibility of tags
+    func setVisible(_ visible: Bool,
+                    animated: Bool = true,
+                    completion: (() -> Void)? = nil)
+    {
+        // only animate if it's not visible and showing or visible and hiding
+        guard (visible == true && visibleState != .visible) ||
+            (visible == false && visibleState != .hidden) else { return }
+
+        isHidden = false
+        if visible {
+            alpha = 0.0 // prepare for show
+        } else {
+            alpha = 1.0 // prepare for hide
+        }
+        let applyChange = {
+            self.alpha = visible ? 1.0 : 0.0
+            self.isHidden = !visible
+            self.visibleState = visible ? .visible : .hidden
+        }
+        if animated {
+            UIView.animate(withDuration: 0.1) { applyChange() } completion: { _ in
+                completion?()
+            }
+        } else {
+            applyChange()
+            completion?()
+        }
     }
 }
 

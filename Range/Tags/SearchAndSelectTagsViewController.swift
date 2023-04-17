@@ -269,9 +269,9 @@ extension SearchAndSelectTagsViewController: TagsViewModelDelegate {
                 .activate(headersInputMetrics: [self.tagsHeaderInputMetrics()])
         }
 
+        tagsHeaderVC.selectedTagsView.visibleStateWillTransition()
         if selected {
             // showing the tags
-            tagsHeaderVC.selectedTagsWillShow()
             tagsHeaderViewHeightConstraint?.update(offset: newTagsHeaderHeight)
             // first animate the header height
             UIView.animate(withDuration: 0.1) {
@@ -283,8 +283,6 @@ extension SearchAndSelectTagsViewController: TagsViewModelDelegate {
                 reactivateExpander()
             }
         } else {
-            // hiding the tags
-            tagsHeaderVC.selectedTagsWillHide()
             // first hide the tags
             tagsHeaderVC.setSelectedTagsVisible(false, animated: true) {
                 // then animate the header to its new height
