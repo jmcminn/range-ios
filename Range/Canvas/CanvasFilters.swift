@@ -38,7 +38,7 @@ class CanvasFilters: Codable {
 
     /// This is not nil when user enabled filtering by tags.
     /// If not nil and not empty then only match the collaborations that have (or their upload have) any of given tags (tag ids).
-    var tagsFilter: [String]? = nil
+    var tagsFilter: [String]? = nil { didSet { postUpdate() }}
 
     /// Whether to show only the pins created by the current user
     var showOnlyCreatedByUser: Bool = false { didSet { postUpdate() } }
@@ -60,6 +60,23 @@ extension CanvasFilters {
         if !showTaskPins, collaboration.status != nil { return false }
         if let status = collaboration.status, !show(status) { return false }
         if showOnlyCreatedByUser, collaboration.author?.id != model?.userId { return false }
+        if let tagsFilter = tagsFilter, !tagsFilter.isEmpty {
+            if !matchTags(tagsFilter, collaboration: collaboration) { return false }
+        }
         return true
+    }
+
+    /// Return `true` if at least 1 tag from `tags` is in the collaboration or it's uploads tags
+    func matchTags(_ tags: [String], collaboration: Collaboration) -> Bool {
+        var allCollaborationTags = Set<String>(collaboration.tags.map(\.id))
+        for upload in collaboration.uploads {
+            allCollaborationTags = allCollaborationTags.union(upload.tags.map(\.id))
+        }
+
+        for tag in tags {
+            if allCollaborationTags.contains(tag) { return true }
+        }
+
+        return false
     }
 }

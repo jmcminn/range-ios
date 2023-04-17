@@ -100,6 +100,7 @@
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
 		0A3680D929ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680D829ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift */; };
+		0A3680DC29ED9AA600CD1D98 /* CanvasFiltersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680DB29ED9AA600CD1D98 /* CanvasFiltersTest.swift */; };
 		0A36CDF7299BD2260004758E /* LocalFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDF6299BD2260004758E /* LocalFiles.swift */; };
 		0A36CDF9299BD2350004758E /* MediaKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDF8299BD2350004758E /* MediaKey.swift */; };
 		0A36CDFB299C0E2B0004758E /* RangeLocalFileImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDFA299C0E2A0004758E /* RangeLocalFileImageDataProvider.swift */; };
@@ -464,6 +465,7 @@
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
 		0A3680D829ED7CE700CD1D98 /* SelectedTagEditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTagEditCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A3680DB29ED9AA600CD1D98 /* CanvasFiltersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersTest.swift; sourceTree = "<group>"; };
 		0A36CDF6299BD2260004758E /* LocalFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFiles.swift; sourceTree = "<group>"; };
 		0A36CDF8299BD2350004758E /* MediaKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKey.swift; sourceTree = "<group>"; };
 		0A36CDFA299C0E2A0004758E /* RangeLocalFileImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeLocalFileImageDataProvider.swift; sourceTree = "<group>"; };
@@ -1031,6 +1033,14 @@
 			path = TypeScale;
 			sourceTree = "<group>";
 		};
+		0A3680DA29ED9A9700CD1D98 /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				0A3680DB29ED9AA600CD1D98 /* CanvasFiltersTest.swift */,
+			);
+			path = Canvas;
+			sourceTree = "<group>";
+		};
 		0A374DD6292418070036C184 /* Toast */ = {
 			isa = PBXGroup;
 			children = (
@@ -1299,6 +1309,7 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
+				0A3680DA29ED9A9700CD1D98 /* Canvas */,
 				0A130EAC28D8A2BC00FF1368 /* Extensions */,
 				0A4995BB2857697F00E571FB /* HeaderExpand */,
 				0A4DC76627EDCCFB00712518 /* Math */,
@@ -2149,6 +2160,7 @@
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirestoreTagNameTest.swift in Sources */,
+				0A3680DC29ED9AA600CD1D98 /* CanvasFiltersTest.swift in Sources */,
 				0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */,
 				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
 				0A6DB6A7292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift in Sources */,

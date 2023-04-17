@@ -43,6 +43,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             icon: UIImage(systemName: "line.3.horizontal.decrease.circle"),
             title: String(localized: "Canvas Filters")
         )
+        tagsViewModel.addDelegate(self)
     }
 
     var _Subscriber: AnyCancellable?
@@ -277,7 +278,9 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     }
 }
 
-extension CanvasFiltersCardViewController {
+// MARK: - tags
+
+extension CanvasFiltersCardViewController: TagsViewModelDelegate {
     @objc private func tagsTapped() {
         guard let presentingVC = presentingVC else { return }
         let editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
@@ -293,5 +296,9 @@ extension CanvasFiltersCardViewController {
             cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
         )
         editTagsVC.showCard(animated: true)
+    }
+
+    func tagsViewModel(_ viewModel: TagsViewModel, tag _: TagViewModel, selected _: Bool, indexInSelectedTags _: Int) {
+        canvasFilters.tagsFilter = viewModel.selectedTags.map(\.id)
     }
 }
