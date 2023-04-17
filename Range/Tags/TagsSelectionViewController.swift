@@ -32,6 +32,9 @@ class TagsSelectionViewController: UIViewController {
     /// By default show only up to this number of recent tags and add "show more" button if there's more
     private let showLessTagsLimit = 5
 
+    /// Show a special row when there's no direct match in filtered tags
+    var showCreateTag: Bool = true
+
     init(viewModel: TagsViewModel) {
         self.viewModel = viewModel
         tableView = UITableView(frame: .zero, style: .grouped) // grouped so the section headers don't float
@@ -167,7 +170,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         if showFilteredTags {
             // if there's no direct match in filtered tags then add one more row for creating tag
-            return viewModel.filteredTagsContainDirectMatch
+            return viewModel.filteredTagsContainDirectMatch || !showCreateTag
                 ? viewModel.filteredTags.count
                 : viewModel.filteredTags.count + 1
         }

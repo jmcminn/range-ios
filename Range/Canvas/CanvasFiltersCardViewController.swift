@@ -238,10 +238,6 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }
     }
 
-    @objc private func tagsTapped() {
-        // TODO: 993 edit tags
-    }
-
     private func createLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
@@ -278,5 +274,24 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
     override func drivingScrollView() -> UIScrollView? {
         scrollView
+    }
+}
+
+extension CanvasFiltersCardViewController {
+    @objc private func tagsTapped() {
+        guard let presentingVC = presentingVC else { return }
+        let editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
+        editTagsVC.showCreateTag = false
+        editTagsVC.onClose = {
+            editTagsVC.hideCard(animated: true) {
+                presentingVC.removeCard(cardViewController: editTagsVC)
+            }
+        }
+        presentingVC.installCard(
+            cardViewController: editTagsVC,
+            inView: view.superview,
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
+        )
+        editTagsVC.showCard(animated: true)
     }
 }

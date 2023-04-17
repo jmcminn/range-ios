@@ -45,6 +45,9 @@ class SearchAndSelectTagsViewController: UIViewController, NonModalCardCoordinat
         view = RoundShadowView(cornerRadius: 24)
     }
 
+    /// Show a special row when there's no direct match in filtered tags
+    var showCreateTag: Bool = true
+
     init(tagsViewModel: TagsViewModel) {
         self.tagsViewModel = tagsViewModel
         super.init(nibName: nil, bundle: nil)
@@ -176,12 +179,18 @@ extension SearchAndSelectTagsViewController {
     }
 
     private func setupTagsHeaderView() {
-        tagsHeaderVC = SearchAndSelectTagsHeaderViewController(viewModel: tagsViewModel)
+        tagsHeaderVC = SearchAndSelectTagsHeaderViewController(
+            viewModel: tagsViewModel,
+            searchPlaceholderText: showCreateTag
+                ? String(localized: "Search for, or add a tag")
+                : String(localized: "Search for a tag")
+        )
         tagsHeaderVC.searchView.textField.returnKeyType = .done
     }
 
     private func setupTagsView() {
         tagsVC = TagsSelectionViewController(viewModel: tagsViewModel)
+        tagsVC.showCreateTag = showCreateTag
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)
         tagsVC.tableView.keyboardDismissMode = .onDrag

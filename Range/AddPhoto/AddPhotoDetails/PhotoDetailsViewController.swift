@@ -418,7 +418,10 @@ extension PhotoDetailsViewController {
     }
 
     private func buildTagsHeaderView() {
-        tagsHeaderVC = SearchAndSelectTagsHeaderViewController(viewModel: tagsViewModel)
+        tagsHeaderVC = SearchAndSelectTagsHeaderViewController(
+            viewModel: tagsViewModel,
+            searchPlaceholderText: String(localized: "Search for, or add a tag")
+        )
         tagsHeaderVC.searchView.textField.returnKeyType = .done
         tagsHeaderVC.searchView.addDelegate(self)
     }

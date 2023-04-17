@@ -7,7 +7,7 @@ import UIKit
 class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardPresentable, CardDraggingDelegate {
     var cardDragging: NonModalCardDragging?
     /// This card presents itself in given vc
-    private weak var presentingVC: UIViewController?
+    private(set) weak var presentingVC: UIViewController?
 
     /// The view containing the slider, icon, title, subtitle and close button
     /// It also has some bottom margin added, so any sheet content view can be added directly below it

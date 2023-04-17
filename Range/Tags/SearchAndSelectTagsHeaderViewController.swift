@@ -16,12 +16,12 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         }
     }
 
-    init(viewModel: TagsViewModel) {
+    init(viewModel: TagsViewModel, searchPlaceholderText: String) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 
         view.backgroundColor = .dynamic(.Neutral_10)
-        buildViews()
+        buildViews(searchPlaceholderText: searchPlaceholderText)
 
         updateBottomStroke()
     }
@@ -36,8 +36,8 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
     }
 
     /// Creates views, adds them to header and configure the layout
-    private func buildViews() {
-        buildTagsSearchView()
+    private func buildViews(searchPlaceholderText: String) {
+        buildTagsSearchView(placeholderText: searchPlaceholderText)
         buildSelectedTagsView()
         buildBottomStroke()
 
@@ -100,11 +100,8 @@ class SearchAndSelectTagsHeaderViewController: UIViewController {
         updateShadow()
     }
 
-    private func buildTagsSearchView() {
-        searchView = TagsSearchView(
-            placeholderText: String(localized: "Search for, or add a tag"),
-            viewModel: viewModel
-        )
+    private func buildTagsSearchView(placeholderText: String) {
+        searchView = TagsSearchView(placeholderText: placeholderText, viewModel: viewModel)
     }
 
     private func buildSelectedTagsView() {
