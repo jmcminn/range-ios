@@ -183,7 +183,6 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
         }
         tableView.reloadRows(at: [indexPath], with: .automatic)
 
-        print("user \(user) selected \(selected)")
         // 2. show/hide the selected users depending on the list being not empty
         updateSelectedUsersVisibility(userSelected: selected)
     }

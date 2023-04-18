@@ -14,11 +14,7 @@ class SelectedUsersView: UIView {
     }
 
     /// current state
-    private(set) var visibleState: VisibleState {
-        didSet {
-            print("state: \(visibleState)")
-        }
-    }
+    private(set) var visibleState: VisibleState
 
     /// Should it always show a special cell saying "edit" at the beginning of users (even if there's no selected users)
     private let showEditUserCell: Bool

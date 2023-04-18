@@ -249,7 +249,9 @@ extension GeometriesViewAnnotationPinsDisplay {
                     try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
                 }
             } catch {
-                print("error \(update ? "updating" : "adding") view annotation: ", error)
+                Logger.mapbox.error(
+                    "error \(update ? "updating" : "adding") view annotation: \(error.localizedDescription, privacy: .public)"
+                )
             }
         }
     }
