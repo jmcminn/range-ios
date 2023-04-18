@@ -55,20 +55,28 @@ class UsersViewModel: NSObject {
         guard let user = allUsersIndex[userId] else { return }
         guard user.selected != selected else { return }
 
-        if selected, !multiselect {
-            // unselect the previous user first
-            clearSelection()
-        }
-
-        if selected, multiselect {
-            // for multiselect the unassignedUser selection is exclusive with the rest of users
-            if userId == UserViewModel.unassignedUserId {
-                // selecting unassigned user clears the selection
-                clearSelection()
+        // store ids to unselect at the end (after selection)
+        // the unselection is done after selection so switching selection doesn't produce
+        // a temporary empty selection (which doesn't work nicely with the animations
+        // based on the callbacks from model).
+        // TODO: Ideally all the selections/unselections  would be propagated in 1 delegate call (kind of transactional)
+        let userIdsToUnselect: [String]?
+        if selected {
+            if multiselect {
+                // for multiselect the unassignedUser selection is exclusive with the rest of users
+                if userId == UserViewModel.unassignedUserId {
+                    // selecting unassigned user clears the selection
+                    userIdsToUnselect = selectedUsers.map(\.id)
+                } else {
+                    // selecting a user clears the unassigned user selection
+                    userIdsToUnselect = [UserViewModel.unassignedUserId]
+                }
             } else {
-                // selecting a user clears the unassigned user selection
-                set(userWithId: UserViewModel.unassignedUserId, selected: false)
+                // for single selection we unselect the previously selected
+                userIdsToUnselect = selectedUsers.map(\.id)
             }
+        } else {
+            userIdsToUnselect = nil
         }
 
         user.selected = selected
@@ -85,6 +93,10 @@ class UsersViewModel: NSObject {
                     .forEach { $0.usersViewModel?(self, user: user, selected: false, indexInSelectedUsers: deleteIndex)
                     }
             }
+        }
+
+        if let userIdsToUnselect = userIdsToUnselect {
+            userIdsToUnselect.forEach { self.set(userWithId: $0, selected: false) }
         }
     }
 
@@ -167,7 +179,7 @@ class UserViewModel: NSObject, Codable {
     }
 
     static func unassignedUser() -> UserViewModel {
-        UserViewModel(id: unassignedUserId, name: "", email: "")
+        UserViewModel(id: unassignedUserId, name: String(localized: "Unassigned Tasks"), email: "")
     }
 
     /// equatable to check for id only

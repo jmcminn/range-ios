@@ -55,6 +55,8 @@
 		0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */; };
 		0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */; };
 		0A1FCEFE29EE7670005EA59E /* UsersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1FCEFD29EE7670005EA59E /* UsersViewModel.swift */; };
+		0A1FCF0029EEEC21005EA59E /* SelectedUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1FCEFF29EEEC21005EA59E /* SelectedUsersView.swift */; };
+		0A1FCF0229EEED87005EA59E /* SelectedUserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1FCF0129EEED87005EA59E /* SelectedUserCollectionViewCell.swift */; };
 		0A22CF1C2930CE4D0084332B /* CanvasFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */; };
 		0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */; };
 		0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */; };
@@ -419,6 +421,8 @@
 		0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationHeaderCoverViewController.swift; sourceTree = "<group>"; };
 		0A1F8E8B28D0CAB00066F08F /* CollaborationFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFlowController.swift; sourceTree = "<group>"; };
 		0A1FCEFD29EE7670005EA59E /* UsersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersViewModel.swift; sourceTree = "<group>"; };
+		0A1FCEFF29EEEC21005EA59E /* SelectedUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedUsersView.swift; sourceTree = "<group>"; };
+		0A1FCF0129EEED87005EA59E /* SelectedUserCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedUserCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileLoader.swift; sourceTree = "<group>"; };
 		0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+Corners.swift"; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
@@ -1435,6 +1439,8 @@
 				0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */,
 				0A797F75292CC60800D63567 /* UserTableViewCell.swift */,
 				0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */,
+				0A1FCEFF29EEEC21005EA59E /* SelectedUsersView.swift */,
+				0A1FCF0129EEED87005EA59E /* SelectedUserCollectionViewCell.swift */,
 			);
 			path = UserPicker;
 			sourceTree = "<group>";
@@ -1855,6 +1861,7 @@
 				0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */,
 				0AFDFA972952106D00F64D62 /* CreateUploadCommentCommand.swift in Sources */,
 				0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */,
+				0A1FCF0029EEEC21005EA59E /* SelectedUsersView.swift in Sources */,
 				0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */,
 				0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
@@ -2021,6 +2028,7 @@
 				0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
 				0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
+				0A1FCF0229EEED87005EA59E /* SelectedUserCollectionViewCell.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,

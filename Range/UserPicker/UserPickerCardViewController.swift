@@ -1,4 +1,5 @@
 import Foundation
+import SnapKit
 import UIKit
 
 /// Card view controller presenting a list of users to choose from.
@@ -12,8 +13,14 @@ class UserPickerCardViewController: SheetCardViewController {
     // have a shadow when scrolling the users
     private let headerView = UIView()
     private let searchView: SearchView
+    // only when viewModel is multiselect
+    private let selectedUsersView: SelectedUsersView?
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
+
+    private static var headerHeight = 56
+    private static var headerHeightWithSelectedUsers = 100
+    private var headerHeightConstraint: Constraint?
 
     init(title: String, viewModel: UsersViewModel, onClose: (() -> Void)?) {
         self.viewModel = viewModel
@@ -21,7 +28,12 @@ class UserPickerCardViewController: SheetCardViewController {
             placeholderText: viewModel.multiselect ? "Search for users..." : "Search for an assignee...",
             showClearButton: true
         )
+        selectedUsersView = viewModel.multiselect
+            ? SelectedUsersView(viewModel: viewModel, showEditUserCell: false)
+            : nil
+
         super.init(icon: UIImage(systemName: "person"), title: title)
+
         onCancel = onClose
     }
 
@@ -33,7 +45,7 @@ class UserPickerCardViewController: SheetCardViewController {
         headerView.snp.makeConstraints { make in
             make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(56)
+            self.headerHeightConstraint = make.height.equalTo(UserPickerCardViewController.headerHeight).constraint
         }
 
         setupSearchView()
@@ -42,6 +54,15 @@ class UserPickerCardViewController: SheetCardViewController {
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(40)
+        }
+
+        if let selectedUsersView = selectedUsersView {
+            selectedUsersView.isHidden = viewModel.selectedUsers.isEmpty
+            headerView.addSubview(selectedUsersView)
+            selectedUsersView.snp.makeConstraints { make in
+                make.leading.trailing.bottom.equalToSuperview()
+                make.bottom.equalToSuperview().offset(-12)
+            }
         }
 
         setupHeaderStroke()
@@ -148,12 +169,12 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
     func usersViewModel(
         _ viewModel: UsersViewModel,
         user: UserViewModel,
-        selected _: Bool,
+        selected: Bool,
         indexInSelectedUsers _: Int
     ) {
         guard viewModel.multiselect else { return }
-        // for multiselect we need to reload rows that are affected by selection
 
+        // 1. for multiselect we need to reload rows that are affected by selection
         let indexPath: IndexPath
         if user.id == UserViewModel.unassignedUserId {
             indexPath = IndexPath(item: 0, section: 0)
@@ -161,6 +182,39 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
             indexPath = IndexPath(item: viewModel.filteredUsers.firstIndex(of: user) ?? 0, section: 1)
         }
         tableView.reloadRows(at: [indexPath], with: .automatic)
+
+        print("user \(user) selected \(selected)")
+        // 2. show/hide the selected users depending on the list being not empty
+        updateSelectedUsersVisibility(userSelected: selected)
+    }
+
+    func updateSelectedUsersVisibility(userSelected selected: Bool) {
+        guard let selectedUsersView = selectedUsersView else { return }
+        // only handle first selected user (show users) or last unselected (hide users)
+        guard (selected == true && viewModel.selectedUsers.count == 1)
+            || (selected == false && viewModel.selectedUsers.count == 0) else { return }
+
+        selectedUsersView.visibleStateWillTransition()
+        if selected {
+            // showing the users
+            headerHeightConstraint?.update(offset: UserPickerCardViewController.headerHeightWithSelectedUsers)
+            // first animate the header height
+            UIView.animate(withDuration: 0.1) {
+                self.view.layoutIfNeeded()
+            } completion: { _ in
+                // when enough room show the selected users
+                selectedUsersView.setVisible(selected, animated: true)
+            }
+        } else {
+            // first hide the users
+            selectedUsersView.setVisible(false, animated: true) {
+                // then animate the header to its new height
+                self.headerHeightConstraint?.update(offset: UserPickerCardViewController.headerHeight)
+                UIView.animate(withDuration: 0.1) {
+                    self.view.layoutIfNeeded()
+                }
+            }
+        }
     }
 }
 
