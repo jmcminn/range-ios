@@ -57,6 +57,8 @@ class UserPickerCardViewController: SheetCardViewController {
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
+
+        viewModel.addDelegate(self)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -107,7 +109,10 @@ class UserPickerCardViewController: SheetCardViewController {
             UserTableViewCell.self,
             forCellReuseIdentifier: UserTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect)
         )
-        tableView.register(ClearUserTableViewCell.self, forCellReuseIdentifier: "ClearUserCell")
+        tableView.register(
+            ClearUserTableViewCell.self,
+            forCellReuseIdentifier: ClearUserTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect)
+        )
         tableView.keyboardDismissMode = .onDrag
     }
 
@@ -137,6 +142,28 @@ class UserPickerCardViewController: SheetCardViewController {
     }
 }
 
+// MARK: - view model delegate
+
+extension UserPickerCardViewController: UsersViewModelDelegate {
+    func usersViewModel(
+        _ viewModel: UsersViewModel,
+        user: UserViewModel,
+        selected _: Bool,
+        indexInSelectedUsers _: Int
+    ) {
+        guard viewModel.multiselect else { return }
+        // for multiselect we need to reload rows that are affected by selection
+
+        let indexPath: IndexPath
+        if user.id == UserViewModel.unassignedUserId {
+            indexPath = IndexPath(item: 0, section: 0)
+        } else {
+            indexPath = IndexPath(item: viewModel.filteredUsers.firstIndex(of: user) ?? 0, section: 1)
+        }
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+}
+
 // MARK: - filtering users
 
 extension UserPickerCardViewController: SearchViewDelegate {
@@ -150,8 +177,9 @@ extension UserPickerCardViewController: SearchViewDelegate {
 
 extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSource {
     var showNoAssignee: Bool {
-        // it's a single selection with preselected user, add option to choose "no assignee"
-        !viewModel.multiselect && viewModel.selectedUsers.count == 1
+        // if it's a single selection with preselected user, add option to choose "no assignee"
+        // also show for multiselect (in multiselect user can choose "unassigned tasks")
+        viewModel.multiselect || viewModel.selectedUsers.count == 1
     }
 
     func numberOfSections(in _: UITableView) -> Int {
@@ -169,7 +197,14 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if showNoAssignee, indexPath.section == 0 {
             // first section with one row to clear the selected user
-            return tableView.dequeueReusableCell(withIdentifier: "ClearUserCell", for: indexPath)
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: ClearUserTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect),
+                for: indexPath
+            ) as! ClearUserTableViewCell
+            if viewModel.multiselect {
+                cell.setUser(viewModel.unassignedUser)
+            }
+            return cell
         }
         let cell = tableView.dequeueReusableCell(
             withIdentifier: UserTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect),
@@ -194,7 +229,9 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if viewModel.multiselect {
-            let user = viewModel.filteredUsers[indexPath.row]
+            let user = indexPath.section == 0
+                ? viewModel.unassignedUser
+                : viewModel.filteredUsers[indexPath.row]
             viewModel.set(userWithId: user.id, selected: !user.selected)
             tableView.reloadRows(at: [indexPath], with: .automatic)
         } else {

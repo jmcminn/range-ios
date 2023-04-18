@@ -23,6 +23,9 @@ class UsersViewModel: NSObject {
     /// Allows for multiple delegates
     private var delegates = NSHashTable<UsersViewModelDelegate>.weakObjects()
 
+    /// Special user with id = UserViewModel.unassignedUserId for filtering unassigned tasks
+    let unassignedUser: UserViewModel
+
     init(model: ProjectModel, multiselect: Bool) {
         self.multiselect = multiselect
         allUsers = model.mainRealm.objects(Participant.self)
@@ -31,15 +34,12 @@ class UsersViewModel: NSObject {
             .sorted(using: nameSort)
 
         allUsersIndex = Dictionary(uniqueKeysWithValues: zip(allUsers.map(\.id), allUsers))
+        unassignedUser = UserViewModel.unassignedUser()
+        allUsersIndex[unassignedUser.id] = unassignedUser
 
         super.init()
 
         filteredUsers = allUsers
-        // TODO: 993
-//        initialSelectedTags.forEach {
-//            self.add(tag: $0)
-//            self.set(tagWithId: $0.id, selected: true)
-//        }
     }
 
     /// Add delegate
@@ -58,6 +58,17 @@ class UsersViewModel: NSObject {
         if selected, !multiselect {
             // unselect the previous user first
             clearSelection()
+        }
+
+        if selected, multiselect {
+            // for multiselect the unassignedUser selection is exclusive with the rest of users
+            if userId == UserViewModel.unassignedUserId {
+                // selecting unassigned user clears the selection
+                clearSelection()
+            } else {
+                // selecting a user clears the unassigned user selection
+                set(userWithId: UserViewModel.unassignedUserId, selected: false)
+            }
         }
 
         user.selected = selected
@@ -124,6 +135,8 @@ class UsersViewModel: NSObject {
 
 /// View model for user with selection support
 class UserViewModel: NSObject, Codable {
+    /// A special id for user that is used for filtering unassigned tasks
+    static let unassignedUserId = "unassigned"
     let id: String
     @objc let name: String
     @objc let email: String
@@ -151,6 +164,10 @@ class UserViewModel: NSObject, Codable {
     /// Convenience initializer from the model Participant
     convenience init(fromParticipant participant: Participant) {
         self.init(id: participant.id, name: participant.displayName, email: participant.email)
+    }
+
+    static func unassignedUser() -> UserViewModel {
+        UserViewModel(id: unassignedUserId, name: "", email: "")
     }
 
     /// equatable to check for id only
