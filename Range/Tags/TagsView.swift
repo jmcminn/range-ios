@@ -75,7 +75,7 @@ class TagsView: UIView {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "TagCell")
-        collectionView.register(TagAddCollectionViewCell.self, forCellWithReuseIdentifier: "TagAddCell")
+        collectionView.register(EditCollectionViewCell.self, forCellWithReuseIdentifier: "TagAddCell")
 
         dataSource = UICollectionViewDiffableDataSource<Int, CollectionItem>(
             collectionView: collectionView
@@ -132,7 +132,9 @@ class TagsView: UIView {
         var snapshot = NSDiffableDataSourceSnapshot<Int, CollectionItem>()
         snapshot.appendSections([1])
         if showAddTagCell {
-            snapshot.appendItems([CollectionItem(id: "add", name: TagAddCollectionViewCell.labelText, addTag: true)])
+            snapshot
+                .appendItems([CollectionItem(id: "add", name: EditCollectionViewCell.Variant.addTag.label,
+                                             addTag: true)])
         }
         if let tags = tags {
             snapshot.appendItems(tags.map { CollectionItem(id: $0.id, name: $0.name) })
@@ -156,10 +158,10 @@ extension TagsView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
         if collectionItem.addTag {
             // this is the last special "add" tag
             let imageWidth = UIImage(
-                systemName: TagAddCollectionViewCell.tagImageName,
+                systemName: EditCollectionViewCell.Variant.addTag.image,
                 withConfiguration: UIImage.SymbolConfiguration(font: nameFont)
             )?.size.width ?? 0
-            contentWidth = imageWidth + TagAddCollectionViewCell.imageToLabelDistance + nameWidth
+            contentWidth = imageWidth + EditCollectionViewCell.imageToLabelDistance + nameWidth
         } else {
             contentWidth = nameWidth
         }
@@ -179,7 +181,10 @@ extension TagsView {
               collectionItem: CollectionItem) -> UICollectionViewCell?
     {
         if collectionItem.addTag {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "TagAddCell", for: indexPath)
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagAddCell",
+                                                          for: indexPath) as! EditCollectionViewCell
+            cell.setVariant(.addTag)
+            return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell",
                                                           for: indexPath) as! TagCollectionViewCell

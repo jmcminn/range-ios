@@ -51,7 +51,7 @@ class SelectedTagsView: UIView {
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(SelectedTagCollectionViewCell.self, forCellWithReuseIdentifier: "SelectedTagCell")
         collectionView.register(
-            SelectedTagEditCollectionViewCell.self,
+            EditCollectionViewCell.self,
             forCellWithReuseIdentifier: "SelectedTagEditCell"
         )
 
@@ -144,10 +144,12 @@ extension SelectedTagsView: UICollectionViewDataSource, UICollectionViewDelegate
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
         if showEditTagCell, indexPath.item == 0 {
-            return collectionView.dequeueReusableCell(
+            let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "SelectedTagEditCell",
                 for: indexPath
-            )
+            ) as! EditCollectionViewCell
+            cell.setVariant(.editTag)
+            return cell
         } else {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "SelectedTagCell",
@@ -169,16 +171,18 @@ extension SelectedTagsView: UICollectionViewDataSource, UICollectionViewDelegate
     {
         let isEditTagCell = showEditTagCell && indexPath.item == 0
 
-        let name = isEditTagCell ? SelectedTagEditCollectionViewCell.labelText : tag(forIndexPath: indexPath).name
+        let name = isEditTagCell
+            ? EditCollectionViewCell.Variant.editTag.label
+            : tag(forIndexPath: indexPath).name
         let nameFont = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
         let nameWidth = name.size(withAttributes: [NSAttributedString.Key.font: nameFont]).width
         if isEditTagCell {
             // this is the last special "add" tag
             let imageWidth = UIImage(
-                systemName: TagAddCollectionViewCell.tagImageName,
+                systemName: EditCollectionViewCell.Variant.editTag.image,
                 withConfiguration: UIImage.SymbolConfiguration(font: nameFont)
             )?.size.width ?? 0
-            let contentWidth = imageWidth + TagAddCollectionViewCell.imageToLabelDistance + nameWidth
+            let contentWidth = imageWidth + EditCollectionViewCell.imageToLabelDistance + nameWidth
             return CGSize(
                 width: max(contentWidth, TagCollectionViewCell.minLabelWidth) +
                     TagCollectionViewCell.leadingLabelInset +
