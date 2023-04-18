@@ -558,22 +558,21 @@ extension CollaborationFlowController {
 
 extension CollaborationFlowController {
     func editAssigneeAction() {
-        let users = [Participant](model.mainRealm.objects(Participant.self))
         guard let collaboration = collaboration else { return }
-        let userPicker = UserPickerCardViewController(
-            singleSelectWithTitle: "Assignee",
-            users: users,
-            selectedUser: collaboration.assignee,
-            onUserPicked: { [weak self] newAssignee in
-                self?.updateAssignee(newAssignee)
-            }
-        )
+        let viewModel = UsersViewModel(model: model, multiselect: false)
+        if let assignee = collaboration.assignee {
+            viewModel.set(userWithId: assignee.id, selected: true)
+        }
+        let userPicker = UserPickerCardViewController(title: "Assignee", viewModel: viewModel) { [weak self] in
+            let newAssigneeId = viewModel.selectedUsers.first?.id
+            self?.updateAssignee(newAssigneeId)
+        }
         userPicker.installAndShowCard(in: self)
     }
 
-    private func updateAssignee(_ assignee: Participant?) {
+    private func updateAssignee(_ assigneeId: String?) {
         guard let collaboration = collaboration else { return }
-        model.run(model.update(assignee: assignee, forCollaboration: collaboration)) { error in
+        model.run(model.update(assigneeId: assigneeId, forCollaboration: collaboration)) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the assignee") }
         }
     }

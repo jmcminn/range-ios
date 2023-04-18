@@ -5,14 +5,8 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class UserPickerCardViewController: SheetCardViewController {
-    /// All users to display in picker
-    let users: [Participant]
-    /// for each user from `users` this array has a search string to be used when filtering the users (based on the first/last name and email)
-    let searchStrings: [String]
-    /// Users currently filtered by search term from search view (this array is used in the tableView)
-    var filteredUsers: [Participant]
-    private let multiselect: Bool
-    private var selectedUsers: Set<Participant>
+    /// users to select
+    private let viewModel: UsersViewModel
 
     // background view for searchView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the users
@@ -21,81 +15,14 @@ class UserPickerCardViewController: SheetCardViewController {
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    /// for single selection
-    var onUserPicked: ((Participant?) -> Void)?
-    /// for multi selection
-    var onUsersPicked: (([Participant]) -> Void)?
-
-    /// Initializer for single selection case
-    ///
-    /// - Parameters:
-    ///     - title:                    title of the card
-    ///     - users:                 users to show in the picker
-    convenience init(singleSelectWithTitle title: String,
-                     users: [Participant],
-                     selectedUser: Participant?,
-                     onUserPicked: @escaping (Participant?) -> Void)
-    {
-        let selectedUsers: [Participant] = selectedUser != nil ? [selectedUser!] : []
-        self.init(
-            multiselect: false,
-            title: title,
-            users: users,
-            selectedUsers: selectedUsers,
-            onUserPicked: onUserPicked,
-            onUsersPicked: nil
-        )
-    }
-
-    convenience init(multiselectPickerWithTitle title: String,
-                     users: [Participant],
-                     selectedUsers: [Participant],
-                     onUsersPicked: @escaping ([Participant]) -> Void)
-    {
-        self.init(
-            multiselect: true,
-            title: title,
-            users: users,
-            selectedUsers: selectedUsers,
-            onUserPicked: nil,
-            onUsersPicked: onUsersPicked
-        )
-    }
-
-    private init(multiselect: Bool,
-                 title: String,
-                 users: [Participant],
-                 selectedUsers: [Participant],
-                 onUserPicked: ((Participant?) -> Void)?,
-                 onUsersPicked: (([Participant]) -> Void)?)
-    {
-        self.multiselect = multiselect
-        let firstNameSort = SortDescriptor(\Participant.firstName, comparator: .localizedStandard)
-        let lastNameSort = SortDescriptor(\Participant.lastName, comparator: .localizedStandard)
-        // users are sorted by first name and then last name
-        self.users = users.sorted(using: [firstNameSort, lastNameSort])
-        searchStrings = self.users.map {
-            "\($0.firstName) \($0.lastName) \($0.email)"
-                .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
-        }
-        self.selectedUsers = Set<Participant>(selectedUsers)
-        filteredUsers = self.users
+    init(title: String, viewModel: UsersViewModel, onClose: (() -> Void)?) {
+        self.viewModel = viewModel
         searchView = SearchView(
-            placeholderText: multiselect ? "Search for users..." : "Search for an assignee...",
+            placeholderText: viewModel.multiselect ? "Search for users..." : "Search for an assignee...",
             showClearButton: true
         )
-
         super.init(icon: UIImage(systemName: "person"), title: title)
-        self.onUserPicked = onUserPicked
-        self.onUsersPicked = onUsersPicked
-        if multiselect {
-            onCancel = { [weak self] in
-                self?.onUsersPicked?(
-                    [Participant](self?.selectedUsers ?? Set<Participant>())
-                        .sorted(using: [firstNameSort, lastNameSort])
-                )
-            }
-        }
+        onCancel = onClose
     }
 
     override func viewDidLoad() {
@@ -178,7 +105,7 @@ class UserPickerCardViewController: SheetCardViewController {
         tableView.separatorStyle = .none
         tableView.register(
             UserTableViewCell.self,
-            forCellReuseIdentifier: UserTableViewCell.Variant.identifier(forMultiselect: multiselect)
+            forCellReuseIdentifier: UserTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect)
         )
         tableView.register(ClearUserTableViewCell.self, forCellReuseIdentifier: "ClearUserCell")
         tableView.keyboardDismissMode = .onDrag
@@ -214,25 +141,7 @@ class UserPickerCardViewController: SheetCardViewController {
 
 extension UserPickerCardViewController: SearchViewDelegate {
     func searchView(_: SearchView, textDidChange text: String) {
-        filter(by: text)
-    }
-
-    /// filter `users` by given String and store results in `filteredUsers`
-    func filter(by filterString: String) {
-        let filterStringTrimmed = filterString.trimmingCharacters(in: .whitespacesAndNewlines)
-        // remove diacritics and make it lowercase
-        let filterTerm = filterStringTrimmed
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
-        // split by whitespace to multiple terms
-        let filterTerms = filterTerm.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
-        // user matches if the corresponding searchString matches
-        filteredUsers = users.enumerated().compactMap { userIndex, user in
-            // has to contain all of the search terms
-            if filterTerms.allSatisfy({ searchStrings[userIndex].contains($0) }) {
-                return user
-            }
-            return nil
-        }
+        viewModel.filter(by: text)
         tableView.reloadData()
     }
 }
@@ -242,7 +151,7 @@ extension UserPickerCardViewController: SearchViewDelegate {
 extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSource {
     var showNoAssignee: Bool {
         // it's a single selection with preselected user, add option to choose "no assignee"
-        !multiselect && selectedUsers.count == 1
+        !viewModel.multiselect && viewModel.selectedUsers.count == 1
     }
 
     func numberOfSections(in _: UITableView) -> Int {
@@ -254,7 +163,7 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
             // first section with one row to clear the selected user
             return 1
         }
-        return filteredUsers.count
+        return viewModel.filteredUsers.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -263,11 +172,11 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
             return tableView.dequeueReusableCell(withIdentifier: "ClearUserCell", for: indexPath)
         }
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: UserTableViewCell.Variant.identifier(forMultiselect: multiselect),
+            withIdentifier: UserTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect),
             for: indexPath
         ) as! UserTableViewCell
-        let user = filteredUsers[indexPath.row]
-        cell.setUser(user, selected: selectedUsers.contains(user))
+        let user = viewModel.filteredUsers[indexPath.row]
+        cell.setUser(user)
         return cell
     }
 
@@ -284,23 +193,23 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if multiselect {
-            let user = filteredUsers[indexPath.row]
-            if selectedUsers.contains(user) {
-                selectedUsers.remove(user)
-            } else {
-                selectedUsers.insert(user)
-            }
+        if viewModel.multiselect {
+            let user = viewModel.filteredUsers[indexPath.row]
+            viewModel.set(userWithId: user.id, selected: !user.selected)
             tableView.reloadRows(at: [indexPath], with: .automatic)
         } else {
             if showNoAssignee, indexPath.section == 0 {
                 // clear the selected user
+                viewModel.clearSelection()
                 dismissCard()
-                onUserPicked?(nil)
+                onCancel?()
             } else {
-                let user = filteredUsers[indexPath.row]
+                let user = viewModel.filteredUsers[indexPath.row]
+                if !user.selected {
+                    viewModel.set(userWithId: user.id, selected: true)
+                }
                 dismissCard()
-                onUserPicked?(user)
+                onCancel?()
             }
         }
     }

@@ -71,18 +71,18 @@ class UserTableViewCell: UITableViewCell {
         emailLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
     }
 
-    func setUser(_ user: Participant, selected: Bool) {
-        nameLabel.text = user.displayName
+    func setUser(_ user: UserViewModel) {
+        nameLabel.text = user.name
         emailLabel.text = user.email
         if multiselect {
             selectedIconView.isHidden = false
-            selectedIconView.image = selected
+            selectedIconView.image = user.selected
                 ? UIImage(named: "checkmark_checked")
                 : UIImage().addCircleBackground(bgSize: CGSize(width: 20, height: 20),
                                                 bgColor: .dynamic(.Neutral_10),
                                                 strokeColor: .dynamic(.Neutral_07))
         } else {
-            selectedIconView.isHidden = !selected
+            selectedIconView.isHidden = !user.selected
         }
     }
 
