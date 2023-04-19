@@ -69,6 +69,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         super.viewDidLoad()
 
         addSheetHeaderStroke()
+        addSheetHeaderShadowBasedOnDrivingScrollView()
 
         setupResetButton()
         setupNumberOfPinsLabel()
@@ -179,7 +180,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private func setupViews() {
         // Scroll view setup
         scrollView.alwaysBounceVertical = true
-        containerView.addSubview(scrollView)
+        containerView.insertSubview(scrollView, belowSubview: sheetHeaderView)
         scrollView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(sheetHeaderView.snp.bottom)

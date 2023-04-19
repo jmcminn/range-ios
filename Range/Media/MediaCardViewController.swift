@@ -75,6 +75,7 @@ class MediaCardViewController: SheetCardViewController {
         super.viewDidLoad()
 
         addSheetHeaderStroke()
+        addSheetHeaderShadowBasedOnDrivingScrollView()
 
         setupCollectionView()
         containerView.insertSubview(collectionView, belowSubview: sheetHeaderView)
@@ -90,7 +91,6 @@ class MediaCardViewController: SheetCardViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         // update the border color for cells
         collectionView.reloadData()
-        updateHeaderShadow()
     }
 
     private func observeUploads() {
@@ -203,31 +203,6 @@ class MediaCardViewController: SheetCardViewController {
                 )
             }
     }
-
-    /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
-    private func updateHeaderShadow() {
-        let shadowVisible = collectionView.contentOffset.y > 0
-        if shadowVisible {
-            let darkMode = traitCollection.userInterfaceStyle == .dark
-            if darkMode {
-                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
-            } else {
-                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
-            }
-            // make the shadow height = 10 points, so the top part of the shadow is not visible
-            // (the path covers bottom part of the view only)
-            // This only works if the view is actually higher than 10 points. But if it's lower
-            // then the shadow with no shadowPath would not be shown (for view that has 0 height)
-            // so we still need to "cover" this view from top with another view (in a view that's
-            // adding this view controller as a child)
-            sheetHeaderView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
-                                                                         y: sheetHeaderView.bounds.maxY - 10,
-                                                                         width: sheetHeaderView.bounds.width,
-                                                                         height: 10)).cgPath
-        } else {
-            sheetHeaderView.layer.shadowOpacity = 0
-        }
-    }
 }
 
 extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -282,10 +257,6 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
             from: self,
             for: FlowEvent(upload, source: .media)
         )
-    }
-
-    func scrollViewDidScroll(_: UIScrollView) {
-        updateHeaderShadow()
     }
 }
 

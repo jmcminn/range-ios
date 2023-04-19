@@ -161,6 +161,11 @@ class UserPickerCardViewController: SheetCardViewController {
             headerView.layer.shadowOpacity = 0
         }
     }
+
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        updateHeaderShadow()
+    }
 }
 
 // MARK: - view model delegate
@@ -315,9 +320,5 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
         UIView()
-    }
-
-    func scrollViewDidScroll(_: UIScrollView) {
-        updateHeaderShadow()
     }
 }

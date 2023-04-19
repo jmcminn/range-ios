@@ -4,7 +4,9 @@ import UIKit
 /// Base class for non modal card view controllers that have an icon, a title and a close button at the top.
 /// This card only supports .min position (0 height) and .max position.
 /// By default this card closes when minimized, when the overlay is tapped or when the close button is tapped
-class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardPresentable, CardDraggingDelegate {
+class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardPresentable, CardDraggingDelegate,
+    UIScrollViewDelegate
+{
     var cardDragging: NonModalCardDragging?
     /// This card presents itself in given vc
     private(set) weak var presentingVC: UIViewController?
@@ -18,6 +20,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private(set) var subtitleLabel: UILabel?
     private(set) var descriptionLabel: UILabel?
     private var sheetHeaderStroke: UIView?
+    private var sheetHeaderShadowEnabled: Bool = false
 
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
@@ -63,6 +66,17 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             make.height.equalTo(1)
         }
         sheetHeaderStroke = headerStroke
+    }
+
+    /// Adds the shadow to the sheet header that is shown when the driving scroll view is offset.
+    /// It is illegal to call this function if the driving scroll view is nil
+    func addSheetHeaderShadowBasedOnDrivingScrollView() {
+        guard let scrollView = drivingScrollView() else {
+            fatalError("addSheetHeaderShadowBasedOnDrivingScrollView called but drivingScrollView() returned nil")
+        }
+        guard sheetHeaderShadowEnabled == false else { return }
+        sheetHeaderShadowEnabled = true
+        scrollView.forwardDelegateInvocations(to: self)
     }
 
     var roundedShadowView: RoundShadowView {
@@ -181,6 +195,37 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         }
         // stroke not visible in dark mode (same color as background)
         roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
+        updateSheetHeaderShadow()
+    }
+
+    func scrollViewDidScroll(_: UIScrollView) {
+        updateSheetHeaderShadow()
+    }
+
+    /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
+    private func updateSheetHeaderShadow() {
+        guard let scrollView = drivingScrollView() else { return }
+        let shadowVisible = scrollView.contentOffset.y > 0
+        if shadowVisible {
+            let darkMode = traitCollection.userInterfaceStyle == .dark
+            if darkMode {
+                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
+            } else {
+                sheetHeaderView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
+            }
+            // make the shadow height = 10 points, so the top part of the shadow is not visible
+            // (the path covers bottom part of the view only)
+            // This only works if the view is actually higher than 10 points. But if it's lower
+            // then the shadow with no shadowPath would not be shown (for view that has 0 height)
+            // so we still need to "cover" this view from top with another view (in a view that's
+            // adding this view controller as a child)
+            sheetHeaderView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                                         y: sheetHeaderView.bounds.maxY - 10,
+                                                                         width: sheetHeaderView.bounds.width,
+                                                                         height: 10)).cgPath
+        } else {
+            sheetHeaderView.layer.shadowOpacity = 0
+        }
     }
 
     // MARK: Views
@@ -287,6 +332,9 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller
     func dismissCard() {
+        if sheetHeaderShadowEnabled, let scrollView = drivingScrollView() {
+            scrollView.cancelForwardingDelegateInvocations(to: self)
+        }
         hideCard(animated: true) {
             self.cardDragging?.delegate = nil
             self.presentingVC?.removeCard(cardViewController: self)
