@@ -409,7 +409,7 @@ extension ProjectFlowController {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
-            subtitle: "Doing this means you can add a description, tags and assign a status, due date and assignee. The style of the map pin will also change. ",
+            description: "Doing this means you can add a description, tags and assign a status, due date and assignee. The style of the map pin will also change. ",
             actions: [
                 ActionItem(title: "Convert to Task Pin", imageName: "checkmark.circle", handler: {
                     self.convertPhotoCollaborationToTask(collaboration)
@@ -439,7 +439,7 @@ extension ProjectFlowController {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
-            subtitle: collaboration.status != nil
+            description: collaboration.status != nil
                 ? "This task pin will be deleted permanently. It can’t be recovered."
                 : "This photo pin will be deleted permanently. It can’t be recovered.",
             actions: [
@@ -476,7 +476,7 @@ extension ProjectFlowController {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
-            subtitle: "This \(upload.isImage ? "photo" : "file") will be deleted permanently. It can’t be recovered.",
+            description: "This \(upload.isImage ? "photo" : "file") will be deleted permanently. It can’t be recovered.",
             actions: [
                 ActionItem(
                     title: upload.isImage ? "Delete Photo" : "Delete File",
@@ -520,7 +520,7 @@ extension ProjectFlowController {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
-            subtitle: "This \(commentOrNote.lowercased()) will be deleted permanently. It can't be recovered.",
+            description: "This \(commentOrNote.lowercased()) will be deleted permanently. It can't be recovered.",
             actions: [
                 ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive, handler: {
                     self.deleteComment(comment)

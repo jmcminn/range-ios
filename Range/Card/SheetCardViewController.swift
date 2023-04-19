@@ -16,6 +16,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private(set) var titleIcon: UIImageView?
     private(set) var titleLabel: UILabel?
     private(set) var subtitleLabel: UILabel?
+    private(set) var descriptionLabel: UILabel?
 
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
@@ -24,7 +25,13 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     var onCancel: (() -> Void)?
 
     /// Initializer
-    init(icon: UIImage?, title: String?, subtitle: String? = nil, onCancel: (() -> Void)? = nil) {
+    init(
+        icon: UIImage?,
+        title: String?,
+        subtitle: String? = nil,
+        description: String? = nil,
+        onCancel: (() -> Void)? = nil
+    ) {
         super.init(nibName: nil, bundle: nil)
 
         self.onCancel = onCancel
@@ -36,7 +43,10 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             setupTitleLabel(title: title)
         }
         if let subtitle = subtitle {
-            setupSubtitleLabel(subtitle: subtitle)
+            setupSubtitleLabel(text: subtitle)
+        }
+        if let description = description {
+            setupDescriptionLabel(text: description)
         }
     }
 
@@ -75,7 +85,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             make.width.height.equalTo(32)
             make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(21)
-            if subtitleLabel == nil {
+            if descriptionLabel == nil, subtitleLabel == nil {
                 make.bottom.equalToSuperview().offset(-16)
             }
         }
@@ -97,11 +107,26 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
                     make.leading.equalTo(16)
                 }
             }
+            if let subtitleLabel = subtitleLabel {
+                sheetHeaderView.addSubview(subtitleLabel)
+                subtitleLabel.snp.makeConstraints { make in
+                    make.leading.equalTo(titleLabel)
+                    make.trailing.equalToSuperview().inset(16)
+                    make.top.equalTo(titleLabel.snp.bottom).offset(4)
+                    if descriptionLabel == nil {
+                        make.bottom.equalToSuperview().offset(-16)
+                    }
+                }
+            }
         }
-        if let subtitleLabel = subtitleLabel {
-            sheetHeaderView.addSubview(subtitleLabel)
-            subtitleLabel.snp.makeConstraints { make in
-                make.top.equalTo(closeButton.snp.bottom).offset(8)
+        if let descriptionLabel = descriptionLabel {
+            sheetHeaderView.addSubview(descriptionLabel)
+            descriptionLabel.snp.makeConstraints { make in
+                if let subtitleLabel = subtitleLabel {
+                    make.top.equalTo(subtitleLabel.snp.bottom).offset(8)
+                } else {
+                    make.top.equalTo(closeButton.snp.bottom).offset(8)
+                }
                 make.leading.trailing.equalToSuperview().inset(16)
                 make.bottom.equalToSuperview().offset(-16)
             }
@@ -165,14 +190,24 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         titleLabel!.adjustsFontForContentSizeCategory = true
     }
 
-    private func setupSubtitleLabel(subtitle: String) {
+    private func setupSubtitleLabel(text: String) {
         subtitleLabel = UILabel()
-        subtitleLabel!.text = subtitle
+        subtitleLabel!.text = text
         subtitleLabel!.textColor = .dynamic(.Neutral_05)
         subtitleLabel!.font = UIFont.preferredFont(forTextStyle: .subheadline)
         subtitleLabel!.numberOfLines = 0
         subtitleLabel!.lineBreakMode = .byWordWrapping
         subtitleLabel!.adjustsFontForContentSizeCategory = true
+    }
+
+    private func setupDescriptionLabel(text: String) {
+        descriptionLabel = UILabel()
+        descriptionLabel!.text = text
+        descriptionLabel!.textColor = .dynamic(.Neutral_05)
+        descriptionLabel!.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        descriptionLabel!.numberOfLines = 0
+        descriptionLabel!.lineBreakMode = .byWordWrapping
+        descriptionLabel!.adjustsFontForContentSizeCategory = true
     }
 
     private func setupCloseButton() {
@@ -198,7 +233,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
 
         view.layoutIfNeeded()
         let height: CGFloat
-        if let subtitleLabel = subtitleLabel {
+        if let subtitleLabel = descriptionLabel {
             let fittingSize = CGSize(
                 width: containerView.bounds.width - 32,
                 height: UIView.layoutFittingCompressedSize.height

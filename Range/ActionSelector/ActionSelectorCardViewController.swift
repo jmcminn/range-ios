@@ -8,8 +8,8 @@ class ActionSelectorCardViewController: SheetCardViewController {
     private var actionsVC: ActionSelectorViewController!
 
     /// Initializer
-    init(icon: UIImage?, title: String?, subtitle: String? = nil, actions: [ActionItem]) {
-        super.init(icon: icon, title: title, subtitle: subtitle)
+    init(icon: UIImage?, title: String?, description: String? = nil, actions: [ActionItem]) {
+        super.init(icon: icon, title: title, description: description)
 
         setupActions(actions: actions)
     }
