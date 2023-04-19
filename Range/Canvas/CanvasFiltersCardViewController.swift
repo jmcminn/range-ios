@@ -14,6 +14,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private let tagsViewModel: TagsViewModel
 
     private var resetButton: ButtonWithTapAreaInsets!
+    private let numberOfPinsLabel = UILabel()
 
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
@@ -56,7 +57,8 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
         super.init(
             icon: UIImage(systemName: "line.3.horizontal.decrease.circle"),
-            title: String(localized: "Canvas Filters")
+            title: String(localized: "Canvas Filters"),
+            subtitle: "pins on canvas"
         )
 
         usersViewModel.addDelegate(self)
@@ -67,6 +69,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         super.viewDidLoad()
 
         setupResetButton()
+        setupNumberOfPinsLabel()
 
         // add a switch per status
         for status in statuses {
@@ -142,6 +145,14 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
     @objc func canvasFiltersUpdated() {
         resetButton.isHidden = canvasFilters.hasDefaultValues
+
+        let pinsOnCanvasCount = model.currentCanvas.pins
+            .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
+            .filter(canvasFilters.match) // apply filter
+            .count
+        subtitleLabel?.text = pinsOnCanvasCount == 1
+            ? String(localized: "1 pin on canvas")
+            : String(localized: "\(pinsOnCanvasCount) pins on canvas")
     }
 
     /// Update the enabled state of task filters (statuses and assignee)
@@ -363,6 +374,10 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             make.trailing.equalTo(closeButton.snp.leading).offset(-8)
             make.height.equalTo(30)
         }
+    }
+
+    private func setupNumberOfPinsLabel() {
+        sheetHeaderView.addSubview(numberOfPinsLabel)
     }
 
     override func updateColors() {

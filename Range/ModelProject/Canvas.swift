@@ -67,6 +67,15 @@ class Canvas: Object, WithPlaceholder {
         return components.joined(separator: " • ")
     }
 
+    /// Return all pins to be displayed for this canvas (not filtered)
+    var pins: Results<Geometry> {
+        geometries.where { $0.placeholder == false &&
+            $0.annotationType == .photoMarker &&
+            // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
+            ($0.features.collaborations.count > 0).count > 0
+        }
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

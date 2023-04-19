@@ -129,12 +129,7 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
 extension GeometriesViewAnnotationPinsDisplay {
     /// observe the geometries and reload pins when the change is observed
     private func loadAndDisplayPins(onInitialLoad: (() -> Void)?) {
-        geometriesNotificationToken = canvas.geometries
-            .where { $0.placeholder == false &&
-                $0.annotationType == .photoMarker &&
-                // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
-                ($0.features.collaborations.count > 0).count > 0
-            }
+        geometriesNotificationToken = canvas.pins
             .observe { [weak self] changes in
                 guard let self = self else { return }
                 switch changes {
