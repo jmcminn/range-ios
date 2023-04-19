@@ -13,6 +13,8 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private let usersViewModel: UsersViewModel
     private let tagsViewModel: TagsViewModel
 
+    private var resetButton: ButtonWithTapAreaInsets!
+
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
 
@@ -61,15 +63,14 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         tagsViewModel.addDelegate(self)
     }
 
-    var _Subscriber: AnyCancellable?
-
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        setupResetButton()
 
         // add a switch per status
         for status in statuses {
             let statusSwitch = UISwitch()
-            statusSwitch.setOn(canvasFilters.show(status), animated: false)
             statusSwitch.addAction(.init(handler: { [weak self] action in
                 guard let sender = action.sender as? UISwitch else { return }
                 self?.canvasFilters.set(status, shown: sender.isOn)
@@ -80,40 +81,67 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
         setupViews()
 
-        showPhotoPinsSwitch.setOn(canvasFilters.showPhotoPins, animated: false)
         showPhotoPinsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.canvasFilters.showPhotoPins.toggle()
         }), for: .valueChanged)
 
-        showTaskPinsSwitch.setOn(canvasFilters.showTaskPins, animated: false)
         showTaskPinsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.canvasFilters.showTaskPins.toggle()
             self?.updateTaskPinsEnabled()
         }), for: .valueChanged)
 
-        filterByAssigneeSwitch.setOn(canvasFilters.assigneeFilter != nil, animated: false)
         filterByAssigneeSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByAssigneeSwitchAction()
         }), for: .valueChanged)
 
-        filterByTagsSwitch.setOn(canvasFilters.tagsFilter != nil, animated: false)
         filterByTagsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByTagsSwitchAction()
         }), for: .valueChanged)
 
-        showOnlyCreatedByUserSwitch.setOn(canvasFilters.showOnlyCreatedByUser, animated: false)
         showOnlyCreatedByUserSwitch.addAction(.init(handler: { [weak self] _ in
             self?.canvasFilters.showOnlyCreatedByUser.toggle()
         }), for: .valueChanged)
 
-        showArchivedPinsSwitch.setOn(canvasFilters.showArchivedPins, animated: false)
         showArchivedPinsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.canvasFilters.showArchivedPins.toggle()
         }), for: .valueChanged)
 
+        updateControlsStateFromFilters()
+    }
+
+    private func updateControlsStateFromFilters() {
+        showPhotoPinsSwitch.setOn(canvasFilters.showPhotoPins, animated: false)
+        showTaskPinsSwitch.setOn(canvasFilters.showTaskPins, animated: false)
+        for status in statuses {
+            if let statusSwitch = statusSwitches[status] {
+                statusSwitch.setOn(canvasFilters.show(status), animated: false)
+            }
+        }
+        filterByAssigneeSwitch.setOn(canvasFilters.assigneeFilter != nil, animated: false)
+        filterByTagsSwitch.setOn(canvasFilters.tagsFilter != nil, animated: false)
+        showOnlyCreatedByUserSwitch.setOn(canvasFilters.showOnlyCreatedByUser, animated: false)
+        showArchivedPinsSwitch.setOn(canvasFilters.showArchivedPins, animated: false)
         usersView.setVisible(canvasFilters.assigneeFilter != nil, animated: false)
         tagsView.setVisible(canvasFilters.tagsFilter != nil, animated: false)
         updateTaskPinsEnabled()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(canvasFiltersUpdated),
+            name: CanvasFilters.UpdateNotificationName, object: nil
+        )
+        canvasFiltersUpdated()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc func canvasFiltersUpdated() {
+        resetButton.isHidden = canvasFilters.hasDefaultValues
     }
 
     /// Update the enabled state of task filters (statuses and assignee)
@@ -303,6 +331,38 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
         return label
+    }
+
+    private func setupResetButton() {
+        guard resetButton == nil else { return }
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        config.baseBackgroundColor = .Green_01
+        config.baseForegroundColor = .dynamic(.Neutral_04)
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 15
+        config.background.strokeColor = .systemGreen
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
+            return outgoing
+        }
+        resetButton = ButtonWithTapAreaInsets(
+            configuration: config,
+            primaryAction: UIAction(title: String(localized: "Reset")) { [weak self] _ in
+                self?.canvasFilters.resetToDefaults()
+                self?.updateControlsStateFromFilters()
+            }
+        )
+        // more vertical tap area as button is only 30 points high
+        resetButton.tapAreaInsets = UIEdgeInsets(top: -10, left: 0, bottom: -10, right: 0)
+
+        sheetHeaderView.addSubview(resetButton)
+        resetButton.snp.makeConstraints { make in
+            make.centerY.equalTo(closeButton)
+            make.trailing.equalTo(closeButton.snp.leading).offset(-8)
+            make.height.equalTo(30)
+        }
     }
 
     override func updateColors() {

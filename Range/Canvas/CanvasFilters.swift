@@ -2,7 +2,7 @@ import Foundation
 
 /// Defines filters used when showing the pins on the canvas
 /// The filters are projects specific (contain statuses, tags and user ids that are only valid for given project)
-class CanvasFilters: Codable {
+class CanvasFilters: Codable, Equatable {
     /// The name for the notification posted in NotificationCenter when the filters change
     static let UpdateNotificationName = Notification.Name("io.range.App.CanvasFiltersUpdated")
 
@@ -55,6 +55,34 @@ class CanvasFilters: Codable {
     /// Use notification center to post the notification about update in filters
     private func postUpdate() {
         NotificationCenter.default.post(name: CanvasFilters.UpdateNotificationName, object: self)
+    }
+
+    /// Reset the filters to default values
+    func resetToDefaults() {
+        let defaults = CanvasFilters()
+        showPhotoPins = defaults.showPhotoPins
+        showTaskPins = defaults.showTaskPins
+        hiddenStatuses = defaults.hiddenStatuses
+        assigneeFilter = defaults.assigneeFilter
+        tagsFilter = defaults.tagsFilter
+        showOnlyCreatedByUser = defaults.showOnlyCreatedByUser
+        showArchivedPins = defaults.showArchivedPins
+        postUpdate()
+    }
+
+    static func == (lhs: CanvasFilters, rhs: CanvasFilters) -> Bool {
+        if lhs.showPhotoPins != rhs.showPhotoPins { return false }
+        if lhs.showTaskPins != rhs.showTaskPins { return false }
+        if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
+        if lhs.assigneeFilter != rhs.assigneeFilter { return false }
+        if lhs.tagsFilter != rhs.tagsFilter { return false }
+        if lhs.showOnlyCreatedByUser != rhs.showOnlyCreatedByUser { return false }
+        if lhs.showArchivedPins != rhs.showArchivedPins { return false }
+        return true
+    }
+
+    var hasDefaultValues: Bool {
+        self == CanvasFilters()
     }
 }
 
