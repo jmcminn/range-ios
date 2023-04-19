@@ -56,7 +56,7 @@ extension PinDisplayOptions {
                     pinImage = .pinArchivedPhoto(count: uploadsCount)
                 } else {
                     pinImage = hasUncompletedNotes
-                        ? (uploadsCount == 0 ? .pinNote : .pinPhotoWithNote(count: uploadsCount))
+                        ? .pinPhotoWithNote(count: uploadsCount)
                         : .pinPhoto(count: uploadsCount)
                 }
             }

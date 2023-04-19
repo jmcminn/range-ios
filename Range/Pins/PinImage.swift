@@ -12,7 +12,6 @@ enum PinImage {
     case pinPhoto(count: Int)
     case pinArchivedPhoto(count: Int)
     case pinPhotoWithNote(count: Int)
-    case pinNote
     case pinTask(color: UIColor)
     case pinTaskWithNote(color: UIColor)
     case pinTaskWithOverdue(color: UIColor)
@@ -42,8 +41,6 @@ enum PinImage {
             return numberedImageName("marker.selected.archived.", count)
         case let .pinPhotoWithNote(count):
             return numberedImageName("marker.selected.badge.", count)
-        case .pinNote:
-            return "marker.selected.note"
         case let .pinTask(color):
             return "marker.selected.task." + color.toHexString()
         case let .pinTaskWithNote(color):
@@ -65,7 +62,7 @@ enum PinImage {
         }
         switch self {
         // images from resources
-        case .circleNote, .circleOverdue, .pinNote:
+        case .circleNote, .circleOverdue:
             return getAndCacheImage(named: id)
         // constructed images
         case let .circlePhoto(count):
@@ -77,7 +74,7 @@ enum PinImage {
         case let .circleArchivedPhoto(count):
             return constructAndCacheImage(
                 bgImage: "marker.background",
-                bgColor: .Neutral_05,
+                bgColor: .Archived,
                 image: numberedImageName("marker.overlay.", count)
             )
         case let .circleTask(color):
@@ -89,7 +86,7 @@ enum PinImage {
         case .circleArchivedTask:
             return constructAndCacheImage(
                 bgImage: "marker.background",
-                bgColor: .Neutral_05,
+                bgColor: .Archived,
                 image: "marker.task.overlay"
             )
         case let .pinPhoto(count):
@@ -101,7 +98,7 @@ enum PinImage {
         case let .pinArchivedPhoto(count):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
-                bgColor: .Neutral_05,
+                bgColor: .Archived,
                 image: numberedImageName("marker.selected.overlay.", count)
             )
         case let .pinPhotoWithNote(count):
@@ -134,7 +131,7 @@ enum PinImage {
         case .pinArchivedTask:
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
-                bgColor: .Neutral_05,
+                bgColor: .Archived,
                 image: "task.selected.overlay"
             )
         }

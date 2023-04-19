@@ -66,7 +66,7 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
 
         if let status = collaboration.status {
             // display status
-            badgeView.backgroundColor = collaboration.isArchived ? .Neutral_05 : status.color
+            badgeView.backgroundColor = collaboration.isArchived ? .Archived : status.color
             numberOfUploadsLabel?.isHidden = true
             if let checkmarkView = checkmarkView {
                 checkmarkView.isHidden = false
@@ -75,7 +75,7 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
             }
         } else {
             // display number of photos
-            badgeView.backgroundColor = collaboration.isArchived ? .Neutral_05 : .Pink_03
+            badgeView.backgroundColor = collaboration.isArchived ? .Archived : .Pink_03
             if let label = numberOfUploadsLabel {
                 label.isHidden = false
             } else {

@@ -280,7 +280,7 @@ extension CollaborationViewController {
         archivedLabel.font = UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
         archivedLabel.textColor = .Neutral_01
         archivedLabel.adjustsFontForContentSizeCategory = true
-        archivedLabel.backgroundColor = .Neutral_05
+        archivedLabel.backgroundColor = .Archived
         archivedLabel.text = String(localized: "Archived")
         archivedLabel.autoround = true
     }

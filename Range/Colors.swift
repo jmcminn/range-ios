@@ -8,6 +8,7 @@ import UIKit
 /// and Neutral_01 in light (09 vs 02, 08 vs 03, 07 vs 04, 06 vs 05, ...)
 
 extension Color {
+    static let Archived = Color("Archived")
     static let Green_01 = Color("Green_01")
     static let Green_03 = Color("Green_03")
     static let Green_04 = Color("Green_04")
@@ -36,6 +37,7 @@ extension Color {
 }
 
 extension UIColor {
+    static let Archived = UIColor(named: "Archived")!
     static let Green_01 = UIColor(named: "Green_01")!
     static let Green_03 = UIColor(named: "Green_03")!
     static let Green_04 = UIColor(named: "Green_04")!
