@@ -43,7 +43,7 @@ class CanvasFilters: Codable, Equatable {
     var assigneeFilter: [String]? = nil { didSet { postUpdate() }}
 
     /// This is not nil when user enabled filtering by tags.
-    /// If not nil and not empty then only match the collaborations that have (or their upload have) any of given tags (tag ids).
+    /// If not nil and not empty then only match the collaborations that have (or their upload have) all of given tags (tag ids).
     var tagsFilter: [String]? = nil { didSet { postUpdate() }}
 
     /// Whether to show only the pins created by the current user
@@ -122,7 +122,7 @@ extension CanvasFilters {
         return false
     }
 
-    /// Return `true` if at least 1 tag from `tags` is in the collaboration or it's uploads tags
+    /// Return `true` if all `tags` are in the collaboration or it's uploads tags
     func matchTags(_ tags: [String], collaboration: Collaboration) -> Bool {
         var allCollaborationTags = Set<String>(collaboration.tags.map(\.id))
         for upload in collaboration.uploads {
@@ -130,9 +130,9 @@ extension CanvasFilters {
         }
 
         for tag in tags {
-            if allCollaborationTags.contains(tag) { return true }
+            if !allCollaborationTags.contains(tag) { return false }
         }
 
-        return false
+        return true
     }
 }

@@ -49,7 +49,7 @@ final class CanvasFiltersTest: XCTestCase {
 
     func testTagFiltersMatchCollaboration() {
         let filters = CanvasFilters()
-        filters.tagsFilter = ["tag1", "tag2"]
+        filters.tagsFilter = ["tag1"]
 
         let collaboration = Collaboration(placeholderId: "collaboration1")
         XCTAssertFalse(filters.match(collaboration), "collaboration with no tags")
@@ -60,7 +60,7 @@ final class CanvasFiltersTest: XCTestCase {
 
     func testTagFiltersMatchUpload() {
         let filters = CanvasFilters()
-        filters.tagsFilter = ["tag1", "tag2"]
+        filters.tagsFilter = ["tag1"]
 
         let collaboration = Collaboration(placeholderId: "collaboration1")
         XCTAssertFalse(filters.match(collaboration), "collaboration with no tags")
@@ -71,8 +71,22 @@ final class CanvasFiltersTest: XCTestCase {
         XCTAssertFalse(filters.match(collaboration), "collaboration with upload with no matching tags")
 
         let upload2 = Upload(placeholderId: "upload2")
-        upload2.tags.append(Tag(placeholderId: "tag2"))
+        upload2.tags.append(Tag(placeholderId: "tag1"))
         collaboration.uploads.insert(upload2)
         XCTAssertTrue(filters.match(collaboration), "collaboration with an upload with a matching tag")
+    }
+
+    func testTagFiltersAllTagsShouldMatch() {
+        let filters = CanvasFilters()
+        filters.tagsFilter = ["tag1", "tag2"]
+
+        let collaboration = Collaboration(placeholderId: "collaboration1")
+        collaboration.tags.append(Tag(placeholderId: "tag1"))
+        XCTAssertFalse(filters.match(collaboration), "collaboration matches only 1 tag")
+
+        let upload = Upload(placeholderId: "upload1")
+        upload.tags.append(Tag(placeholderId: "tag2"))
+        collaboration.uploads.insert(upload)
+        XCTAssertTrue(filters.match(collaboration), "collaboration and upload match both tags")
     }
 }
