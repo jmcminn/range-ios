@@ -2,6 +2,43 @@
 import XCTest
 
 final class CanvasFiltersTest: XCTestCase {
+    func testAssigneeFiltersForPhotoPin() {
+        let filters = CanvasFilters()
+        filters.assigneeFilter = ["user1"]
+
+        let photoPin = Collaboration(placeholderId: "collaboration1")
+
+        XCTAssertTrue(filters.match(photoPin), "photo pin is not filtered by assignee")
+    }
+
+    func testAssigneeFiltersForTaskPin() {
+        let filters = CanvasFilters()
+        filters.assigneeFilter = ["user1", "user2"]
+
+        let unassignedTaskPin = Collaboration(placeholderId: "collaboration1")
+        unassignedTaskPin.status = Status(placeholderId: "status1")
+
+        let assignedTaskPin = Collaboration(placeholderId: "collaboration2")
+        assignedTaskPin.status = Status(placeholderId: "status1")
+        assignedTaskPin.assignee = Participant(placeholderId: "user2")
+
+        XCTAssertFalse(
+            filters.match(unassignedTaskPin),
+            "unassigned task doesn't match the assignee filter with user id"
+        )
+        XCTAssertTrue(filters.match(assignedTaskPin), "assigned task matches the assignee filter with user id")
+
+        filters.assigneeFilter = [UserViewModel.unassignedUserId]
+        XCTAssertTrue(
+            filters.match(unassignedTaskPin),
+            "unassigned task matches the assignee filter for unnassigned tasks"
+        )
+        XCTAssertFalse(
+            filters.match(assignedTaskPin),
+            "assigned task doesn't match the assignee filter for unassigned tasks"
+        )
+    }
+
     func testEmptyTagFilters() {
         let filters = CanvasFilters()
         filters.tagsFilter = []

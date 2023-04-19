@@ -84,8 +84,12 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func selectCanvasFiltersAction() {
-        CanvasFiltersCardViewController(model: model, canvasFilters: canvasFilters)
-            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        let canvasFiltersCardVC = CanvasFiltersCardViewController(model: model, canvasFilters: canvasFilters)
+        canvasFiltersCardVC.onCancel = { [weak self] in
+            guard let self = self else { return }
+            UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
+        }
+        canvasFiltersCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     func showMediaAction() {

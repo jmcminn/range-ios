@@ -7,7 +7,8 @@ class CanvasFilters: Codable {
     static let UpdateNotificationName = Notification.Name("io.range.App.CanvasFiltersUpdated")
 
     private enum CodingKeys: String, CodingKey {
-        case showPhotoPins, showTaskPins, hiddenStatuses, tagsFilter, showOnlyCreatedByUser, showArchivedPins
+        case showPhotoPins, showTaskPins, hiddenStatuses, assigneeFilter, tagsFilter, showOnlyCreatedByUser,
+             showArchivedPins
     }
 
     weak var model: ProjectModel?
@@ -36,6 +37,11 @@ class CanvasFilters: Codable {
         !hiddenStatuses.contains(status.id)
     }
 
+    /// This is not nil when user enabled filtering by assignee.
+    /// If not nil and not empty then only match the collaborations that have any of given assignees (or doesn't have assignee if filter
+    /// contains a special UserViewModel.unassignedUserId)
+    var assigneeFilter: [String]? = nil { didSet { postUpdate() }}
+
     /// This is not nil when user enabled filtering by tags.
     /// If not nil and not empty then only match the collaborations that have (or their upload have) any of given tags (tag ids).
     var tagsFilter: [String]? = nil { didSet { postUpdate() }}
@@ -56,14 +62,36 @@ class CanvasFilters: Codable {
 extension CanvasFilters {
     func match(_ collaboration: Collaboration) -> Bool {
         if !showArchivedPins, collaboration.isArchived { return false }
-        if !showPhotoPins, collaboration.status == nil { return false }
-        if !showTaskPins, collaboration.status != nil { return false }
-        if let status = collaboration.status, !show(status) { return false }
+
+        if let status = collaboration.status {
+            // task pin filters
+            if !showTaskPins { return false }
+            if !show(status) { return false }
+            if let assigneeFilter = assigneeFilter, !assigneeFilter.isEmpty {
+                if !matchAssignee(assigneeFilter, collaboration: collaboration) { return false }
+            }
+        } else {
+            // photo pin filters
+            if !showPhotoPins { return false }
+        }
+
         if showOnlyCreatedByUser, collaboration.author?.id != model?.userId { return false }
         if let tagsFilter = tagsFilter, !tagsFilter.isEmpty {
             if !matchTags(tagsFilter, collaboration: collaboration) { return false }
         }
         return true
+    }
+
+    /// Return `true` if the task is assigned to one of given users. If the users is [unnassignedUserId] then
+    /// the task matches if it's unassigned
+    func matchAssignee(_ users: [String], collaboration: Collaboration) -> Bool {
+        if users.first == UserViewModel.unassignedUserId {
+            return collaboration.assignee == nil
+        }
+        for user in users {
+            if collaboration.assignee?.id == user { return true }
+        }
+        return false
     }
 
     /// Return `true` if at least 1 tag from `tags` is in the collaboration or it's uploads tags
