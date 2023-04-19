@@ -15,7 +15,6 @@ class CopyTaskCardViewController: SheetCardViewController {
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
 
-    private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
     private var noTasksView: UIView?
 
@@ -45,12 +44,7 @@ class CopyTaskCardViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupHeaderStroke()
-        sheetHeaderView.addSubview(headerStroke)
-        headerStroke.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1)
-        }
+        addSheetHeaderStroke()
 
         setupTableView()
         containerView.insertSubview(tableView, belowSubview: sheetHeaderView)
@@ -126,10 +120,6 @@ class CopyTaskCardViewController: SheetCardViewController {
 
     override func drivingScrollView() -> UIScrollView? {
         tableView
-    }
-
-    private func setupHeaderStroke() {
-        headerStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
     private func setupTableView() {

@@ -15,7 +15,6 @@ class MediaCardViewController: SheetCardViewController {
     /// uploads to show
     private let uploads: Results<Upload>
 
-    private let headerStroke = UIView()
     private let collectionView: UICollectionView
 
     private var headerFont: UIFont {
@@ -75,12 +74,7 @@ class MediaCardViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupHeaderStroke()
-        sheetHeaderView.addSubview(headerStroke)
-        headerStroke.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1)
-        }
+        addSheetHeaderStroke()
 
         setupCollectionView()
         containerView.insertSubview(collectionView, belowSubview: sheetHeaderView)
@@ -180,10 +174,6 @@ class MediaCardViewController: SheetCardViewController {
 
     override func drivingScrollView() -> UIScrollView? {
         collectionView
-    }
-
-    private func setupHeaderStroke() {
-        headerStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
     private func setupCollectionView() {

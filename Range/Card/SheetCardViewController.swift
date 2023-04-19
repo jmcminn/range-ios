@@ -17,6 +17,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private(set) var titleLabel: UILabel?
     private(set) var subtitleLabel: UILabel?
     private(set) var descriptionLabel: UILabel?
+    private var sheetHeaderStroke: UIView?
 
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
@@ -48,6 +49,20 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         if let description = description {
             setupDescriptionLabel(text: description)
         }
+    }
+
+    /// Adds the stroke to the bottom of the sheet header view
+    func addSheetHeaderStroke() {
+        guard sheetHeaderStroke == nil else { return }
+
+        let headerStroke = UIView()
+        headerStroke.backgroundColor = .dynamic(.Neutral_07)
+        sheetHeaderView.addSubview(headerStroke)
+        headerStroke.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        sheetHeaderStroke = headerStroke
     }
 
     var roundedShadowView: RoundShadowView {

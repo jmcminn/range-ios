@@ -68,6 +68,8 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        addSheetHeaderStroke()
+
         setupResetButton()
         setupNumberOfPinsLabel()
 
@@ -191,8 +193,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         stackView.backgroundColor = .dynamic(.Neutral_09)
         scrollView.addSubview(stackView)
         stackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.bottom.leading.trailing.equalToSuperview().inset(16)
         }
 
         // ----- Photo pins ------------------------------------------------------------------------
