@@ -45,7 +45,12 @@ class UserPickerCardViewController: SheetCardViewController {
         headerView.snp.makeConstraints { make in
             make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            self.headerHeightConstraint = make.height.equalTo(UserPickerCardViewController.headerHeight).constraint
+            if selectedUsersView != nil, !viewModel.selectedUsers.isEmpty {
+                self.headerHeightConstraint = make.height
+                    .equalTo(UserPickerCardViewController.headerHeightWithSelectedUsers).constraint
+            } else {
+                self.headerHeightConstraint = make.height.equalTo(UserPickerCardViewController.headerHeight).constraint
+            }
         }
 
         setupSearchView()
