@@ -48,6 +48,9 @@ class SearchAndSelectTagsViewController: UIViewController, NonModalCardCoordinat
     /// Show a special row when there's no direct match in filtered tags
     var showCreateTag: Bool = true
 
+    /// Show a special row (in the 1st section) that allows for selecting TagViewModel.untagged - for filtering pins that have no tags
+    var showUntaggedOption: Bool = false
+
     init(tagsViewModel: TagsViewModel) {
         self.tagsViewModel = tagsViewModel
         super.init(nibName: nil, bundle: nil)
@@ -189,7 +192,7 @@ extension SearchAndSelectTagsViewController {
     }
 
     private func setupTagsView() {
-        tagsVC = TagsSelectionViewController(viewModel: tagsViewModel)
+        tagsVC = TagsSelectionViewController(viewModel: tagsViewModel, showUntaggedOption: showUntaggedOption)
         tagsVC.showCreateTag = showCreateTag
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)

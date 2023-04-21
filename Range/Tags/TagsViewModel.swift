@@ -23,6 +23,9 @@ class TagsViewModel: NSObject {
     /// whether `filteredTags` have a match that directly matches `filterString`
     private(set) var filteredTagsContainDirectMatch: Bool = false
 
+    /// Special tag for filtering untagged pins
+    let untaggedTag = TagViewModel.untagged()
+
     /// used for sorting the tags by name
     private let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
 
@@ -48,6 +51,7 @@ class TagsViewModel: NSObject {
             .reversed()
 
         self.allTagsIndex = allTagsIndex
+        self.allTagsIndex[untaggedTag.id] = untaggedTag
 
         super.init()
 
@@ -70,6 +74,22 @@ class TagsViewModel: NSObject {
     func set(tagWithId tagId: String, selected: Bool) {
         // find tag with matching id in this view model tags
         guard let tag = allTagsIndex[tagId] else { return }
+        guard tag.selected != selected else { return }
+
+        let idsToUnselect: [String]?
+        if selected {
+            // the untagged tag selection is exclusive with the rest of tags
+            if tagId == TagViewModel.untaggedId {
+                // selecting untagged clears the selection
+                idsToUnselect = selectedTags.map(\.id)
+            } else {
+                // selecting a tag clears the untagged selection
+                idsToUnselect = [TagViewModel.untaggedId]
+            }
+        } else {
+            idsToUnselect = nil
+        }
+
         tag.selected = selected
 
         if tag.selected {
@@ -84,6 +104,10 @@ class TagsViewModel: NSObject {
                 delegates.allObjects
                     .forEach { $0.tagsViewModel?(self, tag: tag, selected: false, indexInSelectedTags: deleteIndex) }
             }
+        }
+
+        if let idsToUnselect = idsToUnselect {
+            idsToUnselect.forEach { self.set(tagWithId: $0, selected: false) }
         }
     }
 
@@ -146,6 +170,9 @@ class TagsViewModel: NSObject {
 
 /// View model for a tag with selection support
 class TagViewModel: NSObject, Codable {
+    /// A special id for tag that is used for filtering untagged pins
+    static let untaggedId = "untagged"
+
     let id: String
     @objc let name: String
     /// to how many object the tag is applied
@@ -183,6 +210,11 @@ class TagViewModel: NSObject, Codable {
     /// Convenience initializer for new tags with auto generated id and given name
     convenience init(newTagWithName name: String) {
         self.init(id: generateRealmId(), name: name, usageCount: 0, newTag: true)
+    }
+
+    /// A special tag with id = untaggedId for filtering untagged pins
+    fileprivate static func untagged() -> TagViewModel {
+        TagViewModel(id: untaggedId, name: String(localized: "Untagged Pins"), usageCount: 0)
     }
 
     /// equatable to check for id only

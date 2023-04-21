@@ -46,10 +46,12 @@ class TagSelectionTableViewCell: UITableViewCell {
                 )
                 updateSelection()
 
-                let countText = "(\(tagViewModel.usageCount))"
+                // do not show count for 'untagged'
+                let countText = tagViewModel.id == TagViewModel.untaggedId ? "" : "(\(tagViewModel.usageCount))"
+                let tagName = tagViewModel.id == TagViewModel.untaggedId ? "Show untagged pins" : tagViewModel.name
                 let attributedText =
                     NSMutableAttributedString(
-                        string: "\(tagViewModel.name) \(countText)",
+                        string: "\(tagName) \(countText)",
                         attributes: [
                             .foregroundColor: chooseColor(.Neutral_04),
                             .font: UIFont.preferredFont(forTextStyle: .body),
