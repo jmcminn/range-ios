@@ -90,14 +90,20 @@ class CollaborationDetailsViewController: UIViewController {
                 make.top.equalToSuperview().offset(Constants.descriptionTopSpacing).priority(.high)
                 descriptionTextViewHeightConstraint = make.height.equalTo(0).constraint
             }
+        }
 
-            setupTagsView()
-            view.addSubview(tagsView)
-            tagsView.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
+        setupTagsView()
+        view.addSubview(tagsView)
+        tagsView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            if isTaskWindow {
                 make.top.equalTo(descriptionTextView.snp.bottom).offset(Constants.descriptionBottomSpacing)
+            } else {
+                make.top.equalToSuperview().offset(Constants.verticalSpacing)
             }
+        }
 
+        if isTaskWindow {
             assigneeButton = AssigneeButton()
             assigneeButton.addTarget(self, action: #selector(assigneeTapped), for: .touchUpInside)
             view.addSubview(assigneeButton)
@@ -123,7 +129,7 @@ class CollaborationDetailsViewController: UIViewController {
             if isTaskWindow {
                 make.top.equalTo(assigneeButton.snp.bottom).offset(Constants.verticalSpacing)
             } else {
-                make.top.equalToSuperview().offset(Constants.verticalSpacing)
+                make.top.equalTo(tagsView.snp.bottom).offset(Constants.verticalSpacing)
             }
             make.leading.trailing.equalToSuperview().inset(16).priority(.high)
             make.height.equalTo(Constants.ctasHeight)
@@ -200,7 +206,8 @@ extension CollaborationDetailsViewController {
                 Constants.verticalSpacing + Constants.assigneeButtonHeight +
                 Constants.verticalSpacing + Constants.ctasHeight
         } else {
-            return Constants.verticalSpacing + Constants.ctasHeight
+            return Constants.verticalSpacing + Constants.tagsHeight +
+                Constants.verticalSpacing + Constants.ctasHeight
         }
     }
 

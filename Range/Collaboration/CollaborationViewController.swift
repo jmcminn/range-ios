@@ -391,12 +391,6 @@ extension CollaborationViewController: CardPresentable {
             // the height of the collaboration view header that we want to hide
             // behind the header cover
             var headerHeight = Constants.heightToName + textViewHeight
-            if isTaskWindow {
-                // for task we present all the details
-            } else {
-                // photo collaboration hides the CTAs by default
-                headerHeight += detailsVC.heightUpToCTAs()
-            }
             // 50 is the height of headerCover content
             let headerCoverHeight = cardContainerView.safeAreaInsets.top + 50
             // add enough so the "header" hides behind the headerCover
