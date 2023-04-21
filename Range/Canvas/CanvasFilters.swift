@@ -122,11 +122,16 @@ extension CanvasFilters {
         return false
     }
 
-    /// Return `true` if all `tags` are in the collaboration or it's uploads tags
+    /// Return `true` if all `tags` are in the collaboration or it's uploads tags. If tags is [untaggedId] then the collaboration matches
+    /// if it's untagged (and all of its uploads are untagged)
     func matchTags(_ tags: [String], collaboration: Collaboration) -> Bool {
         var allCollaborationTags = Set<String>(collaboration.tags.map(\.id))
         for upload in collaboration.uploads {
             allCollaborationTags = allCollaborationTags.union(upload.tags.map(\.id))
+        }
+
+        if tags.first == TagViewModel.untaggedId {
+            return allCollaborationTags.isEmpty
         }
 
         for tag in tags {

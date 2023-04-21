@@ -89,4 +89,23 @@ final class CanvasFiltersTest: XCTestCase {
         collaboration.uploads.insert(upload)
         XCTAssertTrue(filters.match(collaboration), "collaboration and upload match both tags")
     }
+
+    func testTagFiltersMatchUntagged() {
+        let filters = CanvasFilters()
+        filters.tagsFilter = [TagViewModel.untaggedId]
+
+        let collaboration = Collaboration(placeholderId: "collaboration1")
+        XCTAssertTrue(filters.match(collaboration), "untagged collaboration matches filters")
+
+        let upload = Upload(placeholderId: "upload1")
+        collaboration.uploads.insert(upload)
+        XCTAssertTrue(filters.match(collaboration), "untagged collaboration with untagged upload matches filters")
+
+        collaboration.tags.append(Tag(placeholderId: "tag1"))
+        XCTAssertFalse(filters.match(collaboration), "tagged collaboration doesn't match filters")
+
+        collaboration.tags.removeAll()
+        upload.tags.append(Tag(placeholderId: "tag1"))
+        XCTAssertFalse(filters.match(collaboration), "untagged collaboration with tagged upload doesn't match filters")
+    }
 }

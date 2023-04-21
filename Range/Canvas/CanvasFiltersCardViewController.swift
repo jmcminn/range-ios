@@ -210,7 +210,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
                     bottomInset: index == (statuses.count - 1) ? 13 : 5)
             }
         }
-        addSeparator()
+        addSeparator(leftInset: 16)
 
         // ----- Assignee --------------------------------------------------------------------------
         filterByAssigneeLabel = createLabel(text: String(localized: "Filter by Assignee"))
@@ -480,6 +480,7 @@ extension CanvasFiltersCardViewController: TagsViewModelDelegate {
         guard let presentingVC = presentingVC else { return }
         let editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
         editTagsVC.showCreateTag = false
+        editTagsVC.showUntaggedOption = true
         editTagsVC.onClose = {
             editTagsVC.hideCard(animated: true) {
                 presentingVC.removeCard(cardViewController: editTagsVC)
