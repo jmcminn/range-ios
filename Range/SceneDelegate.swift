@@ -105,9 +105,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// Used when responding to push notifications.
     /// Opens given project (if not open yet) and shows the task list (closes other views / cancels flows when tapped)
     /// When signed out, it does it after the user signs in
-    func showProjectTaskList(projectId: String) {
+    func showProjectTaskList(projectId: String, projectName: String) {
         if let projectsFlowController = window?.rootViewController as? ProjectsFlowController {
-            projectsFlowController.showProjectTaskList(projectId: projectId)
+            projectsFlowController.showProjectTaskList(projectId: projectId, projectName: projectName)
         } else {
             // open when the user logs in, or when the projects flow is there (the app can be just starting)
             showTaskListOnLoginForProjectId = projectId

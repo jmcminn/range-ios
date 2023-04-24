@@ -284,7 +284,7 @@ class ProjectsFlowController: UINavigationController {
         onSignedOut?()
     }
 
-    func showProjectTaskList(projectId: String) {
+    func showProjectTaskList(projectId: String, projectName: String) {
         let showProjectTaskListAnimated: ((Bool) -> Void) = { [weak self] animated in
             self?.loadAndPushProjectFlowController(projectId: projectId, animated: animated) {
                 self?.projectFCStarted = self?.projectFC?.startedFuture?.sink { _ in
@@ -308,7 +308,7 @@ class ProjectsFlowController: UINavigationController {
             if projectFC.isUserEditingProject {
                 let alert = UIAlertController(
                     title: "View Task List",
-                    message: "It looks like you're in the middle of something, are you sure you want to view this notification?",
+                    message: "It looks like you're in the middle of something. Are you sure you want to view your task list for \(projectName)?",
                     preferredStyle: .alert
                 )
                 alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))

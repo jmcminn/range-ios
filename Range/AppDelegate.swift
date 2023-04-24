@@ -145,6 +145,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
             return
         }
-        sceneDelegate.showProjectTaskList(projectId: projectId)
+        let projectName = userInfo["pName"] as? String ?? "project from notification"
+        sceneDelegate.showProjectTaskList(projectId: projectId, projectName: projectName)
     }
 }
