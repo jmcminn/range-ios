@@ -267,7 +267,7 @@ extension ProjectCanvasControls {
     }
 
     func showCanvasFiltersButton(aboveView: UIView) {
-        let button = RoundShadowButton(image: UIImage(systemName: "line.3.horizontal.decrease.circle") ?? UIImage())
+        let button = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
         button.tag = ViewTag.canvasFiltersButton.rawValue
         button.addTarget(self, action: #selector(canvasFiltersButtonTapped), for: .touchUpInside)
         addSubview(button)

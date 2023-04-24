@@ -30,7 +30,7 @@ class RoundShadowButton: UIControl {
 
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 19)
             .applying(UIImage.SymbolConfiguration(weight: .regular))
-        let imageView = UIImageView(image: image.withConfiguration(imageConfig))
+        let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(imageConfig))
         imageView.tintColor = .Neutral_04
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
