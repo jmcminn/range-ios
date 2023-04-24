@@ -3,53 +3,44 @@ import UIKit
 
 /// Round button with an image that changes its shadow when pressed
 class RoundShadowButton: UIControl {
-    private let style: Style
     private let size: CGFloat
-    ///
-    enum Style {
-        case black // black button (not dependent on the light/dark mode)
-        case blue // blue button (not dependent on the light/dark mode)
-    }
 
     ///
-    init(image: UIImage, style: Style = .black, size: CGFloat = 48) {
-        self.style = style
+    init(image: UIImage, size: CGFloat = 48) {
         self.size = size
         super.init(frame: .zero)
 
-        backgroundColor = style == .black ? .Neutral_09 : .Primary_Blue_04
+        backgroundColor = .clear
         layer.cornerRadius = size / 2.0
         layer.borderWidth = 1
+        layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.isUserInteractionEnabled = false
+        blurEffectView.layer.cornerRadius = layer.cornerRadius
+        blurEffectView.clipsToBounds = true
+        addSubview(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
         isHighlighted = false
 
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 19)
-            .applying(UIImage.SymbolConfiguration(weight: style == .black ? .regular : .bold))
+            .applying(UIImage.SymbolConfiguration(weight: .regular))
         let imageView = UIImageView(image: image.withConfiguration(imageConfig))
-        imageView.tintColor = style == .black ? .Neutral_04 : .Neutral_01
+        imageView.tintColor = .Neutral_04
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-
-        updateColors()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func traitCollectionDidChange(_: UITraitCollection?) {
-        updateColors()
-    }
-
-    /// Update colors that do not automatically adjust when appearance changes
-    private func updateColors() {
-        layer.borderColor = style == .black
-            ? UIColor.Neutral_07.cgColor
-            : UIColor.Primary_Blue_06.cgColor
     }
 
     /// Update the shadow opacity when the button is pressed.
