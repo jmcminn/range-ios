@@ -13,7 +13,6 @@ class RoundShadowButton: UIControl {
         backgroundColor = .clear
         layer.cornerRadius = size / 2.0
         layer.borderWidth = 1
-        layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
 
         let blurEffect = UIBlurEffect(style: .dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -36,11 +35,27 @@ class RoundShadowButton: UIControl {
         imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
+
+        updateColors()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func traitCollectionDidChange(_: UITraitCollection?) {
+        updateColors()
+    }
+
+    /// Update colors that do not automatically adjust when appearance changes
+    private func updateColors() {
+        if traitCollection.userInterfaceStyle == .dark {
+            // make it white in dark mode "so it doesn't get lost in the grid background"
+            layer.borderColor = UIColor(white: 1, alpha: 0.2).cgColor
+        } else {
+            layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+        }
     }
 
     /// Update the shadow opacity when the button is pressed.
