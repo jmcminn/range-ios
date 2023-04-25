@@ -6,6 +6,7 @@ import UIKit
 class ImageMediaCollectionViewCell: UICollectionViewCell {
     let imageView = UIImageView(frame: .zero)
     let avatarView = AvatarView()
+    private var selectedOverlay: UIView?
 
     override init(frame _: CGRect) {
         super.init(frame: .zero)
@@ -26,6 +27,8 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
         avatarView.snp.makeConstraints { make in
             make.leading.bottom.equalToSuperview().inset(8)
         }
+
+        mark(selected: false)
     }
 
     @available(*, unavailable)
@@ -37,11 +40,55 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
         imageView.kf.cancelDownloadTask()
         imageView.image = nil
         avatarView.setUser(nil)
+        mark(selected: false)
     }
 
     func setUpload(_ upload: Upload, imageDataProvider: RangeImageDataProvider) {
         imageView.kf.cancelDownloadTask()
         imageView.kf.setImage(with: imageDataProvider, options: [.targetCache(imageDataProvider.cache)])
         avatarView.setUser(upload.author)
+    }
+
+    func mark(selected: Bool) {
+        avatarView.isHidden = selected
+        if selected {
+            setupSelectedOverlay()
+        }
+        selectedOverlay?.isHidden = !selected
+    }
+
+    private func setupSelectedOverlay() {
+        guard selectedOverlay == nil else { return }
+        let selectedOverlay = UIView()
+        selectedOverlay.backgroundColor = .Green_01
+        selectedOverlay.layer.cornerRadius = contentView.layer.cornerRadius
+        contentView.addSubview(selectedOverlay)
+        selectedOverlay.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        let checkmarkBg = ImageMediaCollectionViewCell.createdSelectedCheckmark()
+        checkmarkBg.layer.cornerRadius = 10
+        selectedOverlay.addSubview(checkmarkBg)
+        checkmarkBg.snp.makeConstraints { make in
+            make.leading.bottom.equalToSuperview().inset(8)
+            make.width.height.equalTo(20)
+        }
+        self.selectedOverlay = selectedOverlay
+    }
+
+    static func createdSelectedCheckmark() -> UIView {
+        let checkmarkBg = UIView()
+        checkmarkBg.layer.borderWidth = 1
+        checkmarkBg.layer.borderColor = UIColor.Neutral_01.cgColor
+        checkmarkBg.backgroundColor = .Green_03
+
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 11, weight: .semibold)
+        let checkmark = UIImageView(image: UIImage(systemName: "checkmark", withConfiguration: imageConfig))
+        checkmark.tintColor = .Neutral_01
+        checkmarkBg.addSubview(checkmark)
+        checkmark.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        return checkmarkBg
     }
 }

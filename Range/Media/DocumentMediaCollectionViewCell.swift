@@ -9,6 +9,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
     let fileTypeLabel = UILabel()
     let fileNameLabel = UILabel()
     let fileSizeLabel = LabelWithTextInsets()
+    private var selectedCheckmark: UIView?
 
     override init(frame _: CGRect) {
         super.init(frame: .zero)
@@ -69,6 +70,8 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         avatarView.snp.makeConstraints { make in
             make.trailing.bottom.equalToSuperview().inset(8)
         }
+
+        mark(selected: false)
     }
 
     @available(*, unavailable)
@@ -81,6 +84,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         fileTypeLabel.text = nil
         fileSizeLabel.text = nil
         fileNameLabel.text = nil
+        mark(selected: false)
     }
 
     func setUpload(_ upload: Upload) {
@@ -108,5 +112,27 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
         }
         fileNameLabel.text = upload.fileName
         avatarView.setUser(upload.author)
+    }
+
+    func mark(selected: Bool) {
+        avatarView.isHidden = selected
+        contentView.backgroundColor = selected ? .Green_03.withAlphaComponent(0.15) : .dynamic(.Neutral_09)
+
+        if selected {
+            setupSelectedCheckmark()
+        }
+        selectedCheckmark?.isHidden = !selected
+    }
+
+    private func setupSelectedCheckmark() {
+        guard selectedCheckmark == nil else { return }
+        let selectedCheckmark = ImageMediaCollectionViewCell.createdSelectedCheckmark()
+        selectedCheckmark.layer.cornerRadius = 12
+        contentView.addSubview(selectedCheckmark)
+        selectedCheckmark.snp.makeConstraints { make in
+            make.trailing.bottom.equalToSuperview().inset(8)
+            make.width.height.equalTo(24)
+        }
+        self.selectedCheckmark = selectedCheckmark
     }
 }

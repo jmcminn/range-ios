@@ -9,6 +9,12 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class MediaCardViewController: SheetCardViewController {
+    /// The mode in which the Media card is currently operating
+    private enum Mode {
+        case normal // showing media
+        case select // selecting media
+    }
+
     private let projectModel: ProjectModel
     private let mediaCache: MediaCache
 
@@ -22,11 +28,15 @@ class MediaCardViewController: SheetCardViewController {
         ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
     }
 
+    private var selectButton: ButtonWithTapAreaInsets!
+    private var mode: Mode = .normal
+
     /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source
     /// will need hash when computing the diff and the Upload may already be gone (if some upload was removed)
     struct CollectionItem: Hashable {
         var id: String
         var upload: Upload
+        var selected: Bool = false
         init(_ upload: Upload) {
             id = upload.id
             self.upload = upload
@@ -38,6 +48,8 @@ class MediaCardViewController: SheetCardViewController {
     }
 
     private var dataSource: UICollectionViewDiffableDataSource<String, CollectionItem>!
+    /// indices of selected sections
+    private var selectedSections = Set<Int>()
 
     /// Token for observing changes in uploads
     private var notificationToken: NotificationToken?
@@ -76,6 +88,8 @@ class MediaCardViewController: SheetCardViewController {
 
         addSheetHeaderStroke()
         addSheetHeaderShadowBasedOnDrivingScrollView()
+
+        setupSelectButton()
 
         setupCollectionView()
         containerView.insertSubview(collectionView, belowSubview: sheetHeaderView)
@@ -177,6 +191,7 @@ class MediaCardViewController: SheetCardViewController {
     }
 
     private func setupCollectionView() {
+        collectionView.allowsMultipleSelection = true
         collectionView.prefetchDataSource = self
         collectionView.delegate = self
         collectionView.register(ImageMediaCollectionViewCell.self, forCellWithReuseIdentifier: "ImageCell")
@@ -202,6 +217,102 @@ class MediaCardViewController: SheetCardViewController {
                     indexPath: indexPath
                 )
             }
+    }
+
+    private func setupSelectButton() {
+        guard selectButton == nil else { return }
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 15
+        config.background.strokeColor = .dynamic(.Neutral_08)
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
+            return outgoing
+        }
+        selectButton = ButtonWithTapAreaInsets(
+            configuration: config,
+            primaryAction: UIAction(title: String(localized: "Select")) { [weak self] _ in
+                self?.toggleMode()
+            }
+        )
+        // more vertical tap area as button is only 30 points high
+        selectButton.tapAreaInsets = UIEdgeInsets(top: -10, left: 0, bottom: -10, right: 0)
+
+        sheetHeaderView.addSubview(selectButton)
+        selectButton.snp.makeConstraints { make in
+            make.centerY.equalTo(closeButton)
+            make.trailing.equalTo(closeButton.snp.leading).offset(-8)
+            make.height.equalTo(30)
+        }
+    }
+
+    private func toggleMode() {
+        mode = mode == .normal ? .select : .normal
+        selectButton.setTitle(mode == .normal ? String(localized: "Select") : String(localized: "Cancel"),
+                              for: .normal)
+        collectionView.reloadData()
+        if mode == .normal {
+            selectedSections.removeAll()
+        }
+    }
+
+    /// Toggle current section selection and marks all items with section selection
+    private func toggleSectionAndAllItemsSelected(sectionIndex: Int) {
+        let currentValue = selectedSections.contains(sectionIndex)
+        let selected = !currentValue
+        markSection(sectionIndex, selected: selected)
+
+        // select/deselect all uploads in section
+        guard let sectionId = dataSource.sectionIdentifier(for: sectionIndex) else { return }
+        let itemsCount = dataSource.snapshot(for: sectionId).items.count
+        let indexPaths = (0 ..< itemsCount).map { IndexPath(row: $0, section: sectionIndex) }
+        markIndexPaths(indexPaths, selected: selected)
+    }
+
+    /// Marks section as selected - adds/removes from selectedSections and updates the section header
+    private func markSection(_ index: Int, selected: Bool) {
+        let currentValue = selectedSections.contains(index)
+        guard currentValue != selected else { return }
+        let selected = !currentValue
+        if selected {
+            selectedSections.insert(index)
+        } else {
+            selectedSections.remove(index)
+        }
+        guard let headerView = collectionView.supplementaryView(
+            forElementKind: UICollectionView.elementKindSectionHeader,
+            at: IndexPath(item: 0, section: index)
+        ) as? MediaCollectionViewHeader else { return }
+        headerView.mark(selected: selected)
+    }
+
+    /// Returns `true` if all items in given section are selected
+    private func allItemsSelected(inSection sectionIndex: Int) -> Bool {
+        guard let sectionId = dataSource.sectionIdentifier(for: sectionIndex) else { return false }
+        let itemsCount = dataSource.snapshot(for: sectionId).items.count
+        let indexPaths = (0 ..< itemsCount).map { IndexPath(row: $0, section: sectionIndex) }
+        guard let selectedIndexPaths = collectionView.indexPathsForSelectedItems else { return false }
+        let selectedIndexPathsSet = Set<IndexPath>(selectedIndexPaths)
+        return indexPaths.allSatisfy(selectedIndexPathsSet.contains)
+    }
+
+    private func markIndexPaths(_ indexPaths: [IndexPath], selected: Bool) {
+        for indexPath in indexPaths {
+            if selected {
+                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            } else {
+                collectionView.deselectItem(at: indexPath, animated: true)
+            }
+            if let cell = collectionView.cellForItem(at: indexPath) as? ImageMediaCollectionViewCell {
+                cell.mark(selected: selected)
+            } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
+                cell.mark(selected: selected)
+            }
+        }
     }
 }
 
@@ -247,16 +358,36 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
     }
 
     func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let sectionId = dataSource.sectionIdentifier(for: indexPath.section) else { return }
-        let sectionUploads = dataSource.snapshot(for: sectionId).items
-        guard indexPath.item < sectionUploads.count else { return }
-        let upload = sectionUploads[indexPath.item].upload
-        UIApplication.shared.sendAction(
-            #selector(ProjectFlowActions.showFullscreenMediaAction),
-            to: nil,
-            from: self,
-            for: FlowEvent(upload, source: .media)
-        )
+        if mode == .normal {
+            guard let upload = dataSource.itemIdentifier(for: indexPath)?.upload else { return }
+            UIApplication.shared.sendAction(
+                #selector(ProjectFlowActions.showFullscreenMediaAction),
+                to: nil,
+                from: self,
+                for: FlowEvent(upload, source: .media)
+            )
+        } else {
+            if let cell = collectionView.cellForItem(at: indexPath) as? ImageMediaCollectionViewCell {
+                cell.mark(selected: true)
+            } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
+                cell.mark(selected: true)
+            }
+            // markSection selected if all uploads selected
+            if allItemsSelected(inSection: indexPath.section) {
+                markSection(indexPath.section, selected: true)
+            }
+        }
+    }
+
+    func collectionView(_: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if mode == .select {
+            if let cell = collectionView.cellForItem(at: indexPath) as? ImageMediaCollectionViewCell {
+                cell.mark(selected: false)
+            } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
+                cell.mark(selected: false)
+            }
+            markSection(indexPath.section, selected: false)
+        }
     }
 }
 
@@ -273,11 +404,13 @@ extension MediaCardViewController {
             let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
             let imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
             cell.setUpload(upload, imageDataProvider: imageDataProvider)
+            cell.mark(selected: collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false)
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DocumentCell",
                                                           for: indexPath) as! DocumentMediaCollectionViewCell
             cell.setUpload(upload)
+            cell.mark(selected: collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false)
             return cell
         }
     }
@@ -296,9 +429,23 @@ extension MediaCardViewController {
             if let sectionName = dataSource.sectionIdentifier(for: indexPath.section) {
                 headerView.label.text = sectionName
             }
+            headerView.tag = indexPath.section
+            headerView.mark(selected: mode == .normal ? nil : selectedSections.contains(indexPath.section))
+            if mode == .select {
+                headerView.addGestureRecognizer(UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(headerTapAction(sender:))
+                ))
+            }
             return headerView
         }
         return nil
+    }
+
+    @objc private func headerTapAction(sender: UITapGestureRecognizer) {
+        guard mode == .select else { return }
+        guard let sectionIndex = sender.view?.tag else { return }
+        toggleSectionAndAllItemsSelected(sectionIndex: sectionIndex)
     }
 }
 
