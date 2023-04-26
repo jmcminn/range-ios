@@ -121,8 +121,8 @@
 		0A374DE62927BA730036C184 /* DeleteCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */; };
 		0A374DE82927D0200036C184 /* UpdateGeometryArchivedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */; };
 		0A374DEA2927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */; };
-		0A374DEC2927DA550036C184 /* DeleteUploadCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */; };
-		0A374DEE2927DAC50036C184 /* DeleteUploadCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */; };
+		0A374DEC2927DA550036C184 /* DeleteUploadsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DEB2927DA550036C184 /* DeleteUploadsCommand.swift */; };
+		0A374DEE2927DAC50036C184 /* DeleteUploadsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DED2927DAC50036C184 /* DeleteUploadsCommandTest.swift */; };
 		0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */; };
 		0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 0A376BC5298031EF004C9B6F /* FirebaseAppCheck */; };
 		0A37837A291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */; };
@@ -488,8 +488,8 @@
 		0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteCollaborationCommandTest.swift; sourceTree = "<group>"; };
 		0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryArchivedCommand.swift; sourceTree = "<group>"; };
 		0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryArchivedCommandTest.swift; sourceTree = "<group>"; };
-		0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadCommand.swift; sourceTree = "<group>"; };
-		0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadCommandTest.swift; sourceTree = "<group>"; };
+		0A374DEB2927DA550036C184 /* DeleteUploadsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadsCommand.swift; sourceTree = "<group>"; };
+		0A374DED2927DAC50036C184 /* DeleteUploadsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadsCommandTest.swift; sourceTree = "<group>"; };
 		0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		0A378375291A71880018BF3C /* GoogleService-Info.demo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.demo.plist"; sourceTree = "<group>"; };
 		0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.dev.plist"; sourceTree = "<group>"; };
@@ -1395,7 +1395,7 @@
 				0AFDFA982952110400F64D62 /* CreateUploadCommentCommandTest.swift */,
 				0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */,
 				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
-				0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */,
+				0A374DED2927DAC50036C184 /* DeleteUploadsCommandTest.swift */,
 				0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */,
 				0A6DB6A6292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift */,
 				0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */,
@@ -1600,7 +1600,7 @@
 				0AFDFA962952106D00F64D62 /* CreateUploadCommentCommand.swift */,
 				0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */,
 				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
-				0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */,
+				0A374DEB2927DA550036C184 /* DeleteUploadsCommand.swift */,
 				0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */,
 				0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
@@ -1944,7 +1944,7 @@
 				0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
 				0A34072C29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift in Sources */,
-				0A374DEC2927DA550036C184 /* DeleteUploadCommand.swift in Sources */,
+				0A374DEC2927DA550036C184 /* DeleteUploadsCommand.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
 				0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */,
 				0A36CDF7299BD2260004758E /* LocalFiles.swift in Sources */,
@@ -2163,7 +2163,7 @@
 				0A797F6F292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift in Sources */,
 				0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */,
 				0A881989291D21160050FC41 /* UpdateUploadTagsCommandTest.swift in Sources */,
-				0A374DEE2927DAC50036C184 /* DeleteUploadCommandTest.swift in Sources */,
+				0A374DEE2927DAC50036C184 /* DeleteUploadsCommandTest.swift in Sources */,
 				0A797F7C292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,

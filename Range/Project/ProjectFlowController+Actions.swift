@@ -495,7 +495,7 @@ extension ProjectFlowController {
         if let fullscreenMediaVC = fullscreenMediaVC, fullscreenMediaVC.upload == upload {
             fullscreenMediaVC.dismissCard()
         }
-        model.run(model.delete(upload: upload)) { error in
+        model.run(model.delete(uploads: [upload.id])) { error in
             if error !=
                 nil { ToastWindow.shared.showError(text: "Failed to delete the \(upload.isImage ? "photo" : "file")") }
         }

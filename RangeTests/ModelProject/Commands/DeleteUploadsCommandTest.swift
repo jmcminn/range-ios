@@ -5,8 +5,8 @@ import FirebaseFirestore
 import RealmSwift
 import XCTest
 
-/// Tests applying `DeleteUploadCommand` in local Realm db
-final class DeleteUploadCommandRealmTest: XCTestCase {
+/// Tests applying `DeleteUploadsCommand` in local Realm db
+final class DeleteUploadsCommandRealmTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
@@ -27,7 +27,11 @@ final class DeleteUploadCommandRealmTest: XCTestCase {
     }
 
     func testApply_noUpload() throws {
-        let command = DeleteUploadCommand(uploadId: "upload1")
+        let upload = Upload(placeholderId: "upload1")
+        try realm.write {
+            realm.add(upload)
+        }
+        let command = DeleteUploadsCommand(uploadIds: ["upload1", "upload2"])
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -36,36 +40,30 @@ final class DeleteUploadCommandRealmTest: XCTestCase {
     }
 
     func testApply_successful() throws {
-        let upload = Upload(
-            id: "upload1",
-            timestamp: Date(),
-            name: nil,
-            description: nil,
-            correlationId: "upload1",
-            fileType: .jpeg,
-            imageHeightToWidth: 1,
-            fileSize: 1024
-        )
+        let upload1 = Upload(placeholderId: "upload1")
+        let upload2 = Upload(placeholderId: "upload2")
         try realm.write {
-            realm.add(upload)
+            realm.add([upload1, upload2])
         }
-        let command = DeleteUploadCommand(uploadId: "upload1")
+        let command = DeleteUploadsCommand(uploadIds: ["upload1", "upload2"])
         try realm.write {
             try command.apply(inRealm: realm)
         }
 
-        XCTAssertTrue(upload.isInvalidated)
+        XCTAssertTrue(upload1.isInvalidated)
         XCTAssertNil(realm.object(ofType: Upload.self, forPrimaryKey: "upload1"))
+        XCTAssertTrue(upload2.isInvalidated)
+        XCTAssertNil(realm.object(ofType: Upload.self, forPrimaryKey: "upload2"))
     }
 }
 
-/// Tests applying `DeleteUploadCommand` to Firestore
-final class DeleteUploadCommandFirestoreTest: XCTestCase {
+/// Tests applying `DeleteUploadsCommand` to Firestore
+final class DeleteUploadsCommandFirestoreTest: XCTestCase {
     func testApply_noOp_noComment() throws {
         // no data exists
         let context = TestFirestoreCommandContext(docs: [])
 
-        let command = DeleteUploadCommand(uploadId: "upload1")
+        let command = DeleteUploadsCommand(uploadIds: ["upload1"])
         try command.apply(inFirestore: context)
         XCTAssertEqual(context.operations.count, 0)
     }
@@ -73,7 +71,7 @@ final class DeleteUploadCommandFirestoreTest: XCTestCase {
     func testApply_successful() throws {
         let context = TestFirestoreCommandContext(docs: [.upload("upload1")])
 
-        let command = DeleteUploadCommand(uploadId: "upload1")
+        let command = DeleteUploadsCommand(uploadIds: ["upload1"])
 
         try command.apply(inFirestore: context)
 
@@ -82,5 +80,17 @@ final class DeleteUploadCommandFirestoreTest: XCTestCase {
             context.operations[0],
             .delete(.upload("upload1"))
         )
+    }
+
+    func testApply_successful_multipleUploadIds() throws {
+        let context = TestFirestoreCommandContext(docs: [.upload("upload1"), .upload("upload3")])
+
+        let command = DeleteUploadsCommand(uploadIds: ["upload1", "upload2", "upload3"])
+
+        try command.apply(inFirestore: context)
+
+        XCTAssertEqual(context.operations.count, 2, "only existing uploads are deleted")
+        AssertOperationsEqual(context.operations[0], .delete(.upload("upload1")))
+        AssertOperationsEqual(context.operations[1], .delete(.upload("upload3")))
     }
 }

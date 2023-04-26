@@ -294,8 +294,9 @@ extension ProjectModel {
         return DeleteCollaborationCommand(geometryId: geometry.id, collaborationId: collaboration.id)
     }
 
-    func delete(upload: Upload) -> Command {
-        DeleteUploadCommand(uploadId: upload.id)
+    /// Delete uploads with given ids
+    func delete(uploads: [String]) -> Command {
+        DeleteUploadsCommand(uploadIds: uploads)
     }
 
     /// Updates the archivedTimestamp for geometry of given collaboration
