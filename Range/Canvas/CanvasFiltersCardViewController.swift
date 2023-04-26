@@ -56,7 +56,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         self.tagsViewModel = tagsViewModel
 
         super.init(
-            icon: UIImage(systemName: "line.3.horizontal.decrease.circle"),
+            icon: UIImage(named: "filter.search"),
             title: String(localized: "Canvas Filters"),
             subtitle: "pins on canvas"
         )

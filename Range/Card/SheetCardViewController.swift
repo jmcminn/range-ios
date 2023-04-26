@@ -238,7 +238,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private func setupTitleIcon(image: UIImage) {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
-        titleIcon = UIImageView(image: image.withConfiguration(imageConfig))
+        titleIcon = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(imageConfig))
         titleIcon!.tintColor = .dynamic(.Neutral_04)
     }
 
