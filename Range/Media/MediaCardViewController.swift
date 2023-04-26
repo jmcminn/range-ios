@@ -31,6 +31,9 @@ class MediaCardViewController: SheetCardViewController {
     private var selectButton: ButtonWithTapAreaInsets!
     private var mode: Mode = .normal
 
+    private var bulkActionsBottomBar: UIView?
+    private var bulkActionsButton: UIButton?
+
     /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source
     /// will need hash when computing the diff and the Upload may already be gone (if some upload was removed)
     struct CollectionItem: Hashable {
@@ -258,6 +261,8 @@ class MediaCardViewController: SheetCardViewController {
         if mode == .normal {
             selectedSections.removeAll()
         }
+        updateBulkActionsBottomBarVisibility()
+        updateBulkActionsButtonText()
     }
 
     /// Toggle current section selection and marks all items with section selection
@@ -311,6 +316,104 @@ class MediaCardViewController: SheetCardViewController {
                 cell.mark(selected: selected)
             } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
                 cell.mark(selected: selected)
+            }
+        }
+    }
+}
+
+// MARK: - bulk actions
+
+extension MediaCardViewController {
+    private func setupBulkActionsBottomBar() {
+        guard bulkActionsBottomBar == nil else { return }
+        let bottomBar = UIView()
+        bottomBar.backgroundColor = .dynamic(.Neutral_10)
+
+        let stroke = UIView()
+        stroke.backgroundColor = .dynamic(.Neutral_07)
+        bottomBar.addSubview(stroke)
+        stroke.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        let button = UIButton(
+            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
+            primaryAction: UIAction(
+                title: "Bulk Actions",
+                image: UIImage(systemName: "ellipsis")
+            ) { _ in }
+        )
+
+        bottomBar.addSubview(button)
+        button.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview().inset(16)
+        }
+        containerView.addSubview(bottomBar)
+        bottomBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(containerView.snp.bottom)
+        }
+
+        bulkActionsBottomBar = bottomBar
+        bulkActionsButton = button
+        containerView.layoutIfNeeded()
+    }
+
+    private func updateBulkActionsButtonText() {
+        let attributedText = NSMutableAttributedString(
+            string: String(localized: "Bulk Actions"),
+            attributes: [
+                .foregroundColor: UIColor.Neutral_01,
+                .font: UIFont.preferredFont(forTextStyle: .subheadline),
+            ]
+        )
+        let numberOfItems = collectionView.indexPathsForSelectedItems?.count ?? 0
+        attributedText.append(NSAttributedString(
+            string: numberOfItems == 1
+                ? String(localized: " (1x media item selected)")
+                : String(localized: " (\(numberOfItems)x media items selected)"),
+            attributes: [
+                .foregroundColor: UIColor.Neutral_01,
+                .font: UIFont.preferredFont(forTextStyle: .footnote),
+            ]
+        ))
+        bulkActionsButton?.setAttributedTitle(attributedText, for: .normal)
+    }
+
+    /// show or hide the bottom bar for bulk actions button
+    private func updateBulkActionsBottomBarVisibility() {
+        let shouldHide = collectionView.indexPathsForSelectedItems?.isEmpty ?? true
+        if shouldHide {
+            if let bottomBar = bulkActionsBottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.top.equalTo(bottomBar.superview!.snp.bottom)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                }
+            }
+            collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            collectionView.scrollIndicatorInsets = collectionView.contentInset
+        } else {
+            setupBulkActionsBottomBar()
+            if let bottomBar = bulkActionsBottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                } completion: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.collectionView.contentInset = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: bottomBar.frame.height,
+                        right: 0
+                    )
+                    self.collectionView.scrollIndicatorInsets = self.collectionView.contentInset
+                }
             }
         }
     }
@@ -376,6 +479,8 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
             if allItemsSelected(inSection: indexPath.section) {
                 markSection(indexPath.section, selected: true)
             }
+            updateBulkActionsBottomBarVisibility()
+            updateBulkActionsButtonText()
         }
     }
 
@@ -387,6 +492,8 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
                 cell.mark(selected: false)
             }
             markSection(indexPath.section, selected: false)
+            updateBulkActionsBottomBarVisibility()
+            updateBulkActionsButtonText()
         }
     }
 }
@@ -446,6 +553,8 @@ extension MediaCardViewController {
         guard mode == .select else { return }
         guard let sectionIndex = sender.view?.tag else { return }
         toggleSectionAndAllItemsSelected(sectionIndex: sectionIndex)
+        updateBulkActionsBottomBarVisibility()
+        updateBulkActionsButtonText()
     }
 }
 
