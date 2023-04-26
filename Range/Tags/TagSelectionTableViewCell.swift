@@ -33,6 +33,9 @@ class TagSelectionTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// whether to show the tag count
+    var showTagCount: Bool = true
+
     /// store the TagViewModel and register for selection observation to update the cell UI
     unowned var tagViewModel: TagViewModel? {
         didSet {
@@ -46,24 +49,22 @@ class TagSelectionTableViewCell: UITableViewCell {
                 )
                 updateSelection()
 
-                // do not show count for 'untagged'
-                let countText = tagViewModel.id == TagViewModel.untaggedId ? "" : "(\(tagViewModel.usageCount))"
                 let tagName = tagViewModel.id == TagViewModel.untaggedId ? "Show untagged pins" : tagViewModel.name
-                let attributedText =
-                    NSMutableAttributedString(
-                        string: "\(tagName) \(countText)",
+                let attributedText = NSMutableAttributedString(
+                    string: tagName,
+                    attributes: [
+                        .foregroundColor: chooseColor(.Neutral_04),
+                        .font: UIFont.preferredFont(forTextStyle: .body),
+                    ]
+                )
+                if showTagCount, tagViewModel.id != TagViewModel.untaggedId {
+                    attributedText.append(NSAttributedString(
+                        string: " (\(tagViewModel.usageCount))",
                         attributes: [
-                            .foregroundColor: chooseColor(.Neutral_04),
-                            .font: UIFont.preferredFont(forTextStyle: .body),
+                            .foregroundColor: UIColor.dynamic(.Neutral_05),
+                            .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
                         ]
-                    )
-                if let range = attributedText.string.range(of: countText) {
-                    let nsRange = NSRange(range, in: attributedText.string)
-                    attributedText.setAttributes([
-                        .foregroundColor: UIColor.dynamic(.Neutral_05),
-                        .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
-                    ],
-                    range: nsRange)
+                    ))
                 }
                 titleView.attributedText = attributedText
             } else {

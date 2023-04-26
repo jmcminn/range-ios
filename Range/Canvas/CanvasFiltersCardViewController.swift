@@ -481,6 +481,7 @@ extension CanvasFiltersCardViewController: TagsViewModelDelegate {
         let editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
         editTagsVC.showCreateTag = false
         editTagsVC.showUntaggedOption = true
+        editTagsVC.showTagCount = false
         editTagsVC.onClose = {
             editTagsVC.hideCard(animated: true) {
                 presentingVC.removeCard(cardViewController: editTagsVC)

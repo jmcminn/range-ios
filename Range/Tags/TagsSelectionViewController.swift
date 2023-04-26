@@ -40,6 +40,9 @@ class TagsSelectionViewController: UIViewController {
     /// Show a special row (in the 1st section) that allows for selecting TagViewModel.untagged - for filtering pins that have no tags
     private let showUntaggedOption: Bool
 
+    /// whether to show the tag count
+    var showTagCount: Bool = true
+
     init(viewModel: TagsViewModel, showUntaggedOption: Bool = false) {
         self.viewModel = viewModel
         self.showUntaggedOption = showUntaggedOption
@@ -227,6 +230,7 @@ extension TagsSelectionViewController: UITableViewDelegate, UITableViewDataSourc
                 withIdentifier: "TagCell",
                 for: indexPath
             ) as! TagSelectionTableViewCell
+            cell.showTagCount = showTagCount
             cell.tagViewModel = tag(forIndexPath: indexPath)
             return cell
         }
