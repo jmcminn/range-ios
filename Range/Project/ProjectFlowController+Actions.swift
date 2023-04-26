@@ -97,7 +97,8 @@ extension ProjectFlowController: ProjectFlowActions {
             projectModel: model,
             mediaCache: mediaCache,
             title: String(localized: "All Media"),
-            uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false }
+            uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false },
+            canvasContainer: canvasContainer
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 

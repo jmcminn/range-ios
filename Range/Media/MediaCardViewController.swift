@@ -23,6 +23,8 @@ class MediaCardViewController: SheetCardViewController {
 
     private let collectionView: UICollectionView
 
+    unowned let canvasContainer: CanvasContainerViewController
+
     private var headerFont: UIFont {
         // for some reason the dynamic font only works when the font is created anew every time it's reloaded
         ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -66,11 +68,13 @@ class MediaCardViewController: SheetCardViewController {
         projectModel: ProjectModel,
         mediaCache: MediaCache,
         title: String,
-        uploads: Results<Upload>
+        uploads: Results<Upload>,
+        canvasContainer: CanvasContainerViewController
     ) {
         self.projectModel = projectModel
         self.mediaCache = mediaCache
         self.uploads = uploads
+        self.canvasContainer = canvasContainer
 
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -341,7 +345,7 @@ extension MediaCardViewController {
             primaryAction: UIAction(
                 title: "Bulk Actions",
                 image: UIImage(systemName: "ellipsis")
-            ) { _ in }
+            ) { [weak self] _ in self?.showBulkActions() }
         )
 
         bottomBar.addSubview(button)
@@ -414,6 +418,56 @@ extension MediaCardViewController {
                     )
                     self.collectionView.scrollIndicatorInsets = self.collectionView.contentInset
                 }
+            }
+        }
+    }
+
+    private func showBulkActions() {
+        ActionSelectorCardViewController(
+            icon: UIImage(systemName: "ellipsis"),
+            title: String(localized: "Bulk Actions"),
+            actions: [
+                ActionItem(
+                    title: String(localized: "Delete Media"),
+                    imageName: "trash",
+                    style: .destructive,
+                    handler: {
+                        self.confirmAndDeleteMedia()
+                    }
+                ),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    func confirmAndDeleteMedia() {
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: String(localized: "Are you sure?"),
+            description: String(
+                localized: "Careful! Selected media and any associated data will be deleted from this project permanently. This can't be undone!"
+            ),
+            actions: [
+                ActionItem(
+                    title: String(localized: "Delete Media"),
+                    imageName: "trash", style: .destructive, handler: { [weak self] in
+                        self?.deleteMedia()
+                    }
+                ),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    private func deleteMedia() {
+        let uploadIdsToRemove = (collectionView.indexPathsForSelectedItems ?? [])
+            .compactMap { dataSource.itemIdentifier(for: $0) }
+            .map(\.id)
+        projectModel.run(projectModel.delete(uploads: uploadIdsToRemove)) { [weak self] error in
+            if error != nil {
+                ToastWindow.shared.showError(text: "Failed to delete media")
+            } else {
+                // clear the selection and back to normal mode after all selected uploads were removed
+                self?.toggleMode()
             }
         }
     }
