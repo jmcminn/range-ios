@@ -34,6 +34,7 @@ class MediaCardViewController: SheetCardViewController {
     private var mode: Mode = .normal
 
     private var bulkActionsBottomBar: UIView?
+    private var selectedMediaCountLabel: UILabel?
     private var bulkActionsButton: UIButton?
 
     /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source
@@ -266,7 +267,7 @@ class MediaCardViewController: SheetCardViewController {
             selectedSections.removeAll()
         }
         updateBulkActionsBottomBarVisibility()
-        updateBulkActionsButtonText()
+        updateSelectedMediaCountLabel()
     }
 
     /// Toggle current section selection and marks all items with section selection
@@ -331,7 +332,16 @@ extension MediaCardViewController {
     private func setupBulkActionsBottomBar() {
         guard bulkActionsBottomBar == nil else { return }
         let bottomBar = UIView()
-        bottomBar.backgroundColor = .dynamic(.Neutral_10)
+        bottomBar.backgroundColor = .clear
+
+        let blurEffect = UIBlurEffect(style: .regular)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.isUserInteractionEnabled = false
+        bottomBar.addSubview(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            make.height.equalToSuperview().offset(100) // add some for the bottom safe area
+        }
 
         let stroke = UIView()
         stroke.backgroundColor = .dynamic(.Neutral_07)
@@ -340,17 +350,35 @@ extension MediaCardViewController {
             make.leading.trailing.top.equalToSuperview()
             make.height.equalTo(1)
         }
+
+        let countLabel = UILabel()
+        countLabel.adjustsFontForContentSizeCategory = true
+        countLabel.textColor = .dynamic(.Neutral_04)
+        countLabel.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        bottomBar.addSubview(countLabel)
+        countLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(bottomBar.snp.top).offset(36)
+            make.leading.equalToSuperview().inset(16)
+        }
+
+        var buttonConfig = UIButton.Configuration.filled()
+        buttonConfig.baseBackgroundColor = .dynamic(.Neutral_09).withAlphaComponent(0.2)
+        buttonConfig.baseForegroundColor = .dynamic(.Neutral_04)
+        buttonConfig.cornerStyle = .fixed
+        buttonConfig.background.cornerRadius = 8
+        buttonConfig.background.strokeColor = .dynamic(.Neutral_07)
+        buttonConfig.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 15)
         let button = UIButton(
-            configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
+            configuration: buttonConfig,
             primaryAction: UIAction(
-                title: "Bulk Actions",
                 image: UIImage(systemName: "ellipsis")
             ) { [weak self] _ in self?.showBulkActions() }
         )
 
         bottomBar.addSubview(button)
         button.snp.makeConstraints { make in
-            make.top.bottom.leading.trailing.equalToSuperview().inset(16)
+            make.top.bottom.trailing.equalToSuperview().inset(16)
+            make.width.height.equalTo(40)
         }
         containerView.addSubview(bottomBar)
         bottomBar.snp.makeConstraints { make in
@@ -360,28 +388,15 @@ extension MediaCardViewController {
 
         bulkActionsBottomBar = bottomBar
         bulkActionsButton = button
+        selectedMediaCountLabel = countLabel
         containerView.layoutIfNeeded()
     }
 
-    private func updateBulkActionsButtonText() {
-        let attributedText = NSMutableAttributedString(
-            string: String(localized: "Bulk Actions"),
-            attributes: [
-                .foregroundColor: UIColor.Neutral_01,
-                .font: UIFont.preferredFont(forTextStyle: .subheadline),
-            ]
-        )
+    private func updateSelectedMediaCountLabel() {
         let numberOfItems = collectionView.indexPathsForSelectedItems?.count ?? 0
-        attributedText.append(NSAttributedString(
-            string: numberOfItems == 1
-                ? String(localized: " (1x media item selected)")
-                : String(localized: " (\(numberOfItems)x media items selected)"),
-            attributes: [
-                .foregroundColor: UIColor.Neutral_01,
-                .font: UIFont.preferredFont(forTextStyle: .footnote),
-            ]
-        ))
-        bulkActionsButton?.setAttributedTitle(attributedText, for: .normal)
+        selectedMediaCountLabel?.text = (numberOfItems == 1)
+            ? String(localized: "1x media item selected")
+            : String(localized: "\(numberOfItems)x media items selected")
     }
 
     /// show or hide the bottom bar for bulk actions button
@@ -534,7 +549,7 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
                 markSection(indexPath.section, selected: true)
             }
             updateBulkActionsBottomBarVisibility()
-            updateBulkActionsButtonText()
+            updateSelectedMediaCountLabel()
         }
     }
 
@@ -547,7 +562,7 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
             }
             markSection(indexPath.section, selected: false)
             updateBulkActionsBottomBarVisibility()
-            updateBulkActionsButtonText()
+            updateSelectedMediaCountLabel()
         }
     }
 }
@@ -608,7 +623,7 @@ extension MediaCardViewController {
         guard let sectionIndex = sender.view?.tag else { return }
         toggleSectionAndAllItemsSelected(sectionIndex: sectionIndex)
         updateBulkActionsBottomBarVisibility()
-        updateBulkActionsButtonText()
+        updateSelectedMediaCountLabel()
     }
 }
 
