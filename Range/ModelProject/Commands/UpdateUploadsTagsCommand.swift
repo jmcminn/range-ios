@@ -6,6 +6,8 @@ import RealmSwift
 struct UpdateUploadsTagsCommand: Command, Codable, Equatable {
     let uploadIds: [String]
     var tags: [CommandTag]
+    // should it add given tags to uploads (true) or replace (false). Replace is the default behavior
+    var add: Bool = false
 }
 
 extension UpdateUploadsTagsCommand: LocalCommand {
@@ -25,8 +27,11 @@ extension UpdateUploadsTagsCommand: LocalCommand {
         // update tags <-> upload
         let tagIds = tags.map(\.id)
         for upload in uploadsToUpdate {
-            upload.cleanupOldTags(newTagIds: tagIds)
-            upload.tags.removeAll()
+            if !add {
+                // only remove previous tags if replacing (not adding)
+                upload.cleanupOldTags(newTagIds: tagIds)
+                upload.tags.removeAll()
+            }
             upload.addNewTags(newTagIds: tagIds, realm: realm)
         }
     }
@@ -37,8 +42,15 @@ extension UpdateUploadsTagsCommand: FirestoreCommand {
     func apply(inFirestore ctx: FirestoreCommandContext) throws {
         // ------------- READS -----------------
         // check that target exists, otherwise abort (the command cannot be applied)
-        let uploadIdsToUpdate = try uploadIds.filter { try ctx.exists(.upload($0)) }
-        if !uploadIds.isEmpty, uploadIdsToUpdate.isEmpty {
+        let uploadsToUpdate = try uploadIds.compactMap { uploadId in
+            if let upload = try ctx.getDocument(.upload(uploadId), as: FirestoreUpload.self) {
+                // return a pair of (id, upload) as FirestoreUpload doesn't contain the id
+                return (uploadId, upload)
+            } else {
+                return nil
+            }
+        }
+        if !uploadIds.isEmpty, uploadsToUpdate.isEmpty {
             throw FirestoreCommandError.obsolete("upload doesn't exist")
         }
 
@@ -50,9 +62,23 @@ extension UpdateUploadsTagsCommand: FirestoreCommand {
             try ctx.setData(from: $0.asFirestoreTagName, forDocument: .tagName($0.id))
         }
         let tagIds = tags.map(\.id)
-        for uploadId in uploadIdsToUpdate {
+        for (uploadId, upload) in uploadsToUpdate {
+            let updatedTagIds: [String]
+            if add {
+                // keep the uploads tag ids and add *new tags only*
+                var newTagIds = upload.tagIds
+                for tagId in tagIds {
+                    if !newTagIds.contains(tagId) {
+                        newTagIds.append(tagId)
+                    }
+                }
+                updatedTagIds = newTagIds
+            } else {
+                // just replace with given tag ids
+                updatedTagIds = tagIds
+            }
             ctx.updateData(
-                [FirestoreUpload.CodingKeys.tagIds.rawValue: tagIds],
+                [FirestoreUpload.CodingKeys.tagIds.rawValue: updatedTagIds],
                 forDocument: .upload(uploadId)
             )
         }

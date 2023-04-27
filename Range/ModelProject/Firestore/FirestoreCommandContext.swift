@@ -39,8 +39,8 @@ class TransactionalFirestoreCommandContext: FirestoreCommandContext {
     }
 
     func getDocument<T: Decodable>(_ doc: FirestoreDocument, as _: T.Type) throws -> T? {
-        guard try exists(doc) else { return nil }
         let snapshot = try transaction.getDocument(docRef(doc))
+        guard snapshot.exists else { return nil }
         return try snapshot.data(as: T.self)
     }
 

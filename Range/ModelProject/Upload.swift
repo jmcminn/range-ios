@@ -130,7 +130,12 @@ class Upload: Object, WithPlaceholder {
 
     /// Add given tags to upload and also link the Upload in Tags
     func addNewTags(newTagIds: [String], realm: Realm) {
-        let newTags = newTagIds.uniqued().compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
+        // for fast lookup
+        let currentTagIdsSet = Set(tags.map(\.id))
+
+        let newTags = newTagIds.uniqued()
+            .filter { !currentTagIdsSet.contains($0) }
+            .compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
         tags.append(objectsIn: newTags)
         newTags.forEach { $0.uploads.insert(self) }
     }

@@ -70,6 +70,39 @@ final class UpdateUploadsTagsCommandRealmTest: XCTestCase {
         XCTAssertEqual(upload1.tags.map(\.id), ["tag2", "tag3"])
         XCTAssertEqual(upload2.tags.map(\.id), ["tag2", "tag3"])
     }
+
+    /// Test that new tags are added but not duplicated (not added if already there)
+    func testApply_add() throws {
+        let upload1 = Upload(placeholderId: "upload1")
+        let tag1 = Tag(id: "tag1", name: "tag 1")
+        let tag2 = Tag(id: "tag2", name: "tag 2")
+        // setup upload1 with tag1 and tag2
+        try realm.write {
+            realm.add([upload1, tag1, tag2])
+            upload1.tags.append(objectsIn: [tag1, tag2])
+            tag1.uploads.insert(upload1)
+            tag2.uploads.insert(upload1)
+        }
+        // add tag2, tag3
+        let command = UpdateUploadsTagsCommand(
+            uploadIds: ["upload1"],
+            tags: [
+                .init(id: "tag2", name: "tag 2"),
+                .init(id: "tag3", name: "tag 3"),
+            ],
+            add: true // add instead of replace
+        )
+        try realm.write {
+            try command.apply(inRealm: realm)
+        }
+
+        let tag3 = try XCTUnwrap(realm.object(ofType: Tag.self, forPrimaryKey: "tag3"), "tag3 not found")
+        XCTAssertEqual(tag3.name, "tag 3")
+        for tag in [tag1, tag2, tag3] {
+            XCTAssertEqual(tag.uploads.map(\.id), ["upload1"])
+        }
+        XCTAssertEqual(upload1.tags.map(\.id), ["tag1", "tag2", "tag3"])
+    }
 }
 
 /// Tests applying `UpdateUploadsTagsCommand` to Firestore
@@ -92,8 +125,16 @@ final class UpdateUploadsTagsCommandFirestoreTest: XCTestCase {
         // upload 1 and 2 exist, upload3 doesn't exist
         // there's also tag1 and tag2 already in firestore
         let context = TestFirestoreCommandContext(docs: [
-            .upload("upload1"), .upload("upload2"),
             .tagName("tag1"), .tagName("tag2"),
+        ], docsData: [
+            .upload("upload1"): FirestoreUpload(
+                parentId: "c1", parentType: "Collaboration", authorId: "user1", timestamp: Timestamp(),
+                correlationId: "upload1", tagIds: ["tag1", "tag2"]
+            ),
+            .upload("upload2"): FirestoreUpload(
+                parentId: "c1", parentType: "Collaboration", authorId: "user1", timestamp: Timestamp(),
+                correlationId: "upload2", tagIds: []
+            ),
         ])
 
         let command = UpdateUploadsTagsCommand(
@@ -126,9 +167,11 @@ final class UpdateUploadsTagsCommandFirestoreTest: XCTestCase {
         // upload exists
         // there's also tag1 and tag2 already in firestore
         let context = TestFirestoreCommandContext(docs: [
-            .upload("upload1"),
             .tagName("tag1"), .tagName("tag2"), .tagName("tag3"),
-        ])
+        ], docsData: [.upload("upload1"): FirestoreUpload(
+            parentId: "c1", parentType: "Collaboration", authorId: "user1", timestamp: Timestamp(),
+            correlationId: "uploads", tagIds: ["tag1", "tag2"]
+        )])
 
         let command = UpdateUploadsTagsCommand(
             uploadIds: ["upload1"],
@@ -145,6 +188,39 @@ final class UpdateUploadsTagsCommandFirestoreTest: XCTestCase {
         AssertOperationsEqual(
             context.operations[0],
             .update(.upload("upload1"), ["tags": ["tag2", "tag3"]])
+        )
+    }
+
+    /// Test that new tags are added but not duplicated (not added if already there)
+    func testApply_add() throws {
+        // upload 1 with tag1 and tag2 already in firestore
+        let context = TestFirestoreCommandContext(docs: [
+            .tagName("tag1"), .tagName("tag2"),
+        ], docsData: [
+            .upload("upload1"): FirestoreUpload(
+                parentId: "c1", parentType: "Collaboration", authorId: "user1", timestamp: Timestamp(),
+                correlationId: "uploads", tagIds: ["tag1", "tag2"]
+            ),
+        ])
+
+        let command = UpdateUploadsTagsCommand(
+            uploadIds: ["upload1"],
+            tags: [
+                .init(id: "tag2", name: "tag 2"),
+                .init(id: "tag3", name: "tag 3"),
+            ],
+            add: true
+        )
+        try command.apply(inFirestore: context)
+
+        XCTAssertEqual(context.operations.count, 2)
+        AssertOperationsEqual(
+            context.operations[0],
+            .set(.tagName("tag3"), ["name": "tag 3"])
+        )
+        AssertOperationsEqual(
+            context.operations[1],
+            .update(.upload("upload1"), ["tags": ["tag1", "tag2", "tag3"]])
         )
     }
 }
