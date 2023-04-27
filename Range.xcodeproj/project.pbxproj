@@ -256,7 +256,7 @@
 		0A881983291D018B0050FC41 /* FirestoreDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881982291D018B0050FC41 /* FirestoreDocument.swift */; };
 		0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */; };
 		0A881987291D17060050FC41 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881986291D17060050FC41 /* CommandTypes.swift */; };
-		0A881989291D21160050FC41 /* UpdateUploadTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881988291D21160050FC41 /* UpdateUploadTagsCommandTest.swift */; };
+		0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */; };
 		0A88198B291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */; };
 		0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */; };
 		0A88198F291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */; };
@@ -310,7 +310,7 @@
 		0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */; };
 		0ABFD8AE28EDB962008CDA74 /* UserDefaultsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */; };
 		0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */; };
-		0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */; };
+		0ABFD8B228EEE771008CDA74 /* UpdateUploadsTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B128EEE771008CDA74 /* UpdateUploadsTagsCommand.swift */; };
 		0ABFD8B728F00A98008CDA74 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B628F00A98008CDA74 /* CommentViewController.swift */; };
 		0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */; };
 		0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */; };
@@ -630,7 +630,7 @@
 		0A881982291D018B0050FC41 /* FirestoreDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreDocument.swift; sourceTree = "<group>"; };
 		0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A881986291D17060050FC41 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
-		0A881988291D21160050FC41 /* UpdateUploadTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadTagsCommandTest.swift; sourceTree = "<group>"; };
+		0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadsTagsCommandTest.swift; sourceTree = "<group>"; };
 		0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationTagsCommandTest.swift; sourceTree = "<group>"; };
 		0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommandTest.swift; sourceTree = "<group>"; };
 		0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDueDateCommandTest.swift; sourceTree = "<group>"; };
@@ -684,7 +684,7 @@
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
 		0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSearchView.swift; sourceTree = "<group>"; };
-		0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadTagsCommand.swift; sourceTree = "<group>"; };
+		0ABFD8B128EEE771008CDA74 /* UpdateUploadsTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadsTagsCommand.swift; sourceTree = "<group>"; };
 		0ABFD8B628F00A98008CDA74 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommand.swift; sourceTree = "<group>"; };
 		0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItem.swift; sourceTree = "<group>"; };
@@ -1407,7 +1407,7 @@
 				0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */,
 				0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */,
 				0A3714E22950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift */,
-				0A881988291D21160050FC41 /* UpdateUploadTagsCommandTest.swift */,
+				0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -1612,7 +1612,7 @@
 				0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */,
 				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
 				0A3714E02950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift */,
-				0ABFD8B128EEE771008CDA74 /* UpdateUploadTagsCommand.swift */,
+				0ABFD8B128EEE771008CDA74 /* UpdateUploadsTagsCommand.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -1872,7 +1872,7 @@
 				0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */,
 				0AFA1A4B294B19E100491492 /* FullscreenMediaSummaryViewController.swift in Sources */,
 				0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */,
-				0ABFD8B228EEE771008CDA74 /* UpdateUploadTagsCommand.swift in Sources */,
+				0ABFD8B228EEE771008CDA74 /* UpdateUploadsTagsCommand.swift in Sources */,
 				0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */,
 				0A010C9F29913AFD0066D35A /* ProjectModel+RealmMigration.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift in Sources */,
@@ -2162,7 +2162,7 @@
 				0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */,
 				0A797F6F292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift in Sources */,
 				0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */,
-				0A881989291D21160050FC41 /* UpdateUploadTagsCommandTest.swift in Sources */,
+				0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */,
 				0A374DEE2927DAC50036C184 /* DeleteUploadsCommandTest.swift in Sources */,
 				0A797F7C292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,

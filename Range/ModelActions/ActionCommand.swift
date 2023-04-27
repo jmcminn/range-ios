@@ -40,7 +40,7 @@ enum ActionCommand: Codable {
     case updateGeometryLocation(UpdateGeometryLocationCommand)
     case updateNoteCompleted(UpdateNoteCompletedCommand)
     case updateUploadDescription(UpdateUploadDescriptionCommand)
-    case updateUploadTags(UpdateUploadTagsCommand)
+    case updateUploadsTags(UpdateUploadsTagsCommand)
 
     init(_ c: Any) {
         switch c {
@@ -62,7 +62,7 @@ enum ActionCommand: Codable {
         case let c as UpdateGeometryLocationCommand: self = .updateGeometryLocation(c)
         case let c as UpdateNoteCompletedCommand: self = .updateNoteCompleted(c)
         case let c as UpdateUploadDescriptionCommand: self = .updateUploadDescription(c)
-        case let c as UpdateUploadTagsCommand: self = .updateUploadTags(c)
+        case let c as UpdateUploadsTagsCommand: self = .updateUploadsTags(c)
         default: fatalError("ActionCommand not implemented for \(c)")
         }
     }
@@ -87,7 +87,7 @@ enum ActionCommand: Codable {
         case let .updateGeometryLocation(c): return c
         case let .updateNoteCompleted(c): return c
         case let .updateUploadDescription(c): return c
-        case let .updateUploadTags(c): return c
+        case let .updateUploadsTags(c): return c
         }
     }
 }

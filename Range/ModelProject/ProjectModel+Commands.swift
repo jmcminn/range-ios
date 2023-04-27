@@ -202,8 +202,8 @@ extension ProjectModel {
         let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
         guard tagIdsSet != existingTagIdsSet else { return nil }
 
-        return UpdateUploadTagsCommand(
-            uploadId: upload.id,
+        return UpdateUploadsTagsCommand(
+            uploadIds: [upload.id],
             tags: tags.map(CommandTag.init(fromViewModel:))
         )
     }

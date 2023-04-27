@@ -3,8 +3,8 @@ import FirebaseFirestore
 import RealmSwift
 import XCTest
 
-/// Tests applying `UpdateUploadTagsCommand` in local Realm db
-final class UpdateUploadTagsCommandRealmTest: XCTestCase {
+/// Tests applying `UpdateUploadsTagsCommand` in local Realm db
+final class UpdateUploadsTagsCommandRealmTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
@@ -25,7 +25,11 @@ final class UpdateUploadTagsCommandRealmTest: XCTestCase {
     }
 
     func testApply_noUpload() throws {
-        let command = UpdateUploadTagsCommand(uploadId: "upload1", tags: [])
+        let upload1 = Upload(placeholderId: "upload1")
+        try realm.write {
+            realm.add(upload1)
+        }
+        let command = UpdateUploadsTagsCommand(uploadIds: ["upload1", "upload2"], tags: [])
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -34,28 +38,20 @@ final class UpdateUploadTagsCommandRealmTest: XCTestCase {
     }
 
     func testApply_successful() throws {
-        let upload1 = Upload(
-            id: "upload1",
-            timestamp: Date(),
-            name: "upload 1",
-            description: nil,
-            correlationId: "upload1",
-            fileType: .jpeg,
-            imageHeightToWidth: 1,
-            fileSize: 1024
-        )
+        let upload1 = Upload(placeholderId: "upload1")
+        let upload2 = Upload(placeholderId: "upload2")
         let tag1 = Tag(id: "tag1", name: "tag 1")
         let tag2 = Tag(id: "tag2", name: "tag 2")
-        // setup upload1 with tag1 and tag2
+        // setup upload1 with tag1 and tag2 and upload2 with no tags
         try realm.write {
-            realm.add([upload1, tag1, tag2])
+            realm.add([upload1, upload2, tag1, tag2])
             upload1.tags.append(objectsIn: [tag1, tag2])
             tag1.uploads.insert(upload1)
             tag2.uploads.insert(upload1)
         }
         // update to tag2, tag3
-        let command = UpdateUploadTagsCommand(
-            uploadId: "upload1",
+        let command = UpdateUploadsTagsCommand(
+            uploadIds: ["upload1", "upload2"],
             tags: [
                 .init(id: "tag2", name: "tag 2"),
                 .init(id: "tag3", name: "tag 3"),
@@ -69,19 +65,20 @@ final class UpdateUploadTagsCommandRealmTest: XCTestCase {
         XCTAssertEqual(tag3.name, "tag 3")
         XCTAssertTrue(tag1.uploads.isEmpty)
         for tag in [tag2, tag3] {
-            XCTAssertEqual(tag.uploads.map(\.id), ["upload1"])
+            XCTAssertEqual(tag.uploads.map(\.id), ["upload1", "upload2"])
         }
         XCTAssertEqual(upload1.tags.map(\.id), ["tag2", "tag3"])
+        XCTAssertEqual(upload2.tags.map(\.id), ["tag2", "tag3"])
     }
 }
 
-/// Tests applying `UpdateUploadTagsCommand` to Firestore
-final class UpdateUploadTagsCommandFirestoreTest: XCTestCase {
+/// Tests applying `UpdateUploadsTagsCommand` to Firestore
+final class UpdateUploadsTagsCommandFirestoreTest: XCTestCase {
     func testApply_noUpload() throws {
         // no data exists
         let context = TestFirestoreCommandContext(docs: [])
 
-        let command = UpdateUploadTagsCommand(uploadId: "upload1", tags: [])
+        let command = UpdateUploadsTagsCommand(uploadIds: ["upload1"], tags: [])
         XCTAssertThrowsError(
             try command.apply(inFirestore: context)
         ) { error in
@@ -92,15 +89,15 @@ final class UpdateUploadTagsCommandFirestoreTest: XCTestCase {
     }
 
     func testApply_successful() throws {
-        // upload exists
+        // upload 1 and 2 exist, upload3 doesn't exist
         // there's also tag1 and tag2 already in firestore
         let context = TestFirestoreCommandContext(docs: [
-            .upload("upload1"),
+            .upload("upload1"), .upload("upload2"),
             .tagName("tag1"), .tagName("tag2"),
         ])
 
-        let command = UpdateUploadTagsCommand(
-            uploadId: "upload1",
+        let command = UpdateUploadsTagsCommand(
+            uploadIds: ["upload1", "upload2", "upload3"],
             tags: [
                 .init(id: "tag2", name: "tag 2"),
                 .init(id: "tag3", name: "tag 3"),
@@ -108,7 +105,7 @@ final class UpdateUploadTagsCommandFirestoreTest: XCTestCase {
         )
         try command.apply(inFirestore: context)
 
-        XCTAssertEqual(context.operations.count, 2)
+        XCTAssertEqual(context.operations.count, 3)
         AssertOperationsEqual(
             context.operations[0],
             .set(.tagName("tag3"), ["name": "tag 3"])
@@ -116,6 +113,10 @@ final class UpdateUploadTagsCommandFirestoreTest: XCTestCase {
         AssertOperationsEqual(
             context.operations[1],
             .update(.upload("upload1"), ["tags": ["tag2", "tag3"]])
+        )
+        AssertOperationsEqual(
+            context.operations[2],
+            .update(.upload("upload2"), ["tags": ["tag2", "tag3"]])
         )
     }
 
@@ -129,8 +130,8 @@ final class UpdateUploadTagsCommandFirestoreTest: XCTestCase {
             .tagName("tag1"), .tagName("tag2"), .tagName("tag3"),
         ])
 
-        let command = UpdateUploadTagsCommand(
-            uploadId: "upload1",
+        let command = UpdateUploadsTagsCommand(
+            uploadIds: ["upload1"],
             tags: [
                 .init(id: "tag2", name: "tag 2"),
                 .init(id: "tag3", name: "tag 3"),
