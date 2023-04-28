@@ -361,15 +361,8 @@ extension MediaCardViewController {
             make.leading.equalToSuperview().inset(16)
         }
 
-        var buttonConfig = UIButton.Configuration.filled()
-        buttonConfig.baseBackgroundColor = .dynamic(.Neutral_09).withAlphaComponent(0.2)
-        buttonConfig.baseForegroundColor = .dynamic(.Neutral_04)
-        buttonConfig.cornerStyle = .fixed
-        buttonConfig.background.cornerRadius = 8
-        buttonConfig.background.strokeColor = .dynamic(.Neutral_07)
-        buttonConfig.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 15)
         let button = UIButton(
-            configuration: buttonConfig,
+            configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(
                 image: UIImage(systemName: "ellipsis")
             ) { [weak self] _ in self?.showBulkActions() }
