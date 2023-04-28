@@ -13,15 +13,25 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
     /// view for tags header and tags selection table
     let contentView = UIView()
 
-    /// Header with search and selected tags
+    /// If provided there will be a segmented control at the top showing the provided options
+    /// It doesn't collapse if content is scrolled
+    private(set) var options: [ActionItem]?
+    private(set) var optionsToggle: SegmentedControl?
+
+    /// Optional description displayed below options toggle (if enabled) and above the search view
+    /// It collapses when content is scrolled
+    private var optionLabel: LabelWithTextInsets?
+    var optionLabelTopConstraint: Constraint?
+
+    /// Header with search and selecte d tags
     var tagsHeaderVC: SearchAndSelectTagsHeaderViewController!
     var tagsHeaderViewHeightConstraint: Constraint?
 
     /// tags table view showing all project tags, popular and recent
     var tagsVC: TagsSelectionViewController!
 
-    /// Header expander that shows/hides the search view in tags header
-    var tagsHeaderExpander: HeaderExpander!
+    /// Header expander that shows/hides the option label (if enabled) and search view in tags header
+    var headerExpander: HeaderExpander!
 
     /// Show a special row when there's no direct match in filtered tags
     var showCreateTag: Bool = true
@@ -47,6 +57,32 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
         tagsViewModel.addDelegate(self)
     }
 
+    func showOptions(_ options: [ActionItem]) {
+        self.options = options
+        // create option label so the text can be set even before the view is loaded
+        optionLabel = LabelWithTextInsets()
+    }
+
+    /// Set new text for option label and show the label (in case it was collapsed as part of header collapsing)
+    func setOptionLabel(_ text: String) {
+        if headerExpander != nil {
+            headerExpander.deactivate()
+        }
+        optionLabel?.text = text
+        // reveal the option label
+        optionLabelTopConstraint?.update(offset: 6)
+        UIView.animate(withDuration: 0.2) {
+            self.optionLabel?.alpha = 1
+            self.view.layoutIfNeeded()
+        } completion: { [weak self] _ in
+            guard let self = self else { return }
+            // and reactivate the expander as the header already has its target height
+            if self.headerExpander != nil {
+                self.activateHeaderExpander()
+            }
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -57,10 +93,45 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
             make.left.right.bottom.equalToSuperview()
         }
 
+        setupOptionsToggle()
+        if let optionsToggle = optionsToggle {
+            contentView.addSubview(optionsToggle)
+            optionsToggle.snp.makeConstraints { make in
+                make.top.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.height.equalTo(32)
+            }
+            if let optionLabel = optionLabel {
+                contentView.addSubview(optionLabel)
+                optionLabel.snp.makeConstraints { make in
+                    self.optionLabelTopConstraint = make.top.equalTo(optionsToggle.snp.bottom).offset(6).constraint
+                    make.leading.trailing.equalToSuperview().inset(16)
+                }
+            }
+        }
+
         setupTagsHeaderView()
         add(childController: tagsHeaderVC, toView: contentView)
         tagsHeaderVC.view.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            if let optionLabel = optionLabel {
+                // TODO: 1117
+                make.top.equalTo(optionLabel.snp.bottom).offset(6)
+            } else if let optionsToggle = optionsToggle {
+                // TODO: 1117
+                // cover the space below optionsToggle, so the shadow for tags header is not visible to the top
+                let shadowCoverView = UIView()
+                shadowCoverView.backgroundColor = containerView.backgroundColor
+                contentView.addSubview(shadowCoverView)
+                shadowCoverView.snp.makeConstraints { make in
+                    make.top.equalTo(optionsToggle.snp.bottom)
+                    make.leading.trailing.equalToSuperview()
+                    make.height.equalTo(12)
+                }
+                make.top.equalTo(optionsToggle.snp.bottom).offset(12)
+            } else {
+                make.top.equalToSuperview()
+            }
+            make.leading.trailing.equalToSuperview()
             self.tagsHeaderViewHeightConstraint = make.height.equalTo(tagsHeaderInputMetrics().expandedHeight)
                 .constraint
         }
@@ -74,11 +145,11 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
             make.bottom.equalToSuperview()
         }
 
-        tagsHeaderExpander = HeaderExpander(
+        headerExpander = HeaderExpander(
             drivingScrollView: tagsVC.tableView,
             contentView: contentView
         )
-        tagsHeaderExpander.delegate = self
+        headerExpander.delegate = self
 
         updateColors()
     }
@@ -87,7 +158,7 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
         super.viewDidAppear(animated)
         // we need the views layed out, so the metrics are calculated properly, so we activate
         // on viewDidAppear
-        tagsHeaderExpander.activate(headersInputMetrics: [tagsHeaderInputMetrics()])
+        activateHeaderExpander()
     }
 
     /// SearchAndSelectTagsViewController is a CardPresentable, but of a fixed size never partially-open
@@ -113,6 +184,17 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
 // MARK: Views
 
 extension SearchAndSelectTagsViewController {
+    private func setupOptionsToggle() {
+        guard let options = options else { return }
+        optionsToggle = SegmentedControl(items: options)
+
+        optionLabel?.numberOfLines = 0
+        optionLabel?.adjustsFontForContentSizeCategory = true
+        optionLabel?.font = .preferredFont(forTextStyle: .subheadline)
+        optionLabel?.textColor = .dynamic(.Neutral_05)
+        optionLabel?.textInsets = UIEdgeInsets(top: 6, left: 0, bottom: 6, right: 0)
+    }
+
     private func setupTagsHeaderView() {
         tagsHeaderVC = SearchAndSelectTagsHeaderViewController(
             viewModel: tagsViewModel,
@@ -136,6 +218,28 @@ extension SearchAndSelectTagsViewController {
 // MARK: - header expanding
 
 extension SearchAndSelectTagsViewController: HeaderExpanderDelegate {
+    private func activateHeaderExpander() {
+        if let optionLabel = optionLabel {
+            headerExpander.activate(headersInputMetrics: [
+                optionDescriptionInputMetrics(),
+                tagsHeaderInputMetrics(),
+            ])
+        } else {
+            headerExpander.activate(headersInputMetrics: [tagsHeaderInputMetrics()])
+        }
+    }
+
+    private func optionDescriptionInputMetrics() -> HeaderInputMetrics {
+        guard let optionLabel = optionLabel else {
+            fatalError("optionDescriptionInputMetrics called when optionLabel is nil")
+        }
+        return HeaderInputMetrics(
+            initialHeight: optionLabel.frame.height,
+            collapsedHeight: 0,
+            expandedHeight: optionLabel.frame.height
+        )
+    }
+
     private func tagsHeaderInputMetrics() -> HeaderInputMetrics {
         tagsHeaderInputMetrics(tagsVisible: !tagsViewModel.selectedTags.isEmpty)
     }
@@ -152,8 +256,18 @@ extension SearchAndSelectTagsViewController: HeaderExpanderDelegate {
     /// Update headers heights when the expander notifies about change
     /// It also triggers the interactive transition from details screen to photos review if user drags down = over expands the headers
     func headerExpanderDidUpdateState(_ expander: HeaderExpander, animationDuration: TimeInterval) {
+        print("expander state: ", expander.headersState)
         let heights = expander.headersState.heights
-        tagsHeaderViewHeightConstraint?.update(offset: heights[0])
+        if let optionLabel = optionLabel {
+            // move the option label up if it's collapsing
+            let optionLabelHeightDelta = heights[0] - expander.inputMetrics[0].expandedHeight
+            // hide (by changing alpha to 0) on the distance of 12 points
+            optionLabel.alpha = min(1, max(0, optionLabelHeightDelta / 12 + 1))
+            optionLabelTopConstraint?.update(offset: 6 + optionLabelHeightDelta)
+            tagsHeaderViewHeightConstraint?.update(offset: heights[1])
+        } else {
+            tagsHeaderViewHeightConstraint?.update(offset: heights[0])
+        }
         if animationDuration > 0 {
             UIView.animate(withDuration: animationDuration) {
                 self.view.layoutIfNeeded()
@@ -174,20 +288,14 @@ extension SearchAndSelectTagsViewController: TagsViewModelDelegate {
             || (selected == false && tagsViewModel.selectedTags.count == 0) else { return }
 
         // deactive the expander as we'll be adjusting the header heights
-        tagsHeaderExpander.deactivate()
+        headerExpander.deactivate()
 
         // calculate new tags header height keeping its collapsed/expanded state
         let newTagsHeaderHeight: CGFloat
-        if case .collapsed = tagsHeaderExpander.headersState.states[0] {
+        if case .collapsed = headerExpander.headersState.states.last {
             newTagsHeaderHeight = tagsHeaderInputMetrics(tagsVisible: selected).collapsedHeight
         } else {
             newTagsHeaderHeight = tagsHeaderInputMetrics(tagsVisible: selected).expandedHeight
-        }
-
-        let reactivateExpander = {
-            // reactivate the expander with new metrics
-            self.tagsHeaderExpander
-                .activate(headersInputMetrics: [self.tagsHeaderInputMetrics()])
         }
 
         tagsHeaderVC.selectedTagsView.visibleStateWillTransition()
@@ -201,7 +309,7 @@ extension SearchAndSelectTagsViewController: TagsViewModelDelegate {
                 // when enough room show the selected tags
                 self.tagsHeaderVC.setSelectedTagsVisible(selected, animated: true)
                 // and reactivate the expander as the header already has its target height
-                reactivateExpander()
+                self.activateHeaderExpander()
             }
         } else {
             // first hide the tags
@@ -212,7 +320,7 @@ extension SearchAndSelectTagsViewController: TagsViewModelDelegate {
                     self.view.layoutIfNeeded()
                 } completion: { _ in
                     // and reactivate the expander as the header already has its target height
-                    reactivateExpander()
+                    self.activateHeaderExpander()
                 }
             }
         }

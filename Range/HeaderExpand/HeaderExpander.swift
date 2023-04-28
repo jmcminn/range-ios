@@ -50,7 +50,7 @@ class HeaderExpander: NSObject {
     private let animationDuration = 0.2
 
     /// header metrics with which it was activated, force unwrapped as it's only used after activation
-    private var inputMetrics: HeadersInputMetrics!
+    private(set) var inputMetrics: HeadersInputMetrics!
     /// Calculator for current input metrics. Force unwrapped as it's only used after the expander was activated
     private var calculator: HeaderExpanderCalculator!
 
