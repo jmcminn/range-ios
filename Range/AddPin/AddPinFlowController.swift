@@ -73,7 +73,7 @@ class AddPinFlowController {
             self.pinTypeOption = .createTask
             self.showPinPlacementUI()
         }
-        copyTaskCardVC.onCancel = { [weak self] in
+        copyTaskCardVC.onClose = { [weak self] in
             self?.onStop?(nil, nil)
         }
         copyTaskCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)

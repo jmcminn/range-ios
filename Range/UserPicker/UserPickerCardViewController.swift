@@ -22,7 +22,7 @@ class UserPickerCardViewController: SheetCardViewController {
     private static var headerHeightWithSelectedUsers = 100
     private var headerHeightConstraint: Constraint?
 
-    init(title: String, viewModel: UsersViewModel, onClose: (() -> Void)?) {
+    init(title: String, viewModel: UsersViewModel) {
         self.viewModel = viewModel
         searchView = SearchView(
             placeholderText: viewModel.multiselect ? "Search for users..." : "Search for an assignee...",
@@ -33,8 +33,6 @@ class UserPickerCardViewController: SheetCardViewController {
             : nil
 
         super.init(icon: UIImage(systemName: "person"), title: title)
-
-        onCancel = onClose
     }
 
     override func viewDidLoad() {
@@ -302,14 +300,14 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
                 // clear the selected user
                 viewModel.clearSelection()
                 dismissCard()
-                onCancel?()
+                onClose?()
             } else {
                 let user = viewModel.filteredUsers[indexPath.row]
                 if !user.selected {
                     viewModel.set(userWithId: user.id, selected: true)
                 }
                 dismissCard()
-                onCancel?()
+                onClose?()
             }
         }
     }

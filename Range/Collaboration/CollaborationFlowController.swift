@@ -563,7 +563,8 @@ extension CollaborationFlowController {
         if let assignee = collaboration.assignee {
             viewModel.set(userWithId: assignee.id, selected: true)
         }
-        let userPicker = UserPickerCardViewController(title: "Assignee", viewModel: viewModel) { [weak self] in
+        let userPicker = UserPickerCardViewController(title: "Assignee", viewModel: viewModel)
+        userPicker.onClose = { [weak self] in
             let newAssigneeId = viewModel.selectedUsers.first?.id
             self?.updateAssignee(newAssigneeId)
         }

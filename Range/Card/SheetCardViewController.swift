@@ -7,6 +7,8 @@ import UIKit
 class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardPresentable, CardDraggingDelegate,
     UIScrollViewDelegate
 {
+    private let cardConfig: CardConfiguration
+    private let autoDismiss: Bool
     var cardDragging: NonModalCardDragging?
     /// This card presents itself in given vc
     private(set) weak var presentingVC: UIViewController?
@@ -26,19 +28,25 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private(set) var bottomView = UIView()
 
     /// Invoked when the sheet is dismissed by tapping close button, the overlay or dragging the card down to min position
-    var onCancel: (() -> Void)?
+    var onClose: (() -> Void)?
 
     /// Initializer
+    /// - Parameters:
+    ///   - autoDismiss: by default the card is dismissed when closed, for dismissing manually (in response to onClose) set to false
     init(
         icon: UIImage?,
         title: String?,
         subtitle: String? = nil,
         description: String? = nil,
-        onCancel: (() -> Void)? = nil
+        onClose: (() -> Void)? = nil,
+        cardConfig: CardConfiguration = CardConfiguration(initialCardPosition: .max, showOverlay: true),
+        autoDismiss: Bool = true
     ) {
+        self.cardConfig = cardConfig
+        self.autoDismiss = autoDismiss
         super.init(nibName: nil, bundle: nil)
 
-        self.onCancel = onCancel
+        self.onClose = onClose
 
         if let icon = icon {
             setupTitleIcon(image: icon)
@@ -274,8 +282,9 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         closeButton = ButtonWithTapAreaInsets(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
-                self?.dismissCard()
-                self?.onCancel?()
+                guard let self = self else { return }
+                if self.autoDismiss { self.dismissCard() }
+                self.onClose?()
             }
         )
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
@@ -319,11 +328,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
 
     /// Convenience function for installing card in given `presentingVC` and showing the card
     @discardableResult func installAndShowCard(in presentingVC: UIViewController, inView: UIView? = nil) -> Self {
-        presentingVC.installCard(
-            cardViewController: self,
-            inView: inView,
-            cardConfig: CardConfiguration(initialCardPosition: .max, showOverlay: true)
-        )
+        presentingVC.installCard(cardViewController: self, inView: inView, cardConfig: cardConfig)
         cardDragging?.delegate = self
         showCard(animated: true)
         self.presentingVC = presentingVC
@@ -345,14 +350,14 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     // MARK: - dragging delegate to automatically close on overlay tap or minimize
 
     func cardOverlayTapped() {
-        dismissCard()
-        onCancel?()
+        if autoDismiss { dismissCard() }
+        onClose?()
     }
 
     func cardWillChangePosition(_ position: CardPosition) {
         if position == .min {
-            dismissCard()
-            onCancel?()
+            if autoDismiss { dismissCard() }
+            onClose?()
         }
     }
 }

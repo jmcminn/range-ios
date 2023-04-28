@@ -436,7 +436,7 @@ extension CanvasFiltersCardViewController: UsersViewModelDelegate {
     /// Show the picker that operates on usersViewModel
     func showUsersPicker() {
         guard let presentingVC = presentingVC else { return }
-        UserPickerCardViewController(title: "Assignee's", viewModel: usersViewModel, onClose: nil)
+        UserPickerCardViewController(title: "Assignee's", viewModel: usersViewModel)
             .installAndShowCard(in: presentingVC)
     }
 
@@ -482,17 +482,7 @@ extension CanvasFiltersCardViewController: TagsViewModelDelegate {
         editTagsVC.showCreateTag = false
         editTagsVC.showUntaggedOption = true
         editTagsVC.showTagCount = false
-        editTagsVC.onClose = {
-            editTagsVC.hideCard(animated: true) {
-                presentingVC.removeCard(cardViewController: editTagsVC)
-            }
-        }
-        presentingVC.installCard(
-            cardViewController: editTagsVC,
-            inView: view.superview,
-            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
-        )
-        editTagsVC.showCard(animated: true)
+        editTagsVC.installAndShowCard(in: presentingVC, inView: view.superview)
     }
 
     /// Updates tags filters when the tagsViewModel is updated

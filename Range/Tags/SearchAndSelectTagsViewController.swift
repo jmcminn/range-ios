@@ -6,18 +6,10 @@ import UIKit
 /// It operates on TagsViewModel
 /// Uses `SearchAndSelectTagsHeaderViewController` for search  + selected tags  and
 /// `TagsSelectionViewController` for selecting tags
-class SearchAndSelectTagsViewController: UIViewController, NonModalCardCoordinating {
-    var cardDragging: NonModalCardDragging?
-
+class SearchAndSelectTagsViewController: SheetCardViewController {
     /// tags to edit
     var tagsViewModel: TagsViewModel
 
-    /// container for the title and close button. We need separate view displayed on top of contentView to cover the top shadow
-    /// from the tagsHeaderVC
-    var topBarView = UIView()
-    var closeButton: UIButton!
-    var titleIcon: UIImageView!
-    var titleLabel: UILabel!
     /// view for tags header and tags selection table
     let contentView = UIView()
 
@@ -31,20 +23,6 @@ class SearchAndSelectTagsViewController: UIViewController, NonModalCardCoordinat
     /// Header expander that shows/hides the search view in tags header
     var tagsHeaderExpander: HeaderExpander!
 
-    var onClose: (() -> Void)?
-
-    var roundedShadowView: RoundShadowView {
-        view as! RoundShadowView
-    }
-
-    var containerView: UIView {
-        roundedShadowView.containerView
-    }
-
-    override func loadView() {
-        view = RoundShadowView(cornerRadius: 24)
-    }
-
     /// Show a special row when there's no direct match in filtered tags
     var showCreateTag: Bool = true
 
@@ -54,55 +32,28 @@ class SearchAndSelectTagsViewController: UIViewController, NonModalCardCoordinat
     /// whether to show the tag count
     var showTagCount: Bool = true
 
-    init(tagsViewModel: TagsViewModel) {
+    /// - Parameters:
+    ///   - tagsViewModel:
+    ///   - autoDismissCard: by default the card is dismissed when closed, for dismissing manually (in response to onClose) set to false
+    init(tagsViewModel: TagsViewModel, autoDismissCard: Bool = true) {
         self.tagsViewModel = tagsViewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init(
+            icon: UIImage(systemName: "tag"),
+            title: String(localized: "Tags"),
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true),
+            autoDismiss: autoDismissCard
+        )
 
         tagsViewModel.addDelegate(self)
     }
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        containerView.backgroundColor = .dynamic(.Neutral_10)
-
-        topBarView.backgroundColor = containerView.backgroundColor
-        containerView.addSubview(topBarView)
-        topBarView.snp.makeConstraints { make in
-            make.height.equalTo(67)
-            make.top.left.right.equalToSuperview()
-        }
-
-        topBarView.installSliderView()
-
-        setupCloseButton()
-        topBarView.addSubview(closeButton)
-        closeButton.snp.makeConstraints { make in
-            make.width.height.equalTo(32)
-            make.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().offset(21)
-        }
-
-        setupTitle()
-        topBarView.addSubview(titleIcon)
-        topBarView.addSubview(titleLabel)
-        titleIcon.snp.makeConstraints { make in
-            make.centerY.equalTo(closeButton.snp.centerY)
-            make.leading.equalTo(16)
-        }
-        titleLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(closeButton.snp.centerY)
-            make.leading.equalTo(titleIcon.snp.trailing).offset(8)
-        }
 
         contentView.backgroundColor = containerView.backgroundColor
-        containerView.insertSubview(contentView, belowSubview: topBarView)
+        containerView.insertSubview(contentView, belowSubview: sheetHeaderView)
         contentView.snp.makeConstraints { make in
-            make.top.equalTo(67)
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.left.right.bottom.equalToSuperview()
         }
 
@@ -139,51 +90,29 @@ class SearchAndSelectTagsViewController: UIViewController, NonModalCardCoordinat
         tagsHeaderExpander.activate(headersInputMetrics: [tagsHeaderInputMetrics()])
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateColors()
+    /// SearchAndSelectTagsViewController is a CardPresentable, but of a fixed size never partially-open
+    override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
+        if cardPosition == .medium {
+            return -1 // not supported
         }
+
+        // the card display controller adds handling for bottom safe area so we need to subtract it
+        // also we don't want to cover the top safe area
+        let fullHeight = cardContainerView.bounds.height - cardContainerView.safeAreaInsets.bottom - cardContainerView
+            .safeAreaInsets.top
+        return fullHeight
     }
 
-    private func updateColors() {
-        let darkMode = traitCollection.userInterfaceStyle == .dark
-        if darkMode {
-            view.setShadowWithFigmaValues(y: -6, blur: 10, opacity: 0.2)
-        } else {
-            view.setShadowWithFigmaValues(y: -3, blur: 6, opacity: 0.05)
-        }
-        // stroke not visible in dark mode (same color as background)
-        roundedShadowView.topStrokeColor = darkMode ? .Neutral_10 : .Neutral_04
+    /// on tags scroll adjust the header bottom stroke visibility
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        tagsHeaderVC.bottomStrokeVisible = scrollView.contentOffset.y > 0
     }
 }
 
 // MARK: Views
 
 extension SearchAndSelectTagsViewController {
-    private func setupTitle() {
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
-            .applying(UIImage.SymbolConfiguration(weight: .bold))
-        let image = UIImage(systemName: "tag", withConfiguration: imageConfig)
-        titleIcon = UIImageView(image: image)
-        titleIcon.tintColor = .dynamic(.Neutral_04)
-
-        titleLabel = UILabel()
-        titleLabel.text = "Tags"
-        titleLabel.textColor = titleIcon.tintColor
-        titleLabel.font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
-        titleLabel.adjustsFontForContentSizeCategory = true
-    }
-
-    private func setupCloseButton() {
-        closeButton = ButtonWithTapAreaInsets(
-            configuration: UIButton.Configuration.closeButton(),
-            primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
-                self?.onClose?()
-            }
-        )
-        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
-    }
-
     private func setupTagsHeaderView() {
         tagsHeaderVC = SearchAndSelectTagsHeaderViewController(
             viewModel: tagsViewModel,
@@ -201,21 +130,6 @@ extension SearchAndSelectTagsViewController {
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)
         tagsVC.tableView.keyboardDismissMode = .onDrag
-    }
-}
-
-/// SearchAndSelectTagsViewController is a CardPresentable, but of a fixed size never partially-open
-extension SearchAndSelectTagsViewController: CardPresentable {
-    func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
-        if cardPosition == .medium {
-            return -1 // not supported
-        }
-
-        // the card display controller adds handling for bottom safe area so we need to subtract it
-        // also we don't want to cover the top safe area
-        let fullHeight = cardContainerView.bounds.height - cardContainerView.safeAreaInsets.bottom - cardContainerView
-            .safeAreaInsets.top
-        return fullHeight
     }
 }
 
@@ -248,15 +162,6 @@ extension SearchAndSelectTagsViewController: HeaderExpanderDelegate {
     }
 
     func headerExpanderWillEndExpanding(_: HeaderExpander, withVelocity _: CGFloat) {}
-}
-
-// MARK: - tags table scroll view delegate
-
-extension SearchAndSelectTagsViewController: UIScrollViewDelegate {
-    /// on tags scroll adjust the header bottom stroke visibility
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        tagsHeaderVC.bottomStrokeVisible = scrollView.contentOffset.y > 0
-    }
 }
 
 // MARK: - tags view model delegate

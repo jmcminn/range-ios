@@ -16,7 +16,7 @@ class SelectPinTypeCardViewController: SheetCardViewController {
     init(onPinTypeSelected: ((PinTypeOption?) -> Void)? = nil) {
         self.onPinTypeSelected = onPinTypeSelected
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Add Pin"))
-        onCancel = { [weak self] in self?.onPinTypeSelected?(nil) }
+        onClose = { [weak self] in self?.onPinTypeSelected?(nil) }
     }
 
     override func viewDidLoad() {

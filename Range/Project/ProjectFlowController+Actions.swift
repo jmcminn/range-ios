@@ -85,7 +85,7 @@ extension ProjectFlowController: ProjectFlowActions {
 
     func selectCanvasFiltersAction() {
         let canvasFiltersCardVC = CanvasFiltersCardViewController(model: model, canvasFilters: canvasFilters)
-        canvasFiltersCardVC.onCancel = { [weak self] in
+        canvasFiltersCardVC.onClose = { [weak self] in
             guard let self = self else { return }
             UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
         }
@@ -194,17 +194,13 @@ extension ProjectFlowController: ProjectFlowActions {
             fatalError("tagsSelected action not implemented for \(event.object)")
         }
         let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialTags)
-        let editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel)
+        // no auto dismiss, the card will be closed after tags are saved
+        let editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel, autoDismissCard: false)
         editTagsVC.onClose = { [weak self] in
             guard let self = self else { return }
             self.updateTagsIfChanged(fromViewController: editTagsVC, forObject: object)
         }
-        canvasContainer.installCard(
-            cardViewController: editTagsVC,
-            inView: canvasContainer.controls,
-            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
-        )
-        editTagsVC.showCard(animated: true)
+        editTagsVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     /// Update tags for given collaboration or upload and close the editTagsVC. The tags are taken from the current editTagsVC
@@ -215,11 +211,6 @@ extension ProjectFlowController: ProjectFlowActions {
         forObject object: Object
     ) {
         let selectedTags = editTagsVC.tagsViewModel.selectedTags
-        let closeEditTagsVC = {
-            editTagsVC.hideCard(animated: true) {
-                self.canvasContainer.removeCard(cardViewController: editTagsVC)
-            }
-        }
 
         let command: Command?
         if let collaboration = object as? Collaboration {
@@ -231,7 +222,7 @@ extension ProjectFlowController: ProjectFlowActions {
         }
 
         guard let command = command else {
-            closeEditTagsVC()
+            editTagsVC.dismissCard()
             return
         }
 
@@ -240,7 +231,7 @@ extension ProjectFlowController: ProjectFlowActions {
             onSuccess: { [weak self] in
                 guard let self = self else { return }
                 UserDefaults.addRecentTagIds(selectedTags.map(\.id), forProjectId: self.model.projectId)
-                closeEditTagsVC()
+                editTagsVC.dismissCard()
             },
             onFailure: { error in
                 let alert = UIAlertController(
@@ -253,7 +244,7 @@ extension ProjectFlowController: ProjectFlowActions {
                     self?.updateTagsIfChanged(fromViewController: editTagsVC, forObject: object)
                 }))
                 alert.addAction(UIAlertAction(title: "Abort", style: .destructive, handler: { _ in
-                    closeEditTagsVC()
+                    editTagsVC.dismissCard()
                 }))
                 editTagsVC.present(alert, animated: true)
             }
