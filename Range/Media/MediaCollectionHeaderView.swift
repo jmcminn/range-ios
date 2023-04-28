@@ -75,6 +75,7 @@ class MediaCollectionViewHeader: UICollectionReusableView {
             make.centerY.equalTo(label)
             make.width.height.equalTo(20)
         }
+        layoutIfNeeded()
         self.selectedView = selectedView
     }
 

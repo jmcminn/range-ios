@@ -133,6 +133,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
             make.trailing.bottom.equalToSuperview().inset(8)
             make.width.height.equalTo(24)
         }
+        layoutIfNeeded()
         self.selectedCheckmark = selectedCheckmark
     }
 }

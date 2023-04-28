@@ -56,6 +56,9 @@ class MediaCardViewController: SheetCardViewController {
     private var dataSource: UICollectionViewDiffableDataSource<String, CollectionItem>!
     /// indices of selected sections
     private var selectedSections = Set<Int>()
+    /// ids of selected uploads
+    /// Don't rely on collectionView.indexPathsForSelectedItems as it doesn't survive reloading of collection view data
+    private var selectedUploads = Set<String>()
 
     /// Token for observing changes in uploads
     private var notificationToken: NotificationToken?
@@ -122,12 +125,16 @@ class MediaCardViewController: SheetCardViewController {
             case .initial:
                 self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
             case let .update(_, _, _, modifications):
+                self.reloadSelectedUploads()
                 self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
                 if !modifications.isEmpty {
                     // if there are some modifications then reload the data as the cells don't listen
                     // for changes (reload data is ok in media view, we don't need any animations here)
                     self.collectionView.reloadData()
                 }
+                self.reloadSelectedSections()
+                updateBulkActionsBottomBarVisibility()
+                updateSelectedMediaCountLabel()
             case let .error(error):
                 Logger.model.error("observing uploads failed: \(error.localizedDescription, privacy: .public)")
             }
@@ -199,7 +206,6 @@ class MediaCardViewController: SheetCardViewController {
     }
 
     private func setupCollectionView() {
-        collectionView.allowsMultipleSelection = true
         collectionView.prefetchDataSource = self
         collectionView.delegate = self
         collectionView.register(ImageMediaCollectionViewCell.self, forCellWithReuseIdentifier: "ImageCell")
@@ -262,10 +268,9 @@ class MediaCardViewController: SheetCardViewController {
         mode = mode == .normal ? .select : .normal
         selectButton.setTitle(mode == .normal ? String(localized: "Select") : String(localized: "Cancel"),
                               for: .normal)
+        selectedSections.removeAll()
+        selectedUploads.removeAll()
         collectionView.reloadData()
-        if mode == .normal {
-            selectedSections.removeAll()
-        }
         updateBulkActionsBottomBarVisibility()
         updateSelectedMediaCountLabel()
     }
@@ -280,7 +285,9 @@ class MediaCardViewController: SheetCardViewController {
         guard let sectionId = dataSource.sectionIdentifier(for: sectionIndex) else { return }
         let itemsCount = dataSource.snapshot(for: sectionId).items.count
         let indexPaths = (0 ..< itemsCount).map { IndexPath(row: $0, section: sectionIndex) }
-        markIndexPaths(indexPaths, selected: selected)
+        for indexPath in indexPaths {
+            markIndexPath(indexPath, selected: selected)
+        }
     }
 
     /// Marks section as selected - adds/removes from selectedSections and updates the section header
@@ -305,24 +312,39 @@ class MediaCardViewController: SheetCardViewController {
         guard let sectionId = dataSource.sectionIdentifier(for: sectionIndex) else { return false }
         let itemsCount = dataSource.snapshot(for: sectionId).items.count
         let indexPaths = (0 ..< itemsCount).map { IndexPath(row: $0, section: sectionIndex) }
-        guard let selectedIndexPaths = collectionView.indexPathsForSelectedItems else { return false }
-        let selectedIndexPathsSet = Set<IndexPath>(selectedIndexPaths)
-        return indexPaths.allSatisfy(selectedIndexPathsSet.contains)
+        return indexPaths
+            .compactMap { dataSource.itemIdentifier(for: $0)?.upload.id ?? nil } // get upload ids
+            .allSatisfy(selectedUploads.contains)
     }
 
-    private func markIndexPaths(_ indexPaths: [IndexPath], selected: Bool) {
-        for indexPath in indexPaths {
-            if selected {
-                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
-            } else {
-                collectionView.deselectItem(at: indexPath, animated: true)
-            }
-            if let cell = collectionView.cellForItem(at: indexPath) as? ImageMediaCollectionViewCell {
-                cell.mark(selected: selected)
-            } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
-                cell.mark(selected: selected)
-            }
+    private func markIndexPath(_ indexPath: IndexPath, selected: Bool) {
+        guard let uploadId = dataSource.itemIdentifier(for: indexPath)?.upload.id else { return }
+        if selected {
+            selectedUploads.insert(uploadId)
+        } else {
+            selectedUploads.remove(uploadId)
         }
+        if let cell = collectionView.cellForItem(at: indexPath) as? ImageMediaCollectionViewCell {
+            cell.mark(selected: selected)
+        } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
+            cell.mark(selected: selected)
+        }
+    }
+
+    /// Recalculate section selection (new uploads might render the section unselected)
+    /// newly added/removed sections might change the section indices
+    private func reloadSelectedSections() {
+        for sectionIndex in 0 ..< dataSource.numberOfSections(in: collectionView) {
+            let sectionSelected = allItemsSelected(inSection: sectionIndex)
+            markSection(sectionIndex, selected: sectionSelected)
+        }
+    }
+
+    /// Called after uploads were updated, some uploads might be gone, so they're no longer selected
+    private func reloadSelectedUploads() {
+        let newUploads = Set<String>(uploads.map(\.id))
+        // Update the selectedUploads and remove all no longer existing uploads
+        selectedUploads.formIntersection(newUploads)
     }
 }
 
@@ -386,15 +408,19 @@ extension MediaCardViewController {
     }
 
     private func updateSelectedMediaCountLabel() {
-        let numberOfItems = collectionView.indexPathsForSelectedItems?.count ?? 0
-        selectedMediaCountLabel?.text = (numberOfItems == 1)
+        selectedMediaCountLabel?.text = selectedMediaCountText
+    }
+
+    var selectedMediaCountText: String {
+        let numberOfItems = selectedUploads.count
+        return (numberOfItems == 1)
             ? String(localized: "1x media item selected")
             : String(localized: "\(numberOfItems)x media items selected")
     }
 
     /// show or hide the bottom bar for bulk actions button
     private func updateBulkActionsBottomBarVisibility() {
-        let shouldHide = collectionView.indexPathsForSelectedItems?.isEmpty ?? true
+        let shouldHide = selectedUploads.isEmpty
         if shouldHide {
             if let bottomBar = bulkActionsBottomBar {
                 bottomBar.snp.remakeConstraints { make in
@@ -467,10 +493,7 @@ extension MediaCardViewController {
     }
 
     private func deleteMedia() {
-        let uploadIdsToRemove = (collectionView.indexPathsForSelectedItems ?? [])
-            .compactMap { dataSource.itemIdentifier(for: $0) }
-            .map(\.id)
-        projectModel.run(projectModel.delete(uploads: uploadIdsToRemove)) { [weak self] error in
+        projectModel.run(projectModel.delete(uploads: [String](selectedUploads))) { [weak self] error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to delete media")
             } else {
@@ -523,8 +546,8 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
     }
 
     func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let upload = dataSource.itemIdentifier(for: indexPath)?.upload else { return }
         if mode == .normal {
-            guard let upload = dataSource.itemIdentifier(for: indexPath)?.upload else { return }
             UIApplication.shared.sendAction(
                 #selector(ProjectFlowActions.showFullscreenMediaAction),
                 to: nil,
@@ -532,28 +555,17 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
                 for: FlowEvent(upload, source: .media)
             )
         } else {
-            if let cell = collectionView.cellForItem(at: indexPath) as? ImageMediaCollectionViewCell {
-                cell.mark(selected: true)
-            } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
-                cell.mark(selected: true)
+            // toggle selected
+            let selected = !selectedUploads.contains(upload.id)
+            markIndexPath(indexPath, selected: selected)
+            if selected {
+                // markSection selected if all uploads selected
+                if allItemsSelected(inSection: indexPath.section) {
+                    markSection(indexPath.section, selected: true)
+                }
+            } else {
+                markSection(indexPath.section, selected: false)
             }
-            // markSection selected if all uploads selected
-            if allItemsSelected(inSection: indexPath.section) {
-                markSection(indexPath.section, selected: true)
-            }
-            updateBulkActionsBottomBarVisibility()
-            updateSelectedMediaCountLabel()
-        }
-    }
-
-    func collectionView(_: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        if mode == .select {
-            if let cell = collectionView.cellForItem(at: indexPath) as? ImageMediaCollectionViewCell {
-                cell.mark(selected: false)
-            } else if let cell = collectionView.cellForItem(at: indexPath) as? DocumentMediaCollectionViewCell {
-                cell.mark(selected: false)
-            }
-            markSection(indexPath.section, selected: false)
             updateBulkActionsBottomBarVisibility()
             updateSelectedMediaCountLabel()
         }
@@ -573,13 +585,13 @@ extension MediaCardViewController {
             let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
             let imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
             cell.setUpload(upload, imageDataProvider: imageDataProvider)
-            cell.mark(selected: collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false)
+            cell.mark(selected: selectedUploads.contains(upload.id))
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DocumentCell",
                                                           for: indexPath) as! DocumentMediaCollectionViewCell
             cell.setUpload(upload)
-            cell.mark(selected: collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false)
+            cell.mark(selected: selectedUploads.contains(upload.id))
             return cell
         }
     }
@@ -598,7 +610,6 @@ extension MediaCardViewController {
             if let sectionName = dataSource.sectionIdentifier(for: indexPath.section) {
                 headerView.label.text = sectionName
             }
-            headerView.tag = indexPath.section
             headerView.mark(selected: mode == .normal ? nil : selectedSections.contains(indexPath.section))
             if mode == .select {
                 headerView.addGestureRecognizer(UITapGestureRecognizer(
@@ -613,7 +624,11 @@ extension MediaCardViewController {
 
     @objc private func headerTapAction(sender: UITapGestureRecognizer) {
         guard mode == .select else { return }
-        guard let sectionIndex = sender.view?.tag else { return }
+        guard
+            let headerView = sender.view as? MediaCollectionViewHeader,
+            // a little hack, the name displayed for the section is it's identifier
+            let sectionIdentifier = headerView.label.text,
+            let sectionIndex = dataSource.index(for: sectionIdentifier) else { return }
         toggleSectionAndAllItemsSelected(sectionIndex: sectionIndex)
         updateBulkActionsBottomBarVisibility()
         updateSelectedMediaCountLabel()

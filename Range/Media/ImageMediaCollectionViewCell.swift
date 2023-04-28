@@ -73,6 +73,7 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
             make.leading.bottom.equalToSuperview().inset(8)
             make.width.height.equalTo(20)
         }
+        layoutIfNeeded()
         self.selectedOverlay = selectedOverlay
     }
 
