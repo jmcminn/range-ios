@@ -235,7 +235,7 @@ class MediaCardViewController: SheetCardViewController {
         config.baseForegroundColor = .dynamic(.Neutral_04)
         config.cornerStyle = .fixed
         config.background.cornerRadius = 15
-        config.background.strokeColor = .dynamic(.Neutral_08)
+        config.background.strokeColor = .dynamic(.Neutral_07)
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
             outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
