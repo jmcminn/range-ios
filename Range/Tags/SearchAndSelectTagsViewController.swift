@@ -42,6 +42,13 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
     /// whether to show the tag count
     var showTagCount: Bool = true
 
+    /// whether to show the cancel/confirm bottom bar
+    var showCancelConfirmBottomBar: Bool = false
+    /// Called when buttons in bottom bar are tapped
+    var onCancel: (() -> Void)?
+    var onConfirm: (() -> Void)?
+    private var bottomBar: UIView?
+
     /// - Parameters:
     ///   - tagsViewModel:
     ///   - autoDismissCard: by default the card is dismissed when closed, for dismissing manually (in response to onClose) set to false
@@ -86,6 +93,11 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if showCancelConfirmBottomBar {
+            setupBottomBar()
+            if let bottomBar = bottomBar {}
+        }
+
         contentView.backgroundColor = containerView.backgroundColor
         containerView.insertSubview(contentView, belowSubview: sheetHeaderView)
         contentView.snp.makeConstraints { make in
@@ -112,22 +124,21 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
 
         setupTagsHeaderView()
         add(childController: tagsHeaderVC, toView: contentView)
+        if let optionLabel = optionLabel, let optionsToggle = optionsToggle {
+            // cover the space below optionsToggle, so the shadow for tags header is not visible to the top
+            let shadowCoverView = UIView()
+            shadowCoverView.backgroundColor = containerView.backgroundColor
+            contentView.insertSubview(shadowCoverView, belowSubview: optionLabel)
+            shadowCoverView.snp.makeConstraints { make in
+                make.top.equalTo(optionsToggle.snp.bottom)
+                make.leading.trailing.equalToSuperview()
+                make.bottom.equalTo(optionLabel.snp.bottom).offset(6)
+            }
+            contentView.insertSubview(tagsHeaderVC.view, belowSubview: shadowCoverView)
+        }
         tagsHeaderVC.view.snp.makeConstraints { make in
             if let optionLabel = optionLabel {
-                // TODO: 1117
                 make.top.equalTo(optionLabel.snp.bottom).offset(6)
-            } else if let optionsToggle = optionsToggle {
-                // TODO: 1117
-                // cover the space below optionsToggle, so the shadow for tags header is not visible to the top
-                let shadowCoverView = UIView()
-                shadowCoverView.backgroundColor = containerView.backgroundColor
-                contentView.addSubview(shadowCoverView)
-                shadowCoverView.snp.makeConstraints { make in
-                    make.top.equalTo(optionsToggle.snp.bottom)
-                    make.leading.trailing.equalToSuperview()
-                    make.height.equalTo(12)
-                }
-                make.top.equalTo(optionsToggle.snp.bottom).offset(12)
             } else {
                 make.top.equalToSuperview()
             }
@@ -212,6 +223,96 @@ extension SearchAndSelectTagsViewController {
         tagsVC.tableView.contentInsetAdjustmentBehavior = .never
         tagsVC.tableView.forwardDelegateInvocations(to: self)
         tagsVC.tableView.keyboardDismissMode = .onDrag
+    }
+
+    private func setupBottomBar() {
+        guard bottomBar == nil else { return }
+        let bottomBar = UIView()
+        bottomBar.backgroundColor = .dynamic(.Neutral_10)
+
+        let stroke = UIView()
+        stroke.backgroundColor = .dynamic(.Neutral_07)
+        bottomBar.addSubview(stroke)
+        stroke.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.height.equalTo(1)
+        }
+
+        let safeAreaCover = UIView()
+        safeAreaCover.backgroundColor = bottomBar.backgroundColor
+        bottomBar.addSubview(safeAreaCover)
+
+        let cancelButton = UIButton(
+            configuration: UIButton.Configuration.grayButton(),
+            primaryAction: UIAction(
+                title: String(localized: "Cancel")
+            ) { [weak self] _ in self?.onCancel?() }
+        )
+        let confirmButton = UIButton(
+            configuration: UIButton.Configuration.blueButton(),
+            primaryAction: UIAction(
+                title: String(localized: "Confirm")
+            ) { [weak self] _ in self?.onConfirm?() }
+        )
+        bottomBar.addSubview(cancelButton)
+        bottomBar.addSubview(confirmButton)
+        cancelButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        confirmButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        cancelButton.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview().inset(16)
+            make.trailing.equalTo(confirmButton.snp.leading).offset(-16)
+            make.width.equalTo(confirmButton.snp.width)
+        }
+        confirmButton.snp.makeConstraints { make in
+            make.trailing.equalTo(-16)
+            make.top.equalToSuperview().inset(16)
+        }
+        containerView.addSubview(bottomBar)
+        bottomBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(containerView.snp.bottom)
+        }
+        safeAreaCover.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(bottomBar.snp.bottom)
+            make.height.equalTo(self.view.safeAreaLayoutGuide.snp.height)
+        }
+
+        self.bottomBar = bottomBar
+    }
+
+    /// show or hide the bottom bar depending on tags selection
+    private func updateBottomBarVisibility() {
+        guard showCancelConfirmBottomBar else { return }
+        let shouldHide = tagsViewModel.selectedTags.isEmpty
+        if shouldHide {
+            if let bottomBar = bottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.top.equalTo(bottomBar.superview!.snp.bottom)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                }
+            }
+            headerExpander.bottomContentEdgeInset = 0
+            tagsVC.tableView.scrollIndicatorInsets = tagsVC.tableView.contentInset
+        } else {
+            setupBottomBar()
+            if let bottomBar = bottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                } completion: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.headerExpander.bottomContentEdgeInset = bottomBar.frame.height
+                    self.tagsVC.tableView.scrollIndicatorInsets = self.tagsVC.tableView.contentInset
+                }
+            }
+        }
     }
 }
 
@@ -324,6 +425,8 @@ extension SearchAndSelectTagsViewController: TagsViewModelDelegate {
                 }
             }
         }
+
+        updateBottomBarVisibility()
     }
 
     /// When the filter is updated on TagsViewModel update the search field (as the update might not originate from the search field)

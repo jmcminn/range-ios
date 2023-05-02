@@ -143,8 +143,10 @@ class HeaderExpander: NSObject {
         // bottom inset is what is missing for scrollview content with collapsed headers to
         // occupy the whole height (minus the bottomContentEdgeInset that may be optionally added
         // below the scroll view
+        // Always apply the bottomContentEdgeInset, as it might be configured by the host view to
+        // allow for some bottom view covering the scroll view
         let bottomInset = max(
-            0,
+            bottomContentEdgeInset,
             contentView.frame.height - inputMetrics.totalCollapsedHeadersHeight
                 - scrollView.contentSize.height - bottomContentEdgeInset
         )
