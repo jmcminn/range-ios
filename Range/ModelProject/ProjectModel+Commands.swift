@@ -208,6 +208,13 @@ extension ProjectModel {
         )
     }
 
+    /// Update mulitple uploads with given tags.
+    /// If adding (add is `true`) then append the tags to current upload tags for each upload.
+    /// If add is `false` then replace the current tags with the newly provided ones
+    func update(tags: [TagViewModel], forUploads uploads: [String], add: Bool) -> Command {
+        UpdateUploadsTagsCommand(uploadIds: uploads, tags: tags.map(CommandTag.init(fromViewModel:)), add: add)
+    }
+
     /// Create command for updating given Collaboration tags (only if tags are different than existing ones).
     /// The command creates new tags.
     func update(tags: [TagViewModel], forCollaboration collaboration: Collaboration) -> Command? {

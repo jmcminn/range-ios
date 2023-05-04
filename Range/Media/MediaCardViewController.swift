@@ -460,17 +460,95 @@ extension MediaCardViewController {
         ActionSelectorCardViewController(
             icon: UIImage(systemName: "ellipsis"),
             title: String(localized: "Bulk Actions"),
+            subtitle: "(\(selectedMediaCountText))",
             actions: [
+                ActionItem(
+                    title: String(localized: "Bulk Manage Tags"),
+                    imageName: "tag",
+                    handler: { [weak self] in
+                        self?.presentBulkManageTagsCard()
+                    }
+                ),
                 ActionItem(
                     title: String(localized: "Delete Media"),
                     imageName: "trash",
                     style: .destructive,
-                    handler: {
-                        self.confirmAndDeleteMedia()
+                    handler: { [weak self] in
+                        self?.confirmAndDeleteMedia()
                     }
                 ),
             ]
         ).installAndShowCard(in: canvasContainer)
+    }
+
+    private func presentBulkManageTagsCard() {
+        let tagsViewModel = TagsViewModel(model: projectModel)
+
+        let addTagsOptionText = String(localized: "Add additional, new tags to the selected media items.")
+        let replaceTagsOptionText = String(localized:
+            "Replace ALL existing tags with new tags for the selected media items. ALL existing tags will be removed and replaced with new tags.")
+
+        let tagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel, autoDismissCard: false)
+        tagsVC.showCancelConfirmBottomBar = true
+        tagsVC.showOptions(
+            [ActionItem(title: String(localized: "Add Tags"), handler: { [weak tagsVC] in
+                tagsVC?.setOptionLabel(addTagsOptionText)
+            }),
+            ActionItem(title: String(localized: "Replace Tags"), handler: { [weak tagsVC] in
+                tagsVC?.setOptionLabel(replaceTagsOptionText)
+            })]
+        )
+        tagsVC.setOptionLabel(addTagsOptionText)
+
+        // block to run for confirming the changes and dismissing the card
+        let onConfirm = { [weak self, weak tagsVC] in
+            // add or replace depending on the option selected in tagsVC (adding is the first option)
+            let addTags: Bool = (tagsVC?.optionsToggle?.selectedSegmentIndex ?? 0) == 0
+            self?.updateTags(tagsViewModel, add: addTags)
+            tagsVC?.dismissCard()
+        }
+        // block to run when user has unsaved changes and chose to close the card - ask if he wants to cancel or save
+        let onUnsavedChanges = { [weak tagsVC] in
+            guard let tagsVC = tagsVC else { return }
+            // user selected some tags, confirm if closing should apply the changes
+            let alertController = UIAlertController(
+                title: "You have unsaved changes",
+                message: "Would you like to confirm or cancel these changes?",
+                preferredStyle: .alert
+            )
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                tagsVC.dismissCard()
+            })
+            alertController.addAction(UIAlertAction(title: "Confirm", style: .default) { _ in
+                onConfirm()
+            })
+            tagsVC.present(alertController, animated: true)
+        }
+
+        // when closing check if user selected any tasks and confirm if so
+        tagsVC.onClose = { [weak tagsVC] in
+            if tagsViewModel.selectedTags.isEmpty {
+                tagsVC?.dismissCard()
+            } else {
+                onUnsavedChanges()
+            }
+        }
+        // always dismiss on cancel
+        tagsVC.onCancel = { [weak tagsVC] in tagsVC?.dismissCard() }
+        // apply changes on confirm
+        tagsVC.onConfirm = onConfirm
+
+        tagsVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    private func updateTags(_ tagsModel: TagsViewModel, add: Bool) {
+        projectModel.run(
+            projectModel.update(tags: tagsModel.selectedTags, forUploads: [String](selectedUploads), add: add)
+        ) { error in
+            if error != nil {
+                ToastWindow.shared.showError(text: "Failed to update tags")
+            }
+        }
     }
 
     func confirmAndDeleteMedia() {
