@@ -314,6 +314,7 @@
 		0ABFD8B728F00A98008CDA74 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8B628F00A98008CDA74 /* CommentViewController.swift */; };
 		0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */; };
 		0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */; };
+		0AC3C0232A03F7EF001E3199 /* Sequence+AsyncMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC3C0222A03F7EF001E3199 /* Sequence+AsyncMap.swift */; };
 		0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */; };
 		0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7D290980DD00D3CCA1 /* GradientView.swift */; };
 		0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */; };
@@ -688,6 +689,7 @@
 		0ABFD8B628F00A98008CDA74 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommand.swift; sourceTree = "<group>"; };
 		0ABFD8BF28F487BE008CDA74 /* ActionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItem.swift; sourceTree = "<group>"; };
+		0AC3C0222A03F7EF001E3199 /* Sequence+AsyncMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+AsyncMap.swift"; sourceTree = "<group>"; };
 		0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCommentTextCommand.swift; sourceTree = "<group>"; };
 		0AC89D7D290980DD00D3CCA1 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVerticalLine.swift; sourceTree = "<group>"; };
@@ -1157,6 +1159,7 @@
 				0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */,
 				0A0D31CC28A3E735007A8D49 /* Realm.swift */,
 				0AD9B75728621782005ACFD7 /* Result+Throws.swift */,
+				0AC3C0222A03F7EF001E3199 /* Sequence+AsyncMap.swift */,
 				0A34C17A28450CAC00BEDC7C /* String+Error.swift */,
 				0AFCD6192939285F004843AA /* String+Size.swift */,
 				0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */,
@@ -1975,6 +1978,7 @@
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0A797F7A292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift in Sources */,
 				0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */,
+				0AC3C0232A03F7EF001E3199 /* Sequence+AsyncMap.swift in Sources */,
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */,
 				0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */,

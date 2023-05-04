@@ -462,21 +462,12 @@ extension MediaCardViewController {
             title: String(localized: "Bulk Actions"),
             subtitle: "(\(selectedMediaCountText))",
             actions: [
-                ActionItem(
-                    title: String(localized: "Bulk Manage Tags"),
-                    imageName: "tag",
-                    handler: { [weak self] in
-                        self?.presentBulkManageTagsCard()
-                    }
-                ),
-                ActionItem(
-                    title: String(localized: "Delete Media"),
-                    imageName: "trash",
-                    style: .destructive,
-                    handler: { [weak self] in
-                        self?.confirmAndDeleteMedia()
-                    }
-                ),
+                ActionItem(title: String(localized: "Bulk Manage Tags"), imageName: "tag",
+                           handler: { [weak self] in self?.presentBulkManageTagsCard() }),
+                ActionItem(title: String(localized: "Share"), imageName: "square.and.arrow.up",
+                           handler: { [weak self] in self?.shareMedia() }),
+                ActionItem(title: String(localized: "Delete Media"), imageName: "trash", style: .destructive,
+                           handler: { [weak self] in self?.confirmAndDeleteMedia() }),
             ]
         ).installAndShowCard(in: canvasContainer)
     }
@@ -547,6 +538,40 @@ extension MediaCardViewController {
         ) { error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to update tags")
+            }
+        }
+    }
+
+    /// Fetch files for all selected uploads and use iOS built in activity view controller to share them.
+    private func shareMedia() {
+        let mediaKeysToShare = [MediaKey](uploads
+            .filter { self.selectedUploads.contains($0.id) }
+            .map { MediaKey(projectId: self.projectModel.projectId, upload: $0) })
+
+        // show activity view (a spinner) that covers the screen disabling any user interactions
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .black.withAlphaComponent(0.3)
+        activityView.color = .Pink_03
+        containerView.addSubview(activityView)
+        activityView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        activityView.startAnimating()
+
+        Task { @MainActor in
+            do {
+                // hide the spinner when data store call is finished
+                defer {
+                    activityView.removeFromSuperview()
+                }
+                // fetch (if not fetched yet) all the uploads to share
+                let itemsToShare: [URL] = try await mediaKeysToShare.concurrentMap {
+                    try await self.mediaCache.getCachedFileURL(forKey: $0)
+                }
+                let shareVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
+                present(shareVC, animated: true)
+            } catch {
+                ToastWindow.shared.showError(text: "Failed to fetch media to share")
             }
         }
     }
