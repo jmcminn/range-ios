@@ -67,6 +67,30 @@ enum ActionCommand: Codable {
         }
     }
 
+    var localCommand: LocalCommand {
+        switch self {
+        case let .addUploadsToCollaboration(c): return c
+        case let .createCollaborationComment(c): return c
+        case let .createCollaboration(c): return c
+        case let .createUploadComment(c): return c
+        case let .deleteCollaboration(c): return c
+        case let .deleteComment(c): return c
+        case let .deleteUploads(c): return c
+        case let .updateCollaborationAssignee(c): return c
+        case let .updateCollaborationDescription(c): return c
+        case let .updateCollaborationDueDate(c): return c
+        case let .updateCollaborationName(c): return c
+        case let .updateCollaborationStatus(c): return c
+        case let .updateCollaborationTags(c): return c
+        case let .updateCommentText(c): return c
+        case let .updateGeometryArchived(c): return c
+        case let .updateGeometryLocation(c): return c
+        case let .updateNoteCompleted(c): return c
+        case let .updateUploadDescription(c): return c
+        case let .updateUploadsTags(c): return c
+        }
+    }
+
     var firestoreCommand: FirestoreCommand {
         switch self {
         case let .addUploadsToCollaboration(c): return c

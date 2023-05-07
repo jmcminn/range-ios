@@ -4,6 +4,9 @@ import RealmSwift
 
 /// Update assignee for given Collaboration
 struct UpdateCollaborationAssigneeCommand: Command, Codable, Equatable {
+    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([collaborationId]) }
+
     var authorId: String
     let collaborationId: String
     var assigneeId: String?

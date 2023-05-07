@@ -3,14 +3,23 @@ import FirebaseFirestoreSwift
 import Foundation
 import RealmSwift
 
+enum CommandType: Codable {
+    case create, update, delete
+}
+
 /// Just a marker interface for being a command = something that can be `run` by `ProjectModel`
 /// This is implemented by commands that are run after user actions (so implement local and firestore updates)
 /// Not all commands are marked with this protocol - the ones that only run locally in response to update/create event
 /// received from Firestore are only marked as LocalCommand and run by `ProjectModelFirestoreSync`
-protocol Command {}
+protocol Command {
+    /// the type of the command
+    var type: CommandType { get }
+    /// the ids of objects that are the target of the command (the object(s) being created/updated/deleted)
+    var targetIds: Set<String> { get }
+}
 
 /// A protocol for local commands - command objects for performing changes on the Realm db.
-protocol LocalCommand {
+protocol LocalCommand: Command {
     /// Apply the changes locally in given Realm. Will be performed in a realm write transaction
     func apply(inRealm realm: Realm) throws
 }

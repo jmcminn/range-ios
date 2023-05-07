@@ -4,6 +4,9 @@ import RealmSwift
 
 /// Update archivedTimestamp for geometry
 struct UpdateGeometryArchivedCommand: Command, Codable, Equatable {
+    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([geometryId]) }
+
     let geometryId: String
     var archive: Bool
 }

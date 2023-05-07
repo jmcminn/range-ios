@@ -35,6 +35,8 @@ class ProjectModel: NSObject, RealmModel {
     let writeQueue = DispatchQueue(label: "model-write-queue")
     /// Realm operating on `writeQueue`, initialized on first use
     var writeRealm: Realm!
+    /// provides LocalCommands from PendingActionsModel
+    var localCommandsProvider: RealmModelLocalCommandsProvider?
 
     /// Initializes the model with Realm file url for given projectId (every project has a separate realm)
     /// - Parameters:
@@ -77,6 +79,12 @@ class ProjectModel: NSObject, RealmModel {
         ]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
+        super.init()
+
+        localCommandsProvider = { [weak self] (targetId: String) -> [LocalCommand] in
+            guard let self = self else { return [] }
+            return self.pendingActionsModel.getLocalCommands(forProjectId: self.projectId, targetObjectId: targetId)
+        }
     }
 
     /// Initiates the writeRealm

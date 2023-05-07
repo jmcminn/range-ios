@@ -19,7 +19,6 @@ extension RealmModel {
     private func apply<T: Decodable & FirestoreToRealmSyncable>(
         documentChangeType changeType: DocumentChangeType,
         snapshot: DocumentSnapshot,
-        fromCache: Bool,
         as type: T.Type,
         inRealm realm: Realm
     ) {
@@ -27,16 +26,35 @@ extension RealmModel {
 
         let collectionId = snapshot.reference.parent.collectionID
         let documentId = snapshot.documentID
-        Logger.firestore.debug(
-            "\(collectionId) \(changeType) \(documentId, privacy: .public) \(fromCache ? "(fromCache)" : "")"
-        )
+        Logger.firestore.debug("\(collectionId) \(changeType) \(documentId, privacy: .public)")
         do {
             let firestoreObject = try snapshot.data(as: type, decoder: decoder)
             try realm.write {
                 if changeType == .added || changeType == .modified {
-                    try firestoreObject.upsert(withId: snapshot.documentID, inRealm: realm)
+                    // get local modifications for this document
+                    let localCommands = localCommandsProvider?(documentId) ?? []
+                    let deletedLocally = localCommands.contains { $0.type == .delete }
+                    // skip updates for locally deleted objects
+                    guard !deletedLocally else {
+                        Logger.firestore.debug(
+                            "ignored locally deleted \(collectionId) \(changeType) \(documentId, privacy: .public)"
+                        )
+                        return
+                    }
+                    try firestoreObject.upsert(withId: documentId, inRealm: realm)
+                    // apply local changes on top of objects received from Firestore. We need to reapply
+                    // these changes as on each start the changes cached by Firestore SDK may overwrite the local
+                    // changes if they were not synced yet. (so the Firestore has a different data than the Realm,
+                    // the difference is provided by given LocalCommands)
+                    let localUpdates = localCommands.filter { $0.type == .update }
+                    if !localUpdates.isEmpty {
+                        Logger.firestore.debug(
+                            "apply local updates for \(collectionId) \(changeType) \(documentId, privacy: .public)"
+                        )
+                        try localUpdates.forEach { try $0.apply(inRealm: realm) }
+                    }
                 } else if changeType == .removed {
-                    guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: snapshot.documentID)
+                    guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: documentId)
                     else {
                         return
                     }
@@ -86,12 +104,9 @@ extension RealmModel {
     ///  - Parameters:
     ///     - documentRef:  the document to observe updates
     ///     - type: the type to use for decoding the firestore SnapshotData for given db reference
-    ///     - allowFromCache: should sync update the data if the snapshot is from local Firestore SDK cache? `false` by default to not overwrite any local pending changes. Use `true` only in cases where no local changes are possible
-    func sync<T: Decodable & FirestoreToRealmSyncable>(
-        _ documentRef: DocumentReference,
-        as type: T.Type,
-        allowFromCache: Bool = false
-    ) -> ListenerRegistration {
+    func sync<T: Decodable & FirestoreToRealmSyncable>(_ documentRef: DocumentReference,
+                                                       as type: T.Type) -> ListenerRegistration
+    {
         let loggingId = "\(documentRef.parent.collectionID)/\(documentRef.documentID)"
         let listenerRegistration = documentRef.addSnapshotListener { [weak self] documentSnapshot, error in
             guard let self = self else { return }
@@ -103,20 +118,6 @@ extension RealmModel {
                     self.deleteObject(documentRef, as: type, inRealm: self.writeRealm)
                     return
                 }
-
-                // if we don't allow changes from cache then guard against changes being not from cache
-                let fromCache = snapshot.metadata.isFromCache
-                if !allowFromCache {
-                    guard !fromCache else {
-                        // we don't want data from cache. Firestore will report all local objects when the app
-                        // is starting even in offline mode (because it has persistence enabled, see AppDelegate
-                        // Firestore config comment for why it has to be enabled).
-                        // This data from cache is not needed, because we have it in Realm and would override
-                        // any local pending changes. So it would flicker but for a potentially very long time:
-                        // From the time user restarted the app in offline after making local changes until the user is back online.
-                        return
-                    }
-                }
                 guard snapshot.data() != nil else {
                     Logger.firestore.info("\(loggingId) fetched no data, removing local object")
                     self.deleteObject(documentRef, as: type, inRealm: self.writeRealm)
@@ -126,7 +127,6 @@ extension RealmModel {
                 self.apply(
                     documentChangeType: changeType,
                     snapshot: snapshot,
-                    fromCache: fromCache,
                     as: type,
                     inRealm: self.writeRealm
                 )
@@ -140,66 +140,31 @@ extension RealmModel {
     ///  - Parameters:
     ///     - collectionRef:  the collection to observe for .childAdded, .childChanged and .childRemoved
     ///     - type: the type to use for decoding the firestore SnapshotData for given db reference
-    func sync<T: Decodable & FirestoreToRealmSyncable>(
-        _ collectionRef: CollectionReference,
-        as type: T.Type
-    ) -> ListenerRegistration {
-        let listenerRegistration = collectionRef.addSnapshotListener { [weak self] querySnapshot, error in
-            guard let self = self else { return }
-            guard let snapshot = querySnapshot else {
-                Logger.firestore.error(
-                    "\(collectionRef.collectionID) fetching snapshots failed: \(error!.localizedDescription)"
-                )
-                return
-            }
-
-            let fromCache = snapshot.metadata.isFromCache
-            self.writeQueue.async {
-                snapshot.documentChanges.forEach { diff in
-                    let document = diff.document
-                    let changeType = diff.type
-
-                    if fromCache {
-                        // we don't want data from cache. Firestore will report all local objects when the app
-                        // is starting even in offline mode (because it has persistence enabled, see AppDelegate
-                        // Firestore config comment for why it has to be enabled).
-                        // This data from cache is not needed, because we have it in Realm and would override
-                        // any local pending changes. So it would flicker but for a potentially very long time:
-                        // From the time user restarted the app in offline after making local changes until the user is back online.
-                        //
-                        // There's one exception - we observed that sometimes deletes are reported
-                        // as "from cache" but shouldn't be. It looks like deletes are safe to
-                        // proceed no mater if from cache or not. Once deleted the object cannot have
-                        // local changes anyway
-                        if changeType == .removed {
-                            self.apply(
-                                documentChangeType: changeType,
-                                snapshot: document,
-                                fromCache: fromCache,
-                                as: type,
-                                inRealm: self.writeRealm
-                            )
-                            // uncomment to see logs about ignored changes from cache
-//                        } else {
-//                            let collectionId = document.reference.parent.collectionID
-//                            let documentId = document.documentID
-//                            Logger.firestore
-//                                .debug(
-//                                    "ignored fromCache \(collectionId) \(changeType) \(documentId, privacy: .public)"
-//                                )
-                        }
-                    } else {
+    func sync<T: Decodable & FirestoreToRealmSyncable>(_ collectionRef: CollectionReference,
+                                                       as type: T.Type) -> ListenerRegistration
+    {
+        let listenerRegistration = collectionRef
+            .addSnapshotListener(includeMetadataChanges: true) { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                guard let snapshot = querySnapshot else {
+                    Logger.firestore.error(
+                        "\(collectionRef.collectionID) fetching snapshots failed: \(error!.localizedDescription)"
+                    )
+                    return
+                }
+                self.writeQueue.async {
+                    snapshot.documentChanges.forEach { diff in
+                        let document = diff.document
+                        let changeType = diff.type
                         self.apply(
                             documentChangeType: changeType,
                             snapshot: document,
-                            fromCache: fromCache,
                             as: type,
                             inRealm: self.writeRealm
                         )
                     }
                 }
             }
-        }
         return listenerRegistration
     }
 }

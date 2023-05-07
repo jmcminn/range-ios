@@ -4,6 +4,9 @@ import RealmSwift
 
 /// Update description for given Upload
 struct UpdateUploadDescriptionCommand: Command, Codable, Equatable {
+    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([uploadId]) }
+
     var authorId: String
     let uploadId: String
     var uploadDescription: String?

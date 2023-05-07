@@ -3,6 +3,9 @@ import Foundation
 import RealmSwift
 
 struct CreateCollaborationCommentCommand: Command, Codable, Equatable {
+    var type: CommandType { .create } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([commentId]) }
+
     let commentId: String
     var collaborationId: String
     var authorId: String

@@ -11,4 +11,6 @@ class TestPendingActionsModel: PendingActionsModel {
     }
 
     func addAction(data _: Data) {}
+
+    func getLocalCommands(forProjectId _: String, targetObjectId _: String) -> [LocalCommand] { [] }
 }

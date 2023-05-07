@@ -23,6 +23,8 @@ class ProjectsModel: NSObject, RealmModel {
     let writeQueue = DispatchQueue(label: "projects-model-write-queue")
     /// Realm operating on `writeQueue`, initialized on first use
     var writeRealm: Realm!
+    /// no support for updates in projects model
+    var localCommandsProvider: RealmModelLocalCommandsProvider?
 
     /// Firestore reference
     let firestore: Firestore
@@ -115,14 +117,8 @@ class ProjectsModel: NSObject, RealmModel {
         for newProjectId in newProjectIds {
             if listeners[newProjectId] == nil {
                 Logger.model.debug("user has permissions for project \(newProjectId), syncing.")
-                // we need to allow reading from cache when syncing the projects.
-                // Normally reading from cache is disabled as it would overwrite any local changes
-                // but project summary is not updated locally and the project summary may have
-                // already been loaded by the Project model. In this case projects model will
-                // not get any data when syncing until the project summary is changed.
                 listeners[newProjectId] = sync(firestore.document("projects/\(newProjectId)"),
-                                               as: FirestoreProjectSummary.self,
-                                               allowFromCache: true)
+                                               as: FirestoreProjectSummary.self)
             }
         }
     }

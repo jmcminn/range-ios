@@ -9,6 +9,9 @@ import Turf
 /// Creates tags if not existing yet.
 /// Attach provided tags to all uploads.
 struct CreateCollaborationCommand: Command, Codable, Equatable {
+    var type: CommandType { .create } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([geometryId, featureId, collaborationId]) }
+
     var authorId: String
     var canvasId: String
     var geometryId: String

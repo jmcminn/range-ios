@@ -4,6 +4,9 @@ import RealmSwift
 
 /// Delete the `Upload`s with given ids
 struct DeleteUploadsCommand: Command, Codable, Equatable {
+    var type: CommandType { .delete } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init(uploadIds) }
+
     let uploadIds: [String]
 }
 

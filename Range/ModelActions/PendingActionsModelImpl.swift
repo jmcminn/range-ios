@@ -63,6 +63,27 @@ class PendingActionsModelImpl: PendingActionsModel {
         }
     }
 
+    /// Get pending local commands for given project and target object id
+    func getLocalCommands(forProjectId projectId: String, targetObjectId: String) -> [LocalCommand] {
+        operationQueue.sync {
+            let actionsData = pendingActions()
+            let actions: [Action] = actionsData
+                .compactMap { // Data => Action
+                    do {
+                        return try jsonDecoder.decode(Action.self, from: $0)
+                    } catch {
+                        Logger.pendingActions.error("Couldn't decode pending action \($0).")
+                        return nil
+                    }
+                }
+                .filter { $0.projectId == projectId }
+            let localCommands = actions
+                .map(\.command.localCommand) // Action => LocalCommand
+                .filter { $0.targetIds.contains(targetObjectId) }
+            return localCommands
+        }
+    }
+
     /// Starts synchronization - observe network and perform any pending actions
     func start() {
         // check if there are any pending actions

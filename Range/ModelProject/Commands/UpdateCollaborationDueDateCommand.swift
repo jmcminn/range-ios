@@ -4,6 +4,9 @@ import RealmSwift
 
 /// Update dueDateTimestamp for given Collaboration
 struct UpdateCollaborationDueDateCommand: Command, Codable, Equatable {
+    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([collaborationId]) }
+
     var authorId: String
     let collaborationId: String
     var dueDateTimestamp: Date?

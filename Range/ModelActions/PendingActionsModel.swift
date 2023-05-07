@@ -10,4 +10,7 @@ protocol PendingActionsModel: AnyObject {
 
     /// Store action data obtained from `prepareAction` for execution
     func addAction(data: Data)
+
+    /// Get pending local commands for given project and target object id
+    func getLocalCommands(forProjectId projectId: String, targetObjectId: String) -> [LocalCommand]
 }

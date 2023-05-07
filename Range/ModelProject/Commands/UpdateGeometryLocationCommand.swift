@@ -6,6 +6,9 @@ import Turf
 
 /// Update location (point geometry coordinates and canvas) for geometry
 struct UpdateGeometryLocationCommand: Command, Codable, Equatable {
+    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([geometryId]) }
+
     let geometryId: String
     var canvasId: String
     var coordinates: LocationCoordinate2DCodable // no CLLocationCoordinate2D as it needs to be codable

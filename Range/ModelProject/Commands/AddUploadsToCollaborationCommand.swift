@@ -6,6 +6,14 @@ import RealmSwift
 /// Creates tags if not existing yet.
 /// Attach provided tags to all uploads.
 struct AddUploadsToCollaborationCommand: Command, Codable, Equatable {
+    var type: CommandType { .create } // don't make it a stored property, so it's not encoded
+    var targetIds: Set<String> { .init([collaborationId]) }
+
+    // Define the CodingKeys to skip the type
+//    private enum CodingKeys: String, CodingKey {
+//        case authorId, collaborationId, tags, uploadDescription, uploads
+//    }
+
     var authorId: String
     var collaborationId: String
     var tags: [CommandTag]
