@@ -584,29 +584,33 @@ extension MediaCardViewController {
             .filter { self.selectedUploads.contains($0.id) }
             .map { MediaKey(projectId: self.projectModel.projectId, upload: $0) })
 
-        // show activity view (a spinner) that covers the screen disabling any user interactions
-        let activityView = UIActivityIndicatorView(style: .large)
-        activityView.backgroundColor = .black.withAlphaComponent(0.3)
-        activityView.color = .Pink_03
-        containerView.addSubview(activityView)
-        activityView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        activityView.startAnimating()
+        var cancelled = false
+        // show alert that prevents any user interaction while downloading items to share
+        // User can still cancel, which won't really cancel the download but will cancel the sharing action
+        let progressAlertController = UIAlertController(
+            title: String(localized: "Hold tight, this may take a few seconds..."),
+            message: String(localized: "We’re currently preparing your media items for sharing."),
+            preferredStyle: .alert
+        )
+        progressAlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            cancelled = true
+        })
+        present(progressAlertController, animated: true)
 
         Task { @MainActor in
             do {
-                // hide the spinner when data store call is finished
-                defer {
-                    activityView.removeFromSuperview()
-                }
                 // fetch (if not fetched yet) all the uploads to share
                 let itemsToShare: [URL] = try await mediaKeysToShare.concurrentMap {
                     try await self.mediaCache.getCachedFileURL(forKey: $0)
                 }
-                let shareVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
-                present(shareVC, animated: true)
+                if !cancelled {
+                    progressAlertController.dismiss(animated: true) { [weak self] in
+                        let shareVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
+                        self?.present(shareVC, animated: true)
+                    }
+                }
             } catch {
+                progressAlertController.dismiss(animated: true)
                 ToastWindow.shared.showError(text: "Failed to fetch media to share")
             }
         }
