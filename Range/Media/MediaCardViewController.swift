@@ -231,6 +231,9 @@ class MediaCardViewController: SheetCardViewController {
                     indexPath: indexPath
                 )
             }
+
+        collectionView
+            .addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
     }
 
     private func setupSelectButton() {
@@ -317,6 +320,24 @@ class MediaCardViewController: SheetCardViewController {
             .allSatisfy(selectedUploads.contains)
     }
 
+    /// Toggle the selection for upload at given indexPath and update all relevant UI elements (toggle section, update bottom bar)
+    private func toggleSelectionAndUpdateUI(forIndexPath indexPath: IndexPath) {
+        guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
+        let selected = !selectedUploads.contains(item.id)
+        markIndexPath(indexPath, selected: selected)
+        if selected {
+            // markSection selected if all uploads selected
+            if allItemsSelected(inSection: indexPath.section) {
+                markSection(indexPath.section, selected: true)
+            }
+        } else {
+            markSection(indexPath.section, selected: false)
+        }
+        updateBulkActionsBottomBarVisibility()
+        updateSelectedMediaCountLabel()
+    }
+
+    /// Marks the selected indexPath cell as selected and add/remove to selectedUploads
     private func markIndexPath(_ indexPath: IndexPath, selected: Bool) {
         guard let uploadId = dataSource.itemIdentifier(for: indexPath)?.upload.id else { return }
         if selected {
@@ -345,6 +366,21 @@ class MediaCardViewController: SheetCardViewController {
         let newUploads = Set<String>(uploads.map(\.id))
         // Update the selectedUploads and remove all no longer existing uploads
         selectedUploads.formIntersection(newUploads)
+    }
+
+    /// Handle long press on cells - enabled select mode if not enabled and select given cell
+    @objc func handleLongPress(gesture: UILongPressGestureRecognizer!) {
+        guard gesture.state == .began else { return }
+
+        let point = gesture.location(in: collectionView)
+        guard let indexPath = collectionView.indexPathForItem(at: point) else { return }
+
+        // enable select mode if in normal mode
+        if mode == .normal {
+            toggleMode()
+        }
+        // handle selection/deselection
+        toggleSelectionAndUpdateUI(forIndexPath: indexPath)
     }
 }
 
@@ -649,8 +685,8 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
     }
 
     func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let upload = dataSource.itemIdentifier(for: indexPath)?.upload else { return }
         if mode == .normal {
+            guard let upload = dataSource.itemIdentifier(for: indexPath)?.upload else { return }
             UIApplication.shared.sendAction(
                 #selector(ProjectFlowActions.showFullscreenMediaAction),
                 to: nil,
@@ -658,19 +694,7 @@ extension MediaCardViewController: UICollectionViewDelegate, UICollectionViewDel
                 for: FlowEvent(upload, source: .media)
             )
         } else {
-            // toggle selected
-            let selected = !selectedUploads.contains(upload.id)
-            markIndexPath(indexPath, selected: selected)
-            if selected {
-                // markSection selected if all uploads selected
-                if allItemsSelected(inSection: indexPath.section) {
-                    markSection(indexPath.section, selected: true)
-                }
-            } else {
-                markSection(indexPath.section, selected: false)
-            }
-            updateBulkActionsBottomBarVisibility()
-            updateSelectedMediaCountLabel()
+            toggleSelectionAndUpdateUI(forIndexPath: indexPath)
         }
     }
 }
@@ -716,8 +740,11 @@ extension MediaCardViewController {
             headerView.mark(selected: mode == .normal ? nil : selectedSections.contains(indexPath.section))
             if mode == .select {
                 headerView.addGestureRecognizer(UITapGestureRecognizer(
-                    target: self,
-                    action: #selector(headerTapAction(sender:))
+                    target: self, action: #selector(headerTapAction)
+                ))
+            } else {
+                headerView.addGestureRecognizer(UILongPressGestureRecognizer(
+                    target: self, action: #selector(headerLongPressAction)
                 ))
             }
             return headerView
@@ -732,6 +759,21 @@ extension MediaCardViewController {
             // a little hack, the name displayed for the section is it's identifier
             let sectionIdentifier = headerView.label.text,
             let sectionIndex = dataSource.index(for: sectionIdentifier) else { return }
+        toggleSectionAndAllItemsSelected(sectionIndex: sectionIndex)
+        updateBulkActionsBottomBarVisibility()
+        updateSelectedMediaCountLabel()
+    }
+
+    @objc private func headerLongPressAction(gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        guard
+            let headerView = gesture.view as? MediaCollectionViewHeader,
+            // a little hack, the name displayed for the section is it's identifier
+            let sectionIdentifier = headerView.label.text,
+            let sectionIndex = dataSource.index(for: sectionIdentifier) else { return }
+        if mode == .normal {
+            toggleMode()
+        }
         toggleSectionAndAllItemsSelected(sectionIndex: sectionIndex)
         updateBulkActionsBottomBarVisibility()
         updateSelectedMediaCountLabel()
