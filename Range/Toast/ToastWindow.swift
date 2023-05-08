@@ -57,4 +57,9 @@ class ToastWindow: UIWindow {
     func showWarning(text: String) {
         showToast(text: text, color: .Orange_03, borderColor: .Orange_04)
     }
+
+    /// Helper function for showing toast with predefined color for success.
+    func showSuccess(text: String) {
+        showToast(text: text, color: .Green_03, borderColor: .Green_03)
+    }
 }
