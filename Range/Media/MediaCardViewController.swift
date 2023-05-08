@@ -37,6 +37,8 @@ class MediaCardViewController: SheetCardViewController {
     private var selectedMediaCountLabel: UILabel?
     private var bulkActionsButton: UIButton?
 
+    private let mediaFiltersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
+
     /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source
     /// will need hash when computing the diff and the Upload may already be gone (if some upload was removed)
     struct CollectionItem: Hashable {
@@ -108,6 +110,8 @@ class MediaCardViewController: SheetCardViewController {
             make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
+
+        setupMediaFiltersButton()
 
         observeUploads()
     }
@@ -384,6 +388,20 @@ class MediaCardViewController: SheetCardViewController {
     }
 }
 
+// MARK: - media filters
+
+extension MediaCardViewController {
+    private func setupMediaFiltersButton() {
+        // TODO: 1107
+//        mediaFiltersButton.addTarget(self, action: #selector(mediaFiltersButtonTapped), for: .touchUpInside)
+        containerView.addSubview(mediaFiltersButton)
+        mediaFiltersButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-12)
+        }
+    }
+}
+
 // MARK: - bulk actions
 
 extension MediaCardViewController {
@@ -463,6 +481,10 @@ extension MediaCardViewController {
                     make.leading.trailing.equalToSuperview()
                     make.top.equalTo(bottomBar.superview!.snp.bottom)
                 }
+                mediaFiltersButton.snp.remakeConstraints { make in
+                    make.trailing.equalToSuperview().inset(12)
+                    make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-12)
+                }
                 UIView.animate(withDuration: 0.2) { [weak self] in
                     self?.containerView.layoutIfNeeded()
                 }
@@ -475,6 +497,10 @@ extension MediaCardViewController {
                 bottomBar.snp.remakeConstraints { make in
                     make.leading.trailing.equalToSuperview()
                     make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                }
+                mediaFiltersButton.snp.remakeConstraints { make in
+                    make.trailing.equalToSuperview().inset(12)
+                    make.bottom.equalTo(bottomBar.snp.top).offset(-12)
                 }
                 UIView.animate(withDuration: 0.2) { [weak self] in
                     self?.containerView.layoutIfNeeded()
