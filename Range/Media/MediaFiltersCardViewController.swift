@@ -17,12 +17,18 @@ class MediaFiltersCardViewController: SheetCardViewController {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
 
+    private var mediaTypeToggle: SegmentedControl!
     private let filterByAuthorSwitch = UISwitch()
     private let usersView: SelectedUsersView
     private let filterByTagsSwitch = UISwitch()
     private let tagsView: SelectedTagsView
 
     private var gradientViews = [GradientView]()
+
+    // rounded background behind the users and tags (rendered behind the views)
+    private let usersTagsBgView = UIView()
+    // rounded stroke behind the users and tags (rendered on top of the views)
+    private let usersTagsStrokeView = UIView()
 
     /// Initializer
     ///
@@ -49,6 +55,13 @@ class MediaFiltersCardViewController: SheetCardViewController {
             title: String(localized: "Media Filters"),
             subtitle: "pins on canvas"
         )
+
+        let mediaTypeActionItems = MediaFilters.MediaTypeFilter.allCases.map { mediaTypeFilter in
+            ActionItem(title: mediaTypeFilter.displayName) { [weak self] in
+                self?.mediaFilters.mediaTypeFilter = mediaTypeFilter
+            }
+        }
+        mediaTypeToggle = SegmentedControl(items: mediaTypeActionItems)
 
         usersViewModel.addDelegate(self)
         tagsViewModel.addDelegate(self)
@@ -78,6 +91,9 @@ class MediaFiltersCardViewController: SheetCardViewController {
     }
 
     private func updateControlsStateFromFilters() {
+        let mediaTypeToggleOptionIndex = MediaFilters.MediaTypeFilter.allCases
+            .lastIndex(of: mediaFilters.mediaTypeFilter) ?? 0
+        mediaTypeToggle.setSelectedSegmentIndex(mediaTypeToggleOptionIndex, animated: true)
         filterByAuthorSwitch.setOn(mediaFilters.authorFilter != nil, animated: false)
         filterByTagsSwitch.setOn(mediaFilters.tagsFilter != nil, animated: false)
         usersView.setVisible(mediaFilters.authorFilter != nil, animated: false)
@@ -122,17 +138,20 @@ class MediaFiltersCardViewController: SheetCardViewController {
 
         // Stack view setup
         stackView.axis = .vertical
-        stackView.layer.cornerRadius = 13
-        stackView.layer.borderWidth = 1
-        stackView.backgroundColor = .dynamic(.Neutral_09)
+        stackView.backgroundColor = .clear
         scrollView.addSubview(stackView)
         stackView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview().inset(16)
         }
 
+        addMediaTypeView()
+
         // ----- Author --------------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Filter by Users")), control: filterByAuthorSwitch,
-            bottomInset: 4) // the rest = 9 is added below users view
+        let usersTagsTopView = add(
+            label: createLabel(text: String(localized: "Filter by Users")),
+            control: filterByAuthorSwitch,
+            bottomInset: 4
+        ) // the rest = 9 is added below users view
         addUsersView()
         addSpace(height: 9)
         addSeparator()
@@ -141,12 +160,27 @@ class MediaFiltersCardViewController: SheetCardViewController {
         add(label: createLabel(text: String(localized: "Filter by Tags")), control: filterByTagsSwitch,
             bottomInset: 4) // the rest = 9 is added below tags view
         addTagsView()
-        addSpace(height: 9)
-        addSeparator()
+        let usersTagsBottomView = addSpace(height: 9)
+
+        usersTagsBgView.backgroundColor = .dynamic(.Neutral_09)
+        usersTagsStrokeView.layer.borderWidth = 1
+        usersTagsStrokeView.backgroundColor = nil
+        stackView.insertSubview(usersTagsBgView, belowSubview: usersTagsTopView)
+        stackView.addSubview(usersTagsStrokeView)
+        for view in [usersTagsBgView, usersTagsStrokeView] {
+            view.isUserInteractionEnabled = false
+            view.layer.cornerRadius = 13
+            view.snp.makeConstraints { make in
+                make.leading.trailing.top.equalTo(usersTagsTopView)
+                make.bottom.equalTo(usersTagsBottomView)
+            }
+        }
     }
 
     /// Adds given label and control to the stack view with proper insets
-    private func add(label: UILabel, control: UIView, topInset: Double = 13, bottomInset: Double = 13) {
+    @discardableResult private func add(label: UILabel, control: UIView, topInset: Double = 13,
+                                        bottomInset: Double = 13) -> UIView
+    {
         // wrapper to add leading/trailing insets
         let wrapper = UIView()
         let labelAndControl = UIStackView()
@@ -162,10 +196,11 @@ class MediaFiltersCardViewController: SheetCardViewController {
             make.leading.trailing.equalToSuperview().inset(16)
             make.width.equalTo(scrollView).offset(-64)
         }
+        return wrapper
     }
 
     /// add some empty space
-    private func addSpace(height: Double) {
+    @discardableResult private func addSpace(height: Double) -> UIView {
         let space = UIView()
         space.backgroundColor = stackView.backgroundColor
         stackView.addArrangedSubview(space)
@@ -173,6 +208,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(height)
         }
+        return space
     }
 
     /// leftInset insets the line from the left (makes it shorter)
@@ -184,6 +220,18 @@ class MediaFiltersCardViewController: SheetCardViewController {
             make.leading.equalToSuperview().inset(leftInset)
             make.height.equalTo(1)
         }
+    }
+
+    private func addMediaTypeView() {
+        let label = createSmallLabel(text: String(localized: "Showing"))
+        stackView.addArrangedSubview(label)
+        stackView.setCustomSpacing(8, after: label)
+        stackView.addArrangedSubview(mediaTypeToggle)
+        mediaTypeToggle.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(32)
+        }
+        stackView.setCustomSpacing(16, after: mediaTypeToggle)
     }
 
     private func addUsersView() {
@@ -245,6 +293,16 @@ class MediaFiltersCardViewController: SheetCardViewController {
         return rightGradientView
     }
 
+    private func createSmallLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .dynamic(.Neutral_05)
+        label.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
+        return label
+    }
+
     private func createLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
@@ -289,7 +347,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
 
     override func updateColors() {
         super.updateColors()
-        stackView.layer.borderColor = chooseColor(.Neutral_07).cgColor
+        usersTagsStrokeView.layer.borderColor = chooseColor(.Neutral_07).cgColor
         let gradientColor = chooseColor(.Neutral_09)
         gradientViews.forEach {
             $0.gradientLayer.colors = [

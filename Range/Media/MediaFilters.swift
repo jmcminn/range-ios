@@ -6,8 +6,16 @@ class MediaFilters: Equatable {
     static let UpdateNotificationName = Notification.Name("io.range.App.MediaFiltersUpdated")
 
     /// Defines possible values for media type filter
-    enum MediaTypeFilter {
+    enum MediaTypeFilter: CaseIterable {
         case all, photos, documents
+
+        var displayName: String {
+            switch self {
+            case .all: return String(localized: "All Media")
+            case .photos: return String(localized: "Photos")
+            case .documents: return String(localized: "Documents")
+            }
+        }
     }
 
     /// whether to show all media or only photos or documents
