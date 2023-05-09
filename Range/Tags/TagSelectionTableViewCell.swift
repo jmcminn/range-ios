@@ -49,7 +49,9 @@ class TagSelectionTableViewCell: UITableViewCell {
                 )
                 updateSelection()
 
-                let tagName = tagViewModel.id == TagViewModel.untaggedId ? "Show untagged pins" : tagViewModel.name
+                let tagName = tagViewModel.id == TagViewModel.untaggedId
+                    ? "Show \(tagViewModel.name.lowercased())"
+                    : tagViewModel.name
                 let attributedText = NSMutableAttributedString(
                     string: tagName,
                     attributes: [

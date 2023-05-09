@@ -14,7 +14,6 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private let tagsViewModel: TagsViewModel
 
     private var resetButton: ButtonWithTapAreaInsets!
-    private let numberOfPinsLabel = UILabel()
 
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
@@ -72,7 +71,6 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         addSheetHeaderShadowBasedOnDrivingScrollView()
 
         setupResetButton()
-        setupNumberOfPinsLabel()
 
         // add a switch per status
         for status in statuses {
@@ -113,6 +111,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }), for: .valueChanged)
 
         updateControlsStateFromFilters()
+        updateColors()
     }
 
     private func updateControlsStateFromFilters() {
@@ -378,10 +377,6 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }
     }
 
-    private func setupNumberOfPinsLabel() {
-        sheetHeaderView.addSubview(numberOfPinsLabel)
-    }
-
     override func updateColors() {
         super.updateColors()
         stackView.layer.borderColor = chooseColor(.Neutral_07).cgColor
@@ -436,8 +431,9 @@ extension CanvasFiltersCardViewController: UsersViewModelDelegate {
     /// Show the picker that operates on usersViewModel
     func showUsersPicker() {
         guard let presentingVC = presentingVC else { return }
-        UserPickerCardViewController(title: "Assignee's", viewModel: usersViewModel)
-            .installAndShowCard(in: presentingVC)
+        let userPickerCardVC = UserPickerCardViewController(title: "Assignee's", viewModel: usersViewModel)
+        userPickerCardVC.showNoUserOption = true
+        userPickerCardVC.installAndShowCard(in: presentingVC)
     }
 
     /// Updates assignee filters when the usersViewModel is updated

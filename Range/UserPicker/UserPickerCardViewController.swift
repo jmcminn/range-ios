@@ -22,6 +22,9 @@ class UserPickerCardViewController: SheetCardViewController {
     private static var headerHeightWithSelectedUsers = 100
     private var headerHeightConstraint: Constraint?
 
+    /// Show a special row (in the 1st section) that allows for selecting the "no user option" (to remove the user in single selection or to selected the unassigned option in multiselect)
+    var showNoUserOption: Bool = false
+
     init(title: String, viewModel: UsersViewModel) {
         self.viewModel = viewModel
         searchView = SearchView(
@@ -237,18 +240,12 @@ extension UserPickerCardViewController: SearchViewDelegate {
 // MARK: - users table view delegate / data source
 
 extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSource {
-    var showNoAssignee: Bool {
-        // if it's a single selection with preselected user, add option to choose "no assignee"
-        // also show for multiselect (in multiselect user can choose "unassigned tasks")
-        viewModel.multiselect || viewModel.selectedUsers.count == 1
-    }
-
     func numberOfSections(in _: UITableView) -> Int {
-        showNoAssignee ? 2 : 1
+        showNoUserOption ? 2 : 1
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if showNoAssignee, section == 0 {
+        if showNoUserOption, section == 0 {
             // first section with one row to clear the selected user
             return 1
         }
@@ -256,7 +253,7 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if showNoAssignee, indexPath.section == 0 {
+        if showNoUserOption, indexPath.section == 0 {
             // first section with one row to clear the selected user
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: ClearUserTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect),
@@ -290,13 +287,13 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if viewModel.multiselect {
-            let user = indexPath.section == 0
+            let user = showNoUserOption && indexPath.section == 0
                 ? viewModel.unassignedUser
                 : viewModel.filteredUsers[indexPath.row]
             viewModel.set(userWithId: user.id, selected: !user.selected)
             tableView.reloadRows(at: [indexPath], with: .automatic)
         } else {
-            if showNoAssignee, indexPath.section == 0 {
+            if showNoUserOption, indexPath.section == 0 {
                 // clear the selected user
                 viewModel.clearSelection()
                 dismissCard()

@@ -24,7 +24,7 @@ class TagsViewModel: NSObject {
     private(set) var filteredTagsContainDirectMatch: Bool = false
 
     /// Special tag for filtering untagged pins
-    let untaggedTag = TagViewModel.untagged()
+    let untaggedTag: TagViewModel
 
     /// used for sorting the tags by name
     private let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
@@ -32,7 +32,11 @@ class TagsViewModel: NSObject {
     /// Allows for multiple delegates
     private var delegates = NSHashTable<TagsViewModelDelegate>.weakObjects()
 
-    init(model: ProjectModel, initialSelectedTags: [TagViewModel] = []) {
+    init(
+        model: ProjectModel,
+        initialSelectedTags: [TagViewModel] = [],
+        untaggedTagName: String = String(localized: "Untagged Pins")
+    ) {
         let nameSort = SortDescriptor(\TagViewModel.name, comparator: .localizedStandard)
         allTags = model.mainRealm.objects(Tag.self)
             .where { $0.placeholder == false }
@@ -51,6 +55,7 @@ class TagsViewModel: NSObject {
             .reversed()
 
         self.allTagsIndex = allTagsIndex
+        untaggedTag = TagViewModel(id: TagViewModel.untaggedId, name: untaggedTagName, usageCount: 0)
         self.allTagsIndex[untaggedTag.id] = untaggedTag
 
         super.init()
@@ -210,11 +215,6 @@ class TagViewModel: NSObject, Codable {
     /// Convenience initializer for new tags with auto generated id and given name
     convenience init(newTagWithName name: String) {
         self.init(id: generateRealmId(), name: name, usageCount: 0, newTag: true)
-    }
-
-    /// A special tag with id = untaggedId for filtering untagged pins
-    fileprivate static func untagged() -> TagViewModel {
-        TagViewModel(id: untaggedId, name: String(localized: "Untagged Pins"), usageCount: 0)
     }
 
     /// equatable to check for id only
