@@ -61,6 +61,8 @@
 		0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */; };
 		0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */; };
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */; };
+		0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */; };
+		0A2C7EE42A097126008F1FB9 /* MediaFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */; };
 		0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */; };
 		0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D928B145BA00E10503 /* CameraViewModel.swift */; };
 		0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F02836CA0500D04A1C /* ProjectModel.swift */; };
@@ -429,6 +431,8 @@
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBottomViewController.swift; sourceTree = "<group>"; };
 		0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationTagsCommand.swift; sourceTree = "<group>"; };
+		0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFilters.swift; sourceTree = "<group>"; };
+		0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A2E04D628AE399700E10503 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosPreviewViewController.swift; sourceTree = "<group>"; };
 		0A2E04D928B145BA00E10503 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
@@ -794,6 +798,8 @@
 				0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */,
 				0A05312A2937B2FA00738BA3 /* ImageMediaCollectionViewCell.swift */,
 				0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */,
+				0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */,
+				0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -1909,6 +1915,7 @@
 				0A374DE82927D0200036C184 /* UpdateGeometryArchivedCommand.swift in Sources */,
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
 				0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */,
+				0A2C7EE42A097126008F1FB9 /* MediaFiltersCardViewController.swift in Sources */,
 				0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */,
 				0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */,
 				0A34072F29C8617F007299A7 /* TypeScaleCardViewController.swift in Sources */,
@@ -2077,6 +2084,7 @@
 				0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
+				0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */,
 				0A374DE0292786530036C184 /* DeleteCommentCommand.swift in Sources */,
 				0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */,
 				0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */,

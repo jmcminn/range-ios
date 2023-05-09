@@ -37,6 +37,7 @@ class MediaCardViewController: SheetCardViewController {
     private var selectedMediaCountLabel: UILabel?
     private var bulkActionsButton: UIButton?
 
+    private let mediaFilters = MediaFilters()
     private let mediaFiltersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
 
     /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source
@@ -94,6 +95,7 @@ class MediaCardViewController: SheetCardViewController {
 
     deinit {
         notificationToken?.invalidate()
+        NotificationCenter.default.removeObserver(self)
     }
 
     override func viewDidLoad() {
@@ -114,6 +116,10 @@ class MediaCardViewController: SheetCardViewController {
         setupMediaFiltersButton()
 
         observeUploads()
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(mediaFiltersUpdated),
+            name: MediaFilters.UpdateNotificationName, object: nil
+        )
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -129,16 +135,10 @@ class MediaCardViewController: SheetCardViewController {
             case .initial:
                 self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
             case let .update(_, _, _, modifications):
-                self.reloadSelectedUploads()
-                self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
-                if !modifications.isEmpty {
-                    // if there are some modifications then reload the data as the cells don't listen
-                    // for changes (reload data is ok in media view, we don't need any animations here)
-                    self.collectionView.reloadData()
-                }
-                self.reloadSelectedSections()
-                updateBulkActionsBottomBarVisibility()
-                updateSelectedMediaCountLabel()
+                // reload uplods
+                // if there are some modifications then reload the collection view data as the cells
+                // don't listen for changes (reload data is ok in media view, we don't need any animations here)
+                reloadUploads(reloadCollectionView: !modifications.isEmpty)
             case let .error(error):
                 Logger.model.error("observing uploads failed: \(error.localizedDescription, privacy: .public)")
             }
@@ -150,7 +150,7 @@ class MediaCardViewController: SheetCardViewController {
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<String, CollectionItem> {
         var sectionName = ""
 
-        let uploads = uploads.sorted(by: \Upload.timestamp, ascending: false)
+        let uploads = filteredUploads.sorted(using: SortDescriptor(\Upload.timestamp, order: .reverse))
 
         var snapshot = NSDiffableDataSourceSnapshot<String, CollectionItem>()
         var sectionItems = [CollectionItem]()
@@ -367,9 +367,21 @@ class MediaCardViewController: SheetCardViewController {
 
     /// Called after uploads were updated, some uploads might be gone, so they're no longer selected
     private func reloadSelectedUploads() {
-        let newUploads = Set<String>(uploads.map(\.id))
+        let newUploads = Set<String>(filteredUploads.map(\.id))
         // Update the selectedUploads and remove all no longer existing uploads
         selectedUploads.formIntersection(newUploads)
+    }
+
+    /// Called when uploads or filters have changed
+    private func reloadUploads(reloadCollectionView: Bool) {
+        reloadSelectedUploads()
+        dataSource.apply(prepareSnapshot(), animatingDifferences: false)
+        if reloadCollectionView {
+            collectionView.reloadData()
+        }
+        reloadSelectedSections()
+        updateBulkActionsBottomBarVisibility()
+        updateSelectedMediaCountLabel()
     }
 
     /// Handle long press on cells - enabled select mode if not enabled and select given cell
@@ -392,13 +404,27 @@ class MediaCardViewController: SheetCardViewController {
 
 extension MediaCardViewController {
     private func setupMediaFiltersButton() {
-        // TODO: 1107
-//        mediaFiltersButton.addTarget(self, action: #selector(mediaFiltersButtonTapped), for: .touchUpInside)
+        mediaFiltersButton.addTarget(self, action: #selector(showMediaFiltersCard), for: .touchUpInside)
         containerView.addSubview(mediaFiltersButton)
         mediaFiltersButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(12)
             make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-12)
         }
+    }
+
+    @objc func showMediaFiltersCard() {
+        let mediaFiltersCardVC = MediaFiltersCardViewController(model: projectModel, mediaFilters: mediaFilters)
+        mediaFiltersCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    @objc func mediaFiltersUpdated() {
+        // reload uploads when filters change, no need to reload the collection view data as
+        // this change is only about adding/removing cells (and not updating them)
+        reloadUploads(reloadCollectionView: false)
+    }
+
+    private var filteredUploads: [Upload] {
+        [Upload](uploads).filter(mediaFilters.match)
     }
 }
 

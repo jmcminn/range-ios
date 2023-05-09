@@ -28,8 +28,8 @@ class Upload: Object, WithPlaceholder {
     @Persisted var author: Participant?
     /// Backlink to the Collaboration. This is automatically updated whenever this upload is added to or removed from the parent
     @Persisted(originProperty: "uploads") var collaboration: LinkingObjects<Collaboration>
-    // timestamp
-    @Persisted var timestamp: Date
+    // timestamp (@objc to use it in SortDescriptor)
+    @objc @Persisted var timestamp: Date
     // name
     @Persisted var name: String?
     // description
