@@ -660,8 +660,10 @@ extension MediaCardViewController {
                         let shareVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
                         shareVC.completionWithItemsHandler = { _, completed, _, _ in
                             if completed {
-                                ToastWindow.shared
-                                    .showSuccess(text: String(localized: "Media items successfully shared"))
+                                ToastWindow.shared.showSuccess(
+                                    iconName: "checkmark.circle.fill",
+                                    text: String(localized: "Media items successfully shared")
+                                )
                             }
                         }
                         self?.present(shareVC, animated: true)

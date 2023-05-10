@@ -44,8 +44,13 @@ class ToastWindow: UIWindow {
     /// Show toast with given text and color.
     /// This will replace the previously shown toast (if any)
     /// The toast will automatically disappear after 5 seconds or when tapped.
-    private func showToast(text: String, color: UIColor, borderColor: UIColor? = nil) {
-        (rootViewController as? ToastViewController)?.showToast(text: text, color: color, borderColor: borderColor)
+    private func showToast(iconName: String? = nil, text: String, color: UIColor, borderColor: UIColor? = nil) {
+        (rootViewController as? ToastViewController)?.showToast(
+            iconName: iconName,
+            text: text,
+            color: color,
+            borderColor: borderColor
+        )
     }
 
     /// Helper function for showing toast with predefined color for error.
@@ -59,7 +64,7 @@ class ToastWindow: UIWindow {
     }
 
     /// Helper function for showing toast with predefined color for success.
-    func showSuccess(text: String) {
-        showToast(text: text, color: .Green_03, borderColor: .Green_03)
+    func showSuccess(iconName: String? = nil, text: String) {
+        showToast(iconName: iconName, text: text, color: .Green_03, borderColor: .Green_03)
     }
 }

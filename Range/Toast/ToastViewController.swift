@@ -37,8 +37,8 @@ class ToastViewController: UIViewController {
     /// Show toast with given text and color.
     /// This will replace the previously shown toast (if any)
     /// The toast will automatically disappear after 5 seconds or when tapped.
-    func showToast(text: String, color: UIColor, borderColor: UIColor? = nil) {
-        let toastView = ToastView(text: text, backgroundColor: color, borderColor: borderColor)
+    func showToast(iconName: String? = nil, text: String, color: UIColor, borderColor: UIColor? = nil) {
+        let toastView = ToastView(iconName: iconName, text: text, backgroundColor: color, borderColor: borderColor)
         _hideCurrentToastView {
             self._showToastView(toastView)
         }
