@@ -63,6 +63,7 @@
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */; };
 		0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */; };
 		0A2C7EE42A097126008F1FB9 /* MediaFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */; };
+		0A2C7EE62A0AC858008F1FB9 /* DateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE52A0AC858008F1FB9 /* DateButton.swift */; };
 		0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */; };
 		0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D928B145BA00E10503 /* CameraViewModel.swift */; };
 		0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F02836CA0500D04A1C /* ProjectModel.swift */; };
@@ -433,6 +434,7 @@
 		0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationTagsCommand.swift; sourceTree = "<group>"; };
 		0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFilters.swift; sourceTree = "<group>"; };
 		0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFiltersCardViewController.swift; sourceTree = "<group>"; };
+		0A2C7EE52A0AC858008F1FB9 /* DateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateButton.swift; sourceTree = "<group>"; };
 		0A2E04D628AE399700E10503 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosPreviewViewController.swift; sourceTree = "<group>"; };
 		0A2E04D928B145BA00E10503 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
@@ -800,6 +802,7 @@
 				0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */,
 				0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */,
 				0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */,
+				0A2C7EE52A0AC858008F1FB9 /* DateButton.swift */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -1941,6 +1944,7 @@
 				0A374DD8292418230036C184 /* ToastWindow.swift in Sources */,
 				0AB8558128FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift in Sources */,
 				0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */,
+				0A2C7EE62A0AC858008F1FB9 /* DateButton.swift in Sources */,
 				0A2F3305283BE18900D04A1C /* LaunchScreenViewController.swift in Sources */,
 				0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */,
 				0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */,

@@ -194,14 +194,24 @@ extension Calendar {
     // compute the distance in days in a way that time of a day doesn't matter
     // (e.g. if from is Monday and to is Wednesday on the same week it'll say 2, no matter what time of the day)
     func _daysAgoString(from: Date, to: Date) -> String {
+        if let daysAgo = _daysAgo(from: from, to: to) {
+            return "\(daysAgo) days ago"
+        } else {
+            return ""
+        }
+    }
+
+    // compute the distance in days in a way that time of a day doesn't matter
+    // (e.g. if from is Monday and to is Wednesday on the same week it'll say 2, no matter what time of the day)
+    func _daysAgo(from: Date, to: Date) -> Int? {
         // reset time of a day
         if let fromNoTime = date(bySettingHour: 0, minute: 0, second: 0, of: from),
            let toNoTime = date(bySettingHour: 0, minute: 0, second: 0, of: to),
            let daysAgo = dateComponents([.day], from: fromNoTime, to: toNoTime).day
         {
-            return "\(daysAgo) days ago"
+            return daysAgo
         } else {
-            return ""
+            return nil
         }
     }
 

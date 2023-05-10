@@ -21,6 +21,12 @@ class MediaFilters: Equatable {
     /// whether to show all media or only photos or documents
     var mediaTypeFilter: MediaTypeFilter = .all { didSet { postUpdate() }}
 
+    /// If not nil then match Uploads with timestamp `>=` given date (this will be set to the beginning of the day, so it's inclusive)
+    private(set) var fromDate: Date? { didSet { postUpdate() }}
+
+    /// If not nil then match Uploads with timestamp `<=` given date (this will be set to the end of the day, so it's inclusive)
+    private(set) var toDate: Date? { didSet { postUpdate() }}
+
     /// This is not nil when user enabled filtering by author.
     /// If not nil and not empty then only match the uploads that have any of given authors
     var authorFilter: [String]? { didSet { postUpdate() }}
@@ -34,10 +40,30 @@ class MediaFilters: Equatable {
         NotificationCenter.default.post(name: MediaFilters.UpdateNotificationName, object: self)
     }
 
+    /// Set from date. Any time component is removed to use the beginning of a day (we want the fromDate to be inclusive in filters)
+    func setFromDate(_ date: Date?) {
+        if let date = date {
+            fromDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: date)
+        } else {
+            fromDate = nil
+        }
+    }
+
+    /// Set to date. Time is set to end of a day (we want the toDate to be inclusive in filters)
+    func setToDate(_ date: Date?) {
+        if let date = date {
+            toDate = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: date)
+        } else {
+            toDate = nil
+        }
+    }
+
     /// Reset the filters to default values
     func resetToDefaults() {
         let defaults = MediaFilters()
         mediaTypeFilter = defaults.mediaTypeFilter
+        fromDate = defaults.fromDate
+        toDate = defaults.toDate
         authorFilter = defaults.authorFilter
         tagsFilter = defaults.tagsFilter
         postUpdate()
@@ -45,6 +71,8 @@ class MediaFilters: Equatable {
 
     static func == (lhs: MediaFilters, rhs: MediaFilters) -> Bool {
         if lhs.mediaTypeFilter != rhs.mediaTypeFilter { return false }
+        if lhs.fromDate != rhs.fromDate { return false }
+        if lhs.toDate != rhs.toDate { return false }
         if lhs.authorFilter != rhs.authorFilter { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
         return true
@@ -60,6 +88,9 @@ extension MediaFilters {
     func match(_ upload: Upload) -> Bool {
         if mediaTypeFilter == .photos, !upload.isImage { return false }
         if mediaTypeFilter == .documents, upload.isImage { return false }
+
+        if let fromDate = fromDate, upload.timestamp < fromDate { return false }
+        if let toDate = toDate, upload.timestamp > toDate { return false }
 
         if let authorFilter = authorFilter, !authorFilter.isEmpty {
             if !matchAuthor(authorFilter, upload: upload) { return false }

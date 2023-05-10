@@ -22,11 +22,18 @@ class DatePickerCardViewController: SheetCardViewController {
     /// - Parameters:
     ///     - title:                         title of the card
     ///     - initialSelectedDate: the date to select initially, or today if `nil`
-    init(title: String?, timeZone: TimeZone, initialSelectedDate: Date? = nil, onDatePicked: ((Date?) -> Void)? = nil) {
+    init(
+        title: String?,
+        timeZone: TimeZone,
+        minimumDate: Date? = nil,
+        initialSelectedDate: Date? = nil,
+        onDatePicked: ((Date?) -> Void)? = nil
+    ) {
         self.timeZone = timeZone
         super.init(icon: UIImage(systemName: "calendar"), title: title)
         selectedDate = initialSelectedDate
         self.onDatePicked = onDatePicked
+        datePicker.minimumDate = minimumDate
     }
 
     override func viewDidLoad() {

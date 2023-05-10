@@ -18,6 +18,8 @@ class MediaFiltersCardViewController: SheetCardViewController {
     private let stackView = UIStackView()
 
     private var mediaTypeToggle: SegmentedControl!
+    private let fromDateButton = DateButton(variant: .from)
+    private let toDateButton = DateButton(variant: .to)
     private let filterByAuthorSwitch = UISwitch()
     private let usersView: SelectedUsersView
     private let filterByTagsSwitch = UISwitch()
@@ -77,6 +79,8 @@ class MediaFiltersCardViewController: SheetCardViewController {
 
         setupViews()
 
+        fromDateButton.addTarget(self, action: #selector(onFromDateAction), for: .touchUpInside)
+        toDateButton.addTarget(self, action: #selector(onToDateAction), for: .touchUpInside)
         filterByAuthorSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByAuthorSwitchAction()
         }), for: .valueChanged)
@@ -94,6 +98,8 @@ class MediaFiltersCardViewController: SheetCardViewController {
         let mediaTypeToggleOptionIndex = MediaFilters.MediaTypeFilter.allCases
             .lastIndex(of: mediaFilters.mediaTypeFilter) ?? 0
         mediaTypeToggle.setSelectedSegmentIndex(mediaTypeToggleOptionIndex, animated: true)
+        fromDateButton.setDate(mediaFilters.fromDate)
+        toDateButton.setDate(mediaFilters.toDate)
         filterByAuthorSwitch.setOn(mediaFilters.authorFilter != nil, animated: false)
         filterByTagsSwitch.setOn(mediaFilters.tagsFilter != nil, animated: false)
         usersView.setVisible(mediaFilters.authorFilter != nil, animated: false)
@@ -144,7 +150,11 @@ class MediaFiltersCardViewController: SheetCardViewController {
             make.top.bottom.leading.trailing.equalToSuperview().inset(16)
         }
 
+        // ----- Media type ----------------------------------------------------------------------
         addMediaTypeView()
+
+        // ----- Date ----------------------------------------------------------------------------
+        addDateView()
 
         // ----- Author --------------------------------------------------------------------------
         let usersTagsTopView = add(
@@ -232,6 +242,31 @@ class MediaFiltersCardViewController: SheetCardViewController {
             make.height.equalTo(32)
         }
         stackView.setCustomSpacing(16, after: mediaTypeToggle)
+    }
+
+    private func addDateView() {
+        let label = createSmallLabel(text: String(localized: "By Date"))
+        stackView.addArrangedSubview(label)
+        stackView.setCustomSpacing(8, after: label)
+
+        let wrapper = UIView()
+        wrapper.addSubview(fromDateButton)
+        fromDateButton.snp.makeConstraints { make in
+            make.leading.top.height.equalToSuperview()
+            make.width.equalToSuperview().dividedBy(2).offset(-8)
+        }
+        wrapper.addSubview(toDateButton)
+        toDateButton.snp.makeConstraints { make in
+            make.trailing.top.height.equalToSuperview()
+            make.width.equalTo(fromDateButton)
+        }
+
+        stackView.addArrangedSubview(wrapper)
+        wrapper.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(48)
+        }
+        stackView.setCustomSpacing(16, after: wrapper)
     }
 
     private func addUsersView() {
@@ -369,6 +404,63 @@ class MediaFiltersCardViewController: SheetCardViewController {
 
     override func drivingScrollView() -> UIScrollView? {
         scrollView
+    }
+}
+
+// MARK: - dates
+
+extension MediaFiltersCardViewController {
+    @objc func onFromDateAction() {
+        showDatePicker(fromDate: true)
+    }
+
+    @objc func onToDateAction() {
+        showDatePicker(fromDate: false)
+    }
+
+    /// show picker for from or to date
+    func showDatePicker(fromDate: Bool) {
+        guard let presentingVC = presentingVC else { return }
+        DatePickerCardViewController(
+            title: fromDate ? String(localized: "From Date") : String(localized: "To Date"),
+            timeZone: TimeZone.current,
+            minimumDate: fromDate ? nil : mediaFilters.fromDate, // to date should be after from date
+            initialSelectedDate: fromDate ? mediaFilters.fromDate : mediaFilters.toDate,
+            onDatePicked: { [weak self] newDate in
+                if fromDate {
+                    self?.updateToDateWhenFromDateChanges(
+                        previousFromDate: self?.mediaFilters.fromDate,
+                        newFromDate: newDate
+                    )
+                    self?.mediaFilters.setFromDate(newDate)
+                } else {
+                    self?.mediaFilters.setToDate(newDate)
+                }
+                self?.updateControlsStateFromFilters()
+            }
+        )
+        .installAndShowCard(in: presentingVC)
+    }
+
+    /// Update toDate when fromDate changes to mimic the behavior of the calendar app in a way that keeps the distance between the
+    /// dates if both are set and the fromDate changes:
+    /// 1. if previousFromDate and toDate are not nil then update the toDate if newFromDate is not nil (keep the date range length)
+    /// 2. if previousFromDate is nil and toDate is not nil then update the toDate if newFromDate is > toDate (so we don't end up with fromDate > toDate)
+    /// 3. in all other cases don't do anything
+    func updateToDateWhenFromDateChanges(previousFromDate: Date?, newFromDate: Date?) {
+        guard let toDate = mediaFilters.toDate, let newFromDate = newFromDate else { return }
+
+        if let previousFromDate = previousFromDate {
+            //  keep the range length
+            let calendar = Calendar.current
+            if let numberOfDaysBetweenFromAndTo = calendar._daysAgo(from: previousFromDate, to: toDate) {
+                let toDate = calendar.date(byAdding: .day, value: numberOfDaysBetweenFromAndTo, to: newFromDate)
+                mediaFilters.setToDate(toDate)
+            }
+        } else if newFromDate > toDate {
+            // make sure that fromDate <= toDate
+            mediaFilters.setToDate(newFromDate)
+        }
     }
 }
 
