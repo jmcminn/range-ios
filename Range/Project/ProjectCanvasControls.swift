@@ -12,6 +12,7 @@ class ProjectCanvasControls: PassthroughView {
         case canvasSelectorButton = 1004
         case canvasSourceSelectorButton = 1005
         case canvasFiltersButton = 1006
+        case canvasFiltersIndicatorBadge = 1007
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -280,5 +281,29 @@ extension ProjectCanvasControls {
     @objc private func canvasFiltersButtonTapped() {
         UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasFiltersAction),
                                         to: nil, from: canvasSourceSelectorButton, for: nil)
+    }
+
+    /// Access to currently showing canvas filters indicators badge, or nil if not showing
+    var canvasFiltersIndicatorBadge: BadgeView? {
+        canvasFiltersButton?.subviews
+            .first { $0.tag == ViewTag.canvasFiltersIndicatorBadge.rawValue } as? BadgeView
+    }
+
+    func showCanvasFiltersIndicatorBadge() {
+        guard let canvasFiltersButton = canvasFiltersButton else {
+            fatalError("showCanvasFiltersIndicatorBadge called when canvasFiltersButton is not shown")
+        }
+        let badge = BadgeView()
+        badge.backgroundColor = .systemGreen
+        badge.contentInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        badge.textColor = .Neutral_10
+        badge.font = .systemFont(ofSize: 11, weight: .bold)
+        badge.isUserInteractionEnabled = false
+        badge.tag = ViewTag.canvasFiltersIndicatorBadge.rawValue
+        canvasFiltersButton.addSubview(badge)
+        badge.snp.makeConstraints { make in
+            make.centerX.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview().offset(-16)
+        }
     }
 }

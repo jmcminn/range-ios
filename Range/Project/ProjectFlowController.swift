@@ -34,6 +34,8 @@ final class ProjectFlowController: UIViewController {
     private var currentCanvasObservation: NSKeyValueObservation?
     /// Observe the currently selected model.currentCanvas
     private var canvasNotificationToken: NotificationToken?
+    /// Token for notifications about changes in the canvas geometries
+    private var geometriesNotificationToken: NotificationToken?
 
     /// id of registered canvas delegate
     var canvasDelegateId: UUID?
@@ -168,6 +170,13 @@ final class ProjectFlowController: UIViewController {
         controls.showCanvasSelectorButton(aboveView: actionCardVC.view)
         controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
         controls.showCanvasFiltersButton(aboveView: controls.canvasSourceSelectorButton!)
+        controls.showCanvasFiltersIndicatorBadge()
+        updateFiltersIndicatorBadge()
+        // observe the filters and update the filters indicator badge on change
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(updateFiltersIndicatorBadge),
+            name: CanvasFilters.UpdateNotificationName, object: nil
+        )
         updateCanvasSourceSelectorVisibility()
 
         showDefaultCanvasUI(animated: false)
@@ -186,6 +195,7 @@ final class ProjectFlowController: UIViewController {
                 useNativeViews: self.debugSettings.nativeViewsForPins,
                 onReloaded: nil
             )
+            self.updateFiltersIndicatorBadge()
         }
 
         canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
@@ -194,6 +204,10 @@ final class ProjectFlowController: UIViewController {
     }
 
     private func observeCanvas() {
+        geometriesNotificationToken?.invalidate()
+        geometriesNotificationToken = model.currentCanvas.pins.observe { [weak self] _ in
+            self?.updateFiltersIndicatorBadge()
+        }
         canvasNotificationToken?.invalidate()
         canvasNotificationToken = model.currentCanvas.observe { [weak self] change in
             if case .deleted = change {
@@ -274,7 +288,10 @@ final class ProjectFlowController: UIViewController {
         currentCanvasObservation = nil
         canvasNotificationToken?.invalidate()
         canvasNotificationToken = nil
+        geometriesNotificationToken?.invalidate()
+        geometriesNotificationToken = nil
         UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
+        NotificationCenter.default.removeObserver(self)
     }
 
     /// Show the default UI elements when viewing the canvas
@@ -403,6 +420,36 @@ extension ProjectFlowController: CanvasViewControllerDelegate {
     }
 
     func canvasTapRecognized(at _: CGPoint) {}
+}
+
+// MARK: - canvas filters {
+
+extension ProjectFlowController {
+    /// Updates the filters indicator badge visibility and number to indicate that filters are affecting the visible pins.
+    /// There is special treatment applied to archived pins - we don't want to show the indicator that archived pins are hidden when the
+    /// filters has them disabled (because we want to hide the archived pins by default)
+    /// Called when filters change or pins are updated or canvas is switched.
+    @objc private func updateFiltersIndicatorBadge() {
+        let allPins = model.currentCanvas.pins
+            .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
+
+        // filters hide the archived pins by default and we don't want to show the indicator if the
+        // only affected pins are the archived ones
+        let allNonArchivedPins = allPins.filter { !$0.isArchived }
+
+        let filteredPinsCount = allPins.filter(canvasFilters.match).count
+
+        if canvasFilters.showArchivedPins {
+            // don't show the indicator if filter is not impacting the visible pins
+            controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == allPins.count
+        } else {
+            // don't show the indicator if filter is not impacting the visible non archived pins
+            controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == allNonArchivedPins.count
+        }
+
+        // show the pins count (including the archived pins if enabled)
+        controls.canvasFiltersIndicatorBadge?.text = filteredPinsCount >= 99 ? "99+" : String(filteredPinsCount)
+    }
 }
 
 // MARK: - actions
