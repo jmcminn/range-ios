@@ -39,6 +39,7 @@ class MediaCardViewController: SheetCardViewController {
 
     private let mediaFilters = MediaFilters()
     private let mediaFiltersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
+    private let filtersIndicatorBadge = BadgeView()
 
     /// Conform to hashable by checking id only, we don't want the Upload being accessed for hashing as the diffable data source
     /// will need hash when computing the diff and the Upload may already be gone (if some upload was removed)
@@ -114,6 +115,8 @@ class MediaCardViewController: SheetCardViewController {
         }
 
         setupMediaFiltersButton()
+        setupFiltersIndicatorBadge()
+        updateFiltersIndicatorBadge()
 
         observeUploads()
         NotificationCenter.default.addObserver(
@@ -382,6 +385,7 @@ class MediaCardViewController: SheetCardViewController {
         reloadSelectedSections()
         updateBulkActionsBottomBarVisibility()
         updateSelectedMediaCountLabel()
+        updateFiltersIndicatorBadge()
     }
 
     /// Handle long press on cells - enabled select mode if not enabled and select given cell
@@ -409,6 +413,19 @@ extension MediaCardViewController {
         mediaFiltersButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(12)
             make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-12)
+        }
+    }
+
+    private func setupFiltersIndicatorBadge() {
+        filtersIndicatorBadge.backgroundColor = .systemGreen
+        filtersIndicatorBadge.contentInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        filtersIndicatorBadge.textColor = .Neutral_10
+        filtersIndicatorBadge.font = .systemFont(ofSize: 11, weight: .bold)
+        filtersIndicatorBadge.isUserInteractionEnabled = false
+        mediaFiltersButton.addSubview(filtersIndicatorBadge)
+        filtersIndicatorBadge.snp.makeConstraints { make in
+            make.centerX.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview().offset(-16)
         }
     }
 
@@ -485,6 +502,13 @@ extension MediaCardViewController {
         bulkActionsButton = button
         selectedMediaCountLabel = countLabel
         containerView.layoutIfNeeded()
+    }
+
+    private func updateFiltersIndicatorBadge() {
+        let filteredCount = filteredUploads.count
+        // don't show the indicator if fitler is not impacting the visible uploads
+        filtersIndicatorBadge.isHidden = filteredCount == uploads.count
+        filtersIndicatorBadge.text = filteredCount >= 99 ? "99+" : String(filteredCount)
     }
 
     private func updateSelectedMediaCountLabel() {

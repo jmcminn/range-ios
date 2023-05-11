@@ -353,6 +353,7 @@
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
 		0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
+		0AF89B552A0CC9A100E49F40 /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF89B542A0CC9A100E49F40 /* BadgeView.swift */; };
 		0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */; };
 		0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC05294776AB002E7549 /* CanvasCollection.swift */; };
 		0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */; };
@@ -732,6 +733,7 @@
 		0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCollaborationTableViewCell.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0AF89B542A0CC9A100E49F40 /* BadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeView.swift; sourceTree = "<group>"; };
 		0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasCollection.swift; sourceTree = "<group>"; };
 		0AF9BC05294776AB002E7549 /* CanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCollection.swift; sourceTree = "<group>"; };
 		0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenMediaCardViewController.swift; sourceTree = "<group>"; };
@@ -1218,6 +1220,7 @@
 		0A4DC7A227F7615700712518 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0AF89B542A0CC9A100E49F40 /* BadgeView.swift */,
 				0A94E8D628CF0E6000A09616 /* ButtonWithTapAreaInsets.swift */,
 				0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */,
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
@@ -2099,6 +2102,7 @@
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
 				0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
+				0AF89B552A0CC9A100E49F40 /* BadgeView.swift in Sources */,
 				0A724F65288AF07800708C6B /* FirebasePendingUploadsModel.swift in Sources */,
 				0A881987291D17060050FC41 /* CommandTypes.swift in Sources */,
 				0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */,
