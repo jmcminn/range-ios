@@ -21,6 +21,9 @@ class MediaCardViewController: SheetCardViewController {
     /// uploads to show
     private let uploads: Results<Upload>
 
+    private var emptyUploadsView: UIView?
+    private var emptyFilteredUploadsView: UIView?
+
     private let collectionView: UICollectionView
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -116,7 +119,8 @@ class MediaCardViewController: SheetCardViewController {
 
         setupMediaFiltersButton()
         setupFiltersIndicatorBadge()
-        updateFiltersIndicatorBadge()
+
+        onUploadsChanged()
 
         observeUploads()
         NotificationCenter.default.addObserver(
@@ -383,9 +387,42 @@ class MediaCardViewController: SheetCardViewController {
             collectionView.reloadData()
         }
         reloadSelectedSections()
+
+        onUploadsChanged()
+    }
+
+    private func onUploadsChanged() {
         updateBulkActionsBottomBarVisibility()
         updateSelectedMediaCountLabel()
         updateFiltersIndicatorBadge()
+
+        let emptyUploads = uploads.isEmpty
+        let emptyFilteredUploads = filteredUploads.isEmpty
+
+        mediaFiltersButton.isHidden = emptyUploads
+        selectButton.isHidden = emptyUploads
+
+        if emptyUploads {
+            if emptyUploadsView == nil {
+                emptyUploadsView = setupEmptyStateView(fromFilters: false)
+                containerView.addSubview(emptyUploadsView!)
+                emptyUploadsView!.snp.makeConstraints { make in
+                    make.centerY.equalToSuperview()
+                    make.leading.trailing.equalToSuperview()
+                }
+            }
+        } else if emptyFilteredUploads {
+            if emptyFilteredUploadsView == nil {
+                emptyFilteredUploadsView = setupEmptyStateView(fromFilters: true)
+                containerView.addSubview(emptyFilteredUploadsView!)
+                emptyFilteredUploadsView!.snp.makeConstraints { make in
+                    make.centerY.equalToSuperview()
+                    make.leading.trailing.equalToSuperview()
+                }
+            }
+        }
+        emptyUploadsView?.isHidden = !emptyUploads
+        emptyFilteredUploadsView?.isHidden = emptyUploads || !emptyFilteredUploads
     }
 
     /// Handle long press on cells - enabled select mode if not enabled and select given cell
@@ -889,5 +926,61 @@ extension MediaCardViewController: UICollectionViewDataSourcePrefetching {
             .compactMap { imageProvider(forItemAt: $0) }
             .map { Source.provider($0) }
         ImagePrefetcher(sources: sources, options: [.targetCache(firstImageDataProvider.cache)]).start()
+    }
+}
+
+extension MediaCardViewController {
+    /// returns the empty state view for media card. There are 2 variants, if fromFilters=false it means that there's not uploads at all,
+    /// if fromFilters=true it means that after filtering there's no uploads
+    private func setupEmptyStateView(fromFilters: Bool) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+
+        let pin = UIImageView(image: UIImage(named: "large_media_pin"))
+        view.addSubview(pin)
+        pin.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+        }
+        let titleLabel = UILabel()
+        titleLabel.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.textColor = .dynamic(.Neutral_04)
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+        titleLabel.text = fromFilters
+            ? String(localized: "There are no results...🤔")
+            : String(localized: "It looks like there’s no media...🤔")
+        view.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(pin.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(36)
+        }
+        let descriptionLabel = UILabel()
+        descriptionLabel.font = .preferredFont(forTextStyle: .body)
+        descriptionLabel.adjustsFontForContentSizeCategory = true
+        descriptionLabel.textColor = .dynamic(.Neutral_05)
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.textAlignment = .center
+
+        if fromFilters {
+            // use attributed string to insert the filter icon
+            let attributedText = NSMutableAttributedString(string: "Try adjusting your ")
+            let filterImage = UIImage(systemName: "line.3.horizontal.decrease.circle") ?? UIImage()
+            let filterAttachment = NSTextAttachment(image: filterImage)
+            attributedText.append(NSAttributedString(attachment: filterAttachment))
+            attributedText.append(NSAttributedString(string: " filters"))
+            descriptionLabel.attributedText = attributedText
+        } else {
+            descriptionLabel.text = String(localized: "Add photos and documents to pins on the canvas")
+        }
+
+        view.addSubview(descriptionLabel)
+        descriptionLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(36)
+            make.bottom.equalToSuperview()
+        }
+        return view
     }
 }
