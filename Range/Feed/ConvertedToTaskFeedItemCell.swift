@@ -22,7 +22,8 @@ class ConvertedToTaskFeedItemCell: UITableViewCell {
             make.width.height.equalTo(32)
             make.leading.equalToSuperview().inset(16)
         }
-        let checkImageView = UIImageView(image: UIImage(named: "tick.small"))
+        let checkImageView = UIImageView(image: UIImage(named: "tick.small")?.withRenderingMode(.alwaysTemplate))
+        checkImageView.tintColor = .dynamic(.Neutral_04)
         checkView.addSubview(checkImageView)
         checkImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
