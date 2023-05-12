@@ -1,7 +1,7 @@
 import SnapKit
 import UIKit
 
-/// View to accept ("Confirm Location") or cancel the placement of new pin
+/// View to accept ("Confirm") or cancel the placement of new pin
 class AddPinConfirmationViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
 
@@ -43,7 +43,7 @@ class AddPinConfirmationViewController: UIViewController, NonModalCardCoordinati
         )
         confirmButton = UIButton(
             configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
-            primaryAction: UIAction(title: String(localized: "Confirm Location")) { [weak self] _ in
+            primaryAction: UIAction(title: String(localized: "Confirm")) { [weak self] _ in
                 self?.onConfirm?()
             }
         )

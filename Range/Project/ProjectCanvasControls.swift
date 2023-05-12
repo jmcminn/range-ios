@@ -169,12 +169,13 @@ extension ProjectCanvasControls {
         let panAndZoomIndicatorView = ToastView(
             iconName: "hand.point.up.left",
             text: "Pan and zoom to adjust the location",
-            backgroundColor: .Neutral_10
+            backgroundColor: .Neutral_10, blurBackground: true
         )
         panAndZoomIndicatorView.tag = ViewTag.panAndZoomIndicatorView.rawValue
         addSubview(panAndZoomIndicatorView)
         panAndZoomIndicatorView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(12)
+            make.trailing.lessThanOrEqualToSuperview().offset(-72) // leave space for FABs on the right
             make.bottom.equalTo(aboveView.snp.top).offset(-12)
         }
     }

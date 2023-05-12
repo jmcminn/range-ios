@@ -1,7 +1,7 @@
 import SnapKit
 import UIKit
 
-/// View to accept ("Confirm Location") or cancel ("Back") your in-progress photo placement
+/// View to accept ("Confirm") or cancel ("Back") your in-progress photo placement
 class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging?
 
