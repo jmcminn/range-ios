@@ -693,48 +693,13 @@ extension MediaCardViewController {
 
     /// Fetch files for all selected uploads and use iOS built in activity view controller to share them.
     private func shareMedia() {
-        let mediaKeysToShare = [MediaKey](uploads
-            .filter { self.selectedUploads.contains($0.id) }
-            .map { MediaKey(projectId: self.projectModel.projectId, upload: $0) })
+        let uploads = [Upload](uploads
+            .filter { self.selectedUploads.contains($0.id) })
 
-        var cancelled = false
-        // show alert that prevents any user interaction while downloading items to share
-        // User can still cancel, which won't really cancel the download but will cancel the sharing action
-        let progressAlertController = UIAlertController(
-            title: String(localized: "Hold tight, this may take a few seconds..."),
-            message: String(localized: "We’re currently preparing your media items for sharing."),
-            preferredStyle: .alert
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowController.shareMediaAction), to: nil, from: self,
+            for: FlowEvent(uploads)
         )
-        progressAlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
-            cancelled = true
-        })
-        present(progressAlertController, animated: true)
-
-        Task { @MainActor in
-            do {
-                // fetch (if not fetched yet) all the uploads to share
-                let itemsToShare: [URL] = try await mediaKeysToShare.concurrentMap {
-                    try await self.mediaCache.getCachedFileURL(forKey: $0)
-                }
-                if !cancelled {
-                    progressAlertController.dismiss(animated: true) { [weak self] in
-                        let shareVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
-                        shareVC.completionWithItemsHandler = { _, completed, _, _ in
-                            if completed {
-                                ToastWindow.shared.showSuccess(
-                                    iconName: "checkmark.circle.fill",
-                                    text: String(localized: "Media items successfully shared")
-                                )
-                            }
-                        }
-                        self?.present(shareVC, animated: true)
-                    }
-                }
-            } catch {
-                progressAlertController.dismiss(animated: true)
-                ToastWindow.shared.showError(text: "Failed to fetch media to share")
-            }
-        }
     }
 
     func confirmAndDeleteMedia() {

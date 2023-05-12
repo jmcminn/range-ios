@@ -12,10 +12,20 @@ final class FlowEvent: UIEvent {
         case media // the event is originating from the media collection view
     }
 
-    let object: Object
+    let object: Object?
+    let objects: [Object]
     let source: Source?
+    /// this will initiate the object, but also objects with an array of 1 item (for convenience)
     init(_ object: Object, source: Source? = nil) {
         self.object = object
+        objects = [object]
+        self.source = source
+    }
+
+    /// this will set the objects property, but not object (so it's not run accidentally for 1 item only)
+    init(_ objects: [Object], source: Source? = nil) {
+        object = nil
+        self.objects = objects
         self.source = source
     }
 }
@@ -46,6 +56,8 @@ final class FlowEvent: UIEvent {
     func moreAction(sender: Any?, event: FlowEvent)
     /// show the Task list card view controller with project tasks
     func showTaskListAction()
+    /// download given media file(s) and show iOS built in share sheet
+    func shareMediaAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -191,7 +203,7 @@ extension ProjectFlowController: ProjectFlowActions {
         } else if let collaboration = object as? Collaboration {
             initialTags = Array(collaboration.tags.map { TagViewModel(fromTag: $0) })
         } else {
-            fatalError("tagsSelected action not implemented for \(event.object)")
+            fatalError("tagsSelected action not implemented for \(String(describing: event.object))")
         }
         let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialTags)
         // no auto dismiss, the card will be closed after tags are saved
@@ -208,7 +220,7 @@ extension ProjectFlowController: ProjectFlowActions {
     /// If updating failed give user a choice to retry or abort (close the editTagsVC and not save changes)
     private func updateTagsIfChanged(
         fromViewController editTagsVC: SearchAndSelectTagsViewController,
-        forObject object: Object
+        forObject object: Object?
     ) {
         let selectedTags = editTagsVC.tagsViewModel.selectedTags
 
@@ -218,7 +230,7 @@ extension ProjectFlowController: ProjectFlowActions {
         } else if let upload = object as? Upload {
             command = model.update(tags: selectedTags, forUpload: upload)
         } else {
-            fatalError("updateTagsIfChanged not implemented for \(object)")
+            fatalError("updateTagsIfChanged not implemented for \(String(describing: object))")
         }
 
         guard let command = command else {
@@ -340,6 +352,13 @@ extension ProjectFlowController {
                 icon: UIImage(systemName: "ellipsis"),
                 title: "More Menu",
                 actions: [
+                    ActionItem(
+                        title: String(localized: "Share"),
+                        imageName: "square.and.arrow.up",
+                        handler: {
+                            self.shareMediaAction(sender: self, event: event)
+                        }
+                    ),
                     ActionItem(
                         title: upload.isImage ? "Delete Photo" : "Delete File",
                         imageName: "trash",
@@ -547,5 +566,59 @@ extension ProjectFlowController {
         }
         hideDefaultCanvasUI()
         movePinFlow?.start()
+    }
+}
+
+// MARK: - media share
+
+extension ProjectFlowController {
+    func shareMediaAction(sender _: Any?, event: FlowEvent) {
+        guard let uploads = event.objects as? [Upload] else { return }
+        let mediaKeysToShare = [MediaKey](uploads
+            .map { MediaKey(projectId: self.model.projectId, upload: $0) })
+
+        let uploadsCount = uploads.count
+        var cancelled = false
+        // show alert that prevents any user interaction while downloading items to share
+        // User can still cancel, which won't really cancel the download but will cancel the sharing action
+        let progressAlertController = UIAlertController(
+            title: String(localized: "Hold tight, this may take a few seconds..."),
+            message: uploadsCount == 1
+                ? String(localized: "We’re currently preparing your media item for sharing.")
+                : String(localized: "We’re currently preparing your media items for sharing."),
+            preferredStyle: .alert
+        )
+        progressAlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            cancelled = true
+        })
+        present(progressAlertController, animated: true)
+
+        Task { @MainActor in
+            do {
+                // fetch (if not fetched yet) all the uploads to share
+                let itemsToShare: [URL] = try await mediaKeysToShare.concurrentMap {
+                    try await self.mediaCache.getCachedFileURL(forKey: $0)
+                }
+                if !cancelled {
+                    progressAlertController.dismiss(animated: true) { [weak self] in
+                        let shareVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
+                        shareVC.completionWithItemsHandler = { _, completed, _, _ in
+                            if completed {
+                                ToastWindow.shared.showSuccess(
+                                    iconName: "checkmark.circle.fill",
+                                    text: uploadsCount == 1
+                                        ? String(localized: "Media item successfully shared")
+                                        : String(localized: "Media items successfully shared")
+                                )
+                            }
+                        }
+                        self?.present(shareVC, animated: true)
+                    }
+                }
+            } catch {
+                progressAlertController.dismiss(animated: true)
+                ToastWindow.shared.showError(text: "Failed to fetch media to share")
+            }
+        }
     }
 }
