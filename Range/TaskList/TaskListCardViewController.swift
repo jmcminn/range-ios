@@ -26,6 +26,8 @@ class TaskListCardViewController: SheetCardViewController {
 
     private var collaborations: [Collaboration] = []
 
+    private var emptyTasksView = [Bool: UIView]()
+
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
 
@@ -99,6 +101,7 @@ class TaskListCardViewController: SheetCardViewController {
                 Logger.model.error("observing collaborations failed: \(error.localizedDescription, privacy: .public)")
             }
         }
+        updateData(collaborations)
     }
 
     /// Sort collaborations and update table view
@@ -108,6 +111,21 @@ class TaskListCardViewController: SheetCardViewController {
             c1.lastUpdatedTimestamp > c2.lastUpdatedTimestamp
         }
         tableView.reloadData()
+
+        // setup this tab (all / only mine) empty view if collaborations empty
+        if collaborations.isEmpty, emptyTasksView[showOnlyMine] == nil {
+            let emptyView = setupEmptyStateView(onlyMine: showOnlyMine)
+            containerView.addSubview(emptyView)
+            emptyView.snp.makeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.trailing.equalToSuperview()
+            }
+            emptyTasksView[showOnlyMine] = emptyView
+        }
+        // show this tab empty view if no collaborations
+        emptyTasksView[showOnlyMine]?.isHidden = !collaborations.isEmpty
+        // hide the other tab empty view
+        emptyTasksView[!showOnlyMine]?.isHidden = true
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
@@ -210,5 +228,51 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
             from: self,
             for: FlowEvent(collaboration)
         )
+    }
+}
+
+extension TaskListCardViewController {
+    /// returns the empty state view for tasks card. There are 2 variants, if onlyMine=false it means that there's no tasks at all,
+    /// if onlyMine=true it means that there's no tasks assigned to me (but there are some other tasks)
+    private func setupEmptyStateView(onlyMine: Bool) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+
+        let pin = UIImageView(image: UIImage(named: "large_task_pin"))
+        view.addSubview(pin)
+        pin.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+        }
+        let titleLabel = UILabel()
+        titleLabel.font = ._preferredFont(forTextStyle: .title3, symbolicTraits: .traitBold)
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.textColor = .dynamic(.Neutral_04)
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+        titleLabel.text = onlyMine
+            ? String(localized: "It looks like there aren’t any tasks assigned to you...🤔")
+            : String(localized: "It looks like there aren’t any tasks...🤔")
+        view.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(pin.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(36)
+        }
+        let descriptionLabel = UILabel()
+        descriptionLabel.font = .preferredFont(forTextStyle: .body)
+        descriptionLabel.adjustsFontForContentSizeCategory = true
+        descriptionLabel.textColor = .dynamic(.Neutral_05)
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.textAlignment = .center
+        descriptionLabel.text = onlyMine
+            ? String(localized: "Tasks assigned to you will show in this list")
+            : String(localized: "Start adding task pins to the canvas")
+        view.addSubview(descriptionLabel)
+        descriptionLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(36)
+            make.bottom.equalToSuperview()
+        }
+        return view
     }
 }
