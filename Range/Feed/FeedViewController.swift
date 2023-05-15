@@ -27,6 +27,15 @@ class FeedViewController: UIViewController {
             isMajor = true
         }
 
+        init?(asGeometryArchived geometry: Geometry) {
+            guard !geometry.isInvalidated else { return nil }
+            guard let archivedTimestamp = geometry.archivedTimestamp else { return nil }
+            id = geometry.id
+            timestamp = archivedTimestamp
+            item = geometry
+            isMajor = false
+        }
+
         init(_ item: Comment) {
             id = item.id
             timestamp = item.timestamp
@@ -77,6 +86,8 @@ class FeedViewController: UIViewController {
 
     unowned let mediaCache: MediaCache
     unowned let projectModel: ProjectModel
+    // for the archived feed item
+    let geometry: Geometry?
     let collaboration: Collaboration?
     let uploads: Results<Upload>?
     let comments: Results<Comment>?
@@ -103,6 +114,8 @@ class FeedViewController: UIViewController {
         }
     }
 
+    private var geometryNotificationToken: NotificationToken?
+
     private var uploadsNotificationToken: NotificationToken?
     private var uploadFeedItems = [FeedItem]()
 
@@ -116,6 +129,7 @@ class FeedViewController: UIViewController {
     init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
         self.mediaCache = mediaCache
         self.projectModel = projectModel
+        geometry = collaboration.feature.first?.geometry.first
         self.collaboration = collaboration
         // convert collections to results
         uploads = collaboration.uploads.filter(NSPredicate(value: true))
@@ -131,6 +145,7 @@ class FeedViewController: UIViewController {
     init(mediaCache: MediaCache, projectModel: ProjectModel, comments: Results<Comment>) {
         self.mediaCache = mediaCache
         self.projectModel = projectModel
+        geometry = nil
         collaboration = nil
         uploads = nil
         self.comments = comments
@@ -146,6 +161,7 @@ class FeedViewController: UIViewController {
     }
 
     deinit {
+        geometryNotificationToken?.invalidate()
         uploadsNotificationToken?.invalidate()
         commentsNotificationToken?.invalidate()
         updatesNotificationToken?.invalidate()
@@ -165,6 +181,7 @@ class FeedViewController: UIViewController {
             make.edges.equalToSuperview()
         }
 
+        observeGeometry()
         observeUploads()
         observeComments()
         observeUpdates()
@@ -183,6 +200,7 @@ class FeedViewController: UIViewController {
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.register(CollaborationCreatedFeedItemCell.self, forCellReuseIdentifier: "CollaborationCreated")
+        tableView.register(GeometryArchivedFeedItemCell.self, forCellReuseIdentifier: "GeometryArchived")
         tableView.register(UploadFeedItemCell.self, forCellReuseIdentifier: "Upload")
         tableView.register(ImageUploadFeedItemCell.self, forCellReuseIdentifier: "ImageUpload")
         tableView.register(CommentFeedItemCell.self, forCellReuseIdentifier: "Comment")
@@ -280,6 +298,15 @@ class FeedViewController: UIViewController {
         super.viewWillDisappear(animated)
         observationsForVerticalLine.forEach { $0.invalidate() }
         observationsForVerticalLine.removeAll()
+    }
+
+    /// observe geometry to adjust the feed when it was archived/unarchived (add/remove the archived feed item)
+    private func observeGeometry() {
+        guard let geometry = geometry else { return }
+        geometryNotificationToken = geometry.observe { [weak self] _ in
+            guard let self = self else { return }
+            self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
+        }
     }
 
     private func observeUploads() {
@@ -401,6 +428,10 @@ class FeedViewController: UIViewController {
             }
         }
 
+        if showMoreUpdates, let geometry = geometry, let archivedFeedItem = FeedItem(asGeometryArchived: geometry) {
+            items = _mergeSortedArrays(FeedItem.self, items, [archivedFeedItem], ascending: ascending)
+        }
+
         var snapshot = NSDiffableDataSourceSnapshot<String, FeedItem>()
         // each feed item has its own section as it's easy to control cells spacing with section
         // header and footer height
@@ -460,6 +491,11 @@ extension FeedViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCreated",
                                                      for: indexPath) as! CollaborationCreatedFeedItemCell
             cell.set(collaboration: collaboration)
+            return cell
+        } else if let geometry = feedItem.item as? Geometry {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GeometryArchived",
+                                                     for: indexPath) as! GeometryArchivedFeedItemCell
+            cell.set(geometry: geometry)
             return cell
         } else if let upload = feedItem.item as? Upload, upload.isImage {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
