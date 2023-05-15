@@ -17,8 +17,7 @@ final class ProjectFlowController: UIViewController {
         case addPhoto // photo flow is started
         case addPin // add pin flow is started
         case movePin // move pin flow is started
-        // TODO: 1140
-//        case fullScreenCanvas // the projects controls are hidden, showing the canvas in full screen (still showing the pins)
+        case fullScreenCanvas // the projects controls are hidden, showing the canvas in full screen (still showing the pins)
     }
 
     // the initial state is set in `start` method
@@ -176,9 +175,6 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
 
-        controls.showTopViewController(title: model.projectSummary.name, onBack: onBack, animated: false)
-        updateTopIndicatorView()
-
         controls.showCanvasSelectorButton(aboveView: actionCardVC.view)
         controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
         controls.showCanvasFiltersButton(aboveView: controls.canvasSourceSelectorButton!)
@@ -269,6 +265,15 @@ final class ProjectFlowController: UIViewController {
                 self?.collaborationFlow.hideCollaborationWindow(animated: true)
             }
         }
+        pinsDisplay?.onCanvasTap = { [weak self] in
+            guard let self = self else { return }
+            // Toggle fullscreen on canvas tap (but only in the default state)
+            if self.uiState == .default {
+                self.setUIState(.fullScreenCanvas, animated: true)
+            } else if self.uiState == .fullScreenCanvas {
+                self.setUIState(.default, animated: true)
+            }
+        }
     }
 
     func stop() {
@@ -296,6 +301,14 @@ final class ProjectFlowController: UIViewController {
     /// Show/hide the controls depending on the state
     func setUIState(_ state: UIState, animated: Bool) {
         uiState = state
+
+        if state == .fullScreenCanvas {
+            controls.hideTopViewController(animated: true)
+        } else {
+            controls.showTopViewController(title: model.projectSummary.name, onBack: onBack, animated: false)
+        }
+        updateTopIndicatorView()
+
         if state == .default {
             actionCardVC.showCard(animated: animated)
             controls.canvasSelectorButton?.isHidden = false
@@ -308,6 +321,11 @@ final class ProjectFlowController: UIViewController {
             fullscreenMediaVC?.dismissCard()
             mediaVC?.dismissCard()
             taskListVC?.dismissCard()
+        } else if state == .fullScreenCanvas {
+            actionCardVC.hideCard(animated: animated)
+            controls.canvasSelectorButton?.isHidden = true
+            controls.canvasSourceSelectorButton?.isHidden = true
+            controls.canvasFiltersButton?.isHidden = true
         } else {
             actionCardVC.hideCard(animated: animated)
             controls.canvasSelectorButton?.isHidden = true
@@ -315,15 +333,11 @@ final class ProjectFlowController: UIViewController {
             controls.canvasFiltersButton?.isHidden = true
             pinsDisplay?.stop()
         }
-
-        // TODO: 1140
-//        case .fullScreenCanvas:
-//            controls.hideTopViewController(animated: true)
     }
 
     // Update for current canvas. Hide if not a pdf.
     fileprivate func updateTopIndicatorView() {
-        if model.currentCanvas.currentCanvasSource.type == .pdf {
+        if model.currentCanvas.currentCanvasSource.type == .pdf, uiState != .fullScreenCanvas {
             controls.showTopIndicatorView(text: model.currentCanvas.displayName, animated: true)
         } else {
             controls.hideTopIndicatorView(animated: true)

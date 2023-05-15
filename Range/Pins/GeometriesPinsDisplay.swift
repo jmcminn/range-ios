@@ -48,6 +48,9 @@ protocol GeometriesPinsDisplay: AnyObject {
 
     /// A way for listener to register for user pin selection
     var onSelectedPinChange: ((PinPoint?) -> Void)? { get set }
+
+    /// Listen to canvas taps. This is provided by GeometriesPinsDisplay as it's the pins display whether a tap is a canvas tap or pin tap
+    var onCanvasTap: (() -> Void)? { get set }
 }
 
 /// Factory for creating pins display instances (either of native or mapbox annotation type)

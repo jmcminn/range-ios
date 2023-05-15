@@ -243,6 +243,8 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             make.top.equalToSuperview()
         }
         collaborationHeaderCoverVC.view.alpha = 0
+        // hide temporarily when adding (otherwise it's temporarily visible)
+        collaborationHeaderCoverVC.view.isHidden = true
         self.collaborationHeaderCoverVC = collaborationHeaderCoverVC
     }
 
@@ -256,6 +258,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     private func setCollaborationHeaderCoverHidden(_ hidden: Bool, animated: Bool) {
         let alpha = hidden ? 0.0 : 1.0
         if let collaborationHeaderCoverVC = collaborationHeaderCoverVC {
+            collaborationHeaderCoverVC.view.isHidden = false
             if animated {
                 UIView.animate(withDuration: 0.2) {
                     collaborationHeaderCoverVC.view.alpha = alpha
@@ -371,6 +374,7 @@ extension CollaborationFlowController: CardDraggingDelegate {
         // once the collaboration view gets behind the cover at least by 30 points (arbitrary, visually
         // selected value) let's change the alpha to 1 on the distance of 20 points
         let headerCoverAlpha = max(0, min(1, (headerCoverBottom - 30 - collaborationViewTop) / 20))
+        collaborationHeaderCoverVC.view.isHidden = false
         collaborationHeaderCoverVC.view.alpha = headerCoverAlpha
 
         updateBottomCardVisibility()

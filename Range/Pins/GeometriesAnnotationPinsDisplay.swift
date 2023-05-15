@@ -32,6 +32,9 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     /// Notifies about change in selected pin.  PinPoint provides the geometry id
     var onSelectedPinChange: ((PinPoint?) -> Void)?
 
+    /// Notifies about tap on canvas (and not on a pin)
+    var onCanvasTap: (() -> Void)?
+
     /// id of registered delegate
     private var canvasDelegateId: UUID?
 
@@ -338,6 +341,7 @@ extension GeometriesAnnotationPinsDisplay: CanvasViewControllerDelegate {
                 }
             } else {
                 // unselect if tapped outside of the pin
+                self.onCanvasTap?()
                 if self.deselectOnCanvasTap {
                     self.setSelectedPin(nil)
                 }

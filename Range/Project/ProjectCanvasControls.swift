@@ -43,6 +43,7 @@ extension ProjectCanvasControls {
 
     /// Creates a `TopViewController` and shows it in an `animated` way
     func showTopViewController(iconName: String? = nil, title: String, onBack: (() -> Void)? = nil, animated: Bool) {
+        guard topViewController == nil else { return }
         let topViewController = TopViewController(iconName: iconName, title: title, onBack: onBack)
         canvasContainer.add(childController: topViewController, toView: self)
         topViewController.view.tag = ViewTag.topView.rawValue
@@ -113,9 +114,14 @@ extension ProjectCanvasControls {
             }
         }
         guard let topIndicatorView = topIndicatorView else { return }
+
+        // fadeIn only when the alpha is below the requested or the text changes (then "blink" the view)
+        let shouldAnimate = animated &&
+            (topIndicatorView.alpha < topIndicatorViewFullOpacity || topIndicatorView.text != text)
+
         topIndicatorView.text = text
 
-        if animated {
+        if shouldAnimate {
             topIndicatorView.alpha = 0.0
             fadeInTopIndicatorView()
         } else {
