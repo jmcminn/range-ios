@@ -10,6 +10,20 @@ import UIKit
 /// Main view controller for displaying a project.
 /// It manages the UI state of project and all view transitions.
 final class ProjectFlowController: UIViewController {
+    /// The state represents a UI configuration in which the canvas is visible but has a different set of additional views.
+    enum UIState {
+        case `default` // showing the project controls
+        case collaboration // when the collaboration view is open (or any view open from it)
+        case addPhoto // photo flow is started
+        case addPin // add pin flow is started
+        case movePin // move pin flow is started
+        // TODO: 1140
+//        case fullScreenCanvas // the projects controls are hidden, showing the canvas in full screen (still showing the pins)
+    }
+
+    // the initial state is set in `start` method
+    private var uiState: UIState?
+
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
     let model: ProjectModel
@@ -58,8 +72,6 @@ final class ProjectFlowController: UIViewController {
     private var startedFuturePromise: Future<Void, Never>.Promise?
     var onBack: (() -> Void)?
 
-    private var defaultCanvasUIHidden = false
-
     // Canvas filters for this project
     let canvasFilters: CanvasFilters
 
@@ -67,7 +79,7 @@ final class ProjectFlowController: UIViewController {
     /// be aborted without confirmation)
     var isUserEditingProject: Bool {
         // some flow is running:
-        addPhotoFlow != nil || addPinFlow != nil || movePinFlow != nil
+        uiState == .addPhoto || uiState == .addPin || uiState == .movePin
             // any field is editing, so user is in the middle of name update for example:
             || view._firstResponder != nil
             // collaboration says it's being edited:
@@ -177,9 +189,10 @@ final class ProjectFlowController: UIViewController {
             self, selector: #selector(updateFiltersIndicatorBadge),
             name: CanvasFilters.UpdateNotificationName, object: nil
         )
-        updateCanvasSourceSelectorVisibility()
 
-        showDefaultCanvasUI(animated: false)
+        setUIState(.default, animated: false)
+
+        updateCanvasSourceSelectorVisibility()
         collaborationFlow.start()
         observeDebugSettings()
         observeCanvas()
@@ -249,27 +262,13 @@ final class ProjectFlowController: UIViewController {
         )
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
             if let geometryId = pinPoint?.id {
-                self?.showCollaborationWindow(forGeometry: geometryId)
+                self?.setUIState(.collaboration, animated: true)
+                self?.collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
             } else {
+                self?.setUIState(.default, animated: true)
                 self?.collaborationFlow.hideCollaborationWindow(animated: true)
             }
         }
-    }
-
-    private func showCollaborationWindow(forGeometry geometryId: String) {
-        // minimize the action card when showing collab
-        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
-        // hide media/fullscreen
-        if let fullscreenMediaVC = fullscreenMediaVC {
-            fullscreenMediaVC.dismissCard()
-        }
-        if let mediaVC = mediaVC {
-            mediaVC.dismissCard()
-        }
-        if let taskListVC = taskListVC {
-            taskListVC.dismissCard()
-        }
-        collaborationFlow.showCollaborationWindow(forGeometry: geometryId, animated: true)
     }
 
     func stop() {
@@ -294,24 +293,32 @@ final class ProjectFlowController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    /// Show the default UI elements when viewing the canvas
-    func showDefaultCanvasUI(animated: Bool = true) {
-        defaultCanvasUIHidden = false
-        actionCardVC.showCard(animated: animated)
-        controls.canvasSelectorButton?.isHidden = false
-        controls.canvasSourceSelectorButton?.isHidden = canvasSourceSelectorHidden
-        controls.canvasFiltersButton?.isHidden = false
-        pinsDisplay?.start(onInitialLoad: nil)
-    }
+    /// Show/hide the controls depending on the state
+    func setUIState(_ state: UIState, animated: Bool) {
+        uiState = state
+        if state == .default {
+            actionCardVC.showCard(animated: animated)
+            controls.canvasSelectorButton?.isHidden = false
+            controls.canvasSourceSelectorButton?.isHidden = canvasSourceSelectorHidden
+            controls.canvasFiltersButton?.isHidden = false
+            pinsDisplay?.start(onInitialLoad: nil)
+        } else if state == .collaboration {
+            // we don't hide the controls, only hide additional cards and minimize the action card
+            actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
+            fullscreenMediaVC?.dismissCard()
+            mediaVC?.dismissCard()
+            taskListVC?.dismissCard()
+        } else {
+            actionCardVC.hideCard(animated: animated)
+            controls.canvasSelectorButton?.isHidden = true
+            controls.canvasSourceSelectorButton?.isHidden = true
+            controls.canvasFiltersButton?.isHidden = true
+            pinsDisplay?.stop()
+        }
 
-    /// Hide the default UI elements when viewing the canvas
-    func hideDefaultCanvasUI(animated: Bool = true) {
-        defaultCanvasUIHidden = true
-        actionCardVC.hideCard(animated: animated)
-        controls.canvasSelectorButton?.isHidden = true
-        controls.canvasSourceSelectorButton?.isHidden = true
-        controls.canvasFiltersButton?.isHidden = true
-        pinsDisplay?.stop()
+        // TODO: 1140
+//        case .fullScreenCanvas:
+//            controls.hideTopViewController(animated: true)
     }
 
     // Update for current canvas. Hide if not a pdf.
@@ -327,7 +334,9 @@ final class ProjectFlowController: UIViewController {
 
     fileprivate func updateCanvasSourceSelectorVisibility() {
         guard let canvasSourceSelectorButton = controls.canvasSourceSelectorButton else { return }
-        canvasSourceSelectorButton.isHidden = canvasSourceSelectorHidden || defaultCanvasUIHidden
+        canvasSourceSelectorButton.isHidden = canvasSourceSelectorHidden
+            // canvas source selector used in other flows is added by these flows if needed
+            || !(uiState == .default || uiState == .collaboration)
 
         guard let canvasFiltersButton = controls.canvasFiltersButton else { return }
         canvasFiltersButton.snp.remakeConstraints { make in
@@ -469,7 +478,7 @@ extension ProjectFlowController {
             canvasContainer: canvasContainer
         )
         addPhotoFlow?.onStop = { [weak self] geometryId, newlyCreated, shouldEdit in
-            self?.showDefaultCanvasUI()
+            self?.setUIState(.default, animated: true)
             self?.addPhotoFlow = nil
             if let geometryId = geometryId, newlyCreated ?? false == true {
                 self?.selectCollaboration(forGeometryId: geometryId, andEditName: shouldEdit ?? false)
@@ -478,7 +487,7 @@ extension ProjectFlowController {
         addPhotoFlow?.start { [weak self] started in
             // hide cards if photo flow started
             if started {
-                self?.hideDefaultCanvasUI()
+                self?.setUIState(.addPhoto, animated: true)
             } else {
                 self?.addPhotoFlow = nil
             }
@@ -492,14 +501,14 @@ extension ProjectFlowController {
         addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer)
         addPinFlow?.onStop = { [weak self] geometryId, pinTypeOption in
             guard let self = self else { return }
-            self.showDefaultCanvasUI()
+            self.setUIState(.default, animated: true)
             if let geometryId = geometryId {
                 // don't edit name if it was .taskCopy
                 self.selectCollaboration(forGeometryId: geometryId, andEditName: pinTypeOption != .copyTask)
             }
             self.addPinFlow = nil
         }
-        hideDefaultCanvasUI()
+        setUIState(.addPin, animated: true)
         addPinFlow?.start()
     }
 

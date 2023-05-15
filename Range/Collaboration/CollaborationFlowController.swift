@@ -161,6 +161,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
                 if case .deleted = change {
                     ToastWindow.shared.showWarning(text: String(localized: "Pin removed"))
                     self?.hideCollaborationWindow(animated: true)
+                    self?.onCollaborationClose?()
                 }
             }
         }

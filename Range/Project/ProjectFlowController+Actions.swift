@@ -468,6 +468,7 @@ extension ProjectFlowController {
     func deleteCollaboration(_ collaboration: Collaboration) {
         guard !collaboration.isInvalidated else { return }
         // hide the window first so all collaboration change listeners are unregistered
+        setUIState(.default, animated: true)
         collaborationFlow.hideCollaborationWindow(animated: true) {
             // unselect the pin
             self.pinsDisplay?.setSelectedPin(nil)
@@ -561,10 +562,10 @@ extension ProjectFlowController {
         )
         movePinFlow?.onStop = { [weak self] _ in
             guard let self = self else { return }
-            self.showDefaultCanvasUI()
+            self.setUIState(.default, animated: true)
             self.movePinFlow = nil
         }
-        hideDefaultCanvasUI()
+        setUIState(.movePin, animated: true)
         movePinFlow?.start()
     }
 }

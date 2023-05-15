@@ -62,6 +62,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     }
 
     func start(onInitialLoad: (() -> Void)? = nil) {
+        guard !started else { return }
         started = true
         loadAndDisplayPins(onInitialLoad: onInitialLoad)
         canvasDelegateId = canvasVC.addDelegate(self)
@@ -73,6 +74,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     }
 
     func stop() {
+        guard started else { return }
         started = false
         NotificationCenter.default.removeObserver(self)
         if let id = canvasDelegateId {
