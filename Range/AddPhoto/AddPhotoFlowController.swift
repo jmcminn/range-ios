@@ -706,13 +706,7 @@ extension AddPhotoFlowController {
             bottomViewToAttachControls = nil
         }
         guard let bottomViewToAttachControls = bottomViewToAttachControls else { return }
-        if let panAndZoomIndicatorView = controls.panAndZoomIndicatorView {
-            // anchor back to confirmation
-            panAndZoomIndicatorView.snp.remakeConstraints { make in
-                make.leading.equalToSuperview().offset(12)
-                make.bottom.equalTo(bottomViewToAttachControls.snp.top).offset(-12)
-            }
-        }
+        controls.anchorPanAndZoomIndicatorView(aboveView: bottomViewToAttachControls)
         if let canvasSelectorButton = controls.canvasSelectorButton {
             // anchor to photos preview
             canvasSelectorButton.snp.remakeConstraints { make in

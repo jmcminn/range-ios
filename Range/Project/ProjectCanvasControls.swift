@@ -173,7 +173,12 @@ extension ProjectCanvasControls {
         )
         panAndZoomIndicatorView.tag = ViewTag.panAndZoomIndicatorView.rawValue
         addSubview(panAndZoomIndicatorView)
-        panAndZoomIndicatorView.snp.makeConstraints { make in
+        anchorPanAndZoomIndicatorView(aboveView: aboveView)
+    }
+
+    func anchorPanAndZoomIndicatorView(aboveView: UIView) {
+        guard let panAndZoomIndicatorView = panAndZoomIndicatorView else { return }
+        panAndZoomIndicatorView.snp.remakeConstraints { make in
             make.leading.equalToSuperview().offset(12)
             make.trailing.lessThanOrEqualToSuperview().offset(-72) // leave space for FABs on the right
             make.bottom.equalTo(aboveView.snp.top).offset(-12)
