@@ -183,6 +183,29 @@ class CameraService: ObservableObject {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    // Focus the camera
+    // -----------------------------------------------------------------------------------------------------------------
+    func focus(onCaptureDevicePoint focusPoint: CGPoint) {
+        let device = videoDeviceInput.device
+        do {
+            defer {
+                device.unlockForConfiguration()
+            }
+            try device.lockForConfiguration()
+            if device.isFocusPointOfInterestSupported {
+                device.focusPointOfInterest = focusPoint
+                device.focusMode = .autoFocus
+            }
+            if device.isExposurePointOfInterestSupported {
+                device.exposurePointOfInterest = focusPoint
+                device.exposureMode = .autoExpose
+            }
+        } catch {
+            Logger.camera.error("focus failed: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     // Zoom the camera
     // -----------------------------------------------------------------------------------------------------------------
 

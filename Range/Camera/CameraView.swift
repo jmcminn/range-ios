@@ -219,45 +219,48 @@ struct CameraView: View {
 
     // Photo preview from the CameraService
     private func cameraView(reader: GeometryProxy) -> some View {
-        CameraPreview(session: camera.session)
-            .frame(height: reader.size.width * 4.0 / 3.0)
-            .gesture(
-                MagnificationGesture()
-                    .onChanged {
-                        progressingScale = $0
-                        camera.set(zoom: cameraScale * progressingScale)
-                    }
-                    .onEnded { _ in
-                        cameraScale = camera.currentZoomFactor
-                        progressingScale = 1
-                    }
-            )
-            .overlay(
-                gridView
-            )
-            .overlay(
-                Group {
-                    if camera.willCapturePhoto {
-                        Color.black
-                    }
+        CameraPreview(session: camera.session, tappedCallback: { _, captureDevicePoint in
+            // focus camera when tapping the CameraPreview view
+            camera.focus(onCaptureDevicePoint: captureDevicePoint)
+        })
+        .frame(height: reader.size.width * 4.0 / 3.0)
+        .gesture(
+            MagnificationGesture()
+                .onChanged {
+                    progressingScale = $0
+                    camera.set(zoom: cameraScale * progressingScale)
                 }
-                .animation(
-                    .easeInOut(duration: 0.1),
-                    value: camera.willCapturePhoto
-                )
-            )
-            .overlay {
-                if camera.isProcessingPhoto {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color
-                                .Neutral_01))
+                .onEnded { _ in
+                    cameraScale = camera.currentZoomFactor
+                    progressingScale = 1
+                }
+        )
+        .overlay(
+            gridView
+        )
+        .overlay(
+            Group {
+                if camera.willCapturePhoto {
+                    Color.black
                 }
             }
-            .overlay {
-                if model.bannerText != nil {
-                    bannerView
-                }
+            .animation(
+                .easeInOut(duration: 0.1),
+                value: camera.willCapturePhoto
+            )
+        )
+        .overlay {
+            if camera.isProcessingPhoto {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color
+                            .Neutral_01))
             }
+        }
+        .overlay {
+            if model.bannerText != nil {
+                bannerView
+            }
+        }
     }
 
     private func topButtonsHStack() -> some View {
