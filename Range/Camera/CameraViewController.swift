@@ -43,7 +43,7 @@ class CameraViewController: UIHostingController<CameraView> {
 
     private func takePhotoAction() {
         guard let onPhotoTaken = onPhotoTaken else { return }
-        cameraService.capturePhoto { [weak self] data in
+        cameraService.capturePhoto(flashMode: cameraViewModel.flashMode) { [weak self] data in
             guard let self = self else { return }
             if let data = data, let image = UIImage(data: data) {
                 onPhotoTaken(data, image) { result in

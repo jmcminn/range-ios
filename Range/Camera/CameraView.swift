@@ -41,16 +41,32 @@ struct CameraView: View {
         }.buttonStyle(.plain)
     }
 
-//    var flashButton: some View {
-//        Button(action: {}) {
-//            Circle()
-//                .strokeBorder(Color.Neutral_07, lineWidth: 1)
-//                .background(Circle().fill(Color.Neutral_09))
-//                .frame(width: 40, height: 40)
-//                .overlay(Image(systemName: "bolt.fill").font(.body.bold()).foregroundColor(.Neutral_04))
-//        }.buttonStyle(.plain)
-//            .disabled(true)
-//    }
+    var flashButton: some View {
+        Button(action: model.toggleFlashMode) {
+            switch model.flashMode {
+            case .on:
+                Circle()
+                    .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                    .background(Circle().fill(Color.Neutral_09))
+                    .frame(width: 40, height: 40)
+                    .overlay(Image(systemName: "bolt.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+            case .auto:
+                Circle()
+                    .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                    .background(Circle().fill(Color.Neutral_09))
+                    .frame(width: 40, height: 40)
+                    .overlay(Image(systemName: "bolt.badge.a.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+            case .off:
+                Circle()
+                    .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                    .background(Circle().fill(Color.Neutral_09))
+                    .frame(width: 40, height: 40)
+                    .overlay(Image(systemName: "bolt.slash.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+            @unknown default:
+                fatalError("flashMode not supported") // this shouldn't happen as the app only allows to select one of the above
+            }
+        }.buttonStyle(.plain)
+    }
 
     var cameraRollButton: some View {
         Button(action: model.cameraRollSelectAction ?? {}) {
@@ -187,9 +203,8 @@ struct CameraView: View {
             .foregroundColor(.Neutral_01)
             .padding(9)
             .background(ZStack {
-                RoundedRectangle(cornerRadius: 10).fill(model.bannerForEnabled ? Color.Pink_03 : Color.Neutral_09)
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(model.bannerForEnabled ? Color.Pink_04 : Color.Neutral_07, lineWidth: 1)
+                RoundedRectangle(cornerRadius: 10).fill(model.bannerFillColor)
+                RoundedRectangle(cornerRadius: 10).stroke(model.bannerStrokeColor, lineWidth: 1)
             })
             .onTapGesture {
                 model.cleanBanner()
@@ -248,7 +263,9 @@ struct CameraView: View {
     private func topButtonsHStack() -> some View {
         HStack(spacing: 12) {
             closeButton.rotationEffect(uiAngle)
-//            flashButton.rotationEffect(uiAngle)
+            if camera.hasFlash {
+                flashButton.rotationEffect(uiAngle)
+            }
             if model.cameraRollSelectAction != nil {
                 cameraRollButton.rotationEffect(uiAngle)
             }

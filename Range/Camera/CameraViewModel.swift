@@ -20,10 +20,13 @@ class CameraViewModel: ObservableObject {
     @Published var bannerText: String? = nil
     /// The icon to display temporarily over camera screen
     @Published var bannerIcon: String? = nil
-    /// Whether the banner is for enabled or disabled state
-    @Published var bannerForEnabled: Bool = false
+    /// Fill and stroke for the banner background
+    @Published var bannerFillColor: Color = .Neutral_09
+    @Published var bannerStrokeColor: Color = .Neutral_07
     /// Delay for hiding the banner
     private var hideBannerDelayer = Delayer(delayTime: 2)
+    /// Current flash mode
+    @Published var flashMode: AVCaptureDevice.FlashMode = .auto
 
     /// Callbacks for the controller
     var closeAction: (() -> Void)?
@@ -63,7 +66,8 @@ class CameraViewModel: ObservableObject {
         setBanner(
             text: "Annotation " + (annotationsEnabled ? "enabled" : "disabled"),
             icon: "tag",
-            forEnabled: annotationsEnabled
+            fillColor: annotationsEnabled ? Color.Pink_03 : Color.Neutral_09,
+            strokeColor: annotationsEnabled ? Color.Pink_04 : Color.Neutral_07
         )
     }
 
@@ -74,15 +78,41 @@ class CameraViewModel: ObservableObject {
         setBanner(
             text: "Multi-photo session " + (multiPhotoEnabled ? "enabled" : "disabled"),
             icon: "photo.on.rectangle",
-            forEnabled: multiPhotoEnabled
+            fillColor: multiPhotoEnabled ? Color.Pink_03 : Color.Neutral_09,
+            strokeColor: multiPhotoEnabled ? Color.Pink_04 : Color.Neutral_07
         )
     }
 
+    /// Toggle auto => off => on => auto => ...
+    /// And sets the `bannerText`/`bannerIcon`
+    func toggleFlashMode() {
+        let bannerText: String
+        let bannerIcon: String
+        switch flashMode {
+        case .auto:
+            flashMode = .off
+            bannerText = String(localized: "Flash disabled")
+            bannerIcon = "bolt.slash.fill"
+        case .off:
+            flashMode = .on
+            bannerText = String(localized: "Flash enabled")
+            bannerIcon = "bolt.fill"
+        case .on:
+            flashMode = .auto
+            bannerText = String(localized: "Auto flash enabled")
+            bannerIcon = "bolt.badge.a.fill"
+        @unknown default:
+            fatalError("flashMode not supported") // this shouldn't happen as the app only allows to select one of the above
+        }
+        setBanner(text: bannerText, icon: bannerIcon, fillColor: .Orange_03, strokeColor: .Orange_04)
+    }
+
     /// Sets given banner and schedule it's cleanup in the future (cancel any already scheduled cleanup)
-    func setBanner(text: String, icon: String, forEnabled: Bool) {
+    func setBanner(text: String, icon: String, fillColor: Color, strokeColor: Color) {
         bannerIcon = icon
         bannerText = text
-        bannerForEnabled = forEnabled
+        bannerFillColor = fillColor
+        bannerStrokeColor = strokeColor
         // new delay for banner hiding after text set/update
         hideBannerDelayer.delay { [weak self] in
             self?.cleanBanner()

@@ -40,6 +40,7 @@ class CameraService: ObservableObject {
     @Published var canCapturePhoto = false // can we enable the UI's camera button?
     @Published var currentZoomFactor = 1.0
     @Published var willCapturePhoto = false
+    @Published var hasFlash = false
 
     let session = AVCaptureSession()
     var minZoomFactor = 1.0
@@ -66,6 +67,7 @@ class CameraService: ObservableObject {
         #if targetEnvironment(simulator)
             // don't configure on simulator...
             canCapturePhoto = true
+            hasFlash = true
         #else
 
             /*
@@ -126,6 +128,7 @@ class CameraService: ObservableObject {
             photoOutput.isHighResolutionCaptureEnabled = true
             photoOutput.maxPhotoQualityPrioritization = .quality
             maxZoomFactor = min(10.0, videoDeviceInput.device.activeFormat.videoMaxZoomFactor)
+            hasFlash = videoDeviceInput.device.hasFlash
             setupResult = .success
         } catch let ConfigurationError.videoUnavailable(message),
                     let ConfigurationError.couldntAddVideo(message),
@@ -203,7 +206,7 @@ class CameraService: ObservableObject {
 
     // Top level function: capture a photo and pass the result to the completion function -- while also providing
     // visual feedback in the form of "snapping" the picture and showing a spinner while iOS processes the photo
-    func capturePhoto(completion: @escaping CompletionFunction) {
+    func capturePhoto(flashMode: AVCaptureDevice.FlashMode, completion: @escaping CompletionFunction) {
         #if targetEnvironment(simulator)
             _captureDummyPhotoForTesting(completion: completion)
         #else
@@ -215,7 +218,7 @@ class CameraService: ObservableObject {
             let orientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
 
             sessionQueue.async {
-                self._capturePhoto(videoOrientation: orientation, completion: completion)
+                self._capturePhoto(flashMode: flashMode, videoOrientation: orientation, completion: completion)
             }
         #endif
     }
@@ -243,12 +246,16 @@ class CameraService: ObservableObject {
     // updates the UI to give the user feedback while the photo is being captured
     // (a flash when the user presses the camera and a spinner while the photo is being processed before it's done)
     // To be called on the sessionQueue
-    private func _capturePhoto(videoOrientation: AVCaptureVideoOrientation, completion: @escaping CompletionFunction) {
+    private func _capturePhoto(
+        flashMode: AVCaptureDevice.FlashMode,
+        videoOrientation: AVCaptureVideoOrientation,
+        completion: @escaping CompletionFunction
+    ) {
         if let photoOutputConnection = photoOutput.connection(with: .video) {
             photoOutputConnection.videoOrientation = videoOrientation
         }
 
-        let photoSettings = _initializePhotoSettings()
+        let photoSettings = _initializePhotoSettings(flashMode: flashMode)
 
         // closure: the photo is about to be captured
         let flashScreenToIndicatePhotoIsAboutToBeTaken = { [weak self] in
@@ -299,8 +306,7 @@ class CameraService: ObservableObject {
     }
 
     // define photo-capture settings. Prefer: HEIF, auto flash mode, high resolution, quality priority, preview format
-    // TODO: implement flashmode
-    private func _initializePhotoSettings() -> AVCapturePhotoSettings {
+    private func _initializePhotoSettings(flashMode: AVCaptureDevice.FlashMode) -> AVCapturePhotoSettings {
         // Capture JPEG photos when supported. Enable according to user settings and high-resolution photos.
         let photoSettings: AVCapturePhotoSettings
         if photoOutput.availablePhotoCodecTypes.contains(.jpeg) {
@@ -313,7 +319,9 @@ class CameraService: ObservableObject {
         }
 
         // Sets the flash option for this capture.
-        if videoDeviceInput.device.isFlashAvailable { photoSettings.flashMode = .auto }
+        if videoDeviceInput.device.hasFlash, videoDeviceInput.device.isFlashAvailable {
+            photoSettings.flashMode = flashMode
+        }
 
         photoSettings.isHighResolutionPhotoEnabled = true
 
