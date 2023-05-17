@@ -43,6 +43,10 @@ class CameraService: ObservableObject {
     @Published var hasFlash = false
 
     let session = AVCaptureSession()
+    /// For ultra wide cameras the zoom factors should be divided by 2.0 when presented in UI.
+    /// The ultra wide camera has zoom starting from 1.0 but iOS Camera app presents this zoom level as 0.5 in the UI and we want to
+    /// keep this behavior, so if ultra wide camera is used this parameter will be 0.5
+    var zoomFactorUIMultiplier = 1.0
     var minZoomFactor = 1.0
     var maxZoomFactor = 10.0
     var isSessionRunning = false
@@ -91,10 +95,7 @@ class CameraService: ObservableObject {
 
     // Try to select a camera by asking AVCapture if it can use various cameras on the device
     private func _selectACaptureDevice() throws -> AVCaptureDevice {
-        // TODO: ignore triple camera for now, we don't really present the full screen photo preview
-        // the zoom is not handled properly (the device still reports 1.0 min zoom level but it should
-        // be labeled as 0.5 in this case
-//        if let d = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) { return d }
+        if let d = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) { return d }
         if let d = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) { return d }
         if let d = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) { return d }
         if let d = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) { return d }
@@ -113,12 +114,21 @@ class CameraService: ObservableObject {
 
             // find some video input
             let videoDevice = try _selectACaptureDevice()
+
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
 
             // Add video input.
             guard session.canAddInput(videoDeviceInput) else { throw ConfigurationError.couldntAddVideo() }
             session.addInput(videoDeviceInput)
             self.videoDeviceInput = videoDeviceInput
+
+            // Special zoom handling for ultra wide camera, see docs of `zoomFactorUIMultiplier`
+            if videoDevice._hasUltraWideCamera {
+                zoomFactorUIMultiplier = 0.5
+
+                // start with zoom 2 (which is 1.0 in the UI) - we want to start with wide, not ultra wide
+                set(zoom: 2.0)
+            }
 
             // Add the photo output.
             guard session.canAddOutput(photoOutput) else { throw ConfigurationError.couldntAddOutput() }
@@ -127,8 +137,10 @@ class CameraService: ObservableObject {
             // configure the output
             photoOutput.isHighResolutionCaptureEnabled = true
             photoOutput.maxPhotoQualityPrioritization = .quality
-            maxZoomFactor = min(10.0, videoDeviceInput.device.activeFormat.videoMaxZoomFactor)
-            hasFlash = videoDeviceInput.device.hasFlash
+            DispatchQueue.main.async {
+                self.maxZoomFactor = min(10.0, videoDeviceInput.device.activeFormat.videoMaxZoomFactor)
+                self.hasFlash = videoDeviceInput.device.hasFlash
+            }
             setupResult = .success
         } catch let ConfigurationError.videoUnavailable(message),
                     let ConfigurationError.couldntAddVideo(message),
@@ -358,6 +370,14 @@ class CameraService: ObservableObject {
 
         photoSettings.photoQualityPrioritization = .quality
         return photoSettings
+    }
+}
+
+extension AVCaptureDevice {
+    /// Returns if this device is an ultra wide camera or is a virtual device that has an ultra wide camera constituent
+    var _hasUltraWideCamera: Bool {
+        deviceType == .builtInUltraWideCamera || constituentDevices
+            .contains { $0.deviceType == .builtInUltraWideCamera }
     }
 }
 

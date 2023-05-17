@@ -27,7 +27,9 @@ struct CameraView: View {
     }
 
     // the current scale not affected by the MagnificationGesture in progress
-    @State var cameraScale: CGFloat = 1.0
+    // The 0.0 initial value is used to mark that the value needs to be obtained from the camera zoom
+    // when used for the first time
+    @State var cameraScale: CGFloat = 0.0
     // progress of the current MagnificationGesture
     @State var progressingScale: CGFloat = 1.0
 
@@ -227,6 +229,9 @@ struct CameraView: View {
         .gesture(
             MagnificationGesture()
                 .onChanged {
+                    if cameraScale <= 0.0 {
+                        cameraScale = camera.currentZoomFactor
+                    }
                     progressingScale = $0
                     camera.set(zoom: cameraScale * progressingScale)
                 }
