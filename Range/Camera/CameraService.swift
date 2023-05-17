@@ -49,6 +49,8 @@ class CameraService: ObservableObject {
     var zoomFactorUIMultiplier = 1.0
     var minZoomFactor = 1.0
     var maxZoomFactor = 10.0
+    /// zoom factors to be presented in UI so user can tap to zoom to given level. This are device values (not UI, so not multiplied by zoomFactorUIMultiplier)
+    var zoomFactors: [Double] = [1.0]
     var isSessionRunning = false
     private var setupResult: SessionSetupResult = .notConfigured
     // Communicate with the session and other session objects on this queue.
@@ -72,6 +74,7 @@ class CameraService: ObservableObject {
             // don't configure on simulator...
             canCapturePhoto = true
             hasFlash = true
+            zoomFactors = [1, 2, 3]
         #else
 
             /*
@@ -112,8 +115,12 @@ class CameraService: ObservableObject {
 
             session.sessionPreset = .photo
 
+            // to print the camera info
+            // AVCaptureDevice._printDeviceInfo()
+
             // find some video input
             let videoDevice = try _selectACaptureDevice()
+            zoomFactors = videoDevice._getZoomFactors()
 
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
 
@@ -127,7 +134,7 @@ class CameraService: ObservableObject {
                 zoomFactorUIMultiplier = 0.5
 
                 // start with zoom 2 (which is 1.0 in the UI) - we want to start with wide, not ultra wide
-                set(zoom: 2.0)
+                set(zoom: 2.0, animated: false)
             }
 
             // Add the photo output.
@@ -222,13 +229,20 @@ class CameraService: ObservableObject {
     // -----------------------------------------------------------------------------------------------------------------
 
     // change the zoom on the camera
-    func set(zoom: CGFloat) {
-        currentZoomFactor = max(minZoomFactor, min(zoom, maxZoomFactor))
+    func set(zoom: CGFloat, animated: Bool) {
+        let newZoom = max(minZoomFactor, min(zoom, maxZoomFactor))
+        DispatchQueue.main.async {
+            self.currentZoomFactor = newZoom
+        }
         let device = videoDeviceInput.device
 
         do {
             try device.lockForConfiguration()
-            device.videoZoomFactor = currentZoomFactor
+            if animated {
+                device.ramp(toVideoZoomFactor: newZoom, withRate: 10)
+            } else {
+                device.videoZoomFactor = newZoom
+            }
             device.unlockForConfiguration()
         } catch {
             Logger.camera.error("setZoom failed: \(error.localizedDescription, privacy: .public)")
@@ -378,6 +392,48 @@ extension AVCaptureDevice {
     var _hasUltraWideCamera: Bool {
         deviceType == .builtInUltraWideCamera || constituentDevices
             .contains { $0.deviceType == .builtInUltraWideCamera }
+    }
+
+    /// Return zoom factors for this device. This are selected zoom levels important for this device (mainly the levels at which
+    /// the device switches the camera but also the secondary zoom factors)
+    /// This array always contains the 1 zoom factor.
+    /// The factors are to be used in UI - for each zoom factor there's a button to reset to given zoom (to replicated the iOS Camera app)
+    /// The factors are doubles but are rounded up. iPhone X reports videoZoomFactors = [1.799999952316284]
+    /// but in iOS Camera app they label it as zoom level 2, so they do some scaling of the zoom range... We don't do that and cheat a little
+    /// bit, so 1.79 will be rounded up to 2 and we'll use that as the zoom factor
+    func _getZoomFactors() -> [Double] {
+        var factors = [Double]()
+        factors.append(1.0)
+        factors.append(contentsOf: virtualDeviceSwitchOverVideoZoomFactors.map { factor in
+            Double(truncating: factor).rounded(.up)
+        })
+        if #available(iOS 16.0, *) {
+            factors.append(contentsOf: activeFormat.secondaryNativeResolutionZoomFactors.map { factor in
+                Double(factor.rounded(.up))
+            })
+        }
+        return factors.uniqued().sorted()
+    }
+
+    /// print the info about cameras and their supported zoom factors and secondary native resolution zoom factors
+    static func _printDeviceInfo() {
+        let deviceTypes: [AVCaptureDevice.DeviceType] = [
+            .builtInUltraWideCamera, .builtInWideAngleCamera, .builtInTelephotoCamera,
+            .builtInDualWideCamera, .builtInDualCamera,
+            .builtInTripleCamera,
+        ]
+
+        for deviceType in deviceTypes {
+            if let d = AVCaptureDevice.default(deviceType, for: .video, position: .back) {
+                print("type: ", deviceType.rawValue, d)
+                print("constituent: ", d.constituentDevices)
+                print("videoZoomFactors ", d.virtualDeviceSwitchOverVideoZoomFactors)
+                if #available(iOS 16.0, *) {
+                    print("secondaryNativeResolutionZoomFactors ",
+                          d.activeFormat.secondaryNativeResolutionZoomFactors)
+                }
+            }
+        }
     }
 }
 

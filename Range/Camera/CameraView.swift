@@ -167,12 +167,29 @@ struct CameraView: View {
     }
 
     // Text overlay on photo preview showing the current zoom level
-    var zoomView: some View {
-        Text(model.zoomString)
-            .font(.system(size: 11)).fontWeight(.semibold)
-            .foregroundColor(Color.Neutral_01)
-            .frame(width: 30, height: 30)
-            .background(Circle().fill(Color.Neutral_10.opacity(0.8)))
+    private func zoomView(zoomFactorIndex: Int) -> some View {
+        let zoom = camera.zoomFactors[zoomFactorIndex]
+        return Button(action: {
+            cameraScale = zoom
+            camera.set(zoom: zoom, animated: true)
+        }) {
+            if zoomFactorIndex == model.currentZoomFactorIndex {
+                // show current zoom for current zoom factor (so show for example 2.3 and not 2 because
+                // zoom might not be exactly one of the zoom factors)
+                Text(model.zoomString)
+                    .font(.system(size: 13)).fontWeight(.semibold)
+                    .foregroundColor(Color.Pink_03)
+                    .frame(width: 38, height: 38)
+                    .background(Circle().fill(Color.Neutral_10.opacity(0.8)))
+            } else {
+                Text(model.zoomToString(zoom))
+                    .font(.system(size: 11)).fontWeight(.semibold)
+                    .foregroundColor(Color.Neutral_01)
+                    .frame(width: 30, height: 30)
+                    .background(Circle().fill(Color.Neutral_10.opacity(0.8)))
+                    .padding(4)
+            }
+        }
     }
 
     // Grid overlay on photo preview showing a grid
@@ -233,7 +250,7 @@ struct CameraView: View {
                         cameraScale = camera.currentZoomFactor
                     }
                     progressingScale = $0
-                    camera.set(zoom: cameraScale * progressingScale)
+                    camera.set(zoom: cameraScale * progressingScale, animated: false)
                 }
                 .onEnded { _ in
                     cameraScale = camera.currentZoomFactor
@@ -287,6 +304,15 @@ struct CameraView: View {
         .padding(16)
     }
 
+    private func zoomButtonsHStack() -> some View {
+        HStack(spacing: 2) {
+            ForEach(0 ..< camera.zoomFactors.count, id: \.self) { index in
+                zoomView(zoomFactorIndex: index).rotationEffect(uiAngle)
+            }
+        }
+        .animation(.default, value: uiAngle)
+    }
+
     private func bottomButtonsZStack() -> some View {
         ZStack {
             HStack(spacing: 19) {
@@ -317,8 +343,7 @@ struct CameraView: View {
                         .overlay(topButtonsHStack(), alignment: .top)
                         .overlay(
                             VStack {
-                                zoomView.rotationEffect(uiAngle)
-                                    .animation(.default, value: uiAngle)
+                                zoomButtonsHStack()
                                 bottomButtonsZStack()
                             }.padding(.bottom, 22),
                             alignment: .bottom
@@ -333,8 +358,7 @@ struct CameraView: View {
                         topButtonsHStack()
                         ZStack(alignment: .bottom) {
                             cameraView(reader: reader)
-                            zoomView.rotationEffect(uiAngle)
-                                .animation(.default, value: uiAngle)
+                            zoomButtonsHStack()
                                 .padding(.bottom, 22)
                         }
                         Spacer(minLength: 0)

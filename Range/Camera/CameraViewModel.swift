@@ -27,6 +27,8 @@ class CameraViewModel: ObservableObject {
     private var hideBannerDelayer = Delayer(delayTime: 2)
     /// Current flash mode
     @Published var flashMode: AVCaptureDevice.FlashMode = .auto
+    /// Current zoom factor - which zoom factor from CameraService.zoomFactors should be marked as selected
+    @Published var currentZoomFactorIndex: Int = 0
 
     /// Callbacks for the controller
     var closeAction: (() -> Void)?
@@ -44,21 +46,38 @@ class CameraViewModel: ObservableObject {
         camera = cameraService
 
         // update zoomString when the @Published CameraService.$currentZoomFactor changes
-        let updateZoomString: (Double) -> Void = { [weak self] zoom in
+        let onCurrentZoomUpdated: (Double) -> Void = { [weak self] zoom in
             guard let self = self else { return }
-            // convert to value to be presented in UI (see the docs for zoomFactorUIMultiplier)
-            let displayZoom = zoom * camera.zoomFactorUIMultiplier
-            let zoomInt = Int(displayZoom)
-            let zoomDecimal: Int = .init(10 * (displayZoom - Double(zoomInt)))
-            if zoomDecimal == 0 {
-                self.zoomString = "\(zoomInt)x"
-            } else {
-                self.zoomString = "\(zoomInt),\(zoomDecimal)x"
-            }
+            self.zoomString = zoomToString(zoom)
+            self.currentZoomFactorIndex = currentZoomFactorIndex(zoom)
         }
 
         // add a listener for changes to service.$currentZoomFactor and hold a strong reference to it
-        cameraService.$currentZoomFactor.sink(receiveValue: updateZoomString).store(in: &subscriptions)
+        cameraService.$currentZoomFactor.sink(receiveValue: onCurrentZoomUpdated).store(in: &subscriptions)
+    }
+
+    /// just find the position of zoom in the array of factors.
+    /// For example if factors are [1, 2, 3] and zoom is 2.1 then the index is 1 (corresponding to zoom factor = 2)
+    /// This could be binary search but currently the max number of zoom factors is 4, so a simple for loop will suffice
+    func currentZoomFactorIndex(_ zoom: Double) -> Int {
+        var index = 0
+        // if there's a next factor check if it's better
+        while index < camera.zoomFactors.count - 1, zoom >= camera.zoomFactors[index + 1] {
+            index += 1
+        }
+        return index
+    }
+
+    func zoomToString(_ zoom: Double) -> String {
+        // convert to value to be presented in UI (see the docs for zoomFactorUIMultiplier)
+        let displayZoom = zoom * camera.zoomFactorUIMultiplier
+        let zoomInt = Int(displayZoom)
+        let zoomDecimal: Int = .init(10 * (displayZoom - Double(zoomInt)))
+        if zoomDecimal == 0 {
+            return "\(zoomInt)x"
+        } else {
+            return "\(zoomInt),\(zoomDecimal)x"
+        }
     }
 
     /// Toggles the `annotationsEnabled` flag and sets the `bannerText`/`bannerIcon`
