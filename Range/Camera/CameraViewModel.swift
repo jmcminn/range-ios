@@ -48,7 +48,7 @@ class CameraViewModel: ObservableObject {
         // update zoomString when the @Published CameraService.$currentZoomFactor changes
         let onCurrentZoomUpdated: (Double) -> Void = { [weak self] zoom in
             guard let self = self else { return }
-            self.zoomString = zoomToString(zoom)
+            self.zoomString = zoomToString(zoom, currentZoom: true)
             self.currentZoomFactorIndex = currentZoomFactorIndex(zoom)
         }
 
@@ -68,15 +68,27 @@ class CameraViewModel: ObservableObject {
         return index
     }
 
-    func zoomToString(_ zoom: Double) -> String {
+    /// currentZoom (`true`) renders differently that zoom factors (as in iOS Camera app)
+    func zoomToString(_ zoom: Double, currentZoom: Bool) -> String {
         // convert to value to be presented in UI (see the docs for zoomFactorUIMultiplier)
         let displayZoom = zoom * camera.zoomFactorUIMultiplier
         let zoomInt = Int(displayZoom)
         let zoomDecimal: Int = .init(10 * (displayZoom - Double(zoomInt)))
-        if zoomDecimal == 0 {
-            return "\(zoomInt)x"
+        if currentZoom {
+            if zoomDecimal == 0 {
+                return "\(zoomInt)×"
+            } else {
+                return "\(zoomInt).\(zoomDecimal)×"
+            }
         } else {
-            return "\(zoomInt),\(zoomDecimal)x"
+            // no front 0 for 0.5, only if 0.0
+            if zoomDecimal == 0 {
+                return "\(zoomInt)"
+            } else if zoomInt == 0 {
+                return ".\(zoomDecimal)"
+            } else {
+                return "\(zoomInt).\(zoomDecimal)"
+            }
         }
     }
 

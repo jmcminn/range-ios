@@ -182,7 +182,7 @@ struct CameraView: View {
                     .frame(width: 38, height: 38)
                     .background(Circle().fill(Color.Neutral_10.opacity(0.8)))
             } else {
-                Text(model.zoomToString(zoom))
+                Text(model.zoomToString(zoom, currentZoom: false))
                     .font(.system(size: 11)).fontWeight(.semibold)
                     .foregroundColor(Color.Neutral_01)
                     .frame(width: 30, height: 30)
