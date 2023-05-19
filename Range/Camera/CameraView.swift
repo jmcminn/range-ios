@@ -39,7 +39,9 @@ struct CameraView: View {
                 .strokeBorder(Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
                 .frame(width: 40, height: 40)
-                .overlay(Image(systemName: "xmark").font(.title3.bold()).foregroundColor(.Red_03))
+                .overlay(Image(systemName: "xmark")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.Red_03))
         }.buttonStyle(.plain)
     }
 
@@ -51,19 +53,25 @@ struct CameraView: View {
                     .strokeBorder(Color.Neutral_07, lineWidth: 1)
                     .background(Circle().fill(Color.Neutral_09))
                     .frame(width: 40, height: 40)
-                    .overlay(Image(systemName: "bolt.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+                    .overlay(Image(systemName: "bolt.fill")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.Orange_03))
             case .auto:
                 Circle()
                     .strokeBorder(Color.Neutral_07, lineWidth: 1)
                     .background(Circle().fill(Color.Neutral_09))
                     .frame(width: 40, height: 40)
-                    .overlay(Image(systemName: "bolt.badge.a.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+                    .overlay(Image(systemName: "bolt.badge.a.fill")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.Neutral_04))
             case .off:
                 Circle()
                     .strokeBorder(Color.Neutral_07, lineWidth: 1)
                     .background(Circle().fill(Color.Neutral_09))
                     .frame(width: 40, height: 40)
-                    .overlay(Image(systemName: "bolt.slash.fill").font(.body.bold()).foregroundColor(.Neutral_04))
+                    .overlay(Image(systemName: "bolt.slash.fill")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.Neutral_04))
             @unknown default:
                 fatalError("flashMode not supported") // this shouldn't happen as the app only allows to select one of the above
             }
@@ -76,7 +84,8 @@ struct CameraView: View {
                 .strokeBorder(Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
                 .frame(width: 40, height: 40)
-                .overlay(Image(systemName: "photo").font(.body.bold())
+                .overlay(Image(systemName: "photo")
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(.Neutral_04))
         }.buttonStyle(.plain)
     }
@@ -113,7 +122,8 @@ struct CameraView: View {
                 .strokeBorder(model.annotationsEnabled ? Color.Pink_04 : Color.Neutral_07, lineWidth: 2)
                 .background(Circle().fill(model.annotationsEnabled ? Color.Pink_03 : Color.Neutral_09))
                 .frame(width: 50, height: 50)
-                .overlay(Image(systemName: "tag").font(.callout.bold())
+                .overlay(Image(systemName: "tag")
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(model.multiPhotoEnabled ? .Neutral_01 : .Neutral_04))
         }.buttonStyle(.plain)
     }
@@ -124,7 +134,8 @@ struct CameraView: View {
                 .strokeBorder(model.multiPhotoEnabled ? Color.Pink_04 : Color.Neutral_07, lineWidth: 2)
                 .background(Circle().fill(model.multiPhotoEnabled ? Color.Pink_03 : Color.Neutral_09))
                 .frame(width: 50, height: 50)
-                .overlay(Image(systemName: "photo.on.rectangle").font(.callout.bold())
+                .overlay(Image(systemName: "photo.on.rectangle")
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(model.multiPhotoEnabled ? .Neutral_01 : .Neutral_04))
         }.buttonStyle(.plain)
     }
@@ -135,7 +146,8 @@ struct CameraView: View {
                 .strokeBorder(Color.Primary_Blue_06, lineWidth: 2)
                 .background(Circle().fill(Color.Primary_Blue_04))
                 .frame(width: 50, height: 50)
-                .overlay(Image(systemName: "arrow.forward").font(.title3.bold())
+                .overlay(Image(systemName: "arrow.forward")
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(.Neutral_01))
         }.buttonStyle(.plain)
             .disabled(model.numberOfPhotos == 0 || camera.isProcessingPhoto)
@@ -285,26 +297,31 @@ struct CameraView: View {
         }
     }
 
-    private func topButtonsHStack() -> some View {
-        HStack(spacing: 12) {
-            closeButton.rotationEffect(uiAngle)
-            if camera.hasFlash {
-                flashButton.rotationEffect(uiAngle)
+    private func topButtons() -> some View {
+        ZStack {
+            HStack {
+                closeButton.rotationEffect(uiAngle)
+                Spacer()
+                if model.multiPhotoEnabled, model.numberOfPhotos > 0 {
+                    imageButton.rotationEffect(uiAngle)
+                }
             }
-            if model.cameraRollSelectAction != nil {
-                cameraRollButton.rotationEffect(uiAngle)
-            }
-//            settingsButton.rotationEffect(uiAngle)
-            Spacer()
-            if model.multiPhotoEnabled, model.numberOfPhotos > 0 {
-                imageButton.rotationEffect(uiAngle)
+            // centered
+            HStack(spacing: 12) {
+                if camera.hasFlash {
+                    flashButton.rotationEffect(uiAngle)
+                }
+                if model.cameraRollSelectAction != nil {
+                    cameraRollButton.rotationEffect(uiAngle)
+                }
+                //            settingsButton.rotationEffect(uiAngle)
             }
         }
         .animation(.default, value: uiAngle)
         .padding(16)
     }
 
-    private func zoomButtonsHStack() -> some View {
+    private func zoomButtons() -> some View {
         HStack(spacing: 2) {
             ForEach(0 ..< camera.zoomFactors.count, id: \.self) { index in
                 zoomView(zoomFactorIndex: index).rotationEffect(uiAngle)
@@ -313,7 +330,7 @@ struct CameraView: View {
         .animation(.default, value: uiAngle)
     }
 
-    private func bottomButtonsZStack() -> some View {
+    private func bottomButtons() -> some View {
         ZStack {
             HStack(spacing: 19) {
                 toggleAnnotationsButton.rotationEffect(uiAngle)
@@ -340,11 +357,11 @@ struct CameraView: View {
                 VStack {
                     Spacer()
                     cameraView(reader: reader)
-                        .overlay(topButtonsHStack(), alignment: .top)
+                        .overlay(topButtons(), alignment: .top)
                         .overlay(
                             VStack {
-                                zoomButtonsHStack()
-                                bottomButtonsZStack()
+                                zoomButtons()
+                                bottomButtons()
                             }.padding(.bottom, 22),
                             alignment: .bottom
                         )
@@ -355,14 +372,14 @@ struct CameraView: View {
                     Color.Neutral_10.edgesIgnoringSafeArea(.all)
                     VStack(spacing: 0) {
                         Spacer(minLength: 0)
-                        topButtonsHStack()
+                        topButtons()
                         ZStack(alignment: .bottom) {
                             cameraView(reader: reader)
-                            zoomButtonsHStack()
+                            zoomButtons()
                                 .padding(.bottom, 22)
                         }
                         Spacer(minLength: 0)
-                        bottomButtonsZStack()
+                        bottomButtons()
                         Spacer(minLength: 0)
                     }
                 }
