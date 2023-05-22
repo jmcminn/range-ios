@@ -187,12 +187,7 @@ class CanvasViewController: UIViewController {
                 ToastWindow.shared.showError(text: "Canvas failed to load")
             }
             setupPDFScrollView()
-            if fromPdfToPdf {
-                // keep the camera state unchanged when switching between pdfs
-                syncPDFViewWithAnnotationViews()
-            } else {
-                updateCameraForCanvasSource()
-            }
+            updateCameraForCanvasSource()
         } else {
             updateCameraForCanvasSource()
             gridView?.removeFromSuperview()
