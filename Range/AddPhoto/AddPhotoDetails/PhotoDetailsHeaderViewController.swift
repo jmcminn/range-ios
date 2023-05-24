@@ -69,7 +69,13 @@ class PhotoDetailsHeaderViewController: UIViewController {
                 localFiles.imageProvider(forKey: $0)
             },
             photoKeys: photosViewModel.photos.map(\.mediaKey),
-            pageHeight2Width: photosViewModel.photos.map(\.height2Width).max() ?? 4.0 / 3.0
+            pageHeight2Width: photosViewModel.photos.map(\.height2Width).max() ?? 4.0 / 3.0,
+            removePhotoHandler: { [weak self] photoIndex in
+                guard let self = self else { return false }
+                guard photoIndex < self.photosViewModel.photos.count else { return false }
+                self.photosViewModel.remove(photoAtIndex: photoIndex)
+                return true
+            }
         )
         galleryVC.onPhotoSelected = { [weak self] in
             self?.onPhotoSelected?()

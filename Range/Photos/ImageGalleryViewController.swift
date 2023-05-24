@@ -18,8 +18,11 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     // this defines the page size
     let pageHeight2Width: Double
 
+    /// Handler that accepts removal of photo at given index by returning `true`
+    let removePhotoHandler: ((Int) -> Bool)?
+
     private let scrollView = UIScrollView()
-    private var pages: [ImageGalleryPageView]
+    private var pages: [ImageGalleryPageView] = []
     private var pageSize: CGSize = .zero
     private(set) var currentPage: Int = 0 {
         didSet {
@@ -39,14 +42,31 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     ///   - imageDataProviderFactory   function returning ImageDataProvider for given PhotoKey
     ///   - photoKeys:                            array of PhotoKey
     ///   - pageHeight2Width                 defines the image gallery page aspect ratio
+    ///   - removePhotoHandler:           if provided then a button for removing photo will be shown. This vc will remove the photo from given photo keys and animate the changes iff the handler returns `true`
     init(imageDataProviderFactory: @escaping (PhotoKey) -> RangeImageDataProvider,
-         photoKeys: [PhotoKey], pageHeight2Width: Double)
+         photoKeys: [PhotoKey], pageHeight2Width: Double, removePhotoHandler: ((Int) -> Bool)? = nil)
     {
         self.imageDataProviderFactory = imageDataProviderFactory
         self.photoKeys = photoKeys
         self.pageHeight2Width = pageHeight2Width
-        pages = photoKeys.map { _ in ImageGalleryPageView() }
+        self.removePhotoHandler = removePhotoHandler
         super.init(nibName: nil, bundle: nil)
+
+        pages = photoKeys.map { _ in self.setupPage() }
+    }
+
+    private func setupPage() -> ImageGalleryPageView {
+        ImageGalleryPageView(
+            onPageTap: { [weak self] in
+                self?.onPhotoSelected?()
+            },
+            onPhotoRemove: removePhotoHandler != nil
+                ? { [weak self] in
+                    guard let self = self else { return }
+                    _ = self.removePhotoHandler?(self.currentPage)
+                }
+                : nil
+        )
     }
 
     @available(*, unavailable)
@@ -66,6 +86,10 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         view.layoutIfNeeded()
         // and reloading of images
         currentPage = primaryVisiblePage
+        // last was deleted, then scroll to previous
+        if currentPage >= photoKeys.count {
+            setCurrentPage(photoKeys.count - 1)
+        }
         loadImages(currentPage: currentPage, force: true)
     }
 
@@ -80,8 +104,6 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
         view.backgroundColor = .dynamic(.Neutral_10)
         view.clipsToBounds = true
-        view.isUserInteractionEnabled = true
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
 
         scrollView.delegate = self
         scrollView.isPagingEnabled = true
@@ -130,11 +152,6 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
             updatePageImageInsets()
         }
         previousSize = pageSize
-    }
-
-    // Handle tapping on the view
-    @objc func viewTapped() {
-        onPhotoSelected?()
     }
 
     /// recalculate page size, etc. based on the current frame size page size ratio

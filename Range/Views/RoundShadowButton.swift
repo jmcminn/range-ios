@@ -6,7 +6,7 @@ class RoundShadowButton: UIControl {
     private let size: CGFloat
 
     ///
-    init(image: UIImage, size: CGFloat = 48) {
+    init(image: UIImage, size: CGFloat = 48, imageTintColor: UIColor = .Neutral_04) {
         self.size = size
         super.init(frame: .zero)
 
@@ -30,7 +30,7 @@ class RoundShadowButton: UIControl {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 19)
             .applying(UIImage.SymbolConfiguration(weight: .regular))
         let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(imageConfig))
-        imageView.tintColor = .Neutral_04
+        imageView.tintColor = imageTintColor
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()

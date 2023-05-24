@@ -3,6 +3,8 @@ import UIKit
 
 /// View displayed in the ImageGalleryViewController for 1 image.
 class ImageGalleryPageView: UIView {
+    let onPageTap: (() -> Void)?
+    let onPhotoRemove: (() -> Void)?
     let imageView = UIImageView()
     /// top/bottom insets for image view, so the side pages in the gallery are lower than the center one.
     /// left/right inset values doesn't matter, but if any is non zero, the image view will be pushed towards the other edge, for example
@@ -19,15 +21,34 @@ class ImageGalleryPageView: UIView {
         }
     }
 
-    init() {
+    var removeButton: RoundShadowButton?
+
+    init(onPageTap: (() -> Void)?, onPhotoRemove: (() -> Void)? = nil) {
+        self.onPageTap = onPageTap
+        self.onPhotoRemove = onPhotoRemove
         super.init(frame: .zero)
 
         imageView.layer.cornerRadius = 13
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFit
+        imageView.isUserInteractionEnabled = true
         imageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())
 
         addSubview(imageView)
+
+        if onPageTap != nil {
+            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(pageTapped))
+            tapRecognizer.delegate = self
+            addGestureRecognizer(tapRecognizer)
+        }
+        if onPhotoRemove != nil {
+            removeButton = RoundShadowButton(image: .init(systemName: "trash") ?? .init(), imageTintColor: .Red_03)
+            removeButton!.addTarget(self, action: #selector(removeButtonTapped), for: .touchUpInside)
+            imageView.addSubview(removeButton!)
+            removeButton!.snp.makeConstraints { make in
+                make.leading.bottom.equalToSuperview().inset(12)
+            }
+        }
     }
 
     @available(*, unavailable)
@@ -42,6 +63,10 @@ class ImageGalleryPageView: UIView {
         imageView.frame = imageViewFrame(
             forImageHeight2Width: imageHeight2Width ?? 4.0 / 3.0, imageInset: imageInset
         )
+
+        // buttons alpha depends on the inset, so we hide the buttons if the page is shrinking (is not a central page)
+        // It's hiding when inset is changing from 0 to 5
+        removeButton?.alpha = max(1 - imageInset.top / 5.0, 0)
     }
 
     /// calculate image frame so it's aspect ratio is preserved and take all insets into account
@@ -78,5 +103,24 @@ class ImageGalleryPageView: UIView {
             width: insetImageWidth,
             height: insetImageHeight
         )
+    }
+
+    @objc private func pageTapped() {
+        onPageTap?()
+    }
+
+    @objc private func removeButtonTapped() {
+        onPhotoRemove?()
+    }
+}
+
+extension ImageGalleryPageView: UIGestureRecognizerDelegate {
+    /// Registering tap gesture recognizer on the view will still 'touchUpInside' events from UIControls so we need to make sure
+    /// that the view ignores touchs on UIControls
+    func gestureRecognizer(_: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UIControl {
+            return false
+        }
+        return true
     }
 }
