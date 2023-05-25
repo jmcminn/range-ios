@@ -121,6 +121,11 @@ class UIScrollViewDelegateProxy: NSObject, UIScrollViewDelegate {
         originalDelegate?.scrollViewDidScroll?(scrollView)
     }
 
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        forwardToDelegates.allObjects.forEach { $0.scrollViewDidZoom?(scrollView) }
+        originalDelegate?.scrollViewDidZoom?(scrollView)
+    }
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         forwardToDelegates.allObjects.forEach { $0.scrollViewWillBeginDragging?(scrollView) }
         originalDelegate?.scrollViewWillBeginDragging?(scrollView)

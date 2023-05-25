@@ -108,8 +108,8 @@ extension UIButton.Configuration {
     static func iconButton(backgroundColor: UIColor, strokeColor: UIColor, cornerRadius: CGFloat = 24) -> UIButton
         .Configuration
     {
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .caption1)
-            .applying(UIImage.SymbolConfiguration(weight: .bold))
+        // size 18 here corresponds to 22 in the design. I don't know where does the difference come from
+        let imageConfig = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 18, weight: .bold))
         var config = UIButton.Configuration.filled()
 
         config.baseBackgroundColor = backgroundColor

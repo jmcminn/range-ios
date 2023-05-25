@@ -357,7 +357,6 @@ extension SearchAndSelectTagsViewController: HeaderExpanderDelegate {
     /// Update headers heights when the expander notifies about change
     /// It also triggers the interactive transition from details screen to photos review if user drags down = over expands the headers
     func headerExpanderDidUpdateState(_ expander: HeaderExpander, animationDuration: TimeInterval) {
-        print("expander state: ", expander.headersState)
         let heights = expander.headersState.heights
         if let optionLabel = optionLabel {
             // move the option label up if it's collapsing

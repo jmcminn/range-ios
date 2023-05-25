@@ -548,7 +548,6 @@ extension FullscreenMediaCardViewController {
         }
     }
 
-    // TODO: 1183
     private func showAnnotationsEditor() {
         let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload)
         let vc = FullscreenImageGalleryViewController(

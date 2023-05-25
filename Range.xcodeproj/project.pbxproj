@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		0A010C9F29913AFD0066D35A /* ProjectModel+RealmMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A010C9E29913AFD0066D35A /* ProjectModel+RealmMigration.swift */; };
+		0A0505742A1BC696001AF644 /* ScribbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505732A1BC696001AF644 /* ScribbleView.swift */; };
+		0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */; };
+		0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */; };
+		0A05057F2A1E2512001AF644 /* CGPoint+Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05057E2A1E2512001AF644 /* CGPoint+Operations.swift */; };
+		0A0505852A1F838A001AF644 /* ScribblingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505842A1F838A001AF644 /* ScribblingView.swift */; };
+		0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505862A1FAEFB001AF644 /* RangeBezierPath.swift */; };
 		0A05312429375BEC00738BA3 /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05312329375BEC00738BA3 /* Throttler.swift */; };
 		0A05312929378FE900738BA3 /* MediaCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05312829378FE900738BA3 /* MediaCardViewController.swift */; };
 		0A05312B2937B2FA00738BA3 /* ImageMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05312A2937B2FA00738BA3 /* ImageMediaCollectionViewCell.swift */; };
@@ -180,6 +186,8 @@
 		0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC79A27F61C8700712518 /* SnapKit */; };
 		0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */; };
 		0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC7A327F7618D00712518 /* RoundShadowView.swift */; };
+		0A5394272A251482008583F0 /* ScribbleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394262A251482008583F0 /* ScribbleViewModel.swift */; };
+		0A5394292A264685008583F0 /* Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394282A264685008583F0 /* Annotations.swift */; };
 		0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A566EF529BA29480094BD60 /* CanvasSource.swift */; };
 		0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		0A58DDB9299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */; };
@@ -385,6 +393,12 @@
 
 /* Begin PBXFileReference section */
 		0A010C9E29913AFD0066D35A /* ProjectModel+RealmMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+RealmMigration.swift"; sourceTree = "<group>"; };
+		0A0505732A1BC696001AF644 /* ScribbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleView.swift; sourceTree = "<group>"; };
+		0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point2DRepresentable.swift; sourceTree = "<group>"; };
+		0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolylineSimplify.swift; sourceTree = "<group>"; };
+		0A05057E2A1E2512001AF644 /* CGPoint+Operations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Operations.swift"; sourceTree = "<group>"; };
+		0A0505842A1F838A001AF644 /* ScribblingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribblingView.swift; sourceTree = "<group>"; };
+		0A0505862A1FAEFB001AF644 /* RangeBezierPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeBezierPath.swift; sourceTree = "<group>"; };
 		0A05312329375BEC00738BA3 /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		0A05312829378FE900738BA3 /* MediaCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCardViewController.swift; sourceTree = "<group>"; };
 		0A05312A2937B2FA00738BA3 /* ImageMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMediaCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -555,6 +569,8 @@
 		0A4DC79727F5B06200712518 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Properties.swift"; sourceTree = "<group>"; };
 		0A4DC7A327F7618D00712518 /* RoundShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowView.swift; sourceTree = "<group>"; };
+		0A5394262A251482008583F0 /* ScribbleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleViewModel.swift; sourceTree = "<group>"; };
+		0A5394282A264685008583F0 /* Annotations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotations.swift; sourceTree = "<group>"; };
 		0A566EF529BA29480094BD60 /* CanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSource.swift; sourceTree = "<group>"; };
 		0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentMediaCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -788,6 +804,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A0505722A1BC679001AF644 /* Annotations */ = {
+			isa = PBXGroup;
+			children = (
+				0A5394282A264685008583F0 /* Annotations.swift */,
+				0A5394262A251482008583F0 /* ScribbleViewModel.swift */,
+				0A0505732A1BC696001AF644 /* ScribbleView.swift */,
+				0A0505842A1F838A001AF644 /* ScribblingView.swift */,
+			);
+			path = Annotations;
+			sourceTree = "<group>";
+		};
+		0A0505772A1D3326001AF644 /* AnnotationUtils */ = {
+			isa = PBXGroup;
+			children = (
+				0A05057E2A1E2512001AF644 /* CGPoint+Operations.swift */,
+				0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */,
+				0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */,
+				0A0505862A1FAEFB001AF644 /* RangeBezierPath.swift */,
+			);
+			path = AnnotationUtils;
+			sourceTree = "<group>";
+		};
 		0A05312229375BDF00738BA3 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -1281,6 +1319,8 @@
 				0ABFD8BE28F48556008CDA74 /* ActionSelector */,
 				0A4995D62860C6A900E571FB /* AddPhoto */,
 				0ADC183929631C84007A59CA /* AddPin */,
+				0A0505722A1BC679001AF644 /* Annotations */,
+				0A0505772A1D3326001AF644 /* AnnotationUtils */,
 				0A07D764281295B500B6F9A2 /* Auth */,
 				0A1935302938C1D6000E8BF8 /* Avatar */,
 				0A97232327FC507200D744F4 /* Camera */,
@@ -1864,6 +1904,7 @@
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
+				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
@@ -1974,6 +2015,7 @@
 				0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A130EA128D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift in Sources */,
+				0A5394292A264685008583F0 /* Annotations.swift in Sources */,
 				0A7FC4192844E6A80097888A /* FirestoreStatusName.swift in Sources */,
 				0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */,
 				0A36CDFB299C0E2B0004758E /* RangeLocalFileImageDataProvider.swift in Sources */,
@@ -1986,6 +2028,7 @@
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirestoreCanvas.swift in Sources */,
+				0A5394272A251482008583F0 /* ScribbleViewModel.swift in Sources */,
 				0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */,
 				0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
@@ -2016,6 +2059,7 @@
 				0A34073529C89E41007299A7 /* UIFont.TextStyle+Extensions.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
 				0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */,
+				0A05057F2A1E2512001AF644 /* CGPoint+Operations.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
 				0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
@@ -2043,6 +2087,7 @@
 				0A130EA728D7409800FF1368 /* Date+Formatting.swift in Sources */,
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */,
 				0A4DC79627F572CF00712518 /* ActionSelectorViewController.swift in Sources */,
+				0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */,
@@ -2083,6 +2128,7 @@
 				0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */,
 				0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */,
 				0A0E2062296309FB001782A5 /* SelectPinTypeCardViewController.swift in Sources */,
+				0A0505852A1F838A001AF644 /* ScribblingView.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
 				0A0E9191297A867C0052EC1B /* UIImage+SaveToCameraRoll.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirestoreGeometry.swift in Sources */,
@@ -2113,6 +2159,7 @@
 				0A4D11B529A392EF00D681E7 /* UploadFeedItemCell.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
+				0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */,
 				0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */,
 				0A9E861E297E96CC0099F22F /* UserSettings.swift in Sources */,
 				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
@@ -2133,6 +2180,7 @@
 				0A30E8B02847AFAB00A50D54 /* PhotoDetailsViewController.swift in Sources */,
 				0A4995C12858D05D00E571FB /* FirestoreTagName.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
+				0A0505742A1BC696001AF644 /* ScribbleView.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirestoreProjectSummary.swift in Sources */,
 				0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */,
 				0A7A537D293FB3690093D913 /* ProjectsViewController.swift in Sources */,

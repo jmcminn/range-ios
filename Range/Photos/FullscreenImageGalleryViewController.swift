@@ -25,8 +25,12 @@ class FullscreenImageGalleryViewController: UIViewController {
     private let pageSeparator = UIView()
     let scrollView = UIScrollView()
     private let currentPageLabel = UILabel()
+    private var scribbleButton: UIButton!
     private var deleteButton: UIButton!
     private var confirmButton: UIButton!
+
+    /// array of Annotations object for each page
+    private var annotationsPerPage: [Annotations]
 
     /// Transitioning delegate to manage the transition to this controller
     var fullscreenTransitioningDelegate: FullscreenImageGalleryTransitioningDelegate?
@@ -65,6 +69,7 @@ class FullscreenImageGalleryViewController: UIViewController {
         self.photoKeys = photoKeys
         self.removePhotoHandler = removePhotoHandler
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
+        annotationsPerPage = pages.map { page in Annotations(hostView: page) }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -90,6 +95,14 @@ class FullscreenImageGalleryViewController: UIViewController {
         scrollView.addSubview(pageSeparator)
 
         view.addSubview(currentPageLabel)
+        if DebugSettings().photoAnnotationsEnabled {
+            view.addSubview(scribbleButton)
+            scribbleButton.snp.makeConstraints { make in
+                make.width.height.equalTo(48)
+                make.leading.equalToSuperview().inset(16)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-72)
+            }
+        }
         if removePhotoHandler != nil {
             view.addSubview(deleteButton)
         }
@@ -138,6 +151,24 @@ class FullscreenImageGalleryViewController: UIViewController {
     }
 
     private func setupButtons() {
+        if DebugSettings().photoAnnotationsEnabled {
+            scribbleButton = UIButton(
+                configuration: UIButton.Configuration.iconButton(
+                    backgroundColor: .Neutral_09, strokeColor: .Neutral_07
+                ),
+                primaryAction: UIAction(image: UIImage(systemName: "scribble")) { [weak self] _ in
+                    self?.toggleScribbleMode()
+                }
+            )
+            scribbleButton.configurationUpdateHandler = { [weak self] button in
+                guard let self = self else { return }
+                var config = button.configuration
+                config?.baseForegroundColor = self.scribbleMode ? .Special_02 : .Neutral_01
+                config?.background.strokeColor = self.scribbleMode ? .Special_02 : .Neutral_07
+                button.configuration = config
+            }
+        }
+
         deleteButton = UIButton(
             configuration: UIButton.Configuration.iconButton(
                 backgroundColor: .Red_03, strokeColor: .Red_04
@@ -154,6 +185,19 @@ class FullscreenImageGalleryViewController: UIViewController {
                 self?.onDone?()
             }
         )
+    }
+
+    var scribbleMode: Bool = false
+
+    private func toggleScribbleMode() {
+        scribbleMode.toggle()
+        scribbleButton.setNeedsUpdateConfiguration()
+
+        let pageView = pages[currentPage]
+
+        scrollView.isScrollEnabled = !scribbleMode
+        pageView.scrollView.isScrollEnabled = !scribbleMode
+        annotationsPerPage[currentPage].setScribblingEnabled(scribbleMode)
     }
 
     private func setupCurrentPageLabel() {
@@ -179,6 +223,8 @@ class FullscreenImageGalleryViewController: UIViewController {
             updatePageSeparatorFrame()
         }
         previousSize = viewSize
+        // to make sure that it's installed if the image is loaded before the views are layed out
+        annotationsPerPage[currentPage].installView()
     }
 
     override dynamic var preferredStatusBarStyle: UIStatusBarStyle {
@@ -271,8 +317,9 @@ class FullscreenImageGalleryViewController: UIViewController {
                             .keepCurrentImageWhileLoading,
                         ],
                         progressBlock: nil,
-                        completionHandler: { _ in
+                        completionHandler: { [weak self] _ in
                             page.imageUpdated()
+                            self?.annotationsPerPage[index].installView()
                         }
                     )
                 }
@@ -287,6 +334,7 @@ class FullscreenImageGalleryViewController: UIViewController {
         guard let removePhotoHandler = removePhotoHandler,
               removePhotoHandler(photoIndexToRemove) == true else { return }
         photoKeys.remove(at: photoIndexToRemove)
+        annotationsPerPage.remove(at: photoIndexToRemove)
         let removedPage = pages.remove(at: photoIndexToRemove)
         // animate changes
         UIView.animate(withDuration: 0.2) {
