@@ -5,6 +5,7 @@ import UIKit
 class ImageGalleryPageView: UIView {
     let onPageTap: (() -> Void)?
     let onPhotoRemove: (() -> Void)?
+    let onAnnotationsTap: (() -> Void)?
     let imageView = UIImageView()
     /// top/bottom insets for image view, so the side pages in the gallery are lower than the center one.
     /// left/right inset values doesn't matter, but if any is non zero, the image view will be pushed towards the other edge, for example
@@ -22,10 +23,12 @@ class ImageGalleryPageView: UIView {
     }
 
     var removeButton: RoundShadowButton?
+    var annotationsButton: RoundShadowButton?
 
-    init(onPageTap: (() -> Void)?, onPhotoRemove: (() -> Void)? = nil) {
+    init(onPageTap: (() -> Void)?, onAnnotationsTap: (() -> Void)?, onPhotoRemove: (() -> Void)? = nil) {
         self.onPageTap = onPageTap
         self.onPhotoRemove = onPhotoRemove
+        self.onAnnotationsTap = onAnnotationsTap
         super.init(frame: .zero)
 
         imageView.layer.cornerRadius = 13
@@ -49,6 +52,14 @@ class ImageGalleryPageView: UIView {
                 make.leading.bottom.equalToSuperview().inset(12)
             }
         }
+        if DebugSettings().photoAnnotationsEnabled {
+            annotationsButton = RoundShadowButton(image: .init(systemName: "scribble") ?? .init())
+            annotationsButton!.addTarget(self, action: #selector(annotationsButtonTapped), for: .touchUpInside)
+            imageView.addSubview(annotationsButton!)
+            annotationsButton!.snp.makeConstraints { make in
+                make.trailing.bottom.equalToSuperview().inset(12)
+            }
+        }
     }
 
     @available(*, unavailable)
@@ -66,7 +77,9 @@ class ImageGalleryPageView: UIView {
 
         // buttons alpha depends on the inset, so we hide the buttons if the page is shrinking (is not a central page)
         // It's hiding when inset is changing from 0 to 5
-        removeButton?.alpha = max(1 - imageInset.top / 5.0, 0)
+        let buttonAlpha = max(1 - imageInset.top / 5.0, 0)
+        removeButton?.alpha = buttonAlpha
+        annotationsButton?.alpha = buttonAlpha
     }
 
     /// calculate image frame so it's aspect ratio is preserved and take all insets into account
@@ -111,6 +124,10 @@ class ImageGalleryPageView: UIView {
 
     @objc private func removeButtonTapped() {
         onPhotoRemove?()
+    }
+
+    @objc private func annotationsButtonTapped() {
+        onAnnotationsTap?()
     }
 }
 

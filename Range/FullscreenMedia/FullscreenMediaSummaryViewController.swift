@@ -26,6 +26,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
     private(set) var addTagsButton: UIView! // visible when there's no description
 
     var onPhotoSelected: (() -> Void)?
+    var onAnnotationsSelected: (() -> Void)?
 
     /// Initializer
     init(projectModel: ProjectModel, mediaCache: MediaCache, upload: Upload, showCollaborationButton: Bool) {
@@ -176,6 +177,9 @@ class FullscreenMediaSummaryViewController: UIViewController {
         )
         galleryVC.onPhotoSelected = { [weak self] in
             self?.onPhotoSelected?()
+        }
+        galleryVC.onAnnotationsSelected = { [weak self] in
+            self?.onAnnotationsSelected?()
         }
         add(childController: galleryVC, toView: stackView)
         galleryVC.view.snp.makeConstraints { make in

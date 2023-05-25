@@ -12,6 +12,7 @@ class PhotoDetailsHeaderViewController: UIViewController {
     var tagsDescriptionSegmentedControl: SegmentedControl!
     /// Current photo tapped
     var onPhotoSelected: (() -> Void)?
+    var onAnnotationsSelected: (() -> Void)?
     /// Callbacks for the tags/description switch
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
@@ -79,6 +80,9 @@ class PhotoDetailsHeaderViewController: UIViewController {
         )
         galleryVC.onPhotoSelected = { [weak self] in
             self?.onPhotoSelected?()
+        }
+        galleryVC.onAnnotationsSelected = { [weak self] in
+            self?.onAnnotationsSelected?()
         }
     }
 

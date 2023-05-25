@@ -14,6 +14,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
     /// Photo selected, the index available in the `currentPage`
     var onPhotoSelected: (() -> Void)?
+    var onAnnotationsSelected: (() -> Void)?
 
     // this defines the page size
     let pageHeight2Width: Double
@@ -59,6 +60,9 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         ImageGalleryPageView(
             onPageTap: { [weak self] in
                 self?.onPhotoSelected?()
+            },
+            onAnnotationsTap: { [weak self] in
+                self?.onAnnotationsSelected?()
             },
             onPhotoRemove: removePhotoHandler != nil
                 ? { [weak self] in

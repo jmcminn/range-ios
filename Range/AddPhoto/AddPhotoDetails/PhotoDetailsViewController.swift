@@ -409,6 +409,11 @@ extension PhotoDetailsViewController {
         headerVC.onPhotoSelected = { [weak self] in
             self?.onPhotoSelected?(nil)
         }
+        headerVC.onAnnotationsSelected = { [weak self] in
+            // in photo flow it doesn't matter whether user taps on photo or annotations button,
+            // it will always open the fullscreen photo gallery that supports annotations
+            self?.onPhotoSelected?(nil)
+        }
         headerVC.onTagsSelected = { [weak self] in
             self?.mode = .tags
         }
