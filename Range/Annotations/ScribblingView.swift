@@ -69,17 +69,25 @@ class ScribblingView: UIView {
         guard points.count >= 2 else { return }
 
         if gesture.state == .ended {
-            let simplifiedPoints = points.simplify(
-                // TODO: 1183 is this dependent on the scribbleScale?
-                tolerance: Float(1 / scale), // 1
-                highestQuality: true
-            )
+            let settings = AnnotationsDevSettings()
 
-            if let path = RangeBezierPath.interpolateWithCatmullRom(simplifiedPoints, closed: false, alpha: 0.5) {
+            let simplifiedPoints = settings.simplifyScribbleLine
+                ? points.simplify(
+                    // TODO: 1183 is this dependent on the scribbleScale?
+                    tolerance: Float(1 / scale), // 1
+                    highestQuality: true
+                )
+                : points
+
+            let path: RangeBezierPath? = settings.interpolateScribbleLine
+                ? RangeBezierPath.interpolateWithCatmullRom(simplifiedPoints, closed: false, alpha: 0.5)
+                : nil // non interpolated polyline is always a backup options for bezier, so no need to create it here
+
+            if let path = path {
                 // notify about new path
                 onScribbleCreated?(path)
-            } else if let path = RangeBezierPath(multilineWithPoints: simplifiedPoints) {
-                // return multiline with given points if no interpolation can be constructed
+            } else if let path = RangeBezierPath(polylineWithPoints: simplifiedPoints) {
+                // return polyline with given points if no interpolation can be constructed
                 onScribbleCreated?(path)
             } else {
                 // not enough points? do nothing (and reset the scribble)

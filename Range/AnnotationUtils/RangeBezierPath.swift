@@ -20,7 +20,7 @@ class RangeBezierPath {
 
     /// Initializes with given points by connecting them with straight lines
     /// There must be at least 2 points, otherwise it returns nil
-    convenience init?(multilineWithPoints points: [CGPoint]) {
+    convenience init?(polylineWithPoints points: [CGPoint]) {
         guard points.count >= 2 else { return nil }
         self.init(elements: [])
         move(to: points[0])

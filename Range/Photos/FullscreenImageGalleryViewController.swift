@@ -1,5 +1,6 @@
 import Foundation
 import Kingfisher
+import SwiftUI
 import UIKit
 
 // implementation loosely based on https://github.com/zvonicek/ImageSlideshow
@@ -26,11 +27,13 @@ class FullscreenImageGalleryViewController: UIViewController {
     let scrollView = UIScrollView()
     private let currentPageLabel = UILabel()
     private var scribbleButton: UIButton!
+    private var annotationsSettingsButton: UIButton!
     private var deleteButton: UIButton!
     private var confirmButton: UIButton!
 
     /// array of Annotations object for each page
     private var annotationsPerPage: [Annotations]
+    private let annotationsSettings = AnnotationsDevSettings()
 
     /// Transitioning delegate to manage the transition to this controller
     var fullscreenTransitioningDelegate: FullscreenImageGalleryTransitioningDelegate?
@@ -103,6 +106,14 @@ class FullscreenImageGalleryViewController: UIViewController {
                 make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-72)
             }
         }
+        if let annotationsSettingsButton = annotationsSettingsButton {
+            view.addSubview(annotationsSettingsButton)
+            annotationsSettingsButton.snp.makeConstraints { make in
+                make.width.height.equalTo(48)
+                make.trailing.equalToSuperview().inset(16)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-72)
+            }
+        }
         if removePhotoHandler != nil {
             view.addSubview(deleteButton)
         }
@@ -169,6 +180,18 @@ class FullscreenImageGalleryViewController: UIViewController {
             }
         }
 
+        let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
+        if showDebugOptions {
+            annotationsSettingsButton = UIButton(
+                configuration: UIButton.Configuration.iconButton(
+                    backgroundColor: .Neutral_09, strokeColor: .Neutral_07
+                ),
+                primaryAction: UIAction(image: UIImage(systemName: "gearshape")) { [weak self] _ in
+                    self?.showAnnotationsSettings()
+                }
+            )
+        }
+
         deleteButton = UIButton(
             configuration: UIButton.Configuration.iconButton(
                 backgroundColor: .Red_03, strokeColor: .Red_04
@@ -198,6 +221,14 @@ class FullscreenImageGalleryViewController: UIViewController {
         scrollView.isScrollEnabled = !scribbleMode
         pageView.scrollView.isScrollEnabled = !scribbleMode
         annotationsPerPage[currentPage].setScribblingEnabled(scribbleMode)
+    }
+
+    /// Shows view controller for annotations dev settings
+    private func showAnnotationsSettings() {
+        let settingsVC = UIHostingController(
+            rootView: AnnotationsDevSettingsView().environmentObject(annotationsSettings)
+        )
+        present(settingsVC, animated: true)
     }
 
     private func setupCurrentPageLabel() {
