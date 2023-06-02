@@ -296,6 +296,15 @@ class AddPhotoFlowController {
             guard let self = self else { return }
             self.showPhotosReviewFromDetailsScreen(interactivePresentation: interactivePresentation)
         }
+        vc.onPSPDFKITAnnotationsSelected = { [weak self] in
+            let alertController = UIAlertController(
+                title: "",
+                message: "pspdfkit only available in the media view",
+                preferredStyle: .alert
+            )
+            alertController.addAction(UIAlertAction(title: "Ok", style: .cancel) { _ in })
+            self?.detailsVC?.present(alertController, animated: true)
+        }
         vc.onBack = { [weak self] in
             guard let self = self, let detailsVC = self.detailsVC else { return }
             self.photoDescription = detailsVC.photoDescription

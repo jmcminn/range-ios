@@ -6,6 +6,7 @@ class ImageGalleryPageView: UIView {
     let onPageTap: (() -> Void)?
     let onPhotoRemove: (() -> Void)?
     let onAnnotationsTap: (() -> Void)?
+    let onPSPDFKITAnnotationsTap: (() -> Void)?
     let imageView = UIImageView()
     /// top/bottom insets for image view, so the side pages in the gallery are lower than the center one.
     /// left/right inset values doesn't matter, but if any is non zero, the image view will be pushed towards the other edge, for example
@@ -24,11 +25,18 @@ class ImageGalleryPageView: UIView {
 
     var removeButton: RoundShadowButton?
     var annotationsButton: RoundShadowButton?
+    var pspdfkitAnnotationsButton: RoundShadowButton?
 
-    init(onPageTap: (() -> Void)?, onAnnotationsTap: (() -> Void)?, onPhotoRemove: (() -> Void)? = nil) {
+    init(
+        onPageTap: (() -> Void)?,
+        onAnnotationsTap: (() -> Void)?,
+        onPSPDFKITAnnotationsTap: (() -> Void)?,
+        onPhotoRemove: (() -> Void)? = nil
+    ) {
         self.onPageTap = onPageTap
         self.onPhotoRemove = onPhotoRemove
         self.onAnnotationsTap = onAnnotationsTap
+        self.onPSPDFKITAnnotationsTap = onPSPDFKITAnnotationsTap
         super.init(frame: .zero)
 
         imageView.layer.cornerRadius = 13
@@ -58,6 +66,18 @@ class ImageGalleryPageView: UIView {
             imageView.addSubview(annotationsButton!)
             annotationsButton!.snp.makeConstraints { make in
                 make.trailing.bottom.equalToSuperview().inset(12)
+            }
+
+            pspdfkitAnnotationsButton = RoundShadowButton(image: .init(systemName: "hand.draw") ?? .init())
+            pspdfkitAnnotationsButton!.addTarget(
+                self,
+                action: #selector(pspdfkitAnnotationsButtonTapped),
+                for: .touchUpInside
+            )
+            imageView.addSubview(pspdfkitAnnotationsButton!)
+            pspdfkitAnnotationsButton!.snp.makeConstraints { make in
+                make.bottom.equalToSuperview().inset(12)
+                make.trailing.equalTo(annotationsButton!.snp.leading).inset(-16)
             }
         }
     }
@@ -128,6 +148,10 @@ class ImageGalleryPageView: UIView {
 
     @objc private func annotationsButtonTapped() {
         onAnnotationsTap?()
+    }
+
+    @objc private func pspdfkitAnnotationsButtonTapped() {
+        onPSPDFKITAnnotationsTap?()
     }
 }
 

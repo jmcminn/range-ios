@@ -1,4 +1,6 @@
 import Foundation
+import PSPDFKit
+import PSPDFKitUI
 import QuickLook
 import RealmSwift
 import UIKit
@@ -546,6 +548,9 @@ extension FullscreenMediaCardViewController {
             // if annotations are selected we show the same editor as in the photo flow
             self?.showAnnotationsEditor()
         }
+        summaryVC.onPSPDFKITAnnotationsSelected = { [weak self] in
+            self?.showPSPDFKITAnnotationsEditor()
+        }
     }
 
     private func showAnnotationsEditor() {
@@ -562,6 +567,45 @@ extension FullscreenMediaCardViewController {
         }
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
+    }
+
+    private func showPSPDFKITAnnotationsEditor() {
+        Task {
+            do {
+                let mediaURL = try await mediaCache
+                    .getCachedFileURL(forKey: MediaKey(projectId: projectModel.projectId, upload: upload))
+                DispatchQueue.main.async {
+                    SDK.setLicenseKey("YOUR_LICENSE_KEY_GOES_HERE")
+                    let controller: PDFViewController
+                    if self.upload.isImage {
+                        let imageDocument = ImageDocument(imageURL: mediaURL)
+                        controller = PDFViewController(document: imageDocument, configuration: .image)
+                        // Not all stock button items make sense for images, so be sure to customize the UI.
+                        let rightItems = [
+                            controller.annotationButtonItem,
+//                            controller.activityButtonItem,
+//                            controller.searchButtonItem,
+                        ]
+                        let leftItems: [UIBarButtonItem] = [
+                            //                            controller.outlineButtonItem,
+//                            controller.brightnessButtonItem
+                        ]
+                        controller.navigationItem.setRightBarButtonItems(rightItems, for: .document, animated: false)
+                        controller.navigationItem.setLeftBarButtonItems(leftItems, for: .document, animated: false)
+
+                        controller.navigationItem.leftItemsSupplementBackButton = true
+                    } else {
+                        let document = Document(url: mediaURL)
+                        controller = PDFViewController(document: document)
+                    }
+                    let navC = UINavigationController(rootViewController: controller)
+                    navC.modalPresentationStyle = .fullScreen
+                    self.present(navC, animated: true)
+                }
+            } catch {
+                ToastWindow.shared.showError(text: "Failed to load the file")
+            }
+        }
     }
 
     private func setupCommentsVC() {

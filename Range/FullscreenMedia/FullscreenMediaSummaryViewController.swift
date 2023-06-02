@@ -27,6 +27,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
     var onPhotoSelected: (() -> Void)?
     var onAnnotationsSelected: (() -> Void)?
+    var onPSPDFKITAnnotationsSelected: (() -> Void)?
 
     /// Initializer
     init(projectModel: ProjectModel, mediaCache: MediaCache, upload: Upload, showCollaborationButton: Bool) {
@@ -180,6 +181,9 @@ class FullscreenMediaSummaryViewController: UIViewController {
         }
         galleryVC.onAnnotationsSelected = { [weak self] in
             self?.onAnnotationsSelected?()
+        }
+        galleryVC.onPSPDFKITAnnotationsSelected = { [weak self] in
+            self?.onPSPDFKITAnnotationsSelected?()
         }
         add(childController: galleryVC, toView: stackView)
         galleryVC.view.snp.makeConstraints { make in

@@ -49,6 +49,7 @@ class PhotoDetailsViewController: UIViewController {
     fileprivate var interactivePresentation: UIPercentDrivenInteractiveTransition?
     /// Current photo tapped (when parameter is nil) or expanded with interactive transition if provided
     var onPhotoSelected: ((UIPercentDrivenInteractiveTransition?) -> Void)?
+    var onPSPDFKITAnnotationsSelected: (() -> Void)?
     /// Callbacks exposed for the flow control
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
@@ -413,6 +414,9 @@ extension PhotoDetailsViewController {
             // in photo flow it doesn't matter whether user taps on photo or annotations button,
             // it will always open the fullscreen photo gallery that supports annotations
             self?.onPhotoSelected?(nil)
+        }
+        headerVC.onPSPDFKITAnnotationsSelected = { [weak self] in
+            self?.onPSPDFKITAnnotationsSelected?()
         }
         headerVC.onTagsSelected = { [weak self] in
             self?.mode = .tags

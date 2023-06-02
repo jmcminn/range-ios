@@ -13,6 +13,7 @@ class PhotoDetailsHeaderViewController: UIViewController {
     /// Current photo tapped
     var onPhotoSelected: (() -> Void)?
     var onAnnotationsSelected: (() -> Void)?
+    var onPSPDFKITAnnotationsSelected: (() -> Void)?
     /// Callbacks for the tags/description switch
     var onTagsSelected: (() -> Void)?
     var onDescriptionSelected: (() -> Void)?
@@ -83,6 +84,9 @@ class PhotoDetailsHeaderViewController: UIViewController {
         }
         galleryVC.onAnnotationsSelected = { [weak self] in
             self?.onAnnotationsSelected?()
+        }
+        galleryVC.onPSPDFKITAnnotationsSelected = { [weak self] in
+            self?.onPSPDFKITAnnotationsSelected?()
         }
     }
 
