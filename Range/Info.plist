@@ -26,6 +26,8 @@
 				</dict>
 			</array>
 		</dict>
+        <key>NSMicrophoneUsageDescription</key>
+        <string>Recording sound annotations requires the microphone.</string>
 	</dict>
 </dict>
 </plist>
