@@ -5,4 +5,6 @@ import Kingfisher
 protocol RangeImageDataProvider: ImageDataProvider {
     /// The cache to use for fetching images
     var cache: ImageCache { get }
+    /// The cache serializer to use
+    var cacheSerializer: CacheSerializer { get }
 }

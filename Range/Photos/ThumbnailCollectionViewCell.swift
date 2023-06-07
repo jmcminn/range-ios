@@ -67,7 +67,10 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
     private func reloadImage() {
         if let imageDataProvider = imageDataProvider {
             imageView.kf.cancelDownloadTask()
-            imageView.kf.setImage(with: imageDataProvider, options: [.targetCache(imageDataProvider.cache)])
+            imageView.kf.setImage(
+                with: imageDataProvider,
+                options: [.targetCache(imageDataProvider.cache), .cacheSerializer(imageDataProvider.cacheSerializer)]
+            )
         } else {
             imageView.image = nil
         }

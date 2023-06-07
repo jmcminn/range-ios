@@ -346,6 +346,7 @@ class FullscreenImageGalleryViewController: UIViewController {
                             .targetCache(rangeImageDataProvider.cache),
                             // keep the image (maybe we have a thumb there and now loading full, no need to go blank while loading)
                             .keepCurrentImageWhileLoading,
+                            .cacheSerializer(rangeImageDataProvider.cacheSerializer),
                         ],
                         progressBlock: nil,
                         completionHandler: { [weak self] _ in

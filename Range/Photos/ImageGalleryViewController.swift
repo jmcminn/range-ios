@@ -229,7 +229,10 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
                     let rangeImageDataProvider = imageDataProviderFactory(photoKeys[index])
                     page.imageView.kf.setImage(
                         with: rangeImageDataProvider,
-                        placeholder: nil, options: [.targetCache(rangeImageDataProvider.cache)], progressBlock: nil,
+                        placeholder: nil, options: [
+                            .targetCache(rangeImageDataProvider.cache),
+                            .cacheSerializer(rangeImageDataProvider.cacheSerializer),
+                        ], progressBlock: nil,
                         completionHandler: { result in
                             // invalidate layout to recalculate aspect ratio after the image is loaded
                             if case let .success(imageResult) = result {

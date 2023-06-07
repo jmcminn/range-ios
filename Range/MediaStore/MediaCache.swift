@@ -24,7 +24,12 @@ class MediaCache {
     /// it'll download files if needed from Storage.
     /// It also passes it's `mediaCache` as the cache to use for caching the downloaded images. It's a little complicated
     func imageProvider(forKey key: MediaKey) -> RangeImageDataProvider {
-        RangeMediaCacheImageDataProvider(cache: mediaCache, mediaKey: key, mediaCache: self)
+        RangeMediaCacheImageDataProvider(
+            cache: mediaCache,
+            cacheSerializer: localFiles.cacheSerializer,
+            mediaKey: key,
+            mediaCache: self
+        )
     }
 
     /// Either gets the file from LocalFiles or downloads the file for given key from Storage

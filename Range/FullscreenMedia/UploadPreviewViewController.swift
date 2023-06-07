@@ -178,15 +178,17 @@ class UploadPreviewViewController: UIViewController {
             // The thumbnail is already in cache, just show it
             setActivityIndicator(hidden: false)
             let imageDataProvider = mediaCache.imageProvider(forKey: thumbnailKey)
-            imageView.kf.setImage(with: imageDataProvider, options: [.targetCache(imageDataProvider.cache)])
-                { [weak self] result in
-                    // show image and hide
-                    if case let .success(imageResult) = result {
-                        self?.setActivityIndicator(hidden: true)
-                        self?.setImageView(hidden: false)
-                        self?.onAspectRatioLoaded?(imageResult.image.size.height / imageResult.image.size.width)
-                    }
+            imageView.kf.setImage(
+                with: imageDataProvider,
+                options: [.targetCache(imageDataProvider.cache), .cacheSerializer(imageDataProvider.cacheSerializer)]
+            ) { [weak self] result in
+                // show image and hide
+                if case let .success(imageResult) = result {
+                    self?.setActivityIndicator(hidden: true)
+                    self?.setImageView(hidden: false)
+                    self?.onAspectRatioLoaded?(imageResult.image.size.height / imageResult.image.size.width)
                 }
+            }
         } else if let upload = upload, let uploadSize = upload.fileSize,
                   uploadSize < UploadPreviewViewController.maxAutoDownloadSize
         {

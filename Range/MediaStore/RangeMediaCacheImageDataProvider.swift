@@ -4,12 +4,17 @@ import Kingfisher
 /// Image data provider that fetches images using MediaCache (so from storage)
 struct RangeMediaCacheImageDataProvider: RangeImageDataProvider {
     let cache: ImageCache
+    let cacheSerializer: CacheSerializer
     let cacheKey: String
     private let mediaKey: MediaKey
     unowned let mediaCache: MediaCache
 
-    init(cache: ImageCache, mediaKey: MediaKey, mediaCache: MediaCache) {
+    init(cache: ImageCache,
+         cacheSerializer: CacheSerializer,
+         mediaKey: MediaKey, mediaCache: MediaCache)
+    {
         self.cache = cache
+        self.cacheSerializer = cacheSerializer
         self.mediaKey = mediaKey
         cacheKey = mediaKey.cacheKey
         self.mediaCache = mediaCache

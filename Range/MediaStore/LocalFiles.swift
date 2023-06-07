@@ -7,6 +7,10 @@ import Kingfisher
 class LocalFiles {
     private let cache: ImageCache
 
+    /// A default cache serializer adjusted to prefer storing the original image data (if available instead of serializing it form UIImage)
+    /// and to use 0.75 compression quality for JPEG (instead of the 1.0 default)
+    let cacheSerializer: CacheSerializer
+
     init() throws {
         // make sure that the "cache" is not in Library/Caches as we want it to persist any cache cleanups
         let applicationDirectory = try FileManager.default.url(
@@ -19,12 +23,18 @@ class LocalFiles {
         localFiles.diskStorage.config.expiration = .never
         localFiles.diskStorage.config.autoExtAfterHashedFileName = true
         cache = localFiles
+
+        var cacheSerializer = DefaultCacheSerializer()
+        cacheSerializer.compressionQuality = 0.75
+        cacheSerializer.preferCacheOriginalData = true
+        self.cacheSerializer = cacheSerializer
     }
 
     /// Return Kingfisher image provider to use for UIImageView. This image provider gets the data from local files.
     func imageProvider(forKey key: MediaKey) -> RangeImageDataProvider {
         RangeLocalFileImageDataProvider(
             cache: cache,
+            cacheSerializer: cacheSerializer,
             cacheKey: key.cacheKey,
             localFileImageDataProvider: LocalFileImageDataProvider(fileURL: fileURL(forKey: key))
         )

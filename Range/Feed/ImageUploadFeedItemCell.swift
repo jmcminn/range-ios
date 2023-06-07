@@ -205,7 +205,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
             possiblyUpdateUploadImageViewConstraints(upload: upload)
             guard let imageDataProvider = imageDataProvider else { return }
             uploadImageView.kf.setImage(with: imageDataProvider,
-                                        options: [.targetCache(imageDataProvider.cache)])
+                                        options: [
+                                            .targetCache(imageDataProvider.cache),
+                                            .cacheSerializer(imageDataProvider.cacheSerializer),
+                                        ])
             tagsView.tags = upload.tags.where { $0.placeholder == false }
 
             let showDescription = !(upload.uploadDescription?.isEmpty ?? true)
