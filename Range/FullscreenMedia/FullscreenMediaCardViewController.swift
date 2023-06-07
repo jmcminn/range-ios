@@ -13,7 +13,7 @@ class UploadPreviewItem: NSObject, QLPreviewItem {
 }
 
 class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinating, CardPresentable,
-    CardDraggingDelegate
+    CardDraggingDelegate, PDFViewControllerDelegate
 {
     var cardDragging: NonModalCardDragging?
     /// This card presents itself in given vc
@@ -542,7 +542,9 @@ extension FullscreenMediaCardViewController {
         summaryVC.scrollView.delegate = self
         summaryVC.onPhotoSelected = { [weak self] in
             // when photo is selected we show the iOS provided preview
-            self?.showPreview()
+            // TODO: pspdfkit
+//            self?.showPreview()
+            self?.showAnnotationsEditor(usePSPDFKITForAnnotations: true)
         }
         summaryVC.onAnnotationsSelected = { [weak self] in
             // if annotations are selected we show the same editor as in the photo flow
@@ -553,14 +555,15 @@ extension FullscreenMediaCardViewController {
         }
     }
 
-    private func showAnnotationsEditor() {
+    private func showAnnotationsEditor(usePSPDFKITForAnnotations: Bool = false) {
         let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload)
         let vc = FullscreenImageGalleryViewController(
             imageDataProviderFactory: { [mediaCache] in
                 mediaCache.imageProvider(forKey: $0)
             },
             photoKeys: [mediaKey],
-            removePhotoHandler: nil
+            removePhotoHandler: nil,
+            usePSPDFKITForAnnotations: usePSPDFKITForAnnotations
         )
         vc.onDone = { [weak vc] in
             vc?.dismiss(animated: true)
@@ -576,10 +579,30 @@ extension FullscreenMediaCardViewController {
                     .getCachedFileURL(forKey: MediaKey(projectId: projectModel.projectId, upload: upload))
                 DispatchQueue.main.async {
                     SDK.setLicenseKey("YOUR_LICENSE_KEY_GOES_HERE")
+                    SDK.shared.styleManager.setLastUsedValue(
+                        4,
+                        forProperty: "lineWidth",
+                        forKey: Annotation.ToolVariantID(tool: .ink)
+                    )
+                    SDK.shared.styleManager.setLastUsedValue(
+                        80,
+                        forProperty: "lineWidth",
+                        forKey: Annotation.ToolVariantID(tool: .ink, variant: .inkPen)
+                    )
+                    SDK.shared.styleManager.setLastUsedValue(
+                        6,
+                        forProperty: "lineWidth",
+                        forKey: Annotation.ToolVariantID(tool: .line)
+                    )
                     let controller: PDFViewController
                     if self.upload.isImage {
                         let imageDocument = ImageDocument(imageURL: mediaURL)
+//                        ImageDocument(imageDataProvider: <#T##DataProviding#>)
+                        imageDocument.imageSaveMode = .flattenAndEmbed
+                        imageDocument.compressionQuality = 0.75
+//                        print("XXX compressionQuality: ", imageDocument.compressionQuality) // 1 by default
                         controller = PDFViewController(document: imageDocument, configuration: .image)
+                        controller.delegate = self
                         // Not all stock button items make sense for images, so be sure to customize the UI.
                         let rightItems = [
                             controller.annotationButtonItem,
@@ -594,18 +617,55 @@ extension FullscreenMediaCardViewController {
                         controller.navigationItem.setLeftBarButtonItems(leftItems, for: .document, animated: false)
 
                         controller.navigationItem.leftItemsSupplementBackButton = true
+
+//                        let pageIndex: PageIndex = PageIndex(0)
+                        let annotations = imageDocument.allAnnotations(of: .ink)
+                        if let annotation = annotations.first, let ink = annotation.value.first as? InkAnnotation {
+                            print("XXX annotations: ", ink)
+                        }
+                        let navC = PDFNavigationController(rootViewController: controller)
+                        navC.modalPresentationStyle = .fullScreen
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.backgroundColor = .clear
+                        self.present(navC, animated: true)
+//                        self.present(controller, animated: true)
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) { [self] in
+                            controller.annotationStateManager.setState(.ink, variant: .inkPen)
+                            controller.view.backgroundColor = .clear
+//                            let documentController: PDFDocumentViewController = controller.documentViewController!
+//                            print("xxx docCtrl: ", documentController)
+//                            let docLayout = documentController.layout
+//                            print("xxx docLayout: ", docLayout)
+                        }
+
                     } else {
                         let document = Document(url: mediaURL)
                         controller = PDFViewController(document: document)
+                        let navC = UINavigationController(rootViewController: controller)
+                        navC.modalPresentationStyle = .fullScreen
+                        self.present(navC, animated: true)
                     }
-                    let navC = UINavigationController(rootViewController: controller)
-                    navC.modalPresentationStyle = .fullScreen
-                    self.present(navC, animated: true)
                 }
             } catch {
                 ToastWindow.shared.showError(text: "Failed to load the file")
             }
         }
+    }
+
+    func pdfViewController(
+        _: PDFViewController,
+        shouldSave document: PSPDFKit.Document,
+        withOptions _: AutoreleasingUnsafeMutablePointer<NSDictionary>
+    ) -> Bool {
+        print("document annotations ", document.allAnnotations(of: .ink))
+        if let provider = document.documentProviders.first {
+            let json = try! document.generateInstantJSON(from: provider)
+            let prettyJSON = NSString(data: json, encoding: String.Encoding.utf8.rawValue)
+            print("XXX ", json)
+            print("XXX ", prettyJSON)
+        }
+        return true
     }
 
     private func setupCommentsVC() {

@@ -256,7 +256,8 @@ class AddPhotoFlowController {
                 guard photoIndex < self.photosToAddViewModel.photos.count else { return false }
                 self.photosToAddViewModel.remove(photoAtIndex: photoIndex)
                 return true
-            }
+            },
+            usePSPDFKITForAnnotations: true
         )
     }
 

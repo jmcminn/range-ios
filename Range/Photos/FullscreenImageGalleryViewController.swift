@@ -1,5 +1,7 @@
 import Foundation
 import Kingfisher
+import PSPDFKit
+import PSPDFKitUI
 import SwiftUI
 import UIKit
 
@@ -19,6 +21,8 @@ class FullscreenImageGalleryViewController: UIViewController {
     var onDone: (() -> Void)?
     /// Handler that accepts removal of photo at given index by returning `true`
     let removePhotoHandler: ((Int) -> Bool)?
+
+    let usePSPDFKITForAnnotations: Bool
 
     /// views representing pages for images
     private var pages: [FullscreenImageGalleryPageView]
@@ -66,11 +70,14 @@ class FullscreenImageGalleryViewController: UIViewController {
     ///
     init(imageDataProviderFactory: @escaping (MediaKey) -> RangeImageDataProvider,
          photoKeys: [MediaKey],
-         removePhotoHandler: ((Int) -> Bool)? = nil)
+         removePhotoHandler: ((Int) -> Bool)? = nil,
+         // TODO: pspdfkit
+         usePSPDFKITForAnnotations: Bool = false)
     {
         self.imageDataProviderFactory = imageDataProviderFactory
         self.photoKeys = photoKeys
         self.removePhotoHandler = removePhotoHandler
+        self.usePSPDFKITForAnnotations = usePSPDFKITForAnnotations
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
         annotationsPerPage = pages.map { page in Annotations(hostView: page) }
         super.init(nibName: nil, bundle: nil)
@@ -338,7 +345,11 @@ class FullscreenImageGalleryViewController: UIViewController {
                 } else {
                     let rangeImageDataProvider = imageDataProviderFactory(photoKeys[index])
                     /// we may already have the image for this page, so update the size
+
                     page.imageUpdated()
+                    var cacheSerializer = DefaultCacheSerializer()
+                    cacheSerializer.compressionQuality = 0.75
+                    cacheSerializer.preferCacheOriginalData = true
                     page.imageView.kf.setImage(
                         with: rangeImageDataProvider,
                         placeholder: nil,
@@ -346,11 +357,42 @@ class FullscreenImageGalleryViewController: UIViewController {
                             .targetCache(rangeImageDataProvider.cache),
                             // keep the image (maybe we have a thumb there and now loading full, no need to go blank while loading)
                             .keepCurrentImageWhileLoading,
+                            .cacheSerializer(cacheSerializer),
                         ],
                         progressBlock: nil,
                         completionHandler: { [weak self] _ in
+                            guard let self = self else { return }
                             page.imageUpdated()
-                            self?.annotationsPerPage[index].installView()
+                            self.annotationsPerPage[index].installView()
+
+                            // not added yet?a
+                            if page.subviews.count == 1, usePSPDFKITForAnnotations {
+                                rangeImageDataProvider.data { result in
+                                    if case let .success(data) = result {
+                                        DispatchQueue.main.async {
+                                            print("XXX page.imageView.subviews: ", page.imageView.subviews.count)
+                                            SDK.setLicenseKey("YOUR_LICENSE_KEY_GOES_HERE")
+                                            let imageDocument =
+                                                ImageDocument(imageDataProvider: DataContainerProvider(data: data))
+                                            //                                    imageDocument.imageSaveMode = .flattenAndEmbed
+                                            let controller = PDFViewController(
+                                                document: imageDocument
+                                            ) {
+                                                $0.backgroundColor = .black
+                                            }
+
+                                            //                                    let navC = PDFNavigationController(rootViewController: controller)
+                                            //                                    self.present(navC, animated: true)
+
+                                            self.add(childController: controller, toView: page)
+                                            controller.view.snp.makeConstraints { make in
+                                                make.edges.equalToSuperview()
+                                            }
+                                        }
+                                    }
+                                }
+                                return
+                            }
                         }
                     )
                 }
