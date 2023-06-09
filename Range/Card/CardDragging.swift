@@ -31,8 +31,8 @@ class CardDragging: NSObject {
     unowned let containerView: UIView
     let config: CardConfiguration
 
-    /// the delegate for state updates
-    weak var delegate: CardDraggingDelegate?
+    /// dictionary of delegates stored per id
+    private(set) var delegates: [UUID: CardDraggingDelegate] = [:]
 
     let topDown = false
     var position: CardPosition
@@ -78,6 +78,20 @@ class CardDragging: NSObject {
         removeScrollViewDelegate()
         setupScrollViewDelegate()
     }
+
+    /// Add delegate and returns id so it can be later removed
+    func addDelegate(_ delegate: CardDraggingDelegate) -> UUID {
+        let id = UUID()
+        delegates[id] = delegate
+        return id
+    }
+
+    /// remove the delegate with given id
+    /// id is optional for callers conveniece
+    func removeDelegate(_ id: UUID?) {
+        guard let id = id else { return }
+        delegates.removeValue(forKey: id)
+    }
 }
 
 /// Card height related properties
@@ -102,7 +116,7 @@ extension CardDragging {
                 presentedViewController.view.frame.size.height = newValue
                 presentedViewController.view.setNeedsUpdateConstraints()
             }
-            delegate?.cardHeightUpdated(newValue)
+            delegates.values.forEach { $0.cardHeightUpdated(newValue) }
         }
     }
 
@@ -167,10 +181,10 @@ extension CardDragging {
             self.position = .max
             height = cardHeight(forPosition: self.position)
         }
-        delegate?.cardWillChangePosition(self.position)
+        delegates.values.forEach { $0.cardWillChangePosition(self.position) }
         setCardHeight(height, animated: animated, withVelocity: velocity) { [weak self] in
             guard let self = self else { return }
-            self.delegate?.cardDidChangePosition(self.position)
+            self.delegates.values.forEach { $0.cardDidChangePosition(self.position) }
             completion?()
         }
     }

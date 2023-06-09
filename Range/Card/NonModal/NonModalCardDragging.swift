@@ -102,6 +102,6 @@ class NonModalCardDragging: CardDragging {
 
     /// When tapped on the overlay
     @objc private func overlayTapped() {
-        delegate?.cardOverlayTapped()
+        delegates.values.forEach { $0.cardOverlayTapped() }
     }
 }

@@ -51,6 +51,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     var collaborationHeaderCoverVC: CollaborationHeaderCoverViewController?
     /// Bottom view with CTAs showing when user scrolls the collaboration view so it's CTAs hide behind the header cover
     var collaborationBottomVC: CollaborationBottomViewController?
+    private var collaborationCardDraggingDelegateId: UUID?
 
     private var collaborationScrollViewObserver: NSKeyValueObservation?
 
@@ -175,15 +176,15 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         if let collaborationBottomVC = collaborationBottomVC {
             view.insertSubview(collaborationVC.view, belowSubview: collaborationBottomVC.view)
         }
-        collaborationVC.cardDragging?.delegate = self
 
         // check if already showing, if so then ignore animated and replace instantly
         if self.collaborationVC != nil {
-            self.collaborationVC?.cardDragging?.delegate = nil
+            self.collaborationVC?.cardDragging?.removeDelegate(collaborationCardDraggingDelegateId)
             let previousCardHeight = self.collaborationVC?.cardDragging?.cardHeight
             hideCollaborationWindow(animated: false)
             setCollaborationHeaderCoverHidden(true, animated: false)
             setBottomCardHidden(true, animated: false)
+            collaborationCardDraggingDelegateId = collaborationVC.cardDragging?.addDelegate(self)
             collaborationVC.showCard(animated: false)
             if let previousCardHeight = previousCardHeight, let newCardDragging = collaborationVC.cardDragging {
                 // animate the height from previous height, so there's no jump
@@ -191,6 +192,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
                 newCardDragging.setPosition(newCardDragging.position, withVelocity: 0, animated: true)
             }
         } else {
+            collaborationCardDraggingDelegateId = collaborationVC.cardDragging?.addDelegate(self)
             collaborationVC.showCard(animated: animated)
         }
         addCollaborationHeaderCover()
@@ -204,7 +206,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         geometryNotificationToken?.invalidate()
         geometryNotificationToken = nil
         if let collaborationVC = collaborationVC {
-            collaborationVC.cardDragging?.delegate = nil
+            collaborationVC.cardDragging?.removeDelegate(collaborationCardDraggingDelegateId)
             collaborationVC.hideCard(animated: animated) {
                 self.removeCard(cardViewController: collaborationVC)
                 completion?()

@@ -5,8 +5,10 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     let actions: [ActionItem]
 
     var cardDragging: NonModalCardDragging? {
-        didSet { cardDragging?.delegate = self }
+        didSet { cardDraggingDelegateId = cardDragging?.addDelegate(self) }
     }
+
+    private var cardDraggingDelegateId: UUID?
 
     var onCamera: (() -> Void)?
     var onAddPin: (() -> Void)?
@@ -38,6 +40,10 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        cardDragging?.removeDelegate(cardDraggingDelegateId)
     }
 
     override func loadView() {

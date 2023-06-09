@@ -10,6 +10,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private let cardConfig: CardConfiguration
     private let autoDismiss: Bool
     var cardDragging: NonModalCardDragging?
+    private var cardDraggingDelegateId: UUID?
     /// This card presents itself in given vc
     private(set) weak var presentingVC: UIViewController?
 
@@ -329,7 +330,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     /// Convenience function for installing card in given `presentingVC` and showing the card
     @discardableResult func installAndShowCard(in presentingVC: UIViewController, inView: UIView? = nil) -> Self {
         presentingVC.installCard(cardViewController: self, inView: inView, cardConfig: cardConfig)
-        cardDragging?.delegate = self
+        cardDraggingDelegateId = cardDragging?.addDelegate(self)
         showCard(animated: true)
         self.presentingVC = presentingVC
         return self
@@ -341,7 +342,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             scrollView.cancelForwardingDelegateInvocations(to: self)
         }
         hideCard(animated: true) {
-            self.cardDragging?.delegate = nil
+            self.cardDragging?.removeDelegate(self.cardDraggingDelegateId)
             self.presentingVC?.removeCard(cardViewController: self)
             self.presentingVC = nil
         }

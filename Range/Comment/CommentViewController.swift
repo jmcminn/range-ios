@@ -5,8 +5,10 @@ import UIKit
 /// Class for adding/editing comment/note
 class CommentViewController: UIViewController, NonModalCardCoordinating {
     var cardDragging: NonModalCardDragging? {
-        didSet { cardDragging?.delegate = self }
+        didSet { cardDraggingDelegateId = cardDragging?.addDelegate(self) }
     }
+
+    private var cardDraggingDelegateId: UUID?
 
     /// The UI differs a little depending on whether it's for adding a new comment/note, adding a comment only or editing the existing one
     enum Mode {
@@ -92,6 +94,10 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        cardDragging?.removeDelegate(cardDraggingDelegateId)
     }
 
     override func viewDidLoad() {

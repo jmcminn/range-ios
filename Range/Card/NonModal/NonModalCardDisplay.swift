@@ -43,6 +43,7 @@ extension UIViewController {
 
     func removeCard(cardViewController: CardPresentable & NonModalCardCoordinating) {
         cardViewController.cardDragging?.remove()
+        cardViewController.cardDragging = nil
         remove(childController: cardViewController)
     }
 }

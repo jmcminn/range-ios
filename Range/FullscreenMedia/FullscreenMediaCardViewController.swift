@@ -14,6 +14,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     CardDraggingDelegate
 {
     var cardDragging: NonModalCardDragging?
+    private var cardDraggingDelegateId: UUID?
     /// This card presents itself in given vc
     private weak var presentingVC: UIViewController?
     /// The view in which it's presented
@@ -375,7 +376,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             inView: inView,
             cardConfig: CardConfiguration(initialCardPosition: .max, showOverlay: showOverlay)
         )
-        cardDragging?.delegate = self
+        cardDraggingDelegateId = cardDragging?.addDelegate(self)
         showCard(animated: true)
         self.presentingVC = presentingVC
         presentingView = inView ?? presentingVC.view
@@ -396,7 +397,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         }
 
         hideCard(animated: true) {
-            self.cardDragging?.delegate = nil
+            self.cardDragging?.removeDelegate(self.cardDraggingDelegateId)
             self.presentingVC?.removeCard(cardViewController: self)
             self.presentingVC = nil
             self.presentingView = nil
