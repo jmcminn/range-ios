@@ -1,4 +1,5 @@
 import Foundation
+import Lottie
 import UIKit
 
 /// A controls view added to CanvasContainerViewController.controls to handle display of common project views.
@@ -13,6 +14,7 @@ class ProjectCanvasControls: PassthroughView {
         case canvasSourceSelectorButton = 1005
         case canvasFiltersButton = 1006
         case canvasFiltersIndicatorBadge = 1007
+        case cardOnboardingView = 1008
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -204,6 +206,62 @@ extension ProjectCanvasControls {
         } else {
             view.removeFromSuperview()
         }
+    }
+}
+
+// MARK: - onboarding
+
+extension ProjectCanvasControls {
+    /// Access to currently showing card onboarding animation view
+    var cardOnboardingView: UIView? {
+        subviews.first { $0.tag == ViewTag.cardOnboardingView.rawValue }
+    }
+
+    func showCardOnboardingView(aboveView: UIView) {
+        let overlay = PassthroughGradientView()
+        overlay.tag = ViewTag.cardOnboardingView.rawValue
+        overlay.backgroundColor = .clear
+        // top to bottom gradient
+        overlay.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        overlay.gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        overlay.gradientLayer.colors = [
+            UIColor.black.withAlphaComponent(0.0).cgColor,
+            UIColor.black.withAlphaComponent(0.6).cgColor,
+        ]
+        addSubview(overlay)
+        overlay.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        let label = UILabel()
+        label.text = String(localized: "Swipe up to view more features")
+        label.textColor = .white
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.adjustsFontForContentSizeCategory = true
+        overlay.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(aboveView.snp.top).offset(-12)
+        }
+
+        let cardOnboardingView = LottieAnimationView(asset: "canvas card onboarding animation")
+        overlay.addSubview(cardOnboardingView)
+        cardOnboardingView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(label.snp.top).offset(-12)
+        }
+        cardOnboardingView.loopMode = .loop
+        cardOnboardingView.play()
+    }
+
+    func hideCardOnboardingView() {
+        guard let view = cardOnboardingView else { return }
+        UIView.animate(withDuration: 0.2,
+                       animations: {
+                           view.alpha = 0
+                       }, completion: { _ in
+                           view.removeFromSuperview()
+                       })
     }
 }
 

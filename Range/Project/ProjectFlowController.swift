@@ -37,6 +37,7 @@ final class ProjectFlowController: UIViewController {
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
 
     lazy var actionCardVC = setupActionCardVC()
+    var actionCardDraggingDelegateId: UUID?
     var pinsDisplay: GeometriesPinsDisplay?
     private let controls: ProjectCanvasControls
     weak var mediaVC: MediaCardViewController?
@@ -175,6 +176,11 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
 
+        if !UserDefaults.cardOnboardingComplete {
+            controls.showCardOnboardingView(aboveView: actionCardVC.view)
+            actionCardDraggingDelegateId = actionCardVC.cardDragging?.addDelegate(self)
+        }
+
         controls.showCanvasSelectorButton(aboveView: actionCardVC.view)
         controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
         controls.showCanvasFiltersButton(aboveView: controls.canvasSourceSelectorButton!)
@@ -282,6 +288,7 @@ final class ProjectFlowController: UIViewController {
         if let canvasDelegateId = canvasDelegateId {
             canvasContainer.canvasViewController.removeDelegate(id: canvasDelegateId)
         }
+        actionCardVC.cardDragging?.removeDelegate(actionCardDraggingDelegateId)
         canvasContainer.removeCard(cardViewController: actionCardVC)
         // dismiss any presented modally VCs
         canvasContainer.dismiss(animated: false)
@@ -419,6 +426,22 @@ final class ProjectFlowController: UIViewController {
                                         showSafeAreaBlur: true
                                     ))
         return vc
+    }
+}
+
+// MARK: - action card dragging delegate
+
+extension ProjectFlowController: CardDraggingDelegate {
+    func cardDidChangePosition(_ position: CardPosition) {
+        if position == .max {
+            // mark the card onboarding complete
+            UserDefaults.cardOnboardingComplete = true
+
+            // and hide the onboarding animation with 1s delay
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [weak self] in
+                self?.controls.hideCardOnboardingView()
+            }
+        }
     }
 }
 

@@ -310,6 +310,8 @@
 		0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
+		0AAF04BB2A334CEA00E8C39D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 0AAF04BA2A334CEA00E8C39D /* Lottie */; };
+		0AAF04BD2A3354F200E8C39D /* PassthroughGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAF04BC2A3354F200E8C39D /* PassthroughGradientView.swift */; };
 		0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557328F9533900491E20 /* AssigneeButton.swift */; };
 		0AB8557628F98EB600491E20 /* DueDateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557528F98EB500491E20 /* DueDateButton.swift */; };
 		0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */; };
@@ -701,6 +703,7 @@
 		0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommandTest.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
+		0AAF04BC2A3354F200E8C39D /* PassthroughGradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassthroughGradientView.swift; sourceTree = "<group>"; };
 		0AB8557328F9533900491E20 /* AssigneeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssigneeButton.swift; sourceTree = "<group>"; };
 		0AB8557528F98EB500491E20 /* DueDateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DueDateButton.swift; sourceTree = "<group>"; };
 		0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationDetailsViewController.swift; sourceTree = "<group>"; };
@@ -780,6 +783,7 @@
 				0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */,
 				0A06241929534AA0004B6512 /* FirebaseFirestore in Frameworks */,
 				0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */,
+				0AAF04BB2A334CEA00E8C39D /* Lottie in Frameworks */,
 				0A06241D29534AA0004B6512 /* FirebaseStorage in Frameworks */,
 				0A06241B29534AA0004B6512 /* FirebaseFirestoreSwift in Frameworks */,
 				0A06241729534AA0004B6512 /* FirebaseAuth in Frameworks */,
@@ -1278,6 +1282,7 @@
 				0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */,
 				0A18126B283230E400A8515B /* MapTooltipView.swift */,
 				0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */,
+				0AAF04BC2A3354F200E8C39D /* PassthroughGradientView.swift */,
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
 				0A9341C529A8A50D006166C1 /* PillView.swift */,
@@ -1755,6 +1760,7 @@
 				0ACE1967296C7AD500D223EB /* Sentry */,
 				0A376BC5298031EF004C9B6F /* FirebaseAppCheck */,
 				0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */,
+				0AAF04BA2A334CEA00E8C39D /* Lottie */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -1837,6 +1843,7 @@
 				0ABFD8A928ED98C3008CDA74 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				0ACE1966296C7AD400D223EB /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -2148,6 +2155,7 @@
 				0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */,
 				0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
+				0AAF04BD2A3354F200E8C39D /* PassthroughGradientView.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */,
 				0A374DE0292786530036C184 /* DeleteCommentCommand.swift in Sources */,
@@ -3802,6 +3810,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
 		0ABFD8A928ED98C3008CDA74 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-collections.git";
@@ -3885,6 +3901,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		0AAF04BA2A334CEA00E8C39D /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
 		};
 		0ABFD8AA28ED98C3008CDA74 /* OrderedCollections */ = {
 			isa = XCSwiftPackageProductDependency;

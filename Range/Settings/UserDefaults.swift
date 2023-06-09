@@ -29,6 +29,8 @@ extension UserDefaults {
         case lastFCMToken
         /// the prefix used for storing canvasFilters for a project, will be followed by a project id
         case canvasFiltersPrefix = "canvasFilters_"
+        /// whether the card onboarding was complete (action card for project needs to be maximized)
+        case cardOnboardingComplete
     }
 
     static var lastOpenProjectId: String? {
@@ -231,5 +233,22 @@ extension UserDefaults {
         } catch {
             Logger.settings.error("Failed to save canvas filters: \(error)")
         }
+    }
+
+    static var cardOnboardingComplete: Bool {
+        get {
+            if UserDefaults.standard.object(forKey: UserDefaultsConstants.cardOnboardingComplete.rawValue) == nil {
+                return false
+            }
+            return UserDefaults.standard.bool(forKey: UserDefaultsConstants.cardOnboardingComplete.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.cardOnboardingComplete.rawValue)
+        }
+    }
+
+    /// Reset onboarding user defaults, so onboarding animation can be tested again (for dev/testing purposes only)
+    static func resetOnboarding() {
+        cardOnboardingComplete = false
     }
 }

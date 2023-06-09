@@ -27,6 +27,17 @@ struct UserSettingsView: View {
                         .padding(.bottom, 6)
                 }
             }
+            if try! AppConfiguration.bool(for: "ShowDebugOptions") {
+                Section {
+                    Button(action: UserDefaults.resetOnboarding) {
+                        Text("Reset onboarding")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .foregroundColor(.dynamic(.Neutral_04))
+                            .contentShape(Rectangle()) // Hack to make the button trigger on the whole width and not only where the text is
+                            .padding(.vertical, 6)
+                    }.buttonStyle(.plain)
+                }
+            }
             Section {
                 Button(action: userSettings.signOutAction ?? {}) {
                     Text("Sign out")
