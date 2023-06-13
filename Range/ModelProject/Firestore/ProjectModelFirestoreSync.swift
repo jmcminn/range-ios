@@ -108,21 +108,6 @@ class ProjectModelFirestoreSync {
         }
     }
 
-    private func replaceCanvasCollections(with canvasCollections: [QueryDocumentSnapshot],
-                                          inRealm realm: Realm) throws
-    {
-        try canvasCollections.forEach {
-            let canvasCollection = try $0.data(as: FirestoreCanvasCollection.self)
-            try canvasCollection.upsert(withId: $0.documentID, inRealm: realm)
-        }
-        /// for fast lookup
-        let newObjectsIds = Set(canvasCollections.map(\.documentID))
-        /// delete all collections from local db that are not in canvasCollections
-        realm.objects(CanvasCollection.self).filter { !newObjectsIds.contains($0.id) }.forEach {
-            realm.delete($0)
-        }
-    }
-
     /// Deregisters all observers.
     /// Will be called on deinit
     func stop() {
