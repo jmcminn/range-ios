@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/details/collaborations/<id>`
-class Collaboration: Object, WithPlaceholder {
+class Collaboration: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Backlink to the Feature. This is automatically updated whenever this coolaboration is added to or removed from the parent

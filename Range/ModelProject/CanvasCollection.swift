@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/<id>/canvasCollections/<id>`.
-class CanvasCollection: Object, WithPlaceholder {
+class CanvasCollection: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
 

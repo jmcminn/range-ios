@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/details/feature/<id>`
-class Feature: Object, WithPlaceholder {
+class Feature: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// name

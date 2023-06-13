@@ -7,7 +7,7 @@ import RealmSwift
 /// Protocol to be adopted by firestore objects that can be stored in Realm
 protocol FirestoreToRealmSyncable {
     /// The type used to store the objects in the model Realm db
-    associatedtype ModelType: Object
+    associatedtype ModelType: Object & WithId
     /// Upsert this element with given id to given Realm. Will be performed in a realm write transaction
     func upsert(withId id: String, inRealm realm: Realm) throws
 }
@@ -166,5 +166,47 @@ extension RealmModel {
                 }
             }
         return listenerRegistration
+    }
+
+    /// Upsert all given documents.
+    /// Remove from local db any documents that are not present in given list
+    func replaceDocuments<T: Decodable & FirestoreToRealmSyncable>(
+        with documents: [QueryDocumentSnapshot],
+        as type: T.Type,
+        inRealm realm: Realm
+    ) {
+        documents.forEach {
+            // failing to load some documents shouldn't fail the whole sync
+            let documentId = $0.documentID
+            let collectionId = $0.reference.parent.collectionID
+            do {
+                let firestoreObject = try $0.data(as: type)
+                try firestoreObject.upsert(withId: documentId, inRealm: realm)
+            } catch let DecodingError.dataCorrupted(context),
+                        let DecodingError.keyNotFound(_, context),
+                        let DecodingError.valueNotFound(_, context),
+                        let DecodingError.typeMismatch(_, context)
+            {
+                Logger.firestore.error(
+                    "\(collectionId) sync decode failed [\(documentId, privacy: .public)]: \(context.debugDescription, privacy: .public)"
+                )
+            } catch {
+                Logger.firestore.error(
+                    "\(collectionId) upsert failed [\(documentId, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
+                )
+            }
+        }
+        /// for fast lookup
+        let newObjectsIds = Set(documents.map(\.documentID))
+        /// delete all objects from local db that are not in documents
+        for oldObject in realm.objects(type.ModelType) {
+            if !newObjectsIds.contains(oldObject.id) {
+                Logger.firestore
+                    .debug(
+                        "\(type.ModelType.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
+                    )
+                realm.delete(oldObject)
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@ import RealmSwift
 import UIKit
 
 /// Realm object for `project/details/participants/<id>`.
-class Participant: Object, WithPlaceholder {
+class Participant: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// user first name (@objc added so it can be used in SortDescriptor)

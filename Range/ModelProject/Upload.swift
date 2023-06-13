@@ -3,7 +3,7 @@ import UIKit
 import UniformTypeIdentifiers
 
 /// Realm object for `project/details/uploads/<id>`.
-class Upload: Object, WithPlaceholder {
+class Upload: Object, WithPlaceholder, WithId {
     /// Supported file types, all others are ignored by Range iOS app
     enum FileType: String, Codable, PersistableEnum {
         case jpeg, png, pdf, docx, xlsx

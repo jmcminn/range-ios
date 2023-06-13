@@ -3,7 +3,7 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/details/canvases/<id>`.
-class Canvas: Object, WithPlaceholder {
+class Canvas: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// canvas sources for this canvas, the order doesn't matter so it's a set

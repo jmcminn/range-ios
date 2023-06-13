@@ -5,7 +5,7 @@ import PDFKit
 import RealmSwift
 
 // Realm object for `project/<id>/canvasSources/<id>`.
-class CanvasSource: Object, WithPlaceholder {
+class CanvasSource: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Backlink to the canvas. This is automatically updated whenever this canvas source is added to or removed from the parent

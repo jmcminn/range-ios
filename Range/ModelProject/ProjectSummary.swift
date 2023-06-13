@@ -3,7 +3,7 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/summary`.
-class ProjectSummary: Object {
+class ProjectSummary: Object, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Project name

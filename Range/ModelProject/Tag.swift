@@ -2,7 +2,7 @@ import RealmSwift
 import UIKit
 
 /// Realm object for `project/details/tagNames/<id>`.
-class Tag: Object, WithPlaceholder {
+class Tag: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     // name

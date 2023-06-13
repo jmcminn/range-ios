@@ -2,7 +2,7 @@ import RealmSwift
 import UIKit
 
 /// Realm object for `project/updates/<id>`.
-class Update: Object, WithPlaceholder {
+class Update: Object, WithPlaceholder, WithId {
     /// Supported updated fields
     enum Field: String, Codable, PersistableEnum {
         case name, description, statusName, assignee, dueDateTimestamp

@@ -94,55 +94,32 @@ class ProjectModelFirestoreSync {
         let statuses = try await statusesRequest
 
         // store in the db
-        try await model.write { realm in
-            try projectSummary.upsert(withId: self.model.projectId, inRealm: realm)
-            try canvasCollections.documents.forEach {
-                let canvasCollection = try $0.data(as: FirestoreCanvasCollection.self)
-                try canvasCollection.upsert(withId: $0.documentID, inRealm: realm)
-            }
-            canvases.documents.forEach {
-                // failing to load some canvases shouldn't fail the whole initial sync
-                do {
-                    let canvas = try $0.data(as: FirestoreCanvas.self)
-                    try canvas.upsert(withId: $0.documentID, inRealm: realm)
-                } catch let DecodingError.dataCorrupted(context),
-                            let DecodingError.keyNotFound(_, context),
-                            let DecodingError.valueNotFound(_, context),
-                            let DecodingError.typeMismatch(_, context)
-                {
-                    Logger.firestore.error(
-                        "canvases initial sync decode failed [\($0.documentID, privacy: .public)]: \(context.debugDescription, privacy: .public)"
-                    )
-                } catch {
-                    Logger.firestore.error(
-                        "canvases initial upsert failed [\($0.documentID, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
-                    )
-                }
-            }
-            canvasSources.documents.forEach {
-                // failing to load some canvas sources shouldn't fail the whole initial sync
-                do {
-                    let canvasSource = try $0.data(as: FirestoreCanvasSource.self)
-                    try canvasSource.upsert(withId: $0.documentID, inRealm: realm)
-                } catch let DecodingError.dataCorrupted(context),
-                            let DecodingError.keyNotFound(_, context),
-                            let DecodingError.valueNotFound(_, context),
-                            let DecodingError.typeMismatch(_, context)
-                {
-                    Logger.firestore.error(
-                        "canvasSources initial sync decode failed [\($0.documentID, privacy: .public)]: \(context.debugDescription, privacy: .public)"
-                    )
-                } catch {
-                    Logger.firestore.error(
-                        "canvasSources initial upsert failed [\($0.documentID, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
-                    )
-                }
-            }
-            try user.upsert(withId: self.model.userId, inRealm: realm)
-            try statuses.documents.forEach {
-                let status = try $0.data(as: FirestoreStatusName.self)
-                try status.upsert(withId: $0.documentID, inRealm: realm)
-            }
+        try await model.write { [self] realm in
+            try projectSummary.upsert(withId: model.projectId, inRealm: realm)
+            model.replaceDocuments(
+                with: canvasCollections.documents,
+                as: FirestoreCanvasCollection.self,
+                inRealm: realm
+            )
+            model.replaceDocuments(with: canvases.documents, as: FirestoreCanvas.self, inRealm: realm)
+            model.replaceDocuments(with: canvasSources.documents, as: FirestoreCanvasSource.self, inRealm: realm)
+            try user.upsert(withId: model.userId, inRealm: realm)
+            model.replaceDocuments(with: statuses.documents, as: FirestoreStatusName.self, inRealm: realm)
+        }
+    }
+
+    private func replaceCanvasCollections(with canvasCollections: [QueryDocumentSnapshot],
+                                          inRealm realm: Realm) throws
+    {
+        try canvasCollections.forEach {
+            let canvasCollection = try $0.data(as: FirestoreCanvasCollection.self)
+            try canvasCollection.upsert(withId: $0.documentID, inRealm: realm)
+        }
+        /// for fast lookup
+        let newObjectsIds = Set(canvasCollections.map(\.documentID))
+        /// delete all collections from local db that are not in canvasCollections
+        realm.objects(CanvasCollection.self).filter { !newObjectsIds.contains($0.id) }.forEach {
+            realm.delete($0)
         }
     }
 

@@ -2,7 +2,7 @@ import RealmSwift
 import UIKit
 
 /// Realm object for `project/details/comments/<id>`.
-class Comment: Object, WithPlaceholder {
+class Comment: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     // comment authr, needs to be optional because of how Realm
