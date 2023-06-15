@@ -122,6 +122,7 @@ extension UIButton.Configuration {
         }
         var config = UIButton.Configuration.filled()
 
+        config.contentInsets = .zero
         config.baseBackgroundColor = backgroundColor
         config.baseForegroundColor = .Neutral_01
         config.cornerStyle = .fixed

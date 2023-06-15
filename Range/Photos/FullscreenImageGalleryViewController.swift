@@ -29,6 +29,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     private var scribbleButton: UIButton!
     private var annotationsSettingsButton: UIButton!
     private var deleteButton: UIButton!
+    private var cancelButton: UIButton!
     private var confirmButton: UIButton!
 
     /// array of Annotations object for each page
@@ -96,9 +97,42 @@ class FullscreenImageGalleryViewController: UIViewController {
         view.addSubview(scrollView)
         pages.forEach(scrollView.addSubview)
         scrollView.addSubview(pageSeparator)
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         view.addSubview(currentPageLabel)
+        currentPageLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(12)
+        }
+
+        view.addSubview(confirmButton)
+        confirmButton.snp.makeConstraints { make in
+            make.height.equalTo(40)
+            make.width.greaterThanOrEqualTo(40)
+            make.centerY.equalTo(currentPageLabel)
+            make.trailing.equalToSuperview().inset(16)
+        }
+
+        if removePhotoHandler != nil {
+            view.addSubview(deleteButton)
+            deleteButton.snp.makeConstraints { make in
+                make.width.height.equalTo(40)
+                make.centerY.equalTo(currentPageLabel)
+                make.left.equalTo(currentPageLabel.snp.right).offset(8)
+            }
+        }
+
         if DebugSettings().photoAnnotationsEnabled {
+            view.addSubview(cancelButton)
+            cancelButton.snp.makeConstraints { make in
+                make.height.equalTo(40)
+                make.width.greaterThanOrEqualTo(40)
+                make.centerY.equalTo(currentPageLabel)
+                make.leading.equalToSuperview().inset(16)
+            }
+
             view.addSubview(scribbleButton)
             scribbleButton.snp.makeConstraints { make in
                 make.width.height.equalTo(48)
@@ -113,30 +147,6 @@ class FullscreenImageGalleryViewController: UIViewController {
                 make.centerY.equalTo(currentPageLabel)
                 make.right.equalTo(currentPageLabel.snp.left).offset(-8)
             }
-        }
-        if removePhotoHandler != nil {
-            view.addSubview(deleteButton)
-        }
-        view.addSubview(confirmButton)
-
-        scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        if removePhotoHandler != nil {
-            deleteButton.snp.makeConstraints { make in
-                make.width.height.equalTo(40)
-                make.centerY.equalTo(currentPageLabel)
-                make.left.equalTo(currentPageLabel.snp.right).offset(8)
-            }
-        }
-        currentPageLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(12)
-        }
-        confirmButton.snp.makeConstraints { make in
-            make.width.height.equalTo(40)
-            make.centerY.equalTo(currentPageLabel)
-            make.trailing.equalToSuperview().inset(16)
         }
 
         updateCurrentPageLabel(currentPage: currentPage)
@@ -154,6 +164,19 @@ class FullscreenImageGalleryViewController: UIViewController {
 
     private func setupButtons() {
         if DebugSettings().photoAnnotationsEnabled {
+            cancelButton = UIButton(
+                configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
+                primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
+                    // TODO: 1270
+                    self?.onDone?()
+                }
+            )
+            confirmButton = UIButton(
+                configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
+                primaryAction: UIAction(title: String(localized: "Done")) { [weak self] _ in
+                    self?.onDone?()
+                }
+            )
             scribbleButton = UIButton(
                 configuration: UIButton.Configuration.iconButton(
                     backgroundColor: .Neutral_09, strokeColor: .Neutral_07
@@ -169,6 +192,15 @@ class FullscreenImageGalleryViewController: UIViewController {
                 config?.background.strokeColor = self.scribbleMode ? .Special_02 : .Neutral_07
                 button.configuration = config
             }
+        } else {
+            confirmButton = UIButton(
+                configuration: UIButton.Configuration.iconButton(
+                    backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
+                ),
+                primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
+                    self?.onDone?()
+                }
+            )
         }
 
         let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
@@ -191,14 +223,17 @@ class FullscreenImageGalleryViewController: UIViewController {
                 self?.removePhoto()
             }
         )
-        confirmButton = UIButton(
-            configuration: UIButton.Configuration.iconButton(
-                backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
-            ),
-            primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
-                self?.onDone?()
-            }
-        )
+    }
+
+    static var cancelDoneButtonConfig: UIButton.Configuration {
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        config.baseBackgroundColor = .Neutral_10
+        config.baseForegroundColor = .Neutral_01
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 20
+        config.background.strokeColor = .Neutral_07
+        return config
     }
 
     var scribbleMode: Bool = false
