@@ -84,7 +84,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .Neutral_10
+        view.backgroundColor = .Neutral_09
         view.clipsToBounds = true
 
         pageSeparator.backgroundColor = view.backgroundColor
@@ -103,15 +103,15 @@ class FullscreenImageGalleryViewController: UIViewController {
             scribbleButton.snp.makeConstraints { make in
                 make.width.height.equalTo(48)
                 make.leading.equalToSuperview().inset(16)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-72)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
             }
         }
         if let annotationsSettingsButton = annotationsSettingsButton {
             view.addSubview(annotationsSettingsButton)
             annotationsSettingsButton.snp.makeConstraints { make in
-                make.width.height.equalTo(48)
-                make.trailing.equalToSuperview().inset(16)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-72)
+                make.width.height.equalTo(40)
+                make.centerY.equalTo(currentPageLabel)
+                make.right.equalTo(currentPageLabel.snp.left).offset(-8)
             }
         }
         if removePhotoHandler != nil {
@@ -124,28 +124,19 @@ class FullscreenImageGalleryViewController: UIViewController {
         }
         if removePhotoHandler != nil {
             deleteButton.snp.makeConstraints { make in
-                make.width.height.equalTo(48)
-                // center in the left half
-                make.centerX.equalTo(self.view.snp.centerX).dividedBy(2).offset(4)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
-            }
-            confirmButton.snp.makeConstraints { make in
-                make.width.height.equalTo(48)
-                // center in the right half
-                make.centerX.equalTo(self.view.snp.centerX).multipliedBy(1.5).offset(-4)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
-            }
-        } else {
-            confirmButton.snp.makeConstraints { make in
-                make.width.height.equalTo(48)
-                // center in the right half
-                make.centerX.equalTo(self.view.snp.centerX)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+                make.width.height.equalTo(40)
+                make.centerY.equalTo(currentPageLabel)
+                make.left.equalTo(currentPageLabel.snp.right).offset(8)
             }
         }
         currentPageLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(12)
+        }
+        confirmButton.snp.makeConstraints { make in
+            make.width.height.equalTo(40)
+            make.centerY.equalTo(currentPageLabel)
+            make.trailing.equalToSuperview().inset(16)
         }
 
         updateCurrentPageLabel(currentPage: currentPage)
@@ -184,7 +175,7 @@ class FullscreenImageGalleryViewController: UIViewController {
         if showDebugOptions {
             annotationsSettingsButton = UIButton(
                 configuration: UIButton.Configuration.iconButton(
-                    backgroundColor: .Neutral_09, strokeColor: .Neutral_07
+                    backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
                 ),
                 primaryAction: UIAction(image: UIImage(systemName: "gearshape")) { [weak self] _ in
                     self?.showAnnotationsSettings()
@@ -194,7 +185,7 @@ class FullscreenImageGalleryViewController: UIViewController {
 
         deleteButton = UIButton(
             configuration: UIButton.Configuration.iconButton(
-                backgroundColor: .Red_03, strokeColor: .Red_04
+                backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
             ),
             primaryAction: UIAction(image: UIImage(systemName: "trash")) { [weak self] _ in
                 self?.removePhoto()
@@ -202,7 +193,7 @@ class FullscreenImageGalleryViewController: UIViewController {
         )
         confirmButton = UIButton(
             configuration: UIButton.Configuration.iconButton(
-                backgroundColor: .Green_03, strokeColor: .Green_04
+                backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
             ),
             primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
                 self?.onDone?()
@@ -232,10 +223,8 @@ class FullscreenImageGalleryViewController: UIViewController {
     }
 
     private func setupCurrentPageLabel() {
-        let font = UIFont.preferredFont(forTextStyle: .body)
-        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: 0)
-        currentPageLabel.textColor = .Neutral_04
-        currentPageLabel.font = boldFont
+        currentPageLabel.textColor = .Neutral_01
+        currentPageLabel.font = .preferredFont(forTextStyle: .body)
         currentPageLabel.adjustsFontForContentSizeCategory = true
     }
 
