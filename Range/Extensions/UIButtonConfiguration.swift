@@ -107,6 +107,7 @@ extension UIButton.Configuration {
 
     static func iconButton(
         backgroundColor: UIColor,
+        foregroundColor: UIColor = .Neutral_01,
         strokeColor: UIColor,
         cornerRadius: CGFloat = 24,
         imagePointSize: CGFloat? = nil
@@ -124,7 +125,7 @@ extension UIButton.Configuration {
 
         config.contentInsets = .zero
         config.baseBackgroundColor = backgroundColor
-        config.baseForegroundColor = .Neutral_01
+        config.baseForegroundColor = foregroundColor
         config.cornerStyle = .fixed
         config.background.cornerRadius = cornerRadius
         config.background.strokeColor = strokeColor

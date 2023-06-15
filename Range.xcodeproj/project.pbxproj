@@ -346,6 +346,9 @@
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */; };
 		0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */; };
+		0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */; };
+		0AD955242A3B608C00B35325 /* AnnotationsToolbarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */; };
+		0AD955262A40AA8F00B35325 /* AnnotationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955252A40AA8F00B35325 /* AnnotationsViewModel.swift */; };
 		0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */; };
 		0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */; };
 		0AD9B75828621782005ACFD7 /* Result+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75728621782005ACFD7 /* Result+Throws.swift */; };
@@ -738,6 +741,9 @@
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FirstResponder.swift"; sourceTree = "<group>"; };
 		0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFilters.swift; sourceTree = "<group>"; };
+		0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarView.swift; sourceTree = "<group>"; };
+		0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarViewController.swift; sourceTree = "<group>"; };
+		0AD955252A40AA8F00B35325 /* AnnotationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsViewModel.swift; sourceTree = "<group>"; };
 		0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Commands.swift"; sourceTree = "<group>"; };
 		0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelCommandsTest.swift; sourceTree = "<group>"; };
 		0AD9B75728621782005ACFD7 /* Result+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Result+Throws.swift"; sourceTree = "<group>"; };
@@ -815,12 +821,15 @@
 		0A0505722A1BC679001AF644 /* Annotations */ = {
 			isa = PBXGroup;
 			children = (
+				0AD955252A40AA8F00B35325 /* AnnotationsViewModel.swift */,
 				0A5394282A264685008583F0 /* Annotations.swift */,
 				0A5394262A251482008583F0 /* ScribbleViewModel.swift */,
 				0A0505732A1BC696001AF644 /* ScribbleView.swift */,
 				0A0505842A1F838A001AF644 /* ScribblingView.swift */,
 				0A1F1B792A288D1D00A2E613 /* AnnotationsDevSettings.swift */,
 				0A1F1B7B2A288E2700A2E613 /* AnnotationsDevSettingsView.swift */,
+				0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */,
+				0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */,
 			);
 			path = Annotations;
 			sourceTree = "<group>";
@@ -1920,6 +1929,7 @@
 				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
+				0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */,
 				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */,
@@ -1931,6 +1941,7 @@
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A7A537B293E4E540093D913 /* ProjectsModel.swift in Sources */,
 				0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */,
+				0AD955262A40AA8F00B35325 /* AnnotationsViewModel.swift in Sources */,
 				0AFDFA972952106D00F64D62 /* CreateUploadCommentCommand.swift in Sources */,
 				0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */,
 				0A1FCF0029EEEC21005EA59E /* SelectedUsersView.swift in Sources */,
@@ -2104,6 +2115,7 @@
 				0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
+				0AD955242A3B608C00B35325 /* AnnotationsToolbarViewController.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */,
 				0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,

@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Kingfisher
 import SwiftUI
@@ -26,12 +27,16 @@ class FullscreenImageGalleryViewController: UIViewController {
     private let pageSeparator = UIView()
     let scrollView = UIScrollView()
     private let currentPageLabel = UILabel()
-    private var scribbleButton: UIButton!
     private var annotationsSettingsButton: UIButton!
+    private var annotationsToolbarVC: AnnotationsToolbarViewController!
     private var deleteButton: UIButton!
     private var cancelButton: UIButton!
     private var confirmButton: UIButton!
 
+    /// Annotations view model - one for all pages (there's one annotations toolbar for all pages)
+    private let annotationsViewModel: AnnotationsViewModel
+    /// for storing the annotationsViewModel scribbling subscriber
+    private var annotationsViewModelScribbleModeSubscriber: AnyCancellable?
     /// array of Annotations object for each page
     private var annotationsPerPage: [Annotations]
     private let annotationsSettings = AnnotationsDevSettings()
@@ -44,6 +49,7 @@ class FullscreenImageGalleryViewController: UIViewController {
             if currentPage != oldValue {
                 updateCurrentPageLabel(currentPage: currentPage)
                 loadImages(currentPage: currentPage)
+                annotationsViewModel.currentAnnotations = annotationsPerPage[currentPage]
             }
         }
     }
@@ -73,7 +79,9 @@ class FullscreenImageGalleryViewController: UIViewController {
         self.photoKeys = photoKeys
         self.removePhotoHandler = removePhotoHandler
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
-        annotationsPerPage = pages.map { page in Annotations(hostView: page) }
+        let annotationsViewModel = AnnotationsViewModel()
+        self.annotationsViewModel = annotationsViewModel
+        annotationsPerPage = pages.map { page in Annotations(hostView: page, viewModel: annotationsViewModel) }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -133,10 +141,10 @@ class FullscreenImageGalleryViewController: UIViewController {
                 make.leading.equalToSuperview().inset(16)
             }
 
-            view.addSubview(scribbleButton)
-            scribbleButton.snp.makeConstraints { make in
-                make.width.height.equalTo(48)
-                make.leading.equalToSuperview().inset(16)
+            annotationsToolbarVC = AnnotationsToolbarViewController(viewModel: annotationsViewModel)
+            add(childController: annotationsToolbarVC)
+            annotationsToolbarVC.view.snp.makeConstraints { make in
+                make.width.equalToSuperview()
                 make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
             }
         }
@@ -151,6 +159,8 @@ class FullscreenImageGalleryViewController: UIViewController {
 
         updateCurrentPageLabel(currentPage: currentPage)
         loadImages(currentPage: currentPage)
+        setupAnnotationsViewModel()
+        annotationsViewModel.currentAnnotations = annotationsPerPage[currentPage]
     }
 
     private func setupScrollView() {
@@ -177,25 +187,11 @@ class FullscreenImageGalleryViewController: UIViewController {
                     self?.onDone?()
                 }
             )
-            scribbleButton = UIButton(
-                configuration: UIButton.Configuration.iconButton(
-                    backgroundColor: .Neutral_09, strokeColor: .Neutral_07
-                ),
-                primaryAction: UIAction(image: UIImage(systemName: "scribble")) { [weak self] _ in
-                    self?.toggleScribbleMode()
-                }
-            )
-            scribbleButton.configurationUpdateHandler = { [weak self] button in
-                guard let self = self else { return }
-                var config = button.configuration
-                config?.baseForegroundColor = self.scribbleMode ? .Special_02 : .Neutral_01
-                config?.background.strokeColor = self.scribbleMode ? .Special_02 : .Neutral_07
-                button.configuration = config
-            }
         } else {
             confirmButton = UIButton(
                 configuration: UIButton.Configuration.iconButton(
-                    backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
+                    backgroundColor: .Neutral_10, foregroundColor: .Neutral_04,
+                    strokeColor: .Neutral_07, imagePointSize: 14
                 ),
                 primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
                     self?.onDone?()
@@ -207,7 +203,8 @@ class FullscreenImageGalleryViewController: UIViewController {
         if showDebugOptions {
             annotationsSettingsButton = UIButton(
                 configuration: UIButton.Configuration.iconButton(
-                    backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
+                    backgroundColor: .Neutral_10, foregroundColor: .Neutral_04,
+                    strokeColor: .Neutral_07, imagePointSize: 14
                 ),
                 primaryAction: UIAction(image: UIImage(systemName: "gearshape")) { [weak self] _ in
                     self?.showAnnotationsSettings()
@@ -217,7 +214,8 @@ class FullscreenImageGalleryViewController: UIViewController {
 
         deleteButton = UIButton(
             configuration: UIButton.Configuration.iconButton(
-                backgroundColor: .Neutral_10, strokeColor: .Neutral_07, imagePointSize: 14
+                backgroundColor: .Neutral_10, foregroundColor: .Neutral_04,
+                strokeColor: .Neutral_07, imagePointSize: 14
             ),
             primaryAction: UIAction(image: UIImage(systemName: "trash")) { [weak self] _ in
                 self?.removePhoto()
@@ -229,24 +227,19 @@ class FullscreenImageGalleryViewController: UIViewController {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         config.baseBackgroundColor = .Neutral_10
-        config.baseForegroundColor = .Neutral_01
+        config.baseForegroundColor = .Neutral_04
         config.cornerStyle = .fixed
         config.background.cornerRadius = 20
         config.background.strokeColor = .Neutral_07
         return config
     }
 
-    var scribbleMode: Bool = false
-
-    private func toggleScribbleMode() {
-        scribbleMode.toggle()
-        scribbleButton.setNeedsUpdateConfiguration()
-
-        let pageView = pages[currentPage]
-
-        scrollView.isScrollEnabled = !scribbleMode
-        pageView.scrollView.isScrollEnabled = !scribbleMode
-        annotationsPerPage[currentPage].setScribblingEnabled(scribbleMode)
+    private func setupAnnotationsViewModel() {
+        annotationsViewModelScribbleModeSubscriber = annotationsViewModel.$scribbleMode
+            .sink { [weak self] scribbleMode in
+                // disable scrolling between pages when scribbling
+                self?.scrollView.isScrollEnabled = !scribbleMode
+            }
     }
 
     /// Shows view controller for annotations dev settings

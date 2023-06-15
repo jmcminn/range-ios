@@ -2,9 +2,13 @@ import Foundation
 import OrderedCollections
 import UIKit
 
+/// Represent annotations on 1 photo
 class Annotations: NSObject {
     /// view hosting all the annotation views
     let view = UIView()
+
+    // TODO: 1268 is this needed here?
+    let viewModel: AnnotationsViewModel
 
     private weak var hostView: FullscreenImageGalleryPageView?
 
@@ -22,8 +26,9 @@ class Annotations: NSObject {
     /// order in this dictionary is the order of annotations rendering, so last is on top
     private var annotations = OrderedDictionary<ScribbleViewModel, UIView>()
 
-    init(hostView: FullscreenImageGalleryPageView) {
+    init(hostView: FullscreenImageGalleryPageView, viewModel: AnnotationsViewModel) {
         self.hostView = hostView
+        self.viewModel = viewModel
         super.init()
         hostView.scrollView.forwardDelegateInvocations(to: self)
     }
@@ -84,6 +89,8 @@ class Annotations: NSObject {
 extension Annotations {
     func setScribblingEnabled(_ enabled: Bool) {
         guard let hostView = hostView else { return }
+
+        hostView.scrollView.isScrollEnabled = !enabled
         // TODO: 1183 enable when installView called
         if enabled {
             currentScribblingView = ScribblingView(scale: scribbleScale)
