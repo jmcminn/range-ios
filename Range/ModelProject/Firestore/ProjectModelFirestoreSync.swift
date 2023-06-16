@@ -47,7 +47,6 @@ class ProjectModelFirestoreSync {
 
         // after this point it's only registering for observation and the function returns
         listeners.append(contentsOf: [
-            model.sync(collection(.canvasCollection), as: FirestoreCanvasCollection.self),
             model.sync(collection(.canvas), as: FirestoreCanvas.self),
             model.sync(collection(.canvasSource), as: FirestoreCanvasSource.self),
             model.sync(collection(.statusName), as: FirestoreStatusName.self),
@@ -72,7 +71,6 @@ class ProjectModelFirestoreSync {
         // already in the Firestore SDK cache and is not updated (as we ignore cached changes
         // when syncing from firestore using `model.sync`)
         async let projectSummaryRequest = projectRef.getDocument(as: FirestoreProjectSummary.self)
-        async let canvasCollectionsRequest = collection(.canvasCollection).getDocuments()
         async let canvasesRequest = collection(.canvas).getDocuments()
         async let canvasSourcesRequest = collection(.canvasSource).getDocuments()
         async let userRequest = collection(.participant).document(model.userId)
@@ -87,7 +85,6 @@ class ProjectModelFirestoreSync {
 
         // await for results
         let projectSummary = try await projectSummaryRequest
-        let canvasCollections = try await canvasCollectionsRequest
         let canvases = try await canvasesRequest
         let canvasSources = try await canvasSourcesRequest
         let user = try await userRequest
@@ -96,11 +93,6 @@ class ProjectModelFirestoreSync {
         // store in the db
         try await model.write { [self] realm in
             try projectSummary.upsert(withId: model.projectId, inRealm: realm)
-            model.replaceDocuments(
-                with: canvasCollections.documents,
-                as: FirestoreCanvasCollection.self,
-                inRealm: realm
-            )
             model.replaceDocuments(with: canvases.documents, as: FirestoreCanvas.self, inRealm: realm)
             model.replaceDocuments(with: canvasSources.documents, as: FirestoreCanvasSource.self, inRealm: realm)
             try user.upsert(withId: model.userId, inRealm: realm)

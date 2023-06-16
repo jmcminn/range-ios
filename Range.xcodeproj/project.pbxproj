@@ -400,8 +400,6 @@
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AF89B552A0CC9A100E49F40 /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF89B542A0CC9A100E49F40 /* BadgeView.swift */; };
 		0AF89B572A1281DA00E49F40 /* GeometryArchivedFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF89B562A1281DA00E49F40 /* GeometryArchivedFeedItemCell.swift */; };
-		0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */; };
-		0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BC05294776AB002E7549 /* CanvasCollection.swift */; };
 		0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */; };
 		0AFA1A4B294B19E100491492 /* FullscreenMediaSummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFA1A4A294B19E100491492 /* FullscreenMediaSummaryViewController.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
@@ -826,8 +824,6 @@
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AF89B542A0CC9A100E49F40 /* BadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeView.swift; sourceTree = "<group>"; };
 		0AF89B562A1281DA00E49F40 /* GeometryArchivedFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryArchivedFeedItemCell.swift; sourceTree = "<group>"; };
-		0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasCollection.swift; sourceTree = "<group>"; };
-		0AF9BC05294776AB002E7549 /* CanvasCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCollection.swift; sourceTree = "<group>"; };
 		0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenMediaCardViewController.swift; sourceTree = "<group>"; };
 		0AFA1A4A294B19E100491492 /* FullscreenMediaSummaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenMediaSummaryViewController.swift; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
@@ -978,7 +974,6 @@
 				0A7FC4142844E0670097888A /* Status.swift */,
 				0A4995BE2858D00100E571FB /* Tag.swift */,
 				0A34C1842845FB4100BEDC7C /* Participant.swift */,
-				0AF9BC05294776AB002E7549 /* CanvasCollection.swift */,
 				0A4DC78427F490CA00712518 /* Canvas.swift */,
 				0A34072329C077E7007299A7 /* CanvasSourceData.swift */,
 				0A566EF529BA29480094BD60 /* CanvasSource.swift */,
@@ -1115,7 +1110,6 @@
 				0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */,
 				0A4995C02858D05D00E571FB /* FirestoreTagName.swift */,
 				0A34C1862845FB7800BEDC7C /* FirestoreParticipant.swift */,
-				0AF9BC0329477670002E7549 /* FirestoreCanvasCollection.swift */,
 				0A2F3302283BDC2B00D04A1C /* FirestoreCanvas.swift */,
 				0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */,
 				0A456237283E792200BA8D21 /* FirestoreGeometry.swift */,
@@ -2324,7 +2318,6 @@
 				0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */,
 				0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
-				0AF9BC0429477670002E7549 /* FirestoreCanvasCollection.swift in Sources */,
 				0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */,
 				0A881983291D018B0050FC41 /* FirestoreDocument.swift in Sources */,
 				0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */,
@@ -2336,7 +2329,6 @@
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A7A5377293E49800093D913 /* ModelError.swift in Sources */,
 				0A34072A29C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift in Sources */,
-				0AF9BC06294776AB002E7549 /* CanvasCollection.swift in Sources */,
 				0A48ACE1281C1ADD0044E06E /* AddPhotoPinsDisplay.swift in Sources */,
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
 				0A99BF1F28C1DC3700DB3F96 /* FullscreenImageGalleryPageView.swift in Sources */,

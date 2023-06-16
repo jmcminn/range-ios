@@ -8,8 +8,6 @@ class Canvas: Object, WithPlaceholder, WithId {
     @Persisted(primaryKey: true) var id: String
     /// canvas sources for this canvas, the order doesn't matter so it's a set
     @Persisted var canvasSources: MutableSet<CanvasSource>
-    /// Backlink to the collection. This is automatically updated whenever this canvas is added to or removed from the parent
-    @Persisted(originProperty: "canvases") var collection: LinkingObjects<CanvasCollection>
     /// The name of canvas
     @Persisted var name: String
 
@@ -46,7 +44,10 @@ class Canvas: Object, WithPlaceholder, WithId {
                 // ignore when there's no match, this shouldn't happen
                 return false
             }
-            return data1.pageNumber < data2.pageNumber
+            // sort by sheetNumber if provided
+            if let sheetNumber1 = data1.sheetNumber, let sheetNumber2 = data2.sheetNumber {
+                return sheetNumber1 < sheetNumber2
+            }
         }
         if !c1HasPdfs, !c2HasPdfs {
             return c1.id < c2.id

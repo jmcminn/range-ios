@@ -43,16 +43,19 @@ class CanvasFileLoader {
 
     @MainActor
     /// Loads PDFPage for given canvas source. If the file exists locally it is used, otherwise it's downloaded from the Storage.
-    func loadPDFPage(forSource source: PdfCanvasSourceData, canvas: Canvas, projectId: String) async throws -> PDFPage {
-        guard let canvasCollection = canvas.collection.first else {
-            throw ModelError.canvasCollectionNotFound
+    func loadPDFPage(forSource source: CanvasSource, projectId: String) async throws -> PDFPage {
+        guard case let .pdf(pdfSource) = source.data else {
+            fatalError("reloadPdfPage called when canvas source is not a PDF")
         }
-        let storagePath = "projects/\(projectId)/canvasCollections/\(canvasCollection.id)"
+        let storagePath = "projects/\(projectId)/canvasSources/\(source.id)"
         // use storage version if present to load/store the file locally, so when the version
         // gets updated the new file will be downloaded
-        let localFileName = canvasCollection.storageVersion != nil
-            ? "\(canvasCollection.storageVersion!).pdf"
-            : "_.pdf"
+        let localFileName: String
+        if let storageVersion = pdfSource.mainStorageVersion() {
+            localFileName = "\(storageVersion).pdf"
+        } else {
+            localFileName = "_.pdf"
+        }
         // The directory for this canvas files. We always want just the latest file (the storage
         // version is part of the file name). Each canvas has a separate directory so it's easy
         // to remove it when downloading new version of canvas file (the older version is not needed)
@@ -63,7 +66,7 @@ class CanvasFileLoader {
         if fileManager.fileExists(atPath: localPdfFileURL.path) {
             Logger.storage.debug("Loading canvas from local file: \(localPdfFileURL)")
             do {
-                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: source.pageNumber)
+                return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: 0)
             } catch {
                 // cannot load, try download again
                 Logger.storage
@@ -98,7 +101,7 @@ class CanvasFileLoader {
 
         // use downloaded file
         Logger.storage.debug("Loading canvas from local file: \(localPdfFileURL)")
-        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: source.pageNumber)
+        return try loadPDFPage(fromLocalFile: localPdfFileURL, pageNumber: 0)
     }
 
     /// Loads PDFPage with given number (zero based) from given local file

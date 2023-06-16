@@ -60,7 +60,7 @@ class ProjectModelTest: ProjectModelTestCase {
             let canvas = Canvas(id: "canvas1", name: "")
             let canvasSource = CanvasSource(
                 id: "canvasSource1", name: "",
-                data: .pdf(PdfCanvasSourceData(pageNumber: 0, userDefinedScale: 1))
+                data: .pdf(PdfCanvasSourceData(userDefinedScale: 1))
             )
             realm.add([canvas, canvasSource])
             canvas.canvasSources.insert(canvasSource)

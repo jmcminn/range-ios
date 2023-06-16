@@ -48,15 +48,19 @@ struct PdfCanvasSourceData: Equatable, Codable {
     var type: CanvasSourceType = .pdf
     /// sheet identifier
     var sheetNumber: String?
-    /// 0-based PDF page number
-    var pageNumber: Int
     /// the scale of PDF. Example value: 48.0, meaning the scale is 1:48
     var userDefinedScale: Double
+    /// version of the pdf file, to recognize when new pdf was uploaded
+    var storageVersion: [String: String]?
 
-    init(sheetNumber: String? = nil, pageNumber: Int, userDefinedScale: Double) {
+    init(sheetNumber: String? = nil, userDefinedScale: Double) {
         self.sheetNumber = sheetNumber
-        self.pageNumber = pageNumber
         self.userDefinedScale = userDefinedScale
+    }
+
+    /// expose the main storage version
+    func mainStorageVersion() -> String? {
+        storageVersion?["main"]
     }
 }
 

@@ -77,7 +77,7 @@ class ProjectModel: NSObject, RealmModel {
             Logger.model.info("project realm file url: \(config.fileURL?.path ?? "")")
         }
         config.objectTypes = [
-            ProjectSummary.self, Status.self, Tag.self, Participant.self, CanvasCollection.self,
+            ProjectSummary.self, Status.self, Tag.self, Participant.self,
             Canvas.self, CanvasSource.self, Geometry.self, Feature.self, Collaboration.self, Comment.self,
             Update.self, Upload.self, Location.self,
         ]

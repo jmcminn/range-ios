@@ -51,7 +51,6 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
             XCTFail("unexpected canvas source data: \(decodedSource.data)"); return
         }
         XCTAssertEqual(pdfData.sheetNumber, "A01")
-        XCTAssertEqual(pdfData.pageNumber, 1)
         XCTAssertEqual(pdfData.userDefinedScale, 48)
     }
 
@@ -63,7 +62,7 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
     func testUpsert_canvasNotFound() throws {
         let firestoreSource = FirestoreCanvasSource(
             canvasId: "canvas1", name: "",
-            data: .pdf(PdfCanvasSourceData(pageNumber: 0, userDefinedScale: 1))
+            data: .pdf(PdfCanvasSourceData(userDefinedScale: 1))
         )
         try realm.write {
             try firestoreSource.upsert(withId: "canvasSource1", inRealm: realm)
@@ -83,7 +82,7 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
         // 2. add source to canvas1
         let firestoreSource1 = FirestoreCanvasSource(
             canvasId: "canvas1", name: "canvas source name",
-            data: .pdf(PdfCanvasSourceData(pageNumber: 1, userDefinedScale: 48))
+            data: .pdf(PdfCanvasSourceData(userDefinedScale: 48))
         )
         try realm.write {
             try firestoreSource1.upsert(withId: "canvasSource1", inRealm: realm)
@@ -100,7 +99,6 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
             XCTFail("unexpected canvas source data: \(source1.data)"); return
         }
         XCTAssertEqual(pdfData.sheetNumber, nil)
-        XCTAssertEqual(pdfData.pageNumber, 1)
         XCTAssertEqual(pdfData.userDefinedScale, 48)
     }
 }

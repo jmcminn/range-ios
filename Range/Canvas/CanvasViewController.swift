@@ -97,8 +97,8 @@ class CanvasViewController: UIViewController {
     private var currentCanvasObservation: NSKeyValueObservation?
     /// To observe changes in model.currentCanvas.currentCanvasSource
     private var currentCanvasSourceObservation: NSKeyValueObservation?
-    /// Observe canvas collection for pdf storage version change to reload the pdf
-    private var canvasCollectionNotificationToken: NotificationToken?
+    /// Observe canvas source for pdf storage version change to reload the pdf
+    private var canvasSourceNotificationToken: NotificationToken?
 
     /// A default empty style for annotations with path to local glyphs
     var annotationsStyle: String {
@@ -124,8 +124,8 @@ class CanvasViewController: UIViewController {
         if canvas.currentCanvasSource.type == .pdf {
             try await reloadPdfPage()
         }
-        observeCanvasCollection()
-        observeCanvasSource()
+        observeCurrentCanvasSource()
+        observeCanvasSourceChanges()
         currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
             Task { @MainActor in
@@ -162,8 +162,8 @@ class CanvasViewController: UIViewController {
         guard canvas.id != model.currentCanvas.id else { return }
         let previousCanvas = canvas
         canvas = model.currentCanvas
-        observeCanvasCollection()
-        observeCanvasSource()
+        observeCurrentCanvasSource()
+        observeCanvasSourceChanges()
         await onCanvasSourceChange(previousCanvasSource: previousCanvas.currentCanvasSource)
     }
 
@@ -205,7 +205,7 @@ class CanvasViewController: UIViewController {
     deinit {
         currentCanvasObservation?.invalidate()
         currentCanvasSourceObservation?.invalidate()
-        canvasCollectionNotificationToken?.invalidate()
+        canvasSourceNotificationToken?.invalidate()
     }
 
     /// Add delegate and returns id so it can be later removed
@@ -220,25 +220,14 @@ class CanvasViewController: UIViewController {
         delegates.removeValue(forKey: id)
     }
 
-    /// update the canvas collection observation
-    private func observeCanvasCollection() {
-        canvasCollectionNotificationToken?.invalidate()
-        guard canvas.currentCanvasSource.type == .pdf else { return }
-        if let collection = canvas.collection.first {
-            canvasCollectionNotificationToken = collection.observe { [weak self] _ in
-                Task { @MainActor in
-                    // update the pdfCanvas
-                    await self?.reloadPDFScrollView()
-                }
-            }
-        }
-    }
-
-    private func observeCanvasSource() {
+    /// Observe when canvas source is switched to different canvas source
+    private func observeCurrentCanvasSource() {
         currentCanvasSourceObservation?.invalidate()
         currentCanvasSourceObservation = model.currentCanvas
             .observe(\.currentCanvasSource, options: [.old]) { [weak self] _, change in
                 guard let self = self else { return }
+                self.observeCanvasSourceChanges()
+
                 guard let previousCanvasSource = change.oldValue ?? nil else {
                     return
                 }
@@ -246,6 +235,20 @@ class CanvasViewController: UIViewController {
                     await self.onCanvasSourceChange(previousCanvasSource: previousCanvasSource)
                 }
             }
+    }
+
+    /// Observe when canvas source is updated
+    private func observeCanvasSourceChanges() {
+        canvasSourceNotificationToken?.invalidate()
+        if case .pdf = canvas.currentCanvasSource.data {
+            // observe pdf source for storage version (or any) update to reload the pdf
+            self.canvasSourceNotificationToken = self.canvas.currentCanvasSource.observe { [weak self] _ in
+                Task { @MainActor in
+                    // update the pdfCanvas
+                    await self?.reloadPDFScrollView()
+                }
+            }
+        }
     }
 
     /// This is called when canvas changes after loading the initial canvas.
@@ -276,11 +279,8 @@ class CanvasViewController: UIViewController {
 
     @MainActor
     private func reloadPdfPage() async throws {
-        guard case let .pdf(pdfSource) = canvas.currentCanvasSource.data else {
-            fatalError("reloadPdfPage called when canvas source is not a PDF")
-        }
         pdfPage = try await CanvasFileLoader()
-            .loadPDFPage(forSource: pdfSource, canvas: canvas, projectId: model.projectId)
+            .loadPDFPage(forSource: canvas.currentCanvasSource, projectId: model.projectId)
     }
 
     /// Setup the PDF scroll view appropriately for current canvas source. (if not needed then removes the current one)

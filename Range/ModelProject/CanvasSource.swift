@@ -13,7 +13,7 @@ class CanvasSource: Object, WithPlaceholder, WithId {
     /// The name of canvas source
     @Persisted var name: String
     /// Canvas source type dependent data (Realm requires some default value)
-    @Persisted var data: CanvasSourceData = .pdf(PdfCanvasSourceData(pageNumber: 0, userDefinedScale: 1))
+    @Persisted var data: CanvasSourceData = .pdf(PdfCanvasSourceData(userDefinedScale: 1))
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -56,7 +56,7 @@ class CanvasSource: Object, WithPlaceholder, WithId {
         self.init(
             id: id,
             name: "",
-            data: .pdf(PdfCanvasSourceData(pageNumber: 0, userDefinedScale: 1)),
+            data: .pdf(PdfCanvasSourceData(userDefinedScale: 1)),
             placeholder: true
         )
     }
