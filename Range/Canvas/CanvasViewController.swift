@@ -69,6 +69,7 @@ class CanvasViewController: UIViewController {
     private var currentCameraChangeReason: CanvasCameraChangeReason?
 
     unowned let model: ProjectModel
+    unowned let canvasFileLoader: CanvasFileLoader
     private var canvas: Canvas
     // only when displaying pdf source
     private var pdfPage: PDFPage?
@@ -115,8 +116,9 @@ class CanvasViewController: UIViewController {
 //            """
     }
 
-    init(model: ProjectModel) async throws {
+    init(model: ProjectModel, canvasFileLoader: CanvasFileLoader) async throws {
         self.model = model
+        self.canvasFileLoader = canvasFileLoader
         canvas = model.currentCanvas
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
@@ -251,7 +253,7 @@ class CanvasViewController: UIViewController {
         }
     }
 
-    /// This is called when canvas changes after loading the initial canvas.
+    /// This is called when canvas PDF changes after loading the initial canvas.
     /// We keep the zoom/offset, so there's no recalculation of initial zoom.
     @MainActor
     private func reloadPDFScrollView() async {
@@ -279,8 +281,10 @@ class CanvasViewController: UIViewController {
 
     @MainActor
     private func reloadPdfPage() async throws {
-        pdfPage = try await CanvasFileLoader()
-            .loadPDFPage(forSource: canvas.currentCanvasSource, projectId: model.projectId)
+        pdfPage = try await canvasFileLoader.loadPDFPage(
+            forSource: canvas.currentCanvasSource,
+            projectId: model.projectId
+        )
     }
 
     /// Setup the PDF scroll view appropriately for current canvas source. (if not needed then removes the current one)

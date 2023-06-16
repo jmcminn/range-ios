@@ -25,6 +25,7 @@ final class ProjectFlowController: UIViewController {
 
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
+    unowned let canvasFileLoader: CanvasFileLoader
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
 
@@ -50,6 +51,8 @@ final class ProjectFlowController: UIViewController {
     private var canvasNotificationToken: NotificationToken?
     /// Token for notifications about changes in the canvas geometries
     private var geometriesNotificationToken: NotificationToken?
+    /// Token for observing canvas sources to (re)download their pdfs
+    private var canvasSourcesNotificationToken: NotificationToken?
 
     /// id of registered canvas delegate
     var canvasDelegateId: UUID?
@@ -103,12 +106,14 @@ final class ProjectFlowController: UIViewController {
         canvasId: String?,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
+        canvasFileLoader: CanvasFileLoader,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
         userSettings: UserSettings
     ) async throws {
         self.localFiles = localFiles
         self.mediaCache = mediaCache
+        self.canvasFileLoader = canvasFileLoader
         model = try ProjectModel(
             userId: userId,
             projectId: projectId,
@@ -138,7 +143,11 @@ final class ProjectFlowController: UIViewController {
         defaultCanvasFilters = CanvasFilters()
         defaultCanvasFilters.model = model
 
-        canvasContainer = try await CanvasContainerViewController(model: model, canvasFilters: canvasFilters)
+        canvasContainer = try await CanvasContainerViewController(
+            model: model,
+            canvasFilters: canvasFilters,
+            canvasFileLoader: canvasFileLoader
+        )
         collaborationFlow = CollaborationFlowController(
             model: model,
             localFiles: localFiles,
@@ -221,6 +230,21 @@ final class ProjectFlowController: UIViewController {
         canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
 
         startedFuturePromise?(.success(()))
+
+        // after the project is started, and on each canvas source change, download all the pdfs for all pdf canvas sources
+        canvasSourcesNotificationToken = model.mainRealm.objects(CanvasSource.self).observe { [weak self] _ in
+            self?.possiblyDownloadPdfsForCanvasSources()
+        }
+    }
+
+    /// Iterates over all pdf canvas sources and triggers the pdf file download.
+    /// If the file is available locally it will not be redownloaded
+    @MainActor
+    private func possiblyDownloadPdfsForCanvasSources() {
+        let pdfSources = model.mainRealm.objects(CanvasSource.self).filter { $0.data.type == .pdf }
+        for pdfSource in pdfSources {
+            canvasFileLoader.downloadPDF(forSource: pdfSource, projectId: model.projectId)
+        }
     }
 
     private func observeCanvas() {
@@ -306,6 +330,8 @@ final class ProjectFlowController: UIViewController {
         canvasNotificationToken = nil
         geometriesNotificationToken?.invalidate()
         geometriesNotificationToken = nil
+        canvasSourcesNotificationToken?.invalidate()
+        canvasSourcesNotificationToken = nil
         UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
         NotificationCenter.default.removeObserver(self)
     }

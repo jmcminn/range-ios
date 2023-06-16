@@ -21,8 +21,8 @@ class CanvasContainerViewController: UIViewController {
     /// for presenting cards and other controls (on top of content)
     let controls = PassthroughView()
 
-    init(model: ProjectModel, canvasFilters: CanvasFilters) async throws {
-        canvasViewController = try await CanvasViewController(model: model)
+    init(model: ProjectModel, canvasFilters: CanvasFilters, canvasFileLoader: CanvasFileLoader) async throws {
+        canvasViewController = try await CanvasViewController(model: model, canvasFileLoader: canvasFileLoader)
         self.canvasFilters = canvasFilters
         super.init(nibName: nil, bundle: nil)
     }
