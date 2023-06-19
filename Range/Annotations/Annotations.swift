@@ -7,14 +7,14 @@ class Annotations: NSObject {
     /// view hosting all the annotation views
     let view = UIView()
 
-    // TODO: 1268 is this needed here?
+    // TODO: 1290 is this needed here?
     let viewModel: AnnotationsViewModel
 
     private weak var hostView: FullscreenImageGalleryPageView?
 
     var scribbleScale: Double = 1.0
 
-    var selectedAnnotation: ScribbleViewModel?
+    @objc dynamic var selectedAnnotation: ScribbleViewModel?
     /// remember the origin of selected annotation when dragging begins (so it can be translated while dragging)
     var dragAnnotationOrigin: CGPoint?
 
@@ -81,6 +81,16 @@ class Annotations: NSObject {
         annotationsView.addSubview(scribbleView)
         scribbleView.frame = scribble.viewBounds
         setSelected(nil)
+    }
+
+    func deleteAnnotation(_ annotation: ScribbleViewModel) {
+        if let view = annotations[annotation] {
+            view.removeFromSuperview()
+        }
+        annotations[annotation] = nil
+        if annotation == selectedAnnotation {
+            setSelected(nil)
+        }
     }
 }
 

@@ -9,13 +9,39 @@ import UIKit
 ///
 class AnnotationsViewModel: ObservableObject {
     /// currently annotated page in photos gallery
-    var currentAnnotations: Annotations?
+    var currentAnnotations: Annotations? { didSet { currentAnnotationsDidSet() }}
 
     /// Is the scribble mode enabled
     @Published private(set) var scribbleMode: Bool = false
 
+    @Published var selectedAnnotation: ScribbleViewModel? = nil
+    private var selectedAnnotationObservation: NSKeyValueObservation?
+
     func toggleScribbleMode() {
         scribbleMode.toggle()
         currentAnnotations?.setScribblingEnabled(scribbleMode)
+    }
+
+    /// Unselect the currently selected annotation
+    func unselectAnnotation() {
+        currentAnnotations?.setSelected(nil)
+    }
+
+    /// Deletes the currently selected annotation
+    func deleteAnnotation() {
+        if let annotation = currentAnnotations?.selectedAnnotation {
+            currentAnnotations?.deleteAnnotation(annotation)
+        }
+    }
+
+    /// When switching the Annotations currently handled by annotation session (so when changing a page in photos gallery)
+    private func currentAnnotationsDidSet() {
+        selectedAnnotationObservation?.invalidate()
+        selectedAnnotation = currentAnnotations?.selectedAnnotation
+        if let currentAnnotations = currentAnnotations {
+            selectedAnnotationObservation = currentAnnotations.observe(\.selectedAnnotation) { [weak self] _, _ in
+                self?.selectedAnnotation = currentAnnotations.selectedAnnotation
+            }
+        }
     }
 }

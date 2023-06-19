@@ -46,11 +46,11 @@ class FullscreenImageGalleryViewController: UIViewController {
 
     var currentPage: Int = 0 {
         didSet {
-            if currentPage != oldValue {
-                updateCurrentPageLabel(currentPage: currentPage)
-                loadImages(currentPage: currentPage)
-                annotationsViewModel.currentAnnotations = annotationsPerPage[currentPage]
-            }
+            updateCurrentPageLabel(currentPage: currentPage)
+            loadImages(currentPage: currentPage)
+            annotationsViewModel.currentAnnotations = currentPage >= 0 && currentPage < annotationsPerPage.count
+                ? annotationsPerPage[currentPage]
+                : nil
         }
     }
 
