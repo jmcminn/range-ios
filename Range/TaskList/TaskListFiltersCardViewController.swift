@@ -203,6 +203,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         addSeparator()
 
         // ----- Statuses --------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Status")), bottomInset: 5)
         for (index, status) in statuses.enumerated() {
             if let statusLabel = statusLabels[status], let statusSwitch = statusSwitches[status] {
                 add(label: statusLabel, control: statusSwitch, topInset: index == 0 ? 13 : 5,
@@ -229,6 +230,20 @@ class TaskListFiltersCardViewController: SheetCardViewController {
 
         // ----- Archived pins ---------------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Show Archived Tasks")), control: showArchivedSwitch)
+    }
+
+    /// Adds given label to the stack view with proper insets
+    private func add(label: UILabel, topInset: Double = 13, bottomInset: Double = 13) {
+        // wrapper to add leading/trailing insets
+        let wrapper = UIView()
+        wrapper.addSubview(label)
+        stackView.addArrangedSubview(wrapper)
+        label.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(topInset)
+            make.bottom.equalToSuperview().inset(bottomInset)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.width.equalTo(scrollView).offset(-64)
+        }
     }
 
     /// Adds given label and control to the stack view with proper insets
