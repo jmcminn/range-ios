@@ -11,6 +11,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     private let filters: TaskListFilters
     private let statuses: [Status]
     private let usersViewModel: UsersViewModel
+    private let canvasesViewModel: CanvasesViewModel
     private let tagsViewModel: TagsViewModel
 
     private var resetButton: ButtonWithTapAreaInsets!
@@ -18,9 +19,10 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
 
-    private var filterByAssigneeLabel: UILabel!
     private let filterByAssigneeSwitch = UISwitch()
     private let usersView: SelectedUsersView
+    private let filterByCanvasSwitch = UISwitch()
+    private let canvasesView: SelectedCanvasesView
     private var statusLabels = [Status: UILabel]()
     private var statusSwitches = [Status: UISwitch]()
     private let filterByTagsSwitch = UISwitch()
@@ -47,6 +49,12 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)
         self.usersViewModel = usersViewModel
 
+        let canvasesViewModel = CanvasesViewModel(model: model, multiselect: true)
+        // preselect canvases from filters
+        filters.canvasFilter?.forEach { canvasesViewModel.set(canvasWithId: $0, selected: true) }
+        canvasesView = SelectedCanvasesView(viewModel: canvasesViewModel, showEditCell: true)
+        self.canvasesViewModel = canvasesViewModel
+
         let tagsViewModel = TagsViewModel(model: model)
         // preselect tags from the filter
         filters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
@@ -61,6 +69,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
 
         usersViewModel.addDelegate(self)
         tagsViewModel.addDelegate(self)
+        canvasesViewModel.addDelegate(self)
     }
 
     override func viewDidLoad() {
@@ -73,6 +82,10 @@ class TaskListFiltersCardViewController: SheetCardViewController {
 
         filterByAssigneeSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByAssigneeSwitchAction()
+        }), for: .valueChanged)
+
+        filterByCanvasSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.onFilterByCanvasSwitchAction()
         }), for: .valueChanged)
 
         // add a switch per status
@@ -115,11 +128,13 @@ class TaskListFiltersCardViewController: SheetCardViewController {
             }
         }
         filterByAssigneeSwitch.setOn(filters.assigneeFilter != nil, animated: false)
+        filterByCanvasSwitch.setOn(filters.canvasFilter != nil, animated: false)
         filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
         showOverdueSwitch.setOn(filters.showOverdue, animated: false)
         showArchivedSwitch.setOn(filters.showArchived, animated: false)
         usersView.setVisible(filters.assigneeFilter != nil, animated: false)
+        canvasesView.setVisible(filters.canvasFilter != nil, animated: false)
         tagsView.setVisible(filters.tagsFilter != nil, animated: false)
     }
 
@@ -172,10 +187,18 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         }
 
         // ----- Assignee --------------------------------------------------------------------------
-        filterByAssigneeLabel = createLabel(text: String(localized: "Filter by Assignee"))
-        add(label: filterByAssigneeLabel, control: filterByAssigneeSwitch,
+        add(label: createLabel(text: String(localized: "Filter by Assignee")),
+            control: filterByAssigneeSwitch,
             bottomInset: 4) // the rest = 9 is added below users view
         addUsersView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Canvas ----------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Canvas")),
+            control: filterByCanvasSwitch,
+            bottomInset: 4) // the rest = 9 is added below canvases view
+        addCanvasesView()
         addSpace(height: 9)
         addSeparator()
 
@@ -259,6 +282,18 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         usersView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(usersTapped)))
 
         addLeftRightGradients(to: usersView)
+    }
+
+    private func addCanvasesView() {
+        canvasesView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(canvasesView)
+        canvasesView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(40)
+        }
+        canvasesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(canvasesTapped)))
+
+        addLeftRightGradients(to: canvasesView)
     }
 
     private func addTagsView() {
@@ -417,6 +452,48 @@ extension TaskListFiltersCardViewController: UsersViewModelDelegate {
         indexInSelectedUsers _: Int
     ) {
         filters.assigneeFilter = viewModel.selectedUsers.map(\.id)
+    }
+}
+
+// MARK: - canvas
+
+extension TaskListFiltersCardViewController: CanvasesViewModelDelegate {
+    /// Called when "Filter by Canvas" switch is toggled
+    private func onFilterByCanvasSwitchAction() {
+        if filterByCanvasSwitch.isOn {
+            filters.canvasFilter = []
+            canvasesView.setVisible(true)
+            showCanvasPicker()
+        } else {
+            canvasesViewModel.clearSelection()
+            filters.canvasFilter = nil
+            canvasesView.setVisible(false)
+        }
+        if let cardDragging = cardDragging {
+            cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
+        }
+    }
+
+    /// Invoked when selected canvases tapped
+    @objc private func canvasesTapped() {
+        showCanvasPicker()
+    }
+
+    /// Show the picker that operates on canvasesViewModel
+    func showCanvasPicker() {
+        guard let presentingVC = presentingVC else { return }
+        let pickerCardVC = CanvasPickerCardViewController(title: "Canvas", viewModel: canvasesViewModel)
+        pickerCardVC.installAndShowCard(in: presentingVC)
+    }
+
+    /// Updates canvas filters when the viewModel is updated
+    func canvasesViewModel(
+        _ viewModel: CanvasesViewModel,
+        canvas _: CanvasViewModel,
+        selected _: Bool,
+        indexInSelectedCanvases _: Int
+    ) {
+        filters.canvasFilter = viewModel.selectedCanvases.map(\.id)
     }
 }
 

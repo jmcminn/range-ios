@@ -264,6 +264,11 @@
 		0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */; };
 		0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322322A419D6F0076D032 /* TaskListFilters.swift */; };
 		0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */; };
+		0A8322382A41E4CE0076D032 /* CanvasesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322372A41E4CD0076D032 /* CanvasesViewModel.swift */; };
+		0A83223A2A41E80A0076D032 /* SelectedCanvasesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322392A41E80A0076D032 /* SelectedCanvasesView.swift */; };
+		0A83223C2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83223B2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift */; };
+		0A83223E2A41EBC10076D032 /* CanvasPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83223D2A41EBC10076D032 /* CanvasPickerCardViewController.swift */; };
+		0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83223F2A41EDC80076D032 /* CanvasPickerTableViewCell.swift */; };
 		0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A859CF729D5F49000CCAEC5 /* Delayer.swift */; };
 		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197E291C24A60050FC41 /* PendingActionsModel.swift */; };
@@ -661,6 +666,11 @@
 		0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCommentTextCommandTest.swift; sourceTree = "<group>"; };
 		0A8322322A419D6F0076D032 /* TaskListFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListFilters.swift; sourceTree = "<group>"; };
 		0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListFiltersCardViewController.swift; sourceTree = "<group>"; };
+		0A8322372A41E4CD0076D032 /* CanvasesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasesViewModel.swift; sourceTree = "<group>"; };
+		0A8322392A41E80A0076D032 /* SelectedCanvasesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedCanvasesView.swift; sourceTree = "<group>"; };
+		0A83223B2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedCanvasCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A83223D2A41EBC10076D032 /* CanvasPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPickerCardViewController.swift; sourceTree = "<group>"; };
+		0A83223F2A41EDC80076D032 /* CanvasPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPickerTableViewCell.swift; sourceTree = "<group>"; };
 		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
 		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
@@ -1349,6 +1359,7 @@
 				0A1935302938C1D6000E8BF8 /* Avatar */,
 				0A97232327FC507200D744F4 /* Camera */,
 				0A22CF1A2930CD310084332B /* Canvas */,
+				0A8322362A41E4760076D032 /* CanvasPicker */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0ABFD8B528F00A46008CDA74 /* Comment */,
@@ -1564,6 +1575,18 @@
 				0A7A537A293E4E540093D913 /* ProjectsModel.swift */,
 			);
 			path = ModelProjects;
+			sourceTree = "<group>";
+		};
+		0A8322362A41E4760076D032 /* CanvasPicker */ = {
+			isa = PBXGroup;
+			children = (
+				0A8322372A41E4CD0076D032 /* CanvasesViewModel.swift */,
+				0A83223D2A41EBC10076D032 /* CanvasPickerCardViewController.swift */,
+				0A83223F2A41EDC80076D032 /* CanvasPickerTableViewCell.swift */,
+				0A8322392A41E80A0076D032 /* SelectedCanvasesView.swift */,
+				0A83223B2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift */,
+			);
+			path = CanvasPicker;
 			sourceTree = "<group>";
 		};
 		0A9341C029A7D41C006166C1 /* CopyTask */ = {
@@ -1995,6 +2018,7 @@
 				0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */,
 				0A374DE82927D0200036C184 /* UpdateGeometryArchivedCommand.swift in Sources */,
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
+				0A83223E2A41EBC10076D032 /* CanvasPickerCardViewController.swift in Sources */,
 				0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */,
 				0A2C7EE42A097126008F1FB9 /* MediaFiltersCardViewController.swift in Sources */,
 				0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */,
@@ -2133,8 +2157,10 @@
 				0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeView.swift in Sources */,
 				0A1F1B7C2A288E2700A2E613 /* AnnotationsDevSettingsView.swift in Sources */,
+				0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */,
 				0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */,
 				0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */,
+				0A83223A2A41E80A0076D032 /* SelectedCanvasesView.swift in Sources */,
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
 				0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */,
 				0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */,
@@ -2163,6 +2189,7 @@
 				0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */,
 				0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */,
 				0A0E2062296309FB001782A5 /* SelectPinTypeCardViewController.swift in Sources */,
+				0A83223C2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift in Sources */,
 				0A0505852A1F838A001AF644 /* ScribblingView.swift in Sources */,
 				0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */,
 				0A0E9191297A867C0052EC1B /* UIImage+SaveToCameraRoll.swift in Sources */,
@@ -2197,6 +2224,7 @@
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */,
 				0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */,
+				0A8322382A41E4CE0076D032 /* CanvasesViewModel.swift in Sources */,
 				0A9E861E297E96CC0099F22F /* UserSettings.swift in Sources */,
 				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
 				0A3714DF29504FA6004ED1B0 /* ProjectFlowController+Actions.swift in Sources */,
