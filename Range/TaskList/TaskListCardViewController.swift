@@ -9,38 +9,39 @@ import UIKit
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class TaskListCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
+    unowned let canvasContainer: CanvasContainerViewController
 
     private let headerView = UIView()
-    private var onlyMineToggle: SegmentedControl!
     private let headerStroke = UIView()
 
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    /// whether to show all tasks (`false`) or only tasks of the current user (`true`)
-    private var showOnlyMine = false {
-        didSet {
-            UserDefaults.showOnlyMineTasks = showOnlyMine
-            reloadCollaborations()
-        }
-    }
+    private let collaborations: Results<Collaboration>
+    private var filteredCollaborations: [Collaboration] = []
 
-    private var collaborations: [Collaboration] = []
-
-    private var emptyTasksView = [Bool: UIView]()
+    private var emptyView: UIView?
+    private var emptyFilteredView: UIView?
 
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
+
+    private let filters = TaskListFilters()
+    private let filtersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
+    private let filtersIndicatorBadge = BadgeView()
 
     /// Initializer
     ///
     /// - Parameters:
     ///     - projectModel:               model to read collaborations from
-    init(projectModel: ProjectModel) {
+    init(projectModel: ProjectModel, canvasContainer: CanvasContainerViewController) {
         self.projectModel = projectModel
+        self.canvasContainer = canvasContainer
+        collaborations = projectModel.mainRealm.objects(Collaboration.self)
+            .where { (c: Query<Collaboration>) -> Query<Bool> in
+                c.placeholder == false && c.status != nil // only tasks
+            }
 
         super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "Task List"))
-
-        showOnlyMine = UserDefaults.showOnlyMineTasks
     }
 
     deinit {
@@ -55,7 +56,8 @@ class TaskListCardViewController: SheetCardViewController {
         headerView.snp.makeConstraints { make in
             make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(48)
+            // TODO: 1294
+            make.height.equalTo(1)
         }
 
         setupTableView()
@@ -65,7 +67,16 @@ class TaskListCardViewController: SheetCardViewController {
             make.leading.trailing.bottom.equalToSuperview()
         }
 
-        reloadCollaborations()
+        setupFiltersButton()
+        setupFiltersIndicatorBadge()
+
+        observeCollaborations()
+
+        updateData()
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(filtersUpdated),
+            name: TaskListFilters.UpdateNotificationName, object: nil
+        )
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -74,58 +85,61 @@ class TaskListCardViewController: SheetCardViewController {
         tableView.reloadData()
     }
 
-    private func reloadCollaborations() {
-        var collaborations: Results<Collaboration> =
-            projectModel.mainRealm.objects(Collaboration.self)
-                .where { (c: Query<Collaboration>) -> Query<Bool> in
-                    c.placeholder == false
-                        && c.status != nil // only tasks
-                        && c.feature.geometry.placeholder == false // has a geometry (just a sanity check)
-                        && c.feature.geometry.archivedTimestamp == nil // not archived
-                }
-
-        if showOnlyMine {
-            collaborations = collaborations
-                .where { (c: Query<Collaboration>) -> Query<Bool> in
-                    c.assignee == projectModel.currentUser
-                }
-        }
+    private func observeCollaborations() {
         notificationToken = collaborations.observe { [weak self] (changes: RealmCollectionChange) in
             guard let self = self else { return }
             switch changes {
-            case let .initial(collabs):
-                self.updateData(collabs)
-            case let .update(collabs, _, _, _):
-                self.updateData(collabs)
+            case .initial:
+                self.updateData()
+            case .update:
+                self.updateData()
             case let .error(error):
                 Logger.model.error("observing collaborations failed: \(error.localizedDescription, privacy: .public)")
             }
         }
-        updateData(collaborations)
     }
 
     /// Sort collaborations and update table view
-    private func updateData(_ collaborations: Results<Collaboration>) {
-        self.collaborations = collaborations.sorted { c1, c2 in
+    private func updateData() {
+        filteredCollaborations = collaborations.filter(filters.match).sorted { c1, c2 in
             // sort by last updated desc
             c1.lastUpdatedTimestamp > c2.lastUpdatedTimestamp
         }
         tableView.reloadData()
 
-        // setup this tab (all / only mine) empty view if collaborations empty
-        if collaborations.isEmpty, emptyTasksView[showOnlyMine] == nil {
-            let emptyView = setupEmptyStateView(onlyMine: showOnlyMine)
-            containerView.addSubview(emptyView)
-            emptyView.snp.makeConstraints { make in
-                make.centerY.equalToSuperview()
-                make.leading.trailing.equalToSuperview()
+        onCollaborationsChanged()
+    }
+
+    /// Adjust the UI for changed collaborations
+    private func onCollaborationsChanged() {
+        updateFiltersIndicatorBadge()
+
+        let emptyTasks = collaborations.isEmpty
+        let emptyFilteredTasks = filteredCollaborations.isEmpty
+
+        filtersButton.isHidden = emptyTasks
+
+        if emptyTasks {
+            if emptyView == nil {
+                emptyView = setupEmptyStateView(fromFilters: false)
+                containerView.addSubview(emptyView!)
+                emptyView!.snp.makeConstraints { make in
+                    make.centerY.equalToSuperview()
+                    make.leading.trailing.equalToSuperview()
+                }
             }
-            emptyTasksView[showOnlyMine] = emptyView
+        } else if emptyFilteredTasks {
+            if emptyFilteredView == nil {
+                emptyFilteredView = setupEmptyStateView(fromFilters: true)
+                containerView.addSubview(emptyFilteredView!)
+                emptyFilteredView!.snp.makeConstraints { make in
+                    make.centerY.equalToSuperview()
+                    make.leading.trailing.equalToSuperview()
+                }
+            }
         }
-        // show this tab empty view if no collaborations
-        emptyTasksView[showOnlyMine]?.isHidden = !collaborations.isEmpty
-        // hide the other tab empty view
-        emptyTasksView[!showOnlyMine]?.isHidden = true
+        emptyView?.isHidden = !emptyTasks
+        emptyFilteredView?.isHidden = emptyTasks || !emptyFilteredTasks
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
@@ -143,31 +157,6 @@ class TaskListCardViewController: SheetCardViewController {
 
     private func setupHeaderView() {
         headerView.backgroundColor = view.backgroundColor
-
-        onlyMineToggle = SegmentedControl(items: [
-            ActionItem(
-                title: String(localized: "Only Mine"),
-                handler: { [weak self] in
-                    self?.showOnlyMine = true
-                }
-            ),
-            ActionItem(
-                title: String(localized: "All Tasks"),
-                handler: { [weak self] in
-                    self?.showOnlyMine = false
-                }
-            ),
-        ])
-        if !UserDefaults.showOnlyMineTasks {
-            onlyMineToggle.setSelectedSegmentIndex(1, animated: false)
-        }
-        headerView.addSubview(onlyMineToggle)
-        onlyMineToggle.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(SegmentedControl.height)
-        }
-
         headerStroke.backgroundColor = .dynamic(.Neutral_07)
         headerView.addSubview(headerStroke)
         headerStroke.snp.makeConstraints { make in
@@ -191,14 +180,14 @@ class TaskListCardViewController: SheetCardViewController {
 
 extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        collaborations.count
+        filteredCollaborations.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCell",
                                                  for: indexPath) as! TaskListCollaborationTableViewCell
-        if indexPath.row < collaborations.count {
-            let collaboration = collaborations[indexPath.row]
+        if indexPath.row < filteredCollaborations.count {
+            let collaboration = filteredCollaborations[indexPath.row]
             cell.setCollaboration(collaboration, projectTimeZone: projectModel.projectSummary.timeZone)
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in
@@ -220,8 +209,8 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard indexPath.row < collaborations.count else { return }
-        let collaboration = collaborations[indexPath.row]
+        guard indexPath.row < filteredCollaborations.count else { return }
+        let collaboration = filteredCollaborations[indexPath.row]
         UIApplication.shared.sendAction(
             #selector(ProjectFlowActions.showCollaborationAction),
             to: nil,
@@ -231,10 +220,64 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
     }
 }
 
+// MARK: - media filters
+
 extension TaskListCardViewController {
-    /// returns the empty state view for tasks card. There are 2 variants, if onlyMine=false it means that there's no tasks at all,
-    /// if onlyMine=true it means that there's no tasks assigned to me (but there are some other tasks)
-    private func setupEmptyStateView(onlyMine: Bool) -> UIView {
+    private func setupFiltersButton() {
+        filtersButton.addTarget(self, action: #selector(showFiltersCard), for: .touchUpInside)
+        containerView.addSubview(filtersButton)
+        filtersButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-12)
+        }
+    }
+
+    private func setupFiltersIndicatorBadge() {
+        filtersIndicatorBadge.backgroundColor = .systemGreen
+        filtersIndicatorBadge.contentInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        filtersIndicatorBadge.textColor = .Neutral_10
+        filtersIndicatorBadge.font = .systemFont(ofSize: 11, weight: .bold)
+        filtersIndicatorBadge.isUserInteractionEnabled = false
+        filtersButton.addSubview(filtersIndicatorBadge)
+        filtersIndicatorBadge.snp.makeConstraints { make in
+            make.centerX.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview().offset(-16)
+        }
+    }
+
+    @objc func showFiltersCard() {
+        let filtersCardVC = TaskListFiltersCardViewController(model: projectModel, taskListFilters: filters)
+        filtersCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    @objc func filtersUpdated() {
+        // reload collaborations when filters change
+        updateData()
+    }
+
+    private func updateFiltersIndicatorBadge() {
+        let filteredCount = filteredCollaborations.count
+
+        // filters hide the archived tasks by default and we don't want to show the indicator if the
+        // only affected tasks are the archived ones
+        let allNonArchivedTasks = collaborations.filter { !$0.isArchived }
+
+        if filters.showArchived {
+            // don't show the indicator if filter is not impacting the visible tasks
+            filtersIndicatorBadge.isHidden = filteredCount == collaborations.count
+        } else {
+            // don't show the indicator if filter is not impacting the visible non archived tasks
+            filtersIndicatorBadge.isHidden = filteredCount == allNonArchivedTasks.count
+        }
+
+        filtersIndicatorBadge.text = filteredCount >= 99 ? "99+" : String(filteredCount)
+    }
+}
+
+extension TaskListCardViewController {
+    /// returns the empty state view. There are 2 variants, if fromFilters=false it means that there's not tasks at all,
+    /// if fromFilters=true it means that after filtering there's no tasks
+    private func setupEmptyStateView(fromFilters: Bool) -> UIView {
         let view = UIView()
         view.backgroundColor = .clear
 
@@ -250,8 +293,8 @@ extension TaskListCardViewController {
         titleLabel.textColor = .dynamic(.Neutral_04)
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
-        titleLabel.text = onlyMine
-            ? String(localized: "It looks like there aren’t any tasks assigned to you...🤔")
+        titleLabel.text = fromFilters
+            ? String(localized: "There are no results...🤔")
             : String(localized: "It looks like there aren’t any tasks...🤔")
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
@@ -264,9 +307,19 @@ extension TaskListCardViewController {
         descriptionLabel.textColor = .dynamic(.Neutral_05)
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textAlignment = .center
-        descriptionLabel.text = onlyMine
-            ? String(localized: "Tasks assigned to you will show in this list")
-            : String(localized: "Start adding task pins to the canvas")
+
+        if fromFilters {
+            // use attributed string to insert the filter icon
+            let attributedText = NSMutableAttributedString(string: "Try adjusting your ")
+            let filterImage = UIImage(systemName: "line.3.horizontal.decrease.circle") ?? UIImage()
+            let filterAttachment = NSTextAttachment(image: filterImage)
+            attributedText.append(NSAttributedString(attachment: filterAttachment))
+            attributedText.append(NSAttributedString(string: " filters"))
+            descriptionLabel.attributedText = attributedText
+        } else {
+            descriptionLabel.text = String(localized: "Start adding task pins to the canvas")
+        }
+
         view.addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)

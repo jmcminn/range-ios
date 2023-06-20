@@ -115,7 +115,7 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func showTaskListAction() {
-        taskListVC = TaskListCardViewController(projectModel: model)
+        taskListVC = TaskListCardViewController(projectModel: model, canvasContainer: canvasContainer)
             .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 

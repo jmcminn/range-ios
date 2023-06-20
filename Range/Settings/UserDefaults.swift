@@ -21,8 +21,6 @@ extension UserDefaults {
         case moreUpdatesInTheFeed
         /// the prefix to be used for storing recent tags for a project, will be followed by a project id
         case recentTagsPrefix = "recentTags_"
-        /// last user's choice if the tasks list shows all or only mine tasks, `true` by default
-        case showOnlyMineTasks
         /// remember the last option selected by user when creating a new collaboration in the photo flow
         case lastPinTypeOption
         /// remember last fcm token, so it can be removed when a new one is obtained
@@ -155,18 +153,6 @@ extension UserDefaults {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.moreUpdatesInTheFeed.rawValue)
-        }
-    }
-
-    static var showOnlyMineTasks: Bool {
-        get {
-            if UserDefaults.standard.object(forKey: UserDefaultsConstants.showOnlyMineTasks.rawValue) == nil {
-                return true
-            }
-            return UserDefaults.standard.bool(forKey: UserDefaultsConstants.showOnlyMineTasks.rawValue)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: UserDefaultsConstants.showOnlyMineTasks.rawValue)
         }
     }
 

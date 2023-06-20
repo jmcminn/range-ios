@@ -262,6 +262,8 @@
 		0A82A8EC292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */; };
 		0A82A8EE292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */; };
 		0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */; };
+		0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322322A419D6F0076D032 /* TaskListFilters.swift */; };
+		0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */; };
 		0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A859CF729D5F49000CCAEC5 /* Delayer.swift */; };
 		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197E291C24A60050FC41 /* PendingActionsModel.swift */; };
@@ -657,6 +659,8 @@
 		0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollaborationCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCommentTextCommandTest.swift; sourceTree = "<group>"; };
+		0A8322322A419D6F0076D032 /* TaskListFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListFilters.swift; sourceTree = "<group>"; };
+		0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
 		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
@@ -1712,6 +1716,8 @@
 			children = (
 				0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */,
 				0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */,
+				0A8322322A419D6F0076D032 /* TaskListFilters.swift */,
+				0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */,
 			);
 			path = TaskList;
 			sourceTree = "<group>";
@@ -1927,6 +1933,7 @@
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
+				0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */,
@@ -2004,6 +2011,7 @@
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A9341C429A8A464006166C1 /* CopyTaskTableViewCell.swift in Sources */,
 				0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */,
+				0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
