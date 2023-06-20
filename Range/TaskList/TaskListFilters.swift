@@ -5,6 +5,18 @@ class TaskListFilters: Codable, Equatable {
     /// The name for the notification posted in NotificationCenter when the filters change
     static let UpdateNotificationName = Notification.Name("io.range.App.TaskListFiltersUpdated")
 
+    enum AssigneeFilterType: CaseIterable {
+        case onlyMine, everyone, select
+
+        var displayName: String {
+            switch self {
+            case .onlyMine: return String(localized: "Only Mine")
+            case .everyone: return String(localized: "Everyone")
+            case .select: return String(localized: "Select")
+            }
+        }
+    }
+
     private enum CodingKeys: String, CodingKey {
         case hiddenStatuses, assigneeFilter, canvasFilter, tagsFilter, showOverdue, showOnlyCreatedByUser,
              showArchived
@@ -12,7 +24,22 @@ class TaskListFilters: Codable, Equatable {
 
     weak var model: ProjectModel?
 
-    // TODO: 1292 only mine / everyone / select
+    /// 3 value toggle for enabling filtering by assignee
+    var assigneeFilterType = AssigneeFilterType.onlyMine { didSet {
+        if assigneeFilterType != oldValue {
+            if assigneeFilterType == .onlyMine {
+                // preselect current user
+                if let currentUserId = model?.userId {
+                    assigneeFilter = [currentUserId]
+                }
+            } else {
+                // for .everyone we don't want filters - it'll allow everyone
+                // for .select we need to clear the filters as user will choose manually
+                assigneeFilter = nil
+            }
+            postUpdate()
+        }
+    }}
     /// This is not nil when user enabled filtering by assignee.
     /// If not nil and not empty then only match the collaborations that have any of given assignees (or doesn't have assignee if filter
     /// contains a special UserViewModel.unassignedUserId)
@@ -60,6 +87,7 @@ class TaskListFilters: Codable, Equatable {
     /// Reset the filters to default values
     func resetToDefaults() {
         let defaults = TaskListFilters()
+        assigneeFilterType = defaults.assigneeFilterType
         assigneeFilter = defaults.assigneeFilter
         canvasFilter = defaults.canvasFilter
         hiddenStatuses = defaults.hiddenStatuses
@@ -71,6 +99,7 @@ class TaskListFilters: Codable, Equatable {
     }
 
     static func == (lhs: TaskListFilters, rhs: TaskListFilters) -> Bool {
+        if lhs.assigneeFilterType != rhs.assigneeFilterType { return false }
         if lhs.assigneeFilter != rhs.assigneeFilter { return false }
         if lhs.canvasFilter != rhs.canvasFilter { return false }
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }

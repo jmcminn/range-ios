@@ -19,7 +19,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
 
-    private let filterByAssigneeSwitch = UISwitch()
+    private var assigneeFilterTypeToggle: SegmentedControl!
     private let usersView: SelectedUsersView
     private let filterByCanvasSwitch = UISwitch()
     private let canvasesView: SelectedCanvasesView
@@ -67,6 +67,15 @@ class TaskListFiltersCardViewController: SheetCardViewController {
             subtitle: "tasks in the list"
         )
 
+        let assigneeFilterTypeActionItems = TaskListFilters.AssigneeFilterType.allCases.map { assigneeFilterType in
+            ActionItem(title: assigneeFilterType.displayName) { [weak self] in
+                guard let self = self else { return }
+                self.filters.assigneeFilterType = assigneeFilterType
+                self.onAssigneeFilterTypeChanged()
+            }
+        }
+        assigneeFilterTypeToggle = SegmentedControl(items: assigneeFilterTypeActionItems)
+
         usersViewModel.addDelegate(self)
         tagsViewModel.addDelegate(self)
         canvasesViewModel.addDelegate(self)
@@ -79,10 +88,6 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         addSheetHeaderShadowBasedOnDrivingScrollView()
 
         setupResetButton()
-
-        filterByAssigneeSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.onFilterByAssigneeSwitchAction()
-        }), for: .valueChanged)
 
         filterByCanvasSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByCanvasSwitchAction()
@@ -122,13 +127,15 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     }
 
     private func updateControlsStateFromFilters() {
+        let assigneeFilterTypeToggleOptionIndex = TaskListFilters.AssigneeFilterType.allCases
+            .lastIndex(of: filters.assigneeFilterType) ?? 0
+        assigneeFilterTypeToggle.setSelectedSegmentIndex(assigneeFilterTypeToggleOptionIndex, animated: true)
+        filterByCanvasSwitch.setOn(filters.canvasFilter != nil, animated: false)
         for status in statuses {
             if let statusSwitch = statusSwitches[status] {
                 statusSwitch.setOn(filters.show(status), animated: false)
             }
         }
-        filterByAssigneeSwitch.setOn(filters.assigneeFilter != nil, animated: false)
-        filterByCanvasSwitch.setOn(filters.canvasFilter != nil, animated: false)
         filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
         showOverdueSwitch.setOn(filters.showOverdue, animated: false)
@@ -187,9 +194,8 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         }
 
         // ----- Assignee --------------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Filter by Assignee")),
-            control: filterByAssigneeSwitch,
-            bottomInset: 4) // the rest = 9 is added below users view
+        add(label: createLabel(text: String(localized: "Filter by Assignee")), bottomInset: 13)
+        addAssigneeFilterTypeView()
         addUsersView()
         addSpace(height: 9)
         addSeparator()
@@ -210,7 +216,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
                     bottomInset: index == (statuses.count - 1) ? 13 : 5)
             }
         }
-        addSeparator(leftInset: 16)
+        addSeparator()
 
         // ----- Tags ------------------------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Filter by Tags")), control: filterByTagsSwitch,
@@ -285,6 +291,18 @@ class TaskListFiltersCardViewController: SheetCardViewController {
             make.leading.equalToSuperview().inset(leftInset)
             make.height.equalTo(1)
         }
+    }
+
+    private func addAssigneeFilterTypeView() {
+        let wrapper = UIView()
+        wrapper.addSubview(assigneeFilterTypeToggle)
+        stackView.addArrangedSubview(wrapper)
+        assigneeFilterTypeToggle.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(32)
+        }
+        stackView.setCustomSpacing(9, after: wrapper)
     }
 
     private func addUsersView() {
@@ -430,17 +448,15 @@ class TaskListFiltersCardViewController: SheetCardViewController {
 // MARK: - assignee
 
 extension TaskListFiltersCardViewController: UsersViewModelDelegate {
-    /// Called when "Filter by Assignee" switch is toggled
-    private func onFilterByAssigneeSwitchAction() {
-        if filterByAssigneeSwitch.isOn {
-            filters.assigneeFilter = []
+    /// Called when "Filter by Assignee" type is changed
+    private func onAssigneeFilterTypeChanged() {
+        if filters.assigneeFilterType == .select {
             usersView.setVisible(true)
             showUsersPicker()
         } else {
-            usersViewModel.clearSelection()
-            filters.assigneeFilter = nil
             usersView.setVisible(false)
         }
+        usersViewModel.set(selectedUsersWithIds: filters.assigneeFilter ?? [])
         if let cardDragging = cardDragging {
             cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
         }

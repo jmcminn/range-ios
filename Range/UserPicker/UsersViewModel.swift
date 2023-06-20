@@ -48,6 +48,22 @@ class UsersViewModel: NSObject {
         delegates.add(delegate)
     }
 
+    /// Replaces user selection with given users
+    func set(selectedUsersWithIds ids: [String]) {
+        // for lookup
+        let idsSet = Set(ids)
+
+        // currently selected but not in the ids replacing selection
+        let userIdsToUnselect = selectedUsers.map(\.id).filter { !idsSet.contains($0) }
+
+        for id in ids {
+            set(userWithId: id, selected: true)
+        }
+        for id in userIdsToUnselect {
+            set(userWithId: id, selected: false)
+        }
+    }
+
     /// Mark user with given id as selected/deselected and notify delegates
     /// If user with given id is not present it's ignored
     func set(userWithId userId: String, selected: Bool) {

@@ -42,6 +42,8 @@ class TaskListCardViewController: SheetCardViewController {
             }
 
         super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "Task List"))
+
+        filters.model = projectModel
     }
 
     deinit {
