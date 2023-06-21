@@ -25,7 +25,7 @@ class TaskListCardViewController: SheetCardViewController {
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
 
-    private let filters = TaskListFilters()
+    private let filters: TaskListFilters
     private let filtersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
     private let filtersIndicatorBadge = BadgeView()
 
@@ -36,14 +36,13 @@ class TaskListCardViewController: SheetCardViewController {
     init(projectModel: ProjectModel, canvasContainer: CanvasContainerViewController) {
         self.projectModel = projectModel
         self.canvasContainer = canvasContainer
+        filters = TaskListFilters(model: projectModel)
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.placeholder == false && c.status != nil // only tasks
             }
 
         super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "Task List"))
-
-        filters.model = projectModel
     }
 
     deinit {

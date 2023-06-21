@@ -140,7 +140,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
         showOverdueSwitch.setOn(filters.showOverdue, animated: false)
         showArchivedSwitch.setOn(filters.showArchived, animated: false)
-        usersView.setVisible(filters.assigneeFilter != nil, animated: false)
+        usersView.setVisible(filters.assigneeFilterType == .select, animated: false)
         canvasesView.setVisible(filters.canvasFilter != nil, animated: false)
         tagsView.setVisible(filters.tagsFilter != nil, animated: false)
     }
@@ -450,13 +450,11 @@ class TaskListFiltersCardViewController: SheetCardViewController {
 extension TaskListFiltersCardViewController: UsersViewModelDelegate {
     /// Called when "Filter by Assignee" type is changed
     private func onAssigneeFilterTypeChanged() {
-        if filters.assigneeFilterType == .select {
-            usersView.setVisible(true)
-            showUsersPicker()
-        } else {
-            usersView.setVisible(false)
-        }
         usersViewModel.set(selectedUsersWithIds: filters.assigneeFilter ?? [])
+        if filters.assigneeFilterType == .select {
+            showUsersPicker()
+        }
+        usersView.setVisible(filters.assigneeFilterType == .select)
         if let cardDragging = cardDragging {
             cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
         }
@@ -482,7 +480,7 @@ extension TaskListFiltersCardViewController: UsersViewModelDelegate {
         selected _: Bool,
         indexInSelectedUsers _: Int
     ) {
-        filters.assigneeFilter = viewModel.selectedUsers.map(\.id)
+        filters.setAssigneeFilter(viewModel.selectedUsers.map(\.id))
     }
 }
 

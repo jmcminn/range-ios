@@ -5,7 +5,7 @@ class TaskListFilters: Codable, Equatable {
     /// The name for the notification posted in NotificationCenter when the filters change
     static let UpdateNotificationName = Notification.Name("io.range.App.TaskListFiltersUpdated")
 
-    enum AssigneeFilterType: CaseIterable {
+    enum AssigneeFilterType: CaseIterable, Codable {
         case onlyMine, everyone, select
 
         var displayName: String {
@@ -18,8 +18,8 @@ class TaskListFilters: Codable, Equatable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case hiddenStatuses, assigneeFilter, canvasFilter, tagsFilter, showOverdue, showOnlyCreatedByUser,
-             showArchived
+        case assigneeFilterType, assigneeFilter, canvasFilter, hiddenStatuses,
+             tagsFilter, showOverdue, showOnlyCreatedByUser, showArchived
     }
 
     weak var model: ProjectModel?
@@ -27,23 +27,35 @@ class TaskListFilters: Codable, Equatable {
     /// 3 value toggle for enabling filtering by assignee
     var assigneeFilterType = AssigneeFilterType.onlyMine { didSet {
         if assigneeFilterType != oldValue {
-            if assigneeFilterType == .onlyMine {
-                // preselect current user
-                if let currentUserId = model?.userId {
-                    assigneeFilter = [currentUserId]
-                }
-            } else {
-                // for .everyone we don't want filters - it'll allow everyone
-                // for .select we need to clear the filters as user will choose manually
-                assigneeFilter = nil
-            }
+            updateAssigneeFilter()
             postUpdate()
         }
     }}
+
+    private func updateAssigneeFilter() {
+        if assigneeFilterType == .onlyMine {
+            // preselect current user
+            if let currentUserId = model?.userId {
+                assigneeFilter = [currentUserId]
+            }
+        } else {
+            // for .everyone we don't want filters - it'll allow everyone
+            // for .select we need to clear the filters as user will choose manually
+            assigneeFilter = nil
+        }
+    }
+
     /// This is not nil when user enabled filtering by assignee.
     /// If not nil and not empty then only match the collaborations that have any of given assignees (or doesn't have assignee if filter
     /// contains a special UserViewModel.unassignedUserId)
-    var assigneeFilter: [String]? = nil { didSet { postUpdate() }}
+    /// Achtung: it's private so it doesn't trigger the postUpdate, as it's updated in the TaskListFilters init. The setAssigneeFilter is a public
+    /// method to change the assigneeFilter and trigger the update
+    private(set) var assigneeFilter: [String]? = nil
+
+    func setAssigneeFilter(_ assigneeFilter: [String]?) {
+        self.assigneeFilter = assigneeFilter
+        postUpdate()
+    }
 
     /// Filter by canvas, if nil or empty then all canvases allowed
     var canvasFilter: [String]? = nil { didSet { postUpdate() }}
@@ -84,9 +96,14 @@ class TaskListFilters: Codable, Equatable {
         NotificationCenter.default.post(name: TaskListFilters.UpdateNotificationName, object: self)
     }
 
+    init(model: ProjectModel?) {
+        self.model = model
+        updateAssigneeFilter() // the initial value depends on the current user in the model
+    }
+
     /// Reset the filters to default values
     func resetToDefaults() {
-        let defaults = TaskListFilters()
+        let defaults = TaskListFilters(model: model)
         assigneeFilterType = defaults.assigneeFilterType
         assigneeFilter = defaults.assigneeFilter
         canvasFilter = defaults.canvasFilter
@@ -111,7 +128,7 @@ class TaskListFilters: Codable, Equatable {
     }
 
     var hasDefaultValues: Bool {
-        self == TaskListFilters()
+        self == TaskListFilters(model: model)
     }
 }
 
