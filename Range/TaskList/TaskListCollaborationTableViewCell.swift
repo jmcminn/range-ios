@@ -3,7 +3,6 @@ import UIKit
 
 /// Table cell for displaying collaboration data
 class TaskListCollaborationTableViewCell: UITableViewCell {
-    private let badgeView = UIView()
     private let nameLabel = UILabel()
     private let detailsScrollView = UIScrollView()
     private let detailsStackView = UIStackView()
@@ -20,29 +19,22 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [badgeView, nameLabel, detailsScrollView, lastUpdatedLabel, bottomStroke].forEach(contentView.addSubview)
-
-        badgeView.snp.makeConstraints { make in
-            make.width.height.equalTo(20)
-            make.leading.equalToSuperview().inset(14)
-            make.centerY.equalTo(nameLabel.snp.centerY)
-        }
+        [nameLabel, detailsScrollView, lastUpdatedLabel, bottomStroke].forEach(contentView.addSubview)
 
         nameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
-            make.leading.equalTo(badgeView.snp.trailing).offset(8)
+            make.leading.equalToSuperview().inset(16)
             make.trailing.equalToSuperview().inset(14)
         }
 
         detailsScrollView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualTo(nameLabel.snp.bottom)
-            make.top.greaterThanOrEqualTo(badgeView.snp.bottom)
             make.leading.trailing.equalToSuperview()
         }
 
         lastUpdatedLabel.snp.makeConstraints { make in
             make.top.equalTo(detailsScrollView.snp.bottom).offset(2)
-            make.leading.equalTo(badgeView.snp.trailing).offset(8)
+            make.leading.equalTo(nameLabel)
             make.trailing.equalToSuperview().inset(14)
             make.bottom.equalToSuperview().inset(14)
         }
@@ -59,20 +51,13 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
-        badgeView.layer.cornerRadius = 10
-        let tickView = UIImageView(image: UIImage(named: "tick.smaller"))
-        badgeView.addSubview(tickView)
-        tickView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-
-        nameLabel.font = .preferredFont(forTextStyle: .headline)
+        nameLabel.font = .preferredFont(forTextStyle: .subheadline)
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
 
         detailsScrollView.alwaysBounceHorizontal = true
         detailsScrollView.showsHorizontalScrollIndicator = false
-        detailsScrollView.contentInset = UIEdgeInsets(top: 0, left: 44, bottom: 0, right: 8)
+        detailsScrollView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 8)
         detailsStackView.axis = .horizontal
         detailsStackView.alignment = .center
         detailsStackView.spacing = 8
@@ -94,12 +79,17 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
     func setCollaboration(_ collaboration: Collaboration, projectTimeZone: TimeZone) {
         collaborationId = collaboration.id
-        badgeView.backgroundColor = collaboration.status?.color
         nameLabel.text = collaboration.name.isEmpty
             ? (collaboration.status == nil
                 ? String(localized: "Untitled photos...")
                 : String(localized: "Untitled task..."))
             : collaboration.name
+        if let status = collaboration.status {
+            let statusView = StatusView()
+            statusView.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
+            statusView.setStatus(status)
+            detailsStackView.addArrangedSubview(statusView)
+        }
         if let dueDateTimestamp = collaboration.dueDateTimestamp {
             detailsStackView.addArrangedSubview(PillView(
                 iconName: "calendar",
