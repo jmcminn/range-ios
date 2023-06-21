@@ -8,6 +8,12 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class TaskListCardViewController: SheetCardViewController {
+    /// The mode in which the task list is currently operating
+    private enum Mode {
+        case normal // showing tasks
+        case select // selecting tasks
+    }
+
     private let projectModel: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
@@ -38,6 +44,16 @@ class TaskListCardViewController: SheetCardViewController {
     private let filters: TaskListFilters
     private let filtersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
     private let filtersIndicatorBadge = BadgeView()
+
+    private var selectButton: ButtonWithTapAreaInsets!
+    private var mode: Mode = .normal
+
+    /// ids of selected uploads
+    private var selectedTasks = Set<String>()
+
+    private var bulkActionsBottomBar: UIView?
+    private var selectedTasksCountLabel: UILabel?
+    private var bulkActionsButton: UIButton?
 
     /// Initializer
     ///
@@ -70,6 +86,8 @@ class TaskListCardViewController: SheetCardViewController {
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(56)
         }
+
+        setupSelectButton()
 
         setupTableView()
         containerView.insertSubview(tableView, belowSubview: headerView)
@@ -117,20 +135,31 @@ class TaskListCardViewController: SheetCardViewController {
             c1.lastUpdatedTimestamp > c2.lastUpdatedTimestamp
         }
         searchedCollaborations = filteredCollaborations.filter(matchSearchTerms)
+        reloadSelectedTasks()
 
         tableView.reloadData()
 
         onCollaborationsChanged()
     }
 
+    /// Called after tasks were updated, some tasks might be gone, so they're no longer selected
+    private func reloadSelectedTasks() {
+        let newTasks = Set<String>(filteredCollaborations.map(\.id))
+        // Update the selectedTasks and remove all no longer existing tasks
+        selectedTasks.formIntersection(newTasks)
+    }
+
     /// Adjust the UI for changed collaborations
     private func onCollaborationsChanged() {
+        updateBulkActionsBottomBarVisibility()
+        updateSelectedTasksCountLabel()
         updateFiltersIndicatorBadge()
 
         let emptyTasks = collaborations.isEmpty
         let emptyFilteredTasks = filteredCollaborations.isEmpty
 
         filtersButton.isHidden = emptyTasks
+        selectButton.isHidden = emptyTasks
 
         if emptyTasks {
             if emptyView == nil {
@@ -193,8 +222,57 @@ class TaskListCardViewController: SheetCardViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.register(TaskListCollaborationTableViewCell.self, forCellReuseIdentifier: "CollaborationCell")
+        tableView.register(
+            TaskListCollaborationTableViewCell.self,
+            forCellReuseIdentifier: TaskListCollaborationTableViewCell.Variant.identifier(forSelectable: false)
+        )
+        tableView.register(
+            TaskListCollaborationTableViewCell.self,
+            forCellReuseIdentifier: TaskListCollaborationTableViewCell.Variant.identifier(forSelectable: true)
+        )
         tableView.keyboardDismissMode = .onDrag
+        tableView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
+    }
+
+    private func setupSelectButton() {
+        guard selectButton == nil else { return }
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
+        config.baseForegroundColor = .dynamic(.Neutral_04)
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 15
+        config.background.strokeColor = .dynamic(.Neutral_07)
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
+            return outgoing
+        }
+        selectButton = ButtonWithTapAreaInsets(
+            configuration: config,
+            primaryAction: UIAction(title: String(localized: "Select")) { [weak self] _ in
+                self?.toggleMode()
+            }
+        )
+        // more vertical tap area as button is only 30 points high
+        selectButton.tapAreaInsets = UIEdgeInsets(top: -10, left: 0, bottom: -10, right: 0)
+
+        sheetHeaderView.addSubview(selectButton)
+        selectButton.snp.makeConstraints { make in
+            make.centerY.equalTo(closeButton)
+            make.trailing.equalTo(closeButton.snp.leading).offset(-8)
+            make.height.equalTo(30)
+        }
+    }
+
+    private func toggleMode() {
+        mode = mode == .normal ? .select : .normal
+        selectButton.setTitle(mode == .normal ? String(localized: "Select") : String(localized: "Cancel"),
+                              for: .normal)
+        selectedTasks.removeAll()
+        tableView.reloadData()
+        updateBulkActionsBottomBarVisibility()
+        updateSelectedTasksCountLabel()
     }
 }
 
@@ -206,11 +284,14 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCell",
-                                                 for: indexPath) as! TaskListCollaborationTableViewCell
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: TaskListCollaborationTableViewCell.Variant.identifier(forSelectable: mode == .select),
+            for: indexPath
+        ) as! TaskListCollaborationTableViewCell
         if indexPath.row < searchedCollaborations.count {
             let collaboration = searchedCollaborations[indexPath.row]
             cell.setCollaboration(collaboration, projectTimeZone: projectModel.projectSummary.timeZone)
+            cell.mark(selected: selectedTasks.contains(collaboration.id))
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in
             guard let self = self else { return }
@@ -233,12 +314,17 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
 
         guard indexPath.row < searchedCollaborations.count else { return }
         let collaboration = searchedCollaborations[indexPath.row]
-        UIApplication.shared.sendAction(
-            #selector(ProjectFlowActions.showCollaborationAction),
-            to: nil,
-            from: self,
-            for: FlowEvent(collaboration)
-        )
+
+        if mode == .normal {
+            UIApplication.shared.sendAction(
+                #selector(ProjectFlowActions.showCollaborationAction),
+                to: nil,
+                from: self,
+                for: FlowEvent(collaboration)
+            )
+        } else {
+            toggleSelectionAndUpdateUI(forIndexPath: indexPath)
+        }
     }
 }
 
@@ -295,6 +381,184 @@ extension TaskListCardViewController {
         filtersIndicatorBadge.text = filteredCount >= 99 ? "99+" : String(filteredCount)
     }
 }
+
+// MARK: - selection
+
+extension TaskListCardViewController {
+    /// Handle long press on cells - enabled select mode if not enabled and select given cell
+    @objc func handleLongPress(gesture: UILongPressGestureRecognizer!) {
+        guard gesture.state == .began else { return }
+
+        let point = gesture.location(in: tableView)
+        guard let indexPath = tableView.indexPathForRow(at: point) else { return }
+
+        // enable select mode if in normal mode
+        if mode == .normal {
+            toggleMode()
+        }
+        // handle selection/deselection
+        toggleSelectionAndUpdateUI(forIndexPath: indexPath)
+    }
+
+    /// Marks the indexPath cell as selected and add/remove to selectedTasks
+    private func markIndexPath(_ indexPath: IndexPath, selected: Bool) {
+        guard indexPath.row < searchedCollaborations.count else { return }
+        let id = searchedCollaborations[indexPath.row].id
+        if selected {
+            selectedTasks.insert(id)
+        } else {
+            selectedTasks.remove(id)
+        }
+        if let cell = tableView.cellForRow(at: indexPath) as? TaskListCollaborationTableViewCell {
+            cell.mark(selected: selected)
+        }
+    }
+
+    private func updateSelectedTasksCountLabel() {
+        selectedTasksCountLabel?.text = selectedTasksCountText
+    }
+
+    var selectedTasksCountText: String {
+        let numberOfItems = selectedTasks.count
+        return (numberOfItems == 1)
+            ? String(localized: "1x task selected")
+            : String(localized: "\(numberOfItems)x tasks selected")
+    }
+
+    /// Toggle the selection for task at given indexPath and update all relevant UI elements (bottom bar)
+    private func toggleSelectionAndUpdateUI(forIndexPath indexPath: IndexPath) {
+        guard indexPath.row < searchedCollaborations.count else { return }
+        let task = searchedCollaborations[indexPath.row]
+        let selected = !selectedTasks.contains(task.id)
+        markIndexPath(indexPath, selected: selected)
+        updateBulkActionsBottomBarVisibility()
+        updateSelectedTasksCountLabel()
+    }
+}
+
+// MARK: - bulk actions
+
+extension TaskListCardViewController {
+    private func setupBulkActionsBottomBar() {
+        guard bulkActionsBottomBar == nil else { return }
+        let bottomBar = UIView()
+        bottomBar.backgroundColor = .clear
+
+        let blurEffect = UIBlurEffect(style: .regular)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.isUserInteractionEnabled = false
+        bottomBar.addSubview(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            make.height.equalToSuperview().offset(100) // add some for the bottom safe area
+        }
+
+        let stroke = UIView()
+        stroke.backgroundColor = .dynamic(.Neutral_07)
+        bottomBar.addSubview(stroke)
+        stroke.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.height.equalTo(1)
+        }
+
+        let countLabel = UILabel()
+        countLabel.adjustsFontForContentSizeCategory = true
+        countLabel.textColor = .dynamic(.Neutral_04)
+        countLabel.font = ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        bottomBar.addSubview(countLabel)
+        countLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(bottomBar.snp.top).offset(36)
+            make.leading.equalToSuperview().inset(16)
+        }
+
+        let button = UIButton(
+            configuration: UIButton.Configuration.blueButton(),
+            primaryAction: UIAction(
+                image: UIImage(systemName: "ellipsis")
+            ) { [weak self] _ in self?.showBulkActions() }
+        )
+
+        bottomBar.addSubview(button)
+        button.snp.makeConstraints { make in
+            make.top.bottom.trailing.equalToSuperview().inset(16)
+            make.width.height.equalTo(40)
+        }
+        containerView.addSubview(bottomBar)
+        bottomBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(containerView.snp.bottom)
+        }
+
+        bulkActionsBottomBar = bottomBar
+        bulkActionsButton = button
+        selectedTasksCountLabel = countLabel
+        containerView.layoutIfNeeded()
+    }
+
+    /// show or hide the bottom bar for bulk actions button
+    private func updateBulkActionsBottomBarVisibility() {
+        let shouldHide = selectedTasks.isEmpty
+        if shouldHide {
+            if let bottomBar = bulkActionsBottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.top.equalTo(bottomBar.superview!.snp.bottom)
+                }
+                filtersButton.snp.remakeConstraints { make in
+                    make.trailing.equalToSuperview().inset(12)
+                    make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-12)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                }
+            }
+            tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            tableView.scrollIndicatorInsets = tableView.contentInset
+        } else {
+            setupBulkActionsBottomBar()
+            if let bottomBar = bulkActionsBottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                }
+                filtersButton.snp.remakeConstraints { make in
+                    make.trailing.equalToSuperview().inset(12)
+                    make.bottom.equalTo(bottomBar.snp.top).offset(-12)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                } completion: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.tableView.contentInset = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: bottomBar.frame.height,
+                        right: 0
+                    )
+                    self.tableView.scrollIndicatorInsets = self.tableView.contentInset
+                }
+            }
+        }
+    }
+
+    private func showBulkActions() {
+        ActionSelectorCardViewController(
+            icon: UIImage(systemName: "ellipsis"),
+            title: String(localized: "Bulk Actions"),
+            subtitle: "(\(selectedTasksCountText))",
+            actions: [
+                //                ActionItem(title: String(localized: "Bulk Manage Tags"), imageName: "tag",
+//                           handler: { [weak self] in self?.presentBulkManageTagsCard() }),
+//                ActionItem(title: String(localized: "Share"), imageName: "square.and.arrow.up",
+//                           handler: { [weak self] in self?.shareMedia() }),
+//                ActionItem(title: String(localized: "Delete Media"), imageName: "trash", style: .destructive,
+//                           handler: { [weak self] in self?.confirmAndDeleteMedia() }),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+}
+
+// MARK: - empty state
 
 extension TaskListCardViewController {
     /// returns the empty state view. There are 2 variants, if fromFilters=false it means that there's not tasks at all,

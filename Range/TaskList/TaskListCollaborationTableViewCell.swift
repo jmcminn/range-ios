@@ -3,6 +3,17 @@ import UIKit
 
 /// Table cell for displaying collaboration data
 class TaskListCollaborationTableViewCell: UITableViewCell {
+    /// The cell has 2 variants based on the reuseIdentifier
+    enum Variant: String {
+        case normal = "TaskCell"
+        case selectable = "SelectableTaskCell"
+
+        static func identifier(forSelectable: Bool) -> String {
+            forSelectable ? selectable.rawValue : normal.rawValue
+        }
+    }
+
+    private var selectedView: UIImageView?
     private let nameLabel = UILabel()
     private let detailsScrollView = UIScrollView()
     private let detailsStackView = UIStackView()
@@ -13,9 +24,16 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     /// stored to be used for callback
     private var collaborationId: String?
 
+    private let selectable: Bool
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        selectable = reuseIdentifier == Variant.identifier(forSelectable: true)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .dynamic(.Neutral_10)
+
+        if selectable {
+            setupSelectionViews()
+        }
 
         setupViews()
 
@@ -23,13 +41,14 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
         nameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
-            make.leading.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().inset(selectable ? 64 : 16)
             make.trailing.equalToSuperview().inset(14)
         }
 
         detailsScrollView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualTo(nameLabel.snp.bottom)
-            make.leading.trailing.equalToSuperview()
+            make.leading.equalToSuperview().inset(selectable ? 48 : 0)
+            make.trailing.equalToSuperview()
         }
 
         lastUpdatedLabel.snp.makeConstraints { make in
@@ -48,6 +67,24 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupSelectionViews() {
+        let selectBackground = UIView()
+        selectBackground.backgroundColor = .dynamic(.Neutral_09)
+        contentView.addSubview(selectBackground)
+        selectBackground.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview()
+            make.width.equalTo(48)
+        }
+
+        selectedView = UIImageView()
+        selectedView!.tintColor = .dynamic(.Neutral_04)
+        selectBackground.addSubview(selectedView!)
+        selectedView!.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        mark(selected: false)
     }
 
     private func setupViews() {
@@ -84,29 +121,41 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
                 ? String(localized: "Untitled photos...")
                 : String(localized: "Untitled task..."))
             : collaboration.name
-        if let status = collaboration.status {
-            let statusView = StatusView()
-            statusView.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
-            statusView.setStatus(status)
-            detailsStackView.addArrangedSubview(statusView)
-        }
-        if let dueDateTimestamp = collaboration.dueDateTimestamp {
-            detailsStackView.addArrangedSubview(PillView(
-                iconName: "calendar",
-                text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectTimeZone),
-                style: collaboration.isOverdue ? .red : .default
-            ))
-        }
-        if let assignee = collaboration.assignee {
-            detailsStackView.addArrangedSubview(PillView(iconName: "person", text: assignee.displayName))
-        }
-        if let canvasName = collaboration.feature.first?.geometry.first?.canvas.first?.displayName {
-            detailsStackView.addArrangedSubview(PillView(iconName: "square.3.layers.3d", text: canvasName))
-        }
-        detailsStackView.addArrangedSubview(PillView(iconName: "tag", text: String(collaboration.tags.count)))
+        // it animates the views in a weird way
+        UIView.performWithoutAnimation {
+            if let status = collaboration.status {
+                let statusView = StatusView()
+                statusView.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
+                statusView.setStatus(status)
+                detailsStackView.addArrangedSubview(statusView)
+            }
+            if let dueDateTimestamp = collaboration.dueDateTimestamp {
+                detailsStackView.addArrangedSubview(PillView(
+                    iconName: "calendar",
+                    text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectTimeZone),
+                    style: collaboration.isOverdue ? .red : .default
+                ))
+            }
+            if let assignee = collaboration.assignee {
+                detailsStackView.addArrangedSubview(PillView(iconName: "person", text: assignee.displayName))
+            }
+            if let canvasName = collaboration.feature.first?.geometry.first?.canvas.first?.displayName {
+                detailsStackView.addArrangedSubview(PillView(iconName: "square.3.layers.3d", text: canvasName))
+            }
+            detailsStackView.addArrangedSubview(PillView(iconName: "tag", text: String(collaboration.tags.count)))
 
-        lastUpdatedLabel.text = String(localized: "Last updated") + " " + Date
-            .format1Ago(collaboration.lastUpdatedTimestamp)
+            lastUpdatedLabel.text = String(localized: "Last updated") + " " + Date
+                .format1Ago(collaboration.lastUpdatedTimestamp)
+            layoutIfNeeded()
+        }
+    }
+
+    func mark(selected: Bool) {
+        selectedView?.image = selected
+            ? UIImage(named: "checkmark_checked")
+            : UIImage().addCircleBackground(bgSize: CGSize(width: 20, height: 20),
+                                            bgColor: .dynamic(.Neutral_10),
+                                            strokeColor: .dynamic(.Neutral_07))
     }
 
     override func prepareForReuse() {
@@ -115,6 +164,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             detailsStackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
+        mark(selected: false)
     }
 
     @objc private func scrollViewTapped() {
