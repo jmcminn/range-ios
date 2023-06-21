@@ -12,12 +12,22 @@ class TaskListCardViewController: SheetCardViewController {
     unowned let canvasContainer: CanvasContainerViewController
 
     private let headerView = UIView()
+    private let searchView: SearchView
     private let headerStroke = UIView()
 
     private let tableView = UITableView(frame: .zero, style: .plain)
 
+    // all collaborations
     private let collaborations: Results<Collaboration>
+    // collaborations after applying the filters
     private var filteredCollaborations: [Collaboration] = []
+    // collaborations after applying the filters and searchTerm
+    private var searchedCollaborations: [Collaboration] = []
+
+    /// Calculated from user search term input, this is what is actually applied to tasks.
+    /// It's an array of case/diactric insensitive and trimmed components of the search term
+    /// If empty then it counts as matched.
+    private var searchTerms: [String] = []
 
     private var emptyView: UIView?
     private var emptyFilteredView: UIView?
@@ -41,6 +51,7 @@ class TaskListCardViewController: SheetCardViewController {
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.placeholder == false && c.status != nil // only tasks
             }
+        searchView = SearchView(placeholderText: "Search", showClearButton: true)
 
         super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "Task List"))
     }
@@ -57,8 +68,7 @@ class TaskListCardViewController: SheetCardViewController {
         headerView.snp.makeConstraints { make in
             make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            // TODO: 1294
-            make.height.equalTo(1)
+            make.height.equalTo(56)
         }
 
         setupTableView()
@@ -106,6 +116,8 @@ class TaskListCardViewController: SheetCardViewController {
             // sort by last updated desc
             c1.lastUpdatedTimestamp > c2.lastUpdatedTimestamp
         }
+        searchedCollaborations = filteredCollaborations.filter(matchSearchTerms)
+
         tableView.reloadData()
 
         onCollaborationsChanged()
@@ -158,6 +170,15 @@ class TaskListCardViewController: SheetCardViewController {
 
     private func setupHeaderView() {
         headerView.backgroundColor = view.backgroundColor
+
+        searchView.addDelegate(self)
+        headerView.addSubview(searchView)
+        searchView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(40)
+        }
+
         headerStroke.backgroundColor = .dynamic(.Neutral_07)
         headerView.addSubview(headerStroke)
         headerStroke.snp.makeConstraints { make in
@@ -181,14 +202,14 @@ class TaskListCardViewController: SheetCardViewController {
 
 extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        filteredCollaborations.count
+        searchedCollaborations.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCell",
                                                  for: indexPath) as! TaskListCollaborationTableViewCell
-        if indexPath.row < filteredCollaborations.count {
-            let collaboration = filteredCollaborations[indexPath.row]
+        if indexPath.row < searchedCollaborations.count {
+            let collaboration = searchedCollaborations[indexPath.row]
             cell.setCollaboration(collaboration, projectTimeZone: projectModel.projectSummary.timeZone)
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in
@@ -210,8 +231,8 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard indexPath.row < filteredCollaborations.count else { return }
-        let collaboration = filteredCollaborations[indexPath.row]
+        guard indexPath.row < searchedCollaborations.count else { return }
+        let collaboration = searchedCollaborations[indexPath.row]
         UIApplication.shared.sendAction(
             #selector(ProjectFlowActions.showCollaborationAction),
             to: nil,
@@ -328,5 +349,27 @@ extension TaskListCardViewController {
             make.bottom.equalToSuperview()
         }
         return view
+    }
+}
+
+// MARK: - filtering tasks by search term
+
+extension TaskListCardViewController: SearchViewDelegate {
+    func searchView(_: SearchView, textDidChange text: String) {
+        // calculate search terms from user entered search text
+        let textTrimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // remove diacritics and make it lowercase
+        let searchTerm = textTrimmed
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        // split by whitespace to multiple terms
+        searchTerms = searchTerm.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        updateData()
+    }
+
+    /// Collaboration matches if its name contains all the searchTerms
+    func matchSearchTerms(collaboration: Collaboration) -> Bool {
+        guard !searchTerms.isEmpty else { return true }
+        let name = collaboration.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        return searchTerms.allSatisfy { name.contains($0) }
     }
 }
