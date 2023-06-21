@@ -326,10 +326,10 @@ class ProjectsFlowController: UINavigationController {
     }
 
     private func showTaskListAfterProjectFlowStarted() {
-        // TODO: 1292 reset task filters when opening from notification
-        /// when opening tasks list from notification default to "Only Mine"
-//        UserDefaults.showOnlyMineTasks = true
         projectFCStarted = projectFC?.startedFuture?.sink { [weak self] _ in
+            // When opening the task list the filters default to "only mine" which is what's
+            // needed for the push notification. If the task list filters were stored in UserDefaults
+            // it would be required to reset them here.
             self?.projectFC?.showTaskListAction()
             self?.projectFCStarted?.cancel()
             self?.projectFCStarted = nil
