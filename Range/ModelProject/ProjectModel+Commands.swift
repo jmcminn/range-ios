@@ -342,9 +342,17 @@ extension ProjectModel {
     /// Updates the status for collaboration if it's different than the current one.
     func update(status: Status, forCollaboration collaboration: Collaboration) -> Command? {
         guard status != collaboration.status else { return nil }
-        return UpdateCollaborationStatusCommand(
+        return UpdateCollaborationsStatusCommand(
             authorId: userId,
-            collaborationId: collaboration.id,
+            collaborationIds: [collaboration.id],
+            statusId: status.id
+        )
+    }
+
+    func update(status: Status, forCollaborations collaborationIds: [String]) -> Command {
+        UpdateCollaborationsStatusCommand(
+            authorId: userId,
+            collaborationIds: collaborationIds,
             statusId: status.id
         )
     }

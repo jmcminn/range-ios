@@ -553,6 +553,8 @@ extension TaskListCardViewController {
                            handler: { [weak self] in self?.presentBulkUpdateDueDateCard() }),
                 ActionItem(title: String(localized: "Assignee"), imageName: "person",
                            handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
+                ActionItem(title: String(localized: "Status"), imageName: "circle.dashed",
+                           handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
             ]
         ).installAndShowCard(in: canvasContainer)
     }
@@ -663,6 +665,27 @@ extension TaskListCardViewController {
             projectModel.update(assigneeId: assigneeId, forCollaborations: [String](selectedTasks))
         ) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the assignee") }
+        }
+    }
+
+    private func presentBulkUpdateStatusCard() {
+        let statuses = [Status](projectModel.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
+        StatusPickerCardViewController(
+            title: "Assign Status",
+            statuses: statuses,
+            selectedStatus: nil,
+            onStatusPicked: { [weak self] newStatus in
+                self?.bulkUpdateStatus(newStatus)
+            }
+        )
+        .installAndShowCard(in: self)
+    }
+
+    private func bulkUpdateStatus(_ status: Status) {
+        projectModel.run(
+            projectModel.update(status: status, forCollaborations: [String](selectedTasks))
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the status") }
         }
     }
 }

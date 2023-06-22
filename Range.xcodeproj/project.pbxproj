@@ -235,7 +235,7 @@
 		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
 		0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */; };
-		0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */; };
+		0A797F6D292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */; };
 		0A797F6F292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */; };
 		0A797F72292BDA8900D63567 /* UserPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */; };
 		0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */; };
@@ -635,7 +635,7 @@
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
-		0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommand.swift; sourceTree = "<group>"; };
+		0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsStatusCommand.swift; sourceTree = "<group>"; };
 		0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommandTest.swift; sourceTree = "<group>"; };
 		0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithTapAreaInsets.swift; sourceTree = "<group>"; };
@@ -1710,8 +1710,8 @@
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */,
 				0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */,
+				0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */,
-				0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */,
 				0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */,
@@ -2120,7 +2120,7 @@
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
 				0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
-				0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */,
+				0A797F6D292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift in Sources */,
 				0A4DC78527F490CA00712518 /* Canvas.swift in Sources */,
 				0AFCD61A2939285F004843AA /* String+Size.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
