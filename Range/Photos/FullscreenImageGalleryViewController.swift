@@ -214,7 +214,7 @@ class FullscreenImageGalleryViewController: UIViewController {
 
         deleteButton = UIButton(
             configuration: UIButton.Configuration.iconButton(
-                backgroundColor: .Neutral_10, foregroundColor: .Neutral_04,
+                backgroundColor: .Neutral_10, foregroundColor: .Red_03,
                 strokeColor: .Neutral_07, imagePointSize: 14
             ),
             primaryAction: UIAction(image: UIImage(systemName: "trash")) { [weak self] _ in
