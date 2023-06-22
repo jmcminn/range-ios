@@ -222,9 +222,20 @@ extension ProjectModel {
         let existingTagIdsSet: Set<String> = Set(collaboration.tags.map(\.id))
         guard tagIdsSet != existingTagIdsSet else { return nil }
 
-        return UpdateCollaborationTagsCommand(
-            collaborationId: collaboration.id,
+        return UpdateCollaborationsTagsCommand(
+            collaborationIds: [collaboration.id],
             tags: tags.map(CommandTag.init(fromViewModel:))
+        )
+    }
+
+    /// Update mulitple collaborations with given tags.
+    /// If adding (add is `true`) then append the tags to current collaboration tags for each collaboration.
+    /// If add is `false` then replace the current tags with the newly provided ones
+    func update(tags: [TagViewModel], forCollaborations collaborations: [String], add: Bool) -> Command {
+        UpdateCollaborationsTagsCommand(
+            collaborationIds: collaborations,
+            tags: tags.map(CommandTag.init(fromViewModel:)),
+            add: add
         )
     }
 

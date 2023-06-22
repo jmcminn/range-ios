@@ -15,14 +15,11 @@ struct UpdateUploadsTagsCommand: Command, Codable, Equatable {
 
 extension UpdateUploadsTagsCommand: LocalCommand {
     func apply(inRealm realm: Realm) throws {
-        var uploadsToUpdate = [Upload]()
-        for uploadId in uploadIds {
-            // fail locally if any of the uploads doesn't exist, this shouldn't really happen
-            guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) else {
-                throw ModelError.uploadNotFound
-            }
-            uploadsToUpdate.append(upload)
+        var uploadsToUpdate = try uploadIds.map {
+            // fail locally if any of the object doesn't exist, this shouldn't really happen
+            try realm.object(ofType: Upload.self, forPrimaryKey: $0).or(error: ModelError.uploadNotFound)
         }
+
         // add or update tags
         let tags = tags.map(\.asTag)
         tags.forEach { realm.add($0, update: .modified) }
