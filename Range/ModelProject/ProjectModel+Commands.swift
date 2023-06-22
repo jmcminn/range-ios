@@ -351,9 +351,17 @@ extension ProjectModel {
 
     func update(assigneeId: String?, forCollaboration collaboration: Collaboration) -> Command? {
         guard assigneeId != collaboration.assignee?.id else { return nil }
-        return UpdateCollaborationAssigneeCommand(
+        return UpdateCollaborationsAssigneeCommand(
             authorId: userId,
-            collaborationId: collaboration.id,
+            collaborationIds: [collaboration.id],
+            assigneeId: assigneeId
+        )
+    }
+
+    func update(assigneeId: String?, forCollaborations collaborationIds: [String]) -> Command {
+        UpdateCollaborationsAssigneeCommand(
+            authorId: userId,
+            collaborationIds: collaborationIds,
             assigneeId: assigneeId
         )
     }

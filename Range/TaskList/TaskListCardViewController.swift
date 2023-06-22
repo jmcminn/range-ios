@@ -551,6 +551,8 @@ extension TaskListCardViewController {
                            handler: { [weak self] in self?.presentBulkManageTagsCard() }),
                 ActionItem(title: String(localized: "Due Date"), imageName: "calendar",
                            handler: { [weak self] in self?.presentBulkUpdateDueDateCard() }),
+                ActionItem(title: String(localized: "Assignee"), imageName: "person",
+                           handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
             ]
         ).installAndShowCard(in: canvasContainer)
     }
@@ -641,6 +643,26 @@ extension TaskListCardViewController {
             projectModel.update(dueDate: date, forCollaborations: [String](selectedTasks))
         ) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the due date") }
+        }
+    }
+
+    private func presentBulkUpdateAssigneeCard() {
+        let viewModel = UsersViewModel(model: projectModel, multiselect: false)
+        let userPicker = UserPickerCardViewController(title: "Assignee", viewModel: viewModel)
+        // add option to clear current assignee
+        userPicker.showNoUserOption = true
+        userPicker.onClose = { [weak self] in
+            let newAssigneeId = viewModel.selectedUsers.first?.id
+            self?.bulkUpdateAssignee(newAssigneeId)
+        }
+        userPicker.installAndShowCard(in: self)
+    }
+
+    private func bulkUpdateAssignee(_ assigneeId: String?) {
+        projectModel.run(
+            projectModel.update(assigneeId: assigneeId, forCollaborations: [String](selectedTasks))
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the assignee") }
         }
     }
 }

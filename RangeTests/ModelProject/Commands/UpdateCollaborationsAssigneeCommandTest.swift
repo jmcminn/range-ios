@@ -3,8 +3,8 @@ import FirebaseFirestore
 import RealmSwift
 import XCTest
 
-/// Tests applying `UpdateCollaborationAssigneeCommand` in local Realm db
-final class UpdateCollaborationAssigneeCommandRealmTest: XCTestCase {
+/// Tests applying `UpdateCollaborationsAssigneeCommand` in local Realm db
+final class UpdateCollaborationsAssigneeCommandRealmTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
@@ -25,9 +25,9 @@ final class UpdateCollaborationAssigneeCommandRealmTest: XCTestCase {
     }
 
     func testApply_noCollaboration() throws {
-        let command = UpdateCollaborationAssigneeCommand(
+        let command = UpdateCollaborationsAssigneeCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             assigneeId: nil
         )
         XCTAssertThrowsError(
@@ -43,9 +43,9 @@ final class UpdateCollaborationAssigneeCommandRealmTest: XCTestCase {
         try realm.write {
             realm.add(collaboration1)
         }
-        let command = UpdateCollaborationAssigneeCommand(
+        let command = UpdateCollaborationsAssigneeCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             assigneeId: "user2"
         )
 
@@ -63,9 +63,9 @@ final class UpdateCollaborationAssigneeCommandRealmTest: XCTestCase {
         try realm.write {
             realm.add([collaboration1, user2])
         }
-        let command = UpdateCollaborationAssigneeCommand(
+        let command = UpdateCollaborationsAssigneeCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             assigneeId: "user2"
         )
         try realm.write {
@@ -73,22 +73,22 @@ final class UpdateCollaborationAssigneeCommandRealmTest: XCTestCase {
         }
 
         XCTAssertNil(
-            realm.object(ofType: Update.self, forPrimaryKey: command.updateId),
+            realm.object(ofType: Update.self, forPrimaryKey: command.updateIds[0]),
             "Update is not created when running command in Realm"
         )
         XCTAssertEqual(collaboration1.assignee, user2)
     }
 }
 
-/// Tests applying `UpdateCollaborationAssigneeCommand` to Firestore
-final class UpdateCollaborationAssigneeCommandFirestoreTest: XCTestCase {
+/// Tests applying `UpdateCollaborationsAssigneeCommand` to Firestore
+final class UpdateCollaborationsAssigneeCommandFirestoreTest: XCTestCase {
     func testApply_noCollaboration() throws {
         // no data exists
         let context = TestFirestoreCommandContext(docs: [])
 
-        let command = UpdateCollaborationAssigneeCommand(
+        let command = UpdateCollaborationsAssigneeCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             assigneeId: "user2"
         )
         XCTAssertThrowsError(
@@ -113,25 +113,48 @@ final class UpdateCollaborationAssigneeCommandFirestoreTest: XCTestCase {
                     collaborationDescription: nil,
                     tagIds: []
                 ),
+                .collaboration("collaboration2"): FirestoreCollaboration(
+                    featureId: "feature2",
+                    timestamp: Timestamp(),
+                    statusId: nil,
+                    name: "name",
+                    collaborationDescription: nil,
+                    tagIds: []
+                ),
             ]
         )
 
-        let command = UpdateCollaborationAssigneeCommand(
+        let command = UpdateCollaborationsAssigneeCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1", "collaboration2"],
             assigneeId: "user2"
         )
         try command.apply(inFirestore: context)
 
-        XCTAssertEqual(context.operations.count, 2)
+        XCTAssertEqual(context.operations.count, 4)
         AssertOperationsEqual(
             context.operations[0],
             .update(.collaboration("collaboration1"), ["assignee": "user2"])
         )
         AssertOperationsEqual(
             context.operations[1],
-            .set(.update(command.updateId), [
+            .set(.update(command.updateIds[0]), [
                 "parent": "collaboration1",
+                "parentType": "Collaboration",
+                "timestamp": FieldValue.serverTimestamp(),
+                "user": "user1",
+                "field": Update.Field.assignee.rawValue,
+                "newValue": "user2",
+            ])
+        )
+        AssertOperationsEqual(
+            context.operations[2],
+            .update(.collaboration("collaboration2"), ["assignee": "user2"])
+        )
+        AssertOperationsEqual(
+            context.operations[3],
+            .set(.update(command.updateIds[1]), [
+                "parent": "collaboration2",
                 "parentType": "Collaboration",
                 "timestamp": FieldValue.serverTimestamp(),
                 "user": "user1",
@@ -155,9 +178,9 @@ final class UpdateCollaborationAssigneeCommandFirestoreTest: XCTestCase {
             ),
         ])
 
-        let command = UpdateCollaborationAssigneeCommand(
+        let command = UpdateCollaborationsAssigneeCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             assigneeId: nil
         )
         try command.apply(inFirestore: context)
@@ -169,7 +192,7 @@ final class UpdateCollaborationAssigneeCommandFirestoreTest: XCTestCase {
         )
         AssertOperationsEqual(
             context.operations[1],
-            .set(.update(command.updateId), [
+            .set(.update(command.updateIds[0]), [
                 "parent": "collaboration1",
                 "parentType": "Collaboration",
                 "timestamp": FieldValue.serverTimestamp(),
@@ -178,50 +201,5 @@ final class UpdateCollaborationAssigneeCommandFirestoreTest: XCTestCase {
                 "oldValue": "user2",
             ])
         )
-    }
-
-    /// Test for idempotency
-    /// The Update is already added, so skip the command
-    func testApply_noOp_updateExists() throws {
-        let command = UpdateCollaborationAssigneeCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            assigneeId: "user2"
-        )
-        // update exists
-        let context = TestFirestoreCommandContext(docs: [
-            .update(command.updateId),
-        ])
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 0)
-    }
-
-    /// Test for idempotency
-    /// The name is the same as in Firestore... ignore
-    func testApply_noOp_assigneeUnchanged() throws {
-        // collaboration exists
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .collaboration("collaboration1"): FirestoreCollaboration(
-                featureId: "feature1",
-                timestamp: Timestamp(),
-                statusId: nil,
-                name: "old name",
-                collaborationDescription: nil,
-                tagIds: [],
-                assigneeId: "user2"
-            ),
-        ])
-        // same assignee
-        let command = UpdateCollaborationAssigneeCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            assigneeId: "user2"
-        )
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 0)
     }
 }

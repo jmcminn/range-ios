@@ -241,8 +241,8 @@
 		0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */; };
 		0A797F76292CC60800D63567 /* UserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F75292CC60800D63567 /* UserTableViewCell.swift */; };
 		0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */; };
-		0A797F7A292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */; };
-		0A797F7C292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */; };
+		0A797F7A292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */; };
+		0A797F7C292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F7B292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift */; };
 		0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5371293E3D130093D913 /* RealmModel.swift */; };
 		0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */; };
 		0A7A5377293E49800093D913 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5376293E49800093D913 /* ModelError.swift */; };
@@ -641,8 +641,8 @@
 		0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A797F75292CC60800D63567 /* UserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTableViewCell.swift; sourceTree = "<group>"; };
 		0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearUserTableViewCell.swift; sourceTree = "<group>"; };
-		0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationAssigneeCommand.swift; sourceTree = "<group>"; };
-		0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationAssigneeCommandTest.swift; sourceTree = "<group>"; };
+		0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsAssigneeCommand.swift; sourceTree = "<group>"; };
+		0A797F7B292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsAssigneeCommandTest.swift; sourceTree = "<group>"; };
 		0A7A5371293E3D130093D913 /* RealmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmModel.swift; sourceTree = "<group>"; };
 		0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RealmModel+SyncFromFirestore.swift"; sourceTree = "<group>"; };
 		0A7A5375293E48C70093D913 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -1489,9 +1489,9 @@
 				0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */,
 				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
 				0A374DED2927DAC50036C184 /* DeleteUploadsCommandTest.swift */,
-				0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */,
 				0A6DB6A6292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift */,
 				0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */,
+				0A797F7B292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift */,
 				0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */,
 				0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */,
 				0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */,
@@ -1706,10 +1706,10 @@
 				0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */,
 				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
 				0A374DEB2927DA550036C184 /* DeleteUploadsCommand.swift */,
-				0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */,
 				0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */,
+				0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */,
 				0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
@@ -2093,7 +2093,7 @@
 				0A797F76292CC60800D63567 /* UserTableViewCell.swift in Sources */,
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */,
-				0A797F7A292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift in Sources */,
+				0A797F7A292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift in Sources */,
 				0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */,
 				0AC3C0232A03F7EF001E3199 /* Sequence+AsyncMap.swift in Sources */,
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
@@ -2300,7 +2300,7 @@
 				0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */,
 				0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */,
 				0A374DEE2927DAC50036C184 /* DeleteUploadsCommandTest.swift in Sources */,
-				0A797F7C292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift in Sources */,
+				0A797F7C292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirestoreTagNameTest.swift in Sources */,
