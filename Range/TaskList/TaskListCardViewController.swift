@@ -577,6 +577,8 @@ extension TaskListCardViewController {
                            handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
                 ActionItem(title: String(localized: "Archive"), imageName: "archivebox",
                            handler: { [weak self] in self?.bulkArchive() }),
+                ActionItem(title: String(localized: "Delete"), imageName: "trash", style: .destructive,
+                           handler: { [weak self] in self?.confirmAndBulkDelete() }),
             ]
         ).installAndShowCard(in: canvasContainer)
     }
@@ -716,6 +718,29 @@ extension TaskListCardViewController {
             projectModel.update(archived: true, forCollaborations: [String](selectedTasks))
         ) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to archive") }
+        }
+    }
+
+    private func confirmAndBulkDelete() {
+        ActionSelectorCardViewController(
+            icon: nil,
+            title: "Are you sure?",
+            description: "Careful! All data associated with these collaborations will be deleted from this project permanently. This can’t be undone!",
+            actions: [
+                ActionItem(
+                    title: "Delete Tasks", imageName: "trash", style: .destructive,
+                    handler: { self.bulkDelete() }
+                ),
+                ActionItem(title: "Cancel", imageName: "xmark"),
+            ]
+        ).installAndShowCard(in: canvasContainer)
+    }
+
+    private func bulkDelete() {
+        projectModel.run(
+            projectModel.delete(collaborations: [String](selectedTasks))
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to delete") }
         }
     }
 }

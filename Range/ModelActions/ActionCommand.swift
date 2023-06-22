@@ -26,7 +26,7 @@ enum ActionCommand: Codable {
     case createCollaborationComment(CreateCollaborationCommentCommand)
     case createCollaboration(CreateCollaborationCommand)
     case createUploadComment(CreateUploadCommentCommand)
-    case deleteCollaboration(DeleteCollaborationCommand)
+    case deleteCollaborations(DeleteCollaborationsCommand)
     case deleteComment(DeleteCommentCommand)
     case deleteUploads(DeleteUploadsCommand)
     case updateCollaborationDescription(UpdateCollaborationDescriptionCommand)
@@ -48,7 +48,7 @@ enum ActionCommand: Codable {
         case let c as CreateCollaborationCommentCommand: self = .createCollaborationComment(c)
         case let c as CreateCollaborationCommand: self = .createCollaboration(c)
         case let c as CreateUploadCommentCommand: self = .createUploadComment(c)
-        case let c as DeleteCollaborationCommand: self = .deleteCollaboration(c)
+        case let c as DeleteCollaborationsCommand: self = .deleteCollaborations(c)
         case let c as DeleteCommentCommand: self = .deleteComment(c)
         case let c as DeleteUploadsCommand: self = .deleteUploads(c)
         case let c as UpdateCollaborationDescriptionCommand: self = .updateCollaborationDescription(c)
@@ -73,7 +73,7 @@ enum ActionCommand: Codable {
         case let .createCollaborationComment(c): return c
         case let .createCollaboration(c): return c
         case let .createUploadComment(c): return c
-        case let .deleteCollaboration(c): return c
+        case let .deleteCollaborations(c): return c
         case let .deleteComment(c): return c
         case let .deleteUploads(c): return c
         case let .updateCollaborationDescription(c): return c
@@ -97,7 +97,7 @@ enum ActionCommand: Codable {
         case let .createCollaborationComment(c): return c
         case let .createCollaboration(c): return c
         case let .createUploadComment(c): return c
-        case let .deleteCollaboration(c): return c
+        case let .deleteCollaborations(c): return c
         case let .deleteComment(c): return c
         case let .deleteUploads(c): return c
         case let .updateCollaborationDescription(c): return c

@@ -5,8 +5,8 @@ import RealmSwift
 import Turf
 import XCTest
 
-/// Tests applying `DeleteCollaborationCommand` in local Realm db
-final class DeleteCollaborationCommandRealmTest: XCTestCase {
+/// Tests applying `DeleteCollaborationsCommand` in local Realm db
+final class DeleteCollaborationsCommandRealmTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
@@ -27,7 +27,7 @@ final class DeleteCollaborationCommandRealmTest: XCTestCase {
     }
 
     func testApply_noCollaboration() throws {
-        let command = DeleteCollaborationCommand(geometryId: "geometry1", collaborationId: "collaboration1")
+        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -41,7 +41,7 @@ final class DeleteCollaborationCommandRealmTest: XCTestCase {
             realm.add(collaboration)
         }
 
-        let command = DeleteCollaborationCommand(geometryId: "geometry1", collaborationId: "collaboration1")
+        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -57,7 +57,7 @@ final class DeleteCollaborationCommandRealmTest: XCTestCase {
             feature.collaborations.insert(collaboration)
         }
 
-        let command = DeleteCollaborationCommand(geometryId: "geometry1", collaborationId: "collaboration1")
+        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -99,7 +99,7 @@ final class DeleteCollaborationCommandRealmTest: XCTestCase {
             collaboration.tags.append(tag)
             upload.tags.append(tag)
         }
-        let command = DeleteCollaborationCommand(geometryId: "geometry", collaborationId: "collaboration1")
+        let command = DeleteCollaborationsCommand(geometryIds: ["geometry"], collaborationIds: ["collaboration1"])
         try realm.write {
             try command.apply(inRealm: realm)
         }
@@ -123,26 +123,27 @@ final class DeleteCollaborationCommandRealmTest: XCTestCase {
 
 /// Tests applying `DeleteCollaborationCommand` to Firestore
 final class DeleteCollaborationCommandFirestoreTest: XCTestCase {
-    func testApply_noOp_noComment() throws {
+    func testApply_noOp_noCollaboration() throws {
         // no data exists
         let context = TestFirestoreCommandContext(docs: [])
 
-        let command = DeleteCollaborationCommand(geometryId: "geometry1", collaborationId: "collaboration1")
+        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
         try command.apply(inFirestore: context)
         XCTAssertEqual(context.operations.count, 0)
     }
 
     func testApply_successful() throws {
-        let context = TestFirestoreCommandContext(docs: [.geometry("geometry1")])
+        let context = TestFirestoreCommandContext(docs: [.geometry("geometry1"), .geometry("geometry2")])
 
-        let command = DeleteCollaborationCommand(geometryId: "geometry1", collaborationId: "collaboration1")
+        let command = DeleteCollaborationsCommand(
+            geometryIds: ["geometry1", "geometry2", "geometry3"],
+            collaborationIds: ["collaboration1", "collaboration2", "collaboration3"]
+        )
 
         try command.apply(inFirestore: context)
 
-        XCTAssertEqual(context.operations.count, 1)
-        AssertOperationsEqual(
-            context.operations[0],
-            .delete(.geometry("geometry1"))
-        )
+        XCTAssertEqual(context.operations.count, 2)
+        AssertOperationsEqual(context.operations[0], .delete(.geometry("geometry1")))
+        AssertOperationsEqual(context.operations[1], .delete(.geometry("geometry2")))
     }
 }
