@@ -292,9 +292,22 @@ extension ProjectModel {
         // no due date and the current time was used, or the time was different in Firestore (which shouldn't happen?)
         let endOfDayDueDate: Date? = dueDate?._endOfDay(in: projectSummary.timeZone)
         guard endOfDayDueDate != collaboration.dueDateTimestamp else { return nil }
-        return UpdateCollaborationDueDateCommand(
+        return UpdateCollaborationsDueDateCommand(
             authorId: userId,
-            collaborationId: collaboration.id,
+            collaborationIds: [collaboration.id],
+            dueDateTimestamp: endOfDayDueDate
+        )
+    }
+
+    /// Updates the due date for collaborations.
+    func update(dueDate: Date?, forCollaborations collaborationIds: [String]) -> Command {
+        // the date has the selected day in project timezone, the time needs to be updated
+        // to 23:59:59 (in project timezone) - the time might be different because there was
+        // no due date and the current time was used, or the time was different in Firestore (which shouldn't happen?)
+        let endOfDayDueDate: Date? = dueDate?._endOfDay(in: projectSummary.timeZone)
+        return UpdateCollaborationsDueDateCommand(
+            authorId: userId,
+            collaborationIds: collaborationIds,
             dueDateTimestamp: endOfDayDueDate
         )
     }

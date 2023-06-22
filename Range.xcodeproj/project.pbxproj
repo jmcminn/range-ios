@@ -220,7 +220,7 @@
 		0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */; };
 		0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */; };
 		0A7121B8290EE2DC0013E2F8 /* Date+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */; };
-		0A7121BA290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */; };
+		0A7121BA290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */; };
 		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
 		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
@@ -279,7 +279,7 @@
 		0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */; };
 		0A88198B291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */; };
 		0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */; };
-		0A88198F291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */; };
+		0A88198F291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */; };
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
 		0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */; };
@@ -621,7 +621,7 @@
 		0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerCardViewController.swift; sourceTree = "<group>"; };
 		0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCardViewController.swift; sourceTree = "<group>"; };
 		0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Utils.swift"; sourceTree = "<group>"; };
-		0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDueDateCommand.swift; sourceTree = "<group>"; };
+		0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsDueDateCommand.swift; sourceTree = "<group>"; };
 		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
@@ -681,7 +681,7 @@
 		0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadsTagsCommandTest.swift; sourceTree = "<group>"; };
 		0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsTagsCommandTest.swift; sourceTree = "<group>"; };
 		0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommandTest.swift; sourceTree = "<group>"; };
-		0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDueDateCommandTest.swift; sourceTree = "<group>"; };
+		0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsDueDateCommandTest.swift; sourceTree = "<group>"; };
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
 		0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersCardViewController.swift; sourceTree = "<group>"; };
@@ -1491,10 +1491,10 @@
 				0A374DED2927DAC50036C184 /* DeleteUploadsCommandTest.swift */,
 				0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */,
 				0A6DB6A6292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift */,
-				0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */,
 				0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */,
-				0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */,
+				0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */,
 				0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */,
+				0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */,
 				0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */,
 				0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */,
 				0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */,
@@ -1696,9 +1696,9 @@
 		0AD9B75E28677145005ACFD7 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */,
 				0AD9B7672869E55E005ACFD7 /* Command.swift */,
 				0A881986291D17060050FC41 /* CommandTypes.swift */,
-				0A378379291BAC450018BF3C /* AddUploadsToCollaborationCommand.swift */,
 				0A82A8E5292178E000A4BBCE /* CreateCollaborationCommand.swift */,
 				0A82A8E929226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift */,
 				0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */,
@@ -1708,10 +1708,10 @@
 				0A374DEB2927DA550036C184 /* DeleteUploadsCommand.swift */,
 				0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */,
 				0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */,
-				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
-				0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */,
+				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */,
+				0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */,
 				0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */,
@@ -2164,7 +2164,7 @@
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
 				0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */,
 				0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */,
-				0A7121BA290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift in Sources */,
+				0A7121BA290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift in Sources */,
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
@@ -2280,7 +2280,7 @@
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
 				0A82A8EC292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift in Sources */,
 				0A881981291C25630050FC41 /* TestPendingActionsModel.swift in Sources */,
-				0A88198F291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift in Sources */,
+				0A88198F291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift in Sources */,
 				0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */,
 				0A34C17F284551F500BEDC7C /* FirestoreStatusNameTest.swift in Sources */,
 				0ABFD8AE28EDB962008CDA74 /* UserDefaultsTest.swift in Sources */,

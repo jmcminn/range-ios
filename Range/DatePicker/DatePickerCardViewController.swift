@@ -8,6 +8,7 @@ import UIKit
 class DatePickerCardViewController: SheetCardViewController {
     private let datePickerBackground = UIView()
     private let datePicker = UIDatePicker()
+    private let showRemoveDateOption: Bool
     private var leftButton: UIButton! // either "cancel" or "remove date" button
     private var doneButton: UIButton!
     let timeZone: TimeZone
@@ -22,14 +23,21 @@ class DatePickerCardViewController: SheetCardViewController {
     /// - Parameters:
     ///     - title:                         title of the card
     ///     - initialSelectedDate: the date to select initially, or today if `nil`
+    ///     - showRemoveDateOption: if initialSelectedDate is provided then it's assumed to be `true`, otherwise set to `true` to have "Remove Date" even if no initial date (for bulk operations)
     init(
         title: String?,
         timeZone: TimeZone,
         minimumDate: Date? = nil,
         initialSelectedDate: Date? = nil,
+        showRemoveDateOption: Bool = false,
         onDatePicked: ((Date?) -> Void)? = nil
     ) {
         self.timeZone = timeZone
+        if initialSelectedDate != nil {
+            self.showRemoveDateOption = true
+        } else {
+            self.showRemoveDateOption = showRemoveDateOption
+        }
         super.init(icon: UIImage(systemName: "calendar"), title: title)
         selectedDate = initialSelectedDate
         self.onDatePicked = onDatePicked
@@ -109,15 +117,7 @@ extension DatePickerCardViewController {
     }
 
     private func setupButtons() {
-        if selectedDate == nil {
-            // no initial date, just cancel
-            leftButton = UIButton(
-                configuration: UIButton.Configuration.grayButton(),
-                primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
-                    self?.dismissCard()
-                }
-            )
-        } else {
+        if showRemoveDateOption {
             // remove current date button
             leftButton = UIButton(
                 configuration: UIButton.Configuration.redButton(),
@@ -128,6 +128,14 @@ extension DatePickerCardViewController {
                     self?.selectedDate = nil
                     self?.dismissCard()
                     self?.onDatePicked?(self?.selectedDate)
+                }
+            )
+        } else {
+            // no initial date, just cancel
+            leftButton = UIButton(
+                configuration: UIButton.Configuration.grayButton(),
+                primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
+                    self?.dismissCard()
                 }
             )
         }

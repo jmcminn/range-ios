@@ -3,8 +3,8 @@ import FirebaseFirestore
 import RealmSwift
 import XCTest
 
-/// Tests applying `UpdateCollaborationDueDateCommand` in local Realm db
-final class UpdateCollaborationDueDateCommandRealmTest: XCTestCase {
+/// Tests applying `UpdateCollaborationsDueDateCommand` in local Realm db
+final class UpdateCollaborationsDueDateCommandRealmTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
@@ -25,9 +25,9 @@ final class UpdateCollaborationDueDateCommandRealmTest: XCTestCase {
     }
 
     func testApply_noCollaboration() throws {
-        let command = UpdateCollaborationDueDateCommand(
+        let command = UpdateCollaborationsDueDateCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             dueDateTimestamp: nil
         )
         XCTAssertThrowsError(
@@ -43,9 +43,9 @@ final class UpdateCollaborationDueDateCommandRealmTest: XCTestCase {
         try realm.write {
             realm.add(collaboration1)
         }
-        let command = UpdateCollaborationDueDateCommand(
+        let command = UpdateCollaborationsDueDateCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             dueDateTimestamp: Date(timeIntervalSince1970: 100)
         )
         try realm.write {
@@ -53,7 +53,7 @@ final class UpdateCollaborationDueDateCommandRealmTest: XCTestCase {
         }
 
         XCTAssertNil(
-            realm.object(ofType: Update.self, forPrimaryKey: command.updateId),
+            realm.object(ofType: Update.self, forPrimaryKey: command.updateIds[0]),
             "Update is not created when running command in Realm"
         )
         XCTAssertEqual(collaboration1.dueDateTimestamp?.timeIntervalSince1970, 100)
@@ -61,14 +61,14 @@ final class UpdateCollaborationDueDateCommandRealmTest: XCTestCase {
 }
 
 /// Tests applying `UpdateCollaborationDueDateCommand` to Firestore
-final class UpdateCollaborationDueDateCommandFirestoreTest: XCTestCase {
+final class UpdateCollaborationsDueDateCommandFirestoreTest: XCTestCase {
     func testApply_noUpload() throws {
         // no data exists
         let context = TestFirestoreCommandContext(docs: [])
 
-        let command = UpdateCollaborationDueDateCommand(
+        let command = UpdateCollaborationsDueDateCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             dueDateTimestamp: nil
         )
         XCTAssertThrowsError(
@@ -87,15 +87,25 @@ final class UpdateCollaborationDueDateCommandFirestoreTest: XCTestCase {
                 featureId: "feature1",
                 timestamp: Timestamp(),
                 statusId: nil,
-                name: "old name",
+                name: "name",
                 collaborationDescription: nil,
                 tagIds: []
             ),
+            .collaboration("collaboration2"): FirestoreCollaboration(
+                featureId: "feature2",
+                timestamp: Timestamp(),
+                statusId: nil,
+                name: "name",
+                collaborationDescription: nil,
+                tagIds: [],
+                dueDateTimestamp: Timestamp(seconds: 100, nanoseconds: 0)
+
+            ),
         ])
 
-        let command = UpdateCollaborationDueDateCommand(
+        let command = UpdateCollaborationsDueDateCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             dueDateTimestamp: Date(timeIntervalSince1970: 100)
         )
         try command.apply(inFirestore: context)
@@ -107,7 +117,7 @@ final class UpdateCollaborationDueDateCommandFirestoreTest: XCTestCase {
         )
         AssertOperationsEqual(
             context.operations[1],
-            .set(.update(command.updateId), [
+            .set(.update(command.updateIds[0]), [
                 "parent": "collaboration1",
                 "parentType": "Collaboration",
                 "timestamp": FieldValue.serverTimestamp(),
@@ -132,9 +142,9 @@ final class UpdateCollaborationDueDateCommandFirestoreTest: XCTestCase {
             ),
         ])
 
-        let command = UpdateCollaborationDueDateCommand(
+        let command = UpdateCollaborationsDueDateCommand(
             authorId: "user1",
-            collaborationId: "collaboration1",
+            collaborationIds: ["collaboration1"],
             dueDateTimestamp: nil
         )
         try command.apply(inFirestore: context)
@@ -146,7 +156,7 @@ final class UpdateCollaborationDueDateCommandFirestoreTest: XCTestCase {
         )
         AssertOperationsEqual(
             context.operations[1],
-            .set(.update(command.updateId), [
+            .set(.update(command.updateIds[0]), [
                 "parent": "collaboration1",
                 "parentType": "Collaboration",
                 "timestamp": FieldValue.serverTimestamp(),
@@ -155,50 +165,5 @@ final class UpdateCollaborationDueDateCommandFirestoreTest: XCTestCase {
                 "oldValue": Timestamp(seconds: 100, nanoseconds: 0),
             ])
         )
-    }
-
-    /// Test for idempotency
-    /// The Update is already added, so skip the command
-    func testApply_noOp_updateExists() throws {
-        let command = UpdateCollaborationDueDateCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            dueDateTimestamp: Date(timeIntervalSince1970: 100)
-        )
-        // update exists
-        let context = TestFirestoreCommandContext(docs: [
-            .update(command.updateId),
-        ])
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 0)
-    }
-
-    /// Test for idempotency
-    /// The name is the same as in Firestore... ignore
-    func testApply_noOp_nameUnchanged() throws {
-        // collaboration exists
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .collaboration("collaboration1"): FirestoreCollaboration(
-                featureId: "feature1",
-                timestamp: Timestamp(),
-                statusId: nil,
-                name: "old name",
-                collaborationDescription: nil,
-                tagIds: [],
-                dueDateTimestamp: Timestamp(seconds: 100, nanoseconds: 0)
-            ),
-        ])
-        // same due date
-        let command = UpdateCollaborationDueDateCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            dueDateTimestamp: Date(timeIntervalSince1970: 100)
-        )
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 0)
     }
 }

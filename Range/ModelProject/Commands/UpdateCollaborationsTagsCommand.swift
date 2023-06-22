@@ -15,7 +15,7 @@ struct UpdateCollaborationsTagsCommand: Command, Codable, Equatable {
 
 extension UpdateCollaborationsTagsCommand: LocalCommand {
     func apply(inRealm realm: Realm) throws {
-        var collaborationsToUpdate = try collaborationIds.map {
+        let collaborationsToUpdate = try collaborationIds.map {
             // fail locally if any of the object doesn't exist, this shouldn't really happen
             try realm.object(ofType: Collaboration.self, forPrimaryKey: $0).or(error: ModelError.collaborationNotFound)
         }

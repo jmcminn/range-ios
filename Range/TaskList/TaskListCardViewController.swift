@@ -549,10 +549,8 @@ extension TaskListCardViewController {
             actions: [
                 ActionItem(title: String(localized: "Tags"), imageName: "tag",
                            handler: { [weak self] in self?.presentBulkManageTagsCard() }),
-//                ActionItem(title: String(localized: "Share"), imageName: "square.and.arrow.up",
-//                           handler: { [weak self] in self?.shareMedia() }),
-//                ActionItem(title: String(localized: "Delete Media"), imageName: "trash", style: .destructive,
-//                           handler: { [weak self] in self?.confirmAndDeleteMedia() }),
+                ActionItem(title: String(localized: "Due Date"), imageName: "calendar",
+                           handler: { [weak self] in self?.presentBulkUpdateDueDateCard() }),
             ]
         ).installAndShowCard(in: canvasContainer)
     }
@@ -580,7 +578,7 @@ extension TaskListCardViewController {
         let onConfirm = { [weak self, weak tagsVC] in
             // add or replace depending on the option selected in tagsVC (adding is the first option)
             let addTags: Bool = (tagsVC?.optionsToggle?.selectedSegmentIndex ?? 0) == 0
-            self?.updateTags(tagsViewModel, add: addTags)
+            self?.bulkUpdateTags(tagsViewModel, add: addTags)
             tagsVC?.dismissCard()
         }
         // block to run when user has unsaved changes and chose to close the card - ask if he wants to cancel or save
@@ -617,13 +615,32 @@ extension TaskListCardViewController {
         tagsVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
-    private func updateTags(_ tagsModel: TagsViewModel, add: Bool) {
+    private func bulkUpdateTags(_ tagsModel: TagsViewModel, add: Bool) {
         projectModel.run(
             projectModel.update(tags: tagsModel.selectedTags, forCollaborations: [String](selectedTasks), add: add)
         ) { error in
-            if error != nil {
-                ToastWindow.shared.showError(text: "Failed to update tags")
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update tags") }
+        }
+    }
+
+    private func presentBulkUpdateDueDateCard() {
+        DatePickerCardViewController(
+            title: "Due Date",
+            timeZone: projectModel.projectSummary.timeZone,
+            initialSelectedDate: nil, // no initial date as it's a bulk operation
+            showRemoveDateOption: true, // but still allow to clear the date for all tasks
+            onDatePicked: { [weak self] date in
+                self?.bulkUpdateDueDate(date)
             }
+        )
+        .installAndShowCard(in: self)
+    }
+
+    private func bulkUpdateDueDate(_ date: Date?) {
+        projectModel.run(
+            projectModel.update(dueDate: date, forCollaborations: [String](selectedTasks))
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the due date") }
         }
     }
 }
