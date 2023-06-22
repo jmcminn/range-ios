@@ -5,8 +5,8 @@ import RealmSwift
 import Turf
 import XCTest
 
-/// Tests applying `UpdateGeometryArchivedCommand` in local Realm db
-final class UpdateGeometryArchivedCommandRealmTest: XCTestCase {
+/// Tests applying `UpdateGeometriesArchivedCommand` in local Realm db
+final class UpdateGeometriesArchivedCommandRealmTest: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
     var model: ProjectModel!
@@ -27,7 +27,7 @@ final class UpdateGeometryArchivedCommandRealmTest: XCTestCase {
     }
 
     func testApply_noGeometry() throws {
-        let command = UpdateGeometryArchivedCommand(geometryId: "geometry1", archive: true)
+        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -44,7 +44,7 @@ final class UpdateGeometryArchivedCommandRealmTest: XCTestCase {
         try realm.write {
             realm.add(geometry)
         }
-        let command = UpdateGeometryArchivedCommand(geometryId: "geometry1", archive: true)
+        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
         try realm.write {
             try command.apply(inRealm: realm)
         }
@@ -61,7 +61,7 @@ final class UpdateGeometryArchivedCommandRealmTest: XCTestCase {
         try realm.write {
             realm.add(geometry)
         }
-        let command = UpdateGeometryArchivedCommand(geometryId: "geometry1", archive: false)
+        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: false)
         try realm.write {
             try command.apply(inRealm: realm)
         }
@@ -69,13 +69,13 @@ final class UpdateGeometryArchivedCommandRealmTest: XCTestCase {
     }
 }
 
-/// Tests applying `UpdateGeometryArchivedCommand` to Firestore
-final class UpdateGeometryArchivedCommandFirestoreTest: XCTestCase {
+/// Tests applying `UpdateGeometriesArchivedCommand` to Firestore
+final class UpdateGeometriesArchivedCommandFirestoreTest: XCTestCase {
     func testApply_noGeometry() throws {
         // no data exists
         let context = TestFirestoreCommandContext(docs: [])
 
-        let command = UpdateGeometryArchivedCommand(geometryId: "geometry1", archive: true)
+        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
         XCTAssertThrowsError(
             try command.apply(inFirestore: context)
         ) { error in
@@ -88,7 +88,7 @@ final class UpdateGeometryArchivedCommandFirestoreTest: XCTestCase {
     func testApply_archive_successful() throws {
         let context = TestFirestoreCommandContext(docs: [.geometry("geometry1")])
 
-        let command = UpdateGeometryArchivedCommand(geometryId: "geometry1", archive: true)
+        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
 
         try command.apply(inFirestore: context)
 
@@ -104,7 +104,7 @@ final class UpdateGeometryArchivedCommandFirestoreTest: XCTestCase {
     func testApply_unarchive_successful() throws {
         let context = TestFirestoreCommandContext(docs: [.geometry("geometry1")])
 
-        let command = UpdateGeometryArchivedCommand(geometryId: "geometry1", archive: false)
+        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: false)
 
         try command.apply(inFirestore: context)
 

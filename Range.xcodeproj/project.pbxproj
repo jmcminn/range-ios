@@ -130,7 +130,7 @@
 		0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */; };
 		0A374DE42927B3490036C184 /* DeleteCollaborationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */; };
 		0A374DE62927BA730036C184 /* DeleteCollaborationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */; };
-		0A374DE82927D0200036C184 /* UpdateGeometryArchivedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */; };
+		0A374DE82927D0200036C184 /* UpdateGeometriesArchivedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE72927D0200036C184 /* UpdateGeometriesArchivedCommand.swift */; };
 		0A374DEA2927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */; };
 		0A374DEC2927DA550036C184 /* DeleteUploadsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DEB2927DA550036C184 /* DeleteUploadsCommand.swift */; };
 		0A374DEE2927DAC50036C184 /* DeleteUploadsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A374DED2927DAC50036C184 /* DeleteUploadsCommandTest.swift */; };
@@ -525,7 +525,7 @@
 		0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteCollaborationCommand.swift; sourceTree = "<group>"; };
 		0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteCollaborationCommandTest.swift; sourceTree = "<group>"; };
-		0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryArchivedCommand.swift; sourceTree = "<group>"; };
+		0A374DE72927D0200036C184 /* UpdateGeometriesArchivedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometriesArchivedCommand.swift; sourceTree = "<group>"; };
 		0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryArchivedCommandTest.swift; sourceTree = "<group>"; };
 		0A374DEB2927DA550036C184 /* DeleteUploadsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadsCommand.swift; sourceTree = "<group>"; };
 		0A374DED2927DAC50036C184 /* DeleteUploadsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteUploadsCommandTest.swift; sourceTree = "<group>"; };
@@ -1713,7 +1713,7 @@
 				0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
-				0A374DE72927D0200036C184 /* UpdateGeometryArchivedCommand.swift */,
+				0A374DE72927D0200036C184 /* UpdateGeometriesArchivedCommand.swift */,
 				0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */,
 				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
 				0A3714E02950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift */,
@@ -2016,7 +2016,7 @@
 				0A3831DD28E467B2001AF38A /* NameUpdateFeedItemCell.swift in Sources */,
 				0AB8557628F98EB600491E20 /* DueDateButton.swift in Sources */,
 				0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */,
-				0A374DE82927D0200036C184 /* UpdateGeometryArchivedCommand.swift in Sources */,
+				0A374DE82927D0200036C184 /* UpdateGeometriesArchivedCommand.swift in Sources */,
 				0A30E8B52849057D00A50D54 /* UIButton+Padding.swift in Sources */,
 				0A83223E2A41EBC10076D032 /* CanvasPickerCardViewController.swift in Sources */,
 				0A374DDA29241ED40036C184 /* ToastViewController.swift in Sources */,

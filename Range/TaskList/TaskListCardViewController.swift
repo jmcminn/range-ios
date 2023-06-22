@@ -38,6 +38,7 @@ class TaskListCardViewController: SheetCardViewController {
     private var emptyView: UIView?
     private var emptyFilteredView: UIView?
 
+    private var geometriesNotificationToken: NotificationToken?
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
 
@@ -73,6 +74,7 @@ class TaskListCardViewController: SheetCardViewController {
     }
 
     deinit {
+        geometriesNotificationToken?.invalidate()
         notificationToken?.invalidate()
     }
 
@@ -99,6 +101,7 @@ class TaskListCardViewController: SheetCardViewController {
         setupFiltersButton()
         setupFiltersIndicatorBadge()
 
+        observeGeometries()
         observeCollaborations()
 
         updateData()
@@ -112,6 +115,23 @@ class TaskListCardViewController: SheetCardViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         // update the border color for cells
         tableView.reloadData()
+    }
+
+    /// Observe all geometries and trigger updateData on change as it might mean that some task was archived/unarchived (which
+    /// potentially impacts the filtered tasks)
+    private func observeGeometries() {
+        geometriesNotificationToken = projectModel.mainRealm.objects(Geometry.self)
+            .observe { [weak self] (changes: RealmCollectionChange) in
+                guard let self = self else { return }
+                switch changes {
+                case .initial:
+                    break
+                case .update:
+                    self.updateData()
+                case let .error(error):
+                    Logger.model.error("observing geometries failed: \(error.localizedDescription, privacy: .public)")
+                }
+            }
     }
 
     private func observeCollaborations() {
@@ -555,6 +575,8 @@ extension TaskListCardViewController {
                            handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
                 ActionItem(title: String(localized: "Status"), imageName: "circle.dashed",
                            handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
+                ActionItem(title: String(localized: "Archive"), imageName: "archivebox",
+                           handler: { [weak self] in self?.bulkArchive() }),
             ]
         ).installAndShowCard(in: canvasContainer)
     }
@@ -686,6 +708,14 @@ extension TaskListCardViewController {
             projectModel.update(status: status, forCollaborations: [String](selectedTasks))
         ) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status") }
+        }
+    }
+
+    private func bulkArchive() {
+        projectModel.run(
+            projectModel.update(archived: true, forCollaborations: [String](selectedTasks))
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to archive") }
         }
     }
 }

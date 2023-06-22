@@ -36,7 +36,7 @@ enum ActionCommand: Codable {
     case updateCollaborationsStatus(UpdateCollaborationsStatusCommand)
     case updateCollaborationsTags(UpdateCollaborationsTagsCommand)
     case updateCommentText(UpdateCommentTextCommand)
-    case updateGeometryArchived(UpdateGeometryArchivedCommand)
+    case updateGeometriesArchived(UpdateGeometriesArchivedCommand)
     case updateGeometryLocation(UpdateGeometryLocationCommand)
     case updateNoteCompleted(UpdateNoteCompletedCommand)
     case updateUploadDescription(UpdateUploadDescriptionCommand)
@@ -58,7 +58,7 @@ enum ActionCommand: Codable {
         case let c as UpdateCollaborationsStatusCommand: self = .updateCollaborationsStatus(c)
         case let c as UpdateCollaborationsTagsCommand: self = .updateCollaborationsTags(c)
         case let c as UpdateCommentTextCommand: self = .updateCommentText(c)
-        case let c as UpdateGeometryArchivedCommand: self = .updateGeometryArchived(c)
+        case let c as UpdateGeometriesArchivedCommand: self = .updateGeometriesArchived(c)
         case let c as UpdateGeometryLocationCommand: self = .updateGeometryLocation(c)
         case let c as UpdateNoteCompletedCommand: self = .updateNoteCompleted(c)
         case let c as UpdateUploadDescriptionCommand: self = .updateUploadDescription(c)
@@ -83,7 +83,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationsStatus(c): return c
         case let .updateCollaborationsTags(c): return c
         case let .updateCommentText(c): return c
-        case let .updateGeometryArchived(c): return c
+        case let .updateGeometriesArchived(c): return c
         case let .updateGeometryLocation(c): return c
         case let .updateNoteCompleted(c): return c
         case let .updateUploadDescription(c): return c
@@ -107,7 +107,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationsStatus(c): return c
         case let .updateCollaborationsTags(c): return c
         case let .updateCommentText(c): return c
-        case let .updateGeometryArchived(c): return c
+        case let .updateGeometriesArchived(c): return c
         case let .updateGeometryLocation(c): return c
         case let .updateNoteCompleted(c): return c
         case let .updateUploadDescription(c): return c

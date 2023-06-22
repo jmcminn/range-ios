@@ -336,7 +336,14 @@ extension ProjectModel {
             throw ModelError.geometryNotFound
         }
         let archive = geometry.archivedTimestamp == nil
-        return UpdateGeometryArchivedCommand(geometryId: geometry.id, archive: archive)
+        return UpdateGeometriesArchivedCommand(geometryIds: [geometry.id], archive: archive)
+    }
+
+    func update(archived: Bool, forCollaborations collaborationIds: [String]) -> Command {
+        let geometryIds = [Collaboration](mainRealm.objects(Collaboration.self))
+            .filter { collaborationIds.contains($0.id) }
+            .compactMap { $0.feature.first?.geometry.first?.id }
+        return UpdateGeometriesArchivedCommand(geometryIds: geometryIds, archive: archived)
     }
 
     /// Updates the status for collaboration if it's different than the current one.
