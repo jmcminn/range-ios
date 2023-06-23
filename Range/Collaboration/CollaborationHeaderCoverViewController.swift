@@ -54,7 +54,14 @@ class CollaborationHeaderCoverViewController: UIViewController {
         }
 
         badgeView = CollaborationBadgeView(collaboration)
-        badgeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(badgeTapped)))
+        let singleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
+        singleTapRecognizer.numberOfTapsRequired = 1
+        badgeView.addGestureRecognizer(singleTapRecognizer)
+        let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
+        doubleTapRecognizer.numberOfTapsRequired = 2
+        badgeView.addGestureRecognizer(doubleTapRecognizer)
+        singleTapRecognizer.require(toFail: doubleTapRecognizer)
+
         view.addSubview(badgeView)
         badgeView.snp.makeConstraints { make in
             make.leading.equalTo(16)
@@ -118,10 +125,15 @@ class CollaborationHeaderCoverViewController: UIViewController {
         }
     }
 
-    @objc private func badgeTapped() {
-        UIApplication.shared.sendAction(
-            #selector(CollaborationFlowActions.editStatusAction), to: nil, from: self, for: nil
-        )
+    /// "Quick action" for status badge - when tapped mark task as complete and close the collaboration window
+    @objc private func statusBadgeTapped(recognizer: UITapGestureRecognizer) {
+        // only for tasks
+        guard collaboration.status != nil else { return }
+        let selector = recognizer.numberOfTapsRequired == 1
+            ? #selector(ProjectFlowController.markTaskCompletedAction)
+            : #selector(ProjectFlowController.markTaskCompletedAndArchiveAction)
+        UIApplication.shared.sendAction(selector, to: nil, from: self, for: FlowEvent(collaboration))
+        onClose?()
     }
 
     @objc private func nameTapped() {

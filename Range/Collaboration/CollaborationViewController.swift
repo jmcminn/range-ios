@@ -101,7 +101,15 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         containerView.installSliderView()
 
         badgeView = CollaborationBadgeView(collaboration)
-        badgeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(statusTapped)))
+        // quick actions on badgeView
+        let singleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
+        singleTapRecognizer.numberOfTapsRequired = 1
+        badgeView.addGestureRecognizer(singleTapRecognizer)
+        let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
+        doubleTapRecognizer.numberOfTapsRequired = 2
+        badgeView.addGestureRecognizer(doubleTapRecognizer)
+        singleTapRecognizer.require(toFail: doubleTapRecognizer)
+
         containerView.addSubview(badgeView)
         badgeView.snp.makeConstraints { make in
             make.leading.equalTo(16)
@@ -230,6 +238,19 @@ extension CollaborationViewController {
             }
         }
         feedVC.scroll(toUpload: upload)
+    }
+
+    /// "Quick action" for status badge
+    /// - when tapped mark task as complete and close the collaboration window
+    /// - when double tapped mark task as complete and archived and close the collaboration window
+    @objc private func statusBadgeTapped(recognizer: UITapGestureRecognizer) {
+        // only for tasks
+        guard collaboration.status != nil else { return }
+        let selector = recognizer.numberOfTapsRequired == 1
+            ? #selector(ProjectFlowController.markTaskCompletedAction)
+            : #selector(ProjectFlowController.markTaskCompletedAndArchiveAction)
+        UIApplication.shared.sendAction(selector, to: nil, from: self, for: FlowEvent(collaboration))
+        onClose?()
     }
 
     @objc private func statusTapped() {

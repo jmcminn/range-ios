@@ -346,6 +346,13 @@ extension ProjectModel {
         return UpdateGeometriesArchivedCommand(geometryIds: [geometry.id], archive: archive)
     }
 
+    func markCollaboration(_ collaboration: Collaboration, archived: Bool) throws -> Command {
+        guard let geometry = collaboration.feature.first?.geometry.first else {
+            throw ModelError.geometryNotFound
+        }
+        return UpdateGeometriesArchivedCommand(geometryIds: [geometry.id], archive: archived)
+    }
+
     func update(archived: Bool, forCollaborations collaborationIds: [String]) -> Command {
         let geometryIds = [Collaboration](mainRealm.objects(Collaboration.self))
             .filter { collaborationIds.contains($0.id) }

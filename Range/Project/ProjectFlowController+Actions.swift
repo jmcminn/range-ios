@@ -63,6 +63,10 @@ final class FlowEvent: UIEvent {
     /// download given media file(s) and show iOS built in share sheet,
     /// ACHTUNG: requires sourceView parameter to present the share popover on iPad
     func shareMediaAction(sender: Any?, event: FlowEvent)
+    /// Sets the status for given collaboration to complete
+    func markTaskCompletedAction(sender: Any?, event: FlowEvent)
+    /// Sets the status for given collaboration to complete and archive it
+    func markTaskCompletedAndArchiveAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -266,6 +270,52 @@ extension ProjectFlowController: ProjectFlowActions {
                 editTagsVC.present(alert, animated: true)
             }
         )
+    }
+
+    func markTaskCompletedAction(sender _: Any?, event: FlowEvent) {
+        guard let collaboration = event.object as? Collaboration else {
+            fatalError("markTaskCompletedAction called with no Collaboration")
+        }
+        guard !collaboration.isCompleted else { return }
+        guard let completedStatus = model.mainRealm.objects(Status.self).first(where: { $0.isCompleted }) else {
+            ToastWindow.shared.showError(text: "Completed status not found")
+            return
+        }
+        model.run(
+            model.update(status: completedStatus, forCollaboration: collaboration)
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to complete the task") }
+            else { ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed") }
+        }
+    }
+
+    func markTaskCompletedAndArchiveAction(sender _: Any?, event: FlowEvent) {
+        guard let collaboration = event.object as? Collaboration else {
+            fatalError("markTaskCompletedAndArchiveAction called with no Collaboration")
+        }
+        if collaboration.isCompleted, collaboration.isArchived { return }
+        guard let completedStatus = model.mainRealm.objects(Status.self).first(where: { $0.isCompleted }) else {
+            ToastWindow.shared.showError(text: "Completed status not found")
+            return
+        }
+        let statusUpdateCommand = model.update(status: completedStatus, forCollaboration: collaboration)
+        guard let archiveCommand = try? model.markCollaboration(collaboration, archived: true) else {
+            ToastWindow.shared.showError(text: "Failed to complete and archive the task")
+            return
+        }
+        // Run 2 commands one after another. First mark completed then archive.
+        // It could be reimplemented as a command that does both in one transaction but to archive after
+        // changing the status to complete is not that bad...
+        Task {
+            do {
+                try await model.run(statusUpdateCommand)
+                try await model.run(archiveCommand)
+                ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived")
+            } catch {
+                Logger.firestore.error("Failed to complete and archive the task: \(error, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to complete and archive the task")
+            }
+        }
     }
 }
 
