@@ -36,7 +36,8 @@ class ToastWindow: UIWindow {
 
     /// Passing all touches to the next view (if any), in the view stack.
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        subviews.contains { subview in
+        guard let rootVC = rootViewController else { return false }
+        return rootVC.view.subviews.contains { subview in
             subview.hitTest(convert(point, to: subview), with: event) != nil
         }
     }
