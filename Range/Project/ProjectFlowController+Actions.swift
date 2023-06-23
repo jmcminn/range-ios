@@ -15,18 +15,21 @@ final class FlowEvent: UIEvent {
     let object: Object?
     let objects: [Object]
     let source: Source?
+    let sourceView: UIView?
     /// this will initiate the object, but also objects with an array of 1 item (for convenience)
-    init(_ object: Object, source: Source? = nil) {
+    init(_ object: Object, source: Source? = nil, sourceView: UIView? = nil) {
         self.object = object
         objects = [object]
         self.source = source
+        self.sourceView = sourceView
     }
 
     /// this will set the objects property, but not object (so it's not run accidentally for 1 item only)
-    init(_ objects: [Object], source: Source? = nil) {
+    init(_ objects: [Object], source: Source? = nil, sourceView: UIView? = nil) {
         object = nil
         self.objects = objects
         self.source = source
+        self.sourceView = sourceView
     }
 }
 
@@ -52,11 +55,13 @@ final class FlowEvent: UIEvent {
     func editDescriptionAction(sender: Any?, event: FlowEvent)
     /// Edit tags for Collaboration or Upload
     func editTagsAction(sender: Any?, event: FlowEvent)
-    /// Show more menu for FlowEvent.object
+    /// Show more menu for FlowEvent.object,
+    /// ACHTUNG: requires sourceView parameter for Upload event to present the share popover on iPad
     func moreAction(sender: Any?, event: FlowEvent)
     /// show the Task list card view controller with project tasks
     func showTaskListAction()
-    /// download given media file(s) and show iOS built in share sheet
+    /// download given media file(s) and show iOS built in share sheet,
+    /// ACHTUNG: requires sourceView parameter to present the share popover on iPad
     func shareMediaAction(sender: Any?, event: FlowEvent)
 }
 
@@ -602,6 +607,7 @@ extension ProjectFlowController {
                 }
                 if !cancelled {
                     progressAlertController.dismiss(animated: true) { [weak self] in
+                        guard let self = self else { return }
                         let shareVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
                         shareVC.completionWithItemsHandler = { _, completed, _, _ in
                             if completed {
@@ -613,7 +619,14 @@ extension ProjectFlowController {
                                 )
                             }
                         }
-                        self?.present(shareVC, animated: true)
+                        if let popoverPresentationController = shareVC.popoverPresentationController {
+                            // iPad handling
+                            guard let view = event.sourceView else {
+                                fatalError("shareMediaAction called for event with no sourceView")
+                            }
+                            popoverPresentationController.sourceView = view
+                        }
+                        self.present(shareVC, animated: true)
                     }
                 }
             } catch {

@@ -698,7 +698,7 @@ extension MediaCardViewController {
 
         UIApplication.shared.sendAction(
             #selector(ProjectFlowController.shareMediaAction), to: nil, from: self,
-            for: FlowEvent(uploads)
+            for: FlowEvent(uploads, sourceView: bulkActionsButton)
         )
     }
 

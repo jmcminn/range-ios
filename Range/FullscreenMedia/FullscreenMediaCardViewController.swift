@@ -486,7 +486,7 @@ extension FullscreenMediaCardViewController {
                 guard let self = self else { return }
                 UIApplication.shared.sendAction(
                     #selector(ProjectFlowController.moreAction), to: nil, from: self,
-                    for: FlowEvent(self.upload)
+                    for: FlowEvent(self.upload, sourceView: self.moreButton)
                 )
             }
         )

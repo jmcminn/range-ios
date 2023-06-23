@@ -294,7 +294,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
               let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
         UIApplication.shared.sendAction(
             #selector(ProjectFlowController.moreAction), to: nil, from: self,
-            for: FlowEvent(upload)
+            for: FlowEvent(upload, sourceView: moreButton)
         )
     }
 }
