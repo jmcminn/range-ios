@@ -63,7 +63,7 @@ class TaskListCardViewController: SheetCardViewController {
     init(projectModel: ProjectModel, canvasContainer: CanvasContainerViewController) {
         self.projectModel = projectModel
         self.canvasContainer = canvasContainer
-        filters = TaskListFilters(model: projectModel)
+        filters = UserDefaults.taskListFilters(forModel: projectModel)
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.placeholder == false && c.status != nil // only tasks
@@ -375,6 +375,10 @@ extension TaskListCardViewController {
 
     @objc func showFiltersCard() {
         let filtersCardVC = TaskListFiltersCardViewController(model: projectModel, taskListFilters: filters)
+        filtersCardVC.onClose = { [weak self] in
+            guard let self = self else { return }
+            UserDefaults.setTaskListFilters(self.filters, forProjectId: projectModel.projectId)
+        }
         filtersCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 

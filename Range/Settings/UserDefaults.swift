@@ -27,6 +27,8 @@ extension UserDefaults {
         case lastFCMToken
         /// the prefix used for storing canvasFilters for a project, will be followed by a project id
         case canvasFiltersPrefix = "canvasFilters_"
+        /// the prefix used for storing the task list filters for a project, will be followed by a project id
+        case taskListFiltersPrefix = "taskListFilters_"
         /// whether the card onboarding was complete (action card for project needs to be maximized)
         case cardOnboardingComplete
     }
@@ -218,6 +220,43 @@ extension UserDefaults {
             UserDefaults.standard.set(canvasFiltersString, forKey: canvasFiltersKey(forProjectId: projectId))
         } catch {
             Logger.settings.error("Failed to save canvas filters: \(error)")
+        }
+    }
+
+    /// construct key used for storing tasks filters for given project
+    private static func taskListFiltersKey(forProjectId projectId: String) -> String {
+        UserDefaultsConstants.taskListFiltersPrefix.rawValue + projectId
+    }
+
+    /// Returns the tasks filters for given project or default TaskListFilters if not set yet
+    static func taskListFilters(forModel model: ProjectModel) -> TaskListFilters {
+        guard let taskListFiltersString = UserDefaults.standard
+            .object(forKey: taskListFiltersKey(forProjectId: model.projectId)) as? String
+        else {
+            return TaskListFilters(model: model)
+        }
+        do {
+            let taskListFiltersData = try taskListFiltersString.data(using: .utf8)
+                .or(error: "Failed to get data from task list filters string")
+            let jsonDecoder = JSONDecoder()
+            let filters = try jsonDecoder.decode(TaskListFilters.self, from: taskListFiltersData)
+            filters.model = model
+            return filters
+        } catch {
+            Logger.settings.error("Failed to load task list filters: \(error)")
+            return TaskListFilters(model: model)
+        }
+    }
+
+    static func setTaskListFilters(_ filters: TaskListFilters, forProjectId projectId: String) {
+        do {
+            let jsonEncoder = JSONEncoder()
+            let filtersData = try jsonEncoder.encode(filters)
+            let filtersString = try String(data: filtersData, encoding: .utf8)
+                .or(error: "Failed to create String from task list filters data")
+            UserDefaults.standard.set(filtersString, forKey: taskListFiltersKey(forProjectId: projectId))
+        } catch {
+            Logger.settings.error("Failed to save task list filters: \(error)")
         }
     }
 

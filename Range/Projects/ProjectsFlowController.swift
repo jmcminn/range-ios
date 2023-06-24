@@ -327,12 +327,16 @@ class ProjectsFlowController: UINavigationController {
 
     private func showTaskListAfterProjectFlowStarted() {
         projectFCStarted = projectFC?.startedFuture?.sink { [weak self] _ in
-            // When opening the task list the filters default to "only mine" which is what's
-            // needed for the push notification. If the task list filters were stored in UserDefaults
-            // it would be required to reset them here.
-            self?.projectFC?.showTaskListAction()
-            self?.projectFCStarted?.cancel()
-            self?.projectFCStarted = nil
+            guard let self = self, let projectFC = self.projectFC else { return }
+            // Reset the task list filters when coming from the push notification... This should be
+            // mostly fine as they default to "only mine"...
+            UserDefaults.setTaskListFilters(
+                TaskListFilters(model: projectFC.model),
+                forProjectId: projectFC.model.projectId
+            )
+            projectFC.showTaskListAction()
+            self.projectFCStarted?.cancel()
+            self.projectFCStarted = nil
         }
     }
 }
