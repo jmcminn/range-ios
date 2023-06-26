@@ -345,6 +345,7 @@
 		0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */; };
 		0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19028F8057B00C7185D /* PinImage.swift */; };
 		0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */; };
+		0ACACBCA2A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACACBC92A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift */; };
 		0ACE1968296C7AD500D223EB /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 0ACE1967296C7AD500D223EB /* Sentry */; };
 		0ACE1972296D68DD00D223EB /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1971296D68DD00D223EB /* AppConfiguration.swift */; };
 		0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02554284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift */; };
@@ -746,6 +747,7 @@
 		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
 		0AC9E19028F8057B00C7185D /* PinImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinImage.swift; sourceTree = "<group>"; };
 		0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Merge.swift"; sourceTree = "<group>"; };
+		0ACACBC92A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsStatusAndArchiveCommand.swift; sourceTree = "<group>"; };
 		0ACE1971296D68DD00D223EB /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		0ACE1973296D71AE00D223EB /* GoogleService-Info.staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.staging.plist"; sourceTree = "<group>"; };
 		0ACE1974296D738800D223EB /* GoogleService-Info.production.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.production.plist"; sourceTree = "<group>"; };
@@ -1711,6 +1713,7 @@
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */,
 				0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */,
 				0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */,
+				0ACACBC92A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0A374DE72927D0200036C184 /* UpdateGeometriesArchivedCommand.swift */,
@@ -2084,6 +2087,7 @@
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirestoreCanvas.swift in Sources */,
+				0ACACBCA2A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift in Sources */,
 				0A5394272A251482008583F0 /* ScribbleViewModel.swift in Sources */,
 				0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */,
 				0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */,

@@ -507,8 +507,13 @@ extension CollaborationFlowController {
         StatusPickerCardViewController(
             title: "Assign Status",
             statuses: statuses,
-            selectedStatus: collaboration.status, onStatusPicked: { [weak self] newStatus in
-                self?.updateStatus(newStatus)
+            selectedStatus: collaboration.status, onStatusPicked: { [weak self] result in
+                switch result {
+                case let .status(status):
+                    self?.updateStatus(status)
+                case let .completeAndArchive(status):
+                    self?.updateStatusAndArchive(status)
+                }
             }
         )
         .installAndShowCard(in: self)
@@ -518,6 +523,13 @@ extension CollaborationFlowController {
         guard let collaboration = collaboration else { return }
         model.run(model.update(status: status, forCollaboration: collaboration)) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status") }
+        }
+    }
+
+    private func updateStatusAndArchive(_ status: Status) {
+        guard let collaboration = collaboration else { return }
+        model.run(model.updateStatusAndArchive(status, forCollaborations: [collaboration.id])) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }
         }
     }
 }

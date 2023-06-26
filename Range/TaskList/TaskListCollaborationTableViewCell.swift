@@ -124,15 +124,11 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
         // it animates the views in a weird way
         UIView.performWithoutAnimation {
             if collaboration.isArchived {
-                let archivedLabel = LabelWithTextInsets()
-                archivedLabel.textInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
-                archivedLabel.font = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
-                archivedLabel.textColor = .Neutral_01
-                archivedLabel.adjustsFontForContentSizeCategory = true
-                archivedLabel.backgroundColor = .Archived
-                archivedLabel.text = String(localized: "Archived")
-                archivedLabel.autoround = true
-                detailsStackView.addArrangedSubview(archivedLabel)
+                // show status only if not archived
+                let statusView = StatusView()
+                statusView.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
+                statusView.setArchived()
+                detailsStackView.addArrangedSubview(statusView)
             } else if let status = collaboration.status {
                 // show status only if not archived
                 let statusView = StatusView()

@@ -34,6 +34,7 @@ enum ActionCommand: Codable {
     case updateCollaborationsAssignee(UpdateCollaborationsAssigneeCommand)
     case updateCollaborationsDueDate(UpdateCollaborationsDueDateCommand)
     case updateCollaborationsStatus(UpdateCollaborationsStatusCommand)
+    case updateCollaborationsStatusAndArchive(UpdateCollaborationsStatusAndArchiveCommand)
     case updateCollaborationsTags(UpdateCollaborationsTagsCommand)
     case updateCommentText(UpdateCommentTextCommand)
     case updateGeometriesArchived(UpdateGeometriesArchivedCommand)
@@ -56,6 +57,7 @@ enum ActionCommand: Codable {
         case let c as UpdateCollaborationsAssigneeCommand: self = .updateCollaborationsAssignee(c)
         case let c as UpdateCollaborationsDueDateCommand: self = .updateCollaborationsDueDate(c)
         case let c as UpdateCollaborationsStatusCommand: self = .updateCollaborationsStatus(c)
+        case let c as UpdateCollaborationsStatusAndArchiveCommand: self = .updateCollaborationsStatusAndArchive(c)
         case let c as UpdateCollaborationsTagsCommand: self = .updateCollaborationsTags(c)
         case let c as UpdateCommentTextCommand: self = .updateCommentText(c)
         case let c as UpdateGeometriesArchivedCommand: self = .updateGeometriesArchived(c)
@@ -81,6 +83,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationsAssignee(c): return c
         case let .updateCollaborationsDueDate(c): return c
         case let .updateCollaborationsStatus(c): return c
+        case let .updateCollaborationsStatusAndArchive(c): return c
         case let .updateCollaborationsTags(c): return c
         case let .updateCommentText(c): return c
         case let .updateGeometriesArchived(c): return c
@@ -105,6 +108,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationsAssignee(c): return c
         case let .updateCollaborationsDueDate(c): return c
         case let .updateCollaborationsStatus(c): return c
+        case let .updateCollaborationsStatusAndArchive(c): return c
         case let .updateCollaborationsTags(c): return c
         case let .updateCommentText(c): return c
         case let .updateGeometriesArchived(c): return c

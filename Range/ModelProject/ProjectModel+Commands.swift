@@ -371,8 +371,17 @@ extension ProjectModel {
     }
 
     func update(status: Status, forCollaborations collaborationIds: [String]) -> Command {
-        UpdateCollaborationsStatusCommand(
+        UpdateCollaborationsStatusCommand(authorId: userId, collaborationIds: collaborationIds, statusId: status.id)
+    }
+
+    /// Update status for given collaborations and mark as archived
+    func updateStatusAndArchive(_ status: Status, forCollaborations collaborationIds: [String]) -> Command {
+        let geometryIds = [Collaboration](mainRealm.objects(Collaboration.self))
+            .filter { collaborationIds.contains($0.id) }
+            .compactMap { $0.feature.first?.geometry.first?.id }
+        return UpdateCollaborationsStatusAndArchiveCommand(
             authorId: userId,
+            geometryIds: geometryIds,
             collaborationIds: collaborationIds,
             statusId: status.id
         )

@@ -298,23 +298,11 @@ extension ProjectFlowController: ProjectFlowActions {
             ToastWindow.shared.showError(text: "Completed status not found")
             return
         }
-        let statusUpdateCommand = model.update(status: completedStatus, forCollaboration: collaboration)
-        guard let archiveCommand = try? model.markCollaboration(collaboration, archived: true) else {
-            ToastWindow.shared.showError(text: "Failed to complete and archive the task")
-            return
-        }
-        // Run 2 commands one after another. First mark completed then archive.
-        // It could be reimplemented as a command that does both in one transaction but to archive after
-        // changing the status to complete is not that bad...
-        Task {
-            do {
-                try await model.run(statusUpdateCommand)
-                try await model.run(archiveCommand)
-                ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived")
-            } catch {
-                Logger.firestore.error("Failed to complete and archive the task: \(error, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to complete and archive the task")
-            }
+        model.run(
+            model.updateStatusAndArchive(completedStatus, forCollaborations: [collaboration.id])
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to complete and archive the task") }
+            else { ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived") }
         }
     }
 }

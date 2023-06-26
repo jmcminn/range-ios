@@ -35,7 +35,20 @@ class StatusView: UIView {
     /// If `count` is provided it displays it in the parentheses next to the status name
     func setStatus(_ status: Status, selected: Bool = false, count: Int? = nil) {
         backgroundColor = status.color
+        var text = status.name
+        if let count = count {
+            text += " (\(count))"
+        }
+        set(text: text, selected: selected)
+    }
 
+    /// special version of the view which shows the archived "status". "Archived" is not really a status but it's still rendered in a similar way
+    func setArchived(text: String = String(localized: "Archived")) {
+        backgroundColor = .Archived
+        set(text: text, selected: false)
+    }
+
+    private func set(text: String, selected: Bool) {
         textLabel.font = font
         textLabel.textInsets = contentInsets
 
@@ -63,10 +76,6 @@ class StatusView: UIView {
             }
         }
 
-        var text = status.name
-        if let count = count {
-            text += " (\(count))"
-        }
         textLabel.text = text
         textLabel.sizeToFit()
         var statusSize = textLabel.frame.size

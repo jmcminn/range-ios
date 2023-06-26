@@ -9,16 +9,30 @@ class StatusPickerCardViewController: SheetCardViewController {
     private let selectedStatus: Status?
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    var onStatusPicked: ((Status) -> Void)?
+    enum StatusOption {
+        case status(Status) // a status was picked
+        case completeAndArchive(Status) // a special option to complete and archive was picked
+    }
+
+    var onStatusPicked: ((StatusOption) -> Void)?
+
+    let options: [StatusOption]
 
     /// Initializer
     ///
     /// - Parameters:
     ///     - title:                         title of the card
     ///     - statuses:                 statuses to show in the picker
-    init(title: String, statuses: [Status], selectedStatus: Status?, onStatusPicked: ((Status) -> Void)? = nil) {
+    init(title: String, statuses: [Status], selectedStatus: Status?, onStatusPicked: ((StatusOption) -> Void)? = nil) {
         self.statuses = statuses
         self.selectedStatus = selectedStatus
+        var options: [StatusOption] = statuses.map { .status($0) }
+        // present the complete+archive option
+        if let completeStatus = statuses.first(where: { $0.isCompleted }) {
+            options.append(.completeAndArchive(completeStatus))
+        }
+        self.options = options
+
         super.init(icon: nil, title: title)
         self.onStatusPicked = onStatusPicked
     }
@@ -45,7 +59,14 @@ class StatusPickerCardViewController: SheetCardViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: "StatusCell")
+        tableView.register(
+            StatusTableViewCell.self,
+            forCellReuseIdentifier: StatusTableViewCell.Variant.status.rawValue
+        )
+        tableView.register(
+            StatusTableViewCell.self,
+            forCellReuseIdentifier: StatusTableViewCell.Variant.statusAndArchive.rawValue
+        )
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -75,13 +96,27 @@ extension StatusPickerCardViewController: UITableViewDelegate, UITableViewDataSo
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        statuses.count
+        options.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "StatusCell", for: indexPath) as! StatusTableViewCell
-        let status = statuses[indexPath.row]
-        cell.setStatus(status, selected: status == selectedStatus)
+        let statusOption = options[indexPath.row]
+
+        let cell: StatusTableViewCell
+
+        if case let .status(status) = statusOption {
+            cell = tableView.dequeueReusableCell(
+                withIdentifier: StatusTableViewCell.Variant.status.rawValue,
+                for: indexPath
+            ) as! StatusTableViewCell
+            cell.setStatus(statusOption, selected: status == selectedStatus)
+        } else {
+            cell = tableView.dequeueReusableCell(
+                withIdentifier: StatusTableViewCell.Variant.statusAndArchive.rawValue,
+                for: indexPath
+            ) as! StatusTableViewCell
+            cell.setStatus(statusOption, selected: false)
+        }
         return cell
     }
 
@@ -98,9 +133,9 @@ extension StatusPickerCardViewController: UITableViewDelegate, UITableViewDataSo
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let status = statuses[indexPath.row]
+        let statusOption = options[indexPath.row]
         dismissCard()
-        onStatusPicked?(status)
+        onStatusPicked?(statusOption)
     }
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {

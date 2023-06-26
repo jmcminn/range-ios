@@ -702,8 +702,13 @@ extension TaskListCardViewController {
             title: "Assign Status",
             statuses: statuses,
             selectedStatus: nil,
-            onStatusPicked: { [weak self] newStatus in
-                self?.bulkUpdateStatus(newStatus)
+            onStatusPicked: { [weak self] result in
+                switch result {
+                case let .status(status):
+                    self?.bulkUpdateStatus(status)
+                case let .completeAndArchive(status):
+                    self?.bulkUpdateStatusAndArchive(status)
+                }
             }
         )
         .installAndShowCard(in: self)
@@ -714,6 +719,14 @@ extension TaskListCardViewController {
             projectModel.update(status: status, forCollaborations: [String](selectedTasks))
         ) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status") }
+        }
+    }
+
+    private func bulkUpdateStatusAndArchive(_ status: Status) {
+        projectModel.run(
+            projectModel.updateStatusAndArchive(status, forCollaborations: [String](selectedTasks))
+        ) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }
         }
     }
 
