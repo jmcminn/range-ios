@@ -45,9 +45,23 @@ extension UpdateCollaborationsStatusAndArchiveCommand: LocalCommand {
 extension UpdateCollaborationsStatusAndArchiveCommand: FirestoreCommand {
     func apply(inFirestore ctx: FirestoreCommandContext) throws {
         // ------------- READS -----------------
+        let collaborationsToUpdate = try getCollaborationsToUpdate(ctx)
+        guard try ctx.exists(.statusName(statusId)) else {
+            throw FirestoreCommandError.obsolete("status doesn't exist")
+        }
+        let geometriesToUpdate = try getGeometriesToUpdate(ctx)
+
+        // ------------- WRITES ----------------
+        try updateCollaborations(ctx, collaborations: collaborationsToUpdate)
+        updateGeometries(ctx, geometriesToUpdate)
+    }
+
+    /// Returns an array of existing collaboration as (id, collab) pairs as FirestoreCollaboration doesn't contain the id
+    private func getCollaborationsToUpdate(_ ctx: FirestoreCommandContext) throws
+        -> [(String, FirestoreCollaboration)]
+    {
         let collaborationsToUpdate = try collaborationIds.compactMap { id in
             if let collaboration = try ctx.getDocument(.collaboration(id), as: FirestoreCollaboration.self) {
-                // return a pair of (id, collab) as FirestoreCollaboration doesn't contain the id
                 return (id, collaboration)
             } else {
                 return nil
@@ -56,16 +70,14 @@ extension UpdateCollaborationsStatusAndArchiveCommand: FirestoreCommand {
         if !collaborationIds.isEmpty, collaborationsToUpdate.isEmpty {
             throw FirestoreCommandError.obsolete("collaboration doesn't exist")
         }
-        guard try ctx.exists(.statusName(statusId)) else {
-            throw FirestoreCommandError.obsolete("status doesn't exist")
-        }
-        let geometriesToUpdate = try geometryIds.filter { try ctx.exists(.geometry($0)) }
-        if !geometryIds.isEmpty, geometriesToUpdate.isEmpty {
-            throw FirestoreCommandError.obsolete("geometry doesn't exist")
-        }
+        return collaborationsToUpdate
+    }
 
-        // ------------- WRITES ----------------
-        for ((collaborationId, collaboration), updateId) in zip(collaborationsToUpdate, updateIds) {
+    private func updateCollaborations(
+        _ ctx: FirestoreCommandContext,
+        collaborations: [(String, FirestoreCollaboration)]
+    ) throws {
+        for ((collaborationId, collaboration), updateId) in zip(collaborations, updateIds) {
             ctx.updateData(
                 [FirestoreCollaboration.CodingKeys.statusId.rawValue: statusId],
                 forDocument: .collaboration(collaborationId)
@@ -81,7 +93,19 @@ extension UpdateCollaborationsStatusAndArchiveCommand: FirestoreCommand {
                 inFirestore: ctx
             )
         }
-        for geometryId in geometriesToUpdate {
+    }
+
+    /// Returns array of existing geometries to update
+    private func getGeometriesToUpdate(_ ctx: FirestoreCommandContext) throws -> [String] {
+        let geometriesToUpdate = try geometryIds.filter { try ctx.exists(.geometry($0)) }
+        if !geometryIds.isEmpty, geometriesToUpdate.isEmpty {
+            throw FirestoreCommandError.obsolete("geometry doesn't exist")
+        }
+        return geometriesToUpdate
+    }
+
+    private func updateGeometries(_ ctx: FirestoreCommandContext, _ geometries: [String]) {
+        for geometryId in geometries {
             ctx.updateData(
                 [
                     FirestoreGeometry.CodingKeys.archivedTimestamp.rawValue: FieldValue.serverTimestamp(),
