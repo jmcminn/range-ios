@@ -113,7 +113,7 @@ class ProjectsFlowController: UINavigationController {
             self?.signOut()
         }
         return UIHostingController(
-            rootView: UserSettingsView().environmentObject(userSettings)
+            rootView: UserSettingsView().environmentObject(userSettings).environmentObject(projectsModel.currentUser!)
         )
     }
 

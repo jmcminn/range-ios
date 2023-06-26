@@ -3,6 +3,8 @@ import Foundation
 
 /// Storage for user settings
 final class UserSettings: ObservableObject {
+    let appVersion: String
+
     /// callback for the controller using UserSettings
     var signOutAction: (() -> Void)?
 
@@ -33,5 +35,10 @@ final class UserSettings: ObservableObject {
 
         _uploadUsingCellular = .init(initialValue: defaults.bool(forKey: Keys.uploadUsingCellular))
         _saveImagesToDevice = .init(initialValue: defaults.bool(forKey: Keys.saveImagesToDevice))
+
+        let appName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String ?? ""
+        let releaseVersionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+        let buildVersionNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
+        appVersion = "\(appName) v\(releaseVersionNumber) (\(buildVersionNumber))"
     }
 }

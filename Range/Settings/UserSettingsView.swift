@@ -2,9 +2,16 @@ import SwiftUI
 
 struct UserSettingsView: View {
     @EnvironmentObject var userSettings: UserSettings
+    @EnvironmentObject var currentUser: Participant
 
     var body: some View {
         Form {
+            Section(
+                header: Text("Signed in as"),
+                footer: Text(currentUser.email)
+                    .foregroundColor(.dynamic(.Neutral_04))
+                    .font(.body)
+            ) {}
             Section(header: Text("Uploads")) {
                 Toggle(isOn: $userSettings.uploadUsingCellular) {
                     Text("Allow uploads using cellular data")
@@ -38,7 +45,7 @@ struct UserSettingsView: View {
                     }.buttonStyle(.plain)
                 }
             }
-            Section {
+            Section(footer: Text(userSettings.appVersion)) {
                 Button(action: userSettings.signOutAction ?? {}) {
                     Text("Sign out")
                         .frame(maxWidth: .infinity, alignment: .center)
