@@ -4,6 +4,19 @@ import Kingfisher
 import SwiftUI
 import UIKit
 
+// To use SwiftUI AnnotationsToolbarView over a gallery (UIScrollView) we need to wrap the gallery
+// into a SwiftUI view and use SwiftUI to compose the views. Otherwise the AnnotationsToolbarView
+// cannot extend over the photos (when showing some selectors like scribble thickness). If it's allowed
+// to extend over the photos, then it steals the gestures from UIScrollView below and I couldn't find
+// a way to make it work.
+//
+// View hierarchy (indentation = subviews hierarchy, views on the same level ordered from front to back)
+// - FullscreenImageGalleryViewController.view (UIView)
+//    - top buttons (UIViews for now)
+//    - FullscreenImageGalleryView (SwiftUI view)
+//      - AnnotationsToolbarView
+//      - FullscreenImageGalleryScrollViewRepresentable (wraps gallery UIScrollView for SwiftUI)
+
 // implementation loosely based on https://github.com/zvonicek/ImageSlideshow
 
 /// Image gallery presenting the photos as a horizontal scroll with only 1 image visible at a time and taking the full width.
@@ -28,7 +41,6 @@ class FullscreenImageGalleryViewController: UIViewController {
     let scrollView = UIScrollView()
     private let currentPageLabel = UILabel()
     private var annotationsSettingsButton: UIButton!
-    private var annotationsToolbarVC: AnnotationsToolbarViewController!
     private var deleteButton: UIButton!
     private var cancelButton: UIButton!
     private var confirmButton: UIButton!
@@ -38,7 +50,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     /// for storing the annotationsViewModel scribbling subscriber
     private var annotationsViewModelScribbleModeSubscriber: AnyCancellable?
     /// array of Annotations object for each page
-    private var annotationsPerPage: [Annotations]
+    private var annotationsPerPage: [AnnotationsView]
     private let annotationsSettings = AnnotationsDevSettings()
 
     /// Transitioning delegate to manage the transition to this controller
@@ -81,7 +93,7 @@ class FullscreenImageGalleryViewController: UIViewController {
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
         let annotationsViewModel = AnnotationsViewModel()
         self.annotationsViewModel = annotationsViewModel
-        annotationsPerPage = pages.map { page in Annotations(hostView: page, viewModel: annotationsViewModel) }
+        annotationsPerPage = pages.map { page in AnnotationsView(hostView: page, viewModel: annotationsViewModel) }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -102,12 +114,20 @@ class FullscreenImageGalleryViewController: UIViewController {
         setupButtons()
         setupCurrentPageLabel()
 
-        view.addSubview(scrollView)
         pages.forEach(scrollView.addSubview)
         scrollView.addSubview(pageSeparator)
-        scrollView.snp.makeConstraints { make in
+
+        let galleryViewScroll = FullscreenImageGalleryScrollViewRepresentable(view: scrollView)
+        let galleryView = FullscreenImageGalleryView(
+            annotationsViewModel: annotationsViewModel,
+            imageGalleryView: galleryViewScroll
+        )
+        let galleryViewController = UIHostingController(rootView: galleryView)
+        add(childController: galleryViewController)
+        galleryViewController.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        galleryViewController.view.backgroundColor = .clear
 
         view.addSubview(currentPageLabel)
         currentPageLabel.snp.makeConstraints { make in
@@ -139,13 +159,6 @@ class FullscreenImageGalleryViewController: UIViewController {
                 make.width.greaterThanOrEqualTo(40)
                 make.centerY.equalTo(currentPageLabel)
                 make.leading.equalToSuperview().inset(16)
-            }
-
-            annotationsToolbarVC = AnnotationsToolbarViewController(viewModel: annotationsViewModel)
-            add(childController: annotationsToolbarVC)
-            annotationsToolbarVC.view.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
             }
         }
         if let annotationsSettingsButton = annotationsSettingsButton {

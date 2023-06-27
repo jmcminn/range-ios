@@ -4,7 +4,7 @@ struct AnnotationsToolbarView: View {
     @ObservedObject var model: AnnotationsViewModel
 
     /// background for toolbar buttons
-    private var background: some View {
+    private var panelBackground: some View {
         let rectangle = RoundedRectangle(cornerRadius: 40)
         // cannot add fill and stroke to rectangle, so we need rectange with background rectangle
         return rectangle
@@ -30,9 +30,8 @@ struct AnnotationsToolbarView: View {
                 .strokeBorder(Color.Neutral_10, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_10))
                 .frame(width: 48, height: 48)
-                // TODO: 1290 this should be a view with some thickness depending on the view model
-                .overlay(Image(systemName: "line.3.horizontal")
-                    .font(.system(size: 22, weight: .semibold))
+                .overlay(RoundedRectangle(cornerRadius: 1000)
+                    .frame(width: 30, height: model.currentScribbleThickness.toolbarWidth)
                     .foregroundColor(.Neutral_01))
         }.buttonStyle(.plain)
     }
@@ -61,24 +60,49 @@ struct AnnotationsToolbarView: View {
         }.buttonStyle(.plain)
     }
 
-    var body: some View {
-        HStack(spacing: 4) {
-            scribbleButton
-            if model.selectedAnnotation != nil {
-                Spacer(minLength: 40)
-                // TODO: 1290
-//                scribbleThicknessButton
-                deleteButton
-                unselectButton
+    // TODO: 1290
+    private var scribbleThicknessSelector: some View {
+        VStack(spacing: 8) {
+            ForEach(Annotations.ScribbleThickness.allCases, id: \.rawValue) { thickness in
+                Button(action: {}) {
+                    Circle()
+                        .strokeBorder(Color.Neutral_10, lineWidth: 1)
+                        .background(Circle().fill(Color.Neutral_10))
+                        .frame(width: 48, height: 48)
+                        .overlay(RoundedRectangle(cornerRadius: 1000)
+                            .frame(width: 30, height: thickness.toolbarWidth)
+                            .foregroundColor(.Neutral_01))
+                }.buttonStyle(.plain)
             }
         }
-        .padding(16)
-        .background(background)
-        .padding(.horizontal, 16)
-        .animation(
-            .default,
-            value: model.selectedAnnotation
-        )
+        .padding(8)
+        .background(panelBackground)
+    }
+
+    var body: some View {
+        VStack {
+            HStack(spacing: 4) {
+                scribbleButton
+                if model.selectedAnnotation != nil || model.scribbleMode {
+                    Spacer(minLength: 40)
+                    scribbleThicknessButton.overlay {
+                        // TODO: 1290
+//                        scribbleThicknessSelector
+                    }
+                }
+                if model.selectedAnnotation != nil {
+                    Divider().frame(width: 1, height: 48).overlay(Color.Neutral_07)
+                    deleteButton
+                    unselectButton
+                }
+            }
+            .padding(16)
+            .background(panelBackground)
+            .animation(
+                .default,
+                value: model.selectedAnnotation
+            )
+        }
     }
 }
 
