@@ -2,13 +2,13 @@ import Foundation
 import UIKit
 
 class CollaborationButton: UIControl {
-    private let badge: CollaborationBadgeView
+    private let badge: CollaborationBadgeButton
     private let collaborationNameLabel = UILabel()
     private let canvasNameLabel = UILabel()
     private let disclosureIndicator = UIImageView()
 
     init(collaboration: Collaboration) {
-        badge = CollaborationBadgeView(collaboration)
+        badge = CollaborationBadgeButton(collaboration)
         super.init(frame: .zero)
 
         setupViews()

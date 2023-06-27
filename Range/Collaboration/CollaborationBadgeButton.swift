@@ -4,13 +4,11 @@ import UIKit
 
 /// Badge for a collaboration that display uploads count and a flag.
 /// It observes the collaboration and reloads if it's updated.
-class CollaborationBadgeView: ViewWithTapAreaInsets {
+class CollaborationBadgeButton: ButtonWithTapAreaInsets {
     private let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
     private var geometryNotificationToken: NotificationToken?
     private var commentsNotificationToken: NotificationToken?
-    // the pink circle
-    private var badgeView = UIView()
     // optional label showing number of uploads, only for photo collabs (= no status)
     private var numberOfUploadsLabel: UILabel?
     // optional checkmark shown for collaborations having status (instead of the numberOfUploadsLabel)
@@ -26,7 +24,7 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
         tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
         setContentHuggingPriority(.required, for: .horizontal)
 
-        setupView()
+        setupConfiguration()
 
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.updateBadge()
@@ -47,16 +45,25 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
         commentsNotificationToken?.invalidate()
     }
 
-    private func setupView() {
-        backgroundColor = .clear
+    private func setupConfiguration() {
+        var config = UIButton.Configuration.filled()
+        config.baseForegroundColor = .Neutral_01
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 16
+        config.background.strokeColor = .init(white: 0, alpha: 0.2)
 
-        badgeView.layer.cornerRadius = 16
-        badgeView.layer.borderWidth = 1
-        badgeView.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
-        addSubview(badgeView)
-        badgeView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        configurationUpdateHandler = { [weak self] button in
+            guard let self = self else { return }
+            guard !self.collaboration.isInvalidated else { return }
+            var config = button.configuration
+            if let status = collaboration.status {
+                config?.baseBackgroundColor = collaboration.isArchived ? .Archived : status.color
+            } else {
+                config?.baseBackgroundColor = collaboration.isArchived ? .Archived : .Pink_03
+            }
+            button.configuration = config
         }
+        configuration = config
     }
 
     /// Updates the number on the badge and shows/hides the flag
@@ -64,9 +71,8 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
         guard !collaboration.isInvalidated else { return }
         let uploadsCount = collaboration.uploads.count
 
-        if let status = collaboration.status {
+        if collaboration.status != nil {
             // display status
-            badgeView.backgroundColor = collaboration.isArchived ? .Archived : status.color
             numberOfUploadsLabel?.isHidden = true
             if let checkmarkView = checkmarkView {
                 checkmarkView.isHidden = false
@@ -75,7 +81,6 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
             }
         } else {
             // display number of photos
-            badgeView.backgroundColor = collaboration.isArchived ? .Archived : .Pink_03
             if let label = numberOfUploadsLabel {
                 label.isHidden = false
             } else {
@@ -98,6 +103,7 @@ class CollaborationBadgeView: ViewWithTapAreaInsets {
         } else {
             markerView?.isHidden = true
         }
+        setNeedsUpdateConfiguration()
     }
 
     /// Creates the note flag image view

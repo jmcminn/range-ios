@@ -24,7 +24,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     /// For now it's a constant set in init, so no support for switching the type of view
     let isTaskWindow: Bool
 
-    var badgeView: CollaborationBadgeView!
+    var badgeButton: CollaborationBadgeButton!
     var statusButton: CollaborationStatusButton!
     /// shown for archived collaboration (for tasks it replaces the status button)
     var archivedLabel: LabelWithTextInsets!
@@ -100,18 +100,18 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
         containerView.installSliderView()
 
-        badgeView = CollaborationBadgeView(collaboration)
+        badgeButton = CollaborationBadgeButton(collaboration)
         // quick actions on badgeView
         let singleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
         singleTapRecognizer.numberOfTapsRequired = 1
-        badgeView.addGestureRecognizer(singleTapRecognizer)
+        badgeButton.addGestureRecognizer(singleTapRecognizer)
         let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
         doubleTapRecognizer.numberOfTapsRequired = 2
-        badgeView.addGestureRecognizer(doubleTapRecognizer)
+        badgeButton.addGestureRecognizer(doubleTapRecognizer)
         singleTapRecognizer.require(toFail: doubleTapRecognizer)
 
-        containerView.addSubview(badgeView)
-        badgeView.snp.makeConstraints { make in
+        containerView.addSubview(badgeButton)
+        badgeButton.snp.makeConstraints { make in
             make.leading.equalTo(16)
             make.top.equalTo(21)
         }
@@ -121,16 +121,16 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         containerView.addSubview(statusButton)
         statusButton.snp.makeConstraints { make in
             make.height.equalTo(32)
-            make.centerY.equalTo(badgeView)
-            make.leading.equalTo(badgeView.snp.trailing).offset(10)
+            make.centerY.equalTo(badgeButton)
+            make.leading.equalTo(badgeButton.snp.trailing).offset(10)
         }
 
         setupArchivedLabel()
         containerView.addSubview(archivedLabel)
         archivedLabel.snp.makeConstraints { make in
             make.height.equalTo(32)
-            make.centerY.equalTo(badgeView)
-            make.leading.equalTo(badgeView.snp.trailing).offset(10)
+            make.centerY.equalTo(badgeButton)
+            make.leading.equalTo(badgeButton.snp.trailing).offset(10)
         }
 
         setupCloseButton()
@@ -152,7 +152,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         containerView.addSubview(nameTextView)
         nameTextView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(badgeView.snp.bottom).offset(Constants.verticalSpacing)
+            make.top.equalTo(badgeButton.snp.bottom).offset(Constants.verticalSpacing)
             textViewHeightConstraint = make.height.equalTo(textViewHeight).priority(.high).constraint
         }
 
@@ -265,7 +265,7 @@ extension CollaborationViewController {
 extension CollaborationViewController {
     private func onCollaborationUpdated() {
         guard !collaboration.isInvalidated else { return }
-        badgeView.isUserInteractionEnabled = !collaboration.isArchived
+        badgeButton.isUserInteractionEnabled = !collaboration.isArchived
 
         statusButton.isHidden = !isTaskWindow || collaboration.isArchived
         archivedLabel.isHidden = !collaboration.isArchived

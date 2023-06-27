@@ -9,7 +9,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
     private var geometryNotificationToken: NotificationToken?
     var onClose: (() -> Void)?
 
-    private var badgeView: CollaborationBadgeView!
+    private var badgeButton: CollaborationBadgeButton!
     private var nameLabel: UILabel!
     private var moreButton: UIButton!
     private var closeButton: UIButton!
@@ -53,17 +53,17 @@ class CollaborationHeaderCoverViewController: UIViewController {
             make.height.equalTo(1)
         }
 
-        badgeView = CollaborationBadgeView(collaboration)
+        badgeButton = CollaborationBadgeButton(collaboration)
         let singleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
         singleTapRecognizer.numberOfTapsRequired = 1
-        badgeView.addGestureRecognizer(singleTapRecognizer)
+        badgeButton.addGestureRecognizer(singleTapRecognizer)
         let doubleTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(statusBadgeTapped))
         doubleTapRecognizer.numberOfTapsRequired = 2
-        badgeView.addGestureRecognizer(doubleTapRecognizer)
+        badgeButton.addGestureRecognizer(doubleTapRecognizer)
         singleTapRecognizer.require(toFail: doubleTapRecognizer)
 
-        view.addSubview(badgeView)
-        badgeView.snp.makeConstraints { make in
+        view.addSubview(badgeButton)
+        badgeButton.snp.makeConstraints { make in
             make.leading.equalTo(16)
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(9)
             make.bottom.equalToSuperview().offset(-9)
@@ -73,7 +73,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
         view.addSubview(closeButton)
         closeButton.snp.makeConstraints { make in
             make.width.height.equalTo(40)
-            make.centerY.equalTo(badgeView.snp.centerY)
+            make.centerY.equalTo(badgeButton.snp.centerY)
             make.trailing.equalToSuperview().inset(7)
         }
 
@@ -87,8 +87,8 @@ class CollaborationHeaderCoverViewController: UIViewController {
         setupNameLabel()
         view.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(badgeView.snp.centerY)
-            make.leading.equalTo(badgeView.snp.trailing).offset(16)
+            make.centerY.equalTo(badgeButton.snp.centerY)
+            make.leading.equalTo(badgeButton.snp.trailing).offset(16)
             make.trailing.equalTo(moreButton.snp.leading).offset(-16)
         }
 
@@ -103,7 +103,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
 
     private func onCollaborationUpdated() {
         guard !collaboration.isInvalidated else { return }
-        badgeView.isUserInteractionEnabled = !collaboration.isArchived
+        badgeButton.isUserInteractionEnabled = !collaboration.isArchived
         let name = collaboration.name.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
             nameLabel.textColor = .dynamic(.Neutral_05)
