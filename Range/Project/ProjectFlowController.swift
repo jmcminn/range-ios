@@ -74,6 +74,8 @@ final class ProjectFlowController: UIViewController {
 
     // Canvas filters for this project
     let canvasFilters: CanvasFilters
+    // Default filters, never updated, for comparison of current filters output vs the default one for filters indicator badge
+    let defaultCanvasFilters: CanvasFilters
 
     /// Arbitrary way of deciding whether user is currently editing the project (so in the middle of some meaningful action that should not
     /// be aborted without confirmation)
@@ -132,6 +134,8 @@ final class ProjectFlowController: UIViewController {
         }
         canvasFilters = UserDefaults.canvasFilters(forProjectId: projectId)
         canvasFilters.model = model
+        defaultCanvasFilters = CanvasFilters()
+        defaultCanvasFilters.model = model
 
         canvasContainer = try await CanvasContainerViewController(model: model, canvasFilters: canvasFilters)
         collaborationFlow = CollaborationFlowController(
@@ -472,26 +476,16 @@ extension ProjectFlowController: CanvasViewControllerDelegate {
 
 extension ProjectFlowController {
     /// Updates the filters indicator badge visibility and number to indicate that filters are affecting the visible pins.
-    /// There is special treatment applied to archived pins - we don't want to show the indicator that archived pins are hidden when the
-    /// filters has them disabled (because we want to hide the archived pins by default)
     /// Called when filters change or pins are updated or canvas is switched.
     @objc private func updateFiltersIndicatorBadge() {
         let allPins = model.currentCanvas.pins
             .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
 
-        // filters hide the archived pins by default and we don't want to show the indicator if the
-        // only affected pins are the archived ones
-        let allNonArchivedPins = allPins.filter { !$0.isArchived }
-
         let filteredPinsCount = allPins.filter(canvasFilters.match).count
+        let defaultFilteredPinsCount = allPins.filter(defaultCanvasFilters.match).count
 
-        if canvasFilters.showArchivedPins {
-            // don't show the indicator if filter is not impacting the visible pins
-            controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == allPins.count
-        } else {
-            // don't show the indicator if filter is not impacting the visible non archived pins
-            controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == allNonArchivedPins.count
-        }
+        // don't show the indicator if filter is not impacting the visible pins
+        controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == defaultFilteredPinsCount
 
         // show the pins count (including the archived pins if enabled)
         controls.canvasFiltersIndicatorBadge?.text = filteredPinsCount >= 99 ? "99+" : String(filteredPinsCount)

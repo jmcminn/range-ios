@@ -42,7 +42,10 @@ class TaskListCardViewController: SheetCardViewController {
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
 
+    /// Currently applied filters
     private let filters: TaskListFilters
+    /// Default filters, never updated, for comparison of current filters output vs the default one for filters indicator badge
+    private let defaultFilters: TaskListFilters
     private let filtersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
     private let filtersIndicatorBadge = BadgeView()
 
@@ -64,6 +67,7 @@ class TaskListCardViewController: SheetCardViewController {
         self.projectModel = projectModel
         self.canvasContainer = canvasContainer
         filters = UserDefaults.taskListFilters(forModel: projectModel)
+        defaultFilters = TaskListFilters(model: projectModel)
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.placeholder == false && c.status != nil // only tasks
@@ -387,20 +391,15 @@ extension TaskListCardViewController {
         updateData()
     }
 
+    /// Show filters indicator badge only if the number of items filtered by the current filter is different than the number
+    /// of items filtered by the default filter
     private func updateFiltersIndicatorBadge() {
         let filteredCount = filteredCollaborations.count
 
-        // filters hide the archived tasks by default and we don't want to show the indicator if the
-        // only affected tasks are the archived ones
-        let allNonArchivedTasks = collaborations.filter { !$0.isArchived }
+        let filteredByDefaultFilterCount = collaborations.filter(defaultFilters.match).count
 
-        if filters.showArchived {
-            // don't show the indicator if filter is not impacting the visible tasks
-            filtersIndicatorBadge.isHidden = filteredCount == collaborations.count
-        } else {
-            // don't show the indicator if filter is not impacting the visible non archived tasks
-            filtersIndicatorBadge.isHidden = filteredCount == allNonArchivedTasks.count
-        }
+        // don't show the indicator if filter is not impacting the visible tasks
+        filtersIndicatorBadge.isHidden = filteredCount == filteredByDefaultFilterCount
 
         filtersIndicatorBadge.text = filteredCount >= 99 ? "99+" : String(filteredCount)
     }
