@@ -200,14 +200,6 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         addSpace(height: 9)
         addSeparator()
 
-        // ----- Canvas ----------------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Filter by Canvas")),
-            control: filterByCanvasSwitch,
-            bottomInset: 4) // the rest = 9 is added below canvases view
-        addCanvasesView()
-        addSpace(height: 9)
-        addSeparator()
-
         // ----- Statuses --------------------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Filter by Status")), bottomInset: 5)
         for (index, status) in statuses.enumerated() {
@@ -218,15 +210,23 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         }
         addSeparator()
 
+        // ----- Overdue tasks ---------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show Overdue Tasks")), control: showOverdueSwitch)
+        addSeparator()
+
+        // ----- Canvas ----------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Canvas")),
+            control: filterByCanvasSwitch,
+            bottomInset: 4) // the rest = 9 is added below canvases view
+        addCanvasesView()
+        addSpace(height: 9)
+        addSeparator()
+
         // ----- Tags ------------------------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Filter by Tags")), control: filterByTagsSwitch,
             bottomInset: 4) // the rest = 9 is added below tags view
         addTagsView()
         addSpace(height: 9)
-        addSeparator()
-
-        // ----- Overdue tasks ---------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Overdue Tasks")), control: showOverdueSwitch)
         addSeparator()
 
         // ----- Tasks I've created ----------------------------------------------------------------
