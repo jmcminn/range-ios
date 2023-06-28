@@ -55,6 +55,7 @@
 		0A144F452A49D0A0000F7593 /* Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A144F442A49D0A0000F7593 /* Annotations.swift */; };
 		0A144F472A4B22FB000F7593 /* FullscreenImageGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A144F462A4B22FB000F7593 /* FullscreenImageGalleryView.swift */; };
 		0A144F492A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A144F482A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift */; };
+		0A144F4C2A4C577A000F7593 /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */; };
 		0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A147E7D294C5CB700B5833A /* CollaborationButton.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
@@ -453,6 +454,7 @@
 		0A144F442A49D0A0000F7593 /* Annotations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotations.swift; sourceTree = "<group>"; };
 		0A144F462A4B22FB000F7593 /* FullscreenImageGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryView.swift; sourceTree = "<group>"; };
 		0A144F482A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryScrollViewRepresentable.swift; sourceTree = "<group>"; };
+		0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
 		0A147E7D294C5CB700B5833A /* CollaborationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationButton.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
@@ -1007,6 +1009,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		0A144F4A2A4C575E000F7593 /* ViewsSwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */,
+			);
+			path = ViewsSwiftUI;
+			sourceTree = "<group>";
+		};
 		0A147E81294E268100B5833A /* Feed */ = {
 			isa = PBXGroup;
 			children = (
@@ -1405,6 +1415,7 @@
 				0A797F70292BDA6D00D63567 /* UserPicker */,
 				0A05312229375BDF00738BA3 /* Utils */,
 				0A4DC7A227F7615700712518 /* Views */,
+				0A144F4A2A4C575E000F7593 /* ViewsSwiftUI */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
@@ -2235,6 +2246,7 @@
 				0A881987291D17060050FC41 /* CommandTypes.swift in Sources */,
 				0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */,
 				0A4D11B529A392EF00D681E7 /* UploadFeedItemCell.swift in Sources */,
+				0A144F4C2A4C577A000F7593 /* VisualEffectView.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */,

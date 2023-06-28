@@ -73,7 +73,7 @@ class ScribblingView: UIView {
 
             let simplifiedPoints = settings.simplifyScribbleLine
                 ? points.simplify(
-                    // TODO: 1183 is this dependent on the scribbleScale?
+                    // TODO: 1290 is this dependent on the scribbleScale?
                     tolerance: Float(1 / scale), // 1
                     highestQuality: true
                 )

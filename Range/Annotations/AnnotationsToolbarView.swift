@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AnnotationsToolbarView: View {
     @ObservedObject var model: AnnotationsViewModel
+    @State var pickingScribbleThickness: Bool = false
 
     /// background for toolbar buttons
     private var panelBackground: some View {
@@ -10,6 +11,18 @@ struct AnnotationsToolbarView: View {
         return rectangle
             .stroke(Color.Neutral_07, lineWidth: 1)
             .background(rectangle.fill(Color.Neutral_10))
+    }
+
+    /// blurred background for toolbar buttons
+    private var blurredPanelBackground: some View {
+        let rectangle = RoundedRectangle(cornerRadius: 40)
+        // cannot add fill and stroke to rectangle, so we need rectange with background rectangle
+        return rectangle
+            .stroke(Color.Neutral_07, lineWidth: 1)
+            .background(
+                VisualEffectView(effect: UIBlurEffect(style: .dark))
+                    .clipShape(rectangle)
+            )
     }
 
     private var scribbleButton: some View {
@@ -25,7 +38,7 @@ struct AnnotationsToolbarView: View {
     }
 
     private var scribbleThicknessButton: some View {
-        Button(action: {}) {
+        Button(action: { pickingScribbleThickness = true }) {
             Circle()
                 .strokeBorder(Color.Neutral_10, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_10))
@@ -60,48 +73,52 @@ struct AnnotationsToolbarView: View {
         }.buttonStyle(.plain)
     }
 
-    // TODO: 1290
-    private var scribbleThicknessSelector: some View {
+    private var scribbleThicknessPicker: some View {
         VStack(spacing: 8) {
             ForEach(Annotations.ScribbleThickness.allCases, id: \.rawValue) { thickness in
-                Button(action: {}) {
+                Button(action: {
+                    model.currentScribbleThickness = thickness
+                    pickingScribbleThickness = false
+                }) {
                     Circle()
-                        .strokeBorder(Color.Neutral_10, lineWidth: 1)
-                        .background(Circle().fill(Color.Neutral_10))
+                        .fill(thickness == model.currentScribbleThickness
+                            ? Color.Neutral_01.opacity(0.2) : Color.clear)
                         .frame(width: 48, height: 48)
-                        .overlay(RoundedRectangle(cornerRadius: 1000)
-                            .frame(width: 30, height: thickness.toolbarWidth)
-                            .foregroundColor(.Neutral_01))
-                }.buttonStyle(.plain)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 1000)
+                                .frame(width: 30, height: thickness.toolbarWidth)
+                                .foregroundColor(.Neutral_01)
+                        }
+                }
+                .buttonStyle(.borderless)
             }
         }
         .padding(8)
-        .background(panelBackground)
+        .background(blurredPanelBackground)
     }
 
     var body: some View {
         VStack {
-            HStack(spacing: 4) {
+            HStack(spacing: 0) {
                 scribbleButton
                 if model.selectedAnnotation != nil || model.scribbleMode {
-                    Spacer(minLength: 40)
-                    scribbleThicknessButton.overlay {
-                        // TODO: 1290
-//                        scribbleThicknessSelector
+                    Spacer().frame(minWidth: 12, idealWidth: 40, maxWidth: 40)
+                    scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {
+                        scribbleThicknessPicker
                     }
                 }
                 if model.selectedAnnotation != nil {
+                    Spacer().frame(width: 12)
                     Divider().frame(width: 1, height: 48).overlay(Color.Neutral_07)
+                    Spacer().frame(width: 12)
                     deleteButton
                     unselectButton
                 }
             }
             .padding(16)
             .background(panelBackground)
-            .animation(
-                .default,
-                value: model.selectedAnnotation
-            )
+            .animation(.default, value: model.selectedAnnotation)
+            .animation(.default, value: model.scribbleMode)
         }
     }
 }
@@ -109,5 +126,34 @@ struct AnnotationsToolbarView: View {
 struct AnnotationsToolbarView_Previews: PreviewProvider {
     static var previews: some View {
         AnnotationsToolbarView(model: AnnotationsViewModel())
+    }
+}
+
+/// View modifier to wrap the code related to presenting a picker over a toolbar button
+struct PickerPopup<T: View>: ViewModifier {
+    let popup: T
+    let isPresented: Binding<Bool>
+
+    init(isPresented: Binding<Bool>, @ViewBuilder content: () -> T) {
+        self.isPresented = isPresented
+        popup = content()
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(alignment: .bottom) {
+                if isPresented.wrappedValue {
+                    popup
+                        .offset(y: 8) // to show the bottom picker button over the toolbar button (picker has padding = 8)
+                }
+            }
+            .animation(.default, value: isPresented.wrappedValue)
+    }
+}
+
+extension View {
+    /// idiomatic way to add picker popup (instead of using modifier in the swift ui code
+    func pickerPopup<T: View>(isPresented: Binding<Bool>, @ViewBuilder content: () -> T) -> some View {
+        modifier(PickerPopup(isPresented: isPresented, content: content))
     }
 }

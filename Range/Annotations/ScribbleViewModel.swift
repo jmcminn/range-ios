@@ -31,7 +31,7 @@ class ScribbleViewModel: NSObject {
 
         // Take the bounds.integral (so the enclosing rectangle with integer coordinates/width/height)
         let scribbleBoundsNoThickness = path.getUIBezierPath().bounds.integral
-        // TODO: 1183 line thickness is hardcoded here
+        // TODO: 1290 line thickness is hardcoded here
         // view bounds need to be extended to cover the whole width of the line
         viewBounds = scribbleBoundsNoThickness.insetBy(dx: -6 / scale, dy: -6 / scale)
         uiPath = path
@@ -65,7 +65,7 @@ class ScribbleViewModel: NSObject {
     /// will be selected. If multiple annotations report the same distance (most likely 0 for overlapping annotations) then the selection will
     /// be based on the current order and selection state of annotations.
     func containsTapLocation(_ location: CGPoint) -> Bool {
-        // TODO: 1183 this only makes sense if we want to use convexHull for "roughlyContainsTapLocation"
+        // TODO: 1290 this only makes sense if we want to use convexHull for "roughlyContainsTapLocation"
         // otherwise the viewBounds kind of cover it anyway and multiple matches will still be
         // decided by "distanceToTapLocation"
 

@@ -11,9 +11,8 @@ class AnnotationsViewModel: ObservableObject {
     /// currently annotated page in photos gallery
     var currentAnnotations: AnnotationsView? { didSet { currentAnnotationsDidSet() }}
 
-    // TODO: 1290 remember for each scribble
     /// Current scribble thickness used for new scribbles (last user choice)
-    var currentScribbleThickness: Annotations.ScribbleThickness = .medium
+    @Published var currentScribbleThickness: Annotations.ScribbleThickness = .medium
 
     /// Is the scribble mode enabled
     @Published private(set) var scribbleMode: Bool = false

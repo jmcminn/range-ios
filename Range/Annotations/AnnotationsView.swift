@@ -101,7 +101,7 @@ extension AnnotationsView {
         guard let hostView = hostView else { return }
 
         hostView.scrollView.isScrollEnabled = !enabled
-        // TODO: 1183 enable when installView called
+        // TODO: 1290 enable when installView called
         if enabled {
             currentScribblingView = ScribblingView(scale: scribbleScale)
             currentScribblingView!.onScribbleCreated = { [weak self] path in
