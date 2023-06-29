@@ -272,7 +272,9 @@ class FullscreenImageGalleryViewController: UIViewController {
         }
         previousSize = viewSize
         // to make sure that it's installed if the image is loaded before the views are layed out
-        annotationsPerPage[currentPage].installView()
+        if currentPage >= 0, currentPage < annotationsPerPage.count {
+            annotationsPerPage[currentPage].installView()
+        }
     }
 
     override dynamic var preferredStatusBarStyle: UIStatusBarStyle {
