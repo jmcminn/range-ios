@@ -48,9 +48,10 @@ class AnnotationsView: NSObject {
 
     private func subscribeToViewModel() {
         viewModel.$lastPickedScribbleThickness
-            .sink { [weak self] thickness in
-                self?.currentScribblingView?.thickness = thickness
-            }
+            .sink { [weak self] in self?.currentScribblingView?.thickness = $0 }
+            .store(in: &subscriptions)
+        viewModel.$lastPickedScribbleColor
+            .sink { [weak self] in self?.currentScribblingView?.color = $0 }
             .store(in: &subscriptions)
     }
 
@@ -88,7 +89,11 @@ class AnnotationsView: NSObject {
 
     /// Add a scribble annotation and return its view
     func add(scribbleWithPath path: RangeBezierPath) {
-        let scribble = Annotations.Scribble(path: path, thickness: viewModel.lastPickedScribbleThickness)
+        let scribble = Annotations.Scribble(
+            path: path,
+            thickness: viewModel.lastPickedScribbleThickness,
+            color: viewModel.lastPickedScribbleColor
+        )
         let scribbleVM = ScribbleViewModel(scale: scribbleScale, scribble: scribble)
         if let hostView = hostView {
             scribbleVM.zoomScale = hostView.scrollView.zoomScale
@@ -124,7 +129,8 @@ extension AnnotationsView {
         if enabled {
             currentScribblingView = ScribblingView(
                 scale: scribbleScale,
-                thickness: viewModel.lastPickedScribbleThickness
+                thickness: viewModel.lastPickedScribbleThickness,
+                color: viewModel.lastPickedScribbleColor
             )
             currentScribblingView!.onScribbleStarted = { [weak self] in
                 // unselect annotation on scribbling started

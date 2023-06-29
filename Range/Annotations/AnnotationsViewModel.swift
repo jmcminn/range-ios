@@ -23,6 +23,12 @@ class AnnotationsViewModel: ObservableObject {
     /// This is last user choice, unaffected by the current selected scribble, it is used for drawing
     @Published private(set) var lastPickedScribbleThickness: Annotations.ScribbleThickness = .medium
 
+    /// Current scribble color used for new scribbles (last user choice)
+    /// If a scribble is selected it's the given scribble color
+    @Published private(set) var currentScribbleColor: UIColor = .Pink_03
+    /// This is last user choice, unaffected by the current selected scribble, it is used for drawing
+    @Published private(set) var lastPickedScribbleColor: UIColor = .Pink_03
+
     @Published private(set) var selectedAnnotation: ScribbleViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
     private var currentAnnotationsViewInstalledObservation: NSKeyValueObservation?
@@ -38,9 +44,16 @@ class AnnotationsViewModel: ObservableObject {
         selectedAnnotation?.setThickness(thickness)
     }
 
+    func setCurrentScribbleColor(_ color: UIColor) {
+        currentScribbleColor = color
+        lastPickedScribbleColor = color
+        selectedAnnotation?.setColor(color)
+    }
+
     private func onAnnotationSelected(_ annotationVM: ScribbleViewModel?) {
         selectedAnnotation = annotationVM
         currentScribbleThickness = selectedAnnotation?.scribble.thickness ?? lastPickedScribbleThickness
+        currentScribbleColor = selectedAnnotation?.scribble.color ?? lastPickedScribbleColor
     }
 
     /// Unselect the currently selected annotation

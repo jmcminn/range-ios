@@ -3,6 +3,7 @@ import UIKit
 
 class ScribbleView: UIView {
     let viewModel: ScribbleViewModel
+    private var scribbleObservation: NSKeyValueObservation?
     private var viewBoundsObservation: NSKeyValueObservation?
     private var zoomScaleObservation: NSKeyValueObservation?
     private var selectedObservation: NSKeyValueObservation?
@@ -14,6 +15,9 @@ class ScribbleView: UIView {
         layer.borderColor = UIColor.Primary_Blue_04.cgColor
         updateBorderWidth()
         transform = CGAffineTransform(scaleX: 1 / viewModel.scale, y: 1 / viewModel.scale)
+        scribbleObservation = viewModel.scribble.observe(\.color, changeHandler: { [weak self] _, _ in
+            self?.setNeedsDisplay()
+        })
         viewBoundsObservation = viewModel.observe(\.viewBounds) { [weak self] _, _ in
             self?.frame = viewModel.viewBounds
             self?.setNeedsLayout()
@@ -65,7 +69,7 @@ class ScribbleView: UIView {
 
         // line
         path.lineWidth = lineWidth
-        UIColor.Pink_03.set()
+        viewModel.scribble.color.set()
         path.stroke()
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct AnnotationsToolbarView: View {
     @ObservedObject var model: AnnotationsViewModel
     @State var pickingScribbleThickness: Bool = false
+    @State var pickingScribbleColor: Bool = false
 
     /// background for toolbar buttons
     private var panelBackground: some View {
@@ -37,40 +38,40 @@ struct AnnotationsToolbarView: View {
         }.buttonStyle(.plain)
     }
 
-    private var scribbleThicknessButton: some View {
-        Button(action: { pickingScribbleThickness = true }) {
-            Circle()
-                .strokeBorder(Color.Neutral_10, lineWidth: 1)
-                .background(Circle().fill(Color.Neutral_10))
-                .frame(width: 48, height: 48)
-                .overlay(RoundedRectangle(cornerRadius: 1000)
-                    .frame(width: 30, height: model.currentScribbleThickness.toolbarWidth)
-                    .foregroundColor(.Neutral_01))
-        }.buttonStyle(.plain)
-    }
-
     private var deleteButton: some View {
         Button(action: { model.deleteAnnotation() }) {
-            Circle()
-                .strokeBorder(Color.Neutral_10, lineWidth: 1)
-                .background(Circle().fill(Color.Neutral_10))
+            Rectangle()
+                .fill(Color.clear)
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "trash")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundColor(.Red_03))
-        }.buttonStyle(.plain)
+        }
     }
 
     private var unselectButton: some View {
         Button(action: { model.unselectAnnotation() }) {
-            Circle()
-                .strokeBorder(Color.Neutral_10, lineWidth: 1)
-                .background(Circle().fill(Color.Neutral_10))
+            Rectangle()
+                .fill(Color.clear)
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "xmark")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundColor(.Neutral_01))
-        }.buttonStyle(.plain)
+        }
+    }
+
+    private var scribbleThicknessButton: some View {
+        Button(action: {
+            pickingScribbleThickness = true
+            pickingScribbleColor = false // hide the other picker if shown
+        }) {
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 48, height: 48)
+                .overlay(RoundedRectangle(cornerRadius: 1000)
+                    .frame(width: 30, height: model.currentScribbleThickness.toolbarWidth)
+                    .foregroundColor(.Neutral_01))
+        }
     }
 
     private var scribbleThicknessPicker: some View {
@@ -90,7 +91,51 @@ struct AnnotationsToolbarView: View {
                                 .foregroundColor(.Neutral_01)
                         }
                 }
-                .buttonStyle(.borderless)
+            }
+        }
+        .padding(8)
+        .background(blurredPanelBackground)
+    }
+
+    private var scribbleColorButton: some View {
+        Button(action: {
+            pickingScribbleThickness = false // hide the other picker if shown
+            pickingScribbleColor = true
+        }) {
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 48, height: 48)
+                .overlay(Circle()
+                    .strokeBorder(Color.Neutral_01, lineWidth: 1)
+                    .background(Circle().fill(Color(model.currentScribbleColor)))
+                    .frame(width: 28, height: 28))
+        }
+    }
+
+    private var scribbleColorPicker: some View {
+        VStack(spacing: 8) {
+            ForEach(Annotations.scribbleColors, id: \.hexString) { color in
+                Button(action: {
+                    model.setCurrentScribbleColor(color)
+                    pickingScribbleColor = false
+                }) {
+                    Circle()
+                        .fill(Color.clear)
+                        .frame(width: 48, height: 48)
+                        .overlay {
+                            if color == model.currentScribbleColor {
+                                Circle()
+                                    .strokeBorder(Color.Neutral_01, lineWidth: 6)
+                                    .background(Circle().fill(Color(color)))
+                                    .frame(width: 40, height: 40)
+                            } else {
+                                Circle()
+                                    .strokeBorder(Color.Neutral_01, lineWidth: 1)
+                                    .background(Circle().fill(Color(color)))
+                                    .frame(width: 28, height: 28)
+                            }
+                        }
+                }
             }
         }
         .padding(8)
@@ -99,18 +144,21 @@ struct AnnotationsToolbarView: View {
 
     var body: some View {
         VStack {
-            HStack(spacing: 0) {
+            HStack(spacing: 4) {
                 scribbleButton
                 if model.selectedAnnotation != nil || model.scribbleMode {
-                    Spacer().frame(minWidth: 12, idealWidth: 40, maxWidth: 40)
+                    Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
                     scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {
                         scribbleThicknessPicker
                     }
+                    scribbleColorButton.pickerPopup(isPresented: $pickingScribbleColor) {
+                        scribbleColorPicker
+                    }
                 }
                 if model.selectedAnnotation != nil {
-                    Spacer().frame(width: 12)
+                    Spacer().frame(width: 8)
                     Divider().frame(width: 1, height: 48).overlay(Color.Neutral_07)
-                    Spacer().frame(width: 12)
+                    Spacer().frame(width: 8)
                     deleteButton
                     unselectButton
                 }
@@ -148,6 +196,7 @@ struct PickerPopup<T: View>: ViewModifier {
                         .offset(y: 8) // to show the bottom picker button over the toolbar button (picker has padding = 8)
                 }
             }
+            .zIndex(1)
             .animation(.default, value: isPresented.wrappedValue)
     }
 }

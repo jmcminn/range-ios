@@ -1,15 +1,24 @@
 import Foundation
+import UIKit
 
 /// Namesoace for annotations related definitions
 enum Annotations {
     /// Definition of a scribble drawing
-    struct Scribble {
+    class Scribble: NSObject {
         /// The unique id of the annotation
         let id: String = UUID().uuidString.lowercased()
         /// Path in the image coordinates space
         var path: RangeBezierPath
         /// scribble thickness
         var thickness: Annotations.ScribbleThickness
+        /// inner color (the outline is always white)
+        @objc dynamic var color: UIColor
+
+        init(path: RangeBezierPath, thickness: Annotations.ScribbleThickness, color: UIColor) {
+            self.path = path
+            self.thickness = thickness
+            self.color = color
+        }
     }
 
     /// Scribble thickness, independent of the image size
@@ -40,4 +49,15 @@ enum Annotations {
             }
         }
     }
+
+    /// Colors for scribble color picker
+    static var scribbleColors: [UIColor] = [
+        .white,
+        .black,
+        .Primary_Blue_04,
+        .Pink_03,
+        .Orange_03,
+        .Red_03,
+        UIColor(hexString: "#3694A0"),
+    ]
 }

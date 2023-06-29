@@ -3,7 +3,7 @@ import UIKit
 
 /// Holds the scribble annotations data and properties requried for view rendering, selection, etc.
 class ScribbleViewModel: NSObject {
-    private(set) var scribble: Annotations.Scribble
+    @objc private(set) dynamic var scribble: Annotations.Scribble
 
     /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
     /// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
@@ -61,6 +61,10 @@ class ScribbleViewModel: NSObject {
     func setThickness(_ thickness: Annotations.ScribbleThickness) {
         scribble.thickness = thickness
         updateFromScribble()
+    }
+
+    func setColor(_ color: UIColor) {
+        scribble.color = color
     }
 
     override var hash: Int {
