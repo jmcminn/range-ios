@@ -11,6 +11,9 @@ class AnnotationsViewModel: ObservableObject {
     /// currently annotated page in photos gallery
     var currentAnnotations: AnnotationsView? { didSet { currentAnnotationsDidSet() }}
 
+    /// is the editing enabled for the current AnnotationsView (on if it's `installed`)
+    @Published private(set) var editingEnabled: Bool = false
+
     /// Is the scribble mode enabled
     @Published private(set) var scribbleMode: Bool = false
 
@@ -22,6 +25,7 @@ class AnnotationsViewModel: ObservableObject {
 
     @Published private(set) var selectedAnnotation: ScribbleViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
+    private var currentAnnotationsViewInstalledObservation: NSKeyValueObservation?
 
     func toggleScribbleMode() {
         scribbleMode.toggle()
@@ -54,11 +58,19 @@ class AnnotationsViewModel: ObservableObject {
     /// When switching the Annotations currently handled by annotation session (so when changing a page in photos gallery)
     private func currentAnnotationsDidSet() {
         selectedAnnotationObservation?.invalidate()
+        currentAnnotationsViewInstalledObservation?.invalidate()
         onAnnotationSelected(currentAnnotations?.selectedAnnotation)
+        editingEnabled = currentAnnotations?.installed ?? false
         if let currentAnnotations = currentAnnotations {
             selectedAnnotationObservation = currentAnnotations.observe(\.selectedAnnotation) { [weak self] _, _ in
                 self?.onAnnotationSelected(currentAnnotations.selectedAnnotation)
             }
+            currentAnnotationsViewInstalledObservation = currentAnnotations.observe(
+                \.installed,
+                changeHandler: { [weak self] _, _ in
+                    self?.editingEnabled = currentAnnotations.installed
+                }
+            )
         }
     }
 }

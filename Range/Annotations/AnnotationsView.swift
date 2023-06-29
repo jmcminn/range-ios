@@ -14,6 +14,8 @@ class AnnotationsView: NSObject {
 
     var scribbleScale: Double = 1.0
 
+    // whether the annotations are installed in the host view and ready to be edited
+    @objc dynamic var installed: Bool = false
     @objc dynamic var selectedAnnotation: ScribbleViewModel?
     /// remember the origin of selected annotation when dragging begins (so it can be translated while dragging)
     var dragAnnotationOrigin: CGPoint?
@@ -80,6 +82,8 @@ class AnnotationsView: NSObject {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGesture))
         panGestureRecognizer.delegate = self
         view.addGestureRecognizer(panGestureRecognizer)
+
+        installed = true
     }
 
     /// Add a scribble annotation and return its view
@@ -117,7 +121,6 @@ extension AnnotationsView {
         guard let hostView = hostView else { return }
 
         hostView.scrollView.isScrollEnabled = !enabled
-        // TODO: 1290 enable when installView called
         if enabled {
             currentScribblingView = ScribblingView(
                 scale: scribbleScale,

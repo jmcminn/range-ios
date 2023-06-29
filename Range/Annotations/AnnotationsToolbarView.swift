@@ -120,6 +120,7 @@ struct AnnotationsToolbarView: View {
             .animation(.default, value: model.selectedAnnotation)
             .animation(.default, value: model.scribbleMode)
         }
+        .disabled(!model.editingEnabled)
     }
 }
 
