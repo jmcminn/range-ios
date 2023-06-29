@@ -37,9 +37,8 @@ class ScribbleViewModel: NSObject {
     private func updateFromScribble() {
         // Take the bounds.integral (so the enclosing rectangle with integer coordinates/width/height)
         let scribbleBoundsNoThickness = scribble.path.getUIBezierPath().bounds.integral
-        // TODO: 1290 line thickness is hardcoded here
         // view bounds need to be extended to cover the whole width of the line
-        let lineWidth = 6 * scribble.thickness.thicknessMultiplier / scale
+        let lineWidth = scribble.thickness.lineWidth / scale
         viewBounds = scribbleBoundsNoThickness.insetBy(dx: -lineWidth, dy: -lineWidth)
         uiPath = scribble.path
             // translate so it's relative to view origin:

@@ -56,11 +56,14 @@ class ScribblingView: UIView {
         path.lineJoinStyle = .round
         path.lineCapStyle = .round
 
-        path.lineWidth = 12 * thickness.thicknessMultiplier
+        // lineWidth needs no scaling as the whole view is scaled
+        let lineWidth = thickness.lineWidth
+
+        path.lineWidth = 2 * lineWidth
         UIColor.white.set()
         path.stroke()
 
-        path.lineWidth = 6 * thickness.thicknessMultiplier
+        path.lineWidth = lineWidth
         UIColor.Pink_03.set()
         path.stroke()
     }

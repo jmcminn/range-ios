@@ -17,14 +17,15 @@ enum Annotations {
     enum ScribbleThickness: String, CaseIterable {
         case thin, light, medium, bold, heavy
 
-        /// When rendering the scribble this multiplier is used to adjust the base thickness
-        var thicknessMultiplier: CGFloat {
+        /// When rendering the scribble this is the width of the inner line, the outline is hardcoded to be `2 * lineWidth`
+        /// This are reference values that don't include annotations scaling factor
+        var lineWidth: CGFloat {
             switch self {
-            case .thin: return 0.5
-            case .light: return 0.75
-            case .medium: return 1.0 // reference 100% value
-            case .bold: return 1.5
-            case .heavy: return 2
+            case .thin: return 3.0
+            case .light: return 4.5
+            case .medium: return 6.0 // reference 100% value
+            case .bold: return 9.0
+            case .heavy: return 12.0
             }
         }
 
