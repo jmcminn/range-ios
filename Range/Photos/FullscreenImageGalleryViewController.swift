@@ -16,6 +16,8 @@ import UIKit
 //    - FullscreenImageGalleryView (SwiftUI view)
 //      - AnnotationsToolbarView
 //      - FullscreenImageGalleryScrollViewRepresentable (wraps gallery UIScrollView for SwiftUI)
+//
+// See the Miro board for the diagram of view/view models: https://miro.com/app/board/o9J_lTkhi7M=/?moveToWidget=3458764558296723520&cot=14
 
 // implementation loosely based on https://github.com/zvonicek/ImageSlideshow
 

@@ -1,5 +1,9 @@
 # Photo annotations
 
+## Design
+
+See the [Miro board](https://miro.com/app/board/o9J_lTkhi7M=/?moveToWidget=3458764558296723520&cot=14) for the design.
+
 ## Scribble tool
 
 ### data format
