@@ -1,9 +1,20 @@
 import Foundation
 import UIKit
 
+// TODO: 1290 this should be clearly split into scribble data and derived view properties
 class ScribbleViewModel: NSObject {
+    // MARK: - model
+
     /// The unique id of the annotation
     let id: String = UUID().uuidString.lowercased()
+    /// original path in the annotations coordinates space
+    private(set) var path: RangeBezierPath
+    // TODO: 1290 update view when this changes
+    /// scribble thickness
+    private(set) var thickness: Annotations.ScribbleThickness
+
+    // MARK: - view model
+
     /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
     /// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
     /// This doesn't affect the end result of scribbling and generated annotation image, it's only done for the purpose of rendering
@@ -12,8 +23,6 @@ class ScribbleViewModel: NSObject {
     let scale: Double
     /// the bounds that contain the path, scaled
     private(set) var viewBounds: CGRect
-    /// original path in the annotations coordinates space
-    private(set) var path: RangeBezierPath
     /// translated and scaled so it can be drawn in the UI
     private(set) var uiPath: UIBezierPath
     /// the current zoom level of the displayed view.
@@ -25,15 +34,19 @@ class ScribbleViewModel: NSObject {
     @objc dynamic var selected: Bool = false
 
     /// Initiates the view model with given scale and path
-    init(scale: Double, path: RangeBezierPath) {
-        self.scale = scale
+    init(scale: Double, path: RangeBezierPath, thickness: Annotations.ScribbleThickness) {
         self.path = path
+        self.thickness = thickness
 
+        self.scale = scale
         // Take the bounds.integral (so the enclosing rectangle with integer coordinates/width/height)
         let scribbleBoundsNoThickness = path.getUIBezierPath().bounds.integral
         // TODO: 1290 line thickness is hardcoded here
         // view bounds need to be extended to cover the whole width of the line
-        viewBounds = scribbleBoundsNoThickness.insetBy(dx: -6 / scale, dy: -6 / scale)
+        viewBounds = scribbleBoundsNoThickness.insetBy(
+            dx: -6 / scale * thickness.thicknessMultiplier,
+            dy: -6 / scale * thickness.thicknessMultiplier
+        )
         uiPath = path
             // translate so it's relative to view origin:
             .getTranslatedPath(x: -viewBounds.origin.x, y: -viewBounds.origin.y)

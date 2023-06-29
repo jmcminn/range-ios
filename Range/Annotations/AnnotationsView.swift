@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import OrderedCollections
 import UIKit
@@ -7,7 +8,6 @@ class AnnotationsView: NSObject {
     /// view hosting all the annotation views
     let view = UIView()
 
-    // TODO: 1290 is this needed here?
     let viewModel: AnnotationsViewModel
 
     private weak var hostView: FullscreenImageGalleryPageView?
@@ -26,15 +26,30 @@ class AnnotationsView: NSObject {
     /// order in this dictionary is the order of annotations rendering, so last is on top
     private var annotations = OrderedDictionary<ScribbleViewModel, UIView>()
 
+    /// Combine listeners for viewModel
+    private var subscriptions = Set<AnyCancellable>()
+
     init(hostView: FullscreenImageGalleryPageView, viewModel: AnnotationsViewModel) {
         self.hostView = hostView
         self.viewModel = viewModel
         super.init()
         hostView.scrollView.forwardDelegateInvocations(to: self)
+        subscribeToViewModel()
     }
 
     deinit {
         hostView?.scrollView.cancelForwardingDelegateInvocations(to: self)
+        for subscription in subscriptions {
+            subscription.cancel()
+        }
+    }
+
+    private func subscribeToViewModel() {
+        viewModel.$currentScribbleThickness
+            .sink { [weak self] thickness in
+                self?.currentScribblingView?.thickness = thickness
+            }
+            .store(in: &subscriptions)
     }
 
     /// Adds the view to hostView
@@ -69,7 +84,11 @@ class AnnotationsView: NSObject {
 
     /// Add a scribble annotation and return its view
     func add(scribbleWithPath path: RangeBezierPath) {
-        let scribble = ScribbleViewModel(scale: scribbleScale, path: path)
+        let scribble = ScribbleViewModel(
+            scale: scribbleScale,
+            path: path,
+            thickness: viewModel.currentScribbleThickness
+        )
         if let hostView = hostView {
             scribble.zoomScale = hostView.scrollView.zoomScale
         }
@@ -103,7 +122,7 @@ extension AnnotationsView {
         hostView.scrollView.isScrollEnabled = !enabled
         // TODO: 1290 enable when installView called
         if enabled {
-            currentScribblingView = ScribblingView(scale: scribbleScale)
+            currentScribblingView = ScribblingView(scale: scribbleScale, thickness: viewModel.currentScribbleThickness)
             currentScribblingView!.onScribbleCreated = { [weak self] path in
                 self?.add(scribbleWithPath: path)
             }

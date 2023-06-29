@@ -48,11 +48,11 @@ class ScribbleView: UIView {
         path.lineJoinStyle = .round
         path.lineCapStyle = .round
 
-        path.lineWidth = 12
+        path.lineWidth = 12 * viewModel.thickness.thicknessMultiplier
         UIColor.white.set()
         path.stroke()
 
-        path.lineWidth = 6
+        path.lineWidth = 6 * viewModel.thickness.thicknessMultiplier
         UIColor.Pink_03.set()
         path.stroke()
     }

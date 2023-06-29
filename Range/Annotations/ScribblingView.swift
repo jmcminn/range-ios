@@ -6,6 +6,8 @@ import UIKit
 class ScribblingView: UIView {
     /// The view is scaled (transformed) by this constant (divided, so 1/scale)
     let scale: Double
+    /// the thickness of the line
+    var thickness: Annotations.ScribbleThickness
     /// points recorded for annotation (not scaled)
     private var points: [CGPoint] = []
     /// Path to draw when user is drawing the line (scaled to ScribblingView scale)
@@ -16,8 +18,9 @@ class ScribblingView: UIView {
     /// Callback called with bezier path (not scaled) created whenever user completes a drag gesture
     var onScribbleCreated: ((RangeBezierPath) -> Void)?
 
-    init(scale: Double) {
+    init(scale: Double, thickness: Annotations.ScribbleThickness) {
         self.scale = scale
+        self.thickness = thickness
         super.init(frame: .zero)
         backgroundColor = .clear
         transform = CGAffineTransform(scaleX: 1 / scale, y: 1 / scale)
@@ -51,11 +54,11 @@ class ScribblingView: UIView {
         path.lineJoinStyle = .round
         path.lineCapStyle = .round
 
-        path.lineWidth = 12
+        path.lineWidth = 12 * thickness.thicknessMultiplier
         UIColor.white.set()
         path.stroke()
 
-        path.lineWidth = 6
+        path.lineWidth = 6 * thickness.thicknessMultiplier
         UIColor.Pink_03.set()
         path.stroke()
     }
@@ -73,7 +76,6 @@ class ScribblingView: UIView {
 
             let simplifiedPoints = settings.simplifyScribbleLine
                 ? points.simplify(
-                    // TODO: 1290 is this dependent on the scribbleScale?
                     tolerance: Float(1 / scale), // 1
                     highestQuality: true
                 )
