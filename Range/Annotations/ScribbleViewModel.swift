@@ -77,9 +77,15 @@ class ScribbleViewModel: NSObject {
     /// will be selected. If multiple annotations report the same distance (most likely 0 for overlapping annotations) then the selection will
     /// be based on the current order and selection state of annotations.
     func containsTapLocation(_ location: CGPoint) -> Bool {
-        // TODO: 1290 this only makes sense if we want to use convexHull for "roughlyContainsTapLocation"
+        // ACHTUNG: this approach makes more sense if we want to use convexHull for "roughlyContainsTapLocation"
         // otherwise the viewBounds kind of cover it anyway and multiple matches will still be
-        // decided by "distanceToTapLocation"
+        // decided by "distanceToTapLocation".
+        // The only advantage of path.copy(strokingWithWidth) is that
+        // it creates a little bigger "tap area" in case of horizontal or vertical lines, which would
+        // have a very small viewBounds.
+        // Switching to convextHull in "roughlyContainsTapLocation" would be better as we would actually
+        // see less shapes reporting as tapped, for example if there's a diagonal line and user taps
+        // in the free corner, the bounds approach will report as tapped, while the convexHull would not.
 
         // check if the path actually contains the tap location
         // Do it by creating a stroking path (see it's documentation for details) that is 40 points
