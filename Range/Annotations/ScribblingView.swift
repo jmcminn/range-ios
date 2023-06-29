@@ -15,6 +15,8 @@ class ScribblingView: UIView {
 
     private(set) var gestureRecognizer: UIGestureRecognizer?
 
+    /// Callback when user started another scribble
+    var onScribbleStarted: (() -> Void)?
     /// Callback called with bezier path (not scaled) created whenever user completes a drag gesture
     var onScribbleCreated: ((RangeBezierPath) -> Void)?
 
@@ -64,6 +66,9 @@ class ScribblingView: UIView {
     }
 
     @objc private func panGesture(gesture: UIGestureRecognizer) {
+        if gesture.state == .began {
+            onScribbleStarted?()
+        }
         // The location is in non scaled coordinates
         let location = gesture.location(in: gesture.view)
 

@@ -45,7 +45,7 @@ class AnnotationsView: NSObject {
     }
 
     private func subscribeToViewModel() {
-        viewModel.$currentScribbleThickness
+        viewModel.$lastPickedScribbleThickness
             .sink { [weak self] thickness in
                 self?.currentScribblingView?.thickness = thickness
             }
@@ -84,7 +84,7 @@ class AnnotationsView: NSObject {
 
     /// Add a scribble annotation and return its view
     func add(scribbleWithPath path: RangeBezierPath) {
-        let scribble = Annotations.Scribble(path: path, thickness: viewModel.currentScribbleThickness)
+        let scribble = Annotations.Scribble(path: path, thickness: viewModel.lastPickedScribbleThickness)
         let scribbleVM = ScribbleViewModel(scale: scribbleScale, scribble: scribble)
         if let hostView = hostView {
             scribbleVM.zoomScale = hostView.scrollView.zoomScale
@@ -119,7 +119,14 @@ extension AnnotationsView {
         hostView.scrollView.isScrollEnabled = !enabled
         // TODO: 1290 enable when installView called
         if enabled {
-            currentScribblingView = ScribblingView(scale: scribbleScale, thickness: viewModel.currentScribbleThickness)
+            currentScribblingView = ScribblingView(
+                scale: scribbleScale,
+                thickness: viewModel.lastPickedScribbleThickness
+            )
+            currentScribblingView!.onScribbleStarted = { [weak self] in
+                // unselect annotation on scribbling started
+                self?.setSelected(nil)
+            }
             currentScribblingView!.onScribbleCreated = { [weak self] path in
                 self?.add(scribbleWithPath: path)
             }
