@@ -11,11 +11,11 @@ class AnnotationsViewModel: ObservableObject {
     /// currently annotated page in photos gallery
     var currentAnnotations: AnnotationsView? { didSet { currentAnnotationsDidSet() }}
 
-    /// Current scribble thickness used for new scribbles (last user choice)
-    @Published var currentScribbleThickness: Annotations.ScribbleThickness = .medium
-
     /// Is the scribble mode enabled
     @Published private(set) var scribbleMode: Bool = false
+
+    /// Current scribble thickness used for new scribbles (last user choice)
+    @Published private(set) var currentScribbleThickness: Annotations.ScribbleThickness = .medium
 
     @Published var selectedAnnotation: ScribbleViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
@@ -23,6 +23,11 @@ class AnnotationsViewModel: ObservableObject {
     func toggleScribbleMode() {
         scribbleMode.toggle()
         currentAnnotations?.setScribblingEnabled(scribbleMode)
+    }
+
+    func setCurrentScribbleThickness(_ thickness: Annotations.ScribbleThickness) {
+        currentScribbleThickness = thickness
+        selectedAnnotation?.setThickness(thickness)
     }
 
     /// Unselect the currently selected annotation

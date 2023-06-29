@@ -84,21 +84,18 @@ class AnnotationsView: NSObject {
 
     /// Add a scribble annotation and return its view
     func add(scribbleWithPath path: RangeBezierPath) {
-        let scribble = ScribbleViewModel(
-            scale: scribbleScale,
-            path: path,
-            thickness: viewModel.currentScribbleThickness
-        )
+        let scribble = Annotations.Scribble(path: path, thickness: viewModel.currentScribbleThickness)
+        let scribbleVM = ScribbleViewModel(scale: scribbleScale, scribble: scribble)
         if let hostView = hostView {
-            scribble.zoomScale = hostView.scrollView.zoomScale
+            scribbleVM.zoomScale = hostView.scrollView.zoomScale
         }
 
-        let scribbleView = ScribbleView(viewModel: scribble)
+        let scribbleView = ScribbleView(viewModel: scribbleVM)
 
-        annotations[scribble] = scribbleView
+        annotations[scribbleVM] = scribbleView
 
         annotationsView.addSubview(scribbleView)
-        scribbleView.frame = scribble.viewBounds
+        scribbleView.frame = scribbleVM.viewBounds
         setSelected(nil)
     }
 
@@ -167,9 +164,8 @@ extension AnnotationsView {
             setSelected(tappedAnnotations[0])
         } else {
             // decide which annotation to select by doing some more exact tap recognition
-            // and select the scribble with path closest to tap location (but calculating basing
-            // on the points only, so as if they were straight lines, for simplification)
-            let distancesToTap = tappedAnnotations.map { $0.path.getSimpleDistanceToPoint(location) }
+            // and select the annotation closest to tap location
+            let distancesToTap = tappedAnnotations.map { $0.distanceToTapLocation(location) }
             let minIndex = zip(distancesToTap.indices, distancesToTap).min(by: { $0.1 < $1.1 })?.0 ?? 0
             let closestAnnotation = tappedAnnotations[minIndex]
             setSelected(closestAnnotation)

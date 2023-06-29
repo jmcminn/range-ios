@@ -2,6 +2,16 @@ import Foundation
 
 /// Namesoace for annotations related definitions
 enum Annotations {
+    /// Definition of a scribble drawing
+    struct Scribble {
+        /// The unique id of the annotation
+        let id: String = UUID().uuidString.lowercased()
+        /// Path in the image coordinates space
+        var path: RangeBezierPath
+        /// scribble thickness
+        var thickness: Annotations.ScribbleThickness
+    }
+
     /// Scribble thickness, independent of the image size
     /// The exact thickness in pixels depends on the scale used for annotations (which is dependent on the image size)
     enum ScribbleThickness: String, CaseIterable {

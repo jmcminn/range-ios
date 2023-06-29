@@ -1,19 +1,9 @@
 import Foundation
 import UIKit
 
-// TODO: 1290 this should be clearly split into scribble data and derived view properties
+/// Holds the scribble annotations data and properties requried for view rendering, selection, etc.
 class ScribbleViewModel: NSObject {
-    // MARK: - model
-
-    /// The unique id of the annotation
-    let id: String = UUID().uuidString.lowercased()
-    /// original path in the annotations coordinates space
-    private(set) var path: RangeBezierPath
-    // TODO: 1290 update view when this changes
-    /// scribble thickness
-    private(set) var thickness: Annotations.ScribbleThickness
-
-    // MARK: - view model
+    private(set) var scribble: Annotations.Scribble
 
     /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
     /// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
@@ -22,9 +12,9 @@ class ScribbleViewModel: NSObject {
     /// For example when scale is 0.5, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
     let scale: Double
     /// the bounds that contain the path, scaled
-    private(set) var viewBounds: CGRect
+    @objc private(set) dynamic var viewBounds: CGRect = .zero
     /// translated and scaled so it can be drawn in the UI
-    private(set) var uiPath: UIBezierPath
+    private(set) var uiPath: UIBezierPath = .init()
     /// the current zoom level of the displayed view.
     /// We need it as not all parts of the ScribbleView should be zoomed when the annotations editor zoom changes (the border should
     /// keep the visible 2 pixels width)
@@ -34,44 +24,54 @@ class ScribbleViewModel: NSObject {
     @objc dynamic var selected: Bool = false
 
     /// Initiates the view model with given scale and path
-    init(scale: Double, path: RangeBezierPath, thickness: Annotations.ScribbleThickness) {
-        self.path = path
-        self.thickness = thickness
-
+    init(scale: Double, scribble: Annotations.Scribble) {
+        self.scribble = scribble
         self.scale = scale
+        zoomScale = scale
+        super.init()
+
+        updateFromScribble()
+    }
+
+    /// Update view bounds and uiPath from scribble path
+    private func updateFromScribble() {
         // Take the bounds.integral (so the enclosing rectangle with integer coordinates/width/height)
-        let scribbleBoundsNoThickness = path.getUIBezierPath().bounds.integral
+        let scribbleBoundsNoThickness = scribble.path.getUIBezierPath().bounds.integral
         // TODO: 1290 line thickness is hardcoded here
         // view bounds need to be extended to cover the whole width of the line
-        viewBounds = scribbleBoundsNoThickness.insetBy(
-            dx: -6 / scale * thickness.thicknessMultiplier,
-            dy: -6 / scale * thickness.thicknessMultiplier
-        )
-        uiPath = path
+        let lineWidth = 6 * scribble.thickness.thicknessMultiplier / scale
+        viewBounds = scribbleBoundsNoThickness.insetBy(dx: -lineWidth, dy: -lineWidth)
+        uiPath = scribble.path
             // translate so it's relative to view origin:
             .getTranslatedPath(x: -viewBounds.origin.x, y: -viewBounds.origin.y)
             // scale down the path (as the view is scaled up):
             .getScaledPath(multiplier: scale)
             .getUIBezierPath()
-        zoomScale = scale
-        super.init()
     }
 
     /// Moves the annotation to new origin. It updates the `viewBounds` and `path` (which is not local to the annotation coordinate system)
+    /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
     func setOrigin(_ origin: CGPoint) {
         let originDelta = origin.deltaTo(viewBounds.origin)
+        scribble.path = scribble.path.getTranslatedPath(x: originDelta.x, y: originDelta.y)
+        // no need to `updateFromScribble`, it's only a change in origin
         viewBounds.origin = origin
-        path = path.getTranslatedPath(x: originDelta.x, y: originDelta.y)
+    }
+
+    /// Thickness impacts the `viewBounds`, so it also impacts the `uiPath`
+    func setThickness(_ thickness: Annotations.ScribbleThickness) {
+        scribble.thickness = thickness
+        updateFromScribble()
     }
 
     override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(id)
+        hasher.combine(scribble.id)
         return hasher.finalize()
     }
 
-    override var debugDescription: String { "Scribble[\(id)]" }
-    override var description: String { "Scribble[\(id)]" }
+    override var debugDescription: String { "Scribble[\(scribble.id)]" }
+    override var description: String { "Scribble[\(scribble.id)]" }
 
     /// Whether this annotation contains tap location and should be considered as tapped.
     /// If multiple annotations are tapped then the `distanceToTapLocation` will be checked and the annotation with smallest distance
@@ -85,7 +85,7 @@ class ScribbleViewModel: NSObject {
         // check if the path actually contains the tap location
         // Do it by creating a stroking path (see it's documentation for details) that is 40 points
         // wide (divided by scale so it doesn't depend on the image resolution) but is 40 screen points.
-        let strokePath = path.getUIBezierPath().cgPath
+        let strokePath = scribble.path.getUIBezierPath().cgPath
             .copy(strokingWithWidth: 40 / scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
         return strokePath.contains(location)
     }
@@ -98,6 +98,6 @@ class ScribbleViewModel: NSObject {
 
     /// See description for `containsTapLocation`
     func distanceToTapLocation(_ location: CGPoint) -> Float {
-        path.getSimpleDistanceToPoint(location)
+        scribble.path.getSimpleDistanceToPoint(location)
     }
 }

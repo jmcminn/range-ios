@@ -77,7 +77,7 @@ struct AnnotationsToolbarView: View {
         VStack(spacing: 8) {
             ForEach(Annotations.ScribbleThickness.allCases, id: \.rawValue) { thickness in
                 Button(action: {
-                    model.currentScribbleThickness = thickness
+                    model.setCurrentScribbleThickness(thickness)
                     pickingScribbleThickness = false
                 }) {
                     Circle()

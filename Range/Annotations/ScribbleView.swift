@@ -3,6 +3,7 @@ import UIKit
 
 class ScribbleView: UIView {
     let viewModel: ScribbleViewModel
+    private var viewBoundsObservation: NSKeyValueObservation?
     private var zoomScaleObservation: NSKeyValueObservation?
     private var selectedObservation: NSKeyValueObservation?
 
@@ -13,12 +14,18 @@ class ScribbleView: UIView {
         layer.borderColor = UIColor.Primary_Blue_04.cgColor
         updateBorderWidth()
         transform = CGAffineTransform(scaleX: 1 / viewModel.scale, y: 1 / viewModel.scale)
+        viewBoundsObservation = viewModel.observe(\.viewBounds) { [weak self] _, _ in
+            self?.frame = viewModel.viewBounds
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }
         zoomScaleObservation = viewModel.observe(\.zoomScale) { [weak self] _, _ in
             self?.updateBorderWidth()
         }
         selectedObservation = viewModel.observe(\.selected) { [weak self] _, _ in
             self?.onSelectedUpdate()
         }
+
         onSelectedUpdate()
     }
 
@@ -27,7 +34,7 @@ class ScribbleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func onSelectedUpdate() {
+    private func onSelectedUpdate() {
         isUserInteractionEnabled = viewModel.selected
         updateBorderWidth()
     }
@@ -48,11 +55,11 @@ class ScribbleView: UIView {
         path.lineJoinStyle = .round
         path.lineCapStyle = .round
 
-        path.lineWidth = 12 * viewModel.thickness.thicknessMultiplier
+        path.lineWidth = 12 * viewModel.scribble.thickness.thicknessMultiplier
         UIColor.white.set()
         path.stroke()
 
-        path.lineWidth = 6 * viewModel.thickness.thicknessMultiplier
+        path.lineWidth = 6 * viewModel.scribble.thickness.thicknessMultiplier
         UIColor.Pink_03.set()
         path.stroke()
     }
