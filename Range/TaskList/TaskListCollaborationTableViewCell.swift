@@ -15,6 +15,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
     private var selectedView: UIImageView?
     private let nameLabel = UILabel()
+
     private let detailsScrollView = UIScrollView()
     private let detailsStackView = UIStackView()
     private let lastUpdatedLabel = UILabel()
@@ -88,7 +89,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
-        nameLabel.font = .preferredFont(forTextStyle: .subheadline)
+        nameLabel.font = .preferredFont(forTextStyle: .headline)
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
 
