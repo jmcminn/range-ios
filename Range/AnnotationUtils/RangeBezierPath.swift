@@ -9,44 +9,79 @@ class RangeBezierPath {
         case move(to: CGPoint)
         case addLine(to: CGPoint)
         case addCurve(to: CGPoint, controlPoint1: CGPoint, controlPoint2: CGPoint)
+        case addQuadCurve(to: CGPoint, controlPoint: CGPoint)
         case close
     }
 
-    private var elements: [Element]
+    private var elements: [Element] = []
 
-    convenience init() {
-        self.init(elements: [])
-    }
+    // current point of the path - if path is closed the currentPoint is the previous point the path moved to
+    // (the path may have multiple subpaths defined by multiples moves, each one can be closed or not)
+    private(set) var currentPoint: CGPoint = CGPointZero
+
+    init() {}
 
     /// Initializes with given points by connecting them with straight lines
     /// There must be at least 2 points, otherwise it returns nil
     convenience init?(polylineWithPoints points: [CGPoint]) {
         guard points.count >= 2 else { return nil }
-        self.init(elements: [])
+        self.init()
         move(to: points[0])
         for point in points.suffix(from: 1) {
             addLine(to: point)
         }
     }
 
-    init(elements: [Element]) {
-        self.elements = elements
+    convenience init(elements: [Element]) {
+        self.init()
+        elements.forEach(addElement(_:))
     }
 
     func move(to point: CGPoint) {
-        elements.append(.move(to: point))
+        addElement(.move(to: point))
     }
 
     func addLine(to point: CGPoint) {
-        elements.append(.addLine(to: point))
+        addElement(.addLine(to: point))
     }
 
     func addCurve(to endPoint: CGPoint, controlPoint1: CGPoint, controlPoint2: CGPoint) {
-        elements.append(.addCurve(to: endPoint, controlPoint1: controlPoint1, controlPoint2: controlPoint2))
+        addElement(.addCurve(to: endPoint, controlPoint1: controlPoint1, controlPoint2: controlPoint2))
+    }
+
+    func addQuadCurve(to endPoint: CGPoint, controlPoint: CGPoint) {
+        addElement(.addQuadCurve(to: endPoint, controlPoint: controlPoint))
     }
 
     func close() {
-        elements.append(.close)
+        addElement(.close)
+    }
+
+    /// Add element to `elements` and update the `currentPoint`
+    private func addElement(_ e: Element) {
+        switch e {
+        case let .move(to: point):
+            fallthrough
+        case let .addLine(to: point):
+            fallthrough
+        case let .addCurve(to: point, controlPoint1: _, controlPoint2: _):
+            fallthrough
+        case let .addQuadCurve(to: point, controlPoint: _):
+            currentPoint = point
+        case .close:
+            // when closing the current point is set to last subpath beginning (where subpaths are
+            // started by moves)
+            if let lastMove = elements.last(where: {
+                if case .move = $0 { return true }
+                else { return false }
+            }), case let .move(to: point) = lastMove {
+                currentPoint = point
+            } else {
+                currentPoint = .zero
+            }
+        }
+
+        elements.append(e)
     }
 
     private func elementsWithPointsTransformed(_ transform: (CGPoint) -> CGPoint) -> [Element] {
@@ -62,6 +97,8 @@ class RangeBezierPath {
                     controlPoint1: transform(controlPoint1),
                     controlPoint2: transform(controlPoint2)
                 )
+            case let .addQuadCurve(to: point, controlPoint: controlPoint):
+                return .addQuadCurve(to: transform(point), controlPoint: transform(controlPoint))
             case .close:
                 return .close
             }
@@ -91,6 +128,11 @@ class RangeBezierPath {
                     distance = min(distance, p.squaredDistanceToSegment(previousPoint, point))
                 }
                 previousPoint = point
+            case let .addQuadCurve(to: point, controlPoint: _):
+                if let previousPoint = previousPoint {
+                    distance = min(distance, p.squaredDistanceToSegment(previousPoint, point))
+                }
+                previousPoint = point
             case .close: break
             }
         }
@@ -107,6 +149,8 @@ class RangeBezierPath {
                 path.addLine(to: point)
             case let .addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2):
                 path.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
+            case let .addQuadCurve(to: point, controlPoint: controlPoint):
+                path.addQuadCurve(to: point, controlPoint: controlPoint)
             case .close:
                 path.close()
             }

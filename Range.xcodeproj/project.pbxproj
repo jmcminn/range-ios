@@ -235,6 +235,7 @@
 		0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */; };
 		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
 		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
+		0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */; };
 		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
 		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
@@ -641,6 +642,7 @@
 		0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_portrait.jpg; sourceTree = "<group>"; };
 		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
+		0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeBezierPathTest.swift; sourceTree = "<group>"; };
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
@@ -1427,6 +1429,7 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
+				0A7393742A5DAB8B0079A7FB /* AnnotationUtils */,
 				0A3680DA29ED9A9700CD1D98 /* Canvas */,
 				0A130EAC28D8A2BC00FF1368 /* Extensions */,
 				0A4995BB2857697F00E571FB /* HeaderExpand */,
@@ -1535,6 +1538,14 @@
 				0A724F62288AAFFD00708C6B /* PendingUpload.swift */,
 			);
 			path = ModelUploads;
+			sourceTree = "<group>";
+		};
+		0A7393742A5DAB8B0079A7FB /* AnnotationUtils */ = {
+			isa = PBXGroup;
+			children = (
+				0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */,
+			);
+			path = AnnotationUtils;
 			sourceTree = "<group>";
 		};
 		0A797F67292BA3DE00D63567 /* Status */ = {
@@ -2328,6 +2339,7 @@
 				0A374DE2292788BC0036C184 /* DeleteCommentCommandTest.swift in Sources */,
 				0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */,
 				0A374DEE2927DAC50036C184 /* DeleteUploadsCommandTest.swift in Sources */,
+				0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */,
 				0A797F7C292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
