@@ -4,7 +4,7 @@ import UIKit
 /// UIBezierPath does not give access to the underlying data (https://stackoverflow.com/a/4855932) so we need this class to store all the lines/curves
 /// This class can then be converted to UIBezierPath
 /// It exposes a similar API to UIBezierPath so it can be easily replaced
-class RangeBezierPath {
+class RangeBezierPath: Codable {
     enum Element {
         case move(to: CGPoint)
         case addLine(to: CGPoint)
@@ -217,5 +217,46 @@ class RangeBezierPath {
         }
 
         return path
+    }
+
+    // TODO: 1270 decode from path.d string
+    required init(from _: Decoder) throws {
+        elements = []
+    }
+
+    // TODO: 1270 encode to path.d string
+    func encode(to _: Encoder) throws {}
+}
+
+// MARK: - to SVG path.d conversion
+
+extension RangeBezierPath {
+    /// RangeBezierPath doesn't keep it's original d definition. When creating RangeBezierPath from d string we don't keep the information
+    /// whether the curves were absolute or relative or whether the curves were smooth or not. This doesn't impact how the curve looks
+    /// but it does impact how it's converted to SVG. So converting from and back to SVG will not result in the same string!
+    ///
+    /// Reference: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d
+    func convertToSVGPathD() -> String {
+        elements.map(\.svgPathD).joined(separator: " ")
+    }
+}
+
+extension RangeBezierPath.Element {
+    var svgPathD: String {
+        switch self {
+        case let .move(to): return "M\(toSVGPathD(to))"
+        case let .addLine(to): return "L\(toSVGPathD(to))"
+        case let .addCurve(to, cp1, cp2): return "C\(toSVGPathD(cp1)) \(toSVGPathD(cp2)) \(toSVGPathD(to))"
+        case let .addQuadCurve(to, cp): return "Q\(toSVGPathD(cp)) \(toSVGPathD(to))"
+        case .close: return "Z"
+        }
+    }
+
+    private func toSVGPathD(_ point: CGPoint) -> String {
+        let formatter = NumberFormatter()
+        formatter.minimumIntegerDigits = 1
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: point.x as NSNumber)! + "," + formatter.string(from: point.y as NSNumber)!
     }
 }

@@ -43,4 +43,20 @@ final class RangeBezierPathTest: XCTestCase {
         path.close() // close again, this still refers to last position determined by previous close
         XCTAssertEqual(path.currentPoint, CGPoint(x: 40, y: 5))
     }
+
+    func testConvertToSVGPathD() {
+        let path = RangeBezierPath(elements: [
+            .move(to: CGPoint(x: 10, y: 5)),
+            .addLine(to: CGPoint(x: 20, y: 5)),
+            .addCurve(
+                to: CGPoint(x: 20, y: 10),
+                controlPoint1: CGPoint(x: 21, y: 6),
+                controlPoint2: CGPoint(x: 21, y: 9)
+            ),
+            .addQuadCurve(to: CGPoint(x: 25, y: 10), controlPoint: CGPoint(x: 22, y: 9.3)),
+            .close,
+        ])
+
+        XCTAssertEqual(path.convertToSVGPathD(), "M10,5 L20,5 C21,6 21,9 20,10 Q22,9.3 25,10 Z")
+    }
 }
