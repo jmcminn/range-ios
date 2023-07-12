@@ -46,7 +46,7 @@ final class RangeBezierPathTest: XCTestCase {
 
     func testConvertToSVGPathD() {
         let path = RangeBezierPath(elements: [
-            .move(to: CGPoint(x: 10, y: 5)),
+            .move(to: CGPoint(x: 10, y: -5)),
             .addLine(to: CGPoint(x: 20, y: 5)),
             .addCurve(
                 to: CGPoint(x: 20, y: 10),
@@ -57,6 +57,24 @@ final class RangeBezierPathTest: XCTestCase {
             .close,
         ])
 
-        XCTAssertEqual(path.convertToSVGPathD(), "M10,5 L20,5 C21,6 21,9 20,10 Q22,9.3 25,10 Z")
+        XCTAssertEqual(path.convertToSVGPathD(), "M10,-5 L20,5 C21,6 21,9 20,10 Q22,9.3 25,10 Z")
+    }
+
+    func testConvertSVGPathDToRangeBezierPath() {
+        let dString = "M10,-5 L20,5 C21,6 21,9 20,10 Q22,9.3 25,10 Z"
+
+        let path = RangeBezierPath.svgPathDToRangeBezierPath(dString)
+
+        XCTAssertEqual(path.elements, [
+            .move(to: CGPoint(x: 10, y: -5)),
+            .addLine(to: CGPoint(x: 20, y: 5)),
+            .addCurve(
+                to: CGPoint(x: 20, y: 10),
+                controlPoint1: CGPoint(x: 21, y: 6),
+                controlPoint2: CGPoint(x: 21, y: 9)
+            ),
+            .addQuadCurve(to: CGPoint(x: 25, y: 10), controlPoint: CGPoint(x: 22, y: 9.3)),
+            .close,
+        ])
     }
 }

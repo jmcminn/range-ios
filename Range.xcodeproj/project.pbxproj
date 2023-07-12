@@ -235,6 +235,8 @@
 		0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */; };
 		0A724F6D28900D4400708C6B /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6C28900D4400708C6B /* Async.swift */; };
 		0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */; };
+		0A7393712A5D99980079A7FB /* SVGPathDCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */; };
+		0A7393732A5D99A20079A7FB /* SVGPathDLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */; };
 		0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */; };
 		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
 		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
@@ -642,6 +644,8 @@
 		0A724F6A288B12F800708C6B /* sample_photo_portrait.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sample_photo_portrait.jpg; sourceTree = "<group>"; };
 		0A724F6C28900D4400708C6B /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Kingfisher+Async.swift"; sourceTree = "<group>"; };
+		0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGPathDCommand.swift; sourceTree = "<group>"; };
+		0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGPathDLexer.swift; sourceTree = "<group>"; };
 		0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeBezierPathTest.swift; sourceTree = "<group>"; };
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
@@ -868,6 +872,8 @@
 				0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */,
 				0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */,
 				0A0505862A1FAEFB001AF644 /* RangeBezierPath.swift */,
+				0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */,
+				0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */,
 			);
 			path = AnnotationUtils;
 			sourceTree = "<group>";
@@ -2017,6 +2023,7 @@
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
+				0A7393712A5D99980079A7FB /* SVGPathDCommand.swift in Sources */,
 				0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */,
 				0AFA1A4B294B19E100491492 /* FullscreenMediaSummaryViewController.swift in Sources */,
 				0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */,
@@ -2239,6 +2246,7 @@
 				0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */,
 				0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
+				0A7393732A5D99A20079A7FB /* SVGPathDLexer.swift in Sources */,
 				0AAF04BD2A3354F200E8C39D /* PassthroughGradientView.swift in Sources */,
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */,

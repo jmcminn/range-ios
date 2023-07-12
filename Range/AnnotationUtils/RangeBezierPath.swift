@@ -5,7 +5,7 @@ import UIKit
 /// This class can then be converted to UIBezierPath
 /// It exposes a similar API to UIBezierPath so it can be easily replaced
 class RangeBezierPath: Codable {
-    enum Element {
+    enum Element: Equatable {
         case move(to: CGPoint)
         case addLine(to: CGPoint)
         case addCurve(to: CGPoint, controlPoint1: CGPoint, controlPoint2: CGPoint)
@@ -13,7 +13,7 @@ class RangeBezierPath: Codable {
         case close
     }
 
-    private var elements: [Element] = []
+    private(set) var elements: [Element] = []
 
     // current point of the path - if path is closed the currentPoint is the previous point the path moved to
     // (the path may have multiple subpaths defined by multiples moves, each one can be closed or not)
@@ -238,6 +238,18 @@ extension RangeBezierPath {
     /// Reference: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d
     func convertToSVGPathD() -> String {
         elements.map(\.svgPathD).joined(separator: " ")
+    }
+
+    /// Convert SVG path d string to RangeBezierPath using modified parser from SwiftSVG framework (copied to Range code)
+    /// The modification was to apply SwiftSVG D commands to RangeBezierPath and not UIBezierPath
+    static func svgPathDToRangeBezierPath(_ dString: String) -> RangeBezierPath {
+        let path = RangeBezierPath()
+        var previousCommand: PreviousCommand?
+        for command in PathDLexer(pathString: dString) {
+            command.execute(on: path, previousCommand: previousCommand)
+            previousCommand = command
+        }
+        return path
     }
 }
 
