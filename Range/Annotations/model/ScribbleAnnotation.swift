@@ -30,6 +30,15 @@ class ScribbleAnnotation: NSObject, Codable {
         self.lineWidth = lineWidth
         hexColor = color.hexString
     }
+
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let rhs = object as? ScribbleAnnotation else { return false }
+        if id != rhs.id { return false }
+        if path != rhs.path { return false }
+        if lineWidth != rhs.lineWidth { return false }
+        if hexColor != rhs.hexColor { return false }
+        return true
+    }
 }
 
 extension ScribbleAnnotation: AnnotationConvertible {

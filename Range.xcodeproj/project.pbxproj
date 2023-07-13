@@ -237,9 +237,11 @@
 		0A7393712A5D99980079A7FB /* SVGPathDCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */; };
 		0A7393732A5D99A20079A7FB /* SVGPathDLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */; };
 		0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */; };
+		0A73937B2A6005AE0079A7FB /* AnnotationsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73937A2A6005AE0079A7FB /* AnnotationsTest.swift */; };
 		0A7393812A606BF60079A7FB /* Annotations+Dictionaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393802A606BF60079A7FB /* Annotations+Dictionaries.swift */; };
 		0A7393832A606C360079A7FB /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393822A606C360079A7FB /* Annotation.swift */; };
 		0A7393852A606CBB0079A7FB /* ScribbleAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */; };
+		0A7393882A61415F0079A7FB /* Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393872A61415F0079A7FB /* Annotations.swift */; };
 		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
 		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
@@ -649,9 +651,11 @@
 		0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGPathDCommand.swift; sourceTree = "<group>"; };
 		0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGPathDLexer.swift; sourceTree = "<group>"; };
 		0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeBezierPathTest.swift; sourceTree = "<group>"; };
+		0A73937A2A6005AE0079A7FB /* AnnotationsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsTest.swift; sourceTree = "<group>"; };
 		0A7393802A606BF60079A7FB /* Annotations+Dictionaries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Annotations+Dictionaries.swift"; sourceTree = "<group>"; };
 		0A7393822A606C360079A7FB /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotation.swift; sourceTree = "<group>"; };
+		0A7393872A61415F0079A7FB /* Annotations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotations.swift; sourceTree = "<group>"; };
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
@@ -1434,6 +1438,7 @@
 		0A632EC127E49639001A019B /* RangeTests */ = {
 			isa = PBXGroup;
 			children = (
+				0A7393792A6005970079A7FB /* Annotations */,
 				0A7393742A5DAB8B0079A7FB /* AnnotationUtils */,
 				0A3680DA29ED9A9700CD1D98 /* Canvas */,
 				0A130EAC28D8A2BC00FF1368 /* Extensions */,
@@ -1553,9 +1558,18 @@
 			path = AnnotationUtils;
 			sourceTree = "<group>";
 		};
+		0A7393792A6005970079A7FB /* Annotations */ = {
+			isa = PBXGroup;
+			children = (
+				0A73937A2A6005AE0079A7FB /* AnnotationsTest.swift */,
+			);
+			path = Annotations;
+			sourceTree = "<group>";
+		};
 		0A73937C2A606A030079A7FB /* model */ = {
 			isa = PBXGroup;
 			children = (
+				0A7393872A61415F0079A7FB /* Annotations.swift */,
 				0A7393822A606C360079A7FB /* Annotation.swift */,
 				0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */,
 				0A7393802A606BF60079A7FB /* Annotations+Dictionaries.swift */,
@@ -2238,6 +2252,7 @@
 				0A1FCF0229EEED87005EA59E /* SelectedUserCollectionViewCell.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */,
+				0A7393882A61415F0079A7FB /* Annotations.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeButton.swift in Sources */,
 				0A1F1B7C2A288E2700A2E613 /* AnnotationsDevSettingsView.swift in Sources */,
 				0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */,
@@ -2392,6 +2407,7 @@
 				0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */,
 				0A797F7C292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,
+				0A73937B2A6005AE0079A7FB /* AnnotationsTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirestoreTagNameTest.swift in Sources */,
 				0A3680DC29ED9AA600CD1D98 /* CanvasFiltersTest.swift in Sources */,

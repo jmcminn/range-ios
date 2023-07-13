@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 /// Annotations related definitions
-enum Annotations {
+extension Annotations {
     /// Scribble thickness, independent of the image size
     /// The exact thickness in pixels depends on the scale used for annotations (which is dependent on the image size)
     enum ScribbleThickness: String, CaseIterable, Codable {

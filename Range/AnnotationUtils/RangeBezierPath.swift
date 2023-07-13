@@ -4,7 +4,7 @@ import UIKit
 /// UIBezierPath does not give access to the underlying data (https://stackoverflow.com/a/4855932) so we need this class to store all the lines/curves
 /// This class can then be converted to UIBezierPath
 /// It exposes a similar API to UIBezierPath so it can be easily replaced
-class RangeBezierPath: Codable {
+class RangeBezierPath: Codable, Equatable {
     enum Element: Equatable {
         case move(to: CGPoint)
         case addLine(to: CGPoint)
@@ -219,13 +219,23 @@ class RangeBezierPath: Codable {
         return path
     }
 
-    // TODO: 1270 decode from path.d string
-    required init(from _: Decoder) throws {
-        elements = []
+    /// Decode from SVG d string
+    required convenience init(from decoder: Decoder) throws {
+        let dString = try decoder.singleValueContainer().decode(String.self)
+        let path = RangeBezierPath.svgPathDToRangeBezierPath(dString)
+        self.init(elements: path.elements)
     }
 
-    // TODO: 1270 encode to path.d string
-    func encode(to _: Encoder) throws {}
+    /// Encode as SVG d string (see `convertToSVGPathD`)
+    func encode(to encoder: Encoder) throws {
+        let dString = convertToSVGPathD()
+        var container = encoder.singleValueContainer()
+        try container.encode(dString)
+    }
+
+    static func == (lhs: RangeBezierPath, rhs: RangeBezierPath) -> Bool {
+        lhs.elements == rhs.elements
+    }
 }
 
 // MARK: - to SVG path.d conversion
