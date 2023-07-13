@@ -53,6 +53,11 @@ extension CGPoint {
         return CGPoint(x: x / l, y: y / l)
     }
 
+    /// Returns the point with x, y coordinates rounded to nearest int
+    func roundCoordinates() -> CGPoint {
+        CGPoint(x: x.rounded(), y: y.rounded())
+    }
+
 //    static func fromString(string: String) -> CGPoint {
 //        var s = string.stringByReplacingOccurrencesOfString("{", withString: "")
 //        s = s.stringByReplacingOccurrencesOfString("}", withString: "")

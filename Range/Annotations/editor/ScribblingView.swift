@@ -76,7 +76,9 @@ class ScribblingView: UIView {
             onScribbleStarted?()
         }
         // The location is in non scaled coordinates
-        let location = gesture.location(in: gesture.view)
+        // We round the coordinates, there's no point in dealing with non int coordinates of scribble
+        // for photo (it'll also be more readable when stored in db)
+        let location = gesture.location(in: gesture.view).roundCoordinates()
 
         addPoint(location)
 
