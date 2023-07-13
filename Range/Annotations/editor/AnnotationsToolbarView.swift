@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AnnotationsToolbarView: View {
-    @ObservedObject var model: AnnotationsViewModel
+    @ObservedObject var model: AnnotationsEditorViewModel
     @State var pickingScribbleThickness: Bool = false
     @State var pickingScribbleColor: Bool = false
 
@@ -174,7 +174,7 @@ struct AnnotationsToolbarView: View {
 
 struct AnnotationsToolbarView_Previews: PreviewProvider {
     static var previews: some View {
-        AnnotationsToolbarView(model: AnnotationsViewModel())
+        AnnotationsToolbarView(model: AnnotationsEditorViewModel())
     }
 }
 

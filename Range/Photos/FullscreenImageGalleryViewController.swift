@@ -48,11 +48,11 @@ class FullscreenImageGalleryViewController: UIViewController {
     private var confirmButton: UIButton!
 
     /// Annotations view model - one for all pages (there's one annotations toolbar for all pages)
-    private let annotationsViewModel: AnnotationsViewModel
+    private let annotationsEditorViewModel: AnnotationsEditorViewModel
     /// for storing the annotationsViewModel scribbling subscriber
     private var annotationsViewModelScribbleModeSubscriber: AnyCancellable?
     /// array of Annotations object for each page
-    private var annotationsPerPage: [AnnotationsView]
+    private var annotationsEditorPerPage: [AnnotationsEditor]
     private let annotationsSettings = AnnotationsDevSettings()
 
     /// Transitioning delegate to manage the transition to this controller
@@ -62,8 +62,9 @@ class FullscreenImageGalleryViewController: UIViewController {
         didSet {
             updateCurrentPageLabel(currentPage: currentPage)
             loadImages(currentPage: currentPage)
-            annotationsViewModel.currentAnnotations = currentPage >= 0 && currentPage < annotationsPerPage.count
-                ? annotationsPerPage[currentPage]
+            annotationsEditorViewModel.annotationsEditor = currentPage >= 0 && currentPage < annotationsEditorPerPage
+                .count
+                ? annotationsEditorPerPage[currentPage]
                 : nil
         }
     }
@@ -93,9 +94,11 @@ class FullscreenImageGalleryViewController: UIViewController {
         self.photoKeys = photoKeys
         self.removePhotoHandler = removePhotoHandler
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
-        let annotationsViewModel = AnnotationsViewModel()
-        self.annotationsViewModel = annotationsViewModel
-        annotationsPerPage = pages.map { page in AnnotationsView(hostView: page, viewModel: annotationsViewModel) }
+        let annotationsEditorViewModel = AnnotationsEditorViewModel()
+        self.annotationsEditorViewModel = annotationsEditorViewModel
+        annotationsEditorPerPage = pages.map { page in
+            AnnotationsEditor(hostView: page, viewModel: annotationsEditorViewModel)
+        }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -121,7 +124,7 @@ class FullscreenImageGalleryViewController: UIViewController {
 
         let galleryViewScroll = FullscreenImageGalleryScrollViewRepresentable(view: scrollView)
         let galleryView = FullscreenImageGalleryView(
-            annotationsViewModel: annotationsViewModel,
+            annotationsEditorViewModel: annotationsEditorViewModel,
             imageGalleryView: galleryViewScroll
         )
         let galleryViewController = UIHostingController(rootView: galleryView)
@@ -175,7 +178,7 @@ class FullscreenImageGalleryViewController: UIViewController {
         updateCurrentPageLabel(currentPage: currentPage)
         loadImages(currentPage: currentPage)
         setupAnnotationsViewModel()
-        annotationsViewModel.currentAnnotations = annotationsPerPage[currentPage]
+        annotationsEditorViewModel.annotationsEditor = annotationsEditorPerPage[currentPage]
     }
 
     private func setupScrollView() {
@@ -250,7 +253,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     }
 
     private func setupAnnotationsViewModel() {
-        annotationsViewModelScribbleModeSubscriber = annotationsViewModel.$scribbleMode
+        annotationsViewModelScribbleModeSubscriber = annotationsEditorViewModel.$scribbleMode
             .sink { [weak self] scribbleMode in
                 // disable scrolling between pages when scribbling
                 self?.scrollView.isScrollEnabled = !scribbleMode
@@ -287,8 +290,8 @@ class FullscreenImageGalleryViewController: UIViewController {
         }
         previousSize = viewSize
         // to make sure that it's installed if the image is loaded before the views are layed out
-        if currentPage >= 0, currentPage < annotationsPerPage.count {
-            annotationsPerPage[currentPage].installView()
+        if currentPage >= 0, currentPage < annotationsEditorPerPage.count {
+            annotationsEditorPerPage[currentPage].installView()
         }
     }
 
@@ -385,7 +388,7 @@ class FullscreenImageGalleryViewController: UIViewController {
                         progressBlock: nil,
                         completionHandler: { [weak self] _ in
                             page.imageUpdated()
-                            self?.annotationsPerPage[index].installView()
+                            self?.annotationsEditorPerPage[index].installView()
                         }
                     )
                 }
@@ -400,7 +403,7 @@ class FullscreenImageGalleryViewController: UIViewController {
         guard let removePhotoHandler = removePhotoHandler,
               removePhotoHandler(photoIndexToRemove) == true else { return }
         photoKeys.remove(at: photoIndexToRemove)
-        annotationsPerPage.remove(at: photoIndexToRemove)
+        annotationsEditorPerPage.remove(at: photoIndexToRemove)
         let removedPage = pages.remove(at: photoIndexToRemove)
         // animate changes
         UIView.animate(withDuration: 0.2) {

@@ -4,7 +4,7 @@ import SwiftUI
 import UIKit
 
 class AnnotationsToolbarViewController: UIHostingController<AnnotationsToolbarView> {
-    init(viewModel: AnnotationsViewModel) {
+    init(viewModel: AnnotationsEditorViewModel) {
         super.init(rootView: AnnotationsToolbarView(model: viewModel))
     }
 

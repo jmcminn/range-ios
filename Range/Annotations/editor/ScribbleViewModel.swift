@@ -3,7 +3,7 @@ import UIKit
 
 /// Holds the scribble annotations data and properties requried for view rendering, selection, etc.
 class ScribbleViewModel: NSObject {
-    @objc private(set) dynamic var scribble: Annotations.Scribble
+    @objc private(set) dynamic var scribble: ScribbleAnnotation
 
     /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
     /// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
@@ -23,8 +23,14 @@ class ScribbleViewModel: NSObject {
     /// whether this annotation is currently selected
     @objc dynamic var selected: Bool = false
 
+    /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
+    var thickness: Annotations.ScribbleThickness? {
+        let lineWidthBasedThickness = scribble.lineWidth * scale
+        return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
+    }
+
     /// Initiates the view model with given scale and path
-    init(scale: Double, scribble: Annotations.Scribble) {
+    init(scale: Double, scribble: ScribbleAnnotation) {
         self.scribble = scribble
         self.scale = scale
         zoomScale = scale
@@ -38,7 +44,7 @@ class ScribbleViewModel: NSObject {
         // Take the bounds.integral (so the enclosing rectangle with integer coordinates/width/height)
         let scribbleBoundsNoThickness = scribble.path.getUIBezierPath().bounds.integral
         // view bounds need to be extended to cover the whole width of the line
-        let lineWidth = scribble.thickness.lineWidth / scale
+        let lineWidth = scribble.lineWidth
         viewBounds = scribbleBoundsNoThickness.insetBy(dx: -lineWidth, dy: -lineWidth)
         uiPath = scribble.path
             // translate so it's relative to view origin:
@@ -59,7 +65,7 @@ class ScribbleViewModel: NSObject {
 
     /// Thickness impacts the `viewBounds`, so it also impacts the `uiPath`
     func setThickness(_ thickness: Annotations.ScribbleThickness) {
-        scribble.thickness = thickness
+        scribble.lineWidth = thickness.lineWidth / scale
         updateFromScribble()
     }
 

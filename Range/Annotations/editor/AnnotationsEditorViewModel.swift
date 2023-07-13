@@ -2,14 +2,14 @@
 import Foundation
 import UIKit
 
-/// Used to keep the state of the current photo annotation session.
+/// Used to keep the state of the current photo annotation editing session.
 /// Based on this state the AnnotationsToolbarView is rendered.
 ///
-/// Achtung: Even if annotating multiple photos in a gallery, there's still 1 `AnnotationsViewModel` but there's many `Annotations`
+/// Achtung: Even if annotating multiple photos in a gallery, there's still 1 `AnnotationsEditorViewModel` but there's many `AnnotationsEditor`s
 ///
-class AnnotationsViewModel: ObservableObject {
+class AnnotationsEditorViewModel: ObservableObject {
     /// currently annotated page in photos gallery
-    var currentAnnotations: AnnotationsView? { didSet { currentAnnotationsDidSet() }}
+    var annotationsEditor: AnnotationsEditor? { didSet { currentAnnotationsEditorDidSet() }}
 
     /// is the editing enabled for the current AnnotationsView (on if it's `installed`)
     @Published private(set) var editingEnabled: Bool = false
@@ -31,11 +31,11 @@ class AnnotationsViewModel: ObservableObject {
 
     @Published private(set) var selectedAnnotation: ScribbleViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
-    private var currentAnnotationsViewInstalledObservation: NSKeyValueObservation?
+    private var currentAnnotationsEditorInstalledObservation: NSKeyValueObservation?
 
     func toggleScribbleMode() {
         scribbleMode.toggle()
-        currentAnnotations?.setScribblingEnabled(scribbleMode)
+        annotationsEditor?.setScribblingEnabled(scribbleMode)
     }
 
     func setCurrentScribbleThickness(_ thickness: Annotations.ScribbleThickness) {
@@ -52,36 +52,36 @@ class AnnotationsViewModel: ObservableObject {
 
     private func onAnnotationSelected(_ annotationVM: ScribbleViewModel?) {
         selectedAnnotation = annotationVM
-        currentScribbleThickness = selectedAnnotation?.scribble.thickness ?? lastPickedScribbleThickness
+        currentScribbleThickness = selectedAnnotation?.thickness ?? lastPickedScribbleThickness
         currentScribbleColor = selectedAnnotation?.scribble.color ?? lastPickedScribbleColor
     }
 
     /// Unselect the currently selected annotation
     func unselectAnnotation() {
-        currentAnnotations?.setSelected(nil)
+        annotationsEditor?.setSelected(nil)
     }
 
     /// Deletes the currently selected annotation
     func deleteAnnotation() {
-        if let annotation = currentAnnotations?.selectedAnnotation {
-            currentAnnotations?.deleteAnnotation(annotation)
+        if let annotation = annotationsEditor?.selectedAnnotation {
+            annotationsEditor?.deleteAnnotation(annotation)
         }
     }
 
-    /// When switching the Annotations currently handled by annotation session (so when changing a page in photos gallery)
-    private func currentAnnotationsDidSet() {
+    /// When switching the AnnotationsEditor currently handled by annotation session (so when changing a page in photos gallery)
+    private func currentAnnotationsEditorDidSet() {
         selectedAnnotationObservation?.invalidate()
-        currentAnnotationsViewInstalledObservation?.invalidate()
-        onAnnotationSelected(currentAnnotations?.selectedAnnotation)
-        editingEnabled = currentAnnotations?.installed ?? false
-        if let currentAnnotations = currentAnnotations {
-            selectedAnnotationObservation = currentAnnotations.observe(\.selectedAnnotation) { [weak self] _, _ in
-                self?.onAnnotationSelected(currentAnnotations.selectedAnnotation)
+        currentAnnotationsEditorInstalledObservation?.invalidate()
+        onAnnotationSelected(annotationsEditor?.selectedAnnotation)
+        editingEnabled = annotationsEditor?.installed ?? false
+        if let annotationsEditor = annotationsEditor {
+            selectedAnnotationObservation = annotationsEditor.observe(\.selectedAnnotation) { [weak self] _, _ in
+                self?.onAnnotationSelected(annotationsEditor.selectedAnnotation)
             }
-            currentAnnotationsViewInstalledObservation = currentAnnotations.observe(
+            currentAnnotationsEditorInstalledObservation = annotationsEditor.observe(
                 \.installed,
                 changeHandler: { [weak self] _, _ in
-                    self?.editingEnabled = currentAnnotations.installed
+                    self?.editingEnabled = annotationsEditor.installed
                 }
             )
         }

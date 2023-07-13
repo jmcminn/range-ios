@@ -60,7 +60,7 @@ class ScribbleView: UIView {
         path.lineCapStyle = .round
 
         // lineWidth needs no scaling as the whole view is scaled
-        let lineWidth = viewModel.scribble.thickness.lineWidth
+        let lineWidth = viewModel.scribble.lineWidth * viewModel.scale
 
         // outline
         path.lineWidth = 2 * lineWidth

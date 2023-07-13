@@ -1,29 +1,11 @@
 import Foundation
 import UIKit
 
-/// Namesoace for annotations related definitions
+/// Annotations related definitions
 enum Annotations {
-    /// Definition of a scribble drawing
-    class Scribble: NSObject {
-        /// The unique id of the annotation
-        let id: String = UUID().uuidString.lowercased()
-        /// Path in the image coordinates space
-        var path: RangeBezierPath
-        /// scribble thickness
-        var thickness: Annotations.ScribbleThickness
-        /// inner color (the outline is always white)
-        @objc dynamic var color: UIColor
-
-        init(path: RangeBezierPath, thickness: Annotations.ScribbleThickness, color: UIColor) {
-            self.path = path
-            self.thickness = thickness
-            self.color = color
-        }
-    }
-
     /// Scribble thickness, independent of the image size
     /// The exact thickness in pixels depends on the scale used for annotations (which is dependent on the image size)
-    enum ScribbleThickness: String, CaseIterable {
+    enum ScribbleThickness: String, CaseIterable, Codable {
         case thin, light, medium, bold, heavy
 
         /// When rendering the scribble this is the width of the inner line, the outline is hardcoded to be `2 * lineWidth`
@@ -58,6 +40,6 @@ enum Annotations {
         .Pink_03,
         .Orange_03,
         .Red_03,
-        UIColor(hexString: "#3694A0"),
+        .Green_03,
     ]
 }

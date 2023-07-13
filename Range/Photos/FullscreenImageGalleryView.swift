@@ -2,7 +2,7 @@ import SwiftUI
 
 /// The SwiftUI view that hosts the image gallery and annotations toolbar
 struct FullscreenImageGalleryView: View {
-    @ObservedObject var annotationsViewModel: AnnotationsViewModel
+    @ObservedObject var annotationsEditorViewModel: AnnotationsEditorViewModel
     var imageGalleryView: FullscreenImageGalleryScrollViewRepresentable
 
     var body: some View {
@@ -11,7 +11,7 @@ struct FullscreenImageGalleryView: View {
                 .ignoresSafeArea(.all)
             VStack {
                 Spacer()
-                AnnotationsToolbarView(model: annotationsViewModel)
+                AnnotationsToolbarView(model: annotationsEditorViewModel)
                     .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))
             }
         }
@@ -20,7 +20,7 @@ struct FullscreenImageGalleryView: View {
 
 struct FullscreenImageGalleryView_Previews: PreviewProvider {
     static var previews: some View {
-        FullscreenImageGalleryView(annotationsViewModel: AnnotationsViewModel(),
+        FullscreenImageGalleryView(annotationsEditorViewModel: AnnotationsEditorViewModel(),
                                    imageGalleryView: FullscreenImageGalleryScrollViewRepresentable(
                                        view: UIScrollView()
                                    ))

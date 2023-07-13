@@ -3,14 +3,14 @@ import Foundation
 import OrderedCollections
 import UIKit
 
-/// Represent annotations on 1 photo
-class AnnotationsView: NSObject {
+/// Represent annotations editor for 1 photo
+/// Shows the annotation views and handles the gestures
+class AnnotationsEditor: NSObject {
+    private weak var hostView: FullscreenImageGalleryPageView?
+    let viewModel: AnnotationsEditorViewModel
+
     /// view hosting all the annotation views
     let view = UIView()
-
-    let viewModel: AnnotationsViewModel
-
-    private weak var hostView: FullscreenImageGalleryPageView?
 
     var scribbleScale: Double = 1.0
 
@@ -21,17 +21,20 @@ class AnnotationsView: NSObject {
     var dragAnnotationOrigin: CGPoint?
 
     /// subview of `view` to which annotations are added
-    let annotationsView = UIView()
+    let annotationsContainerView = UIView()
     /// The view for drawing (on top of annotationsView)
     var currentScribblingView: ScribblingView?
 
     /// order in this dictionary is the order of annotations rendering, so last is on top
-    private var annotations = OrderedDictionary<ScribbleViewModel, UIView>()
+    private var annotationsViews = OrderedDictionary<ScribbleViewModel, UIView>()
 
     /// Combine listeners for viewModel
     private var subscriptions = Set<AnyCancellable>()
 
-    init(hostView: FullscreenImageGalleryPageView, viewModel: AnnotationsViewModel) {
+    init(
+        hostView: FullscreenImageGalleryPageView,
+        viewModel: AnnotationsEditorViewModel
+    ) {
         self.hostView = hostView
         self.viewModel = viewModel
         super.init()
@@ -69,8 +72,8 @@ class AnnotationsView: NSObject {
             make.edges.equalToSuperview()
         }
 
-        view.addSubview(annotationsView)
-        annotationsView.snp.makeConstraints { make in
+        view.addSubview(annotationsContainerView)
+        annotationsContainerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
@@ -89,11 +92,15 @@ class AnnotationsView: NSObject {
 
     /// Add a scribble annotation and return its view
     func add(scribbleWithPath path: RangeBezierPath) {
-        let scribble = Annotations.Scribble(
+        let scribble = ScribbleAnnotation(
             path: path,
-            thickness: viewModel.lastPickedScribbleThickness,
+            lineWidth: viewModel.lastPickedScribbleThickness.lineWidth / scribbleScale,
             color: viewModel.lastPickedScribbleColor
         )
+        addScribble(scribble)
+    }
+
+    private func addScribble(_ scribble: ScribbleAnnotation) {
         let scribbleVM = ScribbleViewModel(scale: scribbleScale, scribble: scribble)
         if let hostView = hostView {
             scribbleVM.zoomScale = hostView.scrollView.zoomScale
@@ -101,18 +108,18 @@ class AnnotationsView: NSObject {
 
         let scribbleView = ScribbleView(viewModel: scribbleVM)
 
-        annotations[scribbleVM] = scribbleView
+        annotationsViews[scribbleVM] = scribbleView
 
-        annotationsView.addSubview(scribbleView)
+        annotationsContainerView.addSubview(scribbleView)
         scribbleView.frame = scribbleVM.viewBounds
         setSelected(nil)
     }
 
     func deleteAnnotation(_ annotation: ScribbleViewModel) {
-        if let view = annotations[annotation] {
+        if let view = annotationsViews[annotation] {
             view.removeFromSuperview()
         }
-        annotations[annotation] = nil
+        annotationsViews[annotation] = nil
         if annotation == selectedAnnotation {
             setSelected(nil)
         }
@@ -121,7 +128,7 @@ class AnnotationsView: NSObject {
 
 // MARK: - scribble
 
-extension AnnotationsView {
+extension AnnotationsEditor {
     func setScribblingEnabled(_ enabled: Bool) {
         guard let hostView = hostView else { return }
 
@@ -161,15 +168,15 @@ extension AnnotationsView {
 
 // MARK: - selection
 
-extension AnnotationsView {
+extension AnnotationsEditor {
     @objc private func viewTapped(gesture: UIGestureRecognizer) {
         // find tapped annotation
         let location = gesture.location(in: view)
         // strictly contains the tap location
-        var tappedAnnotations = annotations.keys.filter { $0.containsTapLocation(location) }
+        var tappedAnnotations = annotationsViews.keys.filter { $0.containsTapLocation(location) }
         if tappedAnnotations.isEmpty {
             // fallback to "rough containment"
-            tappedAnnotations = annotations.keys.filter { $0.roughlyContainsTapLocation(location) }
+            tappedAnnotations = annotationsViews.keys.filter { $0.roughlyContainsTapLocation(location) }
         }
 
         if tappedAnnotations.count == 0 {
@@ -191,16 +198,16 @@ extension AnnotationsView {
     /// select given annotation or deselect if nil
     func setSelected(_ selectedAnnotation: ScribbleViewModel?) {
         self.selectedAnnotation = selectedAnnotation
-        for annotation in annotations.keys {
+        for annotation in annotationsViews.keys {
             annotation.selected = annotation == selectedAnnotation
         }
         // the selected annotation should be on top
         if let selectedAnnotation = selectedAnnotation {
             // change the order in annotations dictionary
-            if let annotationView = annotations.removeValue(forKey: selectedAnnotation) {
-                annotations[selectedAnnotation] = annotationView
+            if let annotationView = annotationsViews.removeValue(forKey: selectedAnnotation) {
+                annotationsViews[selectedAnnotation] = annotationView
                 // move the view to the top
-                annotationsView.bringSubviewToFront(annotationView)
+                annotationsContainerView.bringSubviewToFront(annotationView)
             }
         }
     }
@@ -208,7 +215,7 @@ extension AnnotationsView {
 
 // MARK: - drag annotations
 
-extension AnnotationsView: UIGestureRecognizerDelegate {
+extension AnnotationsEditor: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gesture: UIGestureRecognizer) -> Bool {
         let location = gesture.location(in: gesture.view)
         // if it's a drag of selected annotation then start recognizing this gesture (and block
@@ -229,16 +236,16 @@ extension AnnotationsView: UIGestureRecognizerDelegate {
         if let dragAnnotationOrigin = dragAnnotationOrigin {
             let translation = gesture.translation(in: view)
             selectedAnnotation.setOrigin(translation.addTo(dragAnnotationOrigin))
-            annotations[selectedAnnotation]?.frame = selectedAnnotation.viewBounds
+            annotationsViews[selectedAnnotation]?.frame = selectedAnnotation.viewBounds
         }
     }
 }
 
 // MARK: - parent scroll view delegate
 
-extension AnnotationsView: UIScrollViewDelegate {
+extension AnnotationsEditor: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        for annotation in annotations.keys {
+        for annotation in annotationsViews.keys {
             annotation.zoomScale = scrollView.zoomScale
         }
     }
