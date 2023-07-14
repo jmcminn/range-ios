@@ -108,6 +108,7 @@ class DueDateButton: UIButton {
                                                ),
                                            ]))
             setAttributedTitle(title, for: .normal)
+            backgroundColor = markOverdue ? .Red_01 : .dynamic(.Neutral_09)
         } else {
             let title = NSMutableAttributedString(
                 string: "Due Date",
@@ -119,6 +120,7 @@ class DueDateButton: UIButton {
                 ]
             )
             setAttributedTitle(title, for: .normal)
+            backgroundColor = .dynamic(.Neutral_09)
         }
     }
 
