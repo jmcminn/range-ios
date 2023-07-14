@@ -111,6 +111,10 @@ class FullscreenImageGalleryViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -210,6 +214,14 @@ class FullscreenImageGalleryViewController: UIViewController {
                     self.onDone?(resultAnnotations)
                 }
             )
+
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(updateDoneButtonEnabled),
+                name: AnnotationsEditor.AnnotationsUpdatedNotificationName,
+                object: nil
+            )
+            updateDoneButtonEnabled()
         } else {
             confirmButton = UIButton(
                 configuration: UIButton.Configuration.iconButton(
@@ -244,6 +256,10 @@ class FullscreenImageGalleryViewController: UIViewController {
                 self?.removePhoto()
             }
         )
+    }
+
+    @objc private func updateDoneButtonEnabled() {
+        confirmButton.isEnabled = annotationsEditorPerPage.contains(where: \.annotationsUpdated)
     }
 
     static var cancelDoneButtonConfig: UIButton.Configuration {

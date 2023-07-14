@@ -116,3 +116,9 @@ class ScribbleViewModel: NSObject {
         scribble.path.getSimpleDistanceToPoint(location)
     }
 }
+
+extension ScribbleViewModel: AnnotationConvertible {
+    var annotation: Annotation {
+        scribble.annotation
+    }
+}

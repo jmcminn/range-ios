@@ -3,20 +3,26 @@ import UIKit
 
 /// Definition of a scribble drawing
 class ScribbleAnnotation: NSObject, Codable {
+    /// The name for the notification posted in NotificationCenter when the annotation changes
+    static let UpdateNotificationName = Notification.Name("io.range.App.ScribbleAnnotationChanged")
+
     /// The unique id of the annotation
     let id: String
     /// Type, it's not `let` so it's encoded/decoded
     private(set) var type: AnnotationType = .scribble
     /// Path in the image coordinates space
-    var path: RangeBezierPath
+    var path: RangeBezierPath { didSet { postUpdate() }}
     /// scribble thickness
-    var lineWidth: Double
+    var lineWidth: Double { didSet { postUpdate() }}
     /// the storage for color, String so it can be encoded/decoded
     private var hexColor: String
     /// inner color (the outline is always white) - UIColor wrapping the hexColor
     @objc dynamic var color: UIColor {
         get { UIColor(hexString: hexColor) }
-        set { hexColor = newValue.hexString }
+        set {
+            hexColor = newValue.hexString
+            postUpdate()
+        }
     }
 
     init(
@@ -38,6 +44,17 @@ class ScribbleAnnotation: NSObject, Codable {
         if lineWidth != rhs.lineWidth { return false }
         if hexColor != rhs.hexColor { return false }
         return true
+    }
+
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(id)
+        return hasher.finalize()
+    }
+
+    /// Use notification center to post the notification about update in filters
+    private func postUpdate() {
+        NotificationCenter.default.post(name: ScribbleAnnotation.UpdateNotificationName, object: id)
     }
 }
 

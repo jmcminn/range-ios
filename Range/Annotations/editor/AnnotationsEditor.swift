@@ -12,6 +12,14 @@ class AnnotationsEditor: NSObject {
     let initialAnnotations: Annotations?
     let viewModel: AnnotationsEditorViewModel
 
+    /// whether the annotations were updated from the initialAnnotations
+    private(set) var annotationsUpdated: Bool = false { didSet {
+        NotificationCenter.default.post(name: AnnotationsEditor.AnnotationsUpdatedNotificationName, object: self)
+    }}
+    /// The name for the notification posted in NotificationCenter when the `annotationsUpdated` changes
+    static let AnnotationsUpdatedNotificationName = Notification
+        .Name("io.range.App.AnnotationsEditor.AnnotationsUpdated")
+
     /// view hosting all the annotation views
     let view = UIView()
 
@@ -30,6 +38,8 @@ class AnnotationsEditor: NSObject {
 
     /// order in this dictionary is the order of annotations rendering, so last is on top
     private var annotationsViews = OrderedDictionary<ScribbleViewModel, UIView>()
+    /// for fast annotation lookup (if it's part of this editor)
+    private var annotationsIds = Set<String>()
 
     /// Combine listeners for viewModel
     private var subscriptions = Set<AnyCancellable>()
@@ -45,6 +55,11 @@ class AnnotationsEditor: NSObject {
         super.init()
         hostView.scrollView.forwardDelegateInvocations(to: self)
         subscribeToViewModel()
+
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(checkAnnotationsUpdated),
+            name: ScribbleAnnotation.UpdateNotificationName, object: nil
+        )
     }
 
     deinit {
@@ -52,6 +67,7 @@ class AnnotationsEditor: NSObject {
         for subscription in subscriptions {
             subscription.cancel()
         }
+        NotificationCenter.default.removeObserver(self)
     }
 
     private func subscribeToViewModel() {
@@ -70,7 +86,8 @@ class AnnotationsEditor: NSObject {
         guard let image = hostView.imageView.image else { return }
         let viewWidth = hostView.frame.width
         let imageWidth = image.size.width
-        guard viewWidth > 0, imageWidth > 0 else { return }
+        let imageHeight = image.size.height
+        guard viewWidth > 0, imageWidth > 0, imageHeight > 0 else { return }
 
         hostView.imageView.addSubview(view)
         view.snp.makeConstraints { make in
@@ -128,10 +145,13 @@ class AnnotationsEditor: NSObject {
         let scribbleView = ScribbleView(viewModel: scribbleVM)
 
         annotationsViews[scribbleVM] = scribbleView
+        annotationsIds.insert(scribble.id)
 
         annotationsContainerView.addSubview(scribbleView)
         scribbleView.frame = scribbleVM.viewBounds
         setSelected(nil)
+
+        checkAnnotationsUpdated()
     }
 
     func deleteAnnotation(_ annotation: ScribbleViewModel) {
@@ -139,9 +159,18 @@ class AnnotationsEditor: NSObject {
             view.removeFromSuperview()
         }
         annotationsViews[annotation] = nil
+        annotationsIds.remove(annotation.scribble.id)
         if annotation == selectedAnnotation {
             setSelected(nil)
         }
+
+        checkAnnotationsUpdated()
+    }
+
+    @objc private func checkAnnotationsUpdated() {
+        let initialAnnotations = initialAnnotations?.annotations ?? []
+        let currentAnnotations = annotationsViews.keys.map(\.annotation)
+        annotationsUpdated = initialAnnotations != currentAnnotations
     }
 }
 
@@ -161,7 +190,7 @@ extension AnnotationsEditor {
                 width: Int(imageWidth),
                 height: Int(imageHeight),
                 scale: scale,
-                annotationsViews.keys.map(\.scribble.annotation)
+                annotationsViews.keys.map(\.annotation)
             )
         }
     }
@@ -251,6 +280,7 @@ extension AnnotationsEditor {
                 annotationsContainerView.bringSubviewToFront(annotationView)
             }
         }
+        checkAnnotationsUpdated()
     }
 }
 

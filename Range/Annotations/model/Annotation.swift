@@ -6,8 +6,15 @@ enum AnnotationType: String, Codable {
 }
 
 /// Defines annotations representations as enum (so we can have Annotation "superclass" kind of approach)
-enum Annotation: Equatable {
+enum Annotation: Equatable, Hashable {
     case scribble(_ data: ScribbleAnnotation)
+
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case let .scribble(data):
+            hasher.combine(data.id)
+        }
+    }
 }
 
 /// A type that can be represented as a `Annotation` instance.
