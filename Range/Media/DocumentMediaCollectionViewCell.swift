@@ -116,7 +116,7 @@ class DocumentMediaCollectionViewCell: UICollectionViewCell {
 
     func mark(selected: Bool) {
         avatarView.isHidden = selected
-        contentView.backgroundColor = selected ? .Green_03.withAlphaComponent(0.15) : .dynamic(.Neutral_09)
+        contentView.backgroundColor = selected ? .Primary_Blue_02 : .dynamic(.Neutral_09)
 
         if selected {
             setupSelectedCheckmark()

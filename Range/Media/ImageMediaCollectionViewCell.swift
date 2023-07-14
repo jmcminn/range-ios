@@ -63,7 +63,7 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
     private func setupSelectedOverlay() {
         guard selectedOverlay == nil else { return }
         let selectedOverlay = UIView()
-        selectedOverlay.backgroundColor = .Green_01
+        selectedOverlay.backgroundColor = .Primary_Blue_02
         selectedOverlay.layer.cornerRadius = contentView.layer.cornerRadius
         contentView.addSubview(selectedOverlay)
         selectedOverlay.snp.makeConstraints { make in
@@ -84,7 +84,7 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
         let checkmarkBg = UIView()
         checkmarkBg.layer.borderWidth = 1
         checkmarkBg.layer.borderColor = UIColor.Neutral_01.cgColor
-        checkmarkBg.backgroundColor = .Green_03
+        checkmarkBg.backgroundColor = .Primary_Blue_04
 
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 11, weight: .semibold)
         let checkmark = UIImageView(image: UIImage(systemName: "checkmark", withConfiguration: imageConfig))
