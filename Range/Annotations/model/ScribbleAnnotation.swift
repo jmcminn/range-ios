@@ -41,6 +41,13 @@ class ScribbleAnnotation: NSObject, Codable {
     }
 }
 
+extension ScribbleAnnotation: NSCopying {
+    /// Deep copy of the annotation
+    func copy(with _: NSZone? = nil) -> Any {
+        ScribbleAnnotation(id: id, path: path.copy() as! RangeBezierPath, lineWidth: lineWidth, color: color)
+    }
+}
+
 extension ScribbleAnnotation: AnnotationConvertible {
     public var annotation: Annotation { .scribble(self) }
 }

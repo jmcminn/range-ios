@@ -282,3 +282,9 @@ extension RangeBezierPath.Element {
         return formatter.string(from: point.x as NSNumber)! + "," + formatter.string(from: point.y as NSNumber)!
     }
 }
+
+extension RangeBezierPath: NSCopying {
+    func copy(with _: NSZone? = nil) -> Any {
+        RangeBezierPath(elements: elements)
+    }
+}

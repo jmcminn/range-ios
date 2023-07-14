@@ -98,7 +98,10 @@ class AnnotationsEditor: NSObject {
             for annotation in initialAnnotations.annotations {
                 switch annotation {
                 case let .scribble(scribble):
-                    addScribble(scribble)
+                    // copy so we don't change the initial annotations (the initial values should not be
+                    // changed as we need them to compare new state vs initial, changing them would also
+                    // break the "cancel" functionality of the annotations editor)
+                    addScribble(scribble.copy() as! ScribbleAnnotation)
                 }
             }
         }
@@ -150,6 +153,7 @@ extension AnnotationsEditor {
         let imageWidth = image.size.width
         let imageHeight = image.size.height
         guard imageWidth > 0, imageHeight > 0 else { return nil }
+
         if annotationsViews.isEmpty {
             return nil
         } else {

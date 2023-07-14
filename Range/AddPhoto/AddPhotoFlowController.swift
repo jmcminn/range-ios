@@ -214,9 +214,9 @@ class AddPhotoFlowController {
         vc.onCancel = { [weak vc] in
             vc?.dismiss(animated: true)
         }
-        // TODO: 1270
-        vc.onDone = { [weak vc] _ in
+        vc.onDone = { [weak self, weak vc] annotations in
             vc?.dismiss(animated: true)
+            self?.photosToAddViewModel.setAnnotations(annotations)
         }
         vc.modalPresentationStyle = .fullScreen
         cameraVC.present(vc, animated: true)
@@ -227,18 +227,19 @@ class AddPhotoFlowController {
         let vc = createPhotosReviewViewController()
 
         // hides photos review controller and possibly updates the annotations
-        let hideReviewController: (Bool, [Annotations?]) -> Void = { [weak self, weak vc] updateAnnotations, _ in
-            guard let self = self, let vc = vc else { return }
-            if let detailsVC = self.detailsVC {
-                // when hiding the photos review make sure that image gallery in details screen
-                // shows the same page as the last viewed on photos review
-                detailsVC.headerVC.galleryVC.setCurrentPage(vc.currentPage)
+        let hideReviewController: (Bool, [Annotations?])
+            -> Void = { [weak self, weak vc] updateAnnotations, annotations in
+                guard let self = self, let vc = vc else { return }
+                if let detailsVC = self.detailsVC {
+                    // when hiding the photos review make sure that image gallery in details screen
+                    // shows the same page as the last viewed on photos review
+                    detailsVC.headerVC.galleryVC.setCurrentPage(vc.currentPage)
+                }
+                vc.dismiss(animated: true)
+                if updateAnnotations {
+                    self.photosToAddViewModel.setAnnotations(annotations)
+                }
             }
-            vc.dismiss(animated: true)
-            if updateAnnotations {
-                // TODO: 1270
-            }
-        }
 
         vc.onCancel = {
             hideReviewController(false, [])

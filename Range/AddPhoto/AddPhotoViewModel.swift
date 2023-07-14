@@ -21,8 +21,7 @@ struct PhotoToAdd {
     var height2Width: Double
     /// size of the file
     var fileSize: Int64
-
-    // TODO: 1270
+    /// photo annotations
     var annotations: Annotations?
 }
 
@@ -67,6 +66,11 @@ class PhotosToAddViewModel: NSObject {
         DispatchQueue.main.async {
             self.delegates.allObjects.forEach { $0.photoRemoved?(atIndex: index) }
         }
+    }
+
+    /// Updates annotations for all photos (only if changed)
+    func setAnnotations(_ annotations: [Annotations?]) {
+        photos.indices.forEach { photos[$0].annotations = annotations[$0] }
     }
 
     /// Cleanup the current photosToAdd
