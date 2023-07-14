@@ -8,13 +8,18 @@ final class Annotations: NSObject, Codable {
     /// Specifies the format and version of the annotations
     private(set) var format: String = "https://range.io/photo-annotations/v1"
 
+    /// Annotations and image width and height
+    private(set) var width: Int
+    private(set) var height: Int
+
     /// Scale applied to annotation sizes (like thickness from Annotations+Dictionaries). For example if scale is 2 then scribble annotation
     /// added with ".medium" thickness will have a lineWidth of 2 * medium.lineWidth = 2 * 6 = 12 pixels (when rendered on the photo)
-    var scale: Double
+    private(set) var scale: Double
     var annotations: [Annotation]
-    // TODO: 1270 store width/height
 
-    init(scale: Double, _ annotations: [Annotation]) {
+    init(width: Int, height: Int, scale: Double, _ annotations: [Annotation]) {
+        self.width = width
+        self.height = height
         self.scale = scale
         self.annotations = annotations
     }
@@ -22,6 +27,8 @@ final class Annotations: NSObject, Codable {
     override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Annotations else { return false }
         if format != rhs.format { return false }
+        if width != rhs.width { return false }
+        if height != rhs.height { return false }
         if scale != rhs.scale { return false }
         if annotations != rhs.annotations { return false }
         return true
@@ -38,7 +45,7 @@ extension Annotations: FailableCustomPersistable {
         if let data = persistedValue.data(using: .utf8) {
             do {
                 let decoded = try JSONDecoder().decode(Annotations.self, from: data)
-                self.init(scale: decoded.scale, decoded.annotations)
+                self.init(width: decoded.width, height: decoded.height, scale: decoded.scale, decoded.annotations)
                 return
             } catch {
                 Logger.model.error("decoding Annotations failed: \(error.localizedDescription, privacy: .public)")
