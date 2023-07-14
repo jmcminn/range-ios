@@ -119,7 +119,8 @@ extension CreateCollaborationCommand: LocalCommand {
                 correlationId: $0.id,
                 fileType: .jpeg,
                 imageHeightToWidth: $0.imageHeightToWidth,
-                fileSize: $0.fileSize
+                fileSize: $0.fileSize,
+                annotations: $0.annotations
             )
             upload.author = author
             // add new upload
@@ -220,6 +221,7 @@ extension CreateCollaborationCommand: FirestoreCommand {
                 tagIds: uploadTagIds,
                 fileTypeString: Upload.FileType.jpeg.rawValue,
                 imageHeightToWidth: $0.imageHeightToWidth,
+                // TODO: 1271 annotations
                 fileSize: $0.fileSize
             )
             var data = try Firestore.Encoder().encode(firestoreObject)

@@ -30,19 +30,22 @@ struct CommandUpload: Codable, Equatable {
     var fileSize: Int64
     var name: String?
     var imageHeightToWidth: Double?
+    var annotations: Annotations?
 
     init(
         id: String,
         fileType: Upload.FileType,
         fileSize: Int64,
         name: String? = nil,
-        imageHeightToWidth: Double? = nil
+        imageHeightToWidth: Double? = nil,
+        annotations: Annotations? = nil
     ) {
         self.id = id
         self.fileType = fileType
         self.fileSize = fileSize
         self.name = name
         self.imageHeightToWidth = imageHeightToWidth
+        self.annotations = annotations
     }
 
     init(fromPhotoToAdd photoToAdd: PhotoToAdd) {
@@ -51,5 +54,6 @@ struct CommandUpload: Codable, Equatable {
         fileSize = photoToAdd.fileSize
         name = photoToAdd.fileName
         imageHeightToWidth = photoToAdd.height2Width
+        annotations = photoToAdd.annotations
     }
 }
