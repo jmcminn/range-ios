@@ -211,9 +211,12 @@ class AddPhotoFlowController {
     private func showPhotosReviewFromCameraScreen() {
         guard let cameraVC = cameraVC else { return }
         let vc = createPhotosReviewViewController()
-        vc.onDone = { [weak vc] in
-            guard let vc = vc else { return }
-            vc.dismiss(animated: true)
+        vc.onCancel = { [weak vc] in
+            vc?.dismiss(animated: true)
+        }
+        // TODO: 1270
+        vc.onDone = { [weak vc] _ in
+            vc?.dismiss(animated: true)
         }
         vc.modalPresentationStyle = .fullScreen
         cameraVC.present(vc, animated: true)
@@ -222,7 +225,9 @@ class AddPhotoFlowController {
     private func showPhotosReviewFromDetailsScreen(interactivePresentation: UIPercentDrivenInteractiveTransition?) {
         guard let detailsVC = detailsVC else { return }
         let vc = createPhotosReviewViewController()
-        vc.onDone = { [weak self, weak vc] in
+
+        // hides photos review controller and possibly updates the annotations
+        let hideReviewController: (Bool, [Annotations?]) -> Void = { [weak self, weak vc] updateAnnotations, _ in
             guard let self = self, let vc = vc else { return }
             if let detailsVC = self.detailsVC {
                 // when hiding the photos review make sure that image gallery in details screen
@@ -230,6 +235,16 @@ class AddPhotoFlowController {
                 detailsVC.headerVC.galleryVC.setCurrentPage(vc.currentPage)
             }
             vc.dismiss(animated: true)
+            if updateAnnotations {
+                // TODO: 1270
+            }
+        }
+
+        vc.onCancel = {
+            hideReviewController(false, [])
+        }
+        vc.onDone = { annotations in
+            hideReviewController(true, annotations)
         }
 
         let galleryVC = detailsVC.headerVC.galleryVC!
@@ -251,6 +266,7 @@ class AddPhotoFlowController {
                 localFiles.imageProvider(forKey: $0)
             },
             photoKeys: photosToAddViewModel.photos.map(\.mediaKey),
+            annotations: photosToAddViewModel.photos.map(\.annotations),
             removePhotoHandler: { [weak self] photoIndex in
                 guard let self = self else { return false }
                 guard photoIndex < self.photosToAddViewModel.photos.count else { return false }

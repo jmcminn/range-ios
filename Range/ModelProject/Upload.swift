@@ -50,6 +50,8 @@ class Upload: Object, WithPlaceholder, WithId {
     @Persisted var storageVersion: Map<String, String>
     /// comments, the order doesn't matter so it's a set (the order is controlled by the comment timestamp when displaying in the UI)
     @Persisted var comments: MutableSet<Comment>
+    /// annotations for the photo (for now only persisted locally, not synced with Firestore)
+    @Persisted var annotations: Annotations?
 
     /// Derived from fileType
     var isImage: Bool { fileType.isImage }
@@ -80,6 +82,7 @@ class Upload: Object, WithPlaceholder, WithId {
         imageHeightToWidth: Double?,
         fileSize: Int64?,
         storageVersion: [String: String]? = nil,
+        annotations: Annotations? = nil,
         placeholder: Bool = false
     ) {
         super.init()
@@ -95,6 +98,7 @@ class Upload: Object, WithPlaceholder, WithId {
             // merge overwriting with new values
             self.storageVersion.merge(storageVersion) { _, new in new }
         }
+        self.annotations = annotations
         self.placeholder = placeholder
     }
 

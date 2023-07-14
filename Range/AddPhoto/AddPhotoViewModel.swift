@@ -21,6 +21,9 @@ struct PhotoToAdd {
     var height2Width: Double
     /// size of the file
     var fileSize: Int64
+
+    // TODO: 1270
+    var annotations: Annotations?
 }
 
 /// View model for list of `PhotoToAdd`s

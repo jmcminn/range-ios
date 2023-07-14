@@ -556,9 +556,18 @@ extension FullscreenMediaCardViewController {
                 mediaCache.imageProvider(forKey: $0)
             },
             photoKeys: [mediaKey],
+            annotations: [upload.annotations],
             removePhotoHandler: nil
         )
-        vc.onDone = { [weak vc] in
+        vc.onCancel = { [weak vc] in
+            vc?.dismiss(animated: true)
+        }
+        vc.onDone = { [weak self, weak vc] annotations in
+            if let self = self, let annotations = annotations.first {
+                self.projectModel.run(self.projectModel.update(annotations: annotations, forUpload: upload)) { error in
+                    if error != nil { ToastWindow.shared.showError(text: "Failed to update the annotations") }
+                }
+            }
             vc?.dismiss(animated: true)
         }
         vc.modalPresentationStyle = .fullScreen

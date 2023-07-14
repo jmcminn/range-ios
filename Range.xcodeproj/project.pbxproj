@@ -237,6 +237,7 @@
 		0A7393712A5D99980079A7FB /* SVGPathDCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */; };
 		0A7393732A5D99A20079A7FB /* SVGPathDLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */; };
 		0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */; };
+		0A7393782A5FDE450079A7FB /* UpdateUploadAnnotationsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393772A5FDE450079A7FB /* UpdateUploadAnnotationsCommand.swift */; };
 		0A73937B2A6005AE0079A7FB /* AnnotationsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73937A2A6005AE0079A7FB /* AnnotationsTest.swift */; };
 		0A7393812A606BF60079A7FB /* Annotations+Dictionaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393802A606BF60079A7FB /* Annotations+Dictionaries.swift */; };
 		0A7393832A606C360079A7FB /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393822A606C360079A7FB /* Annotation.swift */; };
@@ -651,6 +652,7 @@
 		0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGPathDCommand.swift; sourceTree = "<group>"; };
 		0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGPathDLexer.swift; sourceTree = "<group>"; };
 		0A7393752A5DABA40079A7FB /* RangeBezierPathTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeBezierPathTest.swift; sourceTree = "<group>"; };
+		0A7393772A5FDE450079A7FB /* UpdateUploadAnnotationsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadAnnotationsCommand.swift; sourceTree = "<group>"; };
 		0A73937A2A6005AE0079A7FB /* AnnotationsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsTest.swift; sourceTree = "<group>"; };
 		0A7393802A606BF60079A7FB /* Annotations+Dictionaries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Annotations+Dictionaries.swift"; sourceTree = "<group>"; };
 		0A7393822A606C360079A7FB /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
@@ -1810,6 +1812,7 @@
 				0A374DE72927D0200036C184 /* UpdateGeometriesArchivedCommand.swift */,
 				0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */,
 				0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */,
+				0A7393772A5FDE450079A7FB /* UpdateUploadAnnotationsCommand.swift */,
 				0A3714E02950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift */,
 				0ABFD8B128EEE771008CDA74 /* UpdateUploadsTagsCommand.swift */,
 			);
@@ -2128,6 +2131,7 @@
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
 				0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */,
 				0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */,
+				0A7393782A5FDE450079A7FB /* UpdateUploadAnnotationsCommand.swift in Sources */,
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A9341C429A8A464006166C1 /* CopyTaskTableViewCell.swift in Sources */,
 				0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */,

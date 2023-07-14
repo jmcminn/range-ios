@@ -7,6 +7,9 @@ import UIKit
 /// Shows the annotation views and handles the gestures
 class AnnotationsEditor: NSObject {
     private weak var hostView: FullscreenImageGalleryPageView?
+    // only needed for rendering the initial annotations when opening the annotations editor for a photo
+    // It's not updated when user is editing annotations
+    let initialAnnotations: Annotations?
     let viewModel: AnnotationsEditorViewModel
 
     /// view hosting all the annotation views
@@ -33,9 +36,11 @@ class AnnotationsEditor: NSObject {
 
     init(
         hostView: FullscreenImageGalleryPageView,
+        initialAnnotations: Annotations?,
         viewModel: AnnotationsEditorViewModel
     ) {
         self.hostView = hostView
+        self.initialAnnotations = initialAnnotations
         self.viewModel = viewModel
         super.init()
         hostView.scrollView.forwardDelegateInvocations(to: self)
@@ -78,6 +83,7 @@ class AnnotationsEditor: NSObject {
         }
 
         scale = imageWidth / viewWidth
+        scale = initialAnnotations?.scale ?? imageWidth / viewWidth
 
         // for annotation selection
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
@@ -86,6 +92,16 @@ class AnnotationsEditor: NSObject {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGesture))
         panGestureRecognizer.delegate = self
         view.addGestureRecognizer(panGestureRecognizer)
+
+        // show the initial annotations
+        if let initialAnnotations = initialAnnotations {
+            for annotation in initialAnnotations.annotations {
+                switch annotation {
+                case let .scribble(scribble):
+                    addScribble(scribble)
+                }
+            }
+        }
 
         installed = true
     }
@@ -122,6 +138,27 @@ class AnnotationsEditor: NSObject {
         annotationsViews[annotation] = nil
         if annotation == selectedAnnotation {
             setSelected(nil)
+        }
+    }
+}
+
+// MARK: - annotations save
+
+extension AnnotationsEditor {
+    func getAnnotations() -> Annotations? {
+        guard let hostView = hostView, let image = hostView.imageView.image else { return nil }
+        let imageWidth = image.size.width
+        let imageHeight = image.size.height
+        guard imageWidth > 0, imageHeight > 0 else { return nil }
+        if annotationsViews.isEmpty {
+            return nil
+        } else {
+            return Annotations(
+                width: Int(imageWidth),
+                height: Int(imageHeight),
+                scale: scale,
+                annotationsViews.keys.map(\.scribble.annotation)
+            )
         }
     }
 }

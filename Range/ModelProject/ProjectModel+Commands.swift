@@ -434,4 +434,8 @@ extension ProjectModel {
             geometryId: geometry.id, canvasId: canvas.id, coordinates: coordinates
         )
     }
+
+    func update(annotations: Annotations?, forUpload upload: Upload) -> Command? {
+        UpdateUploadAnnotationsCommand(uploadId: upload.id, annotations: annotations)
+    }
 }

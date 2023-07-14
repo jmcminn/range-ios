@@ -57,13 +57,15 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
             throw "parentType not supported: \(parentType)"
         }
 
-        if let existingObject = realm.object(ofType: Upload.self, forPrimaryKey: id) {
-            existingObject.cleanupOldTags(newTagIds: tagIds)
+        let existingUpload = realm.object(ofType: Upload.self, forPrimaryKey: id)
+
+        if let existingUpload = existingUpload {
+            existingUpload.cleanupOldTags(newTagIds: tagIds)
         }
 
         // if the upload has local imageHeightToWidth then keep it
         var imageHeightToWidth = imageHeightToWidth
-        if imageHeightToWidth == nil, let existingUpload = realm.object(ofType: Upload.self, forPrimaryKey: id) {
+        if imageHeightToWidth == nil, let existingUpload = existingUpload {
             imageHeightToWidth = existingUpload.imageHeightToWidth
         }
 
@@ -78,7 +80,8 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
             fileType: fileType,
             imageHeightToWidth: imageHeightToWidth,
             fileSize: fileSize,
-            storageVersion: storageVersion
+            storageVersion: storageVersion,
+            annotations: existingUpload?.annotations
         )
         upload.author = author
         realm.add(upload, update: .modified)

@@ -32,7 +32,9 @@ class FullscreenImageGalleryViewController: UIViewController {
     let imageDataProviderFactory: (MediaKey) -> RangeImageDataProvider
     private var photoKeys: [MediaKey]
 
-    var onDone: (() -> Void)?
+    var onCancel: (() -> Void)?
+    /// Passes updated annotations for each photo
+    var onDone: (([Annotations?]) -> Void)?
     /// Handler that accepts removal of photo at given index by returning `true`
     let removePhotoHandler: ((Int) -> Bool)?
 
@@ -84,10 +86,12 @@ class FullscreenImageGalleryViewController: UIViewController {
     /// - Parameters
     ///   - imageDataProviderFactory   function returning ImageDataProvider for given PhotoKey
     ///   - photoKeys:                            array of cache key for photos
+    ///   - annotations:                          array of Annotations? data for given photo (optional, there might be no annotations for a photo)
     ///   - removePhotoHandler:           if provided then a button for removing photo will be shown. This vc will remove the photo from given photo keys and animate the changes iff the handler returns `true`
     ///
     init(imageDataProviderFactory: @escaping (MediaKey) -> RangeImageDataProvider,
          photoKeys: [MediaKey],
+         annotations: [Annotations?],
          removePhotoHandler: ((Int) -> Bool)? = nil)
     {
         self.imageDataProviderFactory = imageDataProviderFactory
@@ -96,8 +100,8 @@ class FullscreenImageGalleryViewController: UIViewController {
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
         let annotationsEditorViewModel = AnnotationsEditorViewModel()
         self.annotationsEditorViewModel = annotationsEditorViewModel
-        annotationsEditorPerPage = pages.map { page in
-            AnnotationsEditor(hostView: page, viewModel: annotationsEditorViewModel)
+        annotationsEditorPerPage = zip(pages, annotations).map { page, annotations in
+            AnnotationsEditor(hostView: page, initialAnnotations: annotations, viewModel: annotationsEditorViewModel)
         }
         super.init(nibName: nil, bundle: nil)
     }
@@ -195,14 +199,15 @@ class FullscreenImageGalleryViewController: UIViewController {
             cancelButton = UIButton(
                 configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
                 primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
-                    // TODO: 1270
-                    self?.onDone?()
+                    self?.onCancel?()
                 }
             )
             confirmButton = UIButton(
                 configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
                 primaryAction: UIAction(title: String(localized: "Done")) { [weak self] _ in
-                    self?.onDone?()
+                    guard let self = self else { return }
+                    let resultAnnotations = self.annotationsEditorPerPage.map { $0.getAnnotations() }
+                    self.onDone?(resultAnnotations)
                 }
             )
         } else {
@@ -212,7 +217,7 @@ class FullscreenImageGalleryViewController: UIViewController {
                     strokeColor: .Neutral_07, imagePointSize: 14
                 ),
                 primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
-                    self?.onDone?()
+                    self?.onCancel?()
                 }
             )
         }
