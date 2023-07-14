@@ -5,18 +5,24 @@ import UIKit
 
 /// The root object for annotations
 final class Annotations: NSObject, Codable {
+    /// Specifies the format and version of the annotations
     private(set) var format: String = "https://range.io/photo-annotations/v1"
 
+    /// Scale applied to annotation sizes (like thickness from Annotations+Dictionaries). For example if scale is 2 then scribble annotation
+    /// added with ".medium" thickness will have a lineWidth of 2 * medium.lineWidth = 2 * 6 = 12 pixels (when rendered on the photo)
+    var scale: Double
     var annotations: [Annotation]
-    // TODO: 1270 store width/height/scale
+    // TODO: 1270 store width/height
 
-    init(_ annotations: [Annotation]) {
+    init(scale: Double, _ annotations: [Annotation]) {
+        self.scale = scale
         self.annotations = annotations
     }
 
     override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Annotations else { return false }
         if format != rhs.format { return false }
+        if scale != rhs.scale { return false }
         if annotations != rhs.annotations { return false }
         return true
     }
@@ -32,7 +38,7 @@ extension Annotations: FailableCustomPersistable {
         if let data = persistedValue.data(using: .utf8) {
             do {
                 let decoded = try JSONDecoder().decode(Annotations.self, from: data)
-                self.init(decoded.annotations)
+                self.init(scale: decoded.scale, decoded.annotations)
                 return
             } catch {
                 Logger.model.error("decoding Annotations failed: \(error.localizedDescription, privacy: .public)")
@@ -45,7 +51,9 @@ extension Annotations: FailableCustomPersistable {
     // When writing to the database, this converts the mapped type to a persistable type.
     public var persistableValue: PersistedType {
         do {
-            let encoded = try JSONEncoder().encode(self)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .sortedKeys
+            let encoded = try encoder.encode(self)
             if let json = String(data: encoded, encoding: .utf8) {
                 return json
             }

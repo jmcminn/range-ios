@@ -3,7 +3,7 @@ import XCTest
 
 final class AnnotationsTest: XCTestCase {
     func testPersisting() throws {
-        let annotations = Annotations([
+        let annotations = Annotations(scale: 2.0, [
             .scribble(ScribbleAnnotation(
                 id: "annotation1",
                 path: RangeBezierPath(elements: [
@@ -19,7 +19,7 @@ final class AnnotationsTest: XCTestCase {
         let persistedValue = annotations.persistableValue
         XCTAssertEqual(
             persistedValue,
-            ##"{"annotations":[{"path":"M10,10 L20,5","id":"annotation1","lineWidth":6,"hexColor":"#000000","type":"scribble"}],"format":"https:\/\/range.io\/photo-annotations\/v1"}"##
+            ##"{"annotations":[{"hexColor":"#000000","id":"annotation1","lineWidth":6,"path":"M10,10 L20,5","type":"scribble"}],"format":"https:\/\/range.io\/photo-annotations\/v1","scale":2}"##
         )
 
         // 2 convert back to Annotations

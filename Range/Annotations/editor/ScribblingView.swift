@@ -4,7 +4,7 @@ import UIKit
 /// A view for drawing. This view handles the user pan gesture and creates a shape, while the ScribbleView is for
 /// displaying already created shapes.
 class ScribblingView: UIView {
-    /// The view is scaled (transformed) by this constant (divided, so 1/scale)
+    /// The view is scaled (transformed) by this constant (multiplied)
     let scale: Double
     /// the thickness of the line
     var thickness: Annotations.ScribbleThickness
@@ -28,7 +28,7 @@ class ScribblingView: UIView {
         self.color = color
         super.init(frame: .zero)
         backgroundColor = .clear
-        transform = CGAffineTransform(scaleX: 1 / scale, y: 1 / scale)
+        transform = CGAffineTransform(scaleX: scale, y: scale)
         gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGesture))
     }
 
@@ -39,7 +39,7 @@ class ScribblingView: UIView {
 
     /// Scales the point to this view coordinates and adds to points
     private func addPoint(_ point: CGPoint) {
-        let scaledPoint = point.multiplyBy(scale)
+        let scaledPoint = point.divideBy(scale)
         if points.isEmpty {
             path.move(to: scaledPoint)
         } else {
@@ -89,7 +89,7 @@ class ScribblingView: UIView {
 
             let simplifiedPoints = settings.simplifyScribbleLine
                 ? points.simplify(
-                    tolerance: Float(1 / scale), // 1
+                    tolerance: Float(scale), // 1
                     highestQuality: true
                 )
                 : points

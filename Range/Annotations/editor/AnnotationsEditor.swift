@@ -12,7 +12,7 @@ class AnnotationsEditor: NSObject {
     /// view hosting all the annotation views
     let view = UIView()
 
-    var scribbleScale: Double = 1.0
+    var scale: Double = 1.0
 
     // whether the annotations are installed in the host view and ready to be edited
     @objc dynamic var installed: Bool = false
@@ -77,7 +77,7 @@ class AnnotationsEditor: NSObject {
             make.edges.equalToSuperview()
         }
 
-        scribbleScale = viewWidth / imageWidth
+        scale = imageWidth / viewWidth
 
         // for annotation selection
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
@@ -94,14 +94,14 @@ class AnnotationsEditor: NSObject {
     func add(scribbleWithPath path: RangeBezierPath) {
         let scribble = ScribbleAnnotation(
             path: path,
-            lineWidth: viewModel.lastPickedScribbleThickness.lineWidth / scribbleScale,
+            lineWidth: viewModel.lastPickedScribbleThickness.lineWidth * scale,
             color: viewModel.lastPickedScribbleColor
         )
         addScribble(scribble)
     }
 
     private func addScribble(_ scribble: ScribbleAnnotation) {
-        let scribbleVM = ScribbleViewModel(scale: scribbleScale, scribble: scribble)
+        let scribbleVM = ScribbleViewModel(scale: scale, scribble: scribble)
         if let hostView = hostView {
             scribbleVM.zoomScale = hostView.scrollView.zoomScale
         }
@@ -135,7 +135,7 @@ extension AnnotationsEditor {
         hostView.scrollView.isScrollEnabled = !enabled
         if enabled {
             currentScribblingView = ScribblingView(
-                scale: scribbleScale,
+                scale: scale,
                 thickness: viewModel.lastPickedScribbleThickness,
                 color: viewModel.lastPickedScribbleColor
             )
@@ -149,7 +149,7 @@ extension AnnotationsEditor {
             view.addSubview(currentScribblingView!)
             currentScribblingView!.snp.makeConstraints { make in
                 make.center.equalToSuperview()
-                make.width.height.equalToSuperview().multipliedBy(scribbleScale)
+                make.width.height.equalToSuperview().dividedBy(scale)
             }
 
             if let gestureRecognizer = currentScribblingView?.gestureRecognizer {

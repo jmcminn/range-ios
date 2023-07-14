@@ -9,7 +9,7 @@ class ScribbleViewModel: NSObject {
     /// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
     /// This doesn't affect the end result of scribbling and generated annotation image, it's only done for the purpose of rendering
     /// in the annotations editor on iOS.
-    /// For example when scale is 0.5, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
+    /// For example when scale is 2, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
     let scale: Double
     /// the bounds that contain the path, scaled
     @objc private(set) dynamic var viewBounds: CGRect = .zero
@@ -18,14 +18,14 @@ class ScribbleViewModel: NSObject {
     /// the current zoom level of the displayed view.
     /// We need it as not all parts of the ScribbleView should be zoomed when the annotations editor zoom changes (the border should
     /// keep the visible 2 pixels width)
-    /// The reference (and initial) value is the scale value
+    /// The reference (and initial) value is based on the scale value
     @objc dynamic var zoomScale: Double
     /// whether this annotation is currently selected
     @objc dynamic var selected: Bool = false
 
     /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
     var thickness: Annotations.ScribbleThickness? {
-        let lineWidthBasedThickness = scribble.lineWidth * scale
+        let lineWidthBasedThickness = scribble.lineWidth / scale
         return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
     }
 
@@ -33,7 +33,7 @@ class ScribbleViewModel: NSObject {
     init(scale: Double, scribble: ScribbleAnnotation) {
         self.scribble = scribble
         self.scale = scale
-        zoomScale = scale
+        zoomScale = 1 / scale
         super.init()
 
         updateFromScribble()
@@ -50,7 +50,7 @@ class ScribbleViewModel: NSObject {
             // translate so it's relative to view origin:
             .getTranslatedPath(x: -viewBounds.origin.x, y: -viewBounds.origin.y)
             // scale down the path (as the view is scaled up):
-            .getScaledPath(multiplier: scale)
+            .getScaledPath(multiplier: 1 / scale)
             .getUIBezierPath()
     }
 
@@ -65,7 +65,7 @@ class ScribbleViewModel: NSObject {
 
     /// Thickness impacts the `viewBounds`, so it also impacts the `uiPath`
     func setThickness(_ thickness: Annotations.ScribbleThickness) {
-        scribble.lineWidth = thickness.lineWidth / scale
+        scribble.lineWidth = thickness.lineWidth * scale
         updateFromScribble()
     }
 
@@ -101,7 +101,7 @@ class ScribbleViewModel: NSObject {
         // Do it by creating a stroking path (see it's documentation for details) that is 40 points
         // wide (divided by scale so it doesn't depend on the image resolution) but is 40 screen points.
         let strokePath = scribble.path.getUIBezierPath().cgPath
-            .copy(strokingWithWidth: 40 / scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
+            .copy(strokingWithWidth: 40 * scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
         return strokePath.contains(location)
     }
 
