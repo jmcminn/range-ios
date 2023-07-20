@@ -72,8 +72,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             try await projectsFlowController.start()
         } catch {
             DispatchQueue.main.async {
-                self.onSignedOut()
-                self.showProjectsOpenError(withMessage: error.localizedDescription)
+                self.onSignedOut {
+                    self.showProjectsOpenError(withMessage: error.localizedDescription)
+                }
             }
         }
     }
@@ -88,7 +89,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window!.rootViewController!.present(alertController, animated: true)
     }
 
-    private func onSignedOut() {
+    private func onSignedOut(callback: (() -> Void)? = nil) {
         Task { @MainActor in
             if let projectsFC = window?.rootViewController as? ProjectsFlowController {
                 await projectsFC.stop()
@@ -99,6 +100,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
             }
             showAuth()
+            callback?()
         }
     }
 
