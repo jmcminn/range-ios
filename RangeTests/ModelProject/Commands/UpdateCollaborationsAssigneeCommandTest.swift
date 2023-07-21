@@ -4,26 +4,7 @@ import RealmSwift
 import XCTest
 
 /// Tests applying `UpdateCollaborationsAssigneeCommand` in local Realm db
-final class UpdateCollaborationsAssigneeCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+final class UpdateCollaborationsAssigneeCommandRealmTest: ProjectModelTestCase {
     func testApply_noCollaboration() throws {
         let command = UpdateCollaborationsAssigneeCommand(
             authorId: "user1",

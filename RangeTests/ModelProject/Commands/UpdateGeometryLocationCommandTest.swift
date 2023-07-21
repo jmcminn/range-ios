@@ -6,26 +6,7 @@ import Turf
 import XCTest
 
 /// Tests applying `UpdateGeometryLocationCommand` in local Realm db
-final class UpdateGeometryLocationCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
     func testApply_noGeometry() throws {
         let command = try UpdateGeometryLocationCommand(
             geometryId: "geometry1",

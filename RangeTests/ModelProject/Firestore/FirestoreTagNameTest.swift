@@ -2,26 +2,7 @@
 import RealmSwift
 import XCTest
 
-class FirestoreTagNameTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+class FirestoreTagNameTest: ProjectModelTestCase {
     // Test creating/updating the object in local db from Firestore object
     func testUpsert() throws {
         // 1. initial tag

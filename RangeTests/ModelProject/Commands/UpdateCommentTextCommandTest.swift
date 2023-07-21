@@ -4,26 +4,7 @@ import RealmSwift
 import XCTest
 
 /// Tests applying `UpdateCommentTextCommand` in local Realm db
-final class UpdateCommentTextCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+final class UpdateCommentTextCommandRealmTest: ProjectModelTestCase {
     func testApply_noComment() throws {
         let command = UpdateCommentTextCommand(commentId: "comment1", text: "text")
         XCTAssertThrowsError(

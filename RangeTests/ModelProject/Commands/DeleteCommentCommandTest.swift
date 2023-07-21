@@ -4,26 +4,7 @@ import RealmSwift
 import XCTest
 
 /// Tests applying `DeleteCommentCommand` in local Realm db
-final class DeleteCommentCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+final class DeleteCommentCommandRealmTest: ProjectModelTestCase {
     func testApply_noComment() throws {
         let command = DeleteCommentCommand(commentId: "comment1")
         XCTAssertThrowsError(

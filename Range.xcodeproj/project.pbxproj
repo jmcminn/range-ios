@@ -70,6 +70,7 @@
 		0A1FCF0229EEED87005EA59E /* SelectedUserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1FCF0129EEED87005EA59E /* SelectedUserCollectionViewCell.swift */; };
 		0A22CF1C2930CE4D0084332B /* CanvasFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */; };
 		0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */; };
+		0A26CC3B2A6971DE004C6DFC /* ProjectModelTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */; };
 		0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */; };
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */; };
 		0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */; };
@@ -481,6 +482,7 @@
 		0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileLoader.swift; sourceTree = "<group>"; };
 		0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+Corners.swift"; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
+		0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTestCase.swift; sourceTree = "<group>"; };
 		0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBottomViewController.swift; sourceTree = "<group>"; };
 		0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsTagsCommand.swift; sourceTree = "<group>"; };
 		0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFilters.swift; sourceTree = "<group>"; };
@@ -984,6 +986,7 @@
 			children = (
 				0A724F522889730300708C6B /* Commands */,
 				0A7A536F293DDEF50093D913 /* Firestore */,
+				0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */,
 				0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */,
 				0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */,
 			);
@@ -2395,6 +2398,7 @@
 			files = (
 				0A82A8EE292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift in Sources */,
 				0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */,
+				0A26CC3B2A6971DE004C6DFC /* ProjectModelTestCase.swift in Sources */,
 				0A130EAE28D8A2FC00FF1368 /* DateFormattingTest.swift in Sources */,
 				0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */,
 				0A34C18D2846030800BEDC7C /* FirestoreCommentTest.swift in Sources */,

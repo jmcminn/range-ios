@@ -6,32 +6,13 @@ import Turf
 import XCTest
 
 /// Tests applying `CreateUploadCommentCommand` in local Realm db
-final class CreateUploadCommentCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
+final class CreateUploadCommentCommandRealmTest: ProjectModelTestCase {
     let command = CreateUploadCommentCommand(
         commentId: "comment1",
         uploadId: "upload1",
         authorId: "user1",
         text: "comment\ntext"
     )
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
 
     func testApply_noUpload() throws {
         XCTAssertThrowsError(

@@ -6,26 +6,14 @@ import RealmSwift
 import Turf
 import XCTest
 
-class ProjectModelCommandsTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
+class ProjectModelCommandsTest: ProjectModelTestCase {
     var canvas: Canvas!
     let coordinates = CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)
 
     @MainActor
     override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
+        try super.setUpWithError()
+
         canvas = Canvas(id: "canvas1", name: "")
         try realm.write {
             realm.add(canvas)

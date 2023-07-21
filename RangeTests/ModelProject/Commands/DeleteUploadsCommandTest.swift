@@ -6,26 +6,7 @@ import RealmSwift
 import XCTest
 
 /// Tests applying `DeleteUploadsCommand` in local Realm db
-final class DeleteUploadsCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+final class DeleteUploadsCommandRealmTest: ProjectModelTestCase {
     func testApply_noUpload() throws {
         let upload = Upload(placeholderId: "upload1")
         try realm.write {

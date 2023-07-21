@@ -4,12 +4,7 @@ import RealmSwift
 import XCTest
 
 /// Tests applying `AddUploadsToCollaborationCommand` in local Realm db
-final class AddUploadsToCollaborationCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
+final class AddUploadsToCollaborationCommandRealmTest: ProjectModelTestCase {
     let command = AddUploadsToCollaborationCommand(
         authorId: "user1",
         collaborationId: "collaboration1",
@@ -20,20 +15,6 @@ final class AddUploadsToCollaborationCommandRealmTest: XCTestCase {
             .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
         ]
     )
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
 
     func testApply_noCollaboration() throws {
         XCTAssertThrowsError(

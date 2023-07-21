@@ -6,12 +6,7 @@ import Turf
 import XCTest
 
 /// Tests applying `CreateCollaborationCommand` in local Realm db
-final class CreateCollaborationCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
+final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
     let command = CreateCollaborationCommand(
         authorId: "user1",
         canvasId: "canvas1",
@@ -31,20 +26,6 @@ final class CreateCollaborationCommandRealmTest: XCTestCase {
             .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
         ]
     )
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
 
     func testApply_noCanvas() throws {
         XCTAssertThrowsError(

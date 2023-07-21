@@ -6,26 +6,7 @@ import Turf
 import XCTest
 
 /// Tests applying `UpdateGeometriesArchivedCommand` in local Realm db
-final class UpdateGeometriesArchivedCommandRealmTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+final class UpdateGeometriesArchivedCommandRealmTest: ProjectModelTestCase {
     func testApply_noGeometry() throws {
         let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
         XCTAssertThrowsError(

@@ -3,27 +3,7 @@ import CoreLocation
 import RealmSwift
 import XCTest
 
-class ProjectModelTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
-    override func tearDownWithError() throws {}
-
+class ProjectModelTest: ProjectModelTestCase {
     func testLoadProject_emptyProject() throws {
         XCTAssertThrowsError(
             try model.loadProject(initialCanvasId: "canvas1")

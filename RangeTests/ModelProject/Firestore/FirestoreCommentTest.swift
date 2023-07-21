@@ -3,26 +3,7 @@ import FirebaseFirestore
 import RealmSwift
 import XCTest
 
-class FirestorCommentRealmSyncTest: XCTestCase {
-    let pendingUploadsModel = TestPendingUploadsModel()
-    let pendingActionsModel = TestPendingActionsModel()
-    var model: ProjectModel!
-    var realm: Realm!
-
-    @MainActor
-    override func setUpWithError() throws {
-        // create a different Realm in each test by using a new UUID
-        model = try ProjectModel(
-            userId: "user1",
-            projectId: UUID().uuidString,
-            localFiles: LocalFiles(),
-            pendingUploadsModel: pendingUploadsModel,
-            pendingActionsModel: pendingActionsModel,
-            inMemory: true
-        )
-        realm = model.mainRealm
-    }
-
+class FirestorCommentRealmSyncTest: ProjectModelTestCase {
     // MARK: - upsert tests
 
     // Tests if firebase object fills in the defaults for optionals
