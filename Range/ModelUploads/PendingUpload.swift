@@ -28,6 +28,10 @@ class PendingUpload: Object {
         fileType = mediaKey.fileType
     }
 
+    var mediaKey: MediaKey {
+        MediaKey(localFileKeyWithProjectId: projectId, uploadId: uploadId, fileType: fileType, annotated: annotated)
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

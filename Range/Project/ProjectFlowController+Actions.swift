@@ -619,9 +619,9 @@ extension ProjectFlowController {
     func shareMediaAction(sender _: Any?, event: FlowEvent) {
         guard let uploads = event.objects as? [Upload] else { return }
         let mediaKeysToShare = [MediaKey](uploads
-            .map { MediaKey(projectId: self.model.projectId, upload: $0) })
+            .compactMap { .autoAnnotatedMediaKey(projectId: self.model.projectId, upload: $0) })
 
-        let uploadsCount = uploads.count
+        let uploadsCount = mediaKeysToShare.count
         var cancelled = false
         // show alert that prevents any user interaction while downloading items to share
         // User can still cancel, which won't really cancel the download but will cancel the sharing action

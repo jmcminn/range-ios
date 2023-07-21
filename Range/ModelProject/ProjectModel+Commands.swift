@@ -84,9 +84,7 @@ extension ProjectModel {
         }
 
         for photoToAdd in photosToAdd {
-            try await pendingUploadsModel
-                .addPendingUpload(forKey: MediaKey(projectId: projectId, uploadId: photoToAdd.uploadId,
-                                                   fileType: .jpeg))
+            try await pendingUploadsModel.addPendingUpload(forKey: photoToAdd.mediaKey)
         }
 
         return AddUploadsToCollaborationCommand(
@@ -103,7 +101,8 @@ extension ProjectModel {
                   toCollaboration collaboration: Collaboration) async throws -> Command
     {
         let uploadId = generateRealmId()
-        let mediaKey = MediaKey(projectId: projectId, uploadId: uploadId, fileType: fileType)
+        let mediaKey = MediaKey.localFilesKey(projectId: projectId, uploadId: uploadId,
+                                              fileType: fileType, annotated: false)
 
         try await localFiles.store(data, forKey: mediaKey)
         try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
@@ -153,11 +152,7 @@ extension ProjectModel {
         uploadDescription: String? = nil
     ) async throws -> Command {
         for photoToAdd in photosToAdd {
-            try await pendingUploadsModel.addPendingUpload(forKey: MediaKey(
-                projectId: projectId,
-                uploadId: photoToAdd.uploadId,
-                fileType: .jpeg
-            ))
+            try await pendingUploadsModel.addPendingUpload(forKey: photoToAdd.mediaKey)
         }
 
         var status: Status?

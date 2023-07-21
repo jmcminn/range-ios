@@ -33,6 +33,21 @@ Range implements the custom `FirebaseStorageImageProvider` that can be obtained 
 
 As a fallback the `FirebaseStorageImageProvider` checks if the image can be fetched from `LocalFiles` - to handle the case where the image is not uploaded yet.
 
-
+## MediaCache vs storage version vs offline mode
  
+StorageVersion is a server side feature - when file is uploaded to Storage it gets a new `metadata.generation` which we then store in `Upload` document.
+ 
+MediaCache requires MediaKey with storageVersion, so all files are stored with given version to support image versioning.
+ 
+When uploading files from the device they are stored in LocalFiles and added to pending uploads. 
+We still want to display the images (and their thumbnails) and documents while they're waiting to be uploaded 
+(potentially long time if user is offline). For this to happen MediaCache checks first in LocalFiles before downloading from Firestore.
+
+ - When checking LocalFiles storage version is not used, as it is not know until uploaded
+ - But we still need some storage version to use for MediaKey - in this case we store a random UUID as the storage version - it's not actually used because at this stage the file is only accessed from a LocalFiles, it's more of a HACK so the rest of the app can treat all the Uploads in the same way (using MediaCache)
+
+When local file is uploaded to Firestore we store the it's `generation` (only for the main file, thumbnails are not uploaded) in `Upload.localStorageVersion` and move the files from LocalFiles to MediaCache (using the main generation for the **main file and thumbnails**)
+
+- this allows to immediately show the uploaded files to user without waiting to download them from cache
+- `localStorageVersion` is there to keep the information about the storage version (which is always required to access MediaCache) in case if it's not yet available in the `Upload` object (when file is uploaded it'll take some time to populate the main version and even longer to generate thumbnails and populate their storage versions)
 

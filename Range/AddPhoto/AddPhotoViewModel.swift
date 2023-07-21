@@ -13,7 +13,7 @@ struct PhotoToAdd {
     var fileName: String?
     /// when the photo was taken
     var timestamp: Date
-    /// key for LocalFiles or MediaCache
+    /// key for LocalFiles
     var mediaKey: MediaKey
     /// small 100x100 image (with proper aspect ratio)
     var thumbnail: UIImage
@@ -76,10 +76,10 @@ class PhotosToAddViewModel: NSObject {
     /// Cleanup the current photosToAdd
     /// If the photos were used for uploads they should remain in cache, otherwise should be removed
     func clear(removeFromCache: Bool) {
-        // remove the photos from local cache if we don't need them
+        // remove the photos from local cache if we don't need them, don't wait for completion
         if removeFromCache {
             photos.forEach {
-                localFiles.removeFile(forKey: $0.mediaKey)
+                localFiles.removeFile(forKey: $0.mediaKey, completionHandler: nil)
             }
         }
         photos = []
@@ -99,7 +99,12 @@ class PhotosToAddViewModel: NSObject {
             throw CameraRollError.thumbnailGenerationFailed
         }
         let uploadId = generateRealmId()
-        let mediaKey = MediaKey(projectId: projectId, uploadId: uploadId, fileType: .jpeg)
+        let mediaKey = MediaKey(
+            localFileKeyWithProjectId: projectId,
+            uploadId: uploadId,
+            fileType: .jpeg,
+            annotated: false
+        )
 
         try await localFiles.store(data, forKey: mediaKey)
 

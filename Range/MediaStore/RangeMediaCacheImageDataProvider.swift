@@ -16,6 +16,9 @@ struct RangeMediaCacheImageDataProvider: RangeImageDataProvider {
             .targetCache(cache),
             .cacheSerializer(cacheSerializer),
         ]
+        if !mediaKey.storeInDiskCache {
+            options.append(.cacheMemoryOnly)
+        }
         self.options = options
         self.mediaKey = mediaKey
         cacheKey = mediaKey.cacheKey

@@ -26,6 +26,14 @@ extension ImageCache {
         } as Void
     }
 
+    func _asyncRemoveImage(forKey key: String) async {
+        await withUnsafeContinuation { continuation in
+            self.removeImage(forKey: key) {
+                continuation.resume()
+            }
+        } as Void
+    }
+
     func _asyncRetrieveImage(forKey key: String) async throws -> UIImage? {
         try await withUnsafeThrowingContinuation { continuation in
             self.retrieveImage(forKey: key) { result in

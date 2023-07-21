@@ -28,6 +28,12 @@ class FullscreenMediaSummaryViewController: UIViewController {
     var onPhotoSelected: (() -> Void)?
     var onAnnotationsSelected: (() -> Void)?
 
+    var galleryMediaKey: MediaKey? { .autoAnnotatedMediaKey(
+        projectId: projectModel.projectId,
+        upload: upload,
+        thumbnailNumber: 1
+    ) }
+
     /// Initializer
     init(projectModel: ProjectModel, mediaCache: MediaCache, upload: Upload, showCollaborationButton: Bool) {
         self.projectModel = projectModel
@@ -78,6 +84,10 @@ class FullscreenMediaSummaryViewController: UIViewController {
         tagsHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasTags }
         tagsView.isHidden = !hasTags
         addTagsButton.isHidden = hasTags
+
+        if let galleryVC = galleryVC {
+            galleryVC.updatePhotoKey(galleryMediaKey, atIndex: 0)
+        }
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -166,13 +176,12 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     private func setupGalleryVC() {
-        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
         let galleryHeightToWidth = upload.imageHeightToWidth ?? 4.0 / 3.0
         let galleryVC = ImageGalleryViewController(
             imageDataProviderFactory: { [mediaCache] in
                 mediaCache.imageProvider(forKey: $0)
             },
-            photoKeys: [mediaKey],
+            photoKeys: [galleryMediaKey],
             pageHeight2Width: galleryHeightToWidth
         )
         galleryVC.onPhotoSelected = { [weak self] in

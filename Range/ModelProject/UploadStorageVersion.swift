@@ -1,6 +1,11 @@
 import Foundation
 import RealmSwift
 
+/// Check if the version was created for localFile using the `setMainToLocalFile`
+func _isStorageVersionLocalFile(version: String) -> Bool {
+    version.starts(with: "localFile")
+}
+
 /// Utilities for Upload.storageVersion
 extension Map<String, String> {
     func updateFromFirestore(_ storageVersion: [String: String]?) {
@@ -25,9 +30,23 @@ extension Map<String, String> {
         self[annotated ? "annotated" : "main"]
     }
 
-    /// `local` option adds a "local" prefix to value to mark this file as local
-    func setMain(annotated: Bool, value: String, local: Bool) {
-        setValue(local ? "local_\(value)" : value, forKey: annotated ? "annotated" : "main")
+    func setMain(annotated: Bool, value: String) {
+        setValue(value, forKey: annotated ? "annotated" : "main")
+    }
+
+    /// Sets the main value as a `localFile_<generation>`  where `localFile` is a prefix meaning that this file is in LocalFiles
+    /// and generation is a locally generated `generation` (a timestamp)
+    func setMainToLocalFile(annotated: Bool) {
+        let generation = Int64(Date().timeIntervalSince1970 * 1000)
+        setValue("localFile_\(generation)", forKey: annotated ? "annotated" : "main")
+    }
+
+    func set(annotated: Bool, thumbnail: Int, value: String) {
+        if annotated {
+            setValue(value, forKey: "annotated_thumbnail\(thumbnail)")
+        } else {
+            setValue(value, forKey: "thumbnail\(thumbnail)")
+        }
     }
 
     func get(annotated: Bool, thumbnail: Int) -> String? {

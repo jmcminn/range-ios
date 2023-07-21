@@ -101,8 +101,22 @@ class ThumbnailsViewController: UIViewController {
             switch changes {
             case .initial:
                 self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: false)
-            case .update:
-                self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+            case let .update(_, deletions: deletions, insertions: insertions, modifications: modifications):
+                if !deletions.isEmpty || !insertions.isEmpty {
+                    // if there are some deletetions or insertions just apply the new snapshot
+                    self.dataSource.apply(self.prepareSnapshot(), animatingDifferences: true)
+                } else if !modifications.isEmpty {
+                    // for modifications only reconfigure the modified items (the cells don't listen
+                    // for updates).
+                    let modifiedItems: [CollectionItem] = modifications.compactMap { index in
+                        guard index < self.uploads.count else { return nil }
+                        let upload = self.uploads[index]
+                        return CollectionItem(id: upload.id, upload: upload)
+                    }
+                    var snapshot = self.dataSource!.snapshot()
+                    snapshot.reconfigureItems(modifiedItems)
+                    self.dataSource.apply(snapshot, animatingDifferences: false)
+                }
             case let .error(error):
                 Logger.model.error("observing uploads failed: \(error.localizedDescription, privacy: .public)")
             }
@@ -140,7 +154,11 @@ class ThumbnailsViewController: UIViewController {
     private func imageProvider(forItemAt indexPath: IndexPath) -> RangeImageDataProvider? {
         guard indexPath.item < uploads.count else { return nil }
         let upload = uploads[indexPath.item]
-        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 0)
+        guard let mediaKey = MediaKey.autoAnnotatedMediaKey(projectId: projectModel.projectId, upload: upload,
+                                                            thumbnailNumber: 0)
+        else {
+            return nil
+        }
         return mediaCache.imageProvider(forKey: mediaKey)
     }
 }

@@ -799,9 +799,7 @@ extension MediaCardViewController {
         if upload.isImage {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell",
                                                           for: indexPath) as! ImageMediaCollectionViewCell
-            let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
-            let imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
-            cell.setUpload(upload, imageDataProvider: imageDataProvider)
+            cell.setUpload(upload, imageDataProvider: imageProvider(forUpload: upload))
             cell.mark(selected: selectedUploads.contains(upload.id))
             return cell
         } else {
@@ -879,7 +877,15 @@ extension MediaCardViewController: UICollectionViewDataSourcePrefetching {
         let sectionUploads = dataSource.snapshot(for: sectionId).items
         guard indexPath.item < sectionUploads.count else { return nil }
         let upload = sectionUploads[indexPath.item].upload
-        let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
+        return imageProvider(forUpload: upload)
+    }
+
+    func imageProvider(forUpload upload: Upload) -> RangeImageDataProvider? {
+        guard let mediaKey = MediaKey.autoAnnotatedMediaKey(
+            projectId: projectModel.projectId,
+            upload: upload,
+            thumbnailNumber: 1
+        ) else { return nil }
 
         return mediaCache.imageProvider(forKey: mediaKey)
     }

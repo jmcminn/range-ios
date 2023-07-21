@@ -254,7 +254,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         }
 
         let mediaKey = try await _asyncOnQueue(queue: writeQueue) {
-            MediaKey(projectId: upload.projectId, uploadId: upload.uploadId, fileType: upload.fileType)
+            upload.mediaKey
         }
         let uploadRef = mediaCache.storage.reference(withPath: mediaKey.storagePath)
         let cacheFileURL = localFiles.fileURL(forKey: mediaKey)

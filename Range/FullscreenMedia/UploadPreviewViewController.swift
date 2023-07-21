@@ -30,12 +30,20 @@ class UploadPreviewViewController: UIViewController {
 
     private var mediaKey: MediaKey? {
         guard let upload = upload else { return nil }
-        return MediaKey(projectId: projectModel.projectId, upload: upload)
+        return MediaKey.mediaKey(projectId: projectModel.projectId, upload: upload, annotated: false)
     }
 
     private var thumbnailKey: MediaKey? {
         guard let upload = upload else { return nil }
-        return MediaKey(projectId: projectModel.projectId, uploadId: upload.id, fileType: .jpeg, thumbnailNumber: 1)
+        return MediaKey.mediaCacheKey(
+            projectId: projectModel.projectId,
+            uploadId: upload.id,
+            fileType: .jpeg,
+            annotated: false,
+            thumbnailNumber: 1,
+            storageVersion: "generated",
+            storeInDiskCache: true
+        )
     }
 
     /// notifies when height to width ratio was calculated
@@ -249,7 +257,7 @@ class UploadPreviewViewController: UIViewController {
                 self.onAspectRatioLoaded?(imageHeightToWidth)
             } catch {
                 let key = mediaKey
-                Logger.ui.debug("Couldn't generate thumbnail for \(key, privacy: .public)")
+                Logger.ui.debug("Couldn't generate thumbnail for \(key.uploadId, privacy: .public)")
                 ToastWindow.shared.showError(text: "Failed to generate the preview")
             }
         }

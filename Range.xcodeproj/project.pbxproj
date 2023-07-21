@@ -386,6 +386,7 @@
 		0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */; };
 		0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183C29633E70007A59CA /* TopViewController.swift */; };
 		0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */; };
+		0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
@@ -806,6 +807,7 @@
 		0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinFlowController.swift; sourceTree = "<group>"; };
 		0ADC183C29633E70007A59CA /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
+		0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyTest.swift; sourceTree = "<group>"; };
 		0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPinTypeCardViewController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
@@ -1457,6 +1459,7 @@
 				0A130EAC28D8A2BC00FF1368 /* Extensions */,
 				0A4995BB2857697F00E571FB /* HeaderExpand */,
 				0A4DC76627EDCCFB00712518 /* Math */,
+				0AE007A02A6DA11900EA3232 /* MediaStore */,
 				0A07D7592810377400B6F9A2 /* ModelProject */,
 				0A4DC77027EE111400712518 /* Resources */,
 				0ABFD8AC28EDB945008CDA74 /* Settings */,
@@ -1849,6 +1852,14 @@
 				0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */,
 			);
 			path = AddPin;
+			sourceTree = "<group>";
+		};
+		0AE007A02A6DA11900EA3232 /* MediaStore */ = {
+			isa = PBXGroup;
+			children = (
+				0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */,
+			);
+			path = MediaStore;
 			sourceTree = "<group>";
 		};
 		0AF722AD296EE61900A18F75 /* TaskList */ = {
@@ -2434,6 +2445,7 @@
 				0A374DEE2927DAC50036C184 /* DeleteUploadsCommandTest.swift in Sources */,
 				0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */,
 				0A797F7C292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift in Sources */,
+				0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,
 				0A73937B2A6005AE0079A7FB /* AnnotationsTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,

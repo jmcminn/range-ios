@@ -28,9 +28,9 @@ import UIKit
 /// that the pages are changing width (see the iPhone Photos app for how it works). In fact the pages are layed out next to each other
 /// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
 /// just like in the Photos app)
-class FullscreenImageGalleryViewController: UIViewController {
-    let imageDataProviderFactory: (MediaKey) -> RangeImageDataProvider
-    private var photoKeys: [MediaKey?]
+class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelegate {
+    let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
+    private var photoKeys: [PhotoKey?]
 
     var onCancel: (() -> Void)?
     /// Passes updated annotations for each photo
@@ -58,7 +58,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     private let annotationsSettings = AnnotationsDevSettings()
 
     /// Transitioning delegate to manage the transition to this controller
-    var fullscreenTransitioningDelegate: FullscreenImageGalleryTransitioningDelegate?
+    var fullscreenTransitioningDelegate: FullscreenImageGalleryTransitioningDelegate<PhotoKey>?
 
     var currentPage: Int = 0 {
         didSet {
@@ -89,8 +89,8 @@ class FullscreenImageGalleryViewController: UIViewController {
     ///   - annotations:                          array of Annotations? data for given photo (optional, there might be no annotations for a photo)
     ///   - removePhotoHandler:           if provided then a button for removing photo will be shown. This vc will remove the photo from given photo keys and animate the changes iff the handler returns `true`
     ///
-    init(imageDataProviderFactory: @escaping (MediaKey) -> RangeImageDataProvider,
-         photoKeys: [MediaKey?],
+    init(imageDataProviderFactory: @escaping (PhotoKey) -> RangeImageDataProvider,
+         photoKeys: [PhotoKey?],
          annotations: [Annotations?],
          removePhotoHandler: ((Int) -> Bool)? = nil)
     {
@@ -442,9 +442,7 @@ class FullscreenImageGalleryViewController: UIViewController {
             removedPage.removeFromSuperview()
         }
     }
-}
 
-extension FullscreenImageGalleryViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_: UIScrollView) {
         updatePageSeparatorFrame()
         // update images while scrolling, user might be scrolling with no breaks between pages

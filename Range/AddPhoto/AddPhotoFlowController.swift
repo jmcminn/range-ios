@@ -159,7 +159,12 @@ class AddPhotoFlowController {
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         let uploadId = generateRealmId()
-        let mediaKey = MediaKey(projectId: model.projectId, uploadId: uploadId, fileType: .jpeg)
+        let mediaKey = MediaKey.localFilesKey(
+            projectId: model.projectId,
+            uploadId: uploadId,
+            fileType: .jpeg,
+            annotated: false
+        )
 
         let photoToAdd = PhotoToAdd(
             uploadId: uploadId,

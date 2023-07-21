@@ -22,26 +22,28 @@ class MediaCache {
 
     /// Return Kingfisher image provider to use for UIImageView. This image provider uses MediaCache which means
     /// it'll download files if needed from Storage.
-    /// It also passes it's `mediaCache` as the cache to use for caching the downloaded images. It's a little complicated
+    /// It also passes it's `mediaCache` as the cache to use for caching the downloaded images.
+    ///
+    /// ACHTUNG: MediaCache acts as a common entry point for handling (displaying) the images from LocalFiles and from MediaCache
+    /// so it checks if the key isFromLocalFiles and forwards the call to LocalFiles in this case
     func imageProvider(forKey key: MediaKey) -> RangeImageDataProvider {
-        RangeMediaCacheImageDataProvider(
-            cache: mediaCache,
-            cacheSerializer: localFiles.cacheSerializer,
-            mediaKey: key,
-            mediaCache: self
-        )
+        if key.isFromLocalFiles {
+            return localFiles.imageProvider(forKey: key)
+        } else {
+            return RangeMediaCacheImageDataProvider(
+                cache: mediaCache,
+                cacheSerializer: localFiles.cacheSerializer,
+                mediaKey: key,
+                mediaCache: self
+            )
+        }
     }
 
-    /// Either gets the file from LocalFiles or downloads the file for given key from Storage
+    /// Downloads the file for given key from Storage
     /// To be used from ImageProvider that is operating on the `mediaCache`. If it's called it means the file is not in `mediaCache`
     /// and also this function should not store it there as it will be done by the logic using image provider.
     func getDataForImageProvider(forKey key: MediaKey) async throws -> Data {
-        if localFiles.hasFile(forKey: key) {
-            Logger.cache.trace("Reading \(key) from local files")
-            return try Data(contentsOf: localFiles.fileURL(forKey: key))
-        }
-
-        return try await downloadData(forKey: key)
+        try await downloadData(forKey: key)
     }
 
     private func downloadData(forKey key: MediaKey) async throws -> Data {
@@ -53,7 +55,13 @@ class MediaCache {
     }
 
     func hasFile(forKey key: MediaKey) -> Bool {
-        mediaCache.isCached(forKey: key.cacheKey) || localFiles.hasFile(forKey: key)
+        if !key.isFromLocalFiles, mediaCache.isCached(forKey: key.cacheKey) {
+            return true
+        }
+        if key.isFromLocalFiles, localFiles.hasFile(forKey: key) {
+            return true
+        }
+        return false
     }
 
     /// Returns local file URL for given key either localFiles or mediaCache. If not there download from Storage.
@@ -61,13 +69,15 @@ class MediaCache {
     @MainActor
     func getCachedFileURL(forKey key: MediaKey) async throws -> URL {
         // 1. try local files (the file is not uploaded yet)
-        if localFiles.hasFile(forKey: key) {
+        if key.isFromLocalFiles, localFiles.hasFile(forKey: key) {
             Logger.cache.trace("Reading \(key) from local files")
             return localFiles.fileURL(forKey: key)
         }
 
+        guard !key.isFromLocalFiles else { throw "Requested key is not a storage key" }
+
         // 2. try the media cache
-        if mediaCache.isCached(forKey: key.cacheKey) {
+        if mediaCache.imageCachedType(forKey: key.cacheKey) == .disk {
             Logger.cache.trace("Reading \(key) from media cache")
             return mediaCache.diskStorage.cacheFileURL(forKey: key.cacheKey)
         }
@@ -87,10 +97,10 @@ class MediaCache {
     }
 
     /// Move file from LocalFiles to MediaCache
-    func moveFileFromLocalFilesToMediaCache(forKey key: MediaKey) async throws {
-        guard localFiles.hasFile(forKey: key) else { return }
-        let data = try Data(contentsOf: localFiles.fileURL(forKey: key))
-        try await store(data, forKey: key)
-        localFiles.removeFile(forKey: key)
+    func moveFileFromLocalFilesToMediaCache(from localKey: MediaKey, to storageKey: MediaKey) async throws {
+        guard localFiles.hasFile(forKey: localKey) else { return }
+        let data = try Data(contentsOf: localFiles.fileURL(forKey: localKey))
+        try await store(data, forKey: storageKey)
+        await localFiles.removeFile(forKey: localKey)
     }
 }

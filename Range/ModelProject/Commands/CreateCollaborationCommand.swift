@@ -111,6 +111,13 @@ extension CreateCollaborationCommand: LocalCommand {
         uploadTags.forEach { realm.add($0, update: .modified) }
 
         uploads.forEach {
+            let localStorageVersion = Map<String, String>()
+            // mark storage version that there is a local file, so the MediaKey for MediaCache can
+            // be constructed properly
+            // After the file is uploaded this will be replaced with the real storage version from
+            // backend. Pending uploads wait for the Upload object to be created (fail while it's not there)
+            // so it's guaranteed that this will be set BEFORE the real value.
+            localStorageVersion.setMainToLocalFile(annotated: false)
             let upload = Upload(
                 id: $0.id,
                 timestamp: Date.now,
@@ -120,6 +127,7 @@ extension CreateCollaborationCommand: LocalCommand {
                 fileType: .jpeg,
                 imageHeightToWidth: $0.imageHeightToWidth,
                 fileSize: $0.fileSize,
+                localStorageVersion: localStorageVersion,
                 annotations: $0.annotations
             )
             upload.author = author

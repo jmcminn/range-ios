@@ -5,9 +5,9 @@ import UIKit
 // although this was still more based on: https://github.com/zvonicek/ImageSlideshow/blob/master/ImageSlideshow/Classes/Core/ZoomAnimatedTransitioning.swift
 
 /// Support transitioning from a view controller with photo to FullscreenImageGalleryViewController
-class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    weak var galleryVC: ImageGalleryViewController<MediaKey>?
-    weak var fullscreenGalleryVC: FullscreenImageGalleryViewController?
+class FullscreenImageGalleryTransitioningDelegate<PhotoKey>: NSObject, UIViewControllerTransitioningDelegate {
+    weak var galleryVC: ImageGalleryViewController<PhotoKey>?
+    weak var fullscreenGalleryVC: FullscreenImageGalleryViewController<PhotoKey>?
     weak var interactivePresentation: UIViewControllerInteractiveTransitioning?
     fileprivate var interactiveDismissal: UIPercentDrivenInteractiveTransition?
 
@@ -16,8 +16,8 @@ class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTra
     /// - parameter fullscreenGalleryVC: show this fullscreen gallery view controller
     /// - parameter interactivePresentation: optional controller for interactive presentation, if not provided then it's non interactive
     public init(
-        fromGallery galleryVC: ImageGalleryViewController<MediaKey>,
-        toFullscreenGallery fullscreenGalleryVC: FullscreenImageGalleryViewController,
+        fromGallery galleryVC: ImageGalleryViewController<PhotoKey>,
+        toFullscreenGallery fullscreenGalleryVC: FullscreenImageGalleryViewController<PhotoKey>,
         interactivePresentation: UIViewControllerInteractiveTransitioning?
     ) {
         self.galleryVC = galleryVC
@@ -77,7 +77,7 @@ class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTra
         guard let referenceImageView = galleryVC?.imageViewForCurrentPage else {
             return nil
         }
-        return FullscreenImageGalleryPresentationAnimatedTransitioning(referenceImageView: referenceImageView)
+        return FullscreenImageGalleryPresentationAnimatedTransitioning<PhotoKey>(referenceImageView: referenceImageView)
     }
 
     func interactionControllerForPresentation(using _: UIViewControllerAnimatedTransitioning)
@@ -101,7 +101,7 @@ class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTra
         let imageHeight2Width = referenceImage.size.height / referenceImage.size.width
         let targetFrame = targetView.imageViewFrame(forImageHeight2Width: imageHeight2Width)
 
-        return FullscreenImageGalleryDismissalAnimatedTransitioning(
+        return FullscreenImageGalleryDismissalAnimatedTransitioning<PhotoKey>(
             referenceImageView: referenceImageView,
             targetFrame: targetFrame,
             inView: targetView
@@ -116,7 +116,9 @@ class FullscreenImageGalleryTransitioningDelegate: NSObject, UIViewControllerTra
 }
 
 /// Zooming in to FullscreenImageGalleryViewController
-class FullscreenImageGalleryPresentationAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
+class FullscreenImageGalleryPresentationAnimatedTransitioning<PhotoKey>: NSObject,
+    UIViewControllerAnimatedTransitioning
+{
     private let referenceImageView: UIImageView
 
     private var animatorForCurrentTransition: UIViewImplicitlyAnimating?
@@ -147,7 +149,8 @@ class FullscreenImageGalleryPresentationAnimatedTransitioning: NSObject, UIViewC
 
         let containerView = transitionContext.containerView
         let fromVC = transitionContext.viewController(forKey: .from)!
-        guard let fullscreenVC = transitionContext.viewController(forKey: .to) as? FullscreenImageGalleryViewController
+        guard let fullscreenVC = transitionContext
+            .viewController(forKey: .to) as? FullscreenImageGalleryViewController<PhotoKey>
         else {
             fatalError("Transition not used with FullscreenImageGalleryViewController")
         }
@@ -199,7 +202,7 @@ class FullscreenImageGalleryPresentationAnimatedTransitioning: NSObject, UIViewC
 }
 
 /// Zoom out from the FullscreenImageGalleryViewController
-class FullscreenImageGalleryDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
+class FullscreenImageGalleryDismissalAnimatedTransitioning<PhotoKey>: NSObject, UIViewControllerAnimatedTransitioning {
     private let referenceImageView: UIImageView
     private let targetFrame: CGRect
     private let targetView: UIView
@@ -236,7 +239,7 @@ class FullscreenImageGalleryDismissalAnimatedTransitioning: NSObject, UIViewCont
 
         let containerView = transitionContext.containerView
         guard let fullscreenVC = transitionContext
-            .viewController(forKey: .from) as? FullscreenImageGalleryViewController
+            .viewController(forKey: .from) as? FullscreenImageGalleryViewController<PhotoKey>
         else {
             fatalError("Transition not used with FullscreenImageGalleryViewController")
         }

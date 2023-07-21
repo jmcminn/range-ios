@@ -500,8 +500,13 @@ extension FeedViewController {
         } else if let upload = feedItem.item as? Upload, upload.isImage {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
                                                      for: indexPath) as! ImageUploadFeedItemCell
-            let mediaKey = MediaKey(projectId: projectModel.projectId, upload: upload, thumbnailNumber: 1)
-            cell.imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
+            if let mediaKey = MediaKey.autoAnnotatedMediaKey(
+                projectId: projectModel.projectId,
+                upload: upload,
+                thumbnailNumber: 1
+            ) {
+                cell.imageDataProvider = mediaCache.imageProvider(forKey: mediaKey)
+            }
             cell.set(upload: upload, model: projectModel)
             return cell
         } else if let upload = feedItem.item as? Upload {

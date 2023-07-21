@@ -41,6 +41,9 @@ class LocalFiles {
     }
 
     func store(_ data: Data, forKey key: MediaKey) async throws {
+        // Since the files are not versioned, we need to remove the previous version so the app knows that
+        // image needs to be reloaded
+        await cache._asyncRemoveImage(forKey: key.cacheKey)
         try await cache._asyncStoreToDisk(data, forKey: key.cacheKey)
     }
 
@@ -48,8 +51,12 @@ class LocalFiles {
         cache.isCached(forKey: key.cacheKey)
     }
 
-    func removeFile(forKey key: MediaKey) {
-        cache.removeImage(forKey: key.cacheKey)
+    func removeFile(forKey key: MediaKey) async {
+        await cache._asyncRemoveImage(forKey: key.cacheKey)
+    }
+
+    func removeFile(forKey key: MediaKey, completionHandler: (() -> Void)?) {
+        cache.removeImage(forKey: key.cacheKey, completionHandler: completionHandler)
     }
 
     func fileURL(forKey key: MediaKey) -> URL {

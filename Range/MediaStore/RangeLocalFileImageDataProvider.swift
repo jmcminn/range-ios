@@ -16,8 +16,6 @@ struct RangeLocalFileImageDataProvider: RangeImageDataProvider {
         options = [
             .targetCache(cache),
             .cacheSerializer(cacheSerializer),
-            .forceRefresh,
-            // force refresh is needed as we're overwriting annotated images with same key and expect to always see the fresh version
         ]
         self.cacheKey = cacheKey
         self.localFileImageDataProvider = localFileImageDataProvider
