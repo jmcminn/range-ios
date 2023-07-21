@@ -3,8 +3,7 @@ import Kingfisher
 
 /// A wrapper for LocalFileImageDataProvider to add conformance to RangeImageDataProvider
 struct RangeLocalFileImageDataProvider: RangeImageDataProvider {
-    let cache: ImageCache
-    let cacheSerializer: CacheSerializer
+    let options: KingfisherOptionsInfo
     let cacheKey: String
     private let localFileImageDataProvider: LocalFileImageDataProvider
 
@@ -14,8 +13,12 @@ struct RangeLocalFileImageDataProvider: RangeImageDataProvider {
         cacheKey: String,
         localFileImageDataProvider: LocalFileImageDataProvider
     ) {
-        self.cache = cache
-        self.cacheSerializer = cacheSerializer
+        options = [
+            .targetCache(cache),
+            .cacheSerializer(cacheSerializer),
+            .forceRefresh,
+            // force refresh is needed as we're overwriting annotated images with same key and expect to always see the fresh version
+        ]
         self.cacheKey = cacheKey
         self.localFileImageDataProvider = localFileImageDataProvider
     }

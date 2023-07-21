@@ -180,6 +180,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        imageDataProvider = nil
         updateContent(upload: nil)
     }
 
@@ -203,12 +204,9 @@ class ImageUploadFeedItemCell: UITableViewCell {
         if let upload = upload {
             timestampLabel.text = Date.format1(upload.timestamp)
             possiblyUpdateUploadImageViewConstraints(upload: upload)
-            guard let imageDataProvider = imageDataProvider else { return }
-            uploadImageView.kf.setImage(with: imageDataProvider,
-                                        options: [
-                                            .targetCache(imageDataProvider.cache),
-                                            .cacheSerializer(imageDataProvider.cacheSerializer),
-                                        ])
+            if let imageDataProvider = imageDataProvider {
+                uploadImageView.kf.setImage(with: imageDataProvider, options: imageDataProvider.options)
+            }
             tagsView.tags = upload.tags.where { $0.placeholder == false }
 
             let showDescription = !(upload.uploadDescription?.isEmpty ?? true)

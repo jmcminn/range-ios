@@ -890,11 +890,7 @@ extension MediaCardViewController: UICollectionViewDataSourcePrefetching {
         let sources = indexPaths
             .compactMap { imageProvider(forItemAt: $0) }
             .map { Source.provider($0) }
-        ImagePrefetcher(
-            sources: sources,
-            options: [.targetCache(firstImageDataProvider.cache),
-                      .cacheSerializer(firstImageDataProvider.cacheSerializer)]
-        ).start()
+        ImagePrefetcher(sources: sources, options: firstImageDataProvider.options).start()
     }
 }
 

@@ -397,15 +397,13 @@ class FullscreenImageGalleryViewController: UIViewController {
                     let rangeImageDataProvider = imageDataProviderFactory(photoKeys[index])
                     /// we may already have the image for this page, so update the size
                     page.imageUpdated()
+                    var options = rangeImageDataProvider.options
+                    // keep the image (maybe we have a thumb there and now loading full, no need to go blank while loading)
+                    options.append(.keepCurrentImageWhileLoading)
                     page.imageView.kf.setImage(
                         with: rangeImageDataProvider,
                         placeholder: nil,
-                        options: [
-                            .targetCache(rangeImageDataProvider.cache),
-                            // keep the image (maybe we have a thumb there and now loading full, no need to go blank while loading)
-                            .keepCurrentImageWhileLoading,
-                            .cacheSerializer(rangeImageDataProvider.cacheSerializer),
-                        ],
+                        options: options,
                         progressBlock: nil,
                         completionHandler: { [weak self] _ in
                             page.imageUpdated()

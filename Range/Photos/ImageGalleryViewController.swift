@@ -226,24 +226,28 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
                     page.imageView.kf.cancelDownloadTask()
                     page.imageView.image = nil
                 } else {
-                    let rangeImageDataProvider = imageDataProviderFactory(photoKeys[index])
-                    page.imageView.kf.setImage(
-                        with: rangeImageDataProvider,
-                        placeholder: nil, options: [
-                            .targetCache(rangeImageDataProvider.cache),
-                            .cacheSerializer(rangeImageDataProvider.cacheSerializer),
-                        ], progressBlock: nil,
-                        completionHandler: { result in
-                            // invalidate layout to recalculate aspect ratio after the image is loaded
-                            if case let .success(imageResult) = result {
-                                page.imageHeight2Width = imageResult.image.size.height / imageResult.image.size.width
-                            }
-                        }
-                    )
+                    loadImage(atIndex: index)
                 }
             }
         }
         imagesLastLoadedForPage = currentPage
+    }
+
+    private func loadImage(atIndex index: Int) {
+        let photoKey = photoKeys[index]
+        let rangeImageDataProvider = imageDataProviderFactory(photoKey)
+        let page = pages[index]
+        page.imageView.kf.setImage(
+            with: rangeImageDataProvider,
+            placeholder: nil, options: rangeImageDataProvider.options, progressBlock: nil,
+            completionHandler: { result in
+                // invalidate layout to recalculate aspect ratio after the image is loaded
+                if case let .success(imageResult) = result {
+                    page.imageHeight2Width = imageResult.image.size.height / imageResult.image
+                        .size.width
+                }
+            }
+        )
     }
 
     func scrollViewDidScroll(_: UIScrollView) {

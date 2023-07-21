@@ -43,12 +43,11 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
         mark(selected: false)
     }
 
-    func setUpload(_ upload: Upload, imageDataProvider: RangeImageDataProvider) {
+    func setUpload(_ upload: Upload, imageDataProvider: RangeImageDataProvider?) {
         imageView.kf.cancelDownloadTask()
-        imageView.kf.setImage(
-            with: imageDataProvider,
-            options: [.targetCache(imageDataProvider.cache), .cacheSerializer(imageDataProvider.cacheSerializer)]
-        )
+        if let imageDataProvider = imageDataProvider {
+            imageView.kf.setImage(with: imageDataProvider, options: imageDataProvider.options)
+        }
         avatarView.setUser(upload.author)
     }
 
