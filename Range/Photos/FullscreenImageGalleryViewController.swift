@@ -30,7 +30,7 @@ import UIKit
 /// just like in the Photos app)
 class FullscreenImageGalleryViewController: UIViewController {
     let imageDataProviderFactory: (MediaKey) -> RangeImageDataProvider
-    private var photoKeys: [MediaKey]
+    private var photoKeys: [MediaKey?]
 
     var onCancel: (() -> Void)?
     /// Passes updated annotations for each photo
@@ -90,7 +90,7 @@ class FullscreenImageGalleryViewController: UIViewController {
     ///   - removePhotoHandler:           if provided then a button for removing photo will be shown. This vc will remove the photo from given photo keys and animate the changes iff the handler returns `true`
     ///
     init(imageDataProviderFactory: @escaping (MediaKey) -> RangeImageDataProvider,
-         photoKeys: [MediaKey],
+         photoKeys: [MediaKey?],
          annotations: [Annotations?],
          removePhotoHandler: ((Int) -> Bool)? = nil)
     {
@@ -394,7 +394,8 @@ class FullscreenImageGalleryViewController: UIViewController {
                     page.imageView.kf.cancelDownloadTask()
                     page.imageView.image = nil
                 } else {
-                    let rangeImageDataProvider = imageDataProviderFactory(photoKeys[index])
+                    guard let photoKey = photoKeys[index] else { return }
+                    let rangeImageDataProvider = imageDataProviderFactory(photoKey)
                     /// we may already have the image for this page, so update the size
                     page.imageUpdated()
                     var options = rangeImageDataProvider.options

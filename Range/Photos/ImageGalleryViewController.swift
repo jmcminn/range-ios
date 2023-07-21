@@ -10,7 +10,7 @@ import UIKit
 /// Kingfisher ImageDataProvider which is used to display images from cache (which cache is also internal detail of imageDataProviderFactory).
 class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelegate {
     let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
-    private var photoKeys: [PhotoKey]
+    private var photoKeys: [PhotoKey?]
 
     /// Photo selected, the index available in the `currentPage`
     var onPhotoSelected: (() -> Void)?
@@ -45,7 +45,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     ///   - pageHeight2Width                 defines the image gallery page aspect ratio
     ///   - removePhotoHandler:           if provided then a button for removing photo will be shown. This vc will remove the photo from given photo keys and animate the changes iff the handler returns `true`
     init(imageDataProviderFactory: @escaping (PhotoKey) -> RangeImageDataProvider,
-         photoKeys: [PhotoKey], pageHeight2Width: Double, removePhotoHandler: ((Int) -> Bool)? = nil)
+         photoKeys: [PhotoKey?], pageHeight2Width: Double, removePhotoHandler: ((Int) -> Bool)? = nil)
     {
         self.imageDataProviderFactory = imageDataProviderFactory
         self.photoKeys = photoKeys
@@ -54,6 +54,12 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         super.init(nibName: nil, bundle: nil)
 
         pages = photoKeys.map { _ in self.setupPage() }
+    }
+
+    /// Update photo key at given index and reload the image
+    func updatePhotoKey(_ photoKey: PhotoKey?, atIndex index: Int) {
+        photoKeys[index] = photoKey
+        loadImage(atIndex: index)
     }
 
     private func setupPage() -> ImageGalleryPageView {
@@ -234,7 +240,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     }
 
     private func loadImage(atIndex index: Int) {
-        let photoKey = photoKeys[index]
+        guard let photoKey = photoKeys[index] else { return }
         let rangeImageDataProvider = imageDataProviderFactory(photoKey)
         let page = pages[index]
         page.imageView.kf.setImage(
