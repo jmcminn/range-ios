@@ -47,7 +47,11 @@ class Upload: Object, WithPlaceholder, WithId {
     /// Size of file in bytes, optional until data migrated
     @Persisted var fileSize: Int64?
     /// The storage versions (map of type, for example, "main", "thumbnail0" to version string)
+    /// Please note that "." are replaced with "_", so "main.thumbnail0" is stored with key "main_thumbnail0"
     @Persisted var storageVersion: Map<String, String>
+    /// When the photo is uploaded from this device we store the main/annotated main file generation so we can render the file even
+    /// if the storage version is not yet populated on the backend. This is not synced with Firestore
+    @Persisted var localStorageVersion: Map<String, String>
     /// comments, the order doesn't matter so it's a set (the order is controlled by the comment timestamp when displaying in the UI)
     @Persisted var comments: MutableSet<Comment>
     /// annotations for the photo (for now only persisted locally, not synced with Firestore)
@@ -82,6 +86,7 @@ class Upload: Object, WithPlaceholder, WithId {
         imageHeightToWidth: Double?,
         fileSize: Int64?,
         storageVersion: [String: String]? = nil,
+        localStorageVersion: Map<String, String>? = nil,
         annotations: Annotations? = nil,
         placeholder: Bool = false
     ) {
@@ -94,10 +99,8 @@ class Upload: Object, WithPlaceholder, WithId {
         self.fileType = fileType
         self.imageHeightToWidth = imageHeightToWidth
         self.fileSize = fileSize
-        if let storageVersion = storageVersion {
-            // merge overwriting with new values
-            self.storageVersion.merge(storageVersion) { _, new in new }
-        }
+        self.storageVersion.updateFromFirestore(storageVersion)
+        self.localStorageVersion = localStorageVersion ?? Map()
         self.annotations = annotations
         self.placeholder = placeholder
     }
@@ -114,6 +117,7 @@ class Upload: Object, WithPlaceholder, WithId {
             imageHeightToWidth: nil,
             fileSize: nil,
             storageVersion: nil,
+            localStorageVersion: nil,
             placeholder: true
         )
     }

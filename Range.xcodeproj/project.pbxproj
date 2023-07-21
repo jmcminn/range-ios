@@ -246,6 +246,7 @@
 		0A7393882A61415F0079A7FB /* Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393872A61415F0079A7FB /* Annotations.swift */; };
 		0A73938B2A64284E0079A7FB /* ScribbleRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */; };
 		0A73938D2A6428630079A7FB /* AnnotationsRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */; };
+		0A73938F2A67C4B50079A7FB /* UploadStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938E2A67C4B50079A7FB /* UploadStorageVersion.swift */; };
 		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
 		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
@@ -664,6 +665,7 @@
 		0A7393872A61415F0079A7FB /* Annotations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotations.swift; sourceTree = "<group>"; };
 		0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleRenderer.swift; sourceTree = "<group>"; };
 		0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsRenderer.swift; sourceTree = "<group>"; };
+		0A73938E2A67C4B50079A7FB /* UploadStorageVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadStorageVersion.swift; sourceTree = "<group>"; };
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
@@ -974,6 +976,7 @@
 				0A34C18A2845FF1700BEDC7C /* Comment.swift */,
 				0A3831D228E42D3D001AF38A /* Update.swift */,
 				0A34C18E2846134000BEDC7C /* Upload.swift */,
+				0A73938E2A67C4B50079A7FB /* UploadStorageVersion.swift */,
 				0A3831D428E44404001AF38A /* StringOrDate.swift */,
 				0AD9B75E28677145005ACFD7 /* Commands */,
 				0A2F32FD2837E85E00D04A1C /* Firestore */,
@@ -2359,6 +2362,7 @@
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,
 				0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */,
 				0A7FC4152844E0670097888A /* Status.swift in Sources */,
+				0A73938F2A67C4B50079A7FB /* UploadStorageVersion.swift in Sources */,
 				0A4ADD6429423AA8006DB186 /* ControlWithTapAreaInsets.swift in Sources */,
 				0A36CDF9299BD2350004758E /* MediaKey.swift in Sources */,
 				0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */,

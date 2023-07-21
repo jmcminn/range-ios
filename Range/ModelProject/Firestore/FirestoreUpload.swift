@@ -81,6 +81,7 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
             imageHeightToWidth: imageHeightToWidth,
             fileSize: fileSize,
             storageVersion: storageVersion,
+            localStorageVersion: existingUpload?.localStorageVersion, // preserve the localStorageVersion
             annotations: existingUpload?.annotations
         )
         upload.author = author
