@@ -99,7 +99,7 @@ class AnnotationsEditor: NSObject {
             make.edges.equalToSuperview()
         }
 
-        scale = imageWidth / viewWidth
+        // TODO: 1272 not view width but rather some constant...
         scale = initialAnnotations?.scale ?? imageWidth / viewWidth
 
         // for annotation selection

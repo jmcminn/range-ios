@@ -55,21 +55,9 @@ class ScribbleView: UIView {
     }
 
     override func draw(_: CGRect) {
-        let path = viewModel.uiPath
-        path.lineJoinStyle = .round
-        path.lineCapStyle = .round
-
-        // lineWidth needs no scaling as the whole view is scaled
+        // lineWidth needs "unscaling" as the whole view is scaled
         let lineWidth = viewModel.scribble.lineWidth / viewModel.scale
 
-        // outline
-        path.lineWidth = 2 * lineWidth
-        UIColor.white.set()
-        path.stroke()
-
-        // line
-        path.lineWidth = lineWidth
-        viewModel.scribble.color.set()
-        path.stroke()
+        ScribbleRenderer.render(path: viewModel.uiPath, lineWidth: lineWidth, color: viewModel.scribble.color)
     }
 }

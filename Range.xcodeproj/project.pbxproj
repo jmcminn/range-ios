@@ -243,6 +243,8 @@
 		0A7393832A606C360079A7FB /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393822A606C360079A7FB /* Annotation.swift */; };
 		0A7393852A606CBB0079A7FB /* ScribbleAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */; };
 		0A7393882A61415F0079A7FB /* Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393872A61415F0079A7FB /* Annotations.swift */; };
+		0A73938B2A64284E0079A7FB /* ScribbleRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */; };
+		0A73938D2A6428630079A7FB /* AnnotationsRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */; };
 		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
 		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
@@ -658,6 +660,8 @@
 		0A7393822A606C360079A7FB /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotation.swift; sourceTree = "<group>"; };
 		0A7393872A61415F0079A7FB /* Annotations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotations.swift; sourceTree = "<group>"; };
+		0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleRenderer.swift; sourceTree = "<group>"; };
+		0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsRenderer.swift; sourceTree = "<group>"; };
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
@@ -863,6 +867,7 @@
 			isa = PBXGroup;
 			children = (
 				0A73937C2A606A030079A7FB /* model */,
+				0A7393892A6428390079A7FB /* renderer */,
 				0A73937D2A606A670079A7FB /* editor */,
 				0A73937F2A606AA00079A7FB /* settings */,
 			);
@@ -1610,6 +1615,15 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
+		0A7393892A6428390079A7FB /* renderer */ = {
+			isa = PBXGroup;
+			children = (
+				0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */,
+				0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */,
+			);
+			path = renderer;
+			sourceTree = "<group>";
+		};
 		0A797F67292BA3DE00D63567 /* Status */ = {
 			isa = PBXGroup;
 			children = (
@@ -2079,6 +2093,7 @@
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
+				0A73938D2A6428630079A7FB /* AnnotationsRenderer.swift in Sources */,
 				0A4DC77E27F45F1F00712518 /* ProjectActionCardViewController.swift in Sources */,
 				0A7393712A5D99980079A7FB /* SVGPathDCommand.swift in Sources */,
 				0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */,
@@ -2281,6 +2296,7 @@
 				0A34C1892845FE9C00BEDC7C /* FirestoreComment.swift in Sources */,
 				0A0D31D728A41AC6007A8D49 /* ThumbnailsViewController.swift in Sources */,
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
+				0A73938B2A64284E0079A7FB /* ScribbleRenderer.swift in Sources */,
 				0A0E2066296311A8001782A5 /* PinType.swift in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A7A5377293E49800093D913 /* ModelError.swift in Sources */,

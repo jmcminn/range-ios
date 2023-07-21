@@ -56,19 +56,9 @@ class ScribblingView: UIView {
     }
 
     override func draw(_: CGRect) {
-        path.lineJoinStyle = .round
-        path.lineCapStyle = .round
-
         // lineWidth needs no scaling as the whole view is scaled
         let lineWidth = thickness.lineWidth
-
-        path.lineWidth = 2 * lineWidth
-        UIColor.white.set()
-        path.stroke()
-
-        path.lineWidth = lineWidth
-        color.set()
-        path.stroke()
+        ScribbleRenderer.render(path: path, lineWidth: lineWidth, color: color)
     }
 
     @objc private func panGesture(gesture: UIGestureRecognizer) {
