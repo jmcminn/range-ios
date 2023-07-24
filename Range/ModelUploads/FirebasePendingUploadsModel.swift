@@ -25,8 +25,12 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// maximum backoff for retrying actions (in seconds)
     private let maxBackoff: TimeInterval = 64
 
+    /// The Range id of the current logged in user
+    let userId: String
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
+    /// required for starting the ProjectModel after uploading a file for given project
+    unowned let pendingActionsModel: PendingActionsModel
 
     /// uploading depends on the cellular/wifi user settings
     private let userSettings: UserSettings
@@ -53,12 +57,21 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// - Parameters:
     ///     - inMemory:      optional parameter to create the Realm in memory (for tests), but default `false`
     /// - Warning: to be called on the Main thread
-    init(localFiles: LocalFiles, mediaCache: MediaCache, userSettings: UserSettings, inMemory: Bool = false) throws {
+    init(
+        userId: String,
+        localFiles: LocalFiles,
+        mediaCache: MediaCache,
+        userSettings: UserSettings,
+        pendingActionsModel: PendingActionsModel,
+        inMemory: Bool = false
+    ) throws {
+        self.userId = userId
+        self.pendingActionsModel = pendingActionsModel
         var config = Realm.Configuration.defaultConfiguration
         if inMemory {
             config.inMemoryIdentifier = "pendingUploads"
         } else {
-            config.schemaVersion = 2
+            config.schemaVersion = 3
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("pendingUploads")
             config.fileURL!.appendPathExtension("realm")
@@ -87,6 +100,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 }
             }
         }
+
+        // version 3 adds 'PendingUpload.annotated'
     }
 
     /// Starts synchronization - observes all relevant paths and updates the db.
@@ -140,7 +155,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 try await image._writeToSavedPhotosAlbum()
             }
             // store the thumbnail0, so it doesn;t have to be fetched and is ready in offline mode
-            if let thumbnail0Data = resizeImage(imageData: imageData, maxResolution: _thumbnail1Size) {
+            if let thumbnail0Data = resizeImage(imageData: imageData, maxResolution: _thumbnail0Size) {
                 try await localFiles.store(thumbnail0Data, forKey: key.forThumbnail(0))
             }
             if let thumbnail1Data = resizeImage(imageData: imageData, maxResolution: _thumbnail1Size) {
@@ -149,19 +164,18 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         }
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
             let pendingUpload = PendingUpload(key)
+            let pendingUploads = realm.objects(PendingUpload.self)
+            if pendingUploads.contains(where: { $0 == pendingUpload }) {
+                Logger.storage.debug(
+                    "Pending upload for uploadId \(pendingUpload.uploadId) is already in pending uploads, ignore."
+                )
+                return
+            }
             realm.add(pendingUpload)
             self.writeQueue.async {
                 self._maybePerformUpload()
             }
         }
-    }
-
-    /// After the file is uploaded it has to be removed from the `localFiles` (as it is not expiring)
-    /// It is moved to media cache so it's immediatelly available without downloading.
-    private func _moveFileFromLocalFilesToMediaCache(forKey key: MediaKey) async throws {
-        try await mediaCache.moveFileFromLocalFilesToMediaCache(forKey: key)
-        try await mediaCache.moveFileFromLocalFilesToMediaCache(forKey: key.forThumbnail(0))
-        try await mediaCache.moveFileFromLocalFilesToMediaCache(forKey: key.forThumbnail(1))
     }
 
     /// Return true if connected and the connection is not "expensive" (in terms of NWPath, which means it's not cellular)
@@ -266,15 +280,44 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         do {
             // upload the file
             Logger.storage.debug("Will upload file: \(mediaKey, privacy: .public)")
-            _ = try await uploadRef.putFileAsync(from: cacheFileURL, metadata: metadata)
+
+            // Start the project model to save the storageVersion for Upload
+            // Don't initiate the firestore sync, we need a local save only
+            let projectModel = try ProjectModel(
+                userId: userId,
+                projectId: mediaKey.projectId,
+                localFiles: localFiles,
+                mediaCache: mediaCache,
+                pendingUploadsModel: self,
+                pendingActionsModel: pendingActionsModel
+            )
+            try await projectModel.start()
+
+            try await projectModel.write { realm in
+                if realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) == nil {
+                    throw "Upload object not yet in the local Database"
+                }
+            }
+
+            let resultMetadata = try await uploadRef.putFileAsync(from: cacheFileURL, metadata: metadata)
             Logger.storage.debug("Uploaded file: \(mediaKey, privacy: .public)")
+
+            let storageVersion = String(resultMetadata.generation)
 
             // pending upload can be removed
             try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
                 realm.delete(upload)
             }
 
-            try await _moveFileFromLocalFilesToMediaCache(forKey: mediaKey)
+            try await _moveFileFromLocalFilesToMediaCache(forKey: mediaKey, storageVersion: storageVersion)
+
+            // update the Upload in project model to store the storageVersion
+            try await projectModel.write { realm in
+                guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) else {
+                    throw "Trying to upload a file but Upload doesn't exist"
+                }
+                upload.localStorageVersion.setMain(annotated: mediaKey.annotated, value: storageVersion)
+            }
         } catch {
             Logger.storage.error("Error uploading file: \(error.localizedDescription)")
             // store the error for pending upload
@@ -282,6 +325,30 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 upload.isUploading = false
                 upload.lastErrorMessage = error.localizedDescription
             }
+        }
+    }
+
+    /// After the file is uploaded it has to be removed from the `localFiles` (as it is not expiring)
+    /// It is moved to media cache so it's immediatelly available without downloading.
+    private func _moveFileFromLocalFilesToMediaCache(
+        forKey localKey: MediaKey,
+        storageVersion: String
+    ) async throws {
+        // for main file and thumbnails
+        let thumbnails: [Int?] = [nil, 0, 1]
+        for thumbnail in thumbnails {
+            /// a copy of the key but with a predefined storage version to be used for MediaCache
+            let localThumbnailKey = localKey.forThumbnail(thumbnail)
+            let storageKey = MediaKey(
+                projectId: localKey.projectId,
+                uploadId: localKey.uploadId,
+                fileType: localKey.fileType,
+                annotated: localKey.annotated,
+                thumbnailNumber: thumbnail,
+                storageVersion: storageVersion,
+                storeInDiskCache: true
+            )
+            try await mediaCache.moveFileFromLocalFilesToMediaCache(from: localThumbnailKey, to: storageKey)
         }
     }
 }

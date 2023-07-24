@@ -10,6 +10,8 @@ class PendingUpload: Object {
     @Persisted var projectId: String
     /// upload id
     @Persisted var uploadId: String
+    /// is it the annotated version of the photo
+    @Persisted var annotated: Bool
     /// File type
     @Persisted var fileType: Upload.FileType
     /// Whether this PendingUpload is currently being uploaded
@@ -25,11 +27,12 @@ class PendingUpload: Object {
     init(_ mediaKey: MediaKey) {
         projectId = mediaKey.projectId
         uploadId = mediaKey.uploadId
+        annotated = mediaKey.annotated
         fileType = mediaKey.fileType
     }
 
     var mediaKey: MediaKey {
-        MediaKey(localFileKeyWithProjectId: projectId, uploadId: uploadId, fileType: fileType, annotated: annotated)
+        MediaKey.localFilesKey(projectId: projectId, uploadId: uploadId, fileType: fileType, annotated: annotated)
     }
 
     /// Default initializer required by Realm.
@@ -47,5 +50,14 @@ class PendingUpload: Object {
             // next attempt not scheduled, perform now
             return true
         }
+    }
+
+    /// If it's the same file
+    static func == (lhs: PendingUpload, rhs: PendingUpload) -> Bool {
+        if lhs.projectId != rhs.projectId { return false }
+        if lhs.uploadId != rhs.uploadId { return false }
+        if lhs.annotated != rhs.annotated { return false }
+        if lhs.isUploading != rhs.isUploading { return false }
+        return true
     }
 }

@@ -17,6 +17,7 @@ class ProjectModelTestCase: XCTestCase {
             userId: "user1",
             projectId: UUID().uuidString,
             localFiles: localFiles,
+            mediaCache: MediaCache(localFiles: localFiles),
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
             inMemory: true

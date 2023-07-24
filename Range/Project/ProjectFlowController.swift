@@ -113,6 +113,7 @@ final class ProjectFlowController: UIViewController {
             userId: userId,
             projectId: projectId,
             localFiles: localFiles,
+            mediaCache: mediaCache,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )

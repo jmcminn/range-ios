@@ -34,9 +34,11 @@ class ProjectsFlowController: UINavigationController {
         localFiles = try LocalFiles()
         mediaCache = MediaCache(localFiles: localFiles)
         pendingUploadsModel = try FirebasePendingUploadsModel(
+            userId: userId,
             localFiles: localFiles,
             mediaCache: mediaCache,
-            userSettings: userSettings
+            userSettings: userSettings,
+            pendingActionsModel: pendingActionsModel
         )
         super.init(rootViewController: LaunchScreenViewController())
     }

@@ -14,6 +14,8 @@ class ProjectModel: NSObject, RealmModel {
     let projectId: String
     /// Local files
     unowned let localFiles: LocalFiles
+    /// Media cache
+    unowned let mediaCache: MediaCache
     /// global pending uploads
     unowned let pendingUploadsModel: PendingUploadsModel
     /// global pending actions
@@ -50,6 +52,7 @@ class ProjectModel: NSObject, RealmModel {
         userId: String,
         projectId: String,
         localFiles: LocalFiles,
+        mediaCache: MediaCache,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
         inMemory: Bool = false
@@ -57,6 +60,7 @@ class ProjectModel: NSObject, RealmModel {
         self.userId = userId
         self.projectId = projectId.lowercased()
         self.localFiles = localFiles
+        self.mediaCache = mediaCache
         self.pendingUploadsModel = pendingUploadsModel
         self.pendingActionsModel = pendingActionsModel
         var config = Realm.Configuration.defaultConfiguration
