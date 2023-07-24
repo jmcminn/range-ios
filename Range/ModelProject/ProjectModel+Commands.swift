@@ -86,6 +86,9 @@ extension ProjectModel {
 
         for photoToAdd in photosToAdd {
             try await pendingUploadsModel.addPendingUpload(forKey: photoToAdd.mediaKey)
+            if let annotatedMediaKey = photoToAdd.annotatedMediaKey {
+                try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
+            }
         }
 
         return AddUploadsToCollaborationCommand(
@@ -154,6 +157,9 @@ extension ProjectModel {
     ) async throws -> Command {
         for photoToAdd in photosToAdd {
             try await pendingUploadsModel.addPendingUpload(forKey: photoToAdd.mediaKey)
+            if let annotatedMediaKey = photoToAdd.annotatedMediaKey {
+                try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
+            }
         }
 
         var status: Status?

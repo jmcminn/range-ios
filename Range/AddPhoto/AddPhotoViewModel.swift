@@ -5,8 +5,6 @@ import UIKit
 
 /// Information about the photo to add
 struct PhotoToAdd {
-    /// UUID
-    var uploadId: String
     /// Identifier of the asset selected from the camera roll (only present if the photo was selected using photo picker)
     var assetIdentifier: String?
     /// Suggested file name when asset selected frmo the camera roll
@@ -23,6 +21,8 @@ struct PhotoToAdd {
     var fileSize: Int64
     /// photo annotations
     var annotations: Annotations?
+    /// key for LocalFiles to store the annotated version of the image
+    var annotatedMediaKey: MediaKey?
 }
 
 /// View model for list of `PhotoToAdd`s
@@ -62,6 +62,11 @@ class PhotosToAddViewModel: NSObject {
     /// If the index is invalid it does nothing
     func remove(photoAtIndex index: Int) {
         guard index >= 0, index < photos.count else { return }
+        // remove and don't wait for the result
+        localFiles.removeFile(forKey: photos[index].mediaKey, completionHandler: nil)
+        if let annotatedMediaKey = photos[index].annotatedMediaKey {
+            localFiles.removeFile(forKey: annotatedMediaKey, completionHandler: nil)
+        }
         photos.remove(at: index)
         DispatchQueue.main.async {
             self.delegates.allObjects.forEach { $0.photoRemoved?(atIndex: index) }
@@ -69,8 +74,12 @@ class PhotosToAddViewModel: NSObject {
     }
 
     /// Updates annotations for all photos (only if changed)
-    func setAnnotations(_ annotations: [Annotations?]) {
-        photos.indices.forEach { photos[$0].annotations = annotations[$0] }
+    func setAnnotations(_ annotations: Annotations?, annotatedMediaKey: MediaKey?, atIndex index: Int) {
+        photos[index].annotatedMediaKey = annotatedMediaKey
+        photos[index].annotations = annotations
+        DispatchQueue.main.async {
+            self.delegates.allObjects.forEach { $0.annotationsUpdated?(atIndex: index) }
+        }
     }
 
     /// Cleanup the current photosToAdd
@@ -80,6 +89,9 @@ class PhotosToAddViewModel: NSObject {
         if removeFromCache {
             photos.forEach {
                 localFiles.removeFile(forKey: $0.mediaKey, completionHandler: nil)
+                if let annotatedMediaKey = $0.annotatedMediaKey {
+                    localFiles.removeFile(forKey: annotatedMediaKey, completionHandler: nil)
+                }
             }
         }
         photos = []
@@ -99,8 +111,8 @@ class PhotosToAddViewModel: NSObject {
             throw CameraRollError.thumbnailGenerationFailed
         }
         let uploadId = generateRealmId()
-        let mediaKey = MediaKey(
-            localFileKeyWithProjectId: projectId,
+        let mediaKey = MediaKey.localFilesKey(
+            projectId: projectId,
             uploadId: uploadId,
             fileType: .jpeg,
             annotated: false
@@ -109,7 +121,6 @@ class PhotosToAddViewModel: NSObject {
         try await localFiles.store(data, forKey: mediaKey)
 
         return PhotoToAdd(
-            uploadId: uploadId,
             assetIdentifier: result.assetIdentifier,
             fileName: itemProvider.suggestedName,
             timestamp: Date.now,
@@ -181,4 +192,6 @@ class PhotosToAddViewModel: NSObject {
     @objc optional func photoAdded(atIndex index: Int)
     /// notifies that a photo was removed at given index
     @objc optional func photoRemoved(atIndex index: Int)
+    /// notifies that a photo annotations were updated at given index
+    @objc optional func annotationsUpdated(atIndex index: Int)
 }

@@ -69,7 +69,7 @@ class PhotoDetailsHeaderViewController: UIViewController {
             imageDataProviderFactory: { [localFiles] in
                 localFiles.imageProvider(forKey: $0)
             },
-            photoKeys: photosViewModel.photos.map(\.mediaKey),
+            photoKeys: photosViewModel.photos.map { $0.annotatedMediaKey ?? $0.mediaKey },
             pageHeight2Width: photosViewModel.photos.map(\.height2Width).max() ?? 4.0 / 3.0,
             removePhotoHandler: { [weak self] photoIndex in
                 guard let self = self else { return false }
@@ -106,5 +106,11 @@ class PhotoDetailsHeaderViewController: UIViewController {
 extension PhotoDetailsHeaderViewController: PhotosToAddViewModelDelegate {
     func photoRemoved(atIndex index: Int) {
         galleryVC.photoRemoved(atIndex: index)
+    }
+
+    func annotationsUpdated(atIndex index: Int) {
+        let photo = photosViewModel.photos[index]
+        let photoMediaKey = photo.annotatedMediaKey ?? photo.mediaKey
+        galleryVC.updatePhotoKey(photoMediaKey, atIndex: index)
     }
 }

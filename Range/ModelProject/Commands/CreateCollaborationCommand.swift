@@ -118,6 +118,9 @@ extension CreateCollaborationCommand: LocalCommand {
             // backend. Pending uploads wait for the Upload object to be created (fail while it's not there)
             // so it's guaranteed that this will be set BEFORE the real value.
             localStorageVersion.setMainToLocalFile(annotated: false)
+            if $0.annotations != nil {
+                localStorageVersion.setMainToLocalFile(annotated: true)
+            }
             let upload = Upload(
                 id: $0.id,
                 timestamp: Date.now,

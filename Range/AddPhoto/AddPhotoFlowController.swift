@@ -167,7 +167,6 @@ class AddPhotoFlowController {
         )
 
         let photoToAdd = PhotoToAdd(
-            uploadId: uploadId,
             timestamp: Date.now,
             mediaKey: mediaKey,
             thumbnail: image.imageResized(toFill: 100),
@@ -220,8 +219,15 @@ class AddPhotoFlowController {
             vc?.dismiss(animated: true)
         }
         vc.onDone = { [weak self, weak vc] annotations in
+            guard let self = self else { return }
             vc?.dismiss(animated: true)
-            self?.photosToAddViewModel.setAnnotations(annotations)
+            Task { @MainActor in
+                do {
+                    try await self.updateAnnotations(annotations)
+                } catch {
+                    ToastWindow.shared.showError(text: "Failed to update the annotations")
+                }
+            }
         }
         vc.modalPresentationStyle = .fullScreen
         cameraVC.present(vc, animated: true)
@@ -242,7 +248,13 @@ class AddPhotoFlowController {
                 }
                 vc.dismiss(animated: true)
                 if updateAnnotations {
-                    self.photosToAddViewModel.setAnnotations(annotations)
+                    Task { @MainActor in
+                        do {
+                            try await self.updateAnnotations(annotations)
+                        } catch {
+                            ToastWindow.shared.showError(text: "Failed to update the annotations")
+                        }
+                    }
                 }
             }
 
@@ -266,7 +278,46 @@ class AddPhotoFlowController {
         detailsVC.present(vc, animated: true)
     }
 
-    private func createPhotosReviewViewController() -> FullscreenImageGalleryViewController {
+    /// Update annotations for photos, generate new annotated images (if annotations changed) and store in LocalFiles
+    @MainActor
+    private func updateAnnotations(_ photosAnnotations: [Annotations?]) async throws {
+        for index in photosAnnotations.indices {
+            let photoAnnotations = photosAnnotations[index]
+            if photosToAddViewModel.photos[index].annotations != photoAnnotations {
+                let mediaKey = photosToAddViewModel.photos[index].mediaKey
+                let localFileURL = localFiles.fileURL(forKey: mediaKey)
+                let imageData = try Data(contentsOf: localFileURL)
+                let annotatedImageData: Data
+                if let annotations = photoAnnotations {
+                    guard let image = UIImage(data: imageData) else {
+                        throw "Failed to load the image"
+                    }
+                    // create annotated image
+                    annotatedImageData = AnnotationsRenderer.render(annotations: annotations, onImage: image)
+                } else {
+                    // Annotated photo should be removed, but this requires support from server side,
+                    // so just upload non annotated as annotated for now
+                    annotatedImageData = imageData
+                }
+                // store annotated image locally and add to pending uploads
+                let annotatedMediaKey = MediaKey.localFilesKey(
+                    projectId: mediaKey.projectId,
+                    uploadId: mediaKey.uploadId,
+                    fileType: mediaKey.fileType,
+                    annotated: true,
+                    thumbnailNumber: mediaKey.thumbnailNumber
+                )
+                try await localFiles.store(annotatedImageData, forKey: annotatedMediaKey)
+                photosToAddViewModel.setAnnotations(
+                    photoAnnotations,
+                    annotatedMediaKey: annotatedMediaKey,
+                    atIndex: index
+                )
+            }
+        }
+    }
+
+    private func createPhotosReviewViewController() -> FullscreenImageGalleryViewController<MediaKey> {
         FullscreenImageGalleryViewController(
             imageDataProviderFactory: { [localFiles] in
                 localFiles.imageProvider(forKey: $0)

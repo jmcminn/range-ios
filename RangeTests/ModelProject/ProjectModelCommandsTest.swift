@@ -78,7 +78,6 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
             withGeometryId: "geometry1",
             isTask: false,
             photosToAdd: [PhotoToAdd(
-                uploadId: "upload1",
                 timestamp: Date(timeIntervalSince1970: 1234),
                 mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
                                                  fileType: .jpeg, annotated: false),
@@ -109,7 +108,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
     func testAddPhotosToCollaboration_geometryNotFound() async throws {
         do {
             _ = try await model.addPhotos(
-                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now,
+                [PhotoToAdd(timestamp: Date.now,
                             mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
                                                              fileType: .jpeg, annotated: false),
                             thumbnail: UIImage(),
@@ -141,7 +140,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         }
         do {
             _ = try await model.addPhotos(
-                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now,
+                [PhotoToAdd(timestamp: Date.now,
                             mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
                                                              fileType: .jpeg, annotated: false),
                             thumbnail: UIImage(),
@@ -175,7 +174,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         }
         do {
             _ = try await model.addPhotos(
-                [PhotoToAdd(uploadId: "upload1", timestamp: Date.now,
+                [PhotoToAdd(timestamp: Date.now,
                             mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
                                                              fileType: .jpeg, annotated: false),
                             thumbnail: UIImage(),
@@ -212,13 +211,12 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         }
         let command = try await model.addPhotos(
             [
-                PhotoToAdd(uploadId: "upload1", timestamp: Date(timeIntervalSince1970: 1234),
+                PhotoToAdd(timestamp: Date(timeIntervalSince1970: 1234),
                            mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
                                                             fileType: .jpeg, annotated: false),
                            thumbnail: UIImage(),
                            height2Width: 1, fileSize: 1024),
                 PhotoToAdd(
-                    uploadId: "upload2",
                     timestamp: Date(timeIntervalSince1970: 1235),
                     mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload2",
                                                      fileType: .jpeg, annotated: false),
@@ -226,7 +224,6 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
                     height2Width: 1.2, fileSize: 1024
                 ),
                 PhotoToAdd(
-                    uploadId: "upload3",
                     timestamp: Date(timeIntervalSince1970: 1236),
                     mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload3",
                                                      fileType: .jpeg, annotated: false),

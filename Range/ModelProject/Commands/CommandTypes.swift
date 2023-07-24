@@ -49,8 +49,8 @@ struct CommandUpload: Codable, Equatable {
     }
 
     init(fromPhotoToAdd photoToAdd: PhotoToAdd) {
-        id = photoToAdd.uploadId
-        fileType = .jpeg
+        id = photoToAdd.mediaKey.uploadId
+        fileType = photoToAdd.mediaKey.fileType
         fileSize = photoToAdd.fileSize
         name = photoToAdd.fileName
         imageHeightToWidth = photoToAdd.height2Width
