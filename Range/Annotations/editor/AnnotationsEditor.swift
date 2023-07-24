@@ -99,8 +99,7 @@ class AnnotationsEditor: NSObject {
             make.edges.equalToSuperview()
         }
 
-        // TODO: 1272 not view width but rather some constant...
-        scale = initialAnnotations?.scale ?? imageWidth / viewWidth
+        scale = initialAnnotations?.scale ?? min(imageWidth, imageHeight) / Annotations.referenceViewSize
 
         // for annotation selection
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))

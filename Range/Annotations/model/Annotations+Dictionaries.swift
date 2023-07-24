@@ -3,6 +3,9 @@ import UIKit
 
 /// Annotations related definitions
 extension Annotations {
+    /// The scale property of the Annotations is calculated based on this property, so scale = min(imageHeight, imageWidth)/referenceViewSize
+    static var referenceViewSize: Double = 400.0
+
     /// Scribble thickness, independent of the image size
     /// The exact thickness in pixels depends on the scale used for annotations (which is dependent on the image size)
     enum ScribbleThickness: String, CaseIterable, Codable {
