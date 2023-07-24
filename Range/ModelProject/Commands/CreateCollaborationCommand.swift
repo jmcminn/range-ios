@@ -232,8 +232,8 @@ extension CreateCollaborationCommand: FirestoreCommand {
                 tagIds: uploadTagIds,
                 fileTypeString: Upload.FileType.jpeg.rawValue,
                 imageHeightToWidth: $0.imageHeightToWidth,
-                // TODO: 1271 annotations
-                fileSize: $0.fileSize
+                fileSize: $0.fileSize,
+                annotations: $0.annotations?.persistableValue
             )
             var data = try Firestore.Encoder().encode(firestoreObject)
             data[FirestoreUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()

@@ -22,7 +22,19 @@ extension UpdateUploadAnnotationsCommand: LocalCommand {
 
 /// Apply the update in Firestore.
 extension UpdateUploadAnnotationsCommand: FirestoreCommand {
-    func apply(inFirestore _: FirestoreCommandContext) throws {
-        // TODO: 1271 store in firestore
+    func apply(inFirestore ctx: FirestoreCommandContext) throws {
+        // ------------- READS -----------------
+        // check that target exists, otherwise abort (the command cannot be applied)
+        guard try ctx.exists(.upload(uploadId)) else {
+            throw FirestoreCommandError.obsolete("upload doesn't exist")
+        }
+
+        // ------------- WRITES ----------------
+        ctx.updateData(
+            [FirestoreUpload.CodingKeys.annotations.rawValue: annotations != nil
+                ? annotations!.persistableValue
+                : FieldValue.delete()],
+            forDocument: .upload(uploadId)
+        )
     }
 }
