@@ -564,14 +564,22 @@ extension FullscreenMediaCardViewController {
         }
         vc.onDone = { [weak self, weak vc] annotations in
             if let self = self, let annotations = annotations.first {
-                self.projectModel.run(self.projectModel.update(annotations: annotations, forUpload: upload)) { error in
-                    if error != nil { ToastWindow.shared.showError(text: "Failed to update the annotations") }
-                }
+                self.update(annotations: annotations)
             }
             vc?.dismiss(animated: true)
         }
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
+    }
+
+    private func update(annotations: Annotations?) {
+        Task { @MainActor in
+            do {
+                try await projectModel.run(projectModel.update(annotations: annotations, forUpload: upload))
+            } catch {
+                ToastWindow.shared.showError(text: "Failed to update the annotations")
+            }
+        }
     }
 
     private func setupCommentsVC() {
@@ -613,8 +621,11 @@ extension FullscreenMediaCardViewController: QLPreviewControllerDataSource, QLPr
     private func showPreview() {
         Task {
             do {
-                let mediaURL = try await mediaCache
-                    .getCachedFileURL(forKey: MediaKey(projectId: projectModel.projectId, upload: upload))
+                guard let mediaKey = MediaKey.autoAnnotatedMediaKey(projectId: projectModel.projectId, upload: upload)
+                else {
+                    throw "Failed to load the file"
+                }
+                let mediaURL = try await mediaCache.getCachedFileURL(forKey: mediaKey)
                 let previewItem = UploadPreviewItem()
                 previewItem.previewItemURL = mediaURL
                 previewItem.previewItemTitle = upload.fileName

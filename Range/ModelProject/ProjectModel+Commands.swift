@@ -4,6 +4,7 @@ import Kingfisher
 import OSLog
 import RealmSwift
 import Turf
+import UIKit
 
 // MARK: - run commands
 
@@ -430,7 +431,57 @@ extension ProjectModel {
         )
     }
 
-    func update(annotations: Annotations?, forUpload upload: Upload) -> Command? {
-        UpdateUploadAnnotationsCommand(uploadId: upload.id, annotations: annotations)
+    /// Updates the annotations for Upload
+    /// It generates the annotated image locally (if annotations provided) and schedules the upload of the annotated image
+    /// Once this function finishes the annotated image is in localFiles
+    @MainActor
+    func update(annotations: Annotations?, forUpload upload: Upload) async throws -> Command? {
+        let uploadId = upload.id
+        // fetch image (should be already in cache)
+        func fetchImageData() async throws -> Data {
+            guard let mediaKey = MediaKey.mediaKey(projectId: projectId, upload: upload, annotated: false) else {
+                throw "Failed to load the image"
+            }
+            let imageUrl = try await mediaCache.getCachedFileURL(forKey: mediaKey)
+            return try Data(contentsOf: imageUrl)
+        }
+        // store annotated image in LocalFiles and schedule upload to Storage
+        func storeAnnotatedImageData(_ data: Data) async throws {
+            // store the info about annotated image in LocalFiles
+            // it has to be done before adding pending upload, as when the file is uploaded
+            // the localStorageVersion will be replaced with the real one so we need the correct
+            // order here
+            try await write { realm in
+                if let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
+                    upload.localStorageVersion.setMainToLocalFile(annotated: true)
+                }
+            }
+            // store annotated image locally and add to pending uploads
+            let annotatedMediaKey = MediaKey.localFilesKey(
+                projectId: projectId,
+                uploadId: upload.id,
+                fileType: upload.fileType,
+                annotated: true
+            )
+            try await localFiles.store(data, forKey: annotatedMediaKey)
+            try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
+        }
+
+        let imageData = try await fetchImageData()
+        let annotatedImageData: Data
+        if let annotations = annotations {
+            guard let image = UIImage(data: imageData) else {
+                throw "Failed to load the image"
+            }
+            // create annotated image
+            annotatedImageData = AnnotationsRenderer.render(annotations: annotations, onImage: image)
+        } else {
+            // Annotated photo should be removed, but this requires support from server side,
+            // so just upload non annotated as annotated for now
+            annotatedImageData = imageData
+        }
+        try await storeAnnotatedImageData(annotatedImageData)
+
+        return UpdateUploadAnnotationsCommand(uploadId: uploadId, annotations: annotations)
     }
 }
