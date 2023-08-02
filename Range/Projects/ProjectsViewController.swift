@@ -17,8 +17,17 @@ class ProjectsViewController: UIViewController {
     /// Token for observing changes in projects
     private var notificationToken: NotificationToken?
 
+    let searchController = UISearchController()
+
+    /// Calculated from user search term input, this is what is actually applied to projects.
+    /// It's an array of case/diactric insensitive and trimmed components of the search term
+    /// If empty then it counts as matched.
+    private var searchTerms: [String] = []
+    private var filteredProjects: [ProjectSummary]
+
     init(projects: Results<ProjectSummary>) {
         self.projects = projects
+        filteredProjects = [ProjectSummary](projects)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -35,6 +44,12 @@ class ProjectsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        searchController.searchBar.placeholder = String(localized: "Search for projects")
+        searchController.searchResultsUpdater = self
+
+        navigationItem.hidesSearchBarWhenScrolling = true
+        navigationItem.searchController = searchController
+
         view.backgroundColor = .dynamic(.Neutral_10)
 
         setupTableView()
@@ -42,7 +57,7 @@ class ProjectsViewController: UIViewController {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        tableView.reloadData()
+        updateData()
 
         setupTitleView()
         updateTitleLabel()
@@ -55,15 +70,22 @@ class ProjectsViewController: UIViewController {
             guard let self = self else { return }
             switch changes {
             case .initial:
-                self.tableView.reloadData()
+                self.updateData()
                 self.updateTitleLabel()
             case .update:
-                self.tableView.reloadData()
+                self.updateData()
                 self.updateTitleLabel()
             case let .error(error):
                 Logger.model.error("observing projects failed: \(error.localizedDescription, privacy: .public)")
             }
         }
+    }
+
+    /// apply the search terms to filter the projects and reload the table view
+    private func updateData() {
+        filteredProjects = projects.filter(matchSearchTerms)
+
+        tableView.reloadData()
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
@@ -117,7 +139,7 @@ class ProjectsViewController: UIViewController {
 
 extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        projects.count
+        filteredProjects.count
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
@@ -130,7 +152,7 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
             withIdentifier: "ProjectCell",
             for: indexPath
         ) as! ProjectTableViewCell
-        let project = projects[indexPath.section]
+        let project = filteredProjects[indexPath.section]
         cell.setProject(project)
         return cell
     }
@@ -148,8 +170,8 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard indexPath.section < projects.count else { return }
-        let project = projects[indexPath.section]
+        guard indexPath.section < filteredProjects.count else { return }
+        let project = filteredProjects[indexPath.section]
         onProjectSelected?(project)
     }
 
@@ -163,5 +185,27 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
         UIView()
+    }
+}
+
+extension ProjectsViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        // calculate search terms from user entered search text
+        let textTrimmed = (searchController.searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        // remove diacritics and make it lowercase
+        let searchTerm = textTrimmed
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        // split by whitespace to multiple terms
+        searchTerms = searchTerm.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        updateData()
+
+        print("Search terms: ", searchTerms)
+    }
+
+    /// Project matches if its name contains all the searchTerms
+    func matchSearchTerms(project: ProjectSummary) -> Bool {
+        guard !searchTerms.isEmpty else { return true }
+        let name = project.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        return searchTerms.allSatisfy { name.contains($0) }
     }
 }
