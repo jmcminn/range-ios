@@ -51,6 +51,7 @@ final class DateFormattingTest: XCTestCase {
         // < 1 year ago
         XCTAssertEqual(format1("2021-05-31 15:40", now: "2021-06-02 15:27"), "May 31 @3:40 PM (2 days ago)")
         XCTAssertEqual(format1("2021-05-31 15:26", now: "2021-06-02 15:27"), "May 31 @3:26 PM (2 days ago)")
+        XCTAssertEqual(format1("2023-07-24 22:31", now: "2023-08-01 13:57"), "Jul 24 @10:31 PM (8 days ago)")
         XCTAssertEqual(format1("2021-01-01 00:01", now: "2021-06-02 15:27"), "Jan 01 @12:01 AM (152 days ago)")
         XCTAssertEqual(format1("2021-01-02 00:01", now: "2022-01-01 15:27"), "Jan 02 @12:01 AM (364 days ago)")
         // older
