@@ -59,6 +59,7 @@
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
+		0A187AE72A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AE62A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift */; };
 		0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935312938C1E2000E8BF8 /* AvatarView.swift */; };
 		0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */; };
 		0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F1B792A288D1D00A2E613 /* AnnotationsDevSettings.swift */; };
@@ -472,6 +473,7 @@
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
+		0A187AE62A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsTableViewHeaderCell.swift; sourceTree = "<group>"; };
 		0A1935312938C1E2000E8BF8 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionHeaderView.swift; sourceTree = "<group>"; };
 		0A1F1B792A288D1D00A2E613 /* AnnotationsDevSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsDevSettings.swift; sourceTree = "<group>"; };
@@ -1787,6 +1789,7 @@
 			children = (
 				0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */,
 				0A7A537C293FB3690093D913 /* ProjectsViewController.swift */,
+				0A187AE62A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift */,
 				0A7A537E293FB8F70093D913 /* ProjectTableViewCell.swift */,
 			);
 			path = Projects;
@@ -2094,6 +2097,7 @@
 				0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */,
 				0A374DE42927B3490036C184 /* DeleteCollaborationsCommand.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
+				0A187AE72A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift in Sources */,
 				0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */,
 				0A7393852A606CBB0079A7FB /* ScribbleAnnotation.swift in Sources */,
 				0A3831D128E42CC4001AF38A /* FirestoreUpdate.swift in Sources */,

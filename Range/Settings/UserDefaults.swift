@@ -5,8 +5,8 @@ import OSLog
 /// Store implicit user preferences (not available in settings but based on recent user actions)
 extension UserDefaults {
     enum UserDefaultsConstants: String {
-        /// last project open by the user (to automatically reopen when starting the app)
-        case lastOpenProjectId
+        /// Ids of the up to 3 recently open projects
+        case recentProjectIds
         /// the prefix to be used for storing last open canvas for a project, will be followed by a project id
         case lastOpenCanvasIdPrefix = "lastOpenCanvasId_"
         /// the prefix to be used for storing last open canvas source for a canvas, will be followed by a canvas id
@@ -33,17 +33,24 @@ extension UserDefaults {
         case cardOnboardingComplete
     }
 
-    static var lastOpenProjectId: String? {
-        get {
-            UserDefaults.standard.string(forKey: UserDefaultsConstants.lastOpenProjectId.rawValue)
+    /// return at most last 3 recent project ids. The most recent project is at the beginning of the array
+    static var recentProjectIds: [String] {
+        UserDefaults.standard.array(forKey: UserDefaultsConstants.recentProjectIds.rawValue) as? [String] ?? []
+    }
+
+    /// adds given project id to recent projects (the order of input matters, the projects with lower indices are treated as more recent)
+    /// If project exist in recent projects it will be reinserted at the beginning (so it's "more recent")
+    /// only 3 most recent projects are kept
+    static func addRecentProjectId(_ projectId: String) {
+        var orderedProjectIds = OrderedSet(UserDefaults.recentProjectIds)
+        orderedProjectIds.remove(projectId) // remove, so it gets added at the beginning
+        orderedProjectIds.insert(projectId, at: 0)
+        // keep last 3 at most
+        if orderedProjectIds.count > 3 {
+            orderedProjectIds.removeLast(orderedProjectIds.count - 3)
         }
-        set {
-            if let id = newValue {
-                UserDefaults.standard.set(id, forKey: UserDefaultsConstants.lastOpenProjectId.rawValue)
-            } else {
-                UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastOpenProjectId.rawValue)
-            }
-        }
+        // store in user defaults
+        UserDefaults.standard.set(orderedProjectIds.elements, forKey: UserDefaultsConstants.recentProjectIds.rawValue)
     }
 
     /// construct key used for storing last open canvas id for given project

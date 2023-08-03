@@ -25,9 +25,14 @@ class ProjectsViewController: UIViewController {
     private var searchTerms: [String] = []
     private var filteredProjects: [ProjectSummary]
 
+    private var recentProjects: [ProjectSummary] = []
+
     init(projects: Results<ProjectSummary>) {
         self.projects = projects
         filteredProjects = [ProjectSummary](projects)
+        recentProjects = UserDefaults.recentProjectIds.compactMap { projectId in
+            projects.first { $0.id == projectId }
+        }
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -63,6 +68,15 @@ class ProjectsViewController: UIViewController {
         updateTitleLabel()
 
         observeProjects()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        recentProjects = UserDefaults.recentProjectIds.compactMap { projectId in
+            projects.first { $0.id == projectId }
+        }
+        tableView.reloadData()
     }
 
     private func observeProjects() {
@@ -102,6 +116,7 @@ class ProjectsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
+        tableView.register(ProjectTableViewHeaderCell.self, forCellReuseIdentifier: "HeaderCell")
         tableView.register(ProjectTableViewCell.self, forCellReuseIdentifier: "ProjectCell")
     }
 
@@ -138,8 +153,50 @@ class ProjectsViewController: UIViewController {
 }
 
 extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
+    /// Enum to describe a cell if it's a header of project cell (we need it because we use sections for rows to make them round)
+    enum CellValue {
+        case header(String)
+        case project(ProjectSummary)
+    }
+
+    private func getCellValue(forRowAtIndexPath indexPath: IndexPath) -> CellValue {
+        let row = indexPath.section
+        if searchTerms.isEmpty {
+            // showing recent and all projects but only if there are any recent projects
+            if recentProjects.isEmpty {
+                return .project(projects[row])
+            } else {
+                if row == 0 {
+                    return .header(String(localized: "Recent Projects"))
+                } else if row <= recentProjects.count {
+                    return .project(recentProjects[row - 1])
+                } else if row == recentProjects.count + 1 {
+                    return .header(String(localized: "All Projects (A-Z)"))
+                } else {
+                    return .project(projects[row - recentProjects.count - 2])
+                }
+            }
+        } else {
+            // showing search results only
+            return .project(filteredProjects[row])
+        }
+    }
+
     func numberOfSections(in _: UITableView) -> Int {
-        filteredProjects.count
+        if searchTerms.isEmpty {
+            // showing recent and all projects but only if there are any recent projects
+            if recentProjects.isEmpty {
+                return projects.count
+            } else {
+                // (+1 for each header), as it's all rendered as cells (each project row is a separate
+                // section to get a rounded cell layout
+                return 1 + recentProjects.count + 1 + projects.count
+            }
+
+        } else {
+            // showing search results only
+            return filteredProjects.count
+        }
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
@@ -148,30 +205,41 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "ProjectCell",
-            for: indexPath
-        ) as! ProjectTableViewCell
-        let project = filteredProjects[indexPath.section]
-        cell.setProject(project)
-        return cell
+        let cellValue = getCellValue(forRowAtIndexPath: indexPath)
+        switch cellValue {
+        case let .header(name):
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "HeaderCell",
+                for: indexPath
+            ) as! ProjectTableViewHeaderCell
+            cell.setName(name)
+            return cell
+        case let .project(project):
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: "ProjectCell",
+                for: indexPath
+            ) as! ProjectTableViewCell
+            cell.setProject(project)
+            return cell
+        }
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        // this should be considered a hack - there's no easy way of adding a border around the section in table view
-        tableView.addBackgroundWithBorder(
-            forCell: cell,
-            forRowAt: indexPath,
-            backgroundColor: .dynamic(.Neutral_09),
-            borderColor: .dynamic(.Neutral_07),
-            selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
-        )
+        if case .project = getCellValue(forRowAtIndexPath: indexPath) {
+            // this should be considered a hack - there's no easy way of adding a border around the section in table view
+            tableView.addBackgroundWithBorder(
+                forCell: cell,
+                forRowAt: indexPath,
+                backgroundColor: .dynamic(.Neutral_09),
+                borderColor: .dynamic(.Neutral_07),
+                selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
+            )
+        }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard indexPath.section < filteredProjects.count else { return }
-        let project = filteredProjects[indexPath.section]
+        guard case let .project(project) = getCellValue(forRowAtIndexPath: indexPath) else { return }
         onProjectSelected?(project)
     }
 

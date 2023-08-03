@@ -71,7 +71,6 @@ class ProjectsFlowController: UINavigationController {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
                 // fallback to projects list only
                 self.setViewControllers([tabBarVC], animated: false)
-                UserDefaults.lastOpenProjectId = nil
             }
         }
 
@@ -80,7 +79,7 @@ class ProjectsFlowController: UINavigationController {
             // open project from push notification and open it's task list
             await tryLoadProject(showTaskListOnLoginForProjectId)
             showTaskListAfterProjectFlowStarted()
-        } else if DebugSettings().openLastProjectOnStart, let lastOpenProjectId = UserDefaults.lastOpenProjectId {
+        } else if DebugSettings().openLastProjectOnStart, let lastOpenProjectId = UserDefaults.recentProjectIds.first {
             // reopen last project
             await tryLoadProject(lastOpenProjectId)
         } else {
@@ -201,7 +200,7 @@ class ProjectsFlowController: UINavigationController {
 
     private func updateLastOpenProjectAndCanvas() {
         guard let projectModel = projectFC?.model else { return }
-        UserDefaults.lastOpenProjectId = projectModel.projectId
+        UserDefaults.addRecentProjectId(projectModel.projectId)
         UserDefaults.setLastOpenCanvasId(
             projectModel.currentCanvas.id,
             forProjectId: projectModel.projectId
@@ -234,7 +233,6 @@ class ProjectsFlowController: UINavigationController {
         _ = popViewController(animated: true)
         projectFC?.stop()
         projectFC = nil
-        UserDefaults.lastOpenProjectId = nil
         currentProjectNotificationToken?.invalidate()
         currentProjectNotificationToken = nil
     }
