@@ -9,9 +9,6 @@ struct CameraView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
-    /// the angle to use  for UI elements rotation when the device orientation changes
-    @State private var uiAngle: Angle = .degrees(0)
-
     @ObservedObject var model: CameraViewModel
     @ObservedObject var camera: CameraService
 
@@ -240,12 +237,12 @@ struct CameraView: View {
             .onTapGesture {
                 model.cleanBanner()
             }
-            .rotationEffect(uiAngle)
+            .rotationEffect(model.uiAngle)
             .animation(
                 .easeInOut(duration: 0.3),
                 value: model.bannerText
             )
-            .animation(.default, value: uiAngle)
+            .animation(.default, value: model.uiAngle)
     }
 
     // Photo preview from the CameraService
@@ -300,47 +297,47 @@ struct CameraView: View {
     private func topButtons() -> some View {
         ZStack {
             HStack {
-                closeButton.rotationEffect(uiAngle)
+                closeButton.rotationEffect(model.uiAngle)
                 Spacer()
                 if model.multiPhotoEnabled, model.numberOfPhotos > 0 {
-                    imageButton.rotationEffect(uiAngle)
+                    imageButton.rotationEffect(model.uiAngle)
                 }
             }
             // centered
             HStack(spacing: 12) {
                 if camera.hasFlash {
-                    flashButton.rotationEffect(uiAngle)
+                    flashButton.rotationEffect(model.uiAngle)
                 }
                 if model.cameraRollSelectAction != nil {
-                    cameraRollButton.rotationEffect(uiAngle)
+                    cameraRollButton.rotationEffect(model.uiAngle)
                 }
-                //            settingsButton.rotationEffect(uiAngle)
+                //            settingsButton.rotationEffect(model.uiAngle)
             }
         }
-        .animation(.default, value: uiAngle)
+        .animation(.default, value: model.uiAngle)
         .padding(16)
     }
 
     private func zoomButtons() -> some View {
         HStack(spacing: 2) {
             ForEach(0 ..< camera.zoomFactors.count, id: \.self) { index in
-                zoomView(zoomFactorIndex: index).rotationEffect(uiAngle)
+                zoomView(zoomFactorIndex: index).rotationEffect(model.uiAngle)
             }
         }
-        .animation(.default, value: uiAngle)
+        .animation(.default, value: model.uiAngle)
     }
 
     private func bottomButtons() -> some View {
         ZStack {
             HStack(spacing: 19) {
-                toggleAnnotationsButton.rotationEffect(uiAngle)
-                toggleMultiPhotoButton.rotationEffect(uiAngle)
+                toggleAnnotationsButton.rotationEffect(model.uiAngle)
+                toggleMultiPhotoButton.rotationEffect(model.uiAngle)
                 Spacer()
                 if model.multiPhotoEnabled {
-                    nextButton.rotationEffect(uiAngle)
+                    nextButton.rotationEffect(model.uiAngle)
                 }
             }
-            .animation(.default, value: uiAngle)
+            .animation(.default, value: model.uiAngle)
             .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
             HStack {
                 takePhotoButton.padding(6)
@@ -386,39 +383,6 @@ struct CameraView: View {
             }
         }
         .navigationBarHidden(true)
-        .onRotate { newOrientation in
-            // calculate new angle for ui elements when the device is rotated
-            switch newOrientation {
-            case .portraitUpsideDown:
-                uiAngle = .degrees(180)
-            case .landscapeLeft:
-                uiAngle = .degrees(90)
-            case .landscapeRight:
-                uiAngle = .degrees(-90)
-            default:
-                uiAngle = .degrees(0)
-            }
-        }
-    }
-}
-
-/// Custom view modifier to track rotation and call given action
-struct DeviceRotationViewModifier: ViewModifier {
-    let action: (UIDeviceOrientation) -> Void
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear()
-            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-                action(UIDevice.current.orientation)
-            }
-    }
-}
-
-/// A View wrapper to make the `DeviceRotationViewModifier` easier to use
-extension View {
-    func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
-        modifier(DeviceRotationViewModifier(action: action))
     }
 }
 

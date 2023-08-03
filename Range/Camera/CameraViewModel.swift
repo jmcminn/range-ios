@@ -30,6 +30,9 @@ class CameraViewModel: ObservableObject {
     /// Current zoom factor - which zoom factor from CameraService.zoomFactors should be marked as selected
     @Published var currentZoomFactorIndex: Int = 0
 
+    /// the angle to use  for UI elements rotation when the device orientation changes
+    @Published var uiAngle: Angle = .degrees(0)
+
     /// Callbacks for the controller
     var closeAction: (() -> Void)?
     var takePhotoAction: (() -> Void)?

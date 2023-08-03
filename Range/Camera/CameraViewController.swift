@@ -1,3 +1,4 @@
+import CoreMotion
 import OSLog
 import SwiftUI
 import UIKit
@@ -17,6 +18,24 @@ class CameraViewController: UIHostingController<CameraView> {
     var onNext: (() -> Void)?
     private let cameraService = CameraService()
     let cameraViewModel: CameraViewModel
+
+    /// To recognize device orientation change when Portrait Orientation Lock is On we need to observe the device motion
+    /// instead of relying on UIDevice.current.orientation value and UIDevice.orientationDidChangeNotification, as UIDevice
+    /// reports portrait when the Lock is on, no matter what's the actual real device orientation
+    let motionManager = CMMotionManager()
+    var deviceOrientation: UIDeviceOrientation = .portrait { didSet {
+        // calculate new angle for ui elements when the device is rotated
+        switch deviceOrientation {
+        case .portraitUpsideDown:
+            cameraViewModel.uiAngle = .degrees(180)
+        case .landscapeLeft:
+            cameraViewModel.uiAngle = .degrees(90)
+        case .landscapeRight:
+            cameraViewModel.uiAngle = .degrees(-90)
+        default:
+            cameraViewModel.uiAngle = .degrees(0)
+        }
+    }}
 
     init(photosViewModel: PhotosToAddViewModel) {
         self.photosViewModel = photosViewModel
@@ -43,20 +62,22 @@ class CameraViewController: UIHostingController<CameraView> {
 
     private func takePhotoAction() {
         guard let onPhotoTaken = onPhotoTaken else { return }
-        cameraService.capturePhoto(flashMode: cameraViewModel.flashMode) { [weak self] data in
-            guard let self = self else { return }
-            if let data = data, let image = UIImage(data: data) {
-                onPhotoTaken(data, image) { result in
-                    if case let .failure(error) = result {
-                        Logger.camera
-                            .error("Error while saving the photo: \(error.localizedDescription, privacy: .public)")
-                        self.showCapturePhotoErrorAlert(taking: false)
+        cameraService
+            .capturePhoto(flashMode: cameraViewModel.flashMode,
+                          deviceOrientation: deviceOrientation) { [weak self] data in
+                guard let self = self else { return }
+                if let data = data, let image = UIImage(data: data) {
+                    onPhotoTaken(data, image) { result in
+                        if case let .failure(error) = result {
+                            Logger.camera
+                                .error("Error while saving the photo: \(error.localizedDescription, privacy: .public)")
+                            self.showCapturePhotoErrorAlert(taking: false)
+                        }
                     }
+                } else {
+                    self.showCapturePhotoErrorAlert()
                 }
-            } else {
-                self.showCapturePhotoErrorAlert()
             }
-        }
     }
 
     @available(*, unavailable)
@@ -100,6 +121,22 @@ class CameraViewController: UIHostingController<CameraView> {
         cameraService.configure { [weak self] sessionSetupResult in
             if sessionSetupResult == .configurationFailed {
                 self?.showCameraConfigurationErrorAlert()
+            }
+        }
+
+        motionManager.startDeviceMotionUpdates(to: OperationQueue()) { [weak self] data, _ in
+            guard let self = self else { return }
+            guard let gravity = data?.gravity else { return }
+            let newDeviceOrientation: UIDeviceOrientation
+            if abs(gravity.y) < abs(gravity.x) {
+                newDeviceOrientation = gravity.x > 0 ? .landscapeRight : .landscapeLeft
+            } else {
+                newDeviceOrientation = gravity.y > 0 ? .portraitUpsideDown : .portrait
+            }
+            if self.deviceOrientation != newDeviceOrientation {
+                DispatchQueue.main.async {
+                    self.deviceOrientation = newDeviceOrientation
+                }
             }
         }
     }

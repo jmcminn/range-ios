@@ -255,7 +255,11 @@ class CameraService: ObservableObject {
 
     // Top level function: capture a photo and pass the result to the completion function -- while also providing
     // visual feedback in the form of "snapping" the picture and showing a spinner while iOS processes the photo
-    func capturePhoto(flashMode: AVCaptureDevice.FlashMode, completion: @escaping CompletionFunction) {
+    func capturePhoto(
+        flashMode: AVCaptureDevice.FlashMode,
+        deviceOrientation: UIDeviceOrientation,
+        completion: @escaping CompletionFunction
+    ) {
         #if targetEnvironment(simulator)
             _captureDummyPhotoForTesting(completion: completion)
         #else
@@ -264,7 +268,7 @@ class CameraService: ObservableObject {
             // we're currently taking a photo: disable the camera button until we're done
             canCapturePhoto = false
 
-            let orientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
+            let orientation = AVCaptureVideoOrientation(deviceOrientation: deviceOrientation) ?? .portrait
 
             sessionQueue.async {
                 self._capturePhoto(flashMode: flashMode, videoOrientation: orientation, completion: completion)
