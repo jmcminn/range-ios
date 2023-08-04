@@ -60,6 +60,10 @@
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
 		0A1812752834CFBB00A8515B /* UITableView+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1812742834CFBB00A8515B /* UITableView+Borders.swift */; };
 		0A187AE72A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AE62A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift */; };
+		0A187AE92A7BFE3800EC179C /* Organization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AE82A7BFE3800EC179C /* Organization.swift */; };
+		0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AEA2A7BFE5000EC179C /* FirestoreOrganization.swift */; };
+		0A187AED2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AEC2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift */; };
+		0A187AEF2A7FAE4F00EC179C /* OrganizationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */; };
 		0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935312938C1E2000E8BF8 /* AvatarView.swift */; };
 		0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */; };
 		0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F1B792A288D1D00A2E613 /* AnnotationsDevSettings.swift */; };
@@ -474,6 +478,10 @@
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
 		0A1812742834CFBB00A8515B /* UITableView+Borders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Borders.swift"; sourceTree = "<group>"; };
 		0A187AE62A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsTableViewHeaderCell.swift; sourceTree = "<group>"; };
+		0A187AE82A7BFE3800EC179C /* Organization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Organization.swift; sourceTree = "<group>"; };
+		0A187AEA2A7BFE5000EC179C /* FirestoreOrganization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreOrganization.swift; sourceTree = "<group>"; };
+		0A187AEC2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationSelectorCardViewController.swift; sourceTree = "<group>"; };
+		0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationTableViewCell.swift; sourceTree = "<group>"; };
 		0A1935312938C1E2000E8BF8 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionHeaderView.swift; sourceTree = "<group>"; };
 		0A1F1B792A288D1D00A2E613 /* AnnotationsDevSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsDevSettings.swift; sourceTree = "<group>"; };
@@ -1693,6 +1701,8 @@
 			children = (
 				0A7A5379293E4E140093D913 /* README.md */,
 				0A7A537A293E4E540093D913 /* ProjectsModel.swift */,
+				0A187AE82A7BFE3800EC179C /* Organization.swift */,
+				0A187AEA2A7BFE5000EC179C /* FirestoreOrganization.swift */,
 			);
 			path = ModelProjects;
 			sourceTree = "<group>";
@@ -1791,6 +1801,8 @@
 				0A7A537C293FB3690093D913 /* ProjectsViewController.swift */,
 				0A187AE62A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift */,
 				0A7A537E293FB8F70093D913 /* ProjectTableViewCell.swift */,
+				0A187AEC2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift */,
+				0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -2174,6 +2186,7 @@
 				0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
+				0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */,
@@ -2297,6 +2310,7 @@
 				0A1F1B7C2A288E2700A2E613 /* AnnotationsDevSettingsView.swift in Sources */,
 				0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */,
 				0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */,
+				0A187AED2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift in Sources */,
 				0A94E8D728CF0E6000A09616 /* ButtonWithTapAreaInsets.swift in Sources */,
 				0A83223A2A41E80A0076D032 /* SelectedCanvasesView.swift in Sources */,
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
@@ -2335,6 +2349,7 @@
 				0A0E9191297A867C0052EC1B /* UIImage+SaveToCameraRoll.swift in Sources */,
 				0A456238283E792200BA8D21 /* FirestoreGeometry.swift in Sources */,
 				0A4995CE285B264C00E571FB /* TagSelectionTableViewCell.swift in Sources */,
+				0A187AEF2A7FAE4F00EC179C /* OrganizationTableViewCell.swift in Sources */,
 				0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
 				0A144F492A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift in Sources */,
@@ -2363,6 +2378,7 @@
 				0AB8557F28FF2C0C00491E20 /* StatusUpdateFeedItemCell.swift in Sources */,
 				0A4D11B529A392EF00D681E7 /* UploadFeedItemCell.swift in Sources */,
 				0A144F4C2A4C577A000F7593 /* VisualEffectView.swift in Sources */,
+				0A187AE92A7BFE3800EC179C /* Organization.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */,

@@ -19,6 +19,8 @@ class ProjectsFlowController: UINavigationController {
 
     var onSignedOut: (() -> Void)?
 
+    let projectsVC: ProjectsViewController
+
     var currentUserNotificationToken: NotificationToken?
     var projectFC: ProjectFlowController?
     /// to observe the state of project flow controller `started`
@@ -40,6 +42,7 @@ class ProjectsFlowController: UINavigationController {
             userSettings: userSettings,
             pendingActionsModel: pendingActionsModel
         )
+        projectsVC = ProjectsViewController(model: projectsModel)
         super.init(rootViewController: LaunchScreenViewController())
     }
 
@@ -79,7 +82,10 @@ class ProjectsFlowController: UINavigationController {
             // open project from push notification and open it's task list
             await tryLoadProject(showTaskListOnLoginForProjectId)
             showTaskListAfterProjectFlowStarted()
-        } else if DebugSettings().openLastProjectOnStart, let lastOpenProjectId = UserDefaults.recentProjectIds.first {
+        } else if DebugSettings().openLastProjectOnStart,
+                  let organizationId = UserDefaults.lastOpenOrganizationId,
+                  let lastOpenProjectId = UserDefaults.recentProjectIds(forOrganizationId: organizationId).first
+        {
             // reopen last project
             await tryLoadProject(lastOpenProjectId)
         } else {
@@ -100,16 +106,17 @@ class ProjectsFlowController: UINavigationController {
         currentProjectNotificationToken?.invalidate()
     }
 
-    private func buildProjectsViewController() -> ProjectsViewController {
-        let projects = projectsModel.mainRealm.objects(ProjectSummary.self).sorted(by: \.name)
-        let projectsVC = ProjectsViewController(projects: projects)
+    private func setupProjectsViewController() {
+        projectsVC.title = String(localized: "My Projects")
+        projectsVC.onOrganizationButtonTap = { [weak self] in
+            self?.selectOrganizationAction()
+        }
         projectsVC.onProjectSelected = { [weak self] project in
             self?.loadAndPushProjectFlowController(projectId: project.id, animated: true)
         }
-        return projectsVC
     }
 
-    private func buildSettingsViewController() -> UIViewController {
+    private func setupSettingsViewController() -> UIViewController {
         userSettings.signOutAction = { [weak self] in
             self?.signOut()
         }
@@ -120,8 +127,7 @@ class ProjectsFlowController: UINavigationController {
 
     /// Sets the root view controller of this navigation controller to be a tab bar with "My Projects" and "Settings" tabs
     private func setupTabBarViewController() -> UITabBarController {
-        let projectsVC = buildProjectsViewController()
-        projectsVC.title = String(localized: "My Projects")
+        setupProjectsViewController()
         let projectsNavC = UINavigationController(rootViewController: projectsVC)
         projectsNavC.tabBarItem = UITabBarItem(
             title: String(localized: "My Projects"),
@@ -129,7 +135,7 @@ class ProjectsFlowController: UINavigationController {
             tag: 0
         )
 
-        let settingsVC = buildSettingsViewController()
+        let settingsVC = setupSettingsViewController()
         settingsVC.title = String(localized: "Settings")
         let settingsNavC = UINavigationController(rootViewController: settingsVC)
         settingsNavC.tabBarItem = UITabBarItem(
@@ -200,7 +206,8 @@ class ProjectsFlowController: UINavigationController {
 
     private func updateLastOpenProjectAndCanvas() {
         guard let projectModel = projectFC?.model else { return }
-        UserDefaults.addRecentProjectId(projectModel.projectId)
+        guard let organizationId = projectsModel.currentOrganization?.id else { return }
+        UserDefaults.addRecentProjectId(projectModel.projectId, forOrganizationId: organizationId)
         UserDefaults.setLastOpenCanvasId(
             projectModel.currentCanvas.id,
             forProjectId: projectModel.projectId
@@ -338,5 +345,16 @@ class ProjectsFlowController: UINavigationController {
             self.projectFCStarted?.cancel()
             self.projectFCStarted = nil
         }
+    }
+
+    func selectOrganizationAction() {
+        let organizations = projectsModel.mainRealm.objects(Organization.self).sorted(by: \.name)
+        OrganizationSelectorCardViewController(
+            organizations: [Organization](organizations),
+            selectedOrganization: projectsModel.currentOrganization,
+            onOrganizationSelected: { [weak self] org in
+                self?.projectsModel.setCurrentOrganization(org)
+            }
+        ).installAndShowCard(in: self)
     }
 }

@@ -41,6 +41,7 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
         } else {
             avatarUrl = nil
         }
+        let organizationIds: [String] = (permissions?["organizations"] as? [String]) ?? []
         let projectIds: [String] = (permissions?["projects"] as? [String]) ?? []
         let participant = Participant(
             id: id,
@@ -48,6 +49,7 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
             lastName: lastName,
             avatarUrl: avatarUrl,
             email: email,
+            organizationIds: organizationIds,
             projectIds: projectIds
         )
         realm.add(participant, update: .modified)

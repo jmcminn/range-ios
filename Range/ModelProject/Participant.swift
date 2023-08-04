@@ -13,6 +13,8 @@ class Participant: Object, WithPlaceholder, WithId {
     @Persisted var avatarUrl: URL?
     /// email
     @Persisted var email: String
+    /// array of organization ids this user has permission to access
+    @Persisted var organizationIds: List<String>
     /// array of projects ids this user has permission to access
     @Persisted var projectIds: List<String>
     /// array of user fcmTokens (Firebase Cloud Messaging Tokens)
@@ -32,6 +34,7 @@ class Participant: Object, WithPlaceholder, WithId {
         lastName: String,
         avatarUrl: URL?,
         email: String,
+        organizationIds: [String] = [],
         projectIds: [String] = [],
         fcmTokens: [String] = [],
         placeholder: Bool = false
@@ -42,6 +45,7 @@ class Participant: Object, WithPlaceholder, WithId {
         self.lastName = lastName
         self.avatarUrl = avatarUrl
         self.email = email
+        self.organizationIds.append(objectsIn: organizationIds)
         self.projectIds.append(objectsIn: projectIds)
         self.fcmTokens.append(objectsIn: fcmTokens)
         self.placeholder = placeholder
@@ -55,6 +59,7 @@ class Participant: Object, WithPlaceholder, WithId {
             lastName: "",
             avatarUrl: nil,
             email: "",
+            organizationIds: [],
             projectIds: [],
             fcmTokens: [],
             placeholder: true

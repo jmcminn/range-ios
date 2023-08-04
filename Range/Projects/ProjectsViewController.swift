@@ -5,36 +5,43 @@ import RealmSwift
 import UIKit
 
 class ProjectsViewController: UIViewController {
-    /// projects to show
-    private let projects: Results<ProjectSummary>
+    /// Model to access the current organization and projects
+    unowned let model: ProjectsModel
+
+    /// To observe changes in model.currentOrganization
+    private var currentOrganizationObservation: NSKeyValueObservation?
+
     private var tableView: UITableView!
 
     /// label shown as title view for navigation bar
     private let titleLabel = UILabel()
 
     var onProjectSelected: ((ProjectSummary) -> Void)?
+    var onOrganizationButtonTap: (() -> Void)?
 
     /// Token for observing changes in projects
     private var notificationToken: NotificationToken?
 
     let searchController = UISearchController()
 
+    /// current organization projects sorted by name, optional as there might be no organization
+    private var projects: Results<ProjectSummary>?
+
     /// Calculated from user search term input, this is what is actually applied to projects.
     /// It's an array of case/diactric insensitive and trimmed components of the search term
     /// If empty then it counts as matched.
     private var searchTerms: [String] = []
-    private var filteredProjects: [ProjectSummary]
+    private var filteredProjects: [ProjectSummary] = []
 
     private var recentProjects: [ProjectSummary] = []
 
-    init(projects: Results<ProjectSummary>) {
-        self.projects = projects
-        filteredProjects = [ProjectSummary](projects)
-        recentProjects = UserDefaults.recentProjectIds.compactMap { projectId in
-            projects.first { $0.id == projectId }
-        }
-
+    init(model: ProjectsModel) {
+        self.model = model
         super.init(nibName: nil, bundle: nil)
+
+        currentOrganizationObservation = model.observe(\.currentOrganization) { [weak self] _, _ in
+            self?.onOrganizationChange()
+        }
     }
 
     @available(*, unavailable)
@@ -44,6 +51,37 @@ class ProjectsViewController: UIViewController {
 
     deinit {
         notificationToken?.invalidate()
+        currentOrganizationObservation?.invalidate()
+    }
+
+    private func onOrganizationChange() {
+        // guard so it's not called too fast
+        guard tableView != nil else { return }
+
+        if let organization = model.currentOrganization {
+            let projects = organization.projects.where { $0.placeholder == false }.sorted(by: \.name)
+            filteredProjects = [ProjectSummary](projects)
+            recentProjects = UserDefaults.recentProjectIds(forOrganizationId: organization.id).compactMap { projectId in
+                projects.first { $0.id == projectId }
+            }
+            self.projects = projects
+            observeProjects()
+        } else {
+            projects = nil
+            filteredProjects = []
+            recentProjects = []
+        }
+
+        tableView.reloadData()
+
+        updateTitleLabel()
+        updateProjectSelectorButton()
+
+        if model.currentOrganization != nil {
+            navigationItem.searchController = searchController
+        } else {
+            navigationItem.searchController = nil
+        }
     }
 
     override func viewDidLoad() {
@@ -62,24 +100,29 @@ class ProjectsViewController: UIViewController {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        updateData()
 
         setupTitleView()
-        updateTitleLabel()
 
-        observeProjects()
+        onOrganizationChange()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        recentProjects = UserDefaults.recentProjectIds.compactMap { projectId in
-            projects.first { $0.id == projectId }
+        // reload the recent projects (we may be back from a project so the recent list may have changed)
+        if let organization = model.currentOrganization {
+            recentProjects = UserDefaults.recentProjectIds(forOrganizationId: organization.id).compactMap { projectId in
+                organization.projects.first { $0.id == projectId }
+            }
+        } else {
+            recentProjects = []
         }
         tableView.reloadData()
     }
 
     private func observeProjects() {
+        notificationToken?.invalidate()
+        guard let projects = projects else { return }
         notificationToken = projects.observe { [weak self] (changes: RealmCollectionChange) in
             guard let self = self else { return }
             switch changes {
@@ -97,7 +140,7 @@ class ProjectsViewController: UIViewController {
 
     /// apply the search terms to filter the projects and reload the table view
     private func updateData() {
-        filteredProjects = projects.filter(matchSearchTerms)
+        filteredProjects = projects?.filter(matchSearchTerms) ?? []
 
         tableView.reloadData()
     }
@@ -143,12 +186,41 @@ class ProjectsViewController: UIViewController {
             .font: UIFont._preferredFont(forTextStyle: .headline, symbolicTraits: .traitBold),
         ])
 
-        title.append(NSAttributedString(string: " (\(projects.count))", attributes: [
-            .foregroundColor: UIColor.dynamic(.Neutral_05),
-            .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
-        ]))
+        if let projects = projects {
+            title.append(NSAttributedString(string: " (\(projects.count))", attributes: [
+                .foregroundColor: UIColor.dynamic(.Neutral_05),
+                .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
+            ]))
+        }
 
         titleLabel.attributedText = title
+    }
+
+    private func updateProjectSelectorButton() {
+        guard let organization = model.currentOrganization else {
+            navigationItem.leftBarButtonItem = nil
+            return
+        }
+
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = .zero
+        config.baseBackgroundColor = .dynamic(.Neutral_10)
+        config.baseForegroundColor = .dynamic(.Neutral_05)
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 16
+        config.background.strokeColor = .dynamic(.Neutral_07)
+        let button = ButtonWithTapAreaInsets(
+            configuration: config,
+            primaryAction: UIAction(title: String(organization.name.prefix(1).uppercased())) { [weak self] _ in
+                self?.onOrganizationButtonTap?()
+            }
+        )
+        button.snp.makeConstraints { make in
+            make.width.height.equalTo(32)
+        }
+        button.tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
     }
 }
 
@@ -161,6 +233,7 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
 
     private func getCellValue(forRowAtIndexPath indexPath: IndexPath) -> CellValue {
         let row = indexPath.section
+        guard let projects = projects else { fatalError("No organization set") }
         if searchTerms.isEmpty {
             // showing recent and all projects but only if there are any recent projects
             if recentProjects.isEmpty {
@@ -184,6 +257,7 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in _: UITableView) -> Int {
         if searchTerms.isEmpty {
+            guard let projects = projects else { return 0 }
             // showing recent and all projects but only if there are any recent projects
             if recentProjects.isEmpty {
                 return projects.count

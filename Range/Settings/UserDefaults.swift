@@ -5,8 +5,10 @@ import OSLog
 /// Store implicit user preferences (not available in settings but based on recent user actions)
 extension UserDefaults {
     enum UserDefaultsConstants: String {
-        /// Ids of the up to 3 recently open projects
-        case recentProjectIds
+        /// If of the last open organization
+        case lastOpenOrganizationId
+        /// Ids of the up to 3 recently open projects per organization, will be followe by an organization id
+        case recentProjectIdsPrefix = "recentProjectsIds_"
         /// the prefix to be used for storing last open canvas for a project, will be followed by a project id
         case lastOpenCanvasIdPrefix = "lastOpenCanvasId_"
         /// the prefix to be used for storing last open canvas source for a canvas, will be followed by a canvas id
@@ -33,16 +35,35 @@ extension UserDefaults {
         case cardOnboardingComplete
     }
 
-    /// return at most last 3 recent project ids. The most recent project is at the beginning of the array
-    static var recentProjectIds: [String] {
-        UserDefaults.standard.array(forKey: UserDefaultsConstants.recentProjectIds.rawValue) as? [String] ?? []
+    /// stores the last open organization id
+    static var lastOpenOrganizationId: String? {
+        get {
+            UserDefaults.standard.string(forKey: UserDefaultsConstants.lastOpenOrganizationId.rawValue)
+        }
+        set {
+            if let id = newValue {
+                UserDefaults.standard.set(id, forKey: UserDefaultsConstants.lastOpenOrganizationId.rawValue)
+            } else {
+                UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastOpenOrganizationId.rawValue)
+            }
+        }
     }
 
-    /// adds given project id to recent projects (the order of input matters, the projects with lower indices are treated as more recent)
+    /// construct key used for storing recent project ids for given organization
+    private static func recentProjectIdsKey(forOrganizationId organizationId: String) -> String {
+        UserDefaultsConstants.recentProjectIdsPrefix.rawValue + organizationId
+    }
+
+    /// return at most last 3 recent project ids. The most recent project is at the beginning of the array
+    static func recentProjectIds(forOrganizationId organizationId: String) -> [String] {
+        UserDefaults.standard.array(forKey: recentProjectIdsKey(forOrganizationId: organizationId)) as? [String] ?? []
+    }
+
+    /// adds given project id to recent projects for given organization (the order of input matters, the projects with lower indices are treated as more recent)
     /// If project exist in recent projects it will be reinserted at the beginning (so it's "more recent")
     /// only 3 most recent projects are kept
-    static func addRecentProjectId(_ projectId: String) {
-        var orderedProjectIds = OrderedSet(UserDefaults.recentProjectIds)
+    static func addRecentProjectId(_ projectId: String, forOrganizationId organizationId: String) {
+        var orderedProjectIds = OrderedSet(recentProjectIds(forOrganizationId: organizationId))
         orderedProjectIds.remove(projectId) // remove, so it gets added at the beginning
         orderedProjectIds.insert(projectId, at: 0)
         // keep last 3 at most
@@ -50,7 +71,10 @@ extension UserDefaults {
             orderedProjectIds.removeLast(orderedProjectIds.count - 3)
         }
         // store in user defaults
-        UserDefaults.standard.set(orderedProjectIds.elements, forKey: UserDefaultsConstants.recentProjectIds.rawValue)
+        UserDefaults.standard.set(
+            orderedProjectIds.elements,
+            forKey: recentProjectIdsKey(forOrganizationId: organizationId)
+        )
     }
 
     /// construct key used for storing last open canvas id for given project

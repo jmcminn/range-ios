@@ -3,7 +3,7 @@ import Foundation
 import RealmSwift
 
 /// Realm object for `project/summary`.
-class ProjectSummary: Object, WithId {
+class ProjectSummary: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Project name
@@ -18,6 +18,8 @@ class ProjectSummary: Object, WithId {
     // TODO: should be read from Firestore when it's implemented there
     // to be based on TZ Database name column from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     var timeZone: TimeZone = .init(identifier: "America/Los_Angeles") ?? TimeZone.current
+    /// Whether this object is just a placeholder for a real object
+    @Persisted var placeholder: Bool = false
 
     /// Default initializer required by Realm.
     override init() {
@@ -25,12 +27,31 @@ class ProjectSummary: Object, WithId {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, center: CLLocationCoordinate2D, description: String?, address: String?) {
+    init(
+        id: String,
+        name: String,
+        center: CLLocationCoordinate2D,
+        description: String?,
+        address: String?,
+        placeholder: Bool = false
+    ) {
         super.init()
         self.id = id
         self.name = name
         self.center = center
         projectDescription = description
         self.address = address
+        self.placeholder = placeholder
+    }
+
+    required convenience init(placeholderId: String) {
+        self.init(
+            id: placeholderId,
+            name: "",
+            center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
+            description: nil,
+            address: nil,
+            placeholder: true
+        )
     }
 }
