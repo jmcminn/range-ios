@@ -84,7 +84,7 @@ class ProjectsFlowController: UINavigationController {
             // open project from push notification and open it's task list
             await tryLoadProject(showTaskListOnLoginForProjectId)
             showTaskListAfterProjectFlowStarted()
-        } else if DebugSettings().openLastProjectOnStart,
+        } else if _debugSettings.openLastProjectOnStart,
                   let organizationId = UserDefaults.lastOpenOrganizationId,
                   let lastOpenProjectId = UserDefaults.recentProjectIds(forOrganizationId: organizationId).first
         {

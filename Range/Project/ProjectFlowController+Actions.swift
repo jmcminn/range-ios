@@ -171,7 +171,7 @@ extension ProjectFlowController: ProjectFlowActions {
             ToastWindow.shared.showError(text: "Canvas failed to load")
         }
         // reload the pins (it only reloads if canvas has changed)
-        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
+        reloadGeometriesPinsDisplay(useNativeViews: _debugSettings.nativeViewsForPins) {
             guard let pinsDisplay = self.pinsDisplay else { return }
             if let pin = pinsDisplay.pinForGeometryId(geometry.id) {
                 // select the pin (which will trigger showing the collaboration window)

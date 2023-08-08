@@ -165,7 +165,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
             }
         }
 
-        if DebugSettings().photoAnnotationsEnabled {
+        if _debugSettings.photoAnnotationsEnabled {
             view.addSubview(cancelButton)
             cancelButton.snp.makeConstraints { make in
                 make.height.equalTo(40)
@@ -199,7 +199,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
     }
 
     private func setupButtons() {
-        if DebugSettings().photoAnnotationsEnabled {
+        if _debugSettings.photoAnnotationsEnabled {
             cancelButton = UIButton(
                 configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
                 primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in

@@ -313,7 +313,7 @@ class FeedViewController: UIViewController {
         guard let uploads = uploads else { return }
         uploadsNotificationToken = uploads
             .where { $0.placeholder == false }
-            .sorted(by: \Upload.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
+            .sorted(by: \Upload.timestamp, ascending: _debugSettings.feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
                 switch change {
@@ -347,7 +347,7 @@ class FeedViewController: UIViewController {
         guard let comments = comments else { return }
         commentsNotificationToken = comments
             .where { $0.placeholder == false }
-            .sorted(by: \Comment.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
+            .sorted(by: \Comment.timestamp, ascending: _debugSettings.feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
                 switch change {
@@ -386,7 +386,7 @@ class FeedViewController: UIViewController {
                     ($0.field == .name || $0.field == .description || $0.field == .statusName ||
                         $0.field == .assignee || $0.field == .dueDateTimestamp)
             }
-            .sorted(by: \Update.timestamp, ascending: DebugSettings().feedSortedAscendingByTimestamp)
+            .sorted(by: \Update.timestamp, ascending: _debugSettings.feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
                 switch change {
@@ -405,7 +405,7 @@ class FeedViewController: UIViewController {
     /// Prepare new snapshot for the diffable data source
     /// Add all items sorted by timestamp and include Collaboration for 'collaboration created'
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<String, FeedItem> {
-        let ascending = DebugSettings().feedSortedAscendingByTimestamp
+        let ascending = _debugSettings.feedSortedAscendingByTimestamp
         var items = _mergeSortedArrays(FeedItem.self, commentFeedItems, uploadFeedItems, ascending: ascending)
 
         if showMoreUpdates {

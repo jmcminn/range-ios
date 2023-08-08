@@ -52,7 +52,7 @@ class ImageGalleryPageView: UIView {
                 make.leading.bottom.equalToSuperview().inset(12)
             }
         }
-        if DebugSettings().photoAnnotationsEnabled {
+        if _debugSettings.photoAnnotationsEnabled {
             annotationsButton = RoundShadowButton(image: .init(systemName: "scribble") ?? .init())
             annotationsButton!.addTarget(self, action: #selector(annotationsButtonTapped), for: .touchUpInside)
             imageView.addSubview(annotationsButton!)

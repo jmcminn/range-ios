@@ -171,7 +171,7 @@ class AddPinFlowController {
 
     private func createPinsDisplay() {
         pinsDisplay = _createGeometriesPinsDisplay(
-            usingNativeViews: DebugSettings().nativeViewsForPins,
+            usingNativeViews: _debugSettings.nativeViewsForPins,
             canvas: model.currentCanvas,
             canvasViewController: canvasContainer.canvasViewController,
             selectionEnabled: false,

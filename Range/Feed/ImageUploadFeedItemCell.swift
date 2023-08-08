@@ -248,7 +248,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
     /// Do it only if dynamicImageHeightInCollabFeed is enabled in DebugSettings
     private func possiblyUpdateUploadImageViewConstraints(upload: Upload) {
         // no dynamic height -> no need to update
-        guard DebugSettings().dynamicImageHeightInCollabFeed else { return }
+        guard _debugSettings.dynamicImageHeightInCollabFeed else { return }
         // no image height yet
         guard let imageHeight2Width = upload.imageHeightToWidth else { return }
         updateUploadImageViewConstraints(imageHeight2Width: imageHeight2Width)

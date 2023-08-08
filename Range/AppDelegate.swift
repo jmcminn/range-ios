@@ -3,6 +3,7 @@ import FirebaseAppCheck
 import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
+import FirebaseFunctions
 import FirebaseMessaging
 import FirebaseStorage
 import OSLog
@@ -89,6 +90,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             settings.isPersistenceEnabled = false
             settings.isSSLEnabled = false
             Firestore.firestore().settings = settings
+            Functions.functions(region: "us-west2").useEmulator(withHost: "127.0.0.1", port: 5001)
         } else {
             Logger.firebase.debug("Using firebase project: \(FirebaseOptions.defaultOptions()?.projectID ?? "?")")
 

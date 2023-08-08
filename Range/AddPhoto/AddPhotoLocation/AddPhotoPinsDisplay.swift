@@ -50,7 +50,7 @@ class AddPhotoPinsDisplay {
         self.model = model
         self.image = image
         geometriesPinsDisplay = _createGeometriesPinsDisplay(
-            usingNativeViews: DebugSettings().nativeViewsForPins,
+            usingNativeViews: _debugSettings.nativeViewsForPins,
             canvas: canvas,
             canvasViewController: canvasContainer.canvasViewController,
             deselectOnCanvasTap: false,
@@ -107,7 +107,7 @@ class AddPhotoPinsDisplay {
     private func onSelectedPinChanged(pinPoint: PinPoint?) {
         updatePhotoPinVisibility()
         if pinPoint != nil {
-            if DebugSettings().hapticFeedbackOnPinTapSelection {
+            if _debugSettings.hapticFeedbackOnPinTapSelection {
                 feedbackGenerator.impactOccurred()
                 feedbackGenerator.prepare()
                 hideTooltip()
@@ -246,7 +246,7 @@ extension AddPhotoPinsDisplay: CanvasViewControllerDelegate {
             // show the tooltip after the pan gesture has ended
             if let selectedPin = selectedPin {
                 showSelectedPinTooltip()
-                if DebugSettings().centerCanvasOnPinSnap {
+                if _debugSettings.centerCanvasOnPinSnap {
                     canvasVC.animatePanAndZoom(
                         cameraCenter: selectedPin.point.coordinates,
                         mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom

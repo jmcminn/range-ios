@@ -66,6 +66,7 @@
 		0A187AEF2A7FAE4F00EC179C /* OrganizationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */; };
 		0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935312938C1E2000E8BF8 /* AvatarView.swift */; };
 		0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */; };
+		0A1CBCE62A813ED9003EBE74 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1CBCE52A813ED9003EBE74 /* FirebaseFunctions */; };
 		0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F1B792A288D1D00A2E613 /* AnnotationsDevSettings.swift */; };
 		0A1F1B7C2A288E2700A2E613 /* AnnotationsDevSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F1B7B2A288E2700A2E613 /* AnnotationsDevSettingsView.swift */; };
 		0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */; };
@@ -839,6 +840,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A1CBCE62A813ED9003EBE74 /* FirebaseFunctions in Frameworks */,
 				0ACE1968296C7AD500D223EB /* Sentry in Frameworks */,
 				0A4995D5286099D800E571FB /* Algorithms in Frameworks */,
 				0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */,
@@ -1936,6 +1938,7 @@
 				0A376BC5298031EF004C9B6F /* FirebaseAppCheck */,
 				0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */,
 				0AAF04BA2A334CEA00E8C39D /* Lottie */,
+				0A1CBCE52A813ED9003EBE74 /* FirebaseFunctions */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -3747,7 +3750,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SENTRY_ENV = "";
-				SHOW_DEBUG_OPTIONS = NO;
+				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
@@ -4107,6 +4110,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		0A1CBCE52A813ED9003EBE74 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
 		};
 		0A2F32F52837BF2F00D04A1C /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;

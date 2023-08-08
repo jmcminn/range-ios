@@ -3,7 +3,27 @@ import FirebaseAuth
 import FirebaseMessaging
 import OSLog
 import Sentry
+import SwiftUI
 import UIKit
+
+/// Used only in debug mode
+/// adds a shake gesture recognition to show a special debug screen (CTRL+CMD+z)
+class DebugWindow: UIWindow {
+    // Enable detection of shake motion
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with _: UIEvent?) {
+        if motion == .motionShake {
+            showDebugSettings()
+        }
+    }
+
+    /// Shows view controller for debug settings
+    private func showDebugSettings() {
+        let debugSettingsVC = UIHostingController(
+            rootView: DebugSettingsView().environmentObject(_debugSettings)
+        )
+        rootViewController?._topViewController().present(debugSettingsVC, animated: true)
+    }
+}
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -15,7 +35,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: windowScene)
+        setupWindow(windowScene: windowScene)
 
         // check whether user is authenticated
         if let user = Auth.auth().currentUser {
@@ -30,6 +50,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         } else {
             showAuth()
         }
+    }
+
+    /// Initiate the main app window
+    private func setupWindow(windowScene: UIWindowScene) {
+        #if DEBUG
+            // use DebugWindow in DEBUG mode (= running from Xcode) and only for environments for
+            // which ShowDebugOptions is true (excluding staging and production)
+            if try! AppConfiguration.bool(for: "ShowDebugOptions") {
+                window = DebugWindow(windowScene: windowScene)
+            } else {
+                window = UIWindow(windowScene: windowScene)
+            }
+        #else
+            window = UIWindow(windowScene: windowScene)
+        #endif
     }
 
     /// Start the auth flow for authenticating the user

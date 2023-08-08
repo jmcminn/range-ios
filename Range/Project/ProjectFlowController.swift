@@ -33,7 +33,6 @@ final class ProjectFlowController: UIViewController {
     let collaborationFlow: CollaborationFlowController
 
     let userSettings: UserSettings
-    let debugSettings = DebugSettings()
     /// for storing the debugSettings observer(s)
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
 
@@ -182,7 +181,7 @@ final class ProjectFlowController: UIViewController {
     private func start() {
         guard started == false else { return }
         started = true
-        createGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins)
+        createGeometriesPinsDisplay(useNativeViews: _debugSettings.nativeViewsForPins)
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -221,7 +220,7 @@ final class ProjectFlowController: UIViewController {
             // observe if the current canvas is removed
             self.observeCanvas()
             self.reloadGeometriesPinsDisplay(
-                useNativeViews: self.debugSettings.nativeViewsForPins,
+                useNativeViews: _debugSettings.nativeViewsForPins,
                 onReloaded: nil
             )
             self.updateFiltersIndicatorBadge()
@@ -275,7 +274,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     private func observeDebugSettings() {
-        debugSettingsNativeViewsForPinsSubscriber = debugSettings.$nativeViewsForPins
+        debugSettingsNativeViewsForPinsSubscriber = _debugSettings.$nativeViewsForPins
             .sink { [weak self] useNativeViews in
                 guard let self = self else { return }
                 self.reloadGeometriesPinsDisplay(useNativeViews: useNativeViews, onReloaded: nil)
@@ -404,7 +403,7 @@ final class ProjectFlowController: UIViewController {
     /// Shows view controller for debug settings
     @objc func showDebugSettingsAction() {
         let debugSettingsVC = UIHostingController(
-            rootView: DebugSettingsView().environmentObject(debugSettings)
+            rootView: DebugSettingsView().environmentObject(_debugSettings)
         )
         present(debugSettingsVC, animated: true)
     }
@@ -571,7 +570,7 @@ extension ProjectFlowController {
     }
 
     private func selectCollaboration(forGeometryId geometryId: String, andEditName editName: Bool) {
-        reloadGeometriesPinsDisplay(useNativeViews: debugSettings.nativeViewsForPins) {
+        reloadGeometriesPinsDisplay(useNativeViews: _debugSettings.nativeViewsForPins) {
             if let pinsDisplay = self.pinsDisplay, let pin = pinsDisplay.pinForGeometryId(geometryId) {
                 // select the pin (which will trigger showing the collaboration window)
                 pinsDisplay.setSelectedPin(pin)
