@@ -274,6 +274,7 @@ class AddPinFlowController {
                 dueDate: taskToCopy.dueDateTimestamp,
                 tags: taskToCopy.tags.map(TagViewModel.init(fromTag:))
             )
+            UserDefaults.addLastCopiedTask(taskToCopy.id, forProjectId: model.projectId)
         }
         try await model.run(command)
     }

@@ -562,6 +562,9 @@ class AddPhotoFlowController {
             shouldEditCollaboration = pinTypeOption != .copyTask
             UserDefaults.lastPhotoPinId = geometryId
             UserDefaults.lastPinTypeOption = pinTypeOption
+            if let taskToCopy = taskToCopy {
+                UserDefaults.addLastCopiedTask(taskToCopy.id, forProjectId: model.projectId)
+            }
         }
         UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)
     }

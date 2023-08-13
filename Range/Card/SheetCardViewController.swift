@@ -21,6 +21,8 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private(set) var titleIcon: UIImageView?
     private(set) var titleLabel: UILabel?
     private(set) var subtitleLabel: UILabel?
+    // stack view for descriptionLabel, searchView and any views add with addSheetHeaderSubview
+    private let stackView = UIStackView()
     private(set) var descriptionLabel: UILabel?
     private(set) var searchView: SearchView! // not nil if initiated with showSearchView = true
     private var sheetHeaderStroke: UIView?
@@ -162,8 +164,8 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         // icon, title, subtitle and closeButton layout is quite complicated so it's not part of the
         // stack view (because closeButton defines the sheetHeader height if there's not subtitle)
         // What's below is a vertical stack view
-        let stackView = UIStackView()
         stackView.axis = .vertical
+        stackView.spacing = 12
         stackView.backgroundColor = containerView.backgroundColor
         if let descriptionLabel = descriptionLabel {
             // dont compress label so the UIStackView height is more important than the hardcoded
@@ -207,6 +209,22 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             make.height.equalTo(500)
         }
         updateColors()
+    }
+
+    func addSheetHeaderSubview(_ subview: UIView) {
+        stackView.addArrangedSubview(subview)
+        // not added yet to sheetHeaderView
+        if stackView.superview == nil {
+            sheetHeaderView.addSubview(stackView)
+            stackView.snp.makeConstraints { make in
+                if let subtitleLabel = subtitleLabel {
+                    make.top.equalTo(subtitleLabel.snp.bottom).offset(8)
+                } else {
+                    make.top.equalTo(closeButton.snp.bottom).offset(8)
+                }
+                make.leading.trailing.bottom.equalToSuperview().inset(16)
+            }
+        }
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -320,7 +338,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
 
     // MARK: - card presentable
 
-    func height(forContainer containerView: UIView, cardPosition: CardPosition) -> CGFloat {
+    func height(forContainer _: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .min {
             return 0
         }
@@ -329,22 +347,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         }
 
         view.layoutIfNeeded()
-        let height: CGFloat
-        if let subtitleLabel = descriptionLabel {
-            let fittingSize = CGSize(
-                width: containerView.bounds.width - 32,
-                height: UIView.layoutFittingCompressedSize.height
-            )
-            let subtitleHeight = subtitleLabel.systemLayoutSizeFitting(
-                fittingSize,
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .defaultLow
-            ).height
-            height = 61.0 + subtitleHeight + 16.0
-        } else {
-            height = 69.0
-        }
-        return height
+        return sheetHeaderView.frame.height
     }
 
     /// Provide some implementation that returns `nil` so the subclasses can override

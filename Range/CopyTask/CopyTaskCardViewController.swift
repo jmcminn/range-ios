@@ -10,10 +10,17 @@ import UIKit
 class CopyTaskCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
 
+    private var mostRecentUsedToggle: SegmentedControl!
+
     private let collaborations: Results<Collaboration>
     private var uniqueCollaborations = [Collaboration]()
-    // collaborations after making them unique and applying searchTerm
+    /// collaborations after making them unique and applying searchTerms
     private var searchedCollaborations: [Collaboration] = []
+
+    /// for the "Most Used" tab, shown only the tasks that were used to copy task on this device, ordered so most recently used is at the top
+    /// this is already filtered by searchTerms
+    private var lastCopiedTasks: [Collaboration] = []
+
     /// Calculated from user search term input, this is what is actually applied to tasks.
     /// It's an array of case/diactric insensitive and trimmed components of the search term
     /// If empty then it counts as matched.
@@ -41,6 +48,7 @@ class CopyTaskCardViewController: SheetCardViewController {
                 c.status != nil
             }
             .sorted(by: \Collaboration.timestamp, ascending: false)
+
         super.init(
             icon: UIImage(systemName: "mappin.and.ellipse"),
             title: String(localized: "Select Task to Copy"),
@@ -59,6 +67,7 @@ class CopyTaskCardViewController: SheetCardViewController {
         addSheetHeaderShadowBasedOnDrivingScrollView()
 
         setupSearchView()
+        setupMostRecentUsedToggle()
 
         setupTableView()
         containerView.insertSubview(tableView, belowSubview: sheetHeaderView)
@@ -91,29 +100,42 @@ class CopyTaskCardViewController: SheetCardViewController {
         }
     }
 
+    /// Define String value based on Collaboration name, description, dueDate, assignee and tags.
+    /// The Copy task card only display collaborations that are unique with respect to this value.
+    private func uniqueProjection(_ collaboration: Collaboration) -> String {
+        var values = [String]()
+        values.append(collaboration.name)
+        if let description = collaboration.collaborationDescription {
+            values.append(description)
+        }
+        if let dueDate = collaboration.dueDateTimestamp {
+            values.append(String(dueDate.timeIntervalSince1970))
+        }
+        if let assignee = collaboration.assignee {
+            values.append(assignee.id)
+        }
+        for tag in collaboration.tags {
+            values.append(tag.id)
+        }
+        return String(values.joined(by: "_"))
+    }
+
     /// Out of all collaborations select the ones that are unique with respect to name, description, dueDate, assignee and tags.
     /// The uniqueness is based on the values of all the fields combined to a one long string (to use the built-in uniqued function)
     /// Then filter the collaboration by searchTerms
     private func updateData() {
-        uniqueCollaborations = collaborations.uniqued { c in
-            var values = [String]()
-            values.append(c.name)
-            if let description = c.collaborationDescription {
-                values.append(description)
-            }
-            if let dueDate = c.dueDateTimestamp {
-                values.append(String(dueDate.timeIntervalSince1970))
-            }
-            if let assignee = c.assignee {
-                values.append(assignee.id)
-            }
-            for tag in c.tags {
-                values.append(tag.id)
-            }
-            return String(values.joined(by: "_"))
-        }
-
+        uniqueCollaborations = collaborations.uniqued(on: uniqueProjection)
         searchedCollaborations = uniqueCollaborations.filter(matchSearchTerms)
+
+        // last copied tasks need to filter by UserDefaults.lastCopiedTasks first and then apply
+        // .uniqued, otherwise .uniqued may filter out the task ids from lastCopiedTasks and prefer
+        // the task with same data but different it...
+        lastCopiedTasks =
+            UserDefaults.lastCopiedTasks(forProjectId: projectModel.projectId).compactMap { taskId in
+                collaborations.first { $0.id == taskId }
+            }
+            .uniqued(on: uniqueProjection)
+            .filter(matchSearchTerms)
 
         updateNoTasksViewVisibility()
 
@@ -144,6 +166,27 @@ class CopyTaskCardViewController: SheetCardViewController {
         searchView.addDelegate(self)
     }
 
+    private func setupMostRecentUsedToggle() {
+        mostRecentUsedToggle = SegmentedControl(items: [
+            ActionItem(
+                title: String(localized: "Most Recent"),
+                handler: { [weak self] in
+                    self?.tableView.reloadData()
+                }
+            ),
+            ActionItem(
+                title: String(localized: "Most Used"),
+                handler: { [weak self] in
+                    self?.tableView.reloadData()
+                }
+            ),
+        ])
+        addSheetHeaderSubview(mostRecentUsedToggle)
+        mostRecentUsedToggle.snp.makeConstraints { make in
+            make.height.equalTo(SegmentedControl.height)
+        }
+    }
+
     private func setupTableView() {
         tableView.backgroundColor = view.backgroundColor
         tableView.sectionHeaderTopPadding = 0
@@ -158,19 +201,28 @@ class CopyTaskCardViewController: SheetCardViewController {
 // MARK: table view delegate
 
 extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource {
+    var tasksToDisplay: [Collaboration] {
+        // display all or last copied depending on the current toggle selection
+        if mostRecentUsedToggle.selectedSegmentIndex == 0 {
+            return searchedCollaborations
+        } else {
+            return lastCopiedTasks
+        }
+    }
+
     func numberOfSections(in _: UITableView) -> Int {
         1
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        searchedCollaborations.count
+        tasksToDisplay.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! CopyTaskTableViewCell
         let index = indexPath.row
-        if index < searchedCollaborations.count {
-            cell.setCollaboration(searchedCollaborations[index], projectModel: projectModel)
+        if index < tasksToDisplay.count {
+            cell.setCollaboration(tasksToDisplay[index], projectModel: projectModel)
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in
             guard let self = self else { return }
@@ -187,7 +239,7 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let selectedTask = searchedCollaborations[indexPath.row]
+        let selectedTask = tasksToDisplay[indexPath.row]
         onTaskSelected?(selectedTask)
         dismissCard()
     }
