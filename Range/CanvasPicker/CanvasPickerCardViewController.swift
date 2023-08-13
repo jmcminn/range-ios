@@ -12,14 +12,13 @@ class CanvasPickerCardViewController: SheetCardViewController {
     // background view for searchView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the list
     private let headerView = UIView()
-    private let searchView = SearchView()
     // only when viewModel is multiselect
     private let selectedView: SelectedCanvasesView?
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    private static var headerHeight = 56
-    private static var headerHeightWithSelectedCanvases = 100
+    private static var headerHeight = 0
+    private static var headerHeightWithSelectedCanvases = 44
     private var headerHeightConstraint: Constraint?
 
     init(title: String, viewModel: CanvasesViewModel) {
@@ -28,7 +27,7 @@ class CanvasPickerCardViewController: SheetCardViewController {
             ? SelectedCanvasesView(viewModel: viewModel, showEditCell: false)
             : nil
 
-        super.init(icon: UIImage(systemName: "square.3.layers.3d"), title: title)
+        super.init(icon: UIImage(systemName: "square.3.layers.3d"), title: title, showSearchView: true)
     }
 
     override func viewDidLoad() {
@@ -49,12 +48,6 @@ class CanvasPickerCardViewController: SheetCardViewController {
         }
 
         setupSearchView()
-        headerView.addSubview(searchView)
-        searchView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40)
-        }
 
         if let selectedView = selectedView {
             selectedView.isHidden = viewModel.selectedCanvases.isEmpty
@@ -109,11 +102,11 @@ class CanvasPickerCardViewController: SheetCardViewController {
     }
 
     private func setupSearchView() {
+        searchView.placeholderText = "Search for a canvas..."
         searchView.addDelegate(self)
     }
 
     private func setupHeaderStroke() {
-        searchView.placeholderText = "Search for a canvas..."
         headerStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
@@ -136,13 +129,18 @@ class CanvasPickerCardViewController: SheetCardViewController {
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
     private func updateHeaderShadow() {
+        // the view to which the shadow is attached changes when showing selected canvases (because this view is not in sheetHeaderView)
+        headerView.layer.shadowOpacity = 0
+        sheetHeaderView.layer.shadowOpacity = 0
+
         let shadowVisible = tableView.contentOffset.y > 0
         if shadowVisible {
             let darkMode = traitCollection.userInterfaceStyle == .dark
+            let viewWithShadow = (selectedView?.isHidden ?? true) ? sheetHeaderView : headerView
             if darkMode {
-                headerView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
+                viewWithShadow.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
             } else {
-                headerView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
+                viewWithShadow.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
             }
             // make the shadow height = 10 points, so the top part of the shadow is not visible
             // (the path covers bottom part of the view only)
@@ -150,12 +148,10 @@ class CanvasPickerCardViewController: SheetCardViewController {
             // then the shadow with no shadowPath would not be shown (for view that has 0 height)
             // so we still need to "cover" this view from top with another view (in a view that's
             // adding this view controller as a child)
-            headerView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
-                                                                    y: headerView.bounds.maxY - 10,
-                                                                    width: headerView.bounds.width,
-                                                                    height: 10)).cgPath
-        } else {
-            headerView.layer.shadowOpacity = 0
+            viewWithShadow.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                                        y: viewWithShadow.bounds.maxY - 10,
+                                                                        width: viewWithShadow.bounds.width,
+                                                                        height: 10)).cgPath
         }
     }
 
@@ -197,9 +193,10 @@ extension CanvasPickerCardViewController: CanvasesViewModelDelegate {
             // first animate the header height
             UIView.animate(withDuration: 0.1) {
                 self.view.layoutIfNeeded()
-            } completion: { _ in
+            } completion: { [weak self] _ in
                 // when enough room show the selected users
                 selectedView.setVisible(selected, animated: true)
+                self?.updateHeaderShadow()
             }
         } else {
             // first hide the users
@@ -208,6 +205,8 @@ extension CanvasPickerCardViewController: CanvasesViewModelDelegate {
                 self.headerHeightConstraint?.update(offset: CanvasPickerCardViewController.headerHeight)
                 UIView.animate(withDuration: 0.1) {
                     self.view.layoutIfNeeded()
+                } completion: { [weak self] _ in
+                    self?.updateHeaderShadow()
                 }
             }
         }

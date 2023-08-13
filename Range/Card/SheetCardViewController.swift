@@ -22,6 +22,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     private(set) var titleLabel: UILabel?
     private(set) var subtitleLabel: UILabel?
     private(set) var descriptionLabel: UILabel?
+    private(set) var searchView: SearchView! // not nil if initiated with showSearchView = true
     private var sheetHeaderStroke: UIView?
     private var sheetHeaderShadowEnabled: Bool = false
 
@@ -39,6 +40,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         title: String?,
         subtitle: String? = nil,
         description: String? = nil,
+        showSearchView: Bool = false,
         onClose: (() -> Void)? = nil,
         cardConfig: CardConfiguration = CardConfiguration(initialCardPosition: .max, showOverlay: true),
         autoDismiss: Bool = true
@@ -60,6 +62,9 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         }
         if let description = description {
             setupDescriptionLabel(text: description)
+        }
+        if showSearchView {
+            searchView = SearchView()
         }
     }
 
@@ -113,6 +118,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         containerView.addSubview(sheetHeaderView)
         sheetHeaderView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(69).priority(.high)
         }
 
         sheetHeaderView.installSliderView()
@@ -123,9 +129,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             make.width.height.equalTo(32)
             make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(21)
-            if descriptionLabel == nil, subtitleLabel == nil {
-                make.bottom.equalToSuperview().offset(-16)
-            }
+            make.bottom.lessThanOrEqualToSuperview().offset(-16)
         }
 
         if let titleIcon = titleIcon {
@@ -151,22 +155,44 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
                     make.leading.equalTo(titleLabel)
                     make.trailing.equalToSuperview().inset(16)
                     make.top.equalTo(titleLabel.snp.bottom).offset(4)
-                    if descriptionLabel == nil {
-                        make.bottom.equalToSuperview().offset(-16)
-                    }
+                    make.bottom.lessThanOrEqualToSuperview().offset(-16)
                 }
             }
         }
+        // icon, title, subtitle and closeButton layout is quite complicated so it's not part of the
+        // stack view (because closeButton defines the sheetHeader height if there's not subtitle)
+        // What's below is a vertical stack view
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.backgroundColor = containerView.backgroundColor
         if let descriptionLabel = descriptionLabel {
-            sheetHeaderView.addSubview(descriptionLabel)
-            descriptionLabel.snp.makeConstraints { make in
+            // dont compress label so the UIStackView height is more important than the hardcoded
+            // sheetHeader height constraint
+            descriptionLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+            stackView.addArrangedSubview(descriptionLabel)
+        }
+        if let searchView = searchView {
+            if stackView.arrangedSubviews.isEmpty {
+                // if this is the first view we want a little more spacing (descriptionLabel wants only 8, which search 16)
+                let spacer = UIView()
+                stackView.addArrangedSubview(spacer)
+                stackView.setCustomSpacing(8, after: spacer)
+            }
+            searchView.setContentCompressionResistancePriority(.required, for: .vertical)
+            stackView.addArrangedSubview(searchView)
+            searchView.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+        }
+        if !stackView.arrangedSubviews.isEmpty {
+            sheetHeaderView.addSubview(stackView)
+            stackView.snp.makeConstraints { make in
                 if let subtitleLabel = subtitleLabel {
                     make.top.equalTo(subtitleLabel.snp.bottom).offset(8)
                 } else {
                     make.top.equalTo(closeButton.snp.bottom).offset(8)
                 }
-                make.leading.trailing.equalToSuperview().inset(16)
-                make.bottom.equalToSuperview().offset(-16)
+                make.leading.trailing.bottom.equalToSuperview().inset(16)
             }
         }
 
@@ -213,6 +239,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
     private func updateSheetHeaderShadow() {
+        guard sheetHeaderShadowEnabled else { return }
         guard let scrollView = drivingScrollView() else { return }
         let shadowVisible = scrollView.contentOffset.y > 0
         if shadowVisible {

@@ -17,10 +17,6 @@ class TaskListCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
     unowned let canvasContainer: CanvasContainerViewController
 
-    private let headerView = UIView()
-    private let searchView = SearchView()
-    private let headerStroke = UIView()
-
     private let tableView = UITableView(frame: .zero, style: .plain)
 
     // all collaborations
@@ -73,7 +69,11 @@ class TaskListCardViewController: SheetCardViewController {
                 c.placeholder == false && c.status != nil // only tasks
             }
 
-        super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "Task List"))
+        super.init(
+            icon: UIImage(systemName: "list.bullet"),
+            title: String(localized: "Task List"),
+            showSearchView: true
+        )
     }
 
     deinit {
@@ -84,20 +84,16 @@ class TaskListCardViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupHeaderView()
-        containerView.addSubview(headerView)
-        headerView.snp.makeConstraints { make in
-            make.top.equalTo(sheetHeaderView.snp.bottom)
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(56)
-        }
+        addSheetHeaderStroke()
+        addSheetHeaderShadowBasedOnDrivingScrollView()
 
+        setupSearchView()
         setupSelectButton()
 
         setupTableView()
-        containerView.insertSubview(tableView, belowSubview: headerView)
+        containerView.insertSubview(tableView, belowSubview: sheetHeaderView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
+            make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
@@ -220,24 +216,9 @@ class TaskListCardViewController: SheetCardViewController {
         tableView
     }
 
-    private func setupHeaderView() {
-        headerView.backgroundColor = view.backgroundColor
-
+    private func setupSearchView() {
         searchView.placeholderText = String(localized: "Search")
         searchView.addDelegate(self)
-        headerView.addSubview(searchView)
-        searchView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40)
-        }
-
-        headerStroke.backgroundColor = .dynamic(.Neutral_07)
-        headerView.addSubview(headerStroke)
-        headerStroke.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1)
-        }
     }
 
     private func setupTableView() {

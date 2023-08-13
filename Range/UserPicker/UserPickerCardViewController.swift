@@ -12,14 +12,13 @@ class UserPickerCardViewController: SheetCardViewController {
     // background view for searchView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the users
     private let headerView = UIView()
-    private let searchView = SearchView()
     // only when viewModel is multiselect
     private let selectedUsersView: SelectedUsersView?
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    private static var headerHeight = 56
-    private static var headerHeightWithSelectedUsers = 100
+    private static var headerHeight = 0
+    private static var headerHeightWithSelectedUsers = 44
     private var headerHeightConstraint: Constraint?
 
     /// Show a special row (in the 1st section) that allows for selecting the "no user option" (to remove the user in single selection or to selected the unassigned option in multiselect)
@@ -31,7 +30,7 @@ class UserPickerCardViewController: SheetCardViewController {
             ? SelectedUsersView(viewModel: viewModel, showEditUserCell: false)
             : nil
 
-        super.init(icon: UIImage(systemName: "person"), title: title)
+        super.init(icon: UIImage(systemName: "person"), title: title, showSearchView: true)
     }
 
     override func viewDidLoad() {
@@ -51,12 +50,6 @@ class UserPickerCardViewController: SheetCardViewController {
         }
 
         setupSearchView()
-        headerView.addSubview(searchView)
-        searchView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40)
-        }
 
         if let selectedUsersView = selectedUsersView {
             selectedUsersView.isHidden = viewModel.selectedUsers.isEmpty
@@ -142,13 +135,18 @@ class UserPickerCardViewController: SheetCardViewController {
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
     private func updateHeaderShadow() {
+        // the view to which the shadow is attached changes when showing selectedUsersView (because this view is not in sheetHeaderView)
+        headerView.layer.shadowOpacity = 0
+        sheetHeaderView.layer.shadowOpacity = 0
+
         let shadowVisible = tableView.contentOffset.y > 0
         if shadowVisible {
             let darkMode = traitCollection.userInterfaceStyle == .dark
+            let viewWithShadow = (selectedUsersView?.isHidden ?? true) ? sheetHeaderView : headerView
             if darkMode {
-                headerView.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
+                viewWithShadow.setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
             } else {
-                headerView.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
+                viewWithShadow.setShadowWithFigmaValues(x: 0, y: 3, blur: 6, opacity: 0.1)
             }
             // make the shadow height = 10 points, so the top part of the shadow is not visible
             // (the path covers bottom part of the view only)
@@ -156,12 +154,10 @@ class UserPickerCardViewController: SheetCardViewController {
             // then the shadow with no shadowPath would not be shown (for view that has 0 height)
             // so we still need to "cover" this view from top with another view (in a view that's
             // adding this view controller as a child)
-            headerView.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
-                                                                    y: headerView.bounds.maxY - 10,
-                                                                    width: headerView.bounds.width,
-                                                                    height: 10)).cgPath
-        } else {
-            headerView.layer.shadowOpacity = 0
+            viewWithShadow.layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                                        y: viewWithShadow.bounds.maxY - 10,
+                                                                        width: viewWithShadow.bounds.width,
+                                                                        height: 10)).cgPath
         }
     }
 
@@ -208,9 +204,10 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
             // first animate the header height
             UIView.animate(withDuration: 0.1) {
                 self.view.layoutIfNeeded()
-            } completion: { _ in
+            } completion: { [weak self] _ in
                 // when enough room show the selected users
                 selectedUsersView.setVisible(selected, animated: true)
+                self?.updateHeaderShadow()
             }
         } else {
             // first hide the users
@@ -219,6 +216,8 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
                 self.headerHeightConstraint?.update(offset: UserPickerCardViewController.headerHeight)
                 UIView.animate(withDuration: 0.1) {
                     self.view.layoutIfNeeded()
+                } completion: { [weak self] _ in
+                    self?.updateHeaderShadow()
                 }
             }
         }
