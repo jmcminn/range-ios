@@ -12,6 +12,13 @@ class CopyTaskCardViewController: SheetCardViewController {
 
     private let collaborations: Results<Collaboration>
     private var uniqueCollaborations = [Collaboration]()
+    // collaborations after making them unique and applying searchTerm
+    private var searchedCollaborations: [Collaboration] = []
+    /// Calculated from user search term input, this is what is actually applied to tasks.
+    /// It's an array of case/diactric insensitive and trimmed components of the search term
+    /// If empty then it counts as matched.
+    private var searchTerms: [String] = []
+
     /// Token for observing changes in collaborations
     private var notificationToken: NotificationToken?
 
@@ -34,7 +41,11 @@ class CopyTaskCardViewController: SheetCardViewController {
                 c.status != nil
             }
             .sorted(by: \Collaboration.timestamp, ascending: false)
-        super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Select Task to Copy"))
+        super.init(
+            icon: UIImage(systemName: "mappin.and.ellipse"),
+            title: String(localized: "Select Task to Copy"),
+            showSearchView: true
+        )
     }
 
     deinit {
@@ -46,6 +57,8 @@ class CopyTaskCardViewController: SheetCardViewController {
 
         addSheetHeaderStroke()
         addSheetHeaderShadowBasedOnDrivingScrollView()
+
+        setupSearchView()
 
         setupTableView()
         containerView.insertSubview(tableView, belowSubview: sheetHeaderView)
@@ -69,11 +82,9 @@ class CopyTaskCardViewController: SheetCardViewController {
             guard let self = self else { return }
             switch changes {
             case .initial:
-                self.updateUniqueCollaborations()
-                self.tableView.reloadData()
+                self.updateData()
             case .update:
-                self.updateUniqueCollaborations()
-                self.tableView.reloadData()
+                self.updateData()
             case let .error(error):
                 Logger.model.error("observing collaborations failed: \(error.localizedDescription, privacy: .public)")
             }
@@ -82,7 +93,8 @@ class CopyTaskCardViewController: SheetCardViewController {
 
     /// Out of all collaborations select the ones that are unique with respect to name, description, dueDate, assignee and tags.
     /// The uniqueness is based on the values of all the fields combined to a one long string (to use the built-in uniqued function)
-    private func updateUniqueCollaborations() {
+    /// Then filter the collaboration by searchTerms
+    private func updateData() {
         uniqueCollaborations = collaborations.uniqued { c in
             var values = [String]()
             values.append(c.name)
@@ -100,7 +112,12 @@ class CopyTaskCardViewController: SheetCardViewController {
             }
             return String(values.joined(by: "_"))
         }
+
+        searchedCollaborations = uniqueCollaborations.filter(matchSearchTerms)
+
         updateNoTasksViewVisibility()
+
+        tableView.reloadData()
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
@@ -122,6 +139,11 @@ class CopyTaskCardViewController: SheetCardViewController {
         tableView
     }
 
+    private func setupSearchView() {
+        searchView.placeholderText = String(localized: "Search")
+        searchView.addDelegate(self)
+    }
+
     private func setupTableView() {
         tableView.backgroundColor = view.backgroundColor
         tableView.sectionHeaderTopPadding = 0
@@ -141,14 +163,14 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        uniqueCollaborations.count
+        searchedCollaborations.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! CopyTaskTableViewCell
         let index = indexPath.row
-        if index < uniqueCollaborations.count {
-            cell.setCollaboration(uniqueCollaborations[index], projectModel: projectModel)
+        if index < searchedCollaborations.count {
+            cell.setCollaboration(searchedCollaborations[index], projectModel: projectModel)
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in
             guard let self = self else { return }
@@ -165,7 +187,7 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let selectedTask = uniqueCollaborations[indexPath.row]
+        let selectedTask = searchedCollaborations[indexPath.row]
         onTaskSelected?(selectedTask)
         dismissCard()
     }
@@ -255,5 +277,37 @@ extension CopyTaskCardViewController {
         }
 
         noTasksView = view
+    }
+}
+
+// MARK: - filtering tasks by search term
+
+extension CopyTaskCardViewController: SearchViewDelegate {
+    func searchView(_: SearchView, textDidChange text: String) {
+        // calculate search terms from user entered search text
+        let textTrimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // remove diacritics and make it lowercase
+        let searchTerm = textTrimmed
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        // split by whitespace to multiple terms
+        searchTerms = searchTerm.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        updateData()
+    }
+
+    /// Collaboration matches if its name contains all the searchTerms
+    func matchSearchTerms(collaboration: Collaboration) -> Bool {
+        guard !searchTerms.isEmpty else { return true }
+        let name = collaboration.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        let tagNames = collaboration.tags.map {
+            $0.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+        }
+        // all of the search terms must be found either in name or any tag name
+        return searchTerms.allSatisfy { searchTerm in
+            if name.contains(searchTerm) { return true }
+            for tagName in tagNames {
+                if tagName.contains(searchTerm) { return true }
+            }
+            return false
+        }
     }
 }
