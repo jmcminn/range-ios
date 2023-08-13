@@ -25,7 +25,7 @@ class DatePickerCardViewController: SheetCardViewController {
     ///     - initialSelectedDate: the date to select initially, or today if `nil`
     ///     - showRemoveDateOption: if initialSelectedDate is provided then it's assumed to be `true`, otherwise set to `true` to have "Remove Date" even if no initial date (for bulk operations)
     init(
-        title: String?,
+        title: String,
         timeZone: TimeZone,
         minimumDate: Date? = nil,
         initialSelectedDate: Date? = nil,

@@ -12,7 +12,7 @@ class UserPickerCardViewController: SheetCardViewController {
     // background view for searchView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the users
     private let headerView = UIView()
-    private let searchView: SearchView
+    private let searchView = SearchView()
     // only when viewModel is multiselect
     private let selectedUsersView: SelectedUsersView?
     private let headerStroke = UIView()
@@ -27,10 +27,6 @@ class UserPickerCardViewController: SheetCardViewController {
 
     init(title: String, viewModel: UsersViewModel) {
         self.viewModel = viewModel
-        searchView = SearchView(
-            placeholderText: viewModel.multiselect ? "Search for users..." : "Search for an assignee...",
-            showClearButton: true
-        )
         selectedUsersView = viewModel.multiselect
             ? SelectedUsersView(viewModel: viewModel, showEditUserCell: false)
             : nil
@@ -115,6 +111,7 @@ class UserPickerCardViewController: SheetCardViewController {
     }
 
     private func setupSearchView() {
+        searchView.placeholderText = viewModel.multiselect ? "Search for users..." : "Search for an assignee..."
         searchView.addDelegate(self)
     }
 

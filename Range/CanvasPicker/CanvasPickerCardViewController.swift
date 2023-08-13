@@ -12,7 +12,7 @@ class CanvasPickerCardViewController: SheetCardViewController {
     // background view for searchView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the list
     private let headerView = UIView()
-    private let searchView: SearchView
+    private let searchView = SearchView()
     // only when viewModel is multiselect
     private let selectedView: SelectedCanvasesView?
     private let headerStroke = UIView()
@@ -24,10 +24,6 @@ class CanvasPickerCardViewController: SheetCardViewController {
 
     init(title: String, viewModel: CanvasesViewModel) {
         self.viewModel = viewModel
-        searchView = SearchView(
-            placeholderText: "Search for a canvas...",
-            showClearButton: true
-        )
         selectedView = viewModel.multiselect
             ? SelectedCanvasesView(viewModel: viewModel, showEditCell: false)
             : nil
@@ -117,6 +113,7 @@ class CanvasPickerCardViewController: SheetCardViewController {
     }
 
     private func setupHeaderStroke() {
+        searchView.placeholderText = "Search for a canvas..."
         headerStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 

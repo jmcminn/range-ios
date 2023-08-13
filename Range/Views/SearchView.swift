@@ -20,20 +20,29 @@ class SearchView: UIView {
     /// Force unwrapped - don't use before `setupIcon`
     private var iconView: UIImageView!
     var textField: UITextField!
-    private var clearButton: UIButton?
+    private var clearButton: UIButton!
 
     /// Allows for multiple delegates
     private var delegates = NSHashTable<SearchViewDelegate>.weakObjects()
 
-    init(placeholderText: String, showClearButton: Bool) {
+    var placeholderText: String? { didSet {
+        if let placeholderText = placeholderText {
+            textField.attributedPlaceholder = NSAttributedString(
+                string: placeholderText,
+                attributes: [.foregroundColor: UIColor.Neutral_05]
+            )
+        } else {
+            textField.attributedPlaceholder = nil
+        }
+    } }
+
+    init() {
         super.init(frame: .zero)
 
         setupView()
         setupIcon()
-        if showClearButton {
-            setupClearButton()
-        }
-        setupTextField(placeholderText: placeholderText)
+        setupClearButton()
+        setupTextField()
         updateClearButtonVisibility()
         updateColors()
     }
@@ -81,12 +90,8 @@ class SearchView: UIView {
     }
 
     /// Setup the text field used for entering the search term
-    private func setupTextField(placeholderText: String) {
+    private func setupTextField() {
         textField = UITextField()
-        textField.attributedPlaceholder = NSAttributedString(
-            string: placeholderText,
-            attributes: [.foregroundColor: UIColor.Neutral_05]
-        )
         textField.font = UIFont.preferredFont(forTextStyle: .body)
         textField.adjustsFontForContentSizeCategory = true
         textField.tintColor = .Primary_Blue_04
@@ -110,13 +115,13 @@ class SearchView: UIView {
     /// Custom clear button as we need the custom color
     private func setupClearButton() {
         clearButton = UIButton(type: .custom)
-        clearButton?.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
-        clearButton?.imageView?.tintColor = .dynamic(.Neutral_05)
-        clearButton?.addTarget(self, action: #selector(clearAction), for: .touchUpInside)
-        addSubview(clearButton!)
-        clearButton!.snp.makeConstraints { make in
+        clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
+        clearButton.imageView?.tintColor = .dynamic(.Neutral_05)
+        clearButton.addTarget(self, action: #selector(clearAction), for: .touchUpInside)
+        addSubview(clearButton)
+        clearButton.snp.makeConstraints { make in
             make.height.equalToSuperview()
-            make.width.equalTo(clearButton!.snp.height)
+            make.width.equalTo(clearButton.snp.height)
             make.trailing.equalToSuperview()
             make.centerY.equalToSuperview()
         }
@@ -135,7 +140,7 @@ class SearchView: UIView {
     }
 
     private func updateClearButtonVisibility() {
-        clearButton?.isHidden = (textField.text == nil || textField.text!.isEmpty)
+        clearButton.isHidden = (textField.text == nil || textField.text!.isEmpty)
     }
 
     @available(*, unavailable)

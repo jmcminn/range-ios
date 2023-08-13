@@ -18,7 +18,7 @@ class TaskListCardViewController: SheetCardViewController {
     unowned let canvasContainer: CanvasContainerViewController
 
     private let headerView = UIView()
-    private let searchView: SearchView
+    private let searchView = SearchView()
     private let headerStroke = UIView()
 
     private let tableView = UITableView(frame: .zero, style: .plain)
@@ -72,7 +72,6 @@ class TaskListCardViewController: SheetCardViewController {
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.placeholder == false && c.status != nil // only tasks
             }
-        searchView = SearchView(placeholderText: "Search", showClearButton: true)
 
         super.init(icon: UIImage(systemName: "list.bullet"), title: String(localized: "Task List"))
     }
@@ -224,6 +223,7 @@ class TaskListCardViewController: SheetCardViewController {
     private func setupHeaderView() {
         headerView.backgroundColor = view.backgroundColor
 
+        searchView.placeholderText = String(localized: "Search")
         searchView.addDelegate(self)
         headerView.addSubview(searchView)
         searchView.snp.makeConstraints { make in
