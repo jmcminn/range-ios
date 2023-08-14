@@ -87,10 +87,13 @@ class ProjectsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        searchController.searchBar.placeholder = String(localized: "Search for projects")
+        searchController.searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
+            string: String(localized: "Search for projects"),
+            attributes: [.foregroundColor: UIColor.dynamic(.Neutral_05)]
+        )
         searchController.searchResultsUpdater = self
 
-        navigationItem.hidesSearchBarWhenScrolling = true
+        navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.searchController = searchController
 
         view.backgroundColor = .dynamic(.Neutral_10)
@@ -204,7 +207,7 @@ class ProjectsViewController: UIViewController {
 
         var config = UIButton.Configuration.filled()
         config.contentInsets = .zero
-        config.baseBackgroundColor = .dynamic(.Neutral_10)
+        config.baseBackgroundColor = .dynamic(.Neutral_09)
         config.baseForegroundColor = .dynamic(.Neutral_05)
         config.cornerStyle = .fixed
         config.background.cornerRadius = 16

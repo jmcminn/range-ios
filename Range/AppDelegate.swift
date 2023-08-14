@@ -40,9 +40,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         UITabBar.appearance().tintColor = .Primary_Blue_04
 
+        // search bar customization
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(
             [.foregroundColor: UIColor.Primary_Blue_04], for: .normal
         )
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).backgroundColor = .dynamic(.Neutral_09)
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self])
+            .defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.dynamic(.Neutral_04)]
     }
 
     private func initiateSentry() {
