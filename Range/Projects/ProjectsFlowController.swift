@@ -131,7 +131,7 @@ class ProjectsFlowController: UINavigationController {
         let projectsNavC = UINavigationController(rootViewController: projectsVC)
         projectsNavC.tabBarItem = UITabBarItem(
             title: String(localized: "My Projects"),
-            image: UIImage(systemName: "rectangle.grid.1x2"),
+            image: UIImage(named: "projects_icon"),
             tag: 0
         )
 
@@ -140,7 +140,7 @@ class ProjectsFlowController: UINavigationController {
         let settingsNavC = UINavigationController(rootViewController: settingsVC)
         settingsNavC.tabBarItem = UITabBarItem(
             title: String(localized: "Settings"),
-            image: UIImage(systemName: "gearshape"),
+            image: UIImage(systemName: "gearshape", withConfiguration: UIImage.SymbolConfiguration(pointSize: 13)),
             tag: 1
         )
 
