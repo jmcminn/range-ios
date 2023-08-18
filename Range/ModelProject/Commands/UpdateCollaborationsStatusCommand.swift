@@ -5,7 +5,7 @@ import RealmSwift
 /// Update status for given Collaboration
 struct UpdateCollaborationsStatusCommand: Command, Codable, Equatable {
     var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init(collaborationIds) }
+    var targetIds: [String] { .init(collaborationIds) }
 
     var authorId: String
     let collaborationIds: [String]

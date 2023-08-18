@@ -15,7 +15,7 @@ protocol Command {
     /// the type of the command
     var type: CommandType { get }
     /// the ids of objects that are the target of the command (the object(s) being created/updated/deleted)
-    var targetIds: Set<String> { get }
+    var targetIds: [String] { get }
 }
 
 /// A protocol for local commands - command objects for performing changes on the Realm db.

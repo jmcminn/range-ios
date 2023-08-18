@@ -5,7 +5,7 @@ import RealmSwift
 /// Delete the `Collaboration`(s)
 struct DeleteCollaborationsCommand: Command, Codable, Equatable {
     var type: CommandType { .delete } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init(geometryIds + collaborationIds) }
+    var targetIds: [String] { .init(geometryIds + collaborationIds) }
 
     // remote delete uses geometryId only, there's a cascading delete in Firestore based on geometry
     let geometryIds: [String]

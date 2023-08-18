@@ -5,7 +5,7 @@ import RealmSwift
 /// Update tags for given Upload(s)
 struct UpdateUploadsTagsCommand: Command, Codable, Equatable {
     var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init(uploadIds) }
+    var targetIds: [String] { .init(uploadIds) }
 
     let uploadIds: [String]
     var tags: [CommandTag]

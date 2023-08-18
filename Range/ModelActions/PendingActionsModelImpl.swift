@@ -2,6 +2,7 @@ import FirebaseFirestore
 import Foundation
 import Network
 import OSLog
+import Sentry
 
 /// Stores Actions to be run against the server side.
 /// Runs the actions when the network is available.
@@ -234,13 +235,27 @@ class PendingActionsModelImpl: PendingActionsModel {
             let goToNext: Bool // is processing of this action done?
             if let error = error {
                 Logger.pendingActions.debug("Action error: \(error)")
+                let obsolete: Bool
                 if let error = error as? FirestoreCommandError, case .obsolete = error {
+                    // obsolete action is dropped so it's done
+                    obsolete = true
                     Logger.pendingActions
                         .warning("Dropping obsolete action \(action.debugDescription, privacy: .private)")
-                    goToNext = true // obsolete action is dropped so it's done
                 } else {
-                    goToNext = false // there's some non-obsolete error, retry the action
+                    // there's some non-obsolete error, retry the action
+                    obsolete = false
                 }
+                SentrySDK.capture(error: error) { scope in
+                    scope.setExtras([
+                        "projectId": action.projectId,
+                        // the string with all command properties dumped:
+                        "targetIds": action.command.localCommand.targetIds.joined(separator: ","),
+                    ])
+                    // the name of the struct implementing the command:
+                    scope.setTag(value: String(describing: type(of: action.command.localCommand)), key: "command")
+                    scope.setTag(value: obsolete.description, key: "obsolete")
+                }
+                goToNext = obsolete
             } else {
                 // no error
                 Logger.pendingActions.debug("Action succeeded: \(action.debugDescription, privacy: .private)")

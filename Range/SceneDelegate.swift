@@ -2,6 +2,7 @@ import Firebase
 import FirebaseAuth
 import FirebaseMessaging
 import OSLog
+import Sentry
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -51,6 +52,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///    - newlySignedIn: true if main flow is starting after user went through authentication (and false if user was already authenticated when the app started)
     private func startMainFlow(forUser userId: String, newlySignedIn: Bool) {
         Analytics.setUserID(userId)
+        SentrySDK.setUser(User(userId: userId))
         Task { @MainActor in
             await self.showProjects(forUserId: userId, newlySignedIn: newlySignedIn)
         }
@@ -99,6 +101,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             } catch {
                 Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
             }
+            SentrySDK.setUser(nil)
             showAuth()
             callback?()
         }

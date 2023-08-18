@@ -5,7 +5,7 @@ import RealmSwift
 /// Update annotations for given Upload
 struct UpdateUploadAnnotationsCommand: Command, Codable, Equatable {
     var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init([uploadId]) }
+    var targetIds: [String] { .init([uploadId]) }
 
     let uploadId: String
     var annotations: Annotations?

@@ -5,7 +5,7 @@ import RealmSwift
 /// Delete the `Comment`
 struct DeleteCommentCommand: Command, Codable, Equatable {
     var type: CommandType { .delete } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init([commentId]) }
+    var targetIds: [String] { .init([commentId]) }
 
     let commentId: String
 }

@@ -5,7 +5,7 @@ import RealmSwift
 /// Update status for given Collaboration(s) and mark Geometry(ies) as archived
 struct UpdateCollaborationsStatusAndArchiveCommand: Command, Codable, Equatable {
     var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init(geometryIds + collaborationIds) }
+    var targetIds: [String] { .init(geometryIds + collaborationIds) }
 
     var authorId: String
     let geometryIds: [String]

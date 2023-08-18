@@ -5,7 +5,7 @@ import RealmSwift
 /// Update text and set textIsEdited to `true`
 struct UpdateCommentTextCommand: Command, Codable, Equatable {
     var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init([commentId]) }
+    var targetIds: [String] { .init([commentId]) }
 
     let commentId: String
     var text: String

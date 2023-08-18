@@ -5,7 +5,7 @@ import RealmSwift
 /// Update archivedTimestamp for geometry(ies)
 struct UpdateGeometriesArchivedCommand: Command, Codable, Equatable {
     var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: Set<String> { .init(geometryIds) }
+    var targetIds: [String] { .init(geometryIds) }
 
     let geometryIds: [String]
     var archive: Bool
