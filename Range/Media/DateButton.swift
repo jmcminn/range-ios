@@ -97,7 +97,7 @@ class DateButton: UIButton {
             ])
             setAttributedTitle(title, for: .normal)
         } else {
-            var title = NSMutableAttributedString(string: variant == .from ? "From" : "To", attributes: [
+            let title = NSMutableAttributedString(string: variant == .from ? "From" : "To", attributes: [
                 .foregroundColor: chooseColor(.Neutral_04),
                 .font: UIFont.preferredFont(forTextStyle: .body),
             ])

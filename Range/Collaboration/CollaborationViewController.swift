@@ -411,7 +411,7 @@ extension CollaborationViewController: CardPresentable {
             let fullHeight = cardContainerView.bounds.height
             // the height of the collaboration view header that we want to hide
             // behind the header cover
-            var headerHeight = Constants.heightToName + textViewHeight
+            let headerHeight = Constants.heightToName + textViewHeight
             // 50 is the height of headerCover content
             let headerCoverHeight = cardContainerView.safeAreaInsets.top + 50
             // add enough so the "header" hides behind the headerCover

@@ -118,7 +118,7 @@ extension ProjectModelFirestoreSync {
         let canvasId = model.currentCanvas.id
         let documentRef = collection(.presence).document(model.userId)
         firestore.runTransaction { tx, _ in
-            let data = [
+            let data: [String: Any] = [
                 "canvas": canvasId,
                 "lastPresencePlace": [coordinates.longitude, coordinates.latitude],
                 "lastPresenceTimestamp": FieldValue.serverTimestamp(),

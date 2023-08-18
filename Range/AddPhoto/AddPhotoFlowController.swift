@@ -895,7 +895,7 @@ extension AddPhotoFlowController: PhotosToAddViewModelDelegate {
                 /// as there won't be custom animated transitioning running for this case because there are no images to
                 /// transition between
                 cameraVC.navigationController?.view.alpha = 1.0
-                if let presentedVC = detailsVC.presentedViewController {
+                if detailsVC.presentedViewController != nil {
                     // if a controller is presented by detailsVC (should be photos review controller) the dismiss it and navigate back to camera
                     detailsVC.dismiss(animated: true) {
                         cameraVC.navigationController?.popToViewController(cameraVC, animated: true)

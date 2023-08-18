@@ -95,7 +95,6 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
 
         if showCancelConfirmBottomBar {
             setupBottomBar()
-            if let bottomBar = bottomBar {}
         }
 
         contentView.backgroundColor = containerView.backgroundColor
@@ -320,7 +319,7 @@ extension SearchAndSelectTagsViewController {
 
 extension SearchAndSelectTagsViewController: HeaderExpanderDelegate {
     private func activateHeaderExpander() {
-        if let optionLabel = optionLabel {
+        if optionLabel != nil {
             headerExpander.activate(headersInputMetrics: [
                 optionDescriptionInputMetrics(),
                 tagsHeaderInputMetrics(),
