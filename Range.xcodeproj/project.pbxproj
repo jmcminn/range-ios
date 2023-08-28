@@ -322,6 +322,7 @@
 		0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232A27FC839400D744F4 /* CardConfiguration.swift */; };
 		0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */; };
 		0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A97233127FDCFAF00D744F4 /* CameraService.swift */; };
+		0A985B172A9CC31A00442617 /* FirestoreSuspendedParticipants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A985B162A9CC31A00442617 /* FirestoreSuspendedParticipants.swift */; };
 		0A98E45A298AEC7E004F0112 /* MediaCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A98E459298AEC7E004F0112 /* MediaCache.swift */; };
 		0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */; };
 		0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */; };
@@ -746,6 +747,7 @@
 		0A97232A27FC839400D744F4 /* CardConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardConfiguration.swift; sourceTree = "<group>"; };
 		0A97232C27FC85A900D744F4 /* ModalCardDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalCardDisplay.swift; sourceTree = "<group>"; };
 		0A97233127FDCFAF00D744F4 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		0A985B162A9CC31A00442617 /* FirestoreSuspendedParticipants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreSuspendedParticipants.swift; sourceTree = "<group>"; };
 		0A98E459298AEC7E004F0112 /* MediaCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCache.swift; sourceTree = "<group>"; };
 		0A99BF1628BBCD0B00DB3F96 /* RangeImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeImageDataProvider.swift; sourceTree = "<group>"; };
 		0A99BF1828BFA35800DB3F96 /* NSItemProvider+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Async.swift"; sourceTree = "<group>"; };
@@ -1112,6 +1114,7 @@
 				0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */,
 				0A4995C02858D05D00E571FB /* FirestoreTagName.swift */,
 				0A34C1862845FB7800BEDC7C /* FirestoreParticipant.swift */,
+				0A985B162A9CC31A00442617 /* FirestoreSuspendedParticipants.swift */,
 				0A2F3302283BDC2B00D04A1C /* FirestoreCanvas.swift */,
 				0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */,
 				0A456237283E792200BA8D21 /* FirestoreGeometry.swift */,
@@ -2303,6 +2306,7 @@
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */,
 				0A7393882A61415F0079A7FB /* Annotations.swift in Sources */,
+				0A985B172A9CC31A00442617 /* FirestoreSuspendedParticipants.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeButton.swift in Sources */,
 				0A1F1B7C2A288E2700A2E613 /* AnnotationsDevSettingsView.swift in Sources */,
 				0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */,

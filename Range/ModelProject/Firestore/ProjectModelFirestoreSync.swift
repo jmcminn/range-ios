@@ -52,6 +52,7 @@ class ProjectModelFirestoreSync {
             model.sync(collection(.statusName), as: FirestoreStatusName.self),
             model.sync(collection(.tagName), as: FirestoreTagName.self),
             model.sync(collection(.participant), as: FirestoreParticipant.self),
+            model.sync(collection(.suspendedParticipant), as: FirestoreSuspendedParticipant.self),
             model.sync(collection(.geometry), as: FirestoreGeometry.self),
             model.sync(collection(.feature), as: FirestoreFeature.self),
             model.sync(collection(.collaboration), as: FirestoreCollaboration.self),

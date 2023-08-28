@@ -46,7 +46,8 @@ class ProjectsModel: NSObject, RealmModel {
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
         // v3 introduces Participant.organizationIds and Organization, migration not needed (this field is empty for project model, only used for projectsModel)
-        config.schemaVersion = 3
+        // v4 introduces Participant.participation(state)
+        config.schemaVersion = 4
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("projects")
         config.fileURL!.appendPathExtension("realm")

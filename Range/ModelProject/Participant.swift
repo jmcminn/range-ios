@@ -3,6 +3,21 @@ import UIKit
 
 /// Realm object for `project/details/participants/<id>`.
 class Participant: Object, WithPlaceholder, WithId {
+    // The .removed state is needed as we don't want to remove the user from DB as it might be attached to
+    // many other objects (comments, uploads, collaborations) and the Participant might be only temporarily
+    // removed when switching from active to suspended and vice-versa.
+    // We want to preserve the link between other objects and this participant no matter what is the order
+    // of adding/removing participants vs suspendedParticipants.
+    // The end result is that there's one Participant in the local db synced from either FirestoreParticipant
+    // or FirestoreSuspendedParticipant and when suspending/unsuspending the user the link between
+    // this Participant and other model objects is preserved
+    enum ParticipationState: String, Codable, PersistableEnum {
+        case active // user is an active participant of project
+        case suspended // user is a suspended participant of the project (the name will be striked through
+        // and user cannot be assigned to tasks, etc)
+        case removed // user is removed from project (the displayed name will be empty, cannot be listed in user selection)
+    }
+
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// user first name (@objc added so it can be used in SortDescriptor)
@@ -19,6 +34,8 @@ class Participant: Object, WithPlaceholder, WithId {
     @Persisted var projectIds: List<String>
     /// array of user fcmTokens (Firebase Cloud Messaging Tokens)
     @Persisted var fcmTokens: List<String>
+    /// Whether this participant is currently suspended in the Project
+    @Persisted var participation: ParticipationState = .active
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -37,6 +54,7 @@ class Participant: Object, WithPlaceholder, WithId {
         organizationIds: [String] = [],
         projectIds: [String] = [],
         fcmTokens: [String] = [],
+        participation: ParticipationState = .active,
         placeholder: Bool = false
     ) {
         super.init()
@@ -48,6 +66,7 @@ class Participant: Object, WithPlaceholder, WithId {
         self.organizationIds.append(objectsIn: organizationIds)
         self.projectIds.append(objectsIn: projectIds)
         self.fcmTokens.append(objectsIn: fcmTokens)
+        self.participation = participation
         self.placeholder = placeholder
     }
 
@@ -62,6 +81,7 @@ class Participant: Object, WithPlaceholder, WithId {
             organizationIds: [],
             projectIds: [],
             fcmTokens: [],
+            participation: .active,
             placeholder: true
         )
     }
@@ -71,6 +91,7 @@ class Participant: Object, WithPlaceholder, WithId {
 extension Participant {
     /// The value to display in the UI
     var displayName: String {
+        guard participation != .removed else { return "" }
         var components: [String] = []
         if !firstName.isEmpty { components.append(firstName) }
         if !lastName.isEmpty { components.append(lastName) }
@@ -78,9 +99,15 @@ extension Participant {
     }
 
     var initials: String {
+        guard participation != .removed else { return "" }
         if let firstNameLetter = firstName.first { return String(firstNameLetter) }
         if let lastNameLetter = lastName.first { return String(lastNameLetter) }
         return ""
+    }
+
+    /// Returns NSUnderlineStyle.rawValue - striked through when suspended or removed and non striked through when active
+    var strikethroughStyle: Int {
+        participation == .active ? NSUnderlineStyle([]).rawValue : NSUnderlineStyle.single.rawValue
     }
 
     var tasksCreatedByUser: Results<Collaboration> {

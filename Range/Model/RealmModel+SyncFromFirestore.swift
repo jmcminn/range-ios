@@ -12,6 +12,12 @@ protocol FirestoreToRealmSyncable {
     func upsert(withId id: String, inRealm realm: Realm) throws
 }
 
+/// Protocol for firestore objects that need a custom delete method (instead of doing realm.delete(object) when removed from Firestore)
+protocol FirestoreToRealmSyncableWithCustomDelete {
+    /// Run instead of realm.delete on given object. The implementing method can still decide to realm.delete(object)
+    func customDelete(object: Object, inRealm realm: Realm)
+}
+
 /// Extend RealmModel with sync from Firestore function
 extension RealmModel {
     /// Applies the changes from document to Realm
@@ -58,7 +64,13 @@ extension RealmModel {
                     else {
                         return
                     }
-                    realm.delete(object)
+                    if let firestoreObjectWithCustomDelete =
+                        firestoreObject as? FirestoreToRealmSyncableWithCustomDelete
+                    {
+                        firestoreObjectWithCustomDelete.customDelete(object: object, inRealm: realm)
+                    } else {
+                        realm.delete(object)
+                    }
                 } else {
                     throw "Change type \(changeType) not handled"
                 }

@@ -14,7 +14,7 @@ import RealmSwift
 ///     "avatarUrl": "name.png",
 ///     "email": "email@domain.com"
 /// }
-struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
+struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable, FirestoreToRealmSyncableWithCustomDelete {
     typealias ModelType = Participant
 
     /// CodingKeys used by Codable as a keys in the encoded form
@@ -50,8 +50,17 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable {
             avatarUrl: avatarUrl,
             email: email,
             organizationIds: organizationIds,
-            projectIds: projectIds
+            projectIds: projectIds,
+            participation: .active
         )
         realm.add(participant, update: .modified)
+    }
+
+    func customDelete(object: RealmSwift.Object, inRealm _: RealmSwift.Realm) {
+        guard let participant = object as? Participant else { return }
+        // mark as removed but only if it's active, if it's suspended then it's covered by FirestoreSuspendedParticipant
+        if participant.participation == .active {
+            participant.participation = .removed
+        }
     }
 }
