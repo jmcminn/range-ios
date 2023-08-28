@@ -132,6 +132,7 @@ class CommentFeedItemCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        authorLabel.attributedText = nil
         commentTextLabel.attributedText = nil
         completedLabel.attributedText = nil
         isCompleted = false
@@ -149,7 +150,10 @@ class CommentFeedItemCell: UITableViewCell {
         commentId = comment.id
         isCompleted = comment.completed
         self.model = model
-        authorLabel.text = comment.author?.displayName
+        authorLabel.attributedText = NSAttributedString(
+            string: comment.author?.displayName ?? "",
+            attributes: [.strikethroughStyle: comment.author?.strikethroughStyle ?? 0]
+        )
         timestampLabel.text = Date.format1(comment.timestamp)
 
         let textString = NSMutableAttributedString(
@@ -203,6 +207,7 @@ class CommentFeedItemCell: UITableViewCell {
                 attributes: [
                     .foregroundColor: chooseColor(.Neutral_05),
                     .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+                    .strikethroughStyle: comment.completedBy?.strikethroughStyle ?? 0,
                 ]
             )
             let messageText = " completed this note " + Date.format3(completedTimestamp)

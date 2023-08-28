@@ -394,9 +394,24 @@ class FeedViewController: UIViewController {
                     self.updateFeedItems = [FeedItem](updates.map { FeedItem($0, projectModel: self.projectModel) })
                     self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: false)
 
-                case let .update(updates, deletions: _, insertions: _, modifications: _):
-                    self.updateFeedItems = [FeedItem](updates.map { FeedItem($0, projectModel: self.projectModel) })
-                    self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
+                case let .update(updates, deletions, insertions, modifications):
+                    if !deletions.isEmpty || !insertions.isEmpty {
+                        // if there are some deletetions or insertions just apply the new snapshot
+                        self.updateFeedItems = [FeedItem](updates.map { FeedItem($0, projectModel: self.projectModel) })
+                        self.dataSource?.apply(self.prepareSnapshot(), animatingDifferences: true)
+                    } else if !modifications.isEmpty {
+                        // for modifications only reconfigure the modified items (the cells don't listen
+                        // for updates).
+                        let modifiedFeedItems: [FeedItem] = modifications.compactMap { index in
+                            guard index < self.updateFeedItems.count else { return nil }
+                            return self.updateFeedItems[index]
+                        }
+                        var snapshot = self.dataSource!.snapshot()
+                        snapshot.reconfigureItems(modifiedFeedItems)
+                        self.updateFeedItems = [FeedItem](updates.map { FeedItem($0, projectModel: self.projectModel) })
+                        self.dataSource!.apply(snapshot, animatingDifferences: false)
+                    }
+
                 case .error: break
                 }
             }

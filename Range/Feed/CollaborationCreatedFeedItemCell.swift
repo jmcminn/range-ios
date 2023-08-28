@@ -46,6 +46,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
+                .strikethroughStyle: collaboration.author?.strikethroughStyle ?? 0,
             ]
         )
         let messageText = " created this pin " + Date.format3(collaboration.timestamp)

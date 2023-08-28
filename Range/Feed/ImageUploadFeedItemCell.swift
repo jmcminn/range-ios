@@ -197,7 +197,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
     /// Called whenever an upload is set for the cell or updated
     /// Updates all the fields, loads the image and depending on the settings adjusts the uploadImageView constraints
     private func updateContent(upload: Upload?) {
-        authorLabel.text = upload?.author?.displayName
+        authorLabel.attributedText = NSAttributedString(
+            string: upload?.author?.displayName ?? "",
+            attributes: [.strikethroughStyle: upload?.author?.strikethroughStyle ?? 0]
+        )
 
         uploadImageView.kf.cancelDownloadTask()
 

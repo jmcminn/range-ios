@@ -53,6 +53,7 @@ class ConvertedToTaskFeedItemCell: UITableViewCell {
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
+                .strikethroughStyle: update.user?.strikethroughStyle ?? 0,
             ]
         )
         messageString.append(NSAttributedString(

@@ -75,6 +75,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_05),
                 .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+                .strikethroughStyle: update.user?.strikethroughStyle ?? 0,
             ]
         )
         let messageText = " changed the \(update.field.rawValue) \(Date.format2(update.timestamp))."

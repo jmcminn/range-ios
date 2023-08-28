@@ -35,30 +35,40 @@ class AssigneeUpdateFeedItemCell: UITableViewCell {
     }
 
     /// Updates the text of the message.
+    ///
     func set(update: Update, oldAssignee: Participant?, newAssignee: Participant?) {
         let messageString = NSMutableAttributedString(
             string: update.user?.displayName ?? "",
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_05),
                 .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+                .strikethroughStyle: update.user?.strikethroughStyle ?? 0,
             ]
         )
-        let message: String
+        let messageAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: chooseColor(.Neutral_05),
+            .font: UIFont.preferredFont(forTextStyle: .footnote),
+        ]
         if let newAssignee = newAssignee {
             if oldAssignee == nil {
-                message = "assigned to \(newAssignee.displayName)"
+                messageString.append(NSAttributedString(string: " assigned to ", attributes: messageAttributes))
             } else {
-                message = "changed the assignee to \(newAssignee.displayName)"
+                messageString.append(
+                    NSAttributedString(string: " changed the assignee to ", attributes: messageAttributes)
+                )
             }
+            var newAssigneeAttributes = messageAttributes
+            newAssigneeAttributes[.strikethroughStyle] = newAssignee.strikethroughStyle
+            messageString.append(NSAttributedString(
+                string: newAssignee.displayName,
+                attributes: newAssigneeAttributes
+            ))
         } else {
-            message = "removed the assignee"
+            messageString.append(NSAttributedString(string: " removed the assignee", attributes: messageAttributes))
         }
         messageString.append(NSAttributedString(
-            string: " \(message) \(Date.format2(update.timestamp)).",
-            attributes: [
-                .foregroundColor: chooseColor(.Neutral_05),
-                .font: UIFont.preferredFont(forTextStyle: .footnote),
-            ]
+            string: " \(Date.format2(update.timestamp)).",
+            attributes: messageAttributes
         ))
         messageLabel.attributedText = messageString
     }
