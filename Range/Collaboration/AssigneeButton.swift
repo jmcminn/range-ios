@@ -1,12 +1,23 @@
 import Foundation
+import RealmSwift
 import UIKit
 
 /// Displays a button for assignee.
 class AssigneeButton: UIButton {
     /// The assignee
     var assignee: Participant? {
-        didSet { updateButton() }
+        didSet {
+            assigneeNotificationToken?.invalidate()
+            if let assignee = assignee {
+                assigneeNotificationToken = assignee.observe { [weak self] _ in
+                    self?.updateButton()
+                }
+            }
+            updateButton()
+        }
     }
+
+    private var assigneeNotificationToken: NotificationToken?
 
     init() {
         super.init(frame: .zero)
@@ -18,6 +29,10 @@ class AssigneeButton: UIButton {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        assigneeNotificationToken?.invalidate()
     }
 
     /// Update the content when on assignee change
@@ -82,6 +97,7 @@ class AssigneeButton: UIButton {
             title.append(NSAttributedString(string: assignee.displayName, attributes: [
                 .foregroundColor: chooseColor(.Neutral_04),
                 .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
+                .strikethroughStyle: assignee.strikethroughStyle,
             ]))
             setAttributedTitle(title, for: .normal)
         } else {
