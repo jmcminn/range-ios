@@ -124,7 +124,8 @@ final class DebugSettings: ObservableObject {
 
     static func addOrganizationParticipantTest() {
         Functions.functions(region: "us-west2").httpsCallable("addOrganizationParticipant").call([
-            "organizationId": "84fc607b-1d23-449d-bb28-036941502492", // TomRa
+            "organizationId": "c39f1e8b-cabb-44c9-822e-e0d7ee92a90d", // Range
+//            "organizationId": "84fc607b-1d23-449d-bb28-036941502492", // TomRa
             "userId": "8931bee0-0e8d-46ed-99cc-0b655b068e95", // sam
         ]) { _, error in
             DebugSettings.handCallableError(error: error)
@@ -136,7 +137,8 @@ final class DebugSettings: ObservableObject {
 
     static func removeOrganizationParticipantTest() {
         Functions.functions(region: "us-west2").httpsCallable("removeOrganizationParticipant").call([
-            "organizationId": "84fc607b-1d23-449d-bb28-036941502492", // TomRa
+            "organizationId": "c39f1e8b-cabb-44c9-822e-e0d7ee92a90d", // Range
+//            "organizationId": "84fc607b-1d23-449d-bb28-036941502492", // TomRa
             "userId": "8931bee0-0e8d-46ed-99cc-0b655b068e95", // sam
         ]) { _, error in
             DebugSettings.handCallableError(error: error)

@@ -252,11 +252,19 @@ class ProjectsFlowController: UINavigationController {
             fatalError("observeCurrentUser called when there's no current user")
         }
         currentUserNotificationToken = currentUser.observe { [weak self] change in
+            guard let self = self else { return }
             if case .deleted = change {
-                self?.onSignedOut?()
+                self.onSignedOut?()
                 // it is important that toast is shown after 'onSignedOut' as the sign out
                 // reloads the ToastWindow
                 ToastWindow.shared.showWarning(text: "User removed")
+            } else if case .change = change {
+                if let currentProjectId = self.projectFC?.model.projectId,
+                   !currentUser.projectIds.contains(currentProjectId)
+                {
+                    ToastWindow.shared.showWarning(text: "User removed from project")
+                    self.closeCurrentProject()
+                }
             }
         }
     }
