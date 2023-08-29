@@ -53,6 +53,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     let upload: Upload
     private var uploadNotificationToken: NotificationToken?
+    private var authorNotificationToken: NotificationToken?
 
     private var previewItem: UploadPreviewItem?
 
@@ -175,6 +176,9 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             } else {
                 self?.onUploadUpdated()
             }
+        }
+        authorNotificationToken = upload.author?.observe { [weak self] _ in
+            self?.onUploadUpdated()
         }
     }
 
@@ -316,7 +320,10 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     }
 
     private func onUploadUpdated() {
-        authorLabel.text = upload.author?.displayName
+        authorLabel.attributedText = NSAttributedString(
+            string: upload.author?.displayName ?? "",
+            attributes: [.strikethroughStyle: upload.author?.strikethroughStyle ?? 0]
+        )
         timestampLabel.text = Date.format1(upload.timestamp)
     }
 
@@ -385,6 +392,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller
     func dismissCard() {
+        authorNotificationToken?.invalidate()
         uploadNotificationToken?.invalidate()
         uploadNotificationToken = nil
         tabBar.removeFromSuperview()
