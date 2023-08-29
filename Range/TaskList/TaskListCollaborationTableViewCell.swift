@@ -145,7 +145,10 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
                 ))
             }
             if let assignee = collaboration.assignee {
-                detailsStackView.addArrangedSubview(PillView(iconName: "person", text: assignee.displayName))
+                detailsStackView.addArrangedSubview(PillView(
+                    iconName: "person", text: assignee.displayName,
+                    textAttributes: [.strikethroughStyle: assignee.strikethroughStyle]
+                ))
             }
             if let canvasName = collaboration.feature.first?.geometry.first?.canvas.first?.displayName {
                 detailsStackView.addArrangedSubview(PillView(iconName: "square.3.layers.3d", text: canvasName))

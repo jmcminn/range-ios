@@ -41,7 +41,8 @@ class PillView: UIView {
         text: String,
         verticalPadding: Double = 8.0,
         backgroundColor: UIColor = .dynamic(.Neutral_09),
-        style: Style = .default
+        style: Style = .default,
+        textAttributes: [NSAttributedString.Key: Any]? = nil
     ) {
         self.style = style
         super.init(frame: .zero)
@@ -52,7 +53,11 @@ class PillView: UIView {
         iconView.image = UIImage(systemName: iconName, withConfiguration: UIImage.SymbolConfiguration(font: font))
         iconView.tintColor = style.tintColor
 
-        label.text = text
+        if let textAttributes = textAttributes {
+            label.attributedText = NSAttributedString(string: text, attributes: textAttributes)
+        } else {
+            label.text = text
+        }
         label.font = font
         label.adjustsFontForContentSizeCategory = true
         label.textColor = style.tintColor
