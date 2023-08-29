@@ -19,15 +19,13 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable, FirestoreToRea
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case firstName, lastName, avatarUrlString = "avatarUrl", email, permissions, fcmTokens
+        case firstName, lastName, avatarUrlString = "avatarUrl", email
     }
 
     var firstName: String
     var lastName: String
     var avatarUrlString: String?
     var email: String
-    var permissions: [String: [String]]?
-    var fcmTokens: [String]?
 
     /// Add or update the status.
     /// Ignores not well formed avatarUrl
@@ -41,16 +39,12 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable, FirestoreToRea
         } else {
             avatarUrl = nil
         }
-        let organizationIds: [String] = (permissions?["organizations"] as? [String]) ?? []
-        let projectIds: [String] = (permissions?["projects"] as? [String]) ?? []
         let participant = Participant(
             id: id,
             firstName: firstName,
             lastName: lastName,
             avatarUrl: avatarUrl,
             email: email,
-            organizationIds: organizationIds,
-            projectIds: projectIds,
             participation: .active
         )
         realm.add(participant, update: .modified)

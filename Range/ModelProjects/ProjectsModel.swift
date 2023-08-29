@@ -32,7 +32,7 @@ class ProjectsModel: NSObject, RealmModel {
     /// Firestore listeners, map of firestore id => listener
     var listeners: [String: ListenerRegistration] = [:]
 
-    private(set) var currentUser: Participant?
+    private(set) var currentUser: User?
     /// token for observing the current user in the realm
     private var userNotificationToken: NotificationToken?
 
@@ -45,14 +45,15 @@ class ProjectsModel: NSObject, RealmModel {
         self.newlySignedIn = newlySignedIn
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        // v3 introduces Participant.organizationIds and Organization, migration not needed (this field is empty for project model, only used for projectsModel)
-        // v4 introduces Participant.participation(state)
-        config.schemaVersion = 4
+        config.schemaVersion = 5
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("projects")
         config.fileURL!.appendPathExtension("realm")
+        config.migrationBlock = { migration, oldSchemaVersion in
+            ProjectsModel.migrate(migration, oldSchemaVersion)
+        }
         Logger.model.info("projects realm file url: \(config.fileURL?.path ?? "")")
-        config.objectTypes = [Participant.self, ProjectSummary.self, Location.self, Organization.self]
+        config.objectTypes = [User.self, ProjectSummary.self, Location.self, Organization.self]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
     }
@@ -65,13 +66,13 @@ class ProjectsModel: NSObject, RealmModel {
         }
 
         // 1. require the current user, so it can be loaded and observed
-        let firUser = try await firestore.document("users/\(userId)").getDocument(as: FirestoreParticipant.self)
+        let firUser = try await firestore.document("users/\(userId)").getDocument(as: FirestoreUser.self)
         try await write { realm in
             try firUser.upsert(withId: self.userId, inRealm: realm)
         }
 
         // 2. load current user and observe for project updates
-        guard let user = mainRealm.object(ofType: Participant.self, forPrimaryKey: userId) else {
+        guard let user = mainRealm.object(ofType: User.self, forPrimaryKey: userId) else {
             throw ModelError.currentUserNotFound
         }
         userNotificationToken = user.observe { [weak self] change in
@@ -92,7 +93,7 @@ class ProjectsModel: NSObject, RealmModel {
         currentUser = user
 
         // 3. enable syncing current user from Firestore
-        listeners[userId] = sync(firestore.document("users/\(userId)"), as: FirestoreParticipant.self)
+        listeners[userId] = sync(firestore.document("users/\(userId)"), as: FirestoreUser.self)
 
         // 4. sync the organizations that user has permissions to
         syncCurrentUserOrganizations()

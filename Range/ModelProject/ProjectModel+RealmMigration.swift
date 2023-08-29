@@ -18,6 +18,7 @@ extension ProjectModel {
         // v13 introduces Upload.localStorageVersion (no Firestore sync), migration not needed
         // v14 introduces Participant.organizationIds, migration not needed (this field is empty for project model, only used for projectsModel)
         // v15 introduces Participant.participation(state), migration not needed
+        // v16 removes Participant.organizationIds,projectIds,fcmTokens, they are now handled by the User object
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource

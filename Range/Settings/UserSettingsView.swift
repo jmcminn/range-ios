@@ -2,7 +2,7 @@ import SwiftUI
 
 struct UserSettingsView: View {
     @EnvironmentObject var userSettings: UserSettings
-    @EnvironmentObject var currentUser: Participant
+    @EnvironmentObject var currentUser: User
 
     var body: some View {
         Form {

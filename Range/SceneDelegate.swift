@@ -87,7 +87,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///    - newlySignedIn: true if main flow is starting after user went through authentication (and false if user was already authenticated when the app started)
     private func startMainFlow(forUser userId: String, newlySignedIn: Bool) {
         Analytics.setUserID(userId)
-        SentrySDK.setUser(User(userId: userId))
+        SentrySDK.setUser(Sentry.User(userId: userId))
         Task { @MainActor in
             await self.showProjects(forUserId: userId, newlySignedIn: newlySignedIn)
         }

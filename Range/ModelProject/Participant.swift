@@ -28,12 +28,6 @@ class Participant: Object, WithPlaceholder, WithId {
     @Persisted var avatarUrl: URL?
     /// email
     @Persisted var email: String
-    /// array of organization ids this user has permission to access
-    @Persisted var organizationIds: List<String>
-    /// array of projects ids this user has permission to access
-    @Persisted var projectIds: List<String>
-    /// array of user fcmTokens (Firebase Cloud Messaging Tokens)
-    @Persisted var fcmTokens: List<String>
     /// Whether this participant is currently suspended in the Project
     @Persisted var participation: ParticipationState = .active
     /// Whether this object is just a placeholder for a real object
@@ -51,9 +45,6 @@ class Participant: Object, WithPlaceholder, WithId {
         lastName: String,
         avatarUrl: URL?,
         email: String,
-        organizationIds: [String] = [],
-        projectIds: [String] = [],
-        fcmTokens: [String] = [],
         participation: ParticipationState = .active,
         placeholder: Bool = false
     ) {
@@ -63,9 +54,6 @@ class Participant: Object, WithPlaceholder, WithId {
         self.lastName = lastName
         self.avatarUrl = avatarUrl
         self.email = email
-        self.organizationIds.append(objectsIn: organizationIds)
-        self.projectIds.append(objectsIn: projectIds)
-        self.fcmTokens.append(objectsIn: fcmTokens)
         self.participation = participation
         self.placeholder = placeholder
     }
@@ -78,9 +66,6 @@ class Participant: Object, WithPlaceholder, WithId {
             lastName: "",
             avatarUrl: nil,
             email: "",
-            organizationIds: [],
-            projectIds: [],
-            fcmTokens: [],
             participation: .active,
             placeholder: true
         )
