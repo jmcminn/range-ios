@@ -49,8 +49,8 @@ final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
 
     func testApply_noStatus() throws {
         let canvas1 = Canvas(id: "canvas1", name: "")
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
-        let user2 = Participant(id: "user2", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
+        let user2 = Participant(placeholderId: "user2")
         try realm.write {
             realm.add([canvas1, user1, user2])
         }
@@ -68,7 +68,7 @@ final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
 
     func testApply_noAssignee() throws {
         let canvas1 = Canvas(id: "canvas1", name: "")
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
         try realm.write {
             realm.add([canvas1, user1])
         }
@@ -84,8 +84,8 @@ final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
 
     func testApply_successful() throws {
         let canvas1 = Canvas(id: "canvas1", name: "")
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
-        let user2 = Participant(id: "user2", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
+        let user2 = Participant(placeholderId: "user2")
         try realm.write {
             realm.add([canvas1, user1, user2])
         }

@@ -19,13 +19,14 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable, FirestoreToRea
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case firstName, lastName, avatarUrlString = "avatarUrl", email
+        case firstName, lastName, avatarUrlString = "avatarUrl", email, organizationRole
     }
 
     var firstName: String
     var lastName: String
     var avatarUrlString: String?
     var email: String
+    var organizationRole: String
 
     /// Add or update the status.
     /// Ignores not well formed avatarUrl
@@ -39,13 +40,16 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable, FirestoreToRea
         } else {
             avatarUrl = nil
         }
+        let role = try Participant.OrganizationRole.allCases.first { $0.rawValue == organizationRole }
+            .or(error: ModelError.organizationRoleNotSupported(organizationRole))
         let participant = Participant(
             id: id,
             firstName: firstName,
             lastName: lastName,
             avatarUrl: avatarUrl,
             email: email,
-            participation: .active
+            participation: .active,
+            organizationRole: role
         )
         realm.add(participant, update: .modified)
     }

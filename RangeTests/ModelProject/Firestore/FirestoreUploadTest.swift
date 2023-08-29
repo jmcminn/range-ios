@@ -53,13 +53,7 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
 
     func testUpsert_successful() throws {
         // 1. create 2 collaborations and a user
-        let user1 = Participant(
-            id: "user1",
-            firstName: "First",
-            lastName: "Last",
-            avatarUrl: nil,
-            email: "first@last.com"
-        )
+        let user1 = Participant(placeholderId: "user1")
         let collaboration1 = Collaboration(
             id: "collaboration1",
             timestamp: Date.now,

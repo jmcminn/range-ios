@@ -43,7 +43,8 @@ struct FirestoreSuspendedParticipant: Decodable, FirestoreToRealmSyncable, Fires
             lastName: lastName,
             avatarUrl: avatarUrl,
             email: "",
-            participation: .suspended
+            participation: .suspended,
+            organizationRole: .Unknown
         )
         realm.add(participant, update: .modified)
     }

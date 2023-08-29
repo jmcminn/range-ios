@@ -42,7 +42,7 @@ final class AddUploadsToCollaborationCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_successful() throws {
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
         let collaboration1 = Collaboration(
             id: "collaboration1",
             timestamp: Date.now,

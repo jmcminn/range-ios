@@ -18,6 +18,12 @@ class Participant: Object, WithPlaceholder, WithId {
         case removed // user is removed from project (the displayed name will be empty, cannot be listed in user selection)
     }
 
+    enum OrganizationRole: String, Codable, PersistableEnum {
+        case Admin
+        case Collaborator
+        case Unknown // only valid for suspended participants
+    }
+
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// user first name (@objc added so it can be used in SortDescriptor)
@@ -30,6 +36,8 @@ class Participant: Object, WithPlaceholder, WithId {
     @Persisted var email: String
     /// Whether this participant is currently suspended in the Project
     @Persisted var participation: ParticipationState = .active
+    /// Users role in the organization
+    @Persisted var organizationRole: OrganizationRole = .Admin
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -46,6 +54,7 @@ class Participant: Object, WithPlaceholder, WithId {
         avatarUrl: URL?,
         email: String,
         participation: ParticipationState = .active,
+        organizationRole: OrganizationRole,
         placeholder: Bool = false
     ) {
         super.init()
@@ -55,6 +64,7 @@ class Participant: Object, WithPlaceholder, WithId {
         self.avatarUrl = avatarUrl
         self.email = email
         self.participation = participation
+        self.organizationRole = organizationRole
         self.placeholder = placeholder
     }
 
@@ -67,6 +77,7 @@ class Participant: Object, WithPlaceholder, WithId {
             avatarUrl: nil,
             email: "",
             participation: .active,
+            organizationRole: .Collaborator,
             placeholder: true
         )
     }

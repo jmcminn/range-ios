@@ -25,7 +25,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
     func testRunCommand_inRealm() async throws {
         try await model.start()
         let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
         try realm.write {
             realm.add([collaboration1, user1])
         }
@@ -47,7 +47,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
     func testRunCommand_addPendingAction() async throws {
         try await model.start()
         let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
         try realm.write {
             realm.add([collaboration1, user1])
         }

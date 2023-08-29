@@ -38,7 +38,7 @@ final class CreateUploadCommentCommandRealmTest: ProjectModelTestCase {
     func testApply_successful() throws {
         let upload1 = Upload(id: "upload1", timestamp: Date(), name: nil, description: nil,
                              correlationId: "upload1", fileType: .jpeg, imageHeightToWidth: nil, fileSize: 1024)
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
         try realm.write {
             realm.add([upload1, user1])
         }

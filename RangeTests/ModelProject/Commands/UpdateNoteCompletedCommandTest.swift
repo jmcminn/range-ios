@@ -15,7 +15,7 @@ final class UpdateNoteCompletedCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_uncomplete_successful() throws {
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
         let comment1 = Comment(
             id: "comment1",
             timestamp: Date(),
@@ -37,7 +37,7 @@ final class UpdateNoteCompletedCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_complete_successful() throws {
-        let user1 = Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: "")
+        let user1 = Participant(placeholderId: "user1")
         let comment1 = Comment(
             id: "comment1",
             timestamp: Date(),

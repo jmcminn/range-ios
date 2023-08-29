@@ -29,7 +29,7 @@ class ProjectModelTest: ProjectModelTestCase {
             realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
                 CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil,
                 address: nil))
-            realm.add(Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: ""))
+            realm.add(Participant(placeholderId: "user1"))
         }
         XCTAssertThrowsError(
             try model.loadProject(initialCanvasId: "canvas1")
@@ -42,7 +42,7 @@ class ProjectModelTest: ProjectModelTestCase {
         try realm.write {
             realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
                 CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
-            realm.add(Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: ""))
+            realm.add(Participant(placeholderId: "user1"))
             realm.add(Canvas(id: "canvas1", name: ""))
         }
         XCTAssertThrowsError(
@@ -56,7 +56,7 @@ class ProjectModelTest: ProjectModelTestCase {
         try realm.write {
             realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
                 CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
-            realm.add(Participant(id: "user1", firstName: "", lastName: "", avatarUrl: nil, email: ""))
+            realm.add(Participant(placeholderId: "user1"))
             let canvas = Canvas(id: "canvas1", name: "")
             let canvasSource = CanvasSource(
                 id: "canvasSource1", name: "",

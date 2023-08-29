@@ -39,7 +39,7 @@ final class UpdateCollaborationsAssigneeCommandRealmTest: ProjectModelTestCase {
 
     func testApply_successful() throws {
         let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
-        let user2 = Participant(id: "user2", firstName: "name", lastName: "", avatarUrl: nil, email: "")
+        let user2 = Participant(placeholderId: "user2")
         // setup collaboration1
         try realm.write {
             realm.add([collaboration1, user2])
