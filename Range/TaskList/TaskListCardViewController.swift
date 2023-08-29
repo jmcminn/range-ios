@@ -657,7 +657,7 @@ extension TaskListCardViewController {
     }
 
     private func presentBulkUpdateAssigneeCard() {
-        let viewModel = UsersViewModel(model: projectModel, multiselect: false)
+        let viewModel = UsersViewModel(model: projectModel, multiselect: false, showSuspendedUsers: false)
         let userPicker = UserPickerCardViewController(title: "Assignee", viewModel: viewModel)
         // add option to clear current assignee
         userPicker.showNoUserOption = true

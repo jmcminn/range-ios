@@ -43,7 +43,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
 
         statuses = (model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
 
-        let usersViewModel = UsersViewModel(model: model, multiselect: true)
+        let usersViewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: true)
         // preselect users from filters
         filters.assigneeFilter?.forEach { usersViewModel.set(userWithId: $0, selected: true) }
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)

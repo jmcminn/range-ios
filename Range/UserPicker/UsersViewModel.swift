@@ -1,9 +1,11 @@
 import Algorithms
 import Foundation
 import RealmSwift
+import UIKit
 
 /// View model for list of users and support for selecting/deselecting
 class UsersViewModel: NSObject {
+    unowned let model: ProjectModel
     /// whether it's a multi or single select model
     let multiselect: Bool
     /// all users whether selected or not
@@ -26,10 +28,12 @@ class UsersViewModel: NSObject {
     /// Special user with id = UserViewModel.unassignedUserId for filtering unassigned tasks
     let unassignedUser: UserViewModel
 
-    init(model: ProjectModel, multiselect: Bool) {
+    init(model: ProjectModel, multiselect: Bool, showSuspendedUsers: Bool) {
+        self.model = model
         self.multiselect = multiselect
         allUsers = model.mainRealm.objects(Participant.self)
             .where { $0.placeholder == false }
+            .where { showSuspendedUsers ? $0.participation != .removed : $0.participation == .active }
             .map { UserViewModel(fromParticipant: $0) }
             .sorted(using: nameSort)
 
@@ -39,6 +43,19 @@ class UsersViewModel: NSObject {
 
         super.init()
 
+        filteredUsers = allUsers
+    }
+
+    /// Add given user to view model even if otherwise excluded (because user is suspended and view model is configured to not show suspended users)
+    func addUser(_ participant: Participant) {
+        guard allUsersIndex[participant.id] == nil else { return }
+        let userVM = UserViewModel(fromParticipant: participant)
+        allUsersIndex[userVM.id] = userVM
+        // insert so allUsers is still sorted by name
+        allUsers.insert(userVM, at: allUsers.partitioningIndex(where: {
+            // find the first user in allUsers that's bigger than inserted user
+            nameSort.compare($0, userVM) == .orderedDescending
+        }))
         filteredUsers = allUsers
     }
 
@@ -168,9 +185,15 @@ class UserViewModel: NSObject, Codable {
     let id: String
     @objc let name: String
     @objc let email: String
+    let suspended: Bool
     /// for searching we store a version of string that is diacriticInsensitive and caseInsensitive
     let searchName: String
     @objc fileprivate(set) dynamic var selected: Bool = false
+
+    /// Returns NSUnderlineStyle.rawValue - striked through when suspended and non striked through otherwise
+    var strikethroughStyle: Int {
+        suspended ? NSUnderlineStyle.single.rawValue : NSUnderlineStyle([]).rawValue
+    }
 
     /// Initializer for existing users
     /// - Parameters:
@@ -181,21 +204,28 @@ class UserViewModel: NSObject, Codable {
     init(
         id: String,
         name: String,
-        email: String
+        email: String,
+        suspended: Bool
     ) {
         self.id = id
         self.name = name
         self.email = email
+        self.suspended = suspended
         searchName = "\(name) \(email)".folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
     }
 
     /// Convenience initializer from the model Participant
     convenience init(fromParticipant participant: Participant) {
-        self.init(id: participant.id, name: participant.displayName, email: participant.email)
+        self.init(
+            id: participant.id,
+            name: participant.displayName,
+            email: participant.email,
+            suspended: participant.participation == .suspended
+        )
     }
 
     static func unassignedUser() -> UserViewModel {
-        UserViewModel(id: unassignedUserId, name: String(localized: "Unassigned Tasks"), email: "")
+        UserViewModel(id: unassignedUserId, name: String(localized: "Unassigned Tasks"), email: "", suspended: false)
     }
 
     /// equatable to check for id only

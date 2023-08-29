@@ -27,8 +27,8 @@ class UserTableViewCell: UITableViewCell {
         [avatarView, nameLabel, emailLabel, selectedIconView].forEach(contentView.addSubview)
 
         avatarView.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualToSuperview()
-            make.bottom.lessThanOrEqualToSuperview()
+            make.top.greaterThanOrEqualToSuperview().offset(14)
+            make.bottom.lessThanOrEqualToSuperview().offset(-14)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(32)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 44 : 12)
@@ -72,8 +72,29 @@ class UserTableViewCell: UITableViewCell {
     }
 
     func setUser(_ user: UserViewModel) {
-        nameLabel.text = user.name
-        emailLabel.text = user.email
+        nameLabel.attributedText = NSAttributedString(
+            string: user.name,
+            attributes: [.strikethroughStyle: user.strikethroughStyle]
+        )
+        if user.suspended {
+            // don't show email if user is suspended
+            nameLabel.snp.remakeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 84 : 52)
+                make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
+            }
+            emailLabel.isHidden = true
+            emailLabel.text = nil
+        } else {
+            nameLabel.snp.remakeConstraints { make in
+                make.top.greaterThanOrEqualToSuperview().offset(11)
+                make.bottom.equalTo(contentView.snp.centerY).offset(2)
+                make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 84 : 52)
+                make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
+            }
+            emailLabel.isHidden = false
+            emailLabel.text = user.email
+        }
         if multiselect {
             selectedIconView.isHidden = false
             selectedIconView.image = user.selected
@@ -87,7 +108,7 @@ class UserTableViewCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
-        nameLabel.text = nil
+        nameLabel.attributedText = nil
         emailLabel.text = nil
         selectedIconView.isHidden = true
     }

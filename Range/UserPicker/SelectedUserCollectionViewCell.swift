@@ -67,9 +67,12 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
     unowned var userViewModel: UserViewModel? {
         didSet {
             if let userViewModel = userViewModel {
-                label.text = userViewModel.name
+                label.attributedText = NSAttributedString(
+                    string: userViewModel.name,
+                    attributes: [.strikethroughStyle: userViewModel.strikethroughStyle]
+                )
             } else {
-                label.text = ""
+                label.attributedText = nil
             }
             updateAvatarImage()
         }
