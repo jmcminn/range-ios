@@ -146,7 +146,7 @@ class CopyTaskTableViewCell: UITableViewCell {
         }
 
         let detailsBgColor = UIColor.dynamic(.Neutral_09)
-        if let assignee = collaboration.assignee {
+        if let assignee = collaboration.assignee, assignee.participation == .active {
             detailsStackView.addArrangedSubview(PillView(
                 iconName: "person", text: assignee.displayName,
                 verticalPadding: 4, backgroundColor: detailsBgColor

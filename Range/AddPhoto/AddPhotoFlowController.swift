@@ -550,7 +550,7 @@ class AddPhotoFlowController {
                 isTask: pinTypeOption.pinType == .task,
                 name: taskToCopy?.name,
                 collaborationDescription: taskToCopy?.collaborationDescription,
-                assignee: taskToCopy?.assignee,
+                assignee: taskToCopy?.assignee?.participation == .active ? taskToCopy?.assignee : nil,
                 dueDate: taskToCopy?.dueDateTimestamp,
                 tags: taskToCopy?.tags.map(TagViewModel.init(fromTag:)) ?? [],
                 photosToAdd: photosToAddViewModel.photos,

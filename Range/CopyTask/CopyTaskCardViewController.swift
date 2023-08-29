@@ -1,3 +1,4 @@
+import Algorithms
 import Foundation
 import OSLog
 import Realm
@@ -111,7 +112,8 @@ class CopyTaskCardViewController: SheetCardViewController {
         if let dueDate = collaboration.dueDateTimestamp {
             values.append(String(dueDate.timeIntervalSince1970))
         }
-        if let assignee = collaboration.assignee {
+        // if assignee is not active then ignore it (we don't copy inactive assignees)
+        if let assignee = collaboration.assignee, assignee.participation == .active {
             values.append(assignee.id)
         }
         for tag in collaboration.tags {
