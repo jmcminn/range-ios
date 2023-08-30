@@ -206,6 +206,7 @@
 		0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */; };
 		0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */; };
 		0A598C1B29C067F400DB2849 /* FirestoreCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */; };
+		0A5E897F2A9F6F8200C72235 /* Participant+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
 		0A632EB527E49638001A019B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A632EB427E49638001A019B /* Assets.xcassets */; };
@@ -629,6 +630,7 @@
 		0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPreviewViewController.swift; sourceTree = "<group>"; };
 		0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentThumbnailGenerator.swift; sourceTree = "<group>"; };
 		0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSource.swift; sourceTree = "<group>"; };
+		0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Participant+Permissions.swift"; sourceTree = "<group>"; };
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632EAB27E49636001A019B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A632EAD27E49636001A019B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -984,6 +986,7 @@
 				0A7FC4142844E0670097888A /* Status.swift */,
 				0A4995BE2858D00100E571FB /* Tag.swift */,
 				0A34C1842845FB4100BEDC7C /* Participant.swift */,
+				0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */,
 				0A4DC78427F490CA00712518 /* Canvas.swift */,
 				0A34072329C077E7007299A7 /* CanvasSourceData.swift */,
 				0A566EF529BA29480094BD60 /* CanvasSource.swift */,
@@ -2164,6 +2167,7 @@
 				0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
 				0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */,
+				0A5E897F2A9F6F8200C72235 /* Participant+Permissions.swift in Sources */,
 				0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */,
 				0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */,
 				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,

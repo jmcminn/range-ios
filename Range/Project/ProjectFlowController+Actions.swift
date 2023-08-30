@@ -363,24 +363,21 @@ extension ProjectFlowController {
             actions.append(contentsOf: [
                 ActionItem(
                     title: String(localized: "Update Location"), imageName: "mappin.and.ellipse",
-                    handler: { [weak self] in
-                        self?.moveCollaboration(collaboration)
-                    }
+                    handler: { [weak self] in self?.moveCollaboration(collaboration) }
                 ),
                 ActionItem(
                     title: collaboration.isArchived ? String(localized: "Unarchive") : String(localized: "Archive"),
                     imageName: "archivebox",
-                    handler: { [weak self] in
-                        self?.toggleCollaborationArchived(collaboration)
-                    }
+                    handler: { [weak self] in self?.toggleCollaborationArchived(collaboration) }
                 ),
-                ActionItem(
-                    title: String(localized: "Delete"), imageName: "trash", style: .destructive,
-                    handler: { [weak self] in
-                        self?.confirmAndDeleteCollaboration(collaboration)
-                    }
-                ),
+
             ])
+            if model.currentUser.canDelete(collaboration) {
+                actions.append(ActionItem(
+                    title: String(localized: "Delete"), imageName: "trash", style: .destructive,
+                    handler: { [weak self] in self?.confirmAndDeleteCollaboration(collaboration) }
+                ))
+            }
             let menuTitle = collaboration.status == nil
                 ? String(localized: "Photo Pin Menu")
                 : String(localized: "Task Pin Menu")
@@ -391,41 +388,52 @@ extension ProjectFlowController {
             .installAndShowCard(in: canvasContainer)
         } else if let upload = event.object as? Upload {
             guard !upload.isInvalidated else { return }
-            ActionSelectorCardViewController(
-                icon: UIImage(systemName: "ellipsis"),
-                title: "More Menu",
-                actions: [
-                    ActionItem(
-                        title: String(localized: "Share"),
-                        imageName: "square.and.arrow.up",
-                        handler: {
-                            self.shareMediaAction(sender: self, event: event)
-                        }
-                    ),
+            var actions: [ActionItem] = [
+                ActionItem(
+                    title: String(localized: "Share"),
+                    imageName: "square.and.arrow.up",
+                    handler: { self.shareMediaAction(sender: self, event: event) }
+                ),
+            ]
+            if model.currentUser.canDelete(upload) {
+                actions.append(
                     ActionItem(
                         title: upload.isImage ? "Delete Photo" : "Delete File",
                         imageName: "trash",
                         style: .destructive,
-                        handler: {
-                            self.confirmAndDeleteUpload(upload)
-                        }
-                    ),
-                ]
+                        handler: { self.confirmAndDeleteUpload(upload) }
+                    )
+                )
+            }
+            ActionSelectorCardViewController(
+                icon: UIImage(systemName: "ellipsis"),
+                title: "More Menu",
+                actions: actions
             ).installAndShowCard(in: canvasContainer)
         } else if let comment = event.object as? Comment {
             guard !comment.isInvalidated else { return }
             let commentOrNote = comment.isNote ? "Note" : "Comment"
+            var actions: [ActionItem] = []
+            if model.currentUser.canEditText(comment) {
+                actions.append(
+                    ActionItem(title: "Edit \(commentOrNote)", imageName: "pencil", handler: {
+                        self.editComment(comment)
+                    })
+                )
+            }
+            if model.currentUser.canDelete(comment) {
+                actions.append(
+                    ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive,
+                               handler: {
+                                   self.confirmAndDeleteComment(comment)
+                               })
+                )
+            }
+            guard !actions.isEmpty else { return }
             ActionSelectorCardViewController(
                 icon: UIImage(systemName: "ellipsis"),
                 title: "More Menu",
-                actions: [
-                    ActionItem(title: "Edit \(commentOrNote)", imageName: "pencil", handler: {
-                        self.editComment(comment)
-                    }),
-                    ActionItem(title: "Delete \(commentOrNote)", imageName: "trash", style: .destructive, handler: {
-                        self.confirmAndDeleteComment(comment)
-                    }),
-                ]
+                actions: actions
             ).installAndShowCard(in: canvasContainer)
         }
     }

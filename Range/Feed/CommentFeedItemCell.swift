@@ -156,6 +156,10 @@ class CommentFeedItemCell: UITableViewCell {
         )
         timestampLabel.text = Date.format1(comment.timestamp)
 
+        // only show more button if user is allowed to do any of its actions
+        let showMoreButton = model.currentUser.canDelete(comment) || model.currentUser.canEditText(comment)
+        moreButton.isHidden = !showMoreButton
+
         let textString = NSMutableAttributedString(
             string: comment.text,
             attributes: [
