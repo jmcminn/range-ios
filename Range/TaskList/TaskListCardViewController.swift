@@ -546,24 +546,38 @@ extension TaskListCardViewController {
     }
 
     private func showBulkActions() {
+        var actions: [ActionItem] = [
+            ActionItem(title: String(localized: "Tags"), imageName: "tag",
+                       handler: { [weak self] in self?.presentBulkManageTagsCard() }),
+            ActionItem(title: String(localized: "Due Date"), imageName: "calendar",
+                       handler: { [weak self] in self?.presentBulkUpdateDueDateCard() }),
+            ActionItem(title: String(localized: "Assignee"), imageName: "person",
+                       handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
+            ActionItem(title: String(localized: "Status"), imageName: "circle.dashed",
+                       handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
+            ActionItem(title: String(localized: "Archive"), imageName: "archivebox",
+                       handler: { [weak self] in self?.bulkArchive() }),
+        ]
+
+        // only show the Delete option if user has permissions to remove any of them
+        let tasksToDelete = collaborations
+            .filter { self.selectedTasks.contains($0.id) }
+            .filter { self.projectModel.currentUser.canDelete($0) }
+            .map(\.id)
+        if !tasksToDelete.isEmpty {
+            actions.append(
+                ActionItem(title: String(localized: "Delete"), imageName: "trash", style: .destructive,
+                           handler: { [weak self] in
+                               self?.confirmAndBulkDelete(tasks: [String](tasksToDelete))
+                           })
+            )
+        }
+
         ActionSelectorCardViewController(
             icon: UIImage(systemName: "ellipsis"),
             title: String(localized: "Bulk Actions"),
             subtitle: "(\(selectedTasksCountText))",
-            actions: [
-                ActionItem(title: String(localized: "Tags"), imageName: "tag",
-                           handler: { [weak self] in self?.presentBulkManageTagsCard() }),
-                ActionItem(title: String(localized: "Due Date"), imageName: "calendar",
-                           handler: { [weak self] in self?.presentBulkUpdateDueDateCard() }),
-                ActionItem(title: String(localized: "Assignee"), imageName: "person",
-                           handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
-                ActionItem(title: String(localized: "Status"), imageName: "circle.dashed",
-                           handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
-                ActionItem(title: String(localized: "Archive"), imageName: "archivebox",
-                           handler: { [weak self] in self?.bulkArchive() }),
-                ActionItem(title: String(localized: "Delete"), imageName: "trash", style: .destructive,
-                           handler: { [weak self] in self?.confirmAndBulkDelete() }),
-            ]
+            actions: actions
         ).installAndShowCard(in: canvasContainer)
     }
 
@@ -718,7 +732,7 @@ extension TaskListCardViewController {
         }
     }
 
-    private func confirmAndBulkDelete() {
+    private func confirmAndBulkDelete(tasks: [String]) {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",
@@ -726,18 +740,23 @@ extension TaskListCardViewController {
             actions: [
                 ActionItem(
                     title: "Delete Tasks", imageName: "trash", style: .destructive,
-                    handler: { self.bulkDelete() }
+                    handler: { self.bulkDelete(tasks) }
                 ),
                 ActionItem(title: "Cancel", imageName: "xmark"),
             ]
         ).installAndShowCard(in: canvasContainer)
     }
 
-    private func bulkDelete() {
+    private func bulkDelete(_ tasks: [String]) {
         projectModel.run(
-            projectModel.delete(collaborations: [String](selectedTasks))
+            projectModel.delete(collaborations: tasks)
         ) { error in
-            if error != nil { ToastWindow.shared.showError(text: "Failed to delete") }
+            if error == nil {
+                ToastWindow.shared.showSuccess(text:
+                    "\(tasks.count) \(tasks.count == 1 ? "task" : "tasks") deleted successfully")
+            } else {
+                ToastWindow.shared.showError(text: "Failed to delete tasks")
+            }
         }
     }
 }

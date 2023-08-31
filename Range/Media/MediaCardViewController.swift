@@ -606,18 +606,32 @@ extension MediaCardViewController {
     }
 
     private func showBulkActions() {
+        var actions: [ActionItem] = [
+            ActionItem(title: String(localized: "Bulk Manage Tags"), imageName: "tag",
+                       handler: { [weak self] in self?.presentBulkManageTagsCard() }),
+            ActionItem(title: String(localized: "Share"), imageName: "square.and.arrow.up",
+                       handler: { [weak self] in self?.shareMedia() }),
+        ]
+
+        // only show the Delete option if user has permissions to remove any of them
+        let uploadsToDelete = uploads
+            .filter { self.selectedUploads.contains($0.id) }
+            .filter { self.projectModel.currentUser.canDelete($0) }
+            .map(\.id)
+        if !uploadsToDelete.isEmpty {
+            actions.append(
+                ActionItem(title: String(localized: "Delete Media"), imageName: "trash", style: .destructive,
+                           handler: { [weak self] in
+                               self?.confirmAndDeleteMedia([String](uploadsToDelete))
+                           })
+            )
+        }
+
         ActionSelectorCardViewController(
             icon: UIImage(systemName: "ellipsis"),
             title: String(localized: "Bulk Actions"),
             subtitle: "(\(selectedMediaCountText))",
-            actions: [
-                ActionItem(title: String(localized: "Bulk Manage Tags"), imageName: "tag",
-                           handler: { [weak self] in self?.presentBulkManageTagsCard() }),
-                ActionItem(title: String(localized: "Share"), imageName: "square.and.arrow.up",
-                           handler: { [weak self] in self?.shareMedia() }),
-                ActionItem(title: String(localized: "Delete Media"), imageName: "trash", style: .destructive,
-                           handler: { [weak self] in self?.confirmAndDeleteMedia() }),
-            ]
+            actions: actions
         ).installAndShowCard(in: canvasContainer)
     }
 
@@ -702,7 +716,7 @@ extension MediaCardViewController {
         )
     }
 
-    func confirmAndDeleteMedia() {
+    func confirmAndDeleteMedia(_ uploads: [String]) {
         ActionSelectorCardViewController(
             icon: nil,
             title: String(localized: "Are you sure?"),
@@ -713,7 +727,7 @@ extension MediaCardViewController {
                 ActionItem(
                     title: String(localized: "Delete Media"),
                     imageName: "trash", style: .destructive, handler: { [weak self] in
-                        self?.deleteMedia()
+                        self?.deleteMedia(uploads)
                     }
                 ),
                 ActionItem(title: "Cancel", imageName: "xmark"),
@@ -721,11 +735,13 @@ extension MediaCardViewController {
         ).installAndShowCard(in: canvasContainer)
     }
 
-    private func deleteMedia() {
-        projectModel.run(projectModel.delete(uploads: [String](selectedUploads))) { [weak self] error in
+    private func deleteMedia(_ uploads: [String]) {
+        projectModel.run(projectModel.delete(uploads: uploads)) { [weak self] error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to delete media")
             } else {
+                ToastWindow.shared.showSuccess(text:
+                    "\(uploads.count) media deleted successfully")
                 // clear the selection and back to normal mode after all selected uploads were removed
                 self?.toggleMode()
             }
