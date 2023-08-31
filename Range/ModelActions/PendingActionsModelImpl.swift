@@ -241,6 +241,21 @@ class PendingActionsModelImpl: PendingActionsModel {
                     obsolete = true
                     Logger.pendingActions
                         .warning("Dropping obsolete action \(action.debugDescription, privacy: .private)")
+                } else if (error as NSError).domain == FirestoreErrorDomain,
+                          (error as NSError).code == FirestoreErrorCode.permissionDenied.rawValue
+                {
+                    // permission denied => drop the action and notify the user
+                    obsolete = true
+                    Logger.pendingActions
+                        .warning(
+                            "Dropping action, permission denied: \(action.debugDescription, privacy: .private)"
+                        )
+                    let actionName = String(describing: type(of: action.command.localCommand))
+                    // This is a rather technical message shown to the user but it's better than
+                    // nothing... Also this doesn't rollback the local action, but since the action
+                    // is removed from local actions the next sync will overwrite it's results (unless it was creating something)
+                    // So we need something better than that...
+                    ToastWindow.shared.showError(text: "You don't have permission for \(actionName), aborting!")
                 } else {
                     // there's some non-obsolete error, retry the action
                     obsolete = false
