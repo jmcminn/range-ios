@@ -348,13 +348,6 @@ extension ProjectModel {
         return UpdateGeometriesArchivedCommand(geometryIds: [geometry.id], archive: archive)
     }
 
-    func markCollaboration(_ collaboration: Collaboration, archived: Bool) throws -> Command {
-        guard let geometry = collaboration.feature.first?.geometry.first else {
-            throw ModelError.geometryNotFound
-        }
-        return UpdateGeometriesArchivedCommand(geometryIds: [geometry.id], archive: archived)
-    }
-
     func update(archived: Bool, forCollaborations collaborationIds: [String]) -> Command {
         let geometryIds = [Collaboration](mainRealm.objects(Collaboration.self))
             .filter { collaborationIds.contains($0.id) }
@@ -376,10 +369,13 @@ extension ProjectModel {
         UpdateCollaborationsStatusCommand(authorId: userId, collaborationIds: collaborationIds, statusId: status.id)
     }
 
-    /// Update status for given collaborations and mark as archived
-    func updateStatusAndArchive(_ status: Status, forCollaborations collaborationIds: [String]) -> Command {
+    /// Update status for given collaborations and mark given collaborations as archived (subset of collaborations to update the status)
+    func update(status: Status,
+                forCollaborations collaborationIds: [String],
+                andArchiveCollaborations collaborationIdsToArchive: [String]) -> Command
+    {
         let geometryIds = [Collaboration](mainRealm.objects(Collaboration.self))
-            .filter { collaborationIds.contains($0.id) }
+            .filter { collaborationIdsToArchive.contains($0.id) }
             .compactMap { $0.feature.first?.geometry.first?.id }
         return UpdateCollaborationsStatusAndArchiveCommand(
             authorId: userId,

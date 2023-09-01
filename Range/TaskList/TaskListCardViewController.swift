@@ -555,21 +555,30 @@ extension TaskListCardViewController {
                        handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
             ActionItem(title: String(localized: "Status"), imageName: "circle.dashed",
                        handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
-            ActionItem(title: String(localized: "Archive"), imageName: "archivebox",
-                       handler: { [weak self] in self?.bulkArchive() }),
         ]
 
-        // only show the Delete option if user has permissions to remove any of them
-        let tasksToDelete = collaborations
+        let selectedTasks = collaborations
             .filter { self.selectedTasks.contains($0.id) }
+
+        // only show the Archive option if user has permissions to archive any of the tasks
+        let tasksToArchive = [String](selectedTasks
+            .filter { self.projectModel.currentUser.canArchive($0) }
+            .map(\.id))
+        if !tasksToArchive.isEmpty {
+            actions.append(
+                ActionItem(title: String(localized: "Archive"), imageName: "archivebox",
+                           handler: { [weak self] in self?.bulkArchive(tasksToArchive) })
+            )
+        }
+
+        // only show the Delete option if user has permissions to remove any of the tasks
+        let tasksToDelete = [String](selectedTasks
             .filter { self.projectModel.currentUser.canDelete($0) }
-            .map(\.id)
+            .map(\.id))
         if !tasksToDelete.isEmpty {
             actions.append(
                 ActionItem(title: String(localized: "Delete"), imageName: "trash", style: .destructive,
-                           handler: { [weak self] in
-                               self?.confirmAndBulkDelete(tasks: [String](tasksToDelete))
-                           })
+                           handler: { [weak self] in self?.confirmAndBulkDelete(tasksToDelete) })
             )
         }
 
@@ -717,22 +726,55 @@ extension TaskListCardViewController {
     }
 
     private func bulkUpdateStatusAndArchive(_ status: Status) {
+        // only archive the collaborations user have permissions to archive
+        let collaborationsToArchive = [String](collaborations
+            .filter { self.selectedTasks.contains($0.id) }
+            .filter { self.projectModel.currentUser.canArchive($0) }
+            .map(\.id))
+
+        let completedAndArchivedCount = collaborationsToArchive.count
+        let completedOnlyCount = selectedTasks.count - completedAndArchivedCount
+
         projectModel.run(
-            projectModel.updateStatusAndArchive(status, forCollaborations: [String](selectedTasks))
+            projectModel.update(
+                status: status,
+                forCollaborations: [String](selectedTasks),
+                andArchiveCollaborations: collaborationsToArchive
+            )
         ) { error in
-            if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }
+            if error == nil {
+                var messageStrings: [String] = []
+                if completedOnlyCount > 0 {
+                    messageStrings.append(
+                        "\(completedOnlyCount) \(completedOnlyCount == 1 ? "task" : "tasks") completed"
+                    )
+                }
+                if completedAndArchivedCount > 0 {
+                    messageStrings.append(
+                        "\(completedAndArchivedCount) \(completedAndArchivedCount == 1 ? "task" : "tasks") completed and archived"
+                    )
+                }
+                ToastWindow.shared.showSuccess(text: messageStrings.joined(separator: ", "))
+            } else {
+                ToastWindow.shared.showError(text: "Failed to update the status and archive")
+            }
         }
     }
 
-    private func bulkArchive() {
+    private func bulkArchive(_ tasks: [String]) {
         projectModel.run(
-            projectModel.update(archived: true, forCollaborations: [String](selectedTasks))
+            projectModel.update(archived: true, forCollaborations: tasks)
         ) { error in
-            if error != nil { ToastWindow.shared.showError(text: "Failed to archive") }
+            if error == nil {
+                ToastWindow.shared.showSuccess(text:
+                    "\(tasks.count) \(tasks.count == 1 ? "task" : "tasks") archived successfully")
+            } else {
+                ToastWindow.shared.showError(text: "Failed to archive")
+            }
         }
     }
 
-    private func confirmAndBulkDelete(tasks: [String]) {
+    private func confirmAndBulkDelete(_ tasks: [String]) {
         ActionSelectorCardViewController(
             icon: nil,
             title: "Are you sure?",

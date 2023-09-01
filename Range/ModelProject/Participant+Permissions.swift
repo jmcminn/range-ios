@@ -9,6 +9,13 @@ extension Participant {
         return false
     }
 
+    /// Only author or Admin can archive a collaboration
+    func canArchive(_ collaboration: Collaboration) -> Bool {
+        if organizationRole == .Admin { return true }
+        if id == collaboration.author?.id { return true }
+        return false
+    }
+
     /// Only author or Admin can delete a comment
     func canDelete(_ comment: Comment) -> Bool {
         if organizationRole == .Admin { return true }

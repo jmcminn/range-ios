@@ -508,11 +508,16 @@ extension CollaborationFlowController {
             title: "Assign Status",
             statuses: statuses,
             selectedStatus: collaboration.status, onStatusPicked: { [weak self] result in
+                guard let self = self else { return }
                 switch result {
                 case let .status(status):
-                    self?.updateStatus(status)
+                    self.updateStatus(status)
                 case let .completeAndArchive(status):
-                    self?.updateStatusAndArchive(status)
+                    if model.currentUser.canArchive(collaboration) {
+                        self.updateStatusAndArchive(status)
+                    } else {
+                        self.updateStatus(status)
+                    }
                 }
             }
         )
@@ -528,7 +533,11 @@ extension CollaborationFlowController {
 
     private func updateStatusAndArchive(_ status: Status) {
         guard let collaboration = collaboration else { return }
-        model.run(model.updateStatusAndArchive(status, forCollaborations: [collaboration.id])) { error in
+        model.run(model.update(
+            status: status,
+            forCollaborations: [collaboration.id],
+            andArchiveCollaborations: [collaboration.id]
+        )) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }
         }
     }

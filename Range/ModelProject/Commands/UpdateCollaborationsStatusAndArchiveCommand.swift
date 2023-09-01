@@ -8,13 +8,18 @@ struct UpdateCollaborationsStatusAndArchiveCommand: Command, Codable, Equatable 
     var targetIds: [String] { .init(geometryIds + collaborationIds) }
 
     var authorId: String
-    let geometryIds: [String]
-    let collaborationIds: [String]
+    let geometryIds: [String] // for archiving
+    let collaborationIds: [String] // for status update
     var statusId: String
     /// Store update id for applying to Firestore (for idempotence we need to remember it and do not create multiple updates for one name change)
     var updateIds: [String]
 
-    init(authorId: String, geometryIds: [String], collaborationIds: [String], statusId: String) {
+    init(
+        authorId: String,
+        geometryIds: [String],
+        collaborationIds: [String],
+        statusId: String
+    ) {
         self.authorId = authorId
         self.geometryIds = geometryIds
         self.collaborationIds = collaborationIds

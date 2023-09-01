@@ -298,11 +298,28 @@ extension ProjectFlowController: ProjectFlowActions {
             ToastWindow.shared.showError(text: "Completed status not found")
             return
         }
-        model.run(
-            model.updateStatusAndArchive(completedStatus, forCollaborations: [collaboration.id])
-        ) { error in
-            if error != nil { ToastWindow.shared.showError(text: "Failed to complete and archive the task") }
-            else { ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived") }
+        if !collaboration.isArchived, !model.currentUser.canArchive(collaboration) {
+            // user has no rights to archive, update status only and notify the user
+            model.run(
+                model.update(status: completedStatus, forCollaboration: collaboration)
+            ) { error in
+                if error != nil { ToastWindow.shared.showError(text: "Failed to complete the task") }
+                else {
+                    ToastWindow.shared
+                        .showWarning(text: "Task Completed. You do not have permissions to archive this task.")
+                }
+            }
+        } else {
+            model.run(
+                model.update(
+                    status: completedStatus,
+                    forCollaborations: [collaboration.id],
+                    andArchiveCollaborations: [collaboration.id]
+                )
+            ) { error in
+                if error != nil { ToastWindow.shared.showError(text: "Failed to complete and archive the task") }
+                else { ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived") }
+            }
         }
     }
 }
@@ -365,13 +382,14 @@ extension ProjectFlowController {
                     title: String(localized: "Update Location"), imageName: "mappin.and.ellipse",
                     handler: { [weak self] in self?.moveCollaboration(collaboration) }
                 ),
-                ActionItem(
+            ])
+            if model.currentUser.canArchive(collaboration) {
+                actions.append(ActionItem(
                     title: collaboration.isArchived ? String(localized: "Unarchive") : String(localized: "Archive"),
                     imageName: "archivebox",
                     handler: { [weak self] in self?.toggleCollaborationArchived(collaboration) }
-                ),
-
-            ])
+                ))
+            }
             if model.currentUser.canDelete(collaboration) {
                 actions.append(ActionItem(
                     title: String(localized: "Delete"), imageName: "trash", style: .destructive,
