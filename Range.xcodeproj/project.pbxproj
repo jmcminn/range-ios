@@ -206,6 +206,7 @@
 		0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */; };
 		0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */; };
 		0A598C1B29C067F400DB2849 /* FirestoreCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */; };
+		0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */; };
 		0A5E897F2A9F6F8200C72235 /* Participant+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
@@ -630,6 +631,7 @@
 		0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPreviewViewController.swift; sourceTree = "<group>"; };
 		0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentThumbnailGenerator.swift; sourceTree = "<group>"; };
 		0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSource.swift; sourceTree = "<group>"; };
+		0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListSelectAllTasksView.swift; sourceTree = "<group>"; };
 		0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Participant+Permissions.swift"; sourceTree = "<group>"; };
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632EAB27E49636001A019B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1892,6 +1894,7 @@
 			isa = PBXGroup;
 			children = (
 				0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */,
+				0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */,
 				0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */,
 				0A8322322A419D6F0076D032 /* TaskListFilters.swift */,
 				0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */,
@@ -2118,6 +2121,7 @@
 				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */,
+				0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */,
 				0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */,
 				0A374DE42927B3490036C184 /* DeleteCollaborationsCommand.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,

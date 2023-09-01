@@ -18,6 +18,7 @@ class TaskListCardViewController: SheetCardViewController {
     unowned let canvasContainer: CanvasContainerViewController
 
     private let tableView = UITableView(frame: .zero, style: .plain)
+    private let selectAllTasksView = TaskListSelectAllTasksView()
 
     // all collaborations
     private let collaborations: Results<Collaboration>
@@ -90,6 +91,7 @@ class TaskListCardViewController: SheetCardViewController {
         setupSearchView()
         setupSelectButton()
 
+        setupSelectAllTasksView()
         setupTableView()
         containerView.insertSubview(tableView, belowSubview: sheetHeaderView)
         tableView.snp.makeConstraints { make in
@@ -170,6 +172,7 @@ class TaskListCardViewController: SheetCardViewController {
 
     /// Adjust the UI for changed collaborations
     private func onCollaborationsChanged() {
+        updateSelectAllTasksView()
         updateBulkActionsBottomBarVisibility()
         updateSelectedTasksCountLabel()
         updateFiltersIndicatorBadge()
@@ -239,6 +242,12 @@ class TaskListCardViewController: SheetCardViewController {
         tableView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
     }
 
+    private func setupSelectAllTasksView() {
+        selectAllTasksView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(toggleSelectAllAction))
+        )
+    }
+
     private func setupSelectButton() {
         guard selectButton == nil else { return }
         var config = UIButton.Configuration.filled()
@@ -275,7 +284,10 @@ class TaskListCardViewController: SheetCardViewController {
         selectButton.setTitle(mode == .normal ? String(localized: "Select") : String(localized: "Cancel"),
                               for: .normal)
         selectedTasks.removeAll()
-        tableView.reloadData()
+        UIView.performWithoutAnimation {
+            tableView.reloadData()
+        }
+        updateSelectAllTasksView()
         updateBulkActionsBottomBarVisibility()
         updateSelectedTasksCountLabel()
     }
@@ -284,6 +296,16 @@ class TaskListCardViewController: SheetCardViewController {
 // MARK: table view delegate
 
 extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
+        mode == .select
+            ? UIFont.preferredFont(forTextStyle: .headline).lineHeight + 20
+            : 0
+    }
+
+    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        mode == .select ? selectAllTasksView : nil
+    }
+
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         searchedCollaborations.count
     }
@@ -389,6 +411,22 @@ extension TaskListCardViewController {
 // MARK: - selection
 
 extension TaskListCardViewController {
+    /// Are all currently filtered tasks selected?
+    private var allTasksSelected: Bool {
+        searchedCollaborations.count == selectedTasks.count
+    }
+
+    /// select/deselect all tasks depending on the current selection (if all selected then it's a deselect, otherwise select)
+    @objc func toggleSelectAllAction() {
+        let markSelected = !allTasksSelected
+        for row in 0 ... searchedCollaborations.count {
+            markIndexPath(IndexPath(row: row, section: 0), selected: markSelected)
+        }
+        updateSelectAllTasksView()
+        updateBulkActionsBottomBarVisibility()
+        updateSelectedTasksCountLabel()
+    }
+
     /// Handle long press on cells - enabled select mode if not enabled and select given cell
     @objc func handleLongPress(gesture: UILongPressGestureRecognizer!) {
         guard gesture.state == .began else { return }
@@ -422,6 +460,10 @@ extension TaskListCardViewController {
         selectedTasksCountLabel?.text = selectedTasksCountText
     }
 
+    private func updateSelectAllTasksView() {
+        selectAllTasksView.mark(selected: allTasksSelected)
+    }
+
     var selectedTasksCountText: String {
         let numberOfItems = selectedTasks.count
         return (numberOfItems == 1)
@@ -435,6 +477,7 @@ extension TaskListCardViewController {
         let task = searchedCollaborations[indexPath.row]
         let selected = !selectedTasks.contains(task.id)
         markIndexPath(indexPath, selected: selected)
+        updateSelectAllTasksView()
         updateBulkActionsBottomBarVisibility()
         updateSelectedTasksCountLabel()
     }
