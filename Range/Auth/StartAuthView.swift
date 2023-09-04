@@ -4,6 +4,7 @@ import SwiftUI
 struct StartAuthView: View {
     @Environment(\.colorScheme) var colorScheme
     let loginAction: () -> Void
+    let signUpAction: () -> Void
 
     var body: some View {
         GeometryReader { geometry in
@@ -45,8 +46,7 @@ struct StartAuthView: View {
 
                         GrayButton(text: "Log in", clicked: loginAction)
 
-                        BlueGradientButton(text: "Sign up", clicked: {})
-                            .disabled(true)
+                        BlueGradientButton(text: "Sign up", clicked: signUpAction)
                     }
 
                     Spacer()
@@ -60,6 +60,6 @@ struct StartAuthView: View {
 
 struct StartAuthView_Previews: PreviewProvider {
     static var previews: some View {
-        StartAuthView(loginAction: {})
+        StartAuthView(loginAction: {}, signUpAction: {})
     }
 }

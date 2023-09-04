@@ -35,9 +35,10 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
     }
 
     private func showStartAuthView() {
-        let authView = StartAuthView { [weak self] in
-            self?.showEmailAndPasswordAuthView()
-        }
+        let authView = StartAuthView(
+            loginAction: { [weak self] in self?.showEmailAndPasswordAuthView() },
+            signUpAction: { [weak self] in self?.showEmailAndPasswordSignUpView() }
+        )
         let vc = UIHostingController<StartAuthView>(rootView: authView)
 
         setViewControllers([vc], animated: false)
@@ -47,13 +48,12 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
     private func showEmailAndPasswordAuthView() {
         let emailAuthViewModel = EmailAuthViewModel()
 
-        let emailAuthViewController = UIHostingController<EmailAuthView>(
-            rootView: EmailAuthView(
-                viewModel: emailAuthViewModel
-            ) { [weak self] in
-                self?.authenticate(byEmailAndPassword: emailAuthViewModel)
-            }
-        )
+        let emailAuthView = EmailAuthView(viewModel: emailAuthViewModel) { [weak self] in
+            self?.authenticate(byEmailAndPassword: emailAuthViewModel)
+        }
+
+        let emailAuthViewController = UIHostingController<EmailAuthView>(rootView: emailAuthView)
+
         pushViewController(emailAuthViewController, animated: true)
     }
 
@@ -61,27 +61,80 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
     /// It resolves the flow when authentication succeeded and shows the error alert otherwise
     private func authenticate(byEmailAndPassword model: EmailAuthViewModel) {
         model.isAuthenticating = true
-        Auth.auth()
-            .signIn(withEmail: model.email, password: model.password) { [weak self] result, error in
-                guard let self = self else { return }
-                model.isAuthenticating = false
-                guard error == nil else {
-                    self.showAuthenticationError(withMessage: error!.localizedDescription)
-                    return
+        Task { @MainActor in
+            do {
+                defer {
+                    model.isAuthenticating = false
                 }
-                guard let user = result?.user else {
-                    self.showAuthenticationError(withMessage: "Unknown error")
-                    return
+                let authResult = try await Auth.auth().signIn(withEmail: model.email, password: model.password)
+                let userId = try await authResult.user._getUserId()
+                onAuthenticated(userId)
+            } catch {
+                self.showAuthenticationError(withMessage: self.message(forError: error))
+            }
+        }
+    }
+
+    private func showEmailAndPasswordSignUpView() {
+        let viewModel = EmailSignUpViewModel()
+
+        let emailSignUpVC = UIHostingController<EmailSignUpView>(
+            rootView: EmailSignUpView(viewModel: viewModel) { [weak self] in
+                self?.signUp(byEmailAndPassword: viewModel)
+            }
+        )
+        pushViewController(emailSignUpVC, animated: true)
+    }
+
+    /// Try to sign up with given user input using `FirebaseAuth`.
+    /// It resolves the flow when authentication succeeded and shows the error alert otherwise
+    private func signUp(byEmailAndPassword model: EmailSignUpViewModel) {
+        model.isAuthenticating = true
+        Task { @MainActor in
+            do {
+                defer {
+                    model.isAuthenticating = false
                 }
-                getUserId(forUser: user) { result in
-                    switch result {
-                    case let .failure(error):
-                        self.showAuthenticationError(withMessage: error.localizedDescription)
-                    case let .success(userId):
-                        self.onAuthenticated(userId)
+                let authResult = try await Auth.auth().createUser(withEmail: model.email, password: model.password)
+                let user = authResult.user
+                try await user.sendEmailVerification()
+                let userId = try await user._getUserId()
+                onAuthenticated(userId)
+            } catch {
+                self.showAuthenticationError(withMessage: self.message(forError: error))
+            }
+        }
+    }
+
+    private func message(forError error: Error) -> String {
+        // Extract information about the error from blocking function info in underlying errors
+        if let e = (error as NSError).underlyingErrors.first,
+           let responseInfo = (e as NSError).userInfo["FIRAuthErrorUserInfoDeserializedResponseKey"] as? [String: Any],
+           let message = responseInfo["message"] as? String
+        {
+            // sometimes a message is just a code for error (when coming directly from auth)
+            if message == "INVALID_LOGIN_CREDENTIALS" {
+                return String(localized: "Your email or password is invalid")
+            }
+            // when coming from a blocking auth function, the message is a text but it has a json with message key embedded in it
+            if let jsonStart = message.firstIndex(of: "{"), let jsonEnd = message.lastIndex(of: "}") {
+                let jsonMessage = message[jsonStart ... jsonEnd]
+                if let jsonMessageData = jsonMessage.data(using: .utf8) {
+                    do {
+                        if let jsonObject = try JSONSerialization.jsonObject(with: jsonMessageData) as? [String: Any],
+                           let errorDict = jsonObject["error"] as? [String: Any],
+                           let message = errorDict["message"] as? String
+                        {
+                            return message
+                        }
+                    } catch {
+                        // ignore error
                     }
                 }
             }
+        }
+
+        return error.localizedDescription
     }
 
     /// Present alert controller with authentication error message

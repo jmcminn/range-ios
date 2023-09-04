@@ -2,6 +2,10 @@ import FirebaseAuth
 import Foundation
 import OSLog
 
+// for convenience (and because Xcode complains that there's no type named 'User' in module 'FirebaseAuth'
+// while there is and it builds successfully, so let's limit the complaining to this line
+typealias FirebaseUser = FirebaseAuth.User
+
 // possible errors for authentication
 enum AuthError: Error {
     case unknown
@@ -21,23 +25,14 @@ extension AuthError: LocalizedError {
     }
 }
 
-func getUserId(forUser user: FirebaseAuth.User, completion: @escaping (Result<String, Error>) -> Void) {
-    user.getIDTokenResult { tokenResult, error in
-        if let error = error {
-            Logger.auth.error("error fetching the id token result \(error.localizedDescription, privacy: .public)")
-            completion(.failure(error))
-            return
-        }
-        guard let tokenResult = tokenResult else {
-            Logger.auth.error("no tokenResult")
-            completion(.failure(AuthError.unknown))
-            return
-        }
+extension FirebaseUser {
+    /// Returns userId stored in user custom claims of throws if not found
+    func _getUserId() async throws -> String {
+        let tokenResult = try await getIDTokenResult()
         guard let userId = tokenResult.claims["userId"] as? String else {
-            Logger.auth.error("userId not found in claims")
-            completion(.failure(AuthError.userIdNotFound))
-            return
+            Logger.auth.error("userId not found in claims \(tokenResult.claims)")
+            throw AuthError.userIdNotFound
         }
-        completion(.success(userId))
+        return userId
     }
 }
