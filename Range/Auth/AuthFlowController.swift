@@ -4,7 +4,7 @@ import SwiftUI
 import UIKit
 
 /// The flow controller for authentication
-final class AuthFlowController: UIViewController {
+final class AuthFlowController: UINavigationController, UINavigationControllerDelegate {
     /// callback for when authentication has successfully finished, called with the Range userId
     let onAuthenticated: (String) -> Void
 
@@ -15,6 +15,7 @@ final class AuthFlowController: UIViewController {
     init(onAuthenticated: @escaping (String) -> Void) {
         self.onAuthenticated = onAuthenticated
         super.init(nibName: nil, bundle: nil)
+        delegate = self
     }
 
     @available(*, unavailable)
@@ -23,7 +24,23 @@ final class AuthFlowController: UIViewController {
     }
 
     func start() {
-        showEmailAndPasswordAuthView()
+        showStartAuthView()
+    }
+
+    /// set custom back button when showing a view controller - we don't want the "back" text
+    func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
+        let item = UIBarButtonItem(title: " ", style: .plain, target: nil, action: nil)
+        item.tintColor = .dynamic(.Neutral_04)
+        viewController.navigationItem.backBarButtonItem = item
+    }
+
+    private func showStartAuthView() {
+        let authView = StartAuthView { [weak self] in
+            self?.showEmailAndPasswordAuthView()
+        }
+        let vc = UIHostingController<StartAuthView>(rootView: authView)
+
+        setViewControllers([vc], animated: false)
     }
 
     /// Initiates the authentication by email and password
@@ -37,11 +54,7 @@ final class AuthFlowController: UIViewController {
                 self?.authenticate(byEmailAndPassword: emailAuthViewModel)
             }
         )
-
-        add(childController: emailAuthViewController)
-        emailAuthViewController.view.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        pushViewController(emailAuthViewController, animated: true)
     }
 
     /// Try to authenticate with given user input using `FirebaseAuth`.

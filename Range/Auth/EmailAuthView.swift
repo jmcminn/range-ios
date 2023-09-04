@@ -41,40 +41,44 @@ struct EmailAuthView: View {
                         .frame(height: 40)
                         .padding(EdgeInsets(top: 12, leading: 0, bottom: 40, trailing: 0))
 
-                    Text("Let's get started")
-                        .foregroundColor(.dynamic(.Neutral_04))
-                        .font(.title3.bold())
-                    Text("Please enter your email and password to continue")
+                    Text("Enter your details to log in")
                         .foregroundColor(.dynamic(.Neutral_05))
                         .font(.subheadline)
                         .padding(EdgeInsets(top: 5, leading: 0, bottom: 20, trailing: 0))
 
                     Group {
-                        TextField("Your email", text: $viewModel.email,
-                                  prompt: Text("Your email")
-                                      .foregroundColor(.dynamic(.Neutral_05)))
-                            .onSubmit {
-                                focusedField = "password"
-                            }
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
-                            .textContentType(.emailAddress)
-                            .keyboardType(.emailAddress)
-                            .submitLabel(.next)
+                        Group {
+                            TextField("Your email", text: $viewModel.email,
+                                      prompt: Text("Your email")
+                                          .foregroundColor(.dynamic(.Neutral_05)))
+                                .onSubmit {
+                                    focusedField = "password"
+                                }
+                                .autocapitalization(.none)
+                                .disableAutocorrection(true)
+                                .textContentType(.emailAddress)
+                                .keyboardType(.emailAddress)
+                                .submitLabel(.next)
 
-                        SecureField("Your password", text: $viewModel.password,
-                                    prompt: Text("Your password")
-                                        .foregroundColor(.dynamic(.Neutral_05)))
-                            .onSubmit {
-                                focusedField = nil
-                                authenticateAction()
-                            }
-                            .textContentType(.password)
-                            .focused($focusedField, equals: "password")
+                            SecureField("Your password", text: $viewModel.password,
+                                        prompt: Text("Your password")
+                                            .foregroundColor(.dynamic(.Neutral_05)))
+                                .onSubmit {
+                                    focusedField = nil
+                                    authenticateAction()
+                                }
+                                .textContentType(.password)
+                                .focused($focusedField, equals: "password")
+                        }
+                        .font(.title3)
+                        .accentColor(Color.Secondary_02)
+
+                        BlueGradientButton(text: "Log In", clicked: {
+                            focusedField = nil
+                            authenticateAction()
+                        })
                     }
-                    .padding(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0))
-                    .font(.title3)
-                    .accentColor(Color.Secondary_02)
+                    .padding(EdgeInsets(top: 12, leading: 0, bottom: 22, trailing: 0))
                     .disabled(viewModel.isAuthenticating)
 
                     Spacer()

@@ -207,6 +207,7 @@
 		0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */; };
 		0A598C1B29C067F400DB2849 /* FirestoreCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */; };
 		0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */; };
+		0A5C06882AA1F10A005A04CF /* StartAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06872AA1F10A005A04CF /* StartAuthView.swift */; };
 		0A5E897F2A9F6F8200C72235 /* Participant+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */; };
 		0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAB27E49636001A019B /* AppDelegate.swift */; };
 		0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A632EAD27E49636001A019B /* SceneDelegate.swift */; };
@@ -341,6 +342,7 @@
 		0AA424322913C6F40088E2B1 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424312913C6F40088E2B1 /* Action.swift */; };
 		0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424332913C7030088E2B1 /* ActionCommand.swift */; };
 		0AA42437291431470088E2B1 /* PendingActionsModelImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */; };
+		0AA438512AA1F91C0015B278 /* BlueGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */; };
 		0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */; };
 		0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
@@ -402,6 +404,7 @@
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
+		0AF11C972AA5C8C00022D44D /* GrayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF11C962AA5C8C00022D44D /* GrayButton.swift */; };
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
 		0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
@@ -632,6 +635,7 @@
 		0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentThumbnailGenerator.swift; sourceTree = "<group>"; };
 		0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSource.swift; sourceTree = "<group>"; };
 		0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListSelectAllTasksView.swift; sourceTree = "<group>"; };
+		0A5C06872AA1F10A005A04CF /* StartAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAuthView.swift; sourceTree = "<group>"; };
 		0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Participant+Permissions.swift"; sourceTree = "<group>"; };
 		0A632EA827E49636001A019B /* Range.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Range.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A632EAB27E49636001A019B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -772,6 +776,7 @@
 		0AA424312913C6F40088E2B1 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		0AA424332913C7030088E2B1 /* ActionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCommand.swift; sourceTree = "<group>"; };
 		0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModelImpl.swift; sourceTree = "<group>"; };
+		0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueGradientButton.swift; sourceTree = "<group>"; };
 		0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommand.swift; sourceTree = "<group>"; };
 		0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommandTest.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
@@ -831,6 +836,7 @@
 		0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyTest.swift; sourceTree = "<group>"; };
 		0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPinTypeCardViewController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
+		0AF11C962AA5C8C00022D44D /* GrayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayButton.swift; sourceTree = "<group>"; };
 		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
 		0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCollaborationTableViewCell.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
@@ -1023,6 +1029,7 @@
 			children = (
 				0AD9B75928624204005ACFD7 /* Authentication.swift */,
 				0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */,
+				0A5C06872AA1F10A005A04CF /* StartAuthView.swift */,
 				0A07D7652812960500B6F9A2 /* EmailAuthView.swift */,
 			);
 			path = Auth;
@@ -1057,6 +1064,8 @@
 		0A144F4A2A4C575E000F7593 /* ViewsSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */,
+				0AF11C962AA5C8C00022D44D /* GrayButton.swift */,
 				0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */,
 			);
 			path = ViewsSwiftUI;
@@ -2149,6 +2158,7 @@
 				0AFA1A4B294B19E100491492 /* FullscreenMediaSummaryViewController.swift in Sources */,
 				0A374DDE2924F18C0036C184 /* ToastView.swift in Sources */,
 				0ABFD8B228EEE771008CDA74 /* UpdateUploadsTagsCommand.swift in Sources */,
+				0A5C06882AA1F10A005A04CF /* StartAuthView.swift in Sources */,
 				0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */,
 				0A010C9F29913AFD0066D35A /* ProjectModel+RealmMigration.swift in Sources */,
 				0A99BF2B28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift in Sources */,
@@ -2223,6 +2233,7 @@
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A82A8E6292178E000A4BBCE /* CreateCollaborationCommand.swift in Sources */,
 				0A05312B2937B2FA00738BA3 /* ImageMediaCollectionViewCell.swift in Sources */,
+				0AF11C972AA5C8C00022D44D /* GrayButton.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
@@ -2279,6 +2290,7 @@
 				0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */,
 				0A9341C629A8A50D006166C1 /* PillView.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
+				0AA438512AA1F91C0015B278 /* BlueGradientButton.swift in Sources */,
 				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
 				0A34073529C89E41007299A7 /* UIFont.TextStyle+Extensions.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
