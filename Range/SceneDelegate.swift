@@ -30,6 +30,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// if present show this project and it's task list when user signs in
     var showTaskListOnLoginForProjectId: String?
 
+    var authenticatedUserListenerHandle: AuthStateDidChangeListenerHandle?
+
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -87,10 +89,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///    - userId: Firestore user id
     ///    - newlySignedIn: true if main flow is starting after user went through authentication (and false if user was already authenticated when the app started)
     private func startMainFlow(forUser userId: String, newlySignedIn: Bool) {
+        observeAuthenticatedUser()
         Analytics.setUserID(userId)
         SentrySDK.setUser(Sentry.User(userId: userId))
         Task { @MainActor in
             await self.showProjects(forUserId: userId, newlySignedIn: newlySignedIn)
+        }
+    }
+
+    private func observeAuthenticatedUser() {
+        authenticatedUserListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            if user == nil {
+                Logger.auth.info("user (no longer) authenticated")
+                self?.onSignedOut()
+            }
         }
     }
 
@@ -129,6 +141,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private func onSignedOut(callback: (() -> Void)? = nil) {
         Task { @MainActor in
+            if let authenticatedUserListenerHandle = authenticatedUserListenerHandle {
+                Auth.auth().removeStateDidChangeListener(authenticatedUserListenerHandle)
+            }
             if let projectsFC = window?.rootViewController as? ProjectsFlowController {
                 await projectsFC.stop()
             }
