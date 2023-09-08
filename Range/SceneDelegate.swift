@@ -41,11 +41,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // check whether user is authenticated
         if let user = Auth.auth().currentUser {
-            // TODO: 1654 is email verified
             Task { @MainActor in
                 do {
+                    try await user.reload()
                     let userId = try await user._getUserId()
-                    self.startMainFlow(forUser: userId, newlySignedIn: false)
+                    if user.isEmailVerified {
+                        self.startMainFlow(forUser: userId, newlySignedIn: false)
+                    } else {
+                        showAuth()
+                    }
                 } catch {
                     self.showAuth()
                 }

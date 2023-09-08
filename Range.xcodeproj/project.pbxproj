@@ -158,6 +158,7 @@
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
 		0A456238283E792200BA8D21 /* FirestoreGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A456237283E792200BA8D21 /* FirestoreGeometry.swift */; };
 		0A45BAFD2AA5F74800B86B85 /* EmailSignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */; };
+		0A45BAFF2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BAFE2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift */; };
 		0A45BB012AAA2BE000B86B85 /* TranslucentButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */; };
 		0A45BB032AAB2B0E00B86B85 /* BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BB022AAB2B0E00B86B85 /* BackButton.swift */; };
 		0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4782FF28A516AA0063040F /* CollaborationViewController.swift */; };
@@ -590,6 +591,7 @@
 		0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTest.swift; sourceTree = "<group>"; };
 		0A456237283E792200BA8D21 /* FirestoreGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreGeometry.swift; sourceTree = "<group>"; };
 		0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignUpView.swift; sourceTree = "<group>"; };
+		0A45BAFE2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwaitEmailVerificationView.swift; sourceTree = "<group>"; };
 		0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslucentButton.swift; sourceTree = "<group>"; };
 		0A45BB022AAB2B0E00B86B85 /* BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButton.swift; sourceTree = "<group>"; };
 		0A4782FF28A516AA0063040F /* CollaborationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationViewController.swift; sourceTree = "<group>"; };
@@ -1038,6 +1040,7 @@
 				0A5C06872AA1F10A005A04CF /* StartAuthView.swift */,
 				0A07D7652812960500B6F9A2 /* EmailAuthView.swift */,
 				0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */,
+				0A45BAFE2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -2140,6 +2143,7 @@
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */,
 				0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */,
+				0A45BAFF2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift in Sources */,
 				0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */,
 				0A374DE42927B3490036C184 /* DeleteCollaborationsCommand.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
@@ -2430,6 +2434,7 @@
 				0A144F472A4B22FB000F7593 /* FullscreenImageGalleryView.swift in Sources */,
 				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
 				0A3714DF29504FA6004ED1B0 /* ProjectFlowController+Actions.swift in Sources */,
+				0A45BB012AAA2BE000B86B85 /* TranslucentButton.swift in Sources */,
 				0A7393812A606BF60079A7FB /* Annotations+Dictionaries.swift in Sources */,
 				0A0E206429630B7C001782A5 /* SelectPinTypeButton.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,

@@ -1,4 +1,5 @@
 import FirebaseAuth
+import OSLog
 import SnapKit
 import SwiftUI
 import UIKit
@@ -7,6 +8,9 @@ import UIKit
 final class AuthFlowController: UINavigationController, UINavigationControllerDelegate {
     /// callback for when authentication has successfully finished, called with the Range userId
     let onAuthenticated: (String) -> Void
+
+    /// Timer used to poll the user data with given time interval
+    var checkEmailVerifiedTimer: Timer?
 
     /// Initiates with callback for resolving the flow.
     /// - Important: Please note that this flow can only be resolved after the user successfully authenticates
@@ -41,11 +45,23 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
             loginAction: { [weak self] in self?.showEmailAndPasswordAuthView() },
             signUpAction: { [weak self] in self?.showEmailAndPasswordSignUpView() }
         )
-        let vc = UIHostingController<StartAuthView>(rootView: authView)
+        let startVC = UIHostingController<StartAuthView>(rootView: authView)
 
-        setViewControllers([vc], animated: false)
+        var vcs: [UIViewController] = [startVC]
+
+        if let user = Auth.auth().currentUser, !user.isEmailVerified {
+            // if user is signed in then show AwaitEmailVerificationView on top (going back does sign out)
+            // if user is signed in and email is verified the auth flow should never be started...
+            vcs.append(setupAwaitEmailVerificationView())
+        }
+
+        setViewControllers(vcs, animated: false)
     }
+}
 
+// MARK: - sign in
+
+extension AuthFlowController {
     /// Initiates the authentication by email and password
     private func showEmailAndPasswordAuthView() {
         let emailAuthViewModel = EmailAuthViewModel()
@@ -71,14 +87,25 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
                     model.isAuthenticating = false
                 }
                 let authResult = try await Auth.auth().signIn(withEmail: model.email, password: model.password)
-                let userId = try await authResult.user._getUserId()
-                onAuthenticated(userId)
+                let user = authResult.user
+                let userId = try await user._getUserId()
+                if !user.isEmailVerified {
+                    self.showAwaitEmailVerificationView()
+                } else {
+                    onAuthenticated(userId)
+                }
             } catch {
-                self.showAuthenticationError(withMessage: self.message(forError: error))
+                let message = self.message(forError: error)
+                Logger.auth.error("signIn error \(message)")
+                self.showAuthenticationError(withMessage: message)
             }
         }
     }
+}
 
+// MARK: - sign up
+
+extension AuthFlowController {
     private func showEmailAndPasswordSignUpView() {
         let viewModel = EmailSignUpViewModel()
 
@@ -104,15 +131,126 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
                 }
                 let authResult = try await Auth.auth().createUser(withEmail: model.email, password: model.password)
                 let user = authResult.user
-                try await user.sendEmailVerification()
+                if !user.isEmailVerified {
+                    try await user.sendEmailVerification()
+                    self.showAwaitEmailVerificationView()
+                } else {
+                    let userId = try await user._getUserId()
+                    onAuthenticated(userId)
+                }
+            } catch {
+                let message = self.message(forError: error)
+                Logger.auth.error("createUser error \(message)")
+                self.showAuthenticationError(withMessage: message)
+            }
+        }
+    }
+}
+
+// MARK: - await email verification
+
+extension AuthFlowController {
+    private func showAwaitEmailVerificationView() {
+        let vc = setupAwaitEmailVerificationView()
+        pushViewController(vc, animated: true)
+    }
+
+    /// Creates the view and starts the timer for checking if user is verified
+    private func setupAwaitEmailVerificationView() -> UIViewController {
+        let viewModel = AwaitEmailVerificationViewModel()
+        let awaitEmailVerificationView = AwaitEmailVerificationView(
+            viewModel: viewModel,
+            resendAction: { [weak self] in self?.resendEmailVerification(viewModel) },
+            backAction: { [weak self] in
+                // This is a sign out as user may decide to login as someone else...
+                // And there's no way around email verification...
+                self?.signOutFromAwaitEmailVerification()
+                self?.popToRootViewController(animated: true)
+            }
+        )
+        let awaitEmailVerificationVC = UIHostingController<AwaitEmailVerificationView>(
+            rootView: awaitEmailVerificationView
+        )
+        checkEmailVerifiedTimer = Timer.scheduledTimer(
+            timeInterval: 2,
+            target: self,
+            selector: #selector(checkEmailVerified),
+            userInfo: nil,
+            repeats: true
+        )
+        return awaitEmailVerificationVC
+    }
+
+    private func signOutFromAwaitEmailVerification() {
+        checkEmailVerifiedTimer?.invalidate()
+        do {
+            try Auth.auth().signOut()
+        } catch {
+            let message = message(forError: error)
+            Logger.auth.error("signOutFromAwaitEmailVerification error \(message)")
+            showAuthenticationError(withMessage: message)
+        }
+    }
+
+    /// After the user email is verified
+    private func proceedFromAwaitEmailVerification(_ user: FirebaseUser) {
+        checkEmailVerifiedTimer?.invalidate()
+        Task { @MainActor in
+            do {
                 let userId = try await user._getUserId()
                 onAuthenticated(userId)
             } catch {
-                self.showAuthenticationError(withMessage: self.message(forError: error))
+                let message = self.message(forError: error)
+                Logger.auth.error("proceedFromAwaitEmailVerification error \(message)")
+                self.showAuthenticationError(withMessage: message)
             }
         }
     }
 
+    private func resendEmailVerification(_ viewModel: AwaitEmailVerificationViewModel) {
+        viewModel.isProcessing = true
+        Task { @MainActor in
+            do {
+                defer {
+                    viewModel.isProcessing = false
+                }
+                try await Auth.auth().currentUser?.sendEmailVerification()
+                ToastWindow.shared.showSuccess(text: "Email verification sent")
+            } catch {
+                let message = self.message(forError: error)
+                Logger.auth.error("sendEmailVerification error \(message)")
+                self.showAuthenticationError(withMessage: message)
+            }
+        }
+    }
+
+    /// Called by a timer - poll information about user to see if email was verified in the meantime.
+    /// In practice this function results in error when user verifies it's email (as Firebase Auth requires the user to sign in again) so the
+    /// happy path of `proceedFromAwaitEmailVerification` is not followed
+    @objc
+    private func checkEmailVerified() {
+        guard let user = Auth.auth().currentUser else { return }
+        user.reload { [weak self] error in
+            guard let self = self else { return }
+            if let error = error {
+                // this means that user needs to sign in again
+                let message = self.message(forError: error)
+                Logger.auth.error("checkEmailVerified, reload user error \(message)")
+                self.signOutFromAwaitEmailVerification()
+                self.popToRootViewController(animated: true)
+            } else {
+                if user.isEmailVerified {
+                    self.proceedFromAwaitEmailVerification(user)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - error handling
+
+extension AuthFlowController {
+    /// Extract Firebase Auth error information from given Error or fallback to localizedDescription
     private func message(forError error: Error) -> String {
         // Extract information about the error from blocking function info in underlying errors
         if let e = (error as NSError).underlyingErrors.first,
