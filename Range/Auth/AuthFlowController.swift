@@ -16,6 +16,8 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
         self.onAuthenticated = onAuthenticated
         super.init(nibName: nil, bundle: nil)
         delegate = self
+        // hide the navigation bar, we need custom back navigation
+        isNavigationBarHidden = true
     }
 
     @available(*, unavailable)
@@ -23,15 +25,15 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
         fatalError("init(coder:) has not been implemented")
     }
 
-    func start() {
-        showStartAuthView()
-    }
-
     /// set custom back button when showing a view controller - we don't want the "back" text
     func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
-        let item = UIBarButtonItem(title: " ", style: .plain, target: nil, action: nil)
-        item.tintColor = .dynamic(.Neutral_04)
-        viewController.navigationItem.backBarButtonItem = item
+        // the "topGlow" background can be too wide on some devices and there's no nice way
+        // to clip it in the swiftUI view that make it still cover the safe area...
+        viewController.view.clipsToBounds = true
+    }
+
+    func start() {
+        showStartAuthView()
     }
 
     private func showStartAuthView() {
@@ -48,9 +50,11 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
     private func showEmailAndPasswordAuthView() {
         let emailAuthViewModel = EmailAuthViewModel()
 
-        let emailAuthView = EmailAuthView(viewModel: emailAuthViewModel) { [weak self] in
-            self?.authenticate(byEmailAndPassword: emailAuthViewModel)
-        }
+        let emailAuthView = EmailAuthView(
+            viewModel: emailAuthViewModel,
+            authenticateAction: { [weak self] in self?.authenticate(byEmailAndPassword: emailAuthViewModel) },
+            backAction: { [weak self] in self?.popViewController(animated: true) }
+        )
 
         let emailAuthViewController = UIHostingController<EmailAuthView>(rootView: emailAuthView)
 
@@ -78,11 +82,14 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
     private func showEmailAndPasswordSignUpView() {
         let viewModel = EmailSignUpViewModel()
 
-        let emailSignUpVC = UIHostingController<EmailSignUpView>(
-            rootView: EmailSignUpView(viewModel: viewModel) { [weak self] in
-                self?.signUp(byEmailAndPassword: viewModel)
-            }
+        let emailSignUpView = EmailSignUpView(
+            viewModel: viewModel,
+            continueAction: { [weak self] in self?.signUp(byEmailAndPassword: viewModel) },
+            backAction: { [weak self] in self?.popViewController(animated: true) }
         )
+
+        let emailSignUpVC = UIHostingController<EmailSignUpView>(rootView: emailSignUpView)
+
         pushViewController(emailSignUpVC, animated: true)
     }
 

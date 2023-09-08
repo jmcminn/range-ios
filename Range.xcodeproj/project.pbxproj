@@ -158,6 +158,8 @@
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
 		0A456238283E792200BA8D21 /* FirestoreGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A456237283E792200BA8D21 /* FirestoreGeometry.swift */; };
 		0A45BAFD2AA5F74800B86B85 /* EmailSignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */; };
+		0A45BB012AAA2BE000B86B85 /* TranslucentButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */; };
+		0A45BB032AAB2B0E00B86B85 /* BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BB022AAB2B0E00B86B85 /* BackButton.swift */; };
 		0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4782FF28A516AA0063040F /* CollaborationViewController.swift */; };
 		0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47830128A53FE50063040F /* ThumbnailCollectionViewCell.swift */; };
 		0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDA281BDABF0044E06E /* DisplayLink.swift */; };
@@ -588,6 +590,8 @@
 		0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTest.swift; sourceTree = "<group>"; };
 		0A456237283E792200BA8D21 /* FirestoreGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreGeometry.swift; sourceTree = "<group>"; };
 		0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignUpView.swift; sourceTree = "<group>"; };
+		0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslucentButton.swift; sourceTree = "<group>"; };
+		0A45BB022AAB2B0E00B86B85 /* BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButton.swift; sourceTree = "<group>"; };
 		0A4782FF28A516AA0063040F /* CollaborationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationViewController.swift; sourceTree = "<group>"; };
 		0A47830128A53FE50063040F /* ThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
@@ -1067,8 +1071,10 @@
 		0A144F4A2A4C575E000F7593 /* ViewsSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				0A45BB022AAB2B0E00B86B85 /* BackButton.swift */,
 				0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */,
 				0AF11C962AA5C8C00022D44D /* GrayButton.swift */,
+				0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */,
 				0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */,
 			);
 			path = ViewsSwiftUI;
@@ -2385,6 +2391,7 @@
 				0A4995CE285B264C00E571FB /* TagSelectionTableViewCell.swift in Sources */,
 				0A187AEF2A7FAE4F00EC179C /* OrganizationTableViewCell.swift in Sources */,
 				0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */,
+				0A45BB032AAB2B0E00B86B85 /* BackButton.swift in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
 				0A144F492A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,

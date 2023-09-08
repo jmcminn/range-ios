@@ -15,6 +15,7 @@ class EmailAuthViewModel: ObservableObject {
 struct EmailAuthView: View {
     @ObservedObject var viewModel: EmailAuthViewModel
     let authenticateAction: () -> Void
+    let backAction: () -> Void
     @FocusState private var focusedField: String?
     @Environment(\.colorScheme) var colorScheme
 
@@ -22,7 +23,7 @@ struct EmailAuthView: View {
         // GeometryReader is added as a hack to avoid the whole view moving up when
         // the keyboard appears: https://developer.apple.com/forums/thread/658432s
         GeometryReader { geometry in
-            ZStack(alignment: .top) {
+            ZStack(alignment: .topLeading) {
                 // background that stays in place and ignores safe areas
                 Group {
                     Color(.dynamic(.Neutral_10))
@@ -33,6 +34,8 @@ struct EmailAuthView: View {
                             .frame(width: geometry.size.width)
                     }
                 }.edgesIgnoringSafeArea(.all)
+
+                BackButton(callback: backAction)
 
                 VStack(spacing: 0) {
                     Image("logo_side_by_side")
@@ -59,6 +62,7 @@ struct EmailAuthView: View {
                                 .textContentType(.emailAddress)
                                 .keyboardType(.emailAddress)
                                 .submitLabel(.next)
+                                .padding(EdgeInsets(top: 24, leading: 0, bottom: 36, trailing: 0))
 
                             SecureField("Your password", text: $viewModel.password,
                                         prompt: Text("Your password")
@@ -69,6 +73,7 @@ struct EmailAuthView: View {
                                 }
                                 .textContentType(.password)
                                 .focused($focusedField, equals: "password")
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 24, trailing: 0))
                         }
                         .font(.title3)
                         .accentColor(Color.Secondary_02)
@@ -77,8 +82,10 @@ struct EmailAuthView: View {
                             focusedField = nil
                             authenticateAction()
                         })
+
+                        TranslucentButton(text: "Forgot password?", clicked: {})
                     }
-                    .padding(EdgeInsets(top: 12, leading: 0, bottom: 22, trailing: 0))
+                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
                     .disabled(viewModel.isAuthenticating)
 
                     Spacer()
@@ -97,7 +104,7 @@ struct EmailAuthView: View {
 
 struct EmailAuthView_Previews: PreviewProvider {
     static var previews: some View {
-        EmailAuthView(viewModel: EmailAuthViewModel(), authenticateAction: {})
+        EmailAuthView(viewModel: EmailAuthViewModel(), authenticateAction: {}, backAction: {})
             .preferredColorScheme(.dark)
     }
 }
