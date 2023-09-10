@@ -1,8 +1,15 @@
 import Combine
 import SwiftUI
 
+class StartAuthViewModel: ObservableObject {
+    /// whether the resending verification email is currently in progress
+    @Published var isProcessing = false
+}
+
 struct StartAuthView: View {
+    @ObservedObject var viewModel: StartAuthViewModel
     @Environment(\.colorScheme) var colorScheme
+    let googleLoginAction: () -> Void
     let loginAction: () -> Void
     let signUpAction: () -> Void
 
@@ -33,8 +40,7 @@ struct StartAuthView: View {
                         .padding(.bottom, 48)
 
                     VStack(alignment: .center, spacing: 24) {
-                        GrayButton(text: "Continue with Google", imageName: "Google", clicked: {})
-                            .disabled(true)
+                        GrayButton(text: "Continue with Google", imageName: "Google", clicked: googleLoginAction)
 
                         HStack(alignment: .center, spacing: 12) {
                             Rectangle().frame(height: 1).foregroundColor(.dynamic(.Neutral_07))
@@ -48,11 +54,17 @@ struct StartAuthView: View {
 
                         BlueGradientButton(text: "Sign up", clicked: signUpAction)
                     }
+                    .disabled(viewModel.isProcessing)
 
                     Spacer()
                 }
                 .multilineTextAlignment(.center)
                 .padding(20)
+            }
+            .overlay {
+                if viewModel.isProcessing {
+                    ProgressView()
+                }
             }
         }
     }
@@ -60,6 +72,11 @@ struct StartAuthView: View {
 
 struct StartAuthView_Previews: PreviewProvider {
     static var previews: some View {
-        StartAuthView(loginAction: {}, signUpAction: {})
+        StartAuthView(
+            viewModel: StartAuthViewModel(),
+            googleLoginAction: {},
+            loginAction: {},
+            signUpAction: {}
+        )
     }
 }

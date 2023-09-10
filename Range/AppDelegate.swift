@@ -6,6 +6,7 @@ import FirebaseFirestore
 import FirebaseFunctions
 import FirebaseMessaging
 import FirebaseStorage
+import GoogleSignIn
 import OSLog
 import Sentry
 import UIKit
@@ -127,6 +128,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             name: "Default Configuration",
             sessionRole: connectingSceneSession.role
         )
+    }
+
+    func application(_: UIApplication, open url: URL, options _: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        GIDSignIn.sharedInstance.handle(url)
     }
 }
 

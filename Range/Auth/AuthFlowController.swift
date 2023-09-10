@@ -1,4 +1,6 @@
+import Firebase
 import FirebaseAuth
+import GoogleSignIn
 import OSLog
 import SnapKit
 import SwiftUI
@@ -41,7 +43,10 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
     }
 
     private func showStartAuthView() {
+        let startAuthViewModel = StartAuthViewModel()
         let authView = StartAuthView(
+            viewModel: startAuthViewModel,
+            googleLoginAction: { [weak self] in self?.signInWithGoogle(startAuthViewModel) },
             loginAction: { [weak self] in self?.showEmailAndPasswordAuthView() },
             signUpAction: { [weak self] in self?.showEmailAndPasswordSignUpView() }
         )
@@ -56,6 +61,57 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
         }
 
         setViewControllers(vcs, animated: false)
+    }
+}
+
+// MARK: - Google sign in
+
+extension AuthFlowController {
+    private func signInWithGoogle(_ viewModel: StartAuthViewModel) {
+        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+
+        viewModel.isProcessing = true
+
+        // Create Google Sign In configuration object.
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        Task { @MainActor in
+            do {
+                defer {
+                    viewModel.isProcessing = false
+                }
+                let gidResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: self)
+                let gidUser = gidResult.user
+                guard let idTokenString = gidUser.idToken?.tokenString else {
+                    throw "Cannot login using the provided account. Please contact the support."
+                    return
+                }
+                let credential = GoogleAuthProvider.credential(
+                    withIDToken: idTokenString,
+                    accessToken: gidUser.accessToken.tokenString
+                )
+                let authResult = try await Auth.auth().signIn(with: credential)
+                let user = authResult.user
+                let userId = try await user._getUserId()
+                // no need to check if email is verified. For Google sign in it should be always auto verified
+                if !user.isEmailVerified {
+                    // this shouldn't happen
+                    throw "Email not verified for Google sign in. Please contact the support."
+                }
+                onAuthenticated(userId)
+            } catch {
+                let errorDomain = (error as NSError).domain
+                let errorCode = (error as NSError).code
+                if errorDomain == kGIDSignInErrorDomain, errorCode == GIDSignInError.canceled.rawValue {
+                    // cancellation is not considered an error, don't show the error message
+                    return
+                }
+                let message = self.message(forError: error)
+                Logger.auth.error("GoogleSignIn error \(message)")
+                self.showAuthenticationError(withMessage: message)
+            }
+        }
     }
 }
 
