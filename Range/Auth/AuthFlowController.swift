@@ -125,6 +125,7 @@ extension AuthFlowController {
         let emailAuthView = EmailAuthView(
             viewModel: emailAuthViewModel,
             authenticateAction: { [weak self] in self?.authenticate(byEmailAndPassword: emailAuthViewModel) },
+            forgotPasswordAction: { [weak self] in self?.showForgotPasswordView() },
             backAction: { [weak self] in self?.popViewController(animated: true) }
         )
 
@@ -156,6 +157,55 @@ extension AuthFlowController {
                 self.showAuthenticationError(withMessage: message)
             }
         }
+    }
+}
+
+// MARK: - forgot password
+
+extension AuthFlowController {
+    private func showForgotPasswordView() {
+        let viewModel = ForgotPasswordViewModel()
+
+        let view = ForgotPasswordView(
+            viewModel: viewModel,
+            sendLinkAction: { [weak self] in self?.forgotPassword(viewModel) },
+            backAction: { [weak self] in self?.popViewController(animated: true) }
+        )
+
+        pushViewController(UIHostingController(rootView: view), animated: true)
+    }
+
+    private func forgotPassword(_ model: ForgotPasswordViewModel) {
+        model.isProcessing = true
+        Task { @MainActor in
+            do {
+                defer {
+                    model.isProcessing = false
+                }
+                try await Auth.auth().sendPasswordReset(withEmail: model.email)
+                showForgotPasswordConfirmation()
+            } catch {
+                let message = error._messageForAuthError()
+                Logger.auth.error("forgotPassword error \(message)")
+                self.showAuthenticationError(withMessage: message)
+            }
+        }
+    }
+
+    private func showForgotPasswordConfirmation() {
+        let view = ForgotPasswordConfirmationView(
+            backAction: { [weak self] in self?.popViewController(animated: true) },
+            backToSignInAction: { [weak self] in
+                guard let self = self else { return }
+                let vcCount = self.viewControllers.count
+                if vcCount >= 3 {
+                    self.popToViewController(self.viewControllers[vcCount - 3], animated: true)
+                } else {
+                    self.popViewController(animated: true)
+                }
+            }
+        )
+        pushViewController(UIHostingController(rootView: view), animated: true)
     }
 }
 

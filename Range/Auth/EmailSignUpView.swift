@@ -42,7 +42,7 @@ struct EmailSignUpView: View {
         // GeometryReader is added as a hack to avoid the whole view moving up when
         // the keyboard appears: https://developer.apple.com/forums/thread/658432s
         GeometryReader { geometry in
-            ZStack(alignment: .topLeading) {
+            ZStack(alignment: .top) {
                 // background that stays in place and ignores safe areas
                 Group {
                     Color(.dynamic(.Neutral_10))
@@ -54,7 +54,10 @@ struct EmailSignUpView: View {
                     }
                 }.edgesIgnoringSafeArea(.all)
 
-                BackButton(callback: backAction)
+                HStack {
+                    BackButton(callback: backAction)
+                    Spacer()
+                }
 
                 VStack(spacing: 0) {
                     Image("logo_side_by_side")
@@ -90,7 +93,7 @@ struct EmailSignUpView: View {
                                     focusedField = nil
                                     continueAction()
                                 }
-                                .textContentType(.password)
+                                .textContentType(.newPassword)
                                 .focused($focusedField, equals: "password")
                                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 24, trailing: 0))
                         }

@@ -15,6 +15,7 @@ class EmailAuthViewModel: ObservableObject {
 struct EmailAuthView: View {
     @ObservedObject var viewModel: EmailAuthViewModel
     let authenticateAction: () -> Void
+    let forgotPasswordAction: () -> Void
     let backAction: () -> Void
     @FocusState private var focusedField: String?
     @Environment(\.colorScheme) var colorScheme
@@ -23,7 +24,7 @@ struct EmailAuthView: View {
         // GeometryReader is added as a hack to avoid the whole view moving up when
         // the keyboard appears: https://developer.apple.com/forums/thread/658432s
         GeometryReader { geometry in
-            ZStack(alignment: .topLeading) {
+            ZStack(alignment: .top) {
                 // background that stays in place and ignores safe areas
                 Group {
                     Color(.dynamic(.Neutral_10))
@@ -35,7 +36,10 @@ struct EmailAuthView: View {
                     }
                 }.edgesIgnoringSafeArea(.all)
 
-                BackButton(callback: backAction)
+                HStack {
+                    BackButton(callback: backAction)
+                    Spacer()
+                }
 
                 VStack(spacing: 0) {
                     Image("logo_side_by_side")
@@ -83,7 +87,10 @@ struct EmailAuthView: View {
                             authenticateAction()
                         })
 
-                        TranslucentButton(text: "Forgot password?", clicked: {})
+                        TranslucentButton(text: "Forgot password?", clicked: {
+                            focusedField = nil
+                            forgotPasswordAction()
+                        })
                     }
                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
                     .disabled(viewModel.isAuthenticating)
@@ -104,7 +111,6 @@ struct EmailAuthView: View {
 
 struct EmailAuthView_Previews: PreviewProvider {
     static var previews: some View {
-        EmailAuthView(viewModel: EmailAuthViewModel(), authenticateAction: {}, backAction: {})
-            .preferredColorScheme(.dark)
+        EmailAuthView(viewModel: EmailAuthViewModel(), authenticateAction: {}, forgotPasswordAction: {}, backAction: {})
     }
 }

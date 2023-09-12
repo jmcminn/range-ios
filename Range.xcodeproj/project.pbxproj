@@ -299,6 +299,8 @@
 		0A83223C2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83223B2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift */; };
 		0A83223E2A41EBC10076D032 /* CanvasPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83223D2A41EBC10076D032 /* CanvasPickerCardViewController.swift */; };
 		0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83223F2A41EDC80076D032 /* CanvasPickerTableViewCell.swift */; };
+		0A83D90A2AB0A93A003A8DCE /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */; };
+		0A83D90C2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */; };
 		0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A859CF729D5F49000CCAEC5 /* Delayer.swift */; };
 		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197E291C24A60050FC41 /* PendingActionsModel.swift */; };
@@ -740,6 +742,8 @@
 		0A83D9062AB0513F003A8DCE /* Range.production.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.production.entitlements; sourceTree = "<group>"; };
 		0A83D9072AB0513F003A8DCE /* Range.dev.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.dev.entitlements; sourceTree = "<group>"; };
 		0A83D9082AB0513F003A8DCE /* Range.demo.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.demo.entitlements; sourceTree = "<group>"; };
+		0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordConfirmationView.swift; sourceTree = "<group>"; };
 		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
 		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
@@ -1045,6 +1049,8 @@
 				0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */,
 				0A5C06872AA1F10A005A04CF /* StartAuthView.swift */,
 				0A07D7652812960500B6F9A2 /* EmailAuthView.swift */,
+				0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */,
+				0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */,
 				0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */,
 				0A45BAFE2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift */,
 			);
@@ -2196,6 +2202,7 @@
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
 				0A36CDFD299C11B50004758E /* RangeMediaCacheImageDataProvider.swift in Sources */,
 				0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */,
+				0A83D90C2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift in Sources */,
 				0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */,
 				0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */,
 				0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */,
@@ -2205,6 +2212,7 @@
 				0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */,
 				0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */,
 				0A97232527FC777600D744F4 /* CameraPreview.swift in Sources */,
+				0A83D90A2AB0A93A003A8DCE /* ForgotPasswordView.swift in Sources */,
 				0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */,
 				0A5E897F2A9F6F8200C72235 /* Participant+Permissions.swift in Sources */,
 				0A97232927FC7D9D00D744F4 /* CameraViewController.swift in Sources */,
