@@ -32,30 +32,84 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var authenticatedUserListenerHandle: AuthStateDidChangeListenerHandle?
 
-    func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
+    func scene(_ scene: UIScene, willConnectTo _: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions)
+    {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         setupWindow(windowScene: windowScene)
 
-        // check whether user is authenticated
-        if let user = Auth.auth().currentUser {
-            Task { @MainActor in
+        Task { @MainActor in
+
+            // check whether user is authenticated
+            if let user = Auth.auth().currentUser {
                 do {
                     try await user.reload()
                     let userId = try await user._getUserId()
                     if user.isEmailVerified {
-                        self.startMainFlow(forUser: userId, newlySignedIn: false)
+                        await self.startMainFlow(forUser: userId, newlySignedIn: false)
                     } else {
                         showAuth()
                     }
                 } catch {
                     self.showAuth()
                 }
+            } else {
+                showAuth()
             }
-        } else {
-            showAuth()
+
+            // do the auth action
+            if let activity = connectionOptions.userActivities.first,
+               activity.activityType == NSUserActivityTypeBrowsingWeb
+            {
+                await handleAuthAction(activity)
+            }
+        }
+    }
+
+    func scene(_: UIScene, continue activity: NSUserActivity) {
+        Task { @MainActor in
+            await handleAuthAction(activity)
+        }
+    }
+
+    /// Handles the auth actions confirmations (resetPassword, recoverEmail, verifyEmail) by parsing the link tapped by user,
+    /// extracting the mode and oobCode and applying the code in Firebase Auth
+    /// It is assumed that auth actions have url: "range_domain/actionCode"
+    @MainActor
+    func handleAuthAction(_ activity: NSUserActivity) async {
+        // a map where keys are modes constants provided by Firebase auth and values are the strings
+        // used for iOS messaging
+        let modes = [
+            "resetPassword": "Password reset",
+            "recoverEmail": "Email recovery",
+            "verifyEmail": "Email verification",
+        ]
+
+        guard activity.activityType == NSUserActivityTypeBrowsingWeb,
+              let incomingURL = activity.webpageURL,
+              let components = NSURLComponents(url: incomingURL, resolvingAgainstBaseURL: true)
+        else { return }
+
+        guard components.path == "/actioncode", let params = components.queryItems,
+              let mode = params.first(where: { $0.name == "mode" })?.value,
+              let oobCode = params.first(where: { $0.name == "oobCode" })?.value
+        else { return }
+
+        guard let modeName = modes[mode] else {
+            Logger.auth.error("Unsupported auth auction: \(mode)")
+            return
+        }
+
+        do {
+            try await Auth.auth().applyActionCode(oobCode)
+            ToastWindow.shared.showSuccess(text: "\(modeName) succeeded")
+        } catch {
+            Logger.auth.error("Error applying auth action \(mode): \(error)")
+            let message = error._messageForAuthError()
+            ToastWindow.shared.showError(text: "\(modeName) failed. \(message)")
         }
     }
 
@@ -78,7 +132,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func showAuth() {
         let authFlowController = AuthFlowController { [weak self] userId in
             Analytics.logEvent(AnalyticsEventLogin, parameters: [AnalyticsParameterMethod: "email"])
-            self?.startMainFlow(forUser: userId, newlySignedIn: true)
+            Task { @MainActor in
+                await self?.startMainFlow(forUser: userId, newlySignedIn: true)
+            }
         }
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
@@ -92,13 +148,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// - Parameters:
     ///    - userId: Firestore user id
     ///    - newlySignedIn: true if main flow is starting after user went through authentication (and false if user was already authenticated when the app started)
-    private func startMainFlow(forUser userId: String, newlySignedIn: Bool) {
+    @MainActor
+    private func startMainFlow(forUser userId: String, newlySignedIn: Bool) async {
         observeAuthenticatedUser()
         Analytics.setUserID(userId)
         SentrySDK.setUser(Sentry.User(userId: userId))
-        Task { @MainActor in
-            await self.showProjects(forUserId: userId, newlySignedIn: newlySignedIn)
-        }
+        await showProjects(forUserId: userId, newlySignedIn: newlySignedIn)
     }
 
     private func observeAuthenticatedUser() {
@@ -110,6 +165,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
+    @MainActor
     private func showProjects(forUserId userId: String, newlySignedIn: Bool) async {
         do {
             let projectsFlowController = try ProjectsFlowController(userId: userId, newlySignedIn: newlySignedIn)

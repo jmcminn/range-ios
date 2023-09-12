@@ -107,7 +107,7 @@ extension AuthFlowController {
                     // cancellation is not considered an error, don't show the error message
                     return
                 }
-                let message = self.message(forError: error)
+                let message = error._messageForAuthError()
                 Logger.auth.error("GoogleSignIn error \(message)")
                 self.showAuthenticationError(withMessage: message)
             }
@@ -151,7 +151,7 @@ extension AuthFlowController {
                     onAuthenticated(userId)
                 }
             } catch {
-                let message = self.message(forError: error)
+                let message = error._messageForAuthError()
                 Logger.auth.error("signIn error \(message)")
                 self.showAuthenticationError(withMessage: message)
             }
@@ -195,7 +195,7 @@ extension AuthFlowController {
                     onAuthenticated(userId)
                 }
             } catch {
-                let message = self.message(forError: error)
+                let message = error._messageForAuthError()
                 Logger.auth.error("createUser error \(message)")
                 self.showAuthenticationError(withMessage: message)
             }
@@ -242,7 +242,7 @@ extension AuthFlowController {
         do {
             try Auth.auth().signOut()
         } catch {
-            let message = message(forError: error)
+            let message = error._messageForAuthError()
             Logger.auth.error("signOutFromAwaitEmailVerification error \(message)")
             showAuthenticationError(withMessage: message)
         }
@@ -256,7 +256,7 @@ extension AuthFlowController {
                 let userId = try await user._getUserId()
                 onAuthenticated(userId)
             } catch {
-                let message = self.message(forError: error)
+                let message = error._messageForAuthError()
                 Logger.auth.error("proceedFromAwaitEmailVerification error \(message)")
                 self.showAuthenticationError(withMessage: message)
             }
@@ -273,7 +273,7 @@ extension AuthFlowController {
                 try await Auth.auth().currentUser?.sendEmailVerification()
                 ToastWindow.shared.showSuccess(text: "Email verification sent")
             } catch {
-                let message = self.message(forError: error)
+                let message = error._messageForAuthError()
                 Logger.auth.error("sendEmailVerification error \(message)")
                 self.showAuthenticationError(withMessage: message)
             }
@@ -290,7 +290,7 @@ extension AuthFlowController {
             guard let self = self else { return }
             if let error = error {
                 // this means that user needs to sign in again
-                let message = self.message(forError: error)
+                let message = error._messageForAuthError()
                 Logger.auth.error("checkEmailVerified, reload user error \(message)")
                 self.signOutFromAwaitEmailVerification()
                 self.popToRootViewController(animated: true)
@@ -306,38 +306,6 @@ extension AuthFlowController {
 // MARK: - error handling
 
 extension AuthFlowController {
-    /// Extract Firebase Auth error information from given Error or fallback to localizedDescription
-    private func message(forError error: Error) -> String {
-        // Extract information about the error from blocking function info in underlying errors
-        if let e = (error as NSError).underlyingErrors.first,
-           let responseInfo = (e as NSError).userInfo["FIRAuthErrorUserInfoDeserializedResponseKey"] as? [String: Any],
-           let message = responseInfo["message"] as? String
-        {
-            // sometimes a message is just a code for error (when coming directly from auth)
-            if message == "INVALID_LOGIN_CREDENTIALS" {
-                return String(localized: "Your email or password is invalid")
-            }
-            // when coming from a blocking auth function, the message is a text but it has a json with message key embedded in it
-            if let jsonStart = message.firstIndex(of: "{"), let jsonEnd = message.lastIndex(of: "}") {
-                let jsonMessage = message[jsonStart ... jsonEnd]
-                if let jsonMessageData = jsonMessage.data(using: .utf8) {
-                    do {
-                        if let jsonObject = try JSONSerialization.jsonObject(with: jsonMessageData) as? [String: Any],
-                           let errorDict = jsonObject["error"] as? [String: Any],
-                           let message = errorDict["message"] as? String
-                        {
-                            return message
-                        }
-                    } catch {
-                        // ignore error
-                    }
-                }
-            }
-        }
-
-        return error.localizedDescription
-    }
-
     /// Present alert controller with authentication error message
     private func showAuthenticationError(withMessage message: String) {
         let alertController = UIAlertController(

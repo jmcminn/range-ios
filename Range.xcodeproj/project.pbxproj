@@ -614,7 +614,6 @@
 		0A4995CF285B647600E571FB /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
 		0A4995D1285C9D1E00E571FB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlWithTapAreaInsets.swift; sourceTree = "<group>"; };
-		0A4B043B28CA21AE006E8630 /* Range.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Range.entitlements; sourceTree = "<group>"; };
 		0A4D0D342805B618007A249F /* CardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDragging.swift; sourceTree = "<group>"; };
 		0A4D11B429A392EF00D681E7 /* UploadFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFeedItemCell.swift; sourceTree = "<group>"; };
 		0A4D11BA29A5242400D681E7 /* URL+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+Extensions.swift"; sourceTree = "<group>"; };
@@ -736,6 +735,11 @@
 		0A83223B2A41E92B0076D032 /* SelectedCanvasCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedCanvasCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A83223D2A41EBC10076D032 /* CanvasPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A83223F2A41EDC80076D032 /* CanvasPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPickerTableViewCell.swift; sourceTree = "<group>"; };
+		0A83D9042AB050FB003A8DCE /* Range.custom.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.custom.entitlements; sourceTree = "<group>"; };
+		0A83D9052AB0513F003A8DCE /* Range.staging.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.staging.entitlements; sourceTree = "<group>"; };
+		0A83D9062AB0513F003A8DCE /* Range.production.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.production.entitlements; sourceTree = "<group>"; };
+		0A83D9072AB0513F003A8DCE /* Range.dev.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.dev.entitlements; sourceTree = "<group>"; };
+		0A83D9082AB0513F003A8DCE /* Range.demo.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.demo.entitlements; sourceTree = "<group>"; };
 		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
 		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
@@ -1255,6 +1259,11 @@
 		0A48ACDC281C0CBD0044E06E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0A83D9042AB050FB003A8DCE /* Range.custom.entitlements */,
+				0A83D9072AB0513F003A8DCE /* Range.dev.entitlements */,
+				0A83D9082AB0513F003A8DCE /* Range.demo.entitlements */,
+				0A83D9052AB0513F003A8DCE /* Range.staging.entitlements */,
+				0A83D9062AB0513F003A8DCE /* Range.production.entitlements */,
 				0A632EB927E49638001A019B /* Info.plist */,
 				0A9E5EFB29D5FFC000E7737D /* GoogleService-Info.custom.plist */,
 				0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */,
@@ -1438,7 +1447,6 @@
 		0A632EAA27E49636001A019B /* Range */ = {
 			isa = PBXGroup;
 			children = (
-				0A4B043B28CA21AE006E8630 /* Range.entitlements */,
 				0A48ACDC281C0CBD0044E06E /* Supporting Files */,
 				0ABFD8BE28F48556008CDA74 /* ActionSelector */,
 				0A4995D62860C6A900E571FB /* AddPhoto */,
@@ -2634,7 +2642,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.demo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2774,7 +2782,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.demo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2976,7 +2984,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.production.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3022,7 +3030,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.production.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3206,7 +3214,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.dev.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3352,7 +3360,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.custom.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3492,7 +3500,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.dev.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3638,7 +3646,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.dev.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3784,7 +3792,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.staging.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3924,7 +3932,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Range/Range.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Range/Range.staging.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
