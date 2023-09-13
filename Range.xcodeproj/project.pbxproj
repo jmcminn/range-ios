@@ -301,6 +301,7 @@
 		0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83223F2A41EDC80076D032 /* CanvasPickerTableViewCell.swift */; };
 		0A83D90A2AB0A93A003A8DCE /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */; };
 		0A83D90C2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */; };
+		0A83D90E2AB0BF20003A8DCE /* ResetPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90D2AB0BF20003A8DCE /* ResetPasswordView.swift */; };
 		0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A859CF729D5F49000CCAEC5 /* Delayer.swift */; };
 		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197E291C24A60050FC41 /* PendingActionsModel.swift */; };
@@ -744,6 +745,7 @@
 		0A83D9082AB0513F003A8DCE /* Range.demo.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.demo.entitlements; sourceTree = "<group>"; };
 		0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordConfirmationView.swift; sourceTree = "<group>"; };
+		0A83D90D2AB0BF20003A8DCE /* ResetPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordView.swift; sourceTree = "<group>"; };
 		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
 		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
@@ -1051,6 +1053,7 @@
 				0A07D7652812960500B6F9A2 /* EmailAuthView.swift */,
 				0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */,
 				0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */,
+				0A83D90D2AB0BF20003A8DCE /* ResetPasswordView.swift */,
 				0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */,
 				0A45BAFE2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift */,
 			);
@@ -2351,6 +2354,7 @@
 				0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */,
 				0A632EDF27E4DC2C001A019B /* PDFPageScrollView.swift in Sources */,
 				0A7121B8290EE2DC0013E2F8 /* Date+Utils.swift in Sources */,
+				0A83D90E2AB0BF20003A8DCE /* ResetPasswordView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirestoreParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */,

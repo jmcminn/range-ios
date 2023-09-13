@@ -103,13 +103,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        do {
-            try await Auth.auth().applyActionCode(oobCode)
-            ToastWindow.shared.showSuccess(text: "\(modeName) succeeded")
-        } catch {
-            Logger.auth.error("Error applying auth action \(mode): \(error)")
-            let message = error._messageForAuthError()
-            ToastWindow.shared.showError(text: "\(modeName) failed. \(message)")
+        if mode == "resetPassword" {
+            // reset password shows a screen and only then applies the code
+            if let authFlow = window?.rootViewController as? AuthFlowController {
+                // auth flow is showing, present the reset password
+                authFlow.startResetPassword(oobCode)
+            } else {
+                // sign out and start auth
+                await onSignedOut()
+                guard let authFlow = window?.rootViewController as? AuthFlowController else { return }
+                authFlow.startResetPassword(oobCode)
+            }
+        } else {
+            do {
+                try await Auth.auth().applyActionCode(oobCode)
+                ToastWindow.shared.showSuccess(text: "\(modeName) succeeded")
+            } catch {
+                Logger.auth.error("Error applying auth action \(mode): \(error)")
+                let message = error._messageForAuthError()
+                ToastWindow.shared.showError(text: "\(modeName) failed. \(message)")
+            }
         }
     }
 
@@ -130,18 +143,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Start the auth flow for authenticating the user
     private func showAuth() {
-        let authFlowController = AuthFlowController { [weak self] userId in
-            Analytics.logEvent(AnalyticsEventLogin, parameters: [AnalyticsParameterMethod: "email"])
-            Task { @MainActor in
-                await self?.startMainFlow(forUser: userId, newlySignedIn: true)
-            }
-        }
+        let authFlowController = createAuthFlowController()
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
 
         ToastWindow.shared.showForKeyWindow(window!)
 
         authFlowController.start()
+    }
+
+    private func createAuthFlowController() -> AuthFlowController {
+        AuthFlowController { [weak self] userId in
+            Analytics.logEvent(AnalyticsEventLogin, parameters: [AnalyticsParameterMethod: "email"])
+            Task { @MainActor in
+                await self?.startMainFlow(forUser: userId, newlySignedIn: true)
+            }
+        }
     }
 
     /// Show the main flow for the app (which currently is the projects listing)
@@ -181,11 +198,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             try await projectsFlowController.start()
         } catch {
-            DispatchQueue.main.async {
-                self.onSignedOut {
-                    self.showProjectsOpenError(withMessage: error.localizedDescription)
-                }
-            }
+            await onSignedOut()
+            showProjectsOpenError(withMessage: error.localizedDescription)
         }
     }
 
@@ -199,23 +213,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window!.rootViewController!.present(alertController, animated: true)
     }
 
+    /// Convenience wrapper for the async version
     private func onSignedOut(callback: (() -> Void)? = nil) {
         Task { @MainActor in
-            if let authenticatedUserListenerHandle = authenticatedUserListenerHandle {
-                Auth.auth().removeStateDidChangeListener(authenticatedUserListenerHandle)
-            }
-            if let projectsFC = window?.rootViewController as? ProjectsFlowController {
-                await projectsFC.stop()
-            }
-            do {
-                try Auth.auth().signOut()
-            } catch {
-                Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
-            }
-            SentrySDK.setUser(nil)
-            showAuth()
+            await onSignedOut()
             callback?()
         }
+    }
+
+    @MainActor
+    private func onSignedOut() async {
+        if let authenticatedUserListenerHandle = authenticatedUserListenerHandle {
+            Auth.auth().removeStateDidChangeListener(authenticatedUserListenerHandle)
+        }
+        if let projectsFC = window?.rootViewController as? ProjectsFlowController {
+            await projectsFC.stop()
+        }
+        do {
+            try Auth.auth().signOut()
+        } catch {
+            Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
+        }
+        SentrySDK.setUser(nil)
+        showAuth()
     }
 
     /// Used when responding to push notifications.

@@ -42,6 +42,19 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
         showStartAuthView()
     }
 
+    func startResetPassword(_ actionCode: String) {
+        Task { @MainActor in
+            do {
+                let email = try await Auth.auth().verifyPasswordResetCode(actionCode)
+                showResetPassword(actionCode, email)
+            } catch {
+                Logger.auth.error("verifyPasswordResetCode error: \(error)")
+                let message = error._messageForAuthError()
+                ToastWindow.shared.showError(text: "Reset password failed. \(message)")
+            }
+        }
+    }
+
     private func showStartAuthView() {
         let startAuthViewModel = StartAuthViewModel()
         let authView = StartAuthView(
@@ -61,6 +74,16 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
         }
 
         setViewControllers(vcs, animated: false)
+    }
+
+    /// A reusable code that fetchesd the userId, checks email verified and either goes to email verification screen or call onAuthenticated
+    private func checkUserAndProceed(_ user: FirebaseUser) async throws {
+        let userId = try await user._getUserId()
+        if !user.isEmailVerified {
+            showAwaitEmailVerificationView()
+        } else {
+            onAuthenticated(userId)
+        }
     }
 }
 
@@ -92,14 +115,8 @@ extension AuthFlowController {
                     accessToken: gidUser.accessToken.tokenString
                 )
                 let authResult = try await Auth.auth().signIn(with: credential)
-                let user = authResult.user
-                let userId = try await user._getUserId()
-                // no need to check if email is verified. For Google sign in it should be always auto verified
-                if !user.isEmailVerified {
-                    // this shouldn't happen
-                    throw "Email not verified for Google sign in. Please contact the support."
-                }
-                onAuthenticated(userId)
+                // the email should be verified after google sign in but we can still check
+                try await checkUserAndProceed(authResult.user)
             } catch {
                 let errorDomain = (error as NSError).domain
                 let errorCode = (error as NSError).code
@@ -144,13 +161,7 @@ extension AuthFlowController {
                     model.isAuthenticating = false
                 }
                 let authResult = try await Auth.auth().signIn(withEmail: model.email, password: model.password)
-                let user = authResult.user
-                let userId = try await user._getUserId()
-                if !user.isEmailVerified {
-                    self.showAwaitEmailVerificationView()
-                } else {
-                    onAuthenticated(userId)
-                }
+                try await checkUserAndProceed(authResult.user)
             } catch {
                 let message = error._messageForAuthError()
                 Logger.auth.error("signIn error \(message)")
@@ -206,6 +217,40 @@ extension AuthFlowController {
             }
         )
         pushViewController(UIHostingController(rootView: view), animated: true)
+    }
+
+    private func showResetPassword(_ code: String, _ email: String) {
+        let viewModel = ResetPasswordViewModel()
+        viewModel.email = email
+        let view = ResetPasswordView(
+            viewModel: viewModel,
+            updatePasswordAction: { [weak self] in self?.resetPassword(code, viewModel) },
+            backAction: { [weak self] in self?.popViewController(animated: true) }
+        )
+
+        pushViewController(UIHostingController(rootView: view), animated: true)
+    }
+
+    private func resetPassword(_ code: String, _ model: ResetPasswordViewModel) {
+        model.isProcessing = true
+        Task { @MainActor in
+            do {
+                defer {
+                    model.isProcessing = false
+                }
+                if model.password != model.passwordConfirmation {
+                    throw "Passwords don't match."
+                }
+                try await Auth.auth().confirmPasswordReset(withCode: code, newPassword: model.password)
+                ToastWindow.shared.showSuccess(text: "Password reset succeeded")
+                let authResult = try await Auth.auth().signIn(withEmail: model.email, password: model.password)
+                try await checkUserAndProceed(authResult.user)
+            } catch {
+                let message = error._messageForAuthError()
+                Logger.auth.error("resetPassword error \(message)")
+                self.showAuthenticationError(withMessage: message)
+            }
+        }
     }
 }
 
