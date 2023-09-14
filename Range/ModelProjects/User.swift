@@ -22,6 +22,9 @@ class User: Object, WithPlaceholder, WithId {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
+    /// Whether account is ready or this is a fresh user after a signup
+    var accountReady: Bool { !firstName.isEmpty && firstName != email }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

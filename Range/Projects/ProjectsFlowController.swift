@@ -64,6 +64,10 @@ class ProjectsFlowController: UINavigationController {
         try await pendingUploadsModel.start()
         pendingActionsModel.start()
 
+        if let user = projectsModel.currentUser, !user.accountReady {
+            collectUserData()
+        }
+
         let tabBarVC = setupTabBarViewController()
 
         let tryLoadProject: (String) async -> Void = { projectId in
@@ -367,5 +371,84 @@ class ProjectsFlowController: UINavigationController {
                 self?.projectsModel.setCurrentOrganization(org)
             }
         ).installAndShowCard(in: self)
+    }
+}
+
+// MARK: - user info
+
+extension ProjectsFlowController {
+    /// Ask newly signed up user for name and job title
+    private func collectUserData() {
+        guard let user = projectsModel.currentUser else { return }
+        let enterAccountInfoViewModel = EnterAccountInfoViewModel()
+        enterAccountInfoViewModel.email = user.email
+        let enterAccountInfoView = EnterAccountInfoView(
+            viewModel: enterAccountInfoViewModel,
+            selectJobTitleAction: { [weak self] in self?.showJobTitleSelector(enterAccountInfoViewModel) },
+            createAccountAction: { [weak self] in self?.updateUserAccount(enterAccountInfoViewModel) },
+            logOutAction: { [weak self] in self?.onSignedOut?() }
+        )
+        let vc = UIHostingController(rootView: enterAccountInfoView)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: false)
+    }
+
+    private func showJobTitleSelector(_ viewModel: EnterAccountInfoViewModel) {
+        guard let presentedViewController = presentedViewController else { return }
+        let jobTitlePickerVC = StringPickerCardViewController(
+            title: "Select your Role",
+            strings: [
+                "Client / Customer",
+                "Construction Supervisor",
+                "Construction Trades",
+                "Engineer",
+                "GIS Analyst",
+                "Interior Designer",
+                "Land / Urban Planner",
+                "Executive / Owner",
+                "Project Manager",
+                "Property Facility Manager",
+                "Other",
+            ],
+            selectedString: viewModel.jobTitle
+        )
+        jobTitlePickerVC.onStringSelected = { [weak jobTitlePickerVC] jobTitle in
+            viewModel.jobTitle = jobTitle
+            jobTitlePickerVC?.dismiss(animated: true)
+        }
+        presentedViewController.present(jobTitlePickerVC, animated: true)
+    }
+
+    private func updateUserAccount(_ viewModel: EnterAccountInfoViewModel) {
+        viewModel.isProcessing = true
+        guard !viewModel.firstName.isEmpty else {
+            ToastWindow.shared.showError(text: "first name is empty")
+            return
+        }
+        guard !viewModel.lastName.isEmpty else {
+            ToastWindow.shared.showError(text: "last name is empty")
+            return
+        }
+        guard let jobTitle = viewModel.jobTitle else {
+            ToastWindow.shared.showError(text: "job title is empty")
+            return
+        }
+        Task { @MainActor in
+            do {
+                defer {
+                    viewModel.isProcessing = false
+                }
+                try await self.projectsModel.updateUserData(
+                    firstName: viewModel.firstName,
+                    lastName: viewModel.lastName,
+                    jobTitle: jobTitle
+                )
+                ToastWindow.shared.showSuccess(text: "account created")
+                presentedViewController?.dismiss(animated: true)
+            } catch {
+                Logger.firestore.error("update user data failed: \(error.localizedDescription)")
+                ToastWindow.shared.showError(text: "Account creation failed")
+            }
+        }
     }
 }

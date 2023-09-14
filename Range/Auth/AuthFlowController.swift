@@ -108,7 +108,6 @@ extension AuthFlowController {
                 let gidUser = gidResult.user
                 guard let idTokenString = gidUser.idToken?.tokenString else {
                     throw "Cannot login using the provided account. Please contact the support."
-                    return
                 }
                 let credential = GoogleAuthProvider.credential(
                     withIDToken: idTokenString,

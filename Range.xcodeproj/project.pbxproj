@@ -302,6 +302,8 @@
 		0A83D90A2AB0A93A003A8DCE /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */; };
 		0A83D90C2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */; };
 		0A83D90E2AB0BF20003A8DCE /* ResetPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90D2AB0BF20003A8DCE /* ResetPasswordView.swift */; };
+		0A83D9102AB20008003A8DCE /* EnterAccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */; };
+		0A83D9122AB33A54003A8DCE /* DropdownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D9112AB33A54003A8DCE /* DropdownButton.swift */; };
 		0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A859CF729D5F49000CCAEC5 /* Delayer.swift */; };
 		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197E291C24A60050FC41 /* PendingActionsModel.swift */; };
@@ -392,6 +394,8 @@
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */; };
 		0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */; };
+		0AD8E2622AB35ACC0079E0DD /* StringPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2612AB35ACC0079E0DD /* StringPickerViewController.swift */; };
+		0AD8E2642AB35B730079E0DD /* StringPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */; };
 		0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */; };
 		0AD955242A3B608C00B35325 /* AnnotationsToolbarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */; };
 		0AD955262A40AA8F00B35325 /* AnnotationsEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955252A40AA8F00B35325 /* AnnotationsEditorViewModel.swift */; };
@@ -746,6 +750,8 @@
 		0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordConfirmationView.swift; sourceTree = "<group>"; };
 		0A83D90D2AB0BF20003A8DCE /* ResetPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordView.swift; sourceTree = "<group>"; };
+		0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterAccountInfoView.swift; sourceTree = "<group>"; };
+		0A83D9112AB33A54003A8DCE /* DropdownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownButton.swift; sourceTree = "<group>"; };
 		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
 		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
@@ -836,6 +842,8 @@
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FirstResponder.swift"; sourceTree = "<group>"; };
 		0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFilters.swift; sourceTree = "<group>"; };
+		0AD8E2612AB35ACC0079E0DD /* StringPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerViewController.swift; sourceTree = "<group>"; };
+		0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerTableViewCell.swift; sourceTree = "<group>"; };
 		0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarView.swift; sourceTree = "<group>"; };
 		0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarViewController.swift; sourceTree = "<group>"; };
 		0AD955252A40AA8F00B35325 /* AnnotationsEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsEditorViewModel.swift; sourceTree = "<group>"; };
@@ -1093,6 +1101,7 @@
 				0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */,
 				0AF11C962AA5C8C00022D44D /* GrayButton.swift */,
 				0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */,
+				0A83D9112AB33A54003A8DCE /* DropdownButton.swift */,
 				0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */,
 			);
 			path = ViewsSwiftUI;
@@ -1493,6 +1502,7 @@
 				0AC9E18928F56C1600C7185D /* Projects */,
 				0A2F3307283CE19100D04A1C /* Settings */,
 				0A797F67292BA3DE00D63567 /* Status */,
+				0AD8E2602AB35AA50079E0DD /* StringPicker */,
 				0A30E8BA284A090000A50D54 /* Tags */,
 				0AF722AD296EE61900A18F75 /* TaskList */,
 				0A6DB6A1292E08560017D511 /* TextCard */,
@@ -1856,6 +1866,7 @@
 				0A7A537E293FB8F70093D913 /* ProjectTableViewCell.swift */,
 				0A187AEC2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift */,
 				0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */,
+				0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -1869,6 +1880,15 @@
 				0A4995B928574CC600E571FB /* HeaderExpanderCalculator.swift */,
 			);
 			path = HeaderExpand;
+			sourceTree = "<group>";
+		};
+		0AD8E2602AB35AA50079E0DD /* StringPicker */ = {
+			isa = PBXGroup;
+			children = (
+				0AD8E2612AB35ACC0079E0DD /* StringPickerViewController.swift */,
+				0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */,
+			);
+			path = StringPicker;
 			sourceTree = "<group>";
 		};
 		0AD9B75B28644D85005ACFD7 /* Tags */ = {
@@ -2156,6 +2176,7 @@
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
+				0AD8E2622AB35ACC0079E0DD /* StringPickerViewController.swift in Sources */,
 				0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
@@ -2250,6 +2271,7 @@
 				0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
+				0A83D9122AB33A54003A8DCE /* DropdownButton.swift in Sources */,
 				0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
@@ -2283,6 +2305,7 @@
 				0A7FC4172844E1DD0097888A /* UIColor+Hex.swift in Sources */,
 				0AB85585290009C600491E20 /* DueDateUpdateFeedItemCell.swift in Sources */,
 				0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */,
+				0A83D9102AB20008003A8DCE /* EnterAccountInfoView.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A130EA128D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift in Sources */,
 				0A5394292A264685008583F0 /* AnnotationsEditor.swift in Sources */,
@@ -2369,6 +2392,7 @@
 				0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */,
 				0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
+				0AD8E2642AB35B730079E0DD /* StringPickerTableViewCell.swift in Sources */,
 				0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				0A1FCF0229EEED87005EA59E /* SelectedUserCollectionViewCell.swift in Sources */,
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,

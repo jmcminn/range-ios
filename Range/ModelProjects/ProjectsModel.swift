@@ -323,3 +323,23 @@ extension ProjectsModel: MessagingDelegate {
         }
     }
 }
+
+// MARK: current user management
+
+extension ProjectsModel {
+    /// Updates the current user data in Firestore.
+    /// This is an online action only, applied directly in Firestore.
+    @MainActor
+    func updateUserData(firstName: String, lastName: String, jobTitle: String) async throws {
+        guard let user = currentUser else { return }
+
+        let userRef = firestore.document("users/\(user.id)")
+        _ = try await firestore.runTransaction { tx, _ in
+            tx.updateData([
+                "firstName": firstName,
+                "lastName": lastName,
+                "role": jobTitle,
+            ], forDocument: userRef)
+        }
+    }
+}
