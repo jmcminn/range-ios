@@ -64,7 +64,6 @@ struct EnterAccountInfoView: View {
                                 .autocapitalization(.words)
                                 .disableAutocorrection(true)
                                 .textContentType(.name)
-                                .keyboardType(.namePhonePad)
                                 .submitLabel(.next)
                                 .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 0))
 
@@ -76,7 +75,6 @@ struct EnterAccountInfoView: View {
                                 .autocapitalization(.words)
                                 .disableAutocorrection(true)
                                 .textContentType(.familyName)
-                                .keyboardType(.namePhonePad)
                                 .submitLabel(.next)
                                 .padding(EdgeInsets(top: 15, leading: 4, bottom: 10, trailing: 0))
                                 .focused($focusedField, equals: "lastName")
