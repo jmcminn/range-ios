@@ -76,6 +76,12 @@
 		0A1FCF0229EEED87005EA59E /* SelectedUserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1FCF0129EEED87005EA59E /* SelectedUserCollectionViewCell.swift */; };
 		0A22CF1C2930CE4D0084332B /* CanvasFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */; };
 		0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */; };
+		0A25D2B52AB8C02F00A331E1 /* adjacency_graphs.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A25D2AB2AB8C02F00A331E1 /* adjacency_graphs.json */; };
+		0A25D2B62AB8C02F00A331E1 /* DBPasswordStrengthMeterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2AC2AB8C02F00A331E1 /* DBPasswordStrengthMeterView.m */; };
+		0A25D2B72AB8C02F00A331E1 /* frequency_lists.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A25D2AD2AB8C02F00A331E1 /* frequency_lists.json */; };
+		0A25D2B82AB8C02F00A331E1 /* DBZxcvbn.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B02AB8C02F00A331E1 /* DBZxcvbn.m */; };
+		0A25D2B92AB8C02F00A331E1 /* DBScorer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B12AB8C02F00A331E1 /* DBScorer.m */; };
+		0A25D2BA2AB8C02F00A331E1 /* DBMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */; };
 		0A26CC3B2A6971DE004C6DFC /* ProjectModelTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */; };
 		0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */; };
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */; };
@@ -515,6 +521,17 @@
 		0A1FCF0129EEED87005EA59E /* SelectedUserCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedUserCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileLoader.swift; sourceTree = "<group>"; };
 		0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+Corners.swift"; sourceTree = "<group>"; };
+		0A25D2A92AB8BEF300A331E1 /* Range-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Range-Bridging-Header.h"; sourceTree = "<group>"; };
+		0A25D2AB2AB8C02F00A331E1 /* adjacency_graphs.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = adjacency_graphs.json; sourceTree = "<group>"; };
+		0A25D2AC2AB8C02F00A331E1 /* DBPasswordStrengthMeterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPasswordStrengthMeterView.m; sourceTree = "<group>"; };
+		0A25D2AD2AB8C02F00A331E1 /* frequency_lists.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = frequency_lists.json; sourceTree = "<group>"; };
+		0A25D2AE2AB8C02F00A331E1 /* DBPasswordStrengthMeterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBPasswordStrengthMeterView.h; sourceTree = "<group>"; };
+		0A25D2AF2AB8C02F00A331E1 /* DBMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBMatcher.h; sourceTree = "<group>"; };
+		0A25D2B02AB8C02F00A331E1 /* DBZxcvbn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBZxcvbn.m; sourceTree = "<group>"; };
+		0A25D2B12AB8C02F00A331E1 /* DBScorer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBScorer.m; sourceTree = "<group>"; };
+		0A25D2B22AB8C02F00A331E1 /* DBScorer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBScorer.h; sourceTree = "<group>"; };
+		0A25D2B32AB8C02F00A331E1 /* DBZxcvbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBZxcvbn.h; sourceTree = "<group>"; };
+		0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBMatcher.m; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTestCase.swift; sourceTree = "<group>"; };
 		0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBottomViewController.swift; sourceTree = "<group>"; };
@@ -1156,6 +1173,23 @@
 			path = Canvas;
 			sourceTree = "<group>";
 		};
+		0A25D2AA2AB8BFEF00A331E1 /* Zxcvbn */ = {
+			isa = PBXGroup;
+			children = (
+				0A25D2B32AB8C02F00A331E1 /* DBZxcvbn.h */,
+				0A25D2B02AB8C02F00A331E1 /* DBZxcvbn.m */,
+				0A25D2AF2AB8C02F00A331E1 /* DBMatcher.h */,
+				0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */,
+				0A25D2AE2AB8C02F00A331E1 /* DBPasswordStrengthMeterView.h */,
+				0A25D2AC2AB8C02F00A331E1 /* DBPasswordStrengthMeterView.m */,
+				0A25D2B22AB8C02F00A331E1 /* DBScorer.h */,
+				0A25D2B12AB8C02F00A331E1 /* DBScorer.m */,
+				0A25D2AD2AB8C02F00A331E1 /* frequency_lists.json */,
+				0A25D2AB2AB8C02F00A331E1 /* adjacency_graphs.json */,
+			);
+			path = Zxcvbn;
+			sourceTree = "<group>";
+		};
 		0A25D82B28C8B4EB00F132D4 /* ci_scripts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1300,6 +1334,7 @@
 				0A07D7622810562600B6F9A2 /* fonts */,
 				0A0D31D228A3F21E007A8D49 /* Resources.swift */,
 				0ACE1971296D68DD00D223EB /* AppConfiguration.swift */,
+				0A25D2A92AB8BEF300A331E1 /* Range-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1516,6 +1551,7 @@
 				0A05312229375BDF00738BA3 /* Utils */,
 				0A4DC7A227F7615700712518 /* Views */,
 				0A144F4A2A4C575E000F7593 /* ViewsSwiftUI */,
+				0A25D2AA2AB8BFEF00A331E1 /* Zxcvbn */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
@@ -2128,6 +2164,8 @@
 				0A632EB827E49638001A019B /* LaunchScreen.storyboard in Resources */,
 				0A4DC77C27F45DB600712518 /* Colors.xcassets in Resources */,
 				0A07D7632810562700B6F9A2 /* fonts in Resources */,
+				0A25D2B52AB8C02F00A331E1 /* adjacency_graphs.json in Resources */,
+				0A25D2B72AB8C02F00A331E1 /* frequency_lists.json in Resources */,
 				0A632EB527E49638001A019B /* Assets.xcassets in Resources */,
 				0A724F6B288B12F800708C6B /* sample_photo_portrait.jpg in Resources */,
 				0A6FAC3828B67A350057995B /* sample_photo_landscape.jpg in Resources */,
@@ -2191,6 +2229,7 @@
 				0ABFD8C028F487BE008CDA74 /* ActionItem.swift in Sources */,
 				0AB8557B28FF276500491E20 /* UIView+AsImage.swift in Sources */,
 				0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */,
+				0A25D2B92AB8C02F00A331E1 /* DBScorer.m in Sources */,
 				0A45BAFF2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift in Sources */,
 				0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */,
 				0A374DE42927B3490036C184 /* DeleteCollaborationsCommand.swift in Sources */,
@@ -2392,6 +2431,7 @@
 				0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */,
 				0A130EA728D7409800FF1368 /* Date+Formatting.swift in Sources */,
 				0AD02555284DF22700106CA5 /* PhotoDetailsHeaderViewController.swift in Sources */,
+				0A25D2B62AB8C02F00A331E1 /* DBPasswordStrengthMeterView.m in Sources */,
 				0A4DC79627F572CF00712518 /* ActionSelectorViewController.swift in Sources */,
 				0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
@@ -2434,6 +2474,7 @@
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
 				0A73938B2A64284E0079A7FB /* ScribbleRenderer.swift in Sources */,
 				0A0E2066296311A8001782A5 /* PinType.swift in Sources */,
+				0A25D2BA2AB8C02F00A331E1 /* DBMatcher.m in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
 				0A7A5377293E49800093D913 /* ModelError.swift in Sources */,
 				0A34072A29C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift in Sources */,
@@ -2452,6 +2493,7 @@
 				0A187AEF2A7FAE4F00EC179C /* OrganizationTableViewCell.swift in Sources */,
 				0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */,
 				0A45BB032AAB2B0E00B86B85 /* BackButton.swift in Sources */,
+				0A25D2B82AB8C02F00A331E1 /* DBZxcvbn.m in Sources */,
 				0A34C18B2845FF1700BEDC7C /* Comment.swift in Sources */,
 				0A144F492A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift in Sources */,
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
@@ -2722,6 +2764,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2862,6 +2905,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3064,6 +3108,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3110,6 +3155,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3294,6 +3340,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3440,6 +3487,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3580,6 +3628,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3726,6 +3775,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3872,6 +3922,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -4012,6 +4063,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Range/Range-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

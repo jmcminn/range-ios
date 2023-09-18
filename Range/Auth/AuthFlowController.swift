@@ -273,6 +273,12 @@ extension AuthFlowController {
     /// Try to sign up with given user input using `FirebaseAuth`.
     /// It resolves the flow when authentication succeeded and shows the error alert otherwise
     private func signUp(byEmailAndPassword model: EmailSignUpViewModel) {
+        let zxcvbn = DBZxcvbn()
+        let passwordStrengthResult = zxcvbn.passwordStrength(model.password)
+        if let score = passwordStrengthResult?.score, score < 3 {
+            ToastWindow.shared.showWarning(text: "Please provide a stronger password")
+            return
+        }
         model.isAuthenticating = true
         Task { @MainActor in
             do {
