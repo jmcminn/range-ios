@@ -2,10 +2,7 @@ import Foundation
 import SnapKit
 import UIKit
 
-class StringPickerCardViewController: UIViewController {
-    private let backgroundImageView = UIImageView(image: UIImage(named: "topglow"))
-    private let titleLabel = UILabel()
-
+class StringPickerCardViewController: SheetCardViewController {
     private let strings: [String]
     private var selectedString: String?
     private let tableView = UITableView(frame: .zero, style: .plain)
@@ -13,10 +10,9 @@ class StringPickerCardViewController: UIViewController {
     var onStringSelected: ((String) -> Void)?
 
     init(title: String, strings: [String], selectedString: String?) {
-        titleLabel.text = title
         self.strings = strings
         self.selectedString = selectedString
-        super.init(nibName: nil, bundle: nil)
+        super.init(icon: nil, title: title)
     }
 
     @available(*, unavailable)
@@ -27,25 +23,16 @@ class StringPickerCardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .dynamic(.Neutral_10)
-
-        view.addSubview(backgroundImageView)
-        backgroundImageView.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview()
-        }
-
-        titleLabel.textColor = .dynamic(.Neutral_05)
-        view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            make.centerX.equalToSuperview()
-        }
+        addSheetHeaderStroke()
+        addSheetHeaderShadowBasedOnDrivingScrollView()
 
         setupTableView()
-        view.addSubview(tableView)
+        tableView.reloadData()
+        containerView.insertSubview(tableView, belowSubview: sheetHeaderView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(sheetHeaderView.snp.bottom)
+            make.bottom.equalToSuperview().inset(16)
         }
     }
 
@@ -53,7 +40,6 @@ class StringPickerCardViewController: UIViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         // update the border color for cells
         tableView.reloadData()
-        backgroundImageView.isHidden = traitCollection.userInterfaceStyle == .light
     }
 
     private func setupTableView() {
@@ -68,6 +54,20 @@ class StringPickerCardViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.register(StringPickerTableViewCell.self, forCellReuseIdentifier: "StringCell")
         tableView.keyboardDismissMode = .onDrag
+    }
+
+    override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
+        let baseHeight = super.height(forContainer: cardContainerView, cardPosition: cardPosition)
+
+        if cardPosition == .max {
+            view.layoutIfNeeded()
+            return baseHeight + tableView.contentSize.height + 16.0
+        }
+        return baseHeight
+    }
+
+    override func drivingScrollView() -> UIScrollView? {
+        tableView
     }
 }
 

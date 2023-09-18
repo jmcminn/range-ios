@@ -394,7 +394,7 @@
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */; };
 		0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */; };
-		0AD8E2622AB35ACC0079E0DD /* StringPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2612AB35ACC0079E0DD /* StringPickerViewController.swift */; };
+		0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */; };
 		0AD8E2642AB35B730079E0DD /* StringPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */; };
 		0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */; };
 		0AD955242A3B608C00B35325 /* AnnotationsToolbarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */; };
@@ -842,7 +842,7 @@
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FirstResponder.swift"; sourceTree = "<group>"; };
 		0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFilters.swift; sourceTree = "<group>"; };
-		0AD8E2612AB35ACC0079E0DD /* StringPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerViewController.swift; sourceTree = "<group>"; };
+		0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerCardViewController.swift; sourceTree = "<group>"; };
 		0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerTableViewCell.swift; sourceTree = "<group>"; };
 		0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarView.swift; sourceTree = "<group>"; };
 		0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarViewController.swift; sourceTree = "<group>"; };
@@ -1885,7 +1885,7 @@
 		0AD8E2602AB35AA50079E0DD /* StringPicker */ = {
 			isa = PBXGroup;
 			children = (
-				0AD8E2612AB35ACC0079E0DD /* StringPickerViewController.swift */,
+				0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */,
 				0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */,
 			);
 			path = StringPicker;
@@ -2176,7 +2176,7 @@
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
-				0AD8E2622AB35ACC0079E0DD /* StringPickerViewController.swift in Sources */,
+				0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */,
 				0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,

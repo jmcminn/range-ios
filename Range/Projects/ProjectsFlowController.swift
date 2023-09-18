@@ -416,11 +416,10 @@ extension ProjectsFlowController {
             viewModel.jobTitle = jobTitle
             jobTitlePickerVC?.dismiss(animated: true)
         }
-        presentedViewController.present(jobTitlePickerVC, animated: true)
+        jobTitlePickerVC.installAndShowCard(in: presentedViewController)
     }
 
     private func updateUserAccount(_ viewModel: EnterAccountInfoViewModel) {
-        viewModel.isProcessing = true
         guard !viewModel.firstName.isEmpty else {
             ToastWindow.shared.showError(text: "first name is empty")
             return
@@ -433,6 +432,7 @@ extension ProjectsFlowController {
             ToastWindow.shared.showError(text: "job title is empty")
             return
         }
+        viewModel.isProcessing = true
         Task { @MainActor in
             do {
                 defer {
