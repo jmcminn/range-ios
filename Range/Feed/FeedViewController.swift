@@ -402,9 +402,14 @@ class FeedViewController: UIViewController {
                     } else if !modifications.isEmpty {
                         // for modifications only reconfigure the modified items (the cells don't listen
                         // for updates).
-                        let modifiedFeedItems: [FeedItem] = modifications.compactMap { index in
+                        var modifiedFeedItems: [FeedItem] = modifications.compactMap { index in
                             guard index < self.updateFeedItems.count else { return nil }
                             return self.updateFeedItems[index]
+                        }
+                        if !showMoreUpdates {
+                            // only take major feed items if not showing more (otherwise it would crash
+                            // if we try to reconfigure items that are not in the snapshot)
+                            modifiedFeedItems = modifiedFeedItems.filter(\.isMajor)
                         }
                         var snapshot = self.dataSource!.snapshot()
                         snapshot.reconfigureItems(modifiedFeedItems)
