@@ -114,6 +114,8 @@ class FeedViewController: UIViewController {
         }
     }
 
+    private var currentUserNotificationToken: NotificationToken?
+
     private var geometryNotificationToken: NotificationToken?
 
     private var uploadsNotificationToken: NotificationToken?
@@ -161,6 +163,7 @@ class FeedViewController: UIViewController {
     }
 
     deinit {
+        currentUserNotificationToken?.invalidate()
         geometryNotificationToken?.invalidate()
         uploadsNotificationToken?.invalidate()
         commentsNotificationToken?.invalidate()
@@ -181,6 +184,7 @@ class FeedViewController: UIViewController {
             make.edges.equalToSuperview()
         }
 
+        observeCurrentUser()
         observeGeometry()
         observeUploads()
         observeComments()
@@ -298,6 +302,18 @@ class FeedViewController: UIViewController {
         super.viewWillDisappear(animated)
         observationsForVerticalLine.forEach { $0.invalidate() }
         observationsForVerticalLine.removeAll()
+    }
+
+    /// Whenever the current user changes reload the feed. It may mean that user now has a different role so let's just reload all the
+    /// cells so they can adapt to user privileges
+    private func observeCurrentUser() {
+        guard let currentUser = projectModel.currentUser else {
+            fatalError("observeCurrentUser called when there's no current user")
+        }
+        currentUserNotificationToken = currentUser.observe { [weak self] _ in
+            guard let self = self else { return }
+            self.tableView.reloadData()
+        }
     }
 
     /// observe geometry to adjust the feed when it was archived/unarchived (add/remove the archived feed item)
