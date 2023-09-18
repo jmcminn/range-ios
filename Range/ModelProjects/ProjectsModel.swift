@@ -47,13 +47,13 @@ class ProjectsModel: NSObject, RealmModel {
         var config = Realm.Configuration.defaultConfiguration
         config.schemaVersion = 5
         config.fileURL!.deleteLastPathComponent()
-        config.fileURL!.appendPathComponent("projects")
+        config.fileURL!.appendPathComponent("user_\(userId)")
         config.fileURL!.appendPathExtension("realm")
         config.migrationBlock = { migration, oldSchemaVersion in
             ProjectsModel.migrate(migration, oldSchemaVersion)
         }
-        Logger.model.info("projects realm file url: \(config.fileURL?.path ?? "")")
         config.objectTypes = [User.self, ProjectSummary.self, Location.self, Organization.self]
+        Logger.model.info("user realm file url: \(config.fileURL?.path ?? "")")
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
     }
