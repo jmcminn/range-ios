@@ -1,5 +1,6 @@
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseFunctions
 import FirebaseMessaging
 import Foundation
 import OSLog
@@ -35,6 +36,7 @@ class ProjectsModel: NSObject, RealmModel {
     private(set) var currentUser: User?
     /// token for observing the current user in the realm
     private var userNotificationToken: NotificationToken?
+    private var invitationsNotificationToken: NotificationToken?
 
     /// Currently selected organization, can be nil (user can have no organizations)
     @objc private(set) dynamic var currentOrganization: Organization?
@@ -52,8 +54,8 @@ class ProjectsModel: NSObject, RealmModel {
         config.migrationBlock = { migration, oldSchemaVersion in
             ProjectsModel.migrate(migration, oldSchemaVersion)
         }
-        config.objectTypes = [User.self, ProjectSummary.self, Location.self, Organization.self]
         Logger.model.info("user realm file url: \(config.fileURL?.path ?? "")")
+        config.objectTypes = [User.self, Invitation.self, ProjectSummary.self, Location.self, Organization.self]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
     }
@@ -92,8 +94,10 @@ class ProjectsModel: NSObject, RealmModel {
         }
         currentUser = user
 
+        let userDoc = firestore.document("users/\(userId)")
+
         // 3. enable syncing current user from Firestore
-        listeners[userId] = sync(firestore.document("users/\(userId)"), as: FirestoreUser.self)
+        listeners[userId] = sync(userDoc, as: FirestoreUser.self)
 
         // 4. sync the organizations that user has permissions to
         syncCurrentUserOrganizations()
@@ -110,6 +114,15 @@ class ProjectsModel: NSObject, RealmModel {
         // 8. listen to changes in organizations and update current organization if needed
         organizationsNotificationToken = mainRealm.objects(Organization.self).observe { [weak self] _ in
             self?.updateCurrentOrganization()
+        }
+
+        // 9. sync invitations
+        listeners["invitations"] = sync(userDoc.collection("invitations"), as: FirestoreInvitation.self)
+
+        // 10. observe invitations to trigger auto accepting
+        invitationsNotificationToken = mainRealm.objects(Invitation.self).observe { [weak self] _ in
+            // auto accept first unaccepted invitation
+            self?.possiblyAcceptInvitation()
         }
     }
 
@@ -256,6 +269,8 @@ class ProjectsModel: NSObject, RealmModel {
     func stop() async throws {
         userNotificationToken?.invalidate()
         userNotificationToken = nil
+        invitationsNotificationToken?.invalidate()
+        invitationsNotificationToken = nil
         organizationsNotificationToken?.invalidate()
         organizationsNotificationToken = nil
         listeners.values.forEach { $0.remove() }
@@ -340,6 +355,28 @@ extension ProjectsModel {
                 "lastName": lastName,
                 "role": jobTitle,
             ], forDocument: userRef)
+        }
+    }
+
+    /// Find first unaccepted invitation and accept
+    func possiblyAcceptInvitation() {
+        guard let invitation = mainRealm.objects(Invitation.self).first else { return }
+        Task { @MainActor in
+
+            do {
+                _ = try await Functions.functions(region: "us-west2").httpsCallable("acceptInvitation").call([
+                    "invitationId": invitation.id,
+                ])
+                ToastWindow.shared
+                    .showSuccess(
+                        text: "Received invitation to \(invitation.organizationName) organization from \(invitation.inviterDisplayName)."
+                    )
+            } catch {
+                ToastWindow.shared
+                    .showError(
+                        text: "Failed to receive invitation to join \(invitation.organizationName) organization: \(error.localizedDescription)"
+                    )
+            }
         }
     }
 }

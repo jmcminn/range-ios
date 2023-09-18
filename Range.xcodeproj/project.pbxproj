@@ -155,6 +155,8 @@
 		0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserDefaults.swift */; };
+		0A44751D2AB88539000EC667 /* Invitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44751C2AB88539000EC667 /* Invitation.swift */; };
+		0A44751F2AB88549000EC667 /* FirestoreInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44751E2AB88549000EC667 /* FirestoreInvitation.swift */; };
 		0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */; };
 		0A456238283E792200BA8D21 /* FirestoreGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A456237283E792200BA8D21 /* FirestoreGeometry.swift */; };
 		0A45BAFD2AA5F74800B86B85 /* EmailSignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BAFC2AA5F74800B86B85 /* EmailSignUpView.swift */; };
@@ -595,6 +597,8 @@
 		0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSkeletonCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		0A44751C2AB88539000EC667 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invitation.swift; sourceTree = "<group>"; };
+		0A44751E2AB88549000EC667 /* FirestoreInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreInvitation.swift; sourceTree = "<group>"; };
 		0A45622E283E327500BA8D21 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A45622F283E344D00BA8D21 /* ProjectModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTest.swift; sourceTree = "<group>"; };
 		0A456237283E792200BA8D21 /* FirestoreGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreGeometry.swift; sourceTree = "<group>"; };
@@ -1764,8 +1768,10 @@
 				0A985B1C2A9E37B600442617 /* ProjectsModel+RealmMigration.swift */,
 				0A187AE82A7BFE3800EC179C /* Organization.swift */,
 				0A985B182A9E354400442617 /* User.swift */,
+				0A44751C2AB88539000EC667 /* Invitation.swift */,
 				0A187AEA2A7BFE5000EC179C /* FirestoreOrganization.swift */,
 				0A985B1A2A9E358300442617 /* FirestoreUser.swift */,
+				0A44751E2AB88549000EC667 /* FirestoreInvitation.swift */,
 			);
 			path = ModelProjects;
 			sourceTree = "<group>";
@@ -2227,6 +2233,7 @@
 				0A36CDFD299C11B50004758E /* RangeMediaCacheImageDataProvider.swift in Sources */,
 				0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */,
 				0A83D90C2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift in Sources */,
+				0A44751F2AB88549000EC667 /* FirestoreInvitation.swift in Sources */,
 				0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */,
 				0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */,
 				0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */,
@@ -2306,6 +2313,7 @@
 				0AB85585290009C600491E20 /* DueDateUpdateFeedItemCell.swift in Sources */,
 				0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */,
 				0A83D9102AB20008003A8DCE /* EnterAccountInfoView.swift in Sources */,
+				0A44751D2AB88539000EC667 /* Invitation.swift in Sources */,
 				0A4DC78A27F4CDD500712518 /* PresentationContainerView.swift in Sources */,
 				0A130EA128D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift in Sources */,
 				0A5394292A264685008583F0 /* AnnotationsEditor.swift in Sources */,
