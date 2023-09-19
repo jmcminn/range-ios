@@ -2,6 +2,7 @@ import Foundation
 import OSLog
 import Realm
 import RealmSwift
+import SwiftUI
 import UIKit
 
 class ProjectsViewController: UIViewController {
@@ -12,6 +13,7 @@ class ProjectsViewController: UIViewController {
     private var currentOrganizationObservation: NSKeyValueObservation?
 
     private var tableView: UITableView!
+    private var emptyStateViewController: UIHostingController<ProjectsEmptyStateView>?
 
     /// label shown as title view for navigation bar
     private let titleLabel = UILabel()
@@ -74,6 +76,7 @@ class ProjectsViewController: UIViewController {
 
         tableView.reloadData()
 
+        updateEmptyStateView()
         updateTitleLabel()
         updateProjectSelectorButton()
 
@@ -132,9 +135,11 @@ class ProjectsViewController: UIViewController {
             case .initial:
                 self.updateData()
                 self.updateTitleLabel()
+                self.updateEmptyStateView()
             case .update:
                 self.updateData()
                 self.updateTitleLabel()
+                self.updateEmptyStateView()
             case let .error(error):
                 Logger.model.error("observing projects failed: \(error.localizedDescription, privacy: .public)")
             }
@@ -197,6 +202,18 @@ class ProjectsViewController: UIViewController {
         }
 
         titleLabel.attributedText = title
+    }
+
+    private func updateEmptyStateView() {
+        var newState: ProjectsEmptyStateView.State?
+        if model.currentOrganization == nil {
+            newState = .noOrganization
+        } else if projects == nil || projects!.isEmpty {
+            // TODO: 1717 need org participant...
+        }
+
+//        emptyStateViewController?.view.removeFromSuperview()
+//            emptyStateViewController = UIHostingController(rootView: ProjectsEmptyStateView(state: .noOrganization))
     }
 
     private func updateProjectSelectorButton() {

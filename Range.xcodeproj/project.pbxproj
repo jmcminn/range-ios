@@ -402,6 +402,7 @@
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */; };
 		0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */; };
+		0AD78E002AB9869700710260 /* ProjectsEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD78DFF2AB9869700710260 /* ProjectsEmptyStateView.swift */; };
 		0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */; };
 		0AD8E2642AB35B730079E0DD /* StringPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */; };
 		0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */; };
@@ -863,6 +864,7 @@
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FirstResponder.swift"; sourceTree = "<group>"; };
 		0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFilters.swift; sourceTree = "<group>"; };
+		0AD78DFF2AB9869700710260 /* ProjectsEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsEmptyStateView.swift; sourceTree = "<group>"; };
 		0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerCardViewController.swift; sourceTree = "<group>"; };
 		0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerTableViewCell.swift; sourceTree = "<group>"; };
 		0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarView.swift; sourceTree = "<group>"; };
@@ -1909,6 +1911,7 @@
 				0A187AEC2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift */,
 				0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */,
 				0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */,
+				0AD78DFF2AB9869700710260 /* ProjectsEmptyStateView.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -2319,6 +2322,7 @@
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
 				0A83D9122AB33A54003A8DCE /* DropdownButton.swift in Sources */,
 				0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */,
+				0AD78E002AB9869700710260 /* ProjectsEmptyStateView.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */,
