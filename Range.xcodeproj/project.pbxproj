@@ -211,6 +211,7 @@
 		0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A4DC79A27F61C8700712518 /* SnapKit */; };
 		0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */; };
 		0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC7A327F7618D00712518 /* RoundShadowView.swift */; };
+		0A51A44A2AB9F049008C5B84 /* OrganizationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */; };
 		0A5394272A251482008583F0 /* ScribbleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394262A251482008583F0 /* ScribbleViewModel.swift */; };
 		0A5394292A264685008583F0 /* AnnotationsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394282A264685008583F0 /* AnnotationsEditor.swift */; };
 		0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A566EF529BA29480094BD60 /* CanvasSource.swift */; };
@@ -663,6 +664,7 @@
 		0A4DC79727F5B06200712518 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Properties.swift"; sourceTree = "<group>"; };
 		0A4DC7A327F7618D00712518 /* RoundShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowView.swift; sourceTree = "<group>"; };
+		0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationModel.swift; sourceTree = "<group>"; };
 		0A5394262A251482008583F0 /* ScribbleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleViewModel.swift; sourceTree = "<group>"; };
 		0A5394282A264685008583F0 /* AnnotationsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsEditor.swift; sourceTree = "<group>"; };
 		0A566EF529BA29480094BD60 /* CanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSource.swift; sourceTree = "<group>"; };
@@ -1532,6 +1534,7 @@
 				0A98E458298AEC4F004F0112 /* MediaStore */,
 				0A7A5370293E3CFE0093D913 /* Model */,
 				0A7A5378293E4DFB0093D913 /* ModelProjects */,
+				0AD78E012AB9EC1000710260 /* ModelOrganization */,
 				0A07D75428101B1C00B6F9A2 /* ModelProject */,
 				0AA424302913C6D80088E2B1 /* ModelActions */,
 				0A724F61288AAFCF00708C6B /* ModelUploads */,
@@ -1925,6 +1928,14 @@
 				0A4995B928574CC600E571FB /* HeaderExpanderCalculator.swift */,
 			);
 			path = HeaderExpand;
+			sourceTree = "<group>";
+		};
+		0AD78E012AB9EC1000710260 /* ModelOrganization */ = {
+			isa = PBXGroup;
+			children = (
+				0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */,
+			);
+			path = ModelOrganization;
 			sourceTree = "<group>";
 		};
 		0AD8E2602AB35AA50079E0DD /* StringPicker */ = {
@@ -2380,6 +2391,7 @@
 				0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,
 				0A797F76292CC60800D63567 /* UserTableViewCell.swift in Sources */,
+				0A51A44A2AB9F049008C5B84 /* OrganizationModel.swift in Sources */,
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */,
 				0A797F7A292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift in Sources */,

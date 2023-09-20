@@ -69,7 +69,7 @@ class ProjectModel: NSObject, RealmModel {
         } else {
             config.schemaVersion = 17
             config.fileURL!.deleteLastPathComponent()
-            config.fileURL!.appendPathComponent(self.projectId)
+            config.fileURL!.appendPathComponent("user_\(userId)_project_\(projectId)")
             config.fileURL!.appendPathExtension("realm")
             config.migrationBlock = { migration, oldSchemaVersion in
                 ProjectModel.migrate(migration, oldSchemaVersion)

@@ -51,6 +51,7 @@ class ProjectTableViewCell: UITableViewCell {
     }
 
     func setProject(_ project: ProjectSummary) {
+        guard !project.isInvalidated else { return }
         nameLabel.text = project.name
         descriptionLabel.text = project.projectDescription
 

@@ -16,13 +16,7 @@ struct FirestoreOrganization: Codable, FirestoreToRealmSyncable {
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
-        let organization = Organization(id: id, name: name)
+        let organization = Organization(id: id, name: name, projectIds: projectIds)
         realm.add(organization, update: .modified)
-
-        // add new projects to the organization
-        for projectId in projectIds {
-            let project = realm.objectOrPlaceholder(ofType: ProjectSummary.self, forPrimaryKey: projectId)
-            organization.projects.insert(project)
-        }
     }
 }

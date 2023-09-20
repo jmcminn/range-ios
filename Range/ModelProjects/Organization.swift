@@ -7,8 +7,8 @@ class Organization: Object, WithId {
     @Persisted(primaryKey: true) var id: String
     /// Organization name
     @Persisted var name: String
-    /// projects for this organization (the ones that the user has access to), the order doesn't matter so it's a set
-    @Persisted var projects: MutableSet<ProjectSummary>
+    /// array of all projects ids of this organization (user may not have access to all of them)
+    @Persisted var projectIds: List<String>
 
     /// Default initializer required by Realm.
     override init() {
@@ -16,9 +16,17 @@ class Organization: Object, WithId {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String) {
+    init(id: String, name: String, projectIds: [String] = []) {
         super.init()
         self.id = id
         self.name = name
+        self.projectIds.append(objectsIn: projectIds)
+    }
+
+    /// Equality based on id
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let rhs = object as? Organization else { return false }
+        if id != rhs.id { return false }
+        return true
     }
 }

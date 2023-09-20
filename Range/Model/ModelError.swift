@@ -15,6 +15,7 @@ enum ModelError: Error, Equatable {
     case fileTypeNotSupported(_ type: String)
     case geometryNotFound
     case malformedUrl(_ url: String)
+    case organizationNotFound
     case organizationRoleNotSupported(_ role: String)
     case statusNotFound
     case summaryNotFound
@@ -39,6 +40,7 @@ extension ModelError: LocalizedError {
         case let .fileTypeNotSupported(type): return "\(type) fileType not supported"
         case .geometryNotFound: return "Geometry not found"
         case let .malformedUrl(url): return "Malformed URL: \(url)"
+        case .organizationNotFound: return "Organization not found"
         case let .organizationRoleNotSupported(role): return "Organization role: \(role)"
         case .statusNotFound: return "Status not found"
         case .summaryNotFound: return "Couldn't load project"

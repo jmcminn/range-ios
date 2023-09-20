@@ -20,12 +20,14 @@ class ProjectsFlowController: UINavigationController {
 
     var onSignedOut: (() -> Void)?
 
-    let projectsVC: ProjectsViewController
+    /// The navigation controller presenting the ProjectsViewController (or empty state view if no org is selected)
+    var projectsNavigationController: UINavigationController?
 
     var currentUserNotificationToken: NotificationToken?
     var projectFC: ProjectFlowController?
     /// to observe the state of project flow controller `started`
     var projectFCStarted: AnyCancellable?
+    private var currentOrganizationObservation: NSKeyValueObservation?
     var currentProjectNotificationToken: NotificationToken?
 
     /// if present show this project and it's task list when user signs in
@@ -44,7 +46,6 @@ class ProjectsFlowController: UINavigationController {
             userSettings: userSettings,
             pendingActionsModel: pendingActionsModel
         )
-        projectsVC = ProjectsViewController(model: projectsModel)
         super.init(rootViewController: LaunchScreenViewController())
     }
 
@@ -69,6 +70,7 @@ class ProjectsFlowController: UINavigationController {
         }
 
         let tabBarVC = setupTabBarViewController()
+        updateProjectsViewController()
 
         let tryLoadProject: (String) async -> Void = { projectId in
             do {
@@ -98,6 +100,7 @@ class ProjectsFlowController: UINavigationController {
             setViewControllers([tabBarVC], animated: false)
         }
         observeCurrentUser()
+        observeCurrentOrganization()
     }
 
     func stop() async {
@@ -109,17 +112,8 @@ class ProjectsFlowController: UINavigationController {
         pendingUploadsModel.stop()
         pendingActionsModel.stop()
         currentUserNotificationToken?.invalidate()
+        currentOrganizationObservation?.invalidate()
         currentProjectNotificationToken?.invalidate()
-    }
-
-    private func setupProjectsViewController() {
-        projectsVC.title = String(localized: "My Projects")
-        projectsVC.onOrganizationButtonTap = { [weak self] in
-            self?.selectOrganizationAction()
-        }
-        projectsVC.onProjectSelected = { [weak self] project in
-            self?.loadAndPushProjectFlowController(projectId: project.id, animated: true)
-        }
     }
 
     private func setupSettingsViewController() -> UIViewController {
@@ -133,13 +127,13 @@ class ProjectsFlowController: UINavigationController {
 
     /// Sets the root view controller of this navigation controller to be a tab bar with "My Projects" and "Settings" tabs
     private func setupTabBarViewController() -> UITabBarController {
-        setupProjectsViewController()
-        let projectsNavC = UINavigationController(rootViewController: projectsVC)
+        let projectsNavC = UINavigationController(rootViewController: LaunchScreenViewController())
         projectsNavC.tabBarItem = UITabBarItem(
             title: String(localized: "My Projects"),
             image: UIImage(named: "projects_icon"),
             tag: 0
         )
+        projectsNavigationController = projectsNavC
 
         let settingsVC = setupSettingsViewController()
         settingsVC.title = String(localized: "Settings")
@@ -163,6 +157,25 @@ class ProjectsFlowController: UINavigationController {
         }
 
         return tabBarVC
+    }
+
+    /// Based on current organizationModel show its projects or show the empty view
+    private func updateProjectsViewController() {
+        guard let projectsNavC = projectsNavigationController else { return }
+        if let organizationModel = projectsModel.currentOrganizationModel {
+            let projectsVC = ProjectsViewController(model: organizationModel)
+            projectsVC.title = String(localized: "My Projects")
+            projectsVC.onOrganizationButtonTap = { [weak self] in
+                self?.selectOrganizationAction()
+            }
+            projectsVC.onProjectSelected = { [weak self] project in
+                self?.loadAndPushProjectFlowController(projectId: project.id, animated: true)
+            }
+            projectsNavC.setViewControllers([projectsVC], animated: false)
+        } else {
+            let emptyStateView = ProjectsEmptyStateView(state: .noOrganization)
+            projectsNavC.setViewControllers([UIHostingController(rootView: emptyStateView)], animated: false)
+        }
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
@@ -212,7 +225,7 @@ class ProjectsFlowController: UINavigationController {
 
     private func updateLastOpenProjectAndCanvas() {
         guard let projectModel = projectFC?.model else { return }
-        guard let organizationId = projectsModel.currentOrganization?.id else { return }
+        guard let organizationId = projectsModel.currentOrganizationModel?.organization.id else { return }
         UserDefaults.addRecentProjectId(projectModel.projectId, forOrganizationId: organizationId)
         UserDefaults.setLastOpenCanvasId(
             projectModel.currentCanvas.id,
@@ -273,11 +286,20 @@ class ProjectsFlowController: UINavigationController {
         }
     }
 
+    private func observeCurrentOrganization() {
+        currentOrganizationObservation = projectsModel.observe(\.currentOrganizationModel) { [weak self] _, _ in
+            self?.updateProjectsViewController()
+        }
+    }
+
     private func observeCurrentProject() {
         guard let projectId = projectFC?.model.projectId else {
             fatalError("observeCurrentProject called when no project is open")
         }
-        guard let project = projectsModel.mainRealm.object(ofType: ProjectSummary.self, forPrimaryKey: projectId)
+        guard let organizationModel = projectsModel.currentOrganizationModel else {
+            fatalError("observeCurrentProject called when no organization is selected")
+        }
+        guard let project = organizationModel.mainRealm.object(ofType: ProjectSummary.self, forPrimaryKey: projectId)
         else { return }
         currentProjectNotificationToken?.invalidate()
         currentProjectNotificationToken = project.observe { [weak self] change in
@@ -366,9 +388,15 @@ class ProjectsFlowController: UINavigationController {
         let organizations = projectsModel.mainRealm.objects(Organization.self).sorted(by: \.name)
         OrganizationSelectorCardViewController(
             organizations: [Organization](organizations),
-            selectedOrganization: projectsModel.currentOrganization,
+            selectedOrganization: projectsModel.currentOrganizationModel?.organization,
             onOrganizationSelected: { [weak self] org in
-                self?.projectsModel.setCurrentOrganization(org)
+                Task { @MainActor in
+                    do {
+                        try await self?.projectsModel.setCurrentOrganization(org)
+                    } catch {
+                        ToastWindow.shared.showError(text: "failed to select the organization")
+                    }
+                }
             }
         ).installAndShowCard(in: self)
     }
