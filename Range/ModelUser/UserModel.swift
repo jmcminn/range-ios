@@ -8,7 +8,7 @@ import RealmSwift
 import UIKit
 
 /// Responsible for configuring the Realm for given user and all his organizations, invitations and push notifications
-class ProjectsModel: NSObject, RealmModel {
+class UserModel: NSObject, RealmModel {
     /// The Range id of the current logged in user
     let userId: String
 
@@ -54,7 +54,7 @@ class ProjectsModel: NSObject, RealmModel {
         config.fileURL!.appendPathComponent("user_\(userId)")
         config.fileURL!.appendPathExtension("realm")
         config.migrationBlock = { migration, oldSchemaVersion in
-            ProjectsModel.migrate(migration, oldSchemaVersion)
+            UserModel.migrate(migration, oldSchemaVersion)
         }
         Logger.model.info("user realm file url: \(config.fileURL?.path ?? "")")
         config.objectTypes = [User.self, Invitation.self, Organization.self]
@@ -322,7 +322,7 @@ class ProjectsModel: NSObject, RealmModel {
     }
 }
 
-extension ProjectsModel: MessagingDelegate {
+extension UserModel: MessagingDelegate {
     /// Note: This callback is fired at each app startup and whenever a new token is generated.
     func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let fcmToken = fcmToken else { return }
@@ -335,7 +335,7 @@ extension ProjectsModel: MessagingDelegate {
 
 // MARK: current user management
 
-extension ProjectsModel {
+extension UserModel {
     /// Updates the current user data in Firestore.
     /// This is an online action only, applied directly in Firestore.
     @MainActor

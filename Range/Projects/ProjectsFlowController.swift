@@ -10,7 +10,7 @@ import UIKit
 /// This flow controller is a UINavigationController as it pushes project flow controller(s) onto the navigation stack
 class ProjectsFlowController: UINavigationController {
     private let userId: String
-    let projectsModel: ProjectsModel
+    let userModel: UserModel
     let localFiles: LocalFiles
     let mediaCache: MediaCache
     let canvasFileLoader: CanvasFileLoader
@@ -35,7 +35,7 @@ class ProjectsFlowController: UINavigationController {
 
     init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
-        projectsModel = try ProjectsModel(userId: userId, newlySignedIn: newlySignedIn)
+        userModel = try UserModel(userId: userId, newlySignedIn: newlySignedIn)
         localFiles = try LocalFiles()
         mediaCache = MediaCache(localFiles: localFiles)
         canvasFileLoader = try CanvasFileLoader()
@@ -61,11 +61,11 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func start() async throws {
-        try await projectsModel.start()
+        try await userModel.start()
         try await pendingUploadsModel.start()
         pendingActionsModel.start()
 
-        if let user = projectsModel.currentUser, !user.accountReady {
+        if let user = userModel.currentUser, !user.accountReady {
             collectUserData()
         }
 
@@ -105,9 +105,9 @@ class ProjectsFlowController: UINavigationController {
 
     func stop() async {
         do {
-            try await projectsModel.stop()
+            try await userModel.stop()
         } catch {
-            Logger.model.error("Failed to stop the projectsModel: \(error)s")
+            Logger.model.error("Failed to stop the userModel: \(error)s")
         }
         pendingUploadsModel.stop()
         pendingActionsModel.stop()
@@ -121,7 +121,7 @@ class ProjectsFlowController: UINavigationController {
             self?.signOut()
         }
         return UIHostingController(
-            rootView: UserSettingsView().environmentObject(userSettings).environmentObject(projectsModel.currentUser!)
+            rootView: UserSettingsView().environmentObject(userSettings).environmentObject(userModel.currentUser!)
         )
     }
 
@@ -162,7 +162,7 @@ class ProjectsFlowController: UINavigationController {
     /// Based on current organizationModel show its projects or show the empty view
     private func updateProjectsViewController() {
         guard let projectsNavC = projectsNavigationController else { return }
-        if let organizationModel = projectsModel.currentOrganizationModel {
+        if let organizationModel = userModel.currentOrganizationModel {
             let projectsVC = ProjectsViewController(model: organizationModel)
             projectsVC.title = String(localized: "My Projects")
             projectsVC.onOrganizationButtonTap = { [weak self] in
@@ -225,7 +225,7 @@ class ProjectsFlowController: UINavigationController {
 
     private func updateLastOpenProjectAndCanvas() {
         guard let projectModel = projectFC?.model else { return }
-        guard let organizationId = projectsModel.currentOrganizationModel?.organization.id else { return }
+        guard let organizationId = userModel.currentOrganizationModel?.organization.id else { return }
         UserDefaults.addRecentProjectId(projectModel.projectId, forOrganizationId: organizationId)
         UserDefaults.setLastOpenCanvasId(
             projectModel.currentCanvas.id,
@@ -265,7 +265,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     private func observeCurrentUser() {
-        guard let currentUser = projectsModel.currentUser else {
+        guard let currentUser = userModel.currentUser else {
             fatalError("observeCurrentUser called when there's no current user")
         }
         currentUserNotificationToken = currentUser.observe { [weak self] change in
@@ -287,7 +287,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     private func observeCurrentOrganization() {
-        currentOrganizationObservation = projectsModel.observe(\.currentOrganizationModel) { [weak self] _, _ in
+        currentOrganizationObservation = userModel.observe(\.currentOrganizationModel) { [weak self] _, _ in
             self?.updateProjectsViewController()
         }
     }
@@ -296,7 +296,7 @@ class ProjectsFlowController: UINavigationController {
         guard let projectId = projectFC?.model.projectId else {
             fatalError("observeCurrentProject called when no project is open")
         }
-        guard let organizationModel = projectsModel.currentOrganizationModel else {
+        guard let organizationModel = userModel.currentOrganizationModel else {
             fatalError("observeCurrentProject called when no organization is selected")
         }
         guard let project = organizationModel.mainRealm.object(ofType: ProjectSummary.self, forPrimaryKey: projectId)
@@ -385,14 +385,14 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func selectOrganizationAction() {
-        let organizations = projectsModel.mainRealm.objects(Organization.self).sorted(by: \.name)
+        let organizations = userModel.mainRealm.objects(Organization.self).sorted(by: \.name)
         OrganizationSelectorCardViewController(
             organizations: [Organization](organizations),
-            selectedOrganization: projectsModel.currentOrganizationModel?.organization,
+            selectedOrganization: userModel.currentOrganizationModel?.organization,
             onOrganizationSelected: { [weak self] org in
                 Task { @MainActor in
                     do {
-                        try await self?.projectsModel.setCurrentOrganization(org)
+                        try await self?.userModel.setCurrentOrganization(org)
                     } catch {
                         ToastWindow.shared.showError(text: "failed to select the organization")
                     }
@@ -407,7 +407,7 @@ class ProjectsFlowController: UINavigationController {
 extension ProjectsFlowController {
     /// Ask newly signed up user for name and job title
     private func collectUserData() {
-        guard let user = projectsModel.currentUser else { return }
+        guard let user = userModel.currentUser else { return }
         let enterAccountInfoViewModel = EnterAccountInfoViewModel()
         enterAccountInfoViewModel.email = user.email
         let enterAccountInfoView = EnterAccountInfoView(
@@ -466,7 +466,7 @@ extension ProjectsFlowController {
                 defer {
                     viewModel.isProcessing = false
                 }
-                try await self.projectsModel.updateUserData(
+                try await self.userModel.updateUserData(
                     firstName: viewModel.firstName,
                     lastName: viewModel.lastName,
                     jobTitle: jobTitle

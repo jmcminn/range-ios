@@ -16,7 +16,7 @@ extension ProjectModel {
 
         // v12 introduces optional Upload.annotations (no Firestore sync), migration not needed
         // v13 introduces Upload.localStorageVersion (no Firestore sync), migration not needed
-        // v14 introduces Participant.organizationIds, migration not needed (this field is empty for project model, only used for projectsModel)
+        // v14 introduces Participant.organizationIds, migration not needed (this field is empty for project model, only used for userModel)
         // v15 introduces Participant.participation(state), migration not needed
         // v16 removes Participant.organizationIds,projectIds,fcmTokens, they are now handled by the User object
         // v17 adds Participant.organizationRole
