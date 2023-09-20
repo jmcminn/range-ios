@@ -104,6 +104,7 @@ extension StringPickerCardViewController: UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let value = strings[indexPath.row]
+        dismissCard()
         onStringSelected?(value)
     }
 

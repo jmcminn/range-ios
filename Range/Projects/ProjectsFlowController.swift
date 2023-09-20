@@ -440,9 +440,8 @@ extension ProjectsFlowController {
             ],
             selectedString: viewModel.jobTitle
         )
-        jobTitlePickerVC.onStringSelected = { [weak jobTitlePickerVC] jobTitle in
+        jobTitlePickerVC.onStringSelected = { jobTitle in
             viewModel.jobTitle = jobTitle
-            jobTitlePickerVC?.dismiss(animated: true)
         }
         jobTitlePickerVC.installAndShowCard(in: presentedViewController)
     }
