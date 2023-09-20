@@ -13,6 +13,28 @@ struct StartAuthView: View {
     let loginAction: () -> Void
     let signUpAction: () -> Void
 
+    func descriptionAttributedString() -> AttributedString {
+        var text =
+            AttributedString(
+                "By signing up, or continuing with Google, you agree to our Terms of Service and Privacy Policy"
+            )
+        text.foregroundColor = .dynamic(.Neutral_04)
+
+        if let privacyRange = text.range(of: "Privacy Policy") {
+            text[privacyRange].link =
+                URL(string: "https://rangehq.notion.site/Range-Terms-of-Service-27c0ae45b3b145a883b9cbc72231b32f")
+            text[privacyRange].underlineStyle = .single
+            text[privacyRange].foregroundColor = .Primary_Blue_04
+        }
+        if let termsRange = text.range(of: "Terms of Service") {
+            text[termsRange].link =
+                URL(string: "https://rangehq.notion.site/Range-Privacy-Policy-7171e619c2ae42489a19fff06fbe47c6")
+            text[termsRange].underlineStyle = .single
+            text[termsRange].foregroundColor = .Primary_Blue_04
+        }
+        return text
+    }
+
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .top) {
@@ -35,7 +57,7 @@ struct StartAuthView: View {
                         .padding(EdgeInsets(top: 12, leading: 0, bottom: 40, trailing: 0))
 
                     Text("Let's get started")
-                        .foregroundColor(.dynamic(.Neutral_05))
+                        .foregroundColor(.dynamic(.Neutral_04))
                         .font(.title3.bold())
                         .padding(.bottom, 48)
 
@@ -53,6 +75,9 @@ struct StartAuthView: View {
                         GrayButton(text: "Log in", clicked: loginAction)
 
                         BlueGradientButton(text: "Sign up", clicked: signUpAction)
+
+                        Text(descriptionAttributedString())
+                            .font(.caption)
                     }
                     .disabled(viewModel.isProcessing)
 
