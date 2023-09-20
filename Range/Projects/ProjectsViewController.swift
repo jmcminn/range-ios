@@ -169,15 +169,31 @@ class ProjectsViewController: UIViewController {
     }
 
     private func updateEmptyStateView() {
-        var newState: ProjectsEmptyStateView.State?
-        // TODO: 1717 need org participant...
-//        if model.currentOrganizationModel == nil {
-//            newState = .noOrganization
-//        } else if projects == nil || projects!.isEmpty {
-//        }
+        guard !model.currentUser.isInvalidated else { return }
 
-//        emptyStateViewController?.view.removeFromSuperview()
-//            emptyStateViewController = UIHostingController(rootView: ProjectsEmptyStateView(state: .noOrganization))
+        if projects.isEmpty {
+            navigationItem.searchController = nil
+            tableView.isHidden = true
+
+            if let emptyStateViewController = emptyStateViewController {
+                remove(childController: emptyStateViewController)
+            }
+            let emptyState: ProjectsEmptyStateView.State = model.currentUser.organizationRole == .Admin
+                ? .noProjectsAdmin
+                : .noProjectsCollaborator
+            let emptyStateView = ProjectsEmptyStateView(state: emptyState)
+            emptyStateViewController = UIHostingController(rootView: emptyStateView)
+            add(childController: emptyStateViewController!)
+            emptyStateViewController!.view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        } else {
+            navigationItem.searchController = searchController
+            tableView.isHidden = false
+            if let emptyStateViewController = emptyStateViewController {
+                remove(childController: emptyStateViewController)
+            }
+        }
     }
 
     private func setupOrganizationSelectorButton() {
