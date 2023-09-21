@@ -90,6 +90,14 @@ struct FirestoreGeometry: Codable, FirestoreToRealmSyncable {
     }
 
     func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
+        if let existingGeometry = realm.object(ofType: Geometry.self, forPrimaryKey: id),
+           let previousCanvas = existingGeometry.canvas.first,
+           previousCanvas.id != canvasId
+        {
+            // the geometry has changed canvas, remove from the previous one
+            previousCanvas.geometries.remove(existingGeometry)
+        }
+
         let canvas = realm.objectOrPlaceholder(ofType: Canvas.self, forPrimaryKey: canvasId)
         let geometry = Geometry(
             id: id,

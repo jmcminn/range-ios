@@ -99,7 +99,7 @@ final class DebugSettings: ObservableObject {
             "name": "Test organization",
             "industry": "Testing",
         ]) { result, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "organization created")
             }
@@ -115,7 +115,7 @@ final class DebugSettings: ObservableObject {
             "userId": "a3dff7cb-1db3-4fb0-bcab-4fe150f182ed", // Tom
             "organizationRole": "Admin",
         ]) { _, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "role changed")
             }
@@ -129,7 +129,7 @@ final class DebugSettings: ObservableObject {
             "userId": "8931bee0-0e8d-46ed-99cc-0b655b068e95", // sam
             "organizationRole": "Collaborator",
         ]) { _, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "organization participant added")
             }
@@ -142,7 +142,7 @@ final class DebugSettings: ObservableObject {
 //            "organizationId": "84fc607b-1d23-449d-bb28-036941502492", // TomRa
             "userId": "8931bee0-0e8d-46ed-99cc-0b655b068e95", // sam
         ]) { _, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "organization participant removed")
             }
@@ -155,7 +155,7 @@ final class DebugSettings: ObservableObject {
 //            "projectId": "ab901606-3a6a-4f35-a095-478caa3841ef", // TomRa project
             "userId": "8931bee0-0e8d-46ed-99cc-0b655b068e95", // sam
         ]) { _, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "project participant added")
             }
@@ -168,7 +168,7 @@ final class DebugSettings: ObservableObject {
 //            "projectId": "ab901606-3a6a-4f35-a095-478caa3841ef", // TomRa project
             "userId": "8931bee0-0e8d-46ed-99cc-0b655b068e95", // sam
         ]) { _, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "project participant removed")
             }
@@ -181,7 +181,7 @@ final class DebugSettings: ObservableObject {
             "inviteeEmail": "rafal@range.io", //
             "organizationRole": "Collaborator",
         ]) { result, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "invited to organization")
             }
@@ -197,7 +197,7 @@ final class DebugSettings: ObservableObject {
             "inviteeEmail": "sam@sam.com", //
             "organizationRole": "Collaborator",
         ]) { result, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "invited to organization")
             }
@@ -213,7 +213,7 @@ final class DebugSettings: ObservableObject {
             "inviteeEmail": "tom@tom.com", //
             "organizationRole": "Collaborator",
         ]) { result, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "invited to organization")
             }
@@ -228,7 +228,7 @@ final class DebugSettings: ObservableObject {
             "organizationId": "84fc607b-1d23-449d-bb28-036941502492", // TomRa
             "invitationId": "9c72a608-9f71-41d0-980d-2334987d9994",
         ]) { _, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "invitation resent")
             }
@@ -239,19 +239,19 @@ final class DebugSettings: ObservableObject {
         Functions.functions(region: "us-west2").httpsCallable("acceptInvitation").call([
             "invitationId": "84fc607b-1d23-449d-bb28-036941502492", // TomRa
         ]) { _, error in
-            DebugSettings.handCallableError(error: error)
+            DebugSettings.handleCallableError(error: error)
             if error == nil {
                 ToastWindow.shared.showSuccess(text: "invitation accept")
             }
         }
     }
 
-    private static func handCallableError(error: Error?) {
+    private static func handleCallableError(error: Error?) {
         if let error = error as NSError?, error.domain == FunctionsErrorDomain {
             let code = FunctionsErrorCode(rawValue: error.code)
             let message = error.localizedDescription
             let details = error.userInfo[FunctionsErrorDetailsKey]
-            print("testCallable error: \(code?.rawValue) \(message) \(details ?? "")")
+            print("testCallable error: \(String(describing: code?.rawValue)) \(message) \(details ?? "")")
         } else if let error = error {
             print("testCallable error: \(error)")
         }

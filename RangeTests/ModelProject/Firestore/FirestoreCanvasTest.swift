@@ -9,7 +9,7 @@ final class FirestoreCanvasTest: ProjectModelTestCase {
 
     func testUpsert_deprecated() throws {
         // upsert deprecated canvas
-        var firestoreCanvas = FirestoreCanvas(name: "canvas name")
+        let firestoreCanvas = FirestoreCanvas(name: "canvas name")
         try realm.write {
             try firestoreCanvas.upsert(withId: "canvas1", inRealm: realm)
         }

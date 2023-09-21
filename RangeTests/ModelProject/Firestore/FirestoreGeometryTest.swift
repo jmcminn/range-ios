@@ -163,4 +163,30 @@ class FirestoreGeometryTest: ProjectModelTestCase {
         XCTAssertEqual(canvas2.geometries.count, 0)
         XCTAssertEqual(canvas1.geometries.first?.id, "geometry1")
     }
+
+    func testUpsert_switchCanvas() throws {
+        // 1. create 2 canvases and geometry in canvas1
+        let canvas1 = Canvas(id: "canvas1", name: "")
+        let canvas2 = Canvas(id: "canvas2", name: "")
+        var geometry1 = Geometry(placeholderId: "geometry1")
+        try realm.write {
+            realm.add([canvas1, canvas2, geometry1])
+            canvas1.geometries.insert(geometry1)
+        }
+        XCTAssertEqual(canvas1.geometries.count, 1)
+        XCTAssertEqual(canvas2.geometries.count, 0)
+
+        // when moving the geometry to canvas2
+        let firestoreGeometry1 = FirestoreGeometry(
+            canvasId: "canvas2",
+            geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
+        )
+        try realm.write {
+            try firestoreGeometry1.upsert(withId: "geometry1", inRealm: realm)
+        }
+
+        // the geometry should be now in 2nd canvas, and removed from the first
+        XCTAssertEqual(canvas1.geometries.count, 0)
+        XCTAssertEqual(canvas2.geometries.count, 1)
+    }
 }
