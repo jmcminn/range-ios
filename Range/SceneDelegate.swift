@@ -117,6 +117,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         } else {
             do {
                 try await Auth.auth().applyActionCode(oobCode)
+                if let user = Auth.auth().currentUser {
+                    user.getIDTokenForcingRefresh(true)
+                }
                 ToastWindow.shared.showSuccess(text: "\(modeName) succeeded")
             } catch {
                 Logger.auth.error("Error applying auth action \(mode): \(error)")
