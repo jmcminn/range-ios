@@ -442,7 +442,14 @@ extension ProjectsFlowController {
         )
         jobTitlePickerVC.onStringSelected = { jobTitle in
             viewModel.jobTitle = jobTitle
+            viewModel.isUIDisabled = false
         }
+        jobTitlePickerVC.onClose = {
+            viewModel.isUIDisabled = false
+        }
+        // a hack - disable swift UI controls, otherwise the touches that should be
+        // consumed by jobTitlePicker are also sent to the underlying swiftUI view
+        viewModel.isUIDisabled = true
         jobTitlePickerVC.installAndShowCard(in: presentedViewController)
     }
 

@@ -11,6 +11,8 @@ class EnterAccountInfoViewModel: ObservableObject {
     @Published var jobTitle: String? = nil
     /// whether the account is being updated
     @Published var isProcessing = false
+    /// whether the UI should be disabled - a hack for presenting UIViews on top of this SwiftUI view
+    @Published var isUIDisabled = false
 }
 
 /// View shown when the logged-in user info is not ready (so user is right after signup)
@@ -66,11 +68,13 @@ struct EnterAccountInfoView: View {
                                 .textContentType(.name)
                                 .submitLabel(.next)
                                 .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 0))
+                                .focused($focusedField, equals: "firstName")
 
                             TextField("Last name", text: $viewModel.lastName, prompt: Text("Last name")
                                 .foregroundColor(.dynamic(.Neutral_05)))
                                 .onSubmit {
-                                    focusedField = "role"
+                                    focusedField = nil
+                                    selectJobTitleAction()
                                 }
                                 .autocapitalization(.words)
                                 .disableAutocorrection(true)
@@ -82,7 +86,10 @@ struct EnterAccountInfoView: View {
                             DropdownButton(
                                 placeholderText: "Job Title",
                                 text: $viewModel.jobTitle,
-                                clicked: selectJobTitleAction
+                                clicked: {
+                                    focusedField = nil
+                                    selectJobTitleAction()
+                                }
                             )
                             .padding(EdgeInsets(top: 2, leading: 4, bottom: 10, trailing: 0))
                         }
@@ -99,7 +106,7 @@ struct EnterAccountInfoView: View {
                         TranslucentButton(text: "Log out", clicked: logOutAction)
                     }
                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
-                    .disabled(viewModel.isProcessing)
+                    .disabled(viewModel.isProcessing || viewModel.isUIDisabled)
 
                     Spacer()
                 }
