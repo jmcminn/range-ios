@@ -60,6 +60,7 @@ struct ResetPasswordView: View {
                             SecureField("Enter new password", text: $viewModel.password,
                                         prompt: Text("Enter new password")
                                             .foregroundColor(.dynamic(.Neutral_05)))
+                                .foregroundColor(.dynamic(.Neutral_04))
                                 .onSubmit {
                                     focusedField = "passwordConfirmation"
                                 }
@@ -70,6 +71,7 @@ struct ResetPasswordView: View {
                             SecureField("Re-enter your new password", text: $viewModel.passwordConfirmation,
                                         prompt: Text("Re-enter your new password")
                                             .foregroundColor(.dynamic(.Neutral_05)))
+                                .foregroundColor(.dynamic(.Neutral_04))
                                 .onSubmit {
                                     focusedField = nil
                                     updatePasswordAction()

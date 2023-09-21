@@ -58,30 +58,38 @@ struct EnterAccountInfoView: View {
 
                     Group {
                         Group {
-                            TextField("First name", text: $viewModel.firstName, prompt: Text("First name")
-                                .foregroundColor(.dynamic(.Neutral_05)))
-                                .onSubmit {
-                                    focusedField = "lastName"
-                                }
-                                .autocapitalization(.words)
-                                .disableAutocorrection(true)
-                                .textContentType(.name)
-                                .submitLabel(.next)
-                                .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 0))
-                                .focused($focusedField, equals: "firstName")
+                            TextField(
+                                "First name",
+                                text: $viewModel.firstName,
+                                prompt: Text("First name").foregroundColor(.dynamic(.Neutral_05))
+                            )
+                            .foregroundColor(.dynamic(.Neutral_04))
+                            .onSubmit {
+                                focusedField = "lastName"
+                            }
+                            .autocapitalization(.words)
+                            .disableAutocorrection(true)
+                            .textContentType(.name)
+                            .submitLabel(.next)
+                            .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 0))
+                            .focused($focusedField, equals: "firstName")
 
-                            TextField("Last name", text: $viewModel.lastName, prompt: Text("Last name")
-                                .foregroundColor(.dynamic(.Neutral_05)))
-                                .onSubmit {
-                                    focusedField = nil
-                                    selectJobTitleAction()
-                                }
-                                .autocapitalization(.words)
-                                .disableAutocorrection(true)
-                                .textContentType(.familyName)
-                                .submitLabel(.next)
-                                .padding(EdgeInsets(top: 15, leading: 4, bottom: 10, trailing: 0))
-                                .focused($focusedField, equals: "lastName")
+                            TextField(
+                                "Last name",
+                                text: $viewModel.lastName,
+                                prompt: Text("Last name").foregroundColor(.dynamic(.Neutral_05))
+                            )
+                            .foregroundColor(.dynamic(.Neutral_04))
+                            .onSubmit {
+                                focusedField = nil
+                                selectJobTitleAction()
+                            }
+                            .autocapitalization(.words)
+                            .disableAutocorrection(true)
+                            .textContentType(.familyName)
+                            .submitLabel(.next)
+                            .padding(EdgeInsets(top: 15, leading: 4, bottom: 10, trailing: 0))
+                            .focused($focusedField, equals: "lastName")
 
                             DropdownButton(
                                 placeholderText: "Job Title",

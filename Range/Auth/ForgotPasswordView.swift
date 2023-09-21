@@ -52,6 +52,7 @@ struct ForgotPasswordView: View {
                             TextField("Your email", text: $viewModel.email,
                                       prompt: Text("Your email")
                                           .foregroundColor(.dynamic(.Neutral_05)))
+                                .foregroundColor(.dynamic(.Neutral_04))
                                 .onSubmit {
                                     focusedField = nil
                                     sendLinkAction()

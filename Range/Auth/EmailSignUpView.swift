@@ -76,6 +76,7 @@ struct EmailSignUpView: View {
                             TextField("Your email", text: $viewModel.email,
                                       prompt: Text("Your email")
                                           .foregroundColor(.dynamic(.Neutral_05)))
+                                .foregroundColor(.dynamic(.Neutral_04))
                                 .onSubmit {
                                     focusedField = "password"
                                 }
@@ -89,6 +90,7 @@ struct EmailSignUpView: View {
                             SecureField("Choose a password", text: $viewModel.password,
                                         prompt: Text("Choose a password")
                                             .foregroundColor(.dynamic(.Neutral_05)))
+                                .foregroundColor(.dynamic(.Neutral_04))
                                 .onSubmit {
                                     focusedField = nil
                                     continueAction()

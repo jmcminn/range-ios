@@ -22,7 +22,7 @@ struct DropdownButton: View {
                         Image(systemName: "chevron.down")
                     }
                     .font(.title3.bold())
-                    .foregroundColor(.dynamic(.Neutral_04).opacity(0.5))
+                    .foregroundColor(.dynamic(.Neutral_05))
                 }
             }
             .padding(.vertical, 13)
