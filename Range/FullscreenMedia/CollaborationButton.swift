@@ -18,7 +18,7 @@ class CollaborationButton: UIControl {
                 ? String(localized: "Untitled photos...")
                 : String(localized: "Untitled task..."))
             : collaboration.name
-        canvasNameLabel.text = collaboration.feature.first?.geometry.first?.canvas.first?.displayName
+        canvasNameLabel.text = collaboration.feature.first?.geometry.first?.canvas.first?.name
         updateColors()
         updateHighlightedColor()
         updateDisclosureImage()

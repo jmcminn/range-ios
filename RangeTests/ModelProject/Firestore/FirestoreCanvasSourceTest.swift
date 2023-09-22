@@ -35,7 +35,6 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
             "canvas": "5678",
             "name": "canvas source name",
             "type": "pdf",
-            "sheetNumber": "A01",
             "pageNumber": 1,
             "userDefinedScale": 48
         }
@@ -50,7 +49,6 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
         guard case let .pdf(pdfData) = decodedSource.data else {
             XCTFail("unexpected canvas source data: \(decodedSource.data)"); return
         }
-        XCTAssertEqual(pdfData.sheetNumber, "A01")
         XCTAssertEqual(pdfData.userDefinedScale, 48)
     }
 
@@ -98,7 +96,6 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
         guard case let .pdf(pdfData) = source1.data else {
             XCTFail("unexpected canvas source data: \(source1.data)"); return
         }
-        XCTAssertEqual(pdfData.sheetNumber, nil)
         XCTAssertEqual(pdfData.userDefinedScale, 48)
     }
 }

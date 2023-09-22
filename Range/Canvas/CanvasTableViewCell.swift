@@ -44,7 +44,7 @@ class CanvasTableViewCell: UITableViewCell {
     }
 
     func setCanvas(_ canvas: Canvas, selected: Bool) {
-        nameLabel.text = canvas.displayName
+        nameLabel.text = canvas.name
 
         selectedIconView.isHidden = !selected
         // selectedIconView is shown on top of pink dot, so do not show pink dot when the canvas is selected

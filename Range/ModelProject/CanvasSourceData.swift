@@ -33,28 +33,18 @@ enum CanvasSourceData: Equatable {
             return data.type
         }
     }
-
-    var canvasNamePrefix: String? {
-        switch self {
-        case let .pdf(data): return data.sheetNumber
-        default: return nil
-        }
-    }
 }
 
 /// PDF Canvas Source definition
 struct PdfCanvasSourceData: Equatable, Codable {
     /// The type needs to be stored so it's encoded into db (so later it can be used to decode the proper representation)
     var type: CanvasSourceType = .pdf
-    /// sheet identifier
-    var sheetNumber: String?
     /// the scale of PDF. Example value: 48.0, meaning the scale is 1:48
     var userDefinedScale: Double
     /// version of the pdf file, to recognize when new pdf was uploaded
     var storageVersion: [String: String]?
 
-    init(sheetNumber: String? = nil, userDefinedScale: Double) {
-        self.sheetNumber = sheetNumber
+    init(userDefinedScale: Double) {
         self.userDefinedScale = userDefinedScale
     }
 

@@ -44,28 +44,11 @@ class Canvas: Object, WithPlaceholder, WithId {
                 // ignore when there's no match, this shouldn't happen
                 return false
             }
-            // sort by sheetNumber if provided
-            if let sheetNumber1 = data1.sheetNumber, let sheetNumber2 = data2.sheetNumber {
-                return sheetNumber1 < sheetNumber2
-            }
         }
         if !c1HasPdfs, !c2HasPdfs {
             return c1.id < c2.id
         }
         return !c1HasPdfs
-    }
-
-    /// The value to display in the UI
-    var displayName: String {
-        var components: [String] = []
-        // if there's only 1 source prepend it's "prefix" to this name
-        if canvasSources.count == 1, let firstSource = canvasSources.first,
-           let canvasNamePrefix = firstSource.canvasNamePrefix, !canvasNamePrefix.isEmpty
-        {
-            components.append(canvasNamePrefix)
-        }
-        if !name.isEmpty { components.append(name) }
-        return components.joined(separator: " • ")
     }
 
     /// Return all pins to be displayed for this canvas (not filtered)

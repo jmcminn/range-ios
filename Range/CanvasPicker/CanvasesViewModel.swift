@@ -163,7 +163,7 @@ class CanvasViewModel: NSObject, Codable {
 
     /// Convenience initializer from the model Canvas
     convenience init(fromCanvas canvas: Canvas) {
-        self.init(id: canvas.id, name: canvas.displayName)
+        self.init(id: canvas.id, name: canvas.name)
     }
 
     /// equatable to check for id only

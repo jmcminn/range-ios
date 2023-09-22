@@ -375,7 +375,7 @@ final class ProjectFlowController: UIViewController {
     // Update for current canvas. Hide if not a pdf.
     fileprivate func updateTopIndicatorView() {
         if model.currentCanvas.currentCanvasSource.type == .pdf, uiState != .fullScreenCanvas {
-            controls.showTopIndicatorView(text: model.currentCanvas.displayName, animated: true)
+            controls.showTopIndicatorView(text: model.currentCanvas.name, animated: true)
         } else {
             controls.hideTopIndicatorView(animated: true)
         }

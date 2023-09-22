@@ -20,10 +20,6 @@ class CanvasSource: Object, WithPlaceholder, WithId {
     /// CanvasSource type, based on the CanvasSourceData.type
     var type: CanvasSourceType { data.type }
 
-    /// Added to canvas name when there's only one canvas source for canvas
-    /// Hack to get pdf.sheetNumber displayed in the canvas selector
-    var canvasNamePrefix: String? { data.canvasNamePrefix }
-
     // order: mapbox, dronedeploy, pdf
     // Otherwise sort by id asc
     static var sortingOrder: (CanvasSource, CanvasSource) -> Bool = { cs1, cs2 -> Bool in
