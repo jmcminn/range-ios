@@ -117,15 +117,31 @@ class ProjectModel: NSObject, RealmModel {
             }
             try setCurrentCanvas(initialCanvas)
         } else {
-            guard let firstCanvas = [Canvas](mainRealm.objects(Canvas.self))
-                .filter({ !$0.canvasSources.isEmpty })
-                .sorted(by: Canvas.sortingOrder)
-                .first
-            else {
+            guard let firstCanvas = sortedCanvases.first else {
                 throw ModelError.canvasNotFound
             }
             try setCurrentCanvas(firstCanvas)
         }
+    }
+
+    // maps first (with any map source), followed by pdfs (with any pdf).
+    // sort by name inside each group
+    static var defaultCanvasSortingOrder: (Canvas, Canvas) -> Bool = { (c1: Canvas, c2: Canvas) -> Bool in
+        let c1HasPdfs = c1.canvasSources.contains { $0.type == .pdf }
+        let c2HasPdfs = c2.canvasSources.contains { $0.type == .pdf }
+
+        if c1HasPdfs != c2HasPdfs {
+            // maps first
+            return !c1HasPdfs
+        }
+        // sort by name in maps/pdfs groups
+        return c1.name.compare(c2.name, options: .caseInsensitive).rawValue < 0
+    }
+
+    var sortedCanvases: [Canvas] {
+        [Canvas](mainRealm.objects(Canvas.self).where { $0.placeholder == false })
+            .filter { !$0.canvasSources.isEmpty }
+            .sorted(by: ProjectModel.defaultCanvasSortingOrder)
     }
 
     /// Updates current canvas and loads the last open source for it (or the first source if it wasn't opened yet)

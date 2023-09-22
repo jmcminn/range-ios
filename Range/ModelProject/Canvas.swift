@@ -24,33 +24,6 @@ class Canvas: Object, WithPlaceholder, WithId {
         }
     }
 
-    // maps first (with any map source), followed by pdfs (with any pdf).
-    // Sort pdfs by pageNumber asc.
-    // Otherwise sort by id asc
-    static var sortingOrder: (Canvas, Canvas) -> Bool = { (c1: Canvas, c2: Canvas) -> Bool in
-        let c1HasPdfs = c1.canvasSources.contains { $0.type == .pdf }
-        let c2HasPdfs = c2.canvasSources.contains { $0.type == .pdf }
-
-        if c1HasPdfs, c2HasPdfs {
-            guard let c1PdfSource = c1.canvasSources.first(where: { $0.type == .pdf }),
-                  let c2PdfSource = c2.canvasSources.first(where: { $0.type == .pdf })
-            else {
-                // ignore source not found, this shouldn't happen
-                return false
-            }
-            guard case let .pdf(data1) = c1PdfSource.data,
-                  case let .pdf(data2) = c2PdfSource.data
-            else {
-                // ignore when there's no match, this shouldn't happen
-                return false
-            }
-        }
-        if !c1HasPdfs, !c2HasPdfs {
-            return c1.id < c2.id
-        }
-        return !c1HasPdfs
-    }
-
     /// Return all pins to be displayed for this canvas (not filtered)
     var pins: Results<Geometry> {
         geometries.where { $0.placeholder == false &&

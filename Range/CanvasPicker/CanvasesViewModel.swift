@@ -17,18 +17,12 @@ class CanvasesViewModel: NSObject {
     /// a subset of all canvases matching the current filter in the order as in `allCanvases`
     private(set) var filteredCanvases: [CanvasViewModel] = []
 
-    /// used for sorting the canvases by name
-    private let nameSort = SortDescriptor(\CanvasViewModel.name, comparator: .localizedStandard)
-
     /// Allows for multiple delegates
     private var delegates = NSHashTable<CanvasesViewModelDelegate>.weakObjects()
 
     init(model: ProjectModel, multiselect: Bool) {
         self.multiselect = multiselect
-        allCanvases = model.mainRealm.objects(Canvas.self)
-            .where { $0.placeholder == false }
-            .map { CanvasViewModel(fromCanvas: $0) }
-            .sorted(using: nameSort)
+        allCanvases = model.sortedCanvases.map { CanvasViewModel(fromCanvas: $0) }
 
         allCanvasesIndex = Dictionary(uniqueKeysWithValues: zip(allCanvases.map(\.id), allCanvases))
 
