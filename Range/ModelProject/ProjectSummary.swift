@@ -18,6 +18,8 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
     // TODO: should be read from Firestore when it's implemented there
     // to be based on TZ Database name column from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     var timeZone: TimeZone = .init(identifier: "America/Los_Angeles") ?? TimeZone.current
+    /// array of canvas ids for sorting the canvases in UI
+    @Persisted var canvasOrder: List<String>
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -33,6 +35,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         center: CLLocationCoordinate2D,
         description: String?,
         address: String?,
+        canvasOrder: [String] = [],
         placeholder: Bool = false
     ) {
         super.init()
@@ -41,6 +44,8 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         self.center = center
         projectDescription = description
         self.address = address
+        self.canvasOrder.removeAll()
+        self.canvasOrder.append(objectsIn: canvasOrder)
         self.placeholder = placeholder
     }
 

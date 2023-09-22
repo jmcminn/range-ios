@@ -20,6 +20,7 @@ extension ProjectModel {
         // v15 introduces Participant.participation(state), migration not needed
         // v16 removes Participant.organizationIds,projectIds,fcmTokens, they are now handled by the User object
         // v17 adds Participant.organizationRole
+        // v18 adds ProjectSummary.canvasOrder
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource

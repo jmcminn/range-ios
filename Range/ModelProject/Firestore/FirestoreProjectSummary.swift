@@ -15,10 +15,12 @@ struct FirestoreProjectSummary: Codable, FirestoreToRealmSyncable {
     var projectDescription: String?
     /// address
     var address: String?
+    /// UI order of canvases
+    var canvasOrder: [String]?
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case center, name, projectDescription = "description", address
+        case center, name, projectDescription = "description", address, canvasOrder
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
@@ -27,7 +29,8 @@ struct FirestoreProjectSummary: Codable, FirestoreToRealmSyncable {
             name: name,
             center: center.decodedCoordinates,
             description: projectDescription,
-            address: address
+            address: address,
+            canvasOrder: canvasOrder ?? []
         )
         realm.add(projectSummary, update: .modified)
     }

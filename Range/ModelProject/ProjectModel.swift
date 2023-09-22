@@ -67,7 +67,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 17
+            config.schemaVersion = 18
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("user_\(userId)_project_\(projectId)")
             config.fileURL!.appendPathExtension("realm")
@@ -124,24 +124,27 @@ class ProjectModel: NSObject, RealmModel {
         }
     }
 
-    // maps first (with any map source), followed by pdfs (with any pdf).
-    // sort by name inside each group
-    static var defaultCanvasSortingOrder: (Canvas, Canvas) -> Bool = { (c1: Canvas, c2: Canvas) -> Bool in
-        let c1HasPdfs = c1.canvasSources.contains { $0.type == .pdf }
-        let c2HasPdfs = c2.canvasSources.contains { $0.type == .pdf }
-
-        if c1HasPdfs != c2HasPdfs {
-            // maps first
-            return !c1HasPdfs
+    /// Sorts canvases by projectSummary.canvasOrder. If canvas id is not in canvasOrder it'll be at the end (sorted by name).
+    /// So in case canvasOrder is not there it'll effectively sort canvases by name
+    private func canvasOrderBasedSortingOrder(_ c1: Canvas, _ c2: Canvas) -> Bool {
+        let c1Index = projectSummary.canvasOrder.firstIndex(of: c1.id)
+        let c2Index = projectSummary.canvasOrder.firstIndex(of: c2.id)
+        if let c1Index = c1Index, let c2Index = c2Index {
+            return c1Index < c2Index
+        } else if c1Index == nil, c2Index == nil {
+            // both not in canvasOrder? sort by name
+            return c1.name.compare(c2.name, options: .caseInsensitive).rawValue < 0
+        } else if c2Index == nil {
+            // whatever is not in canvasOrder goes at the end of sorted canvases
+            return true
         }
-        // sort by name in maps/pdfs groups
-        return c1.name.compare(c2.name, options: .caseInsensitive).rawValue < 0
+        return false
     }
 
     var sortedCanvases: [Canvas] {
         [Canvas](mainRealm.objects(Canvas.self).where { $0.placeholder == false })
             .filter { !$0.canvasSources.isEmpty }
-            .sorted(by: ProjectModel.defaultCanvasSortingOrder)
+            .sorted(by: canvasOrderBasedSortingOrder)
     }
 
     /// Updates current canvas and loads the last open source for it (or the first source if it wasn't opened yet)

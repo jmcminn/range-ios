@@ -50,7 +50,7 @@ class OrganizationModel: NSObject, RealmModel {
         self.organizationId = organizationId
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        config.schemaVersion = 1
+        config.schemaVersion = 2
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")
