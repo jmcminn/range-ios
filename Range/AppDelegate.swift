@@ -8,8 +8,11 @@ import FirebaseMessaging
 import FirebaseStorage
 import GoogleSignIn
 import OSLog
+import Segment
 import Sentry
 import UIKit
+
+var analytics: Segment.Analytics!
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        setupAnalytics()
+
         setupAppearance()
 
         initiateSentry()
@@ -28,6 +33,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         registerForNotifications(application)
 
         return true
+    }
+
+    private func setupAnalytics() {
+        let config = Configuration(writeKey: "ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd")
+            // Automatically track Lifecycle events
+            .trackApplicationLifecycleEvents(true)
+            .flushAt(3)
+            .flushInterval(10)
+
+        analytics = Analytics(configuration: config)
     }
 
     /// Set appearance for UI elements

@@ -201,6 +201,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             try await projectsFlowController.start()
         } catch {
+            Logger.firebase.error("Error loading projects: \(error.localizedDescription, privacy: .public)")
             await onSignedOut()
             showProjectsOpenError(withMessage: error.localizedDescription)
         }
@@ -238,6 +239,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
         }
         SentrySDK.setUser(nil)
+        analytics.reset()
         showAuth()
     }
 

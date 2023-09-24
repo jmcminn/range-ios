@@ -49,7 +49,7 @@ class UserModel: NSObject, RealmModel {
         self.newlySignedIn = newlySignedIn
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        config.schemaVersion = 6
+        config.schemaVersion = 7
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(userId)")
         config.fileURL!.appendPathExtension("realm")
@@ -92,6 +92,16 @@ class UserModel: NSObject, RealmModel {
             }
         }
         currentUser = user
+
+        // Identify user in analytics. Couldn't be done any eariler in the flow as this is where
+        // we get the full user data from Firestore
+        analytics.identify(userId: userId, traits: [
+            "email": user.email,
+            "firstName": user.firstName,
+            "lastName": user.lastName,
+            "language": user.language,
+            "jobTitle": user.jobTitle,
+        ])
 
         let userDoc = firestore.document("users/\(userId)")
 

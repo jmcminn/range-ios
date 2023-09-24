@@ -7,6 +7,8 @@ class Organization: Object, WithId {
     @Persisted(primaryKey: true) var id: String
     /// Organization name
     @Persisted var name: String
+    /// Organization industry
+    @Persisted var industry: String
     /// array of all projects ids of this organization (user may not have access to all of them)
     @Persisted var projectIds: List<String>
 
@@ -16,10 +18,11 @@ class Organization: Object, WithId {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, projectIds: [String] = []) {
+    init(id: String, name: String, industry: String, projectIds: [String] = []) {
         super.init()
         self.id = id
         self.name = name
+        self.industry = industry
         self.projectIds.append(objectsIn: projectIds)
     }
 

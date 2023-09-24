@@ -7,16 +7,18 @@ struct FirestoreOrganization: Codable, FirestoreToRealmSyncable {
 
     /// name
     var name: String
+    /// industry
+    var industry: String
     /// address
     var projectIds: [String]
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case name, projectIds = "projects"
+        case name, industry, projectIds = "projects"
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
-        let organization = Organization(id: id, name: name, projectIds: projectIds)
+        let organization = Organization(id: id, name: name, industry: industry, projectIds: projectIds)
         realm.add(organization, update: .modified)
     }
 }

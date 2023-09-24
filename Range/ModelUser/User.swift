@@ -13,6 +13,10 @@ class User: Object, WithPlaceholder, WithId {
     @Persisted var avatarUrl: URL?
     /// email
     @Persisted var email: String
+    /// job title
+    @Persisted var jobTitle: String
+    /// language
+    @Persisted var language: String
     /// array of organization ids this user has permission to access
     @Persisted var organizationIds: List<String>
     /// array of projects ids this user has permission to access
@@ -37,6 +41,8 @@ class User: Object, WithPlaceholder, WithId {
         lastName: String,
         avatarUrl: URL?,
         email: String,
+        jobTitle: String,
+        language: String,
         organizationIds: [String] = [],
         projectIds: [String] = [],
         fcmTokens: [String] = [],
@@ -48,6 +54,8 @@ class User: Object, WithPlaceholder, WithId {
         self.lastName = lastName
         self.avatarUrl = avatarUrl
         self.email = email
+        self.jobTitle = jobTitle
+        self.language = language
         self.organizationIds.append(objectsIn: organizationIds)
         self.projectIds.append(objectsIn: projectIds)
         self.fcmTokens.append(objectsIn: fcmTokens)
@@ -62,6 +70,8 @@ class User: Object, WithPlaceholder, WithId {
             lastName: "",
             avatarUrl: nil,
             email: "",
+            jobTitle: "",
+            language: "",
             organizationIds: [],
             projectIds: [],
             fcmTokens: [],

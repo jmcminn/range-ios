@@ -12,6 +12,8 @@ extension UserModel {
             // v5 replaces Participant with User
             migrateToSchemaVersion5(migration)
         }
+
+        // v7 introduces User.jobTitle, User.language and Organization.industry
     }
 
     /// v5 replaces Participant with User

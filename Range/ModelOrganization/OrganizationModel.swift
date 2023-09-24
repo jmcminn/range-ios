@@ -50,7 +50,8 @@ class OrganizationModel: NSObject, RealmModel {
         self.organizationId = organizationId
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        config.schemaVersion = 2
+        // v3 introduces Organization.industry
+        config.schemaVersion = 3
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")
@@ -122,6 +123,14 @@ class OrganizationModel: NSObject, RealmModel {
         organizationNotificationToken = organization.observe { [weak self] _ in
             self?.syncCurrentUserProjects()
         }
+
+        // associate user with given organization (which is called a group) in analytics
+        analytics.group(groupId: organizationId, traits: [
+            "name": organization.name,
+            "industry": organization.industry,
+            "size": "10-50",
+            "organizationRole": currentUser.organizationRole.rawValue,
+        ])
     }
 
     /// The list of projects to sync depends on the user permissions, so based on user changes this function maintains the listeners

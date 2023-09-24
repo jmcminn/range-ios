@@ -439,6 +439,7 @@
 		0AFCD61A2939285F004843AA /* String+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCD6192939285F004843AA /* String+Size.swift */; };
 		0AFDFA972952106D00F64D62 /* CreateUploadCommentCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFDFA962952106D00F64D62 /* CreateUploadCommentCommand.swift */; };
 		0AFDFA992952110400F64D62 /* CreateUploadCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFDFA982952110400F64D62 /* CreateUploadCommentCommandTest.swift */; };
+		0AFE72062ABDFA9100EBC30D /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 0AFE72052ABDFA9100EBC30D /* Segment */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -914,6 +915,7 @@
 				0ACE1968296C7AD500D223EB /* Sentry in Frameworks */,
 				0A4995D5286099D800E571FB /* Algorithms in Frameworks */,
 				0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */,
+				0AFE72062ABDFA9100EBC30D /* Segment in Frameworks */,
 				0A2F32F62837BF2F00D04A1C /* Realm in Frameworks */,
 				0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */,
 				0A06241929534AA0004B6512 /* FirebaseFirestore in Frameworks */,
@@ -2074,6 +2076,7 @@
 				0AAF04BA2A334CEA00E8C39D /* Lottie */,
 				0A1CBCE52A813ED9003EBE74 /* FirebaseFunctions */,
 				0A45BB052AAB3F7000B86B85 /* GoogleSignInSwift */,
+				0AFE72052ABDFA9100EBC30D /* Segment */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -2158,6 +2161,7 @@
 				0ACE1966296C7AD400D223EB /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				0A45BB042AAB3F6F00B86B85 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				0AFE72042ABDFA9100EBC30D /* XCRemoteSwiftPackageReference "analytics-swift" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -4277,6 +4281,14 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		0AFE72042ABDFA9100EBC30D /* XCRemoteSwiftPackageReference "analytics-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:segmentio/analytics-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -4369,6 +4381,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0ACE1966296C7AD400D223EB /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
+		};
+		0AFE72052ABDFA9100EBC30D /* Segment */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0AFE72042ABDFA9100EBC30D /* XCRemoteSwiftPackageReference "analytics-swift" */;
+			productName = Segment;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
