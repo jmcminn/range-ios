@@ -125,7 +125,7 @@ class OrganizationModel: NSObject, RealmModel {
         }
 
         // associate user with given organization (which is called a group) in analytics
-        analytics.group(groupId: organizationId, traits: [
+        analytics?.group(groupId: organizationId, traits: [
             "name": organization.name,
             "industry": organization.industry,
             "size": "10-50",

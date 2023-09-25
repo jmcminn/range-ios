@@ -239,7 +239,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
         }
         SentrySDK.setUser(nil)
-        analytics.reset()
+        analytics?.reset()
         showAuth()
     }
 

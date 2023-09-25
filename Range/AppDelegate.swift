@@ -12,7 +12,7 @@ import Segment
 import Sentry
 import UIKit
 
-var analytics: Segment.Analytics!
+var analytics: Segment.Analytics?
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -36,13 +36,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func setupAnalytics() {
-        let config = Configuration(writeKey: "ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd")
-            // Automatically track Lifecycle events
-            .trackApplicationLifecycleEvents(true)
-            .flushAt(3)
-            .flushInterval(10)
+        let runningTests = UserDefaults.standard.bool(forKey: "isTest")
 
-        analytics = Analytics(configuration: config)
+        // only setup analytics if running the app and not tests
+        if !runningTests {
+            let config = Configuration(writeKey: "ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd")
+                .trackApplicationLifecycleEvents(true)
+                .flushAt(3)
+                .flushInterval(10)
+
+            analytics = Analytics(configuration: config)
+        }
     }
 
     /// Set appearance for UI elements

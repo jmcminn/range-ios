@@ -198,6 +198,11 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         addCollaborationHeaderCover()
         setupBottomCard()
         self.collaborationVC = collaborationVC
+
+        analytics?.track(name: "collaboration viewed", properties: [
+            "collaborationType": collaboration.status != nil ? "task" : "photo",
+            "canvasType": model.currentCanvas.currentCanvasSource.type.rawValue,
+        ])
     }
 
     /// Hide the currently shown collaboration window (and the header cover)

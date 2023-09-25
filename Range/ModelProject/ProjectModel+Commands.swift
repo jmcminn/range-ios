@@ -169,6 +169,16 @@ extension ProjectModel {
             }
             status = initialStatus
         }
+
+        if let canvasSource = canvas.currentCanvasSource {
+            // The canvas source is set if it's used in UI and can theoretically be null here
+            // (although it shouldn't happen if user is adding a pin)
+            analytics?.track(name: "collaboration created", properties: [
+                "collaborationType": isTask ? "task" : "photo",
+                "canvasType": canvasSource.type.rawValue,
+            ])
+        }
+
         return CreateCollaborationCommand(
             authorId: userId,
             canvasId: canvas.id,

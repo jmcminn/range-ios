@@ -95,7 +95,7 @@ class UserModel: NSObject, RealmModel {
 
         // Identify user in analytics. Couldn't be done any eariler in the flow as this is where
         // we get the full user data from Firestore
-        analytics.identify(userId: userId, traits: [
+        analytics?.identify(userId: userId, traits: [
             "email": user.email,
             "firstName": user.firstName,
             "lastName": user.lastName,
