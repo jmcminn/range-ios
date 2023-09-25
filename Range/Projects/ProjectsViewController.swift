@@ -91,6 +91,8 @@ class ProjectsViewController: UIViewController {
                 model.projects.first { $0.id == projectId }
             }
         tableView.reloadData()
+
+        analytics?.screen(title: "organization projects")
     }
 
     private func observeProjects() {

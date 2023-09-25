@@ -234,6 +234,10 @@ final class ProjectFlowController: UIViewController {
         canvasSourcesNotificationToken = model.mainRealm.objects(CanvasSource.self).observe { [weak self] _ in
             self?.possiblyDownloadPdfsForCanvasSources()
         }
+
+        analytics?.screen(title: "project canvas", properties: [
+            "projectType": model.projectSummary.projectType,
+        ])
     }
 
     /// Iterates over all pdf canvas sources and triggers the pdf file download.

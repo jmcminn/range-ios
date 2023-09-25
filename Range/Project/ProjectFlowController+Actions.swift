@@ -111,18 +111,39 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func showMediaAction() {
-        mediaVC = MediaCardViewController(
+        let mediaVC = MediaCardViewController(
             projectModel: model,
             mediaCache: mediaCache,
             title: String(localized: "All Media"),
             uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false },
             canvasContainer: canvasContainer
-        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        )
+        mediaVC.onClose = { [weak self] in
+            guard let self = self else { return }
+            analytics?.screen(title: "project canvas", properties: [
+                "projectType": self.model.projectSummary.projectType,
+            ])
+        }
+        mediaVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        self.mediaVC = mediaVC
+        analytics?.screen(title: "project media", properties: [
+            "projectType": model.projectSummary.projectType,
+        ])
     }
 
     func showTaskListAction() {
-        taskListVC = TaskListCardViewController(projectModel: model, canvasContainer: canvasContainer)
-            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        let taskListVC = TaskListCardViewController(projectModel: model, canvasContainer: canvasContainer)
+        taskListVC.onClose = { [weak self] in
+            guard let self = self else { return }
+            analytics?.screen(title: "project canvas", properties: [
+                "projectType": self.model.projectSummary.projectType,
+            ])
+        }
+        taskListVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        self.taskListVC = taskListVC
+        analytics?.screen(title: "project tasklist", properties: [
+            "projectType": model.projectSummary.projectType,
+        ])
     }
 
     func showFullscreenMediaAction(sender _: Any?, event: FlowEvent) {

@@ -14,8 +14,7 @@ class ProjectModelTest: ProjectModelTestCase {
 
     func testLoadProject_noCurrentUser() throws {
         try realm.write {
-            realm.add(ProjectSummary(id: model.projectId, name: "", center:
-                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
+            realm.add(ProjectSummary(placeholderId: model.projectId))
         }
         XCTAssertThrowsError(
             try model.loadProject(initialCanvasId: "canvas1")
@@ -26,9 +25,7 @@ class ProjectModelTest: ProjectModelTestCase {
 
     func testLoadProject_noCanvas() throws {
         try realm.write {
-            realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
-                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil,
-                address: nil))
+            realm.add(ProjectSummary(placeholderId: model.projectId))
             realm.add(Participant(placeholderId: "user1"))
         }
         XCTAssertThrowsError(
@@ -40,8 +37,7 @@ class ProjectModelTest: ProjectModelTestCase {
 
     func testLoadProject_noCanvasSource() throws {
         try realm.write {
-            realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
-                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
+            realm.add(ProjectSummary(placeholderId: model.projectId))
             realm.add(Participant(placeholderId: "user1"))
             realm.add(Canvas(id: "canvas1", name: ""))
         }
@@ -54,8 +50,9 @@ class ProjectModelTest: ProjectModelTestCase {
 
     func testLoadProject_successful() throws {
         try realm.write {
-            realm.add(ProjectSummary(id: model.projectId, name: "project name", center:
-                CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5), description: nil, address: nil))
+            realm.add(ProjectSummary(id: model.projectId, name: "project name",
+                                     center: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
+                                     description: nil, address: nil, projectType: .architecture))
             realm.add(Participant(placeholderId: "user1"))
             let canvas = Canvas(id: "canvas1", name: "")
             let canvasSource = CanvasSource(

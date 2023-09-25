@@ -55,6 +55,7 @@ struct UserSettingsView: View {
                 }.buttonStyle(.plain)
             }
         }
+        .onAppear(perform: { analytics?.screen(title: "account settings") })
     }
 }
 

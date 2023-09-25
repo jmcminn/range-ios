@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import OSLog
 import RealmSwift
 
 /// Represents the `ProjectSummary`` (`projects/` path in Firestore)
@@ -17,19 +18,29 @@ struct FirestoreProjectSummary: Codable, FirestoreToRealmSyncable {
     var address: String?
     /// UI order of canvases
     var canvasOrder: [String]?
+    /// project type
+    var projectTypeId: String
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case center, name, projectDescription = "description", address, canvasOrder
+        case center, name, projectDescription = "description", address, canvasOrder, projectTypeId = "projectType"
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
+        let projectType: ProjectSummary.ProjectType
+        if let type = ProjectSummary.ProjectType(fromId: projectTypeId) {
+            projectType = type
+        } else {
+            Logger.firestore.error("Unknown projectType: \(projectTypeId), using '.other' instead")
+            projectType = .other
+        }
         let projectSummary = ProjectSummary(
             id: id,
             name: name,
             center: center.decodedCoordinates,
             description: projectDescription,
             address: address,
+            projectType: projectType,
             canvasOrder: canvasOrder ?? []
         )
         realm.add(projectSummary, update: .modified)

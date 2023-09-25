@@ -4,6 +4,20 @@ import RealmSwift
 
 /// Realm object for `project/summary`.
 class ProjectSummary: Object, WithPlaceholder, WithId {
+    /// Supported project types, all others are ignored by Range iOS app
+    enum ProjectType: String, Codable, PersistableEnum {
+        case architecture = "ARCHITECTURE_ID"
+        case construction = "CONSTRUCTION_ID"
+        case landscaping = "LANDSCAPING_ID"
+        case retrofit = "RETROFIT_ID"
+        case other = "OTHER_ID"
+        init?(fromId: String) {
+            if let type = ProjectType.allCases.first(where: { $0.rawValue == fromId }) {
+                self = type
+            } else { return nil }
+        }
+    }
+
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Project name
@@ -14,6 +28,8 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
     @Persisted var address: String?
     /// Center geo location for the project
     @Persisted var center: CLLocationCoordinate2D
+    /// project type
+    @Persisted var projectType: ProjectType = .architecture
     /// project time zone
     // TODO: should be read from Firestore when it's implemented there
     // to be based on TZ Database name column from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -35,6 +51,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         center: CLLocationCoordinate2D,
         description: String?,
         address: String?,
+        projectType: ProjectType,
         canvasOrder: [String] = [],
         placeholder: Bool = false
     ) {
@@ -44,6 +61,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         self.center = center
         projectDescription = description
         self.address = address
+        self.projectType = projectType
         self.canvasOrder.removeAll()
         self.canvasOrder.append(objectsIn: canvasOrder)
         self.placeholder = placeholder
@@ -56,6 +74,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
             center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
             description: nil,
             address: nil,
+            projectType: .other,
             placeholder: true
         )
     }
