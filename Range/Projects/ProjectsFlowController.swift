@@ -29,6 +29,7 @@ class ProjectsFlowController: UINavigationController {
     var projectFCStarted: AnyCancellable?
     private var currentOrganizationObservation: NSKeyValueObservation?
     var currentProjectNotificationToken: NotificationToken?
+    private var organizationsNotificationToken: NotificationToken?
 
     /// if present show this project and it's task list when user signs in
     var showTaskListOnLoginForProjectId: String?
@@ -101,6 +102,24 @@ class ProjectsFlowController: UINavigationController {
         }
         observeCurrentUser()
         observeCurrentOrganization()
+        observeOrganizations()
+    }
+
+    private func autoShowOrganizationSelectorIfNeeded() {
+        if projectFC == nil, shouldAutoShowOrganizationSelector() {
+            selectOrganizationAction()
+        }
+    }
+
+    /// show organization selector when new organizations added for user (but only if there's more than 1, otherwise user already sees the org)
+    private func shouldAutoShowOrganizationSelector() -> Bool {
+        let currentOrganizationIds = Set<String>(userModel.mainRealm.objects(Organization.self).map(\.id))
+        guard currentOrganizationIds.count > 1 else { return false }
+        let lastPresentedOrganizationIds = Set<String>(UserDefaults.lastPresentedOrganizationIds ?? [])
+
+        let newOrganizationIds = currentOrganizationIds.subtracting(lastPresentedOrganizationIds)
+
+        return !newOrganizationIds.isEmpty
     }
 
     func stop() async {
@@ -114,6 +133,7 @@ class ProjectsFlowController: UINavigationController {
         currentUserNotificationToken?.invalidate()
         currentOrganizationObservation?.invalidate()
         currentProjectNotificationToken?.invalidate()
+        organizationsNotificationToken?.invalidate()
     }
 
     private func setupSettingsViewController() -> UIViewController {
@@ -170,6 +190,9 @@ class ProjectsFlowController: UINavigationController {
             }
             projectsVC.onProjectSelected = { [weak self] project in
                 self?.loadAndPushProjectFlowController(projectId: project.id, animated: true)
+            }
+            projectsVC.onViewWillAppear = { [weak self] in
+                self?.autoShowOrganizationSelectorIfNeeded()
             }
             projectsNavC.setViewControllers([projectsVC], animated: false)
         } else {
@@ -310,6 +333,17 @@ class ProjectsFlowController: UINavigationController {
         }
     }
 
+    /// observe organizations and show org selector if needed
+    private func observeOrganizations() {
+        organizationsNotificationToken = userModel.mainRealm.objects(Organization.self).observe { [weak self] change in
+            // not initially, only on update
+            // initially it's handled when showing projects view controller, here it would be too soon from the UI layout perspective
+            if case .update = change {
+                self?.autoShowOrganizationSelectorIfNeeded()
+            }
+        }
+    }
+
     /// Present alert controller with project loading error message
     private func showProjectOpenError(withMessage message: String) {
         let alertController = UIAlertController(
@@ -399,6 +433,7 @@ class ProjectsFlowController: UINavigationController {
                 }
             }
         ).installAndShowCard(in: self)
+        UserDefaults.lastPresentedOrganizationIds = organizations.map(\.id)
     }
 }
 

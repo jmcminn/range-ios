@@ -5,7 +5,9 @@ import OSLog
 /// Store implicit user preferences (not available in settings but based on recent user actions)
 extension UserDefaults {
     enum UserDefaultsConstants: String {
-        /// If of the last open organization
+        /// Ids of the organizations (array of strings) shown to the user when the organization selector was presented for the last time
+        case lastPresentedOrganizationIds
+        /// Id of the last open organization
         case lastOpenOrganizationId
         /// Ids of the up to 3 recently open projects per organization, will be followe by an organization id
         case recentProjectIdsPrefix = "recentProjectsIds_"
@@ -35,6 +37,20 @@ extension UserDefaults {
         case cardOnboardingComplete
         /// the prefix used for storing last copied tasks (array of ids) for a projects, will be followe by a project id
         case lastCopiedTasksPrefix = "lastCopiedTasks_"
+    }
+
+    /// Ids of the organizations (array of strings) shown to the user when the organization selector was presented for the last time
+    static var lastPresentedOrganizationIds: [String]? {
+        get {
+            UserDefaults.standard.stringArray(forKey: UserDefaultsConstants.lastPresentedOrganizationIds.rawValue)
+        }
+        set {
+            if let ids = newValue {
+                UserDefaults.standard.set(ids, forKey: UserDefaultsConstants.lastPresentedOrganizationIds.rawValue)
+            } else {
+                UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastPresentedOrganizationIds.rawValue)
+            }
+        }
     }
 
     /// stores the last open organization id

@@ -17,6 +17,7 @@ class ProjectsViewController: UIViewController {
 
     var onProjectSelected: ((ProjectSummary) -> Void)?
     var onOrganizationButtonTap: (() -> Void)?
+    var onViewWillAppear: (() -> Void)?
 
     /// Token for observing changes in projects
     private var notificationToken: NotificationToken?
@@ -93,6 +94,8 @@ class ProjectsViewController: UIViewController {
         tableView.reloadData()
 
         analytics?.screen(title: "organization projects")
+
+        onViewWillAppear?()
     }
 
     private func observeProjects() {
