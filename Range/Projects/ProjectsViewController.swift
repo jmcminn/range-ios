@@ -204,11 +204,13 @@ class ProjectsViewController: UIViewController {
     private func setupOrganizationSelectorButton() {
         var config = UIButton.Configuration.filled()
         config.contentInsets = .zero
-        config.baseBackgroundColor = .dynamic(.Neutral_09)
-        config.baseForegroundColor = .dynamic(.Neutral_05)
         config.cornerStyle = .fixed
         config.background.cornerRadius = 16
-        config.background.strokeColor = .dynamic(.Neutral_07)
+
+        config.baseBackgroundColor = .Primary_Blue_04
+        config.baseForegroundColor = .Neutral_03
+        config.background.strokeColor = .dynamicColor(light: .Primary_Blue_04, dark: .Primary_Blue_06)
+
         let button = ButtonWithTapAreaInsets(
             configuration: config,
             primaryAction: UIAction(title: String(model.organization.name.prefix(1).uppercased())) { [weak self] _ in
