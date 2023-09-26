@@ -28,6 +28,7 @@ extension Color {
     static let Pink_04 = Color("Pink_04")
     static let Primary_Blue_01 = Color("Primary_Blue_01")
     static let Primary_Blue_02 = Color("Primary_Blue_02")
+    static let Primary_Blue_03 = Color("Primary_Blue_03")
     static let Primary_Blue_04 = Color("Primary_Blue_04")
     static let Primary_Blue_06 = Color("Primary_Blue_06")
     static let Red_01 = Color("Red_01")
@@ -61,6 +62,7 @@ extension UIColor {
     static let Pink_04 = UIColor(named: "Pink_04")!
     static let Primary_Blue_01 = UIColor(named: "Primary_Blue_01")!
     static let Primary_Blue_02 = UIColor(named: "Primary_Blue_02")!
+    static let Primary_Blue_03 = UIColor(named: "Primary_Blue_03")!
     static let Primary_Blue_04 = UIColor(named: "Primary_Blue_04")!
     static let Primary_Blue_06 = UIColor(named: "Primary_Blue_06")!
     static let Red_01 = UIColor(named: "Red_01")!
