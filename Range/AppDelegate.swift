@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // only setup analytics if running the app and not tests
         if !runningTests {
             let config = Configuration(writeKey: "ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd")
-                .trackApplicationLifecycleEvents(true)
+                .trackApplicationLifecycleEvents(false)
                 .flushAt(3)
                 .flushInterval(10)
 
