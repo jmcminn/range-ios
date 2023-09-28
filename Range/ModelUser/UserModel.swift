@@ -365,21 +365,21 @@ extension UserModel {
     /// Find first unaccepted invitation and accept
     func possiblyAcceptInvitation() {
         guard let invitation = mainRealm.objects(Invitation.self).first else { return }
+        // assign invitation data, as after success it might be already removed (invalidated)
+        let invitingOrganizationName = invitation.organizationName
+        let inviterDisplayName = invitation.inviterDisplayName
         Task { @MainActor in
-
             do {
                 _ = try await Functions.functions(region: "us-west2").httpsCallable("acceptInvitation").call([
                     "invitationId": invitation.id,
                 ])
-                ToastWindow.shared
-                    .showSuccess(
-                        text: "Received invitation to \(invitation.organizationName) organization from \(invitation.inviterDisplayName)."
-                    )
+                ToastWindow.shared.showSuccess(
+                    text: "Received invitation to \(invitingOrganizationName) organization from \(inviterDisplayName)."
+                )
             } catch {
-                ToastWindow.shared
-                    .showError(
-                        text: "Failed to receive invitation to join \(invitation.organizationName) organization: \(error.localizedDescription)"
-                    )
+                ToastWindow.shared.showError(
+                    text: "Failed to receive invitation to join \(invitingOrganizationName) organization: \(error.localizedDescription)"
+                )
             }
         }
     }
