@@ -27,7 +27,7 @@ struct FirestoreUser: Decodable, FirestoreToRealmSyncable {
     var lastName: String
     var avatarUrlString: String?
     var email: String
-    var jobTitle: String
+    var jobTitle: String?
     var language: String
     var permissions: [String: [String]]?
     var fcmTokens: [String]?
@@ -52,7 +52,7 @@ struct FirestoreUser: Decodable, FirestoreToRealmSyncable {
             lastName: lastName,
             avatarUrl: avatarUrl,
             email: email,
-            jobTitle: jobTitle,
+            jobTitle: jobTitle ?? "",
             language: language,
             organizationIds: organizationIds,
             projectIds: projectIds
