@@ -22,6 +22,8 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
     @Persisted(primaryKey: true) var id: String
     /// Project name
     @Persisted var name: String
+    /// parent organizationId
+    @Persisted var organizationId: String
     /// Project description
     @Persisted var projectDescription: String?
     /// Project address
@@ -48,6 +50,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
     init(
         id: String,
         name: String,
+        organizationId: String,
         center: CLLocationCoordinate2D,
         description: String?,
         address: String?,
@@ -58,6 +61,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         super.init()
         self.id = id
         self.name = name
+        self.organizationId = organizationId
         self.center = center
         projectDescription = description
         self.address = address
@@ -71,6 +75,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         self.init(
             id: placeholderId,
             name: "",
+            organizationId: "",
             center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
             description: nil,
             address: nil,

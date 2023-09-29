@@ -52,7 +52,8 @@ class OrganizationModel: NSObject, RealmModel {
         var config = Realm.Configuration.defaultConfiguration
         // v3 introduces Organization.industry
         // v4 introduces ProjectSummary.projectType
-        config.schemaVersion = 4
+        // v5 introduces ProjectSummary.organizationId
+        config.schemaVersion = 5
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")

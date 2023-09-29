@@ -22,6 +22,7 @@ extension ProjectModel {
         // v17 adds Participant.organizationRole
         // v18 adds ProjectSummary.canvasOrder
         // v19 adds ProjectSummary.projectType
+        // v20 introduces ProjectSummary.organizationId
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource

@@ -50,7 +50,7 @@ class ProjectModelTest: ProjectModelTestCase {
 
     func testLoadProject_successful() throws {
         try realm.write {
-            realm.add(ProjectSummary(id: model.projectId, name: "project name",
+            realm.add(ProjectSummary(id: model.projectId, name: "project name", organizationId: "organization1",
                                      center: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
                                      description: nil, address: nil, projectType: .architecture))
             realm.add(Participant(placeholderId: "user1"))
