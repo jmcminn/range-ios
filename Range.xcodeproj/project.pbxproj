@@ -2763,7 +2763,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range demo";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -2904,7 +2904,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range demo";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -3107,7 +3107,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Range;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -3154,7 +3154,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Range;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -3339,7 +3339,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range emulator";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -3486,7 +3486,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range custom";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -3627,7 +3627,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -3774,7 +3774,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -3921,7 +3921,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range staging";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
@@ -4062,7 +4062,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Range staging";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access to take pictures.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Range needs Photo Library access to store photos.";
