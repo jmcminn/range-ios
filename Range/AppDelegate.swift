@@ -8,11 +8,8 @@ import FirebaseMessaging
 import FirebaseStorage
 import GoogleSignIn
 import OSLog
-import Segment
 import Sentry
 import UIKit
-
-var analytics: Segment.Analytics?
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -33,20 +30,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         registerForNotifications(application)
 
         return true
-    }
-
-    private func setupAnalytics() {
-        let runningTests = UserDefaults.standard.bool(forKey: "isTest")
-
-        // only setup analytics if running the app and not tests
-        if !runningTests {
-            let config = Configuration(writeKey: "ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd")
-                .trackApplicationLifecycleEvents(false)
-                .flushAt(3)
-                .flushInterval(10)
-
-            analytics = Analytics(configuration: config)
-        }
     }
 
     /// Set appearance for UI elements

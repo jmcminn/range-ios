@@ -10,6 +10,8 @@ import UIKit
 /// It also owns and manages a CameraService and uses it to actually take photos
 class CameraViewController: UIHostingController<CameraView> {
     unowned let photosViewModel: PhotosToAddViewModel
+    // for analytics
+    private let projectType: ProjectSummary.ProjectType
     var onClose: (() -> Void)?
     /// callback with photo data/UIImage and a completion that will resolve after the photo is stored locally
     var onPhotoTaken: ((Data, UIImage, @escaping (Result<Void, Error>) -> Void) -> Void)?
@@ -37,8 +39,9 @@ class CameraViewController: UIHostingController<CameraView> {
         }
     }}
 
-    init(photosViewModel: PhotosToAddViewModel) {
+    init(photosViewModel: PhotosToAddViewModel, projectType: ProjectSummary.ProjectType) {
         self.photosViewModel = photosViewModel
+        self.projectType = projectType
         cameraViewModel = CameraViewModel(cameraService: cameraService)
         super.init(rootView: CameraView(model: cameraViewModel))
 
@@ -145,6 +148,7 @@ class CameraViewController: UIHostingController<CameraView> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         cameraService.start()
+        analytics?.screen(title: "camera", properties: ["projectType": projectType])
     }
 
     // stop the CameraService before the view disappears

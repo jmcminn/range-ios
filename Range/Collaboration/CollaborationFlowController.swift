@@ -199,9 +199,8 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         setupBottomCard()
         self.collaborationVC = collaborationVC
 
-        analytics?.track(name: "collaboration viewed", properties: [
+        analytics?._trackProjectEvent(name: "collaboration viewed", model, [
             "collaborationType": collaboration.status != nil ? "task" : "photo",
-            "canvasType": model.currentCanvas.currentCanvasSource.type.rawValue,
         ])
     }
 

@@ -130,7 +130,10 @@ class AddPhotoFlowController {
 
     /// Creates the `CameraViewController` and installs the flow callbacks
     private func createCameraViewController() -> CameraViewController {
-        let vc = CameraViewController(photosViewModel: photosToAddViewModel)
+        let vc = CameraViewController(
+            photosViewModel: photosToAddViewModel,
+            projectType: model.projectSummary.projectType
+        )
         vc.onClose = { [weak self, weak vc] in
             vc?.dismiss(animated: true)
             self?.stop(removeCurrentPhotosToAddFromCache: true)

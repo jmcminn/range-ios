@@ -88,6 +88,7 @@
 		0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */; };
 		0A2C7EE42A097126008F1FB9 /* MediaFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */; };
 		0A2C7EE62A0AC858008F1FB9 /* DateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE52A0AC858008F1FB9 /* DateButton.swift */; };
+		0A2DCDC82AC712CF00D63B76 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2DCDC72AC712CF00D63B76 /* Analytics.swift */; };
 		0A2E04D828AE7A1000E10503 /* PhotosPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */; };
 		0A2E04DA28B145BA00E10503 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2E04D928B145BA00E10503 /* CameraViewModel.swift */; };
 		0A2F32F12836CA0500D04A1C /* ProjectModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F32F02836CA0500D04A1C /* ProjectModel.swift */; };
@@ -542,6 +543,7 @@
 		0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFilters.swift; sourceTree = "<group>"; };
 		0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A2C7EE52A0AC858008F1FB9 /* DateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateButton.swift; sourceTree = "<group>"; };
+		0A2DCDC72AC712CF00D63B76 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
 		0A2E04D628AE399700E10503 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0A2E04D728AE7A1000E10503 /* PhotosPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosPreviewViewController.swift; sourceTree = "<group>"; };
 		0A2E04D928B145BA00E10503 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
@@ -1560,6 +1562,7 @@
 				0A144F4A2A4C575E000F7593 /* ViewsSwiftUI */,
 				0A25D2AA2AB8BFEF00A331E1 /* Zxcvbn */,
 				0A2F3304283BE18900D04A1C /* LaunchScreenViewController.swift */,
+				0A2DCDC72AC712CF00D63B76 /* Analytics.swift */,
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
 				0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */,
@@ -2260,6 +2263,7 @@
 				0A7A537B293E4E540093D913 /* UserModel.swift in Sources */,
 				0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */,
 				0AD955262A40AA8F00B35325 /* AnnotationsEditorViewModel.swift in Sources */,
+				0A2DCDC82AC712CF00D63B76 /* Analytics.swift in Sources */,
 				0AFDFA972952106D00F64D62 /* CreateUploadCommentCommand.swift in Sources */,
 				0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */,
 				0A1FCF0029EEEC21005EA59E /* SelectedUsersView.swift in Sources */,

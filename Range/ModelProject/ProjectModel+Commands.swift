@@ -89,6 +89,9 @@ extension ProjectModel {
             if let annotatedMediaKey = photoToAdd.annotatedMediaKey {
                 try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
             }
+            analytics?._trackProjectEvent(name: "media uploaded", self, [
+                "mediaType": photoToAdd.mediaKey.fileType.rawValue,
+            ])
         }
 
         return AddUploadsToCollaborationCommand(
@@ -110,6 +113,9 @@ extension ProjectModel {
 
         try await localFiles.store(data, forKey: mediaKey)
         try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
+        analytics?._trackProjectEvent(name: "media uploaded", self, [
+            "mediaType": fileType.rawValue,
+        ])
 
         return AddUploadsToCollaborationCommand(
             authorId: userId,
@@ -155,11 +161,22 @@ extension ProjectModel {
         uploadTags: [TagViewModel] = [],
         uploadDescription: String? = nil
     ) async throws -> Command {
+        if let canvasSource = canvas.currentCanvasSource {
+            // The canvas source is set if it's used in UI and can theoretically be null here
+            // (although it shouldn't happen if user is adding a pin)
+            analytics?._trackProjectEvent(name: "collaboration created", self, [
+                "collaborationType": isTask ? "task" : "photo",
+                "canvasType": canvasSource.type.rawValue,
+            ])
+        }
         for photoToAdd in photosToAdd {
             try await pendingUploadsModel.addPendingUpload(forKey: photoToAdd.mediaKey)
             if let annotatedMediaKey = photoToAdd.annotatedMediaKey {
                 try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
             }
+            analytics?._trackProjectEvent(name: "media uploaded", self, [
+                "mediaType": photoToAdd.mediaKey.fileType.rawValue,
+            ])
         }
 
         var status: Status?
@@ -168,15 +185,6 @@ extension ProjectModel {
                 throw ModelError.statusNotFound
             }
             status = initialStatus
-        }
-
-        if let canvasSource = canvas.currentCanvasSource {
-            // The canvas source is set if it's used in UI and can theoretically be null here
-            // (although it shouldn't happen if user is adding a pin)
-            analytics?.track(name: "collaboration created", properties: [
-                "collaborationType": isTask ? "task" : "photo",
-                "canvasType": canvasSource.type.rawValue,
-            ])
         }
 
         return CreateCollaborationCommand(
