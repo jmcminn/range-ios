@@ -46,7 +46,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // check whether user is authenticated
             if let user = Auth.auth().currentUser {
                 do {
+                    // reload the user to update the email verification
                     try await user.reload()
+                } catch {
+                    // don't sign out on error while reloading the user, this might just mean that we're offline
+                    Logger.auth.warning("Error while reloading the user: \(error)")
+                }
+                do {
                     let userId = try await user._getUserId()
                     if user.isEmailVerified {
                         await self.startMainFlow(forUser: userId, newlySignedIn: false)
