@@ -505,6 +505,7 @@ extension CollaborationFlowController: UIDocumentPickerDelegate {
 
 extension CollaborationFlowController {
     func editStatusAction() {
+        collaborationVC?.view.endEditing(true)
         guard let collaboration = collaboration else { return }
         guard collaboration.status != nil else { return } // not a task
         let statuses = [Status](model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))

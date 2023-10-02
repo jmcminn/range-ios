@@ -388,6 +388,7 @@ extension ProjectFlowController {
 
 extension ProjectFlowController {
     func moreAction(sender _: Any?, event: FlowEvent) {
+        view.endEditing(true)
         if let collaboration = event.object as? Collaboration {
             guard !collaboration.isInvalidated else { return }
             var actions: [ActionItem] = collaboration.status == nil
