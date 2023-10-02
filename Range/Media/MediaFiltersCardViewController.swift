@@ -11,6 +11,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
     private let mediaFilters: MediaFilters
     private let usersViewModel: UsersViewModel
     private let tagsViewModel: TagsViewModel
+    private let canvasesViewModel: CanvasesViewModel
 
     private var resetButton: ButtonWithTapAreaInsets!
 
@@ -24,13 +25,15 @@ class MediaFiltersCardViewController: SheetCardViewController {
     private let usersView: SelectedUsersView
     private let filterByTagsSwitch = UISwitch()
     private let tagsView: SelectedTagsView
+    private let filterByCanvasSwitch = UISwitch()
+    private let canvasesView: SelectedCanvasesView
 
     private var gradientViews = [GradientView]()
 
-    // rounded background behind the users and tags (rendered behind the views)
-    private let usersTagsBgView = UIView()
-    // rounded stroke behind the users and tags (rendered on top of the views)
-    private let usersTagsStrokeView = UIView()
+    // rounded background behind the users, tags and canvases (rendered behind the views)
+    private let usersTagsCanvasBgView = UIView()
+    // rounded stroke behind the users, tags and canvases (rendered on top of the views)
+    private let usersTagsCanvasStrokeView = UIView()
 
     /// Initializer
     ///
@@ -52,6 +55,12 @@ class MediaFiltersCardViewController: SheetCardViewController {
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
 
+        let canvasesViewModel = CanvasesViewModel(model: model, multiselect: true)
+        // preselect canvases from filters
+        mediaFilters.canvasFilter?.forEach { canvasesViewModel.set(canvasWithId: $0, selected: true) }
+        canvasesView = SelectedCanvasesView(viewModel: canvasesViewModel, showEditCell: true)
+        self.canvasesViewModel = canvasesViewModel
+
         super.init(
             icon: UIImage(named: "filter.search"),
             title: String(localized: "Media Filters"),
@@ -67,6 +76,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
 
         usersViewModel.addDelegate(self)
         tagsViewModel.addDelegate(self)
+        canvasesViewModel.addDelegate(self)
     }
 
     override func viewDidLoad() {
@@ -89,6 +99,10 @@ class MediaFiltersCardViewController: SheetCardViewController {
             self?.onFilterByTagsSwitchAction()
         }), for: .valueChanged)
 
+        filterByCanvasSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.onFilterByCanvasSwitchAction()
+        }), for: .valueChanged)
+
         updateControlsStateFromFilters()
 
         updateColors()
@@ -104,6 +118,8 @@ class MediaFiltersCardViewController: SheetCardViewController {
         filterByTagsSwitch.setOn(mediaFilters.tagsFilter != nil, animated: false)
         usersView.setVisible(mediaFilters.authorFilter != nil, animated: false)
         tagsView.setVisible(mediaFilters.tagsFilter != nil, animated: false)
+        filterByCanvasSwitch.setOn(mediaFilters.canvasFilter != nil, animated: false)
+        canvasesView.setVisible(mediaFilters.canvasFilter != nil, animated: false)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -157,7 +173,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
         addDateView()
 
         // ----- Author --------------------------------------------------------------------------
-        let usersTagsTopView = add(
+        let usersTagsCanvasTopView = add(
             label: createLabel(text: String(localized: "Filter by Users")),
             control: filterByAuthorSwitch,
             bottomInset: 4
@@ -170,19 +186,27 @@ class MediaFiltersCardViewController: SheetCardViewController {
         add(label: createLabel(text: String(localized: "Filter by Tags")), control: filterByTagsSwitch,
             bottomInset: 4) // the rest = 9 is added below tags view
         addTagsView()
-        let usersTagsBottomView = addSpace(height: 9)
+        addSpace(height: 9)
+        addSeparator()
 
-        usersTagsBgView.backgroundColor = .dynamic(.Neutral_09)
-        usersTagsStrokeView.layer.borderWidth = 1
-        usersTagsStrokeView.backgroundColor = nil
-        stackView.insertSubview(usersTagsBgView, belowSubview: usersTagsTopView)
-        stackView.addSubview(usersTagsStrokeView)
-        for view in [usersTagsBgView, usersTagsStrokeView] {
+        // ----- Canvas ----------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Canvas")),
+            control: filterByCanvasSwitch,
+            bottomInset: 4) // the rest = 9 is added below canvases view
+        addCanvasesView()
+        let usersTagsCanvasBottomView = addSpace(height: 9)
+
+        usersTagsCanvasBgView.backgroundColor = .dynamic(.Neutral_09)
+        usersTagsCanvasStrokeView.layer.borderWidth = 1
+        usersTagsCanvasStrokeView.backgroundColor = nil
+        stackView.insertSubview(usersTagsCanvasBgView, belowSubview: usersTagsCanvasTopView)
+        stackView.addSubview(usersTagsCanvasStrokeView)
+        for view in [usersTagsCanvasBgView, usersTagsCanvasStrokeView] {
             view.isUserInteractionEnabled = false
             view.layer.cornerRadius = 13
             view.snp.makeConstraints { make in
-                make.leading.trailing.top.equalTo(usersTagsTopView)
-                make.bottom.equalTo(usersTagsBottomView)
+                make.leading.trailing.top.equalTo(usersTagsCanvasTopView)
+                make.bottom.equalTo(usersTagsCanvasBottomView)
             }
         }
     }
@@ -293,6 +317,18 @@ class MediaFiltersCardViewController: SheetCardViewController {
         addLeftRightGradients(to: tagsView)
     }
 
+    private func addCanvasesView() {
+        canvasesView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(canvasesView)
+        canvasesView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(40)
+        }
+        canvasesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(canvasesTapped)))
+
+        addLeftRightGradients(to: canvasesView)
+    }
+
     private func addLeftRightGradients(to superView: UIView) {
         let leftGradientView = createLeftGradient()
         let rightGradientView = createRightGradient()
@@ -382,7 +418,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
 
     override func updateColors() {
         super.updateColors()
-        usersTagsStrokeView.layer.borderColor = chooseColor(.Neutral_07).cgColor
+        usersTagsCanvasStrokeView.layer.borderColor = chooseColor(.Neutral_07).cgColor
         let gradientColor = chooseColor(.Neutral_09)
         gradientViews.forEach {
             $0.gradientLayer.colors = [
@@ -543,5 +579,47 @@ extension MediaFiltersCardViewController: TagsViewModelDelegate {
     /// Updates tags filters when the tagsViewModel is updated
     func tagsViewModel(_ viewModel: TagsViewModel, tag _: TagViewModel, selected _: Bool, indexInSelectedTags _: Int) {
         mediaFilters.tagsFilter = viewModel.selectedTags.map(\.id)
+    }
+}
+
+// MARK: - canvas
+
+extension MediaFiltersCardViewController: CanvasesViewModelDelegate {
+    /// Called when "Filter by Canvas" switch is toggled
+    private func onFilterByCanvasSwitchAction() {
+        if filterByCanvasSwitch.isOn {
+            mediaFilters.canvasFilter = []
+            canvasesView.setVisible(true)
+            showCanvasPicker()
+        } else {
+            canvasesViewModel.clearSelection()
+            mediaFilters.canvasFilter = nil
+            canvasesView.setVisible(false)
+        }
+        if let cardDragging = cardDragging {
+            cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
+        }
+    }
+
+    /// Invoked when selected canvases tapped
+    @objc private func canvasesTapped() {
+        showCanvasPicker()
+    }
+
+    /// Show the picker that operates on canvasesViewModel
+    func showCanvasPicker() {
+        guard let presentingVC = presentingVC else { return }
+        let pickerCardVC = CanvasPickerCardViewController(title: "Canvas", viewModel: canvasesViewModel)
+        pickerCardVC.installAndShowCard(in: presentingVC)
+    }
+
+    /// Updates canvas filters when the viewModel is updated
+    func canvasesViewModel(
+        _ viewModel: CanvasesViewModel,
+        canvas _: CanvasViewModel,
+        selected _: Bool,
+        indexInSelectedCanvases _: Int
+    ) {
+        mediaFilters.canvasFilter = viewModel.selectedCanvases.map(\.id)
     }
 }

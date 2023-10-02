@@ -35,6 +35,9 @@ class MediaFilters: Equatable {
     /// If not nil and not empty then only match the uploads that have all of given tags (tag ids).
     var tagsFilter: [String]? { didSet { postUpdate() }}
 
+    /// Filter by canvas, if nil or empty then all canvases allowed
+    var canvasFilter: [String]? { didSet { postUpdate() }}
+
     /// Use notification center to post the notification about update in filters
     private func postUpdate() {
         NotificationCenter.default.post(name: MediaFilters.UpdateNotificationName, object: self)
@@ -66,6 +69,7 @@ class MediaFilters: Equatable {
         toDate = defaults.toDate
         authorFilter = defaults.authorFilter
         tagsFilter = defaults.tagsFilter
+        canvasFilter = defaults.canvasFilter
         postUpdate()
     }
 
@@ -75,6 +79,7 @@ class MediaFilters: Equatable {
         if lhs.toDate != rhs.toDate { return false }
         if lhs.authorFilter != rhs.authorFilter { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
+        if lhs.canvasFilter != rhs.canvasFilter { return false }
         return true
     }
 
@@ -97,6 +102,9 @@ extension MediaFilters {
         }
         if let tagsFilter = tagsFilter, !tagsFilter.isEmpty {
             if !matchTags(tagsFilter, upload: upload) { return false }
+        }
+        if let canvasFilter = canvasFilter, !canvasFilter.isEmpty {
+            if !matchCanvas(canvasFilter, upload: upload) { return false }
         }
         return true
     }
@@ -122,5 +130,15 @@ extension MediaFilters {
         }
 
         return true
+    }
+
+    /// Return `true` if the upload belongs to a collaboration on one of given canvases
+    func matchCanvas(_ canvases: [String], upload: Upload) -> Bool {
+        for canvas in canvases {
+            if upload.collaboration.first?.feature.first?.geometry.first?.canvas.first?.id == canvas {
+                return true
+            }
+        }
+        return false
     }
 }
