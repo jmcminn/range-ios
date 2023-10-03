@@ -13,6 +13,25 @@ struct StartAuthView: View {
     let loginAction: () -> Void
     let signUpAction: () -> Void
 
+    func earlyAccessInvitationAttributedString() -> AttributedString {
+        var text =
+            AttributedString(
+                "👋 To sign up for Range you'll need an early access invitation, or be invited by your team members."
+            )
+        text.foregroundColor = .dynamic(.Neutral_07)
+
+        if let earlyAccessRange = text.range(of: "early access invitation") {
+            text[earlyAccessRange].link =
+                URL(
+                    string: "https://docs.google.com/forms/d/e/1FAIpQLSeu1TJGH75nM5Or1KGtYZ1q1AGR6yJLuAJ3cWsMzr1IRWk3jg/viewform"
+                )
+            text[earlyAccessRange].underlineStyle = .single
+            text[earlyAccessRange].foregroundColor = .Primary_Blue_04
+        }
+
+        return text
+    }
+
     func descriptionAttributedString() -> AttributedString {
         var text =
             AttributedString(
@@ -22,13 +41,13 @@ struct StartAuthView: View {
 
         if let privacyRange = text.range(of: "Privacy Policy") {
             text[privacyRange].link =
-                URL(string: "https://rangehq.notion.site/Range-Terms-of-Service-27c0ae45b3b145a883b9cbc72231b32f")
+                URL(string: "https://rangehq.notion.site/Range-Privacy-Policy-7171e619c2ae42489a19fff06fbe47c6")
             text[privacyRange].underlineStyle = .single
             text[privacyRange].foregroundColor = .Primary_Blue_04
         }
         if let termsRange = text.range(of: "Terms of Service") {
             text[termsRange].link =
-                URL(string: "https://rangehq.notion.site/Range-Privacy-Policy-7171e619c2ae42489a19fff06fbe47c6")
+                URL(string: "https://rangehq.notion.site/Range-Terms-of-Service-27c0ae45b3b145a883b9cbc72231b32f")
             text[termsRange].underlineStyle = .single
             text[termsRange].foregroundColor = .Primary_Blue_04
         }
@@ -50,11 +69,21 @@ struct StartAuthView: View {
                 }.edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 0) {
+                    HStack(alignment: .center, spacing: 10) {
+                        Text(earlyAccessInvitationAttributedString())
+                            .font(.subheadline.bold())
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .background(Color.dynamic(.Neutral_04))
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 6)
+
                     Image("logo_side_by_side")
                         .resizable()
                         .scaledToFit()
                         .frame(height: 40)
-                        .padding(EdgeInsets(top: 12, leading: 0, bottom: 40, trailing: 0))
+                        .padding(EdgeInsets(top: 72, leading: 0, bottom: 40, trailing: 0))
 
                     Text("Let's get started")
                         .foregroundColor(.dynamic(.Neutral_04))

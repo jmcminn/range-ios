@@ -25,13 +25,13 @@ struct EmailSignUpView: View {
 
         if let privacyRange = text.range(of: "Privacy Policy") {
             text[privacyRange].link =
-                URL(string: "https://rangehq.notion.site/Range-Terms-of-Service-27c0ae45b3b145a883b9cbc72231b32f")
+                URL(string: "https://rangehq.notion.site/Range-Privacy-Policy-7171e619c2ae42489a19fff06fbe47c6")
             text[privacyRange].underlineStyle = .single
             text[privacyRange].foregroundColor = .Primary_Blue_04
         }
         if let termsRange = text.range(of: "Terms of Service") {
             text[termsRange].link =
-                URL(string: "https://rangehq.notion.site/Range-Privacy-Policy-7171e619c2ae42489a19fff06fbe47c6")
+                URL(string: "https://rangehq.notion.site/Range-Terms-of-Service-27c0ae45b3b145a883b9cbc72231b32f")
             text[termsRange].underlineStyle = .single
             text[termsRange].foregroundColor = .Primary_Blue_04
         }
