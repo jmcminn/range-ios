@@ -109,6 +109,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // ACHTUNG: isPersistenceEnabled must be true for Firestore. Otherwise it won't notify about
             // removed objects while the app was not running
         }
+
+        setupRemoteConfig()
     }
 
     private func registerForNotifications(_: UIApplication) {

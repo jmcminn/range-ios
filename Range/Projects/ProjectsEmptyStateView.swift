@@ -43,7 +43,7 @@ struct ProjectsEmptyStateView: View {
                 .foregroundColor(.dynamic(.Neutral_05))
 
                 Button(action: {
-                    if let url = URL(string: "https://vimeo.com/rangehq") {
+                    if let url = URL(string: aboutRangeVimeoUrl) {
                         UIApplication.shared.open(url)
                     }
                 }) {
