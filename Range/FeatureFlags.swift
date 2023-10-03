@@ -17,6 +17,11 @@ func setupRemoteConfig() {
             Logger.firebase.error("Error fetching firebase remote config: \(error)")
         }
     }
+    // start listening to changes (the listener is automatically disabled by Firebase when app goes to
+    // background and restarted when the app is back)
+    remoteConfig.addOnConfigUpdateListener { _, _ in
+        remoteConfig.activate()
+    }
 }
 
 /// Feature flag for the link to the "about range" vimeo url
