@@ -107,6 +107,7 @@ struct StartAuthView: View {
 
                         Text(descriptionAttributedString())
                             .font(.caption)
+                            .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                     }
                     .disabled(viewModel.isProcessing)
 

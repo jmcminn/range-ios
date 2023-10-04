@@ -109,6 +109,7 @@ struct EmailSignUpView: View {
 
                         Text(descriptionAttributedString())
                             .font(.caption)
+                            .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                             .padding(EdgeInsets(top: 24, leading: 0, bottom: 0, trailing: 0))
                     }
                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
