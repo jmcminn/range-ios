@@ -279,6 +279,7 @@ extension RangeBezierPath.Element {
         formatter.minimumIntegerDigits = 1
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
+        formatter.decimalSeparator = "."
         return formatter.string(from: point.x as NSNumber)! + "," + formatter.string(from: point.y as NSNumber)!
     }
 }
