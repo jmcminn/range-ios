@@ -50,6 +50,7 @@ class CollaborationStatusButton: ButtonWithTapAreaInsets {
         configurationUpdateHandler = { [weak self] button in
             guard let self = self else { return }
             guard !self.collaboration.isInvalidated else { return }
+            if let status = collaboration.status, status.isInvalidated { return }
             var config = button.configuration
             config?.baseBackgroundColor = self.collaboration.status?.color ?? .Primary_Blue_04
             button.configuration = config
