@@ -9,10 +9,12 @@ struct FullscreenImageGalleryView: View {
         ZStack {
             imageGalleryView
                 .ignoresSafeArea(.all)
-            VStack {
-                Spacer()
-                AnnotationsToolbarView(model: annotationsEditorViewModel)
-                    .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))
+            if _debugSettings.photoAnnotationsEnabled {
+                VStack {
+                    Spacer()
+                    AnnotationsToolbarView(model: annotationsEditorViewModel)
+                        .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))
+                }
             }
         }
     }
