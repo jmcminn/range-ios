@@ -36,10 +36,11 @@ struct EmailAuthView: View {
                     }
                 }.edgesIgnoringSafeArea(.all)
 
-                HStack {
-                    BackButton(callback: backAction)
-                    Spacer()
-                }
+                // back button hidden when EmailAuthView is the first screen in the AuthFlow
+//                HStack {
+//                    BackButton(callback: backAction)
+//                    Spacer()
+//                }
 
                 VStack(spacing: 0) {
                     Image("logo_side_by_side")
@@ -47,6 +48,11 @@ struct EmailAuthView: View {
                         .scaledToFit()
                         .frame(height: 40)
                         .padding(EdgeInsets(top: 12, leading: 0, bottom: 40, trailing: 0))
+
+                    Text("Let's get started")
+                        .foregroundColor(.dynamic(.Neutral_04))
+                        .font(.title3.bold())
+                        .padding(.bottom, 10)
 
                     Text("Enter your details to log in")
                         .foregroundColor(.dynamic(.Neutral_05))

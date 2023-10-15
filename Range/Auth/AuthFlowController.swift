@@ -56,16 +56,17 @@ final class AuthFlowController: UINavigationController, UINavigationControllerDe
     }
 
     private func showStartAuthView() {
-        let startAuthViewModel = StartAuthViewModel()
-        let authView = StartAuthView(
-            viewModel: startAuthViewModel,
-            googleLoginAction: { [weak self] in self?.signInWithGoogle(startAuthViewModel) },
-            loginAction: { [weak self] in self?.showEmailAndPasswordAuthView() },
-            signUpAction: { [weak self] in self?.showEmailAndPasswordSignUpView() }
-        )
-        let startVC = UIHostingController<StartAuthView>(rootView: authView)
+        // sign up / sign in with google is disabled for now
+//        let startAuthViewModel = StartAuthViewModel()
+//        let authView = StartAuthView(
+//            viewModel: startAuthViewModel,
+//            googleLoginAction: { [weak self] in self?.signInWithGoogle(startAuthViewModel) },
+//            loginAction: { [weak self] in self?.showEmailAndPasswordAuthView() },
+//            signUpAction: { [weak self] in self?.showEmailAndPasswordSignUpView() }
+//        )
+//        let startVC = UIHostingController<StartAuthView>(rootView: authView)
 
-        var vcs: [UIViewController] = [startVC]
+        var vcs: [UIViewController] = [createEmailAuthViewController()]
 
         if let user = Auth.auth().currentUser, !user.isEmailVerified {
             // if user is signed in then show AwaitEmailVerificationView on top (going back does sign out)
@@ -136,6 +137,12 @@ extension AuthFlowController {
 extension AuthFlowController {
     /// Initiates the authentication by email and password
     private func showEmailAndPasswordAuthView() {
+        let emailAuthViewController = createEmailAuthViewController()
+
+        pushViewController(emailAuthViewController, animated: true)
+    }
+
+    private func createEmailAuthViewController() -> UIViewController {
         let emailAuthViewModel = EmailAuthViewModel()
 
         let emailAuthView = EmailAuthView(
@@ -145,9 +152,7 @@ extension AuthFlowController {
             backAction: { [weak self] in self?.popViewController(animated: true) }
         )
 
-        let emailAuthViewController = UIHostingController<EmailAuthView>(rootView: emailAuthView)
-
-        pushViewController(emailAuthViewController, animated: true)
+        return UIHostingController<EmailAuthView>(rootView: emailAuthView)
     }
 
     /// Try to authenticate with given user input using `FirebaseAuth`.
