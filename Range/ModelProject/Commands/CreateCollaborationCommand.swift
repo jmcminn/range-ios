@@ -27,6 +27,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
     var uploadTags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
+    var mediaKeys: [MediaKey] // to add to pending uploads
 
     init(
         authorId: String,
@@ -43,7 +44,8 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         tags: [CommandTag] = [],
         uploadTags: [CommandTag] = [],
         uploadDescription: String? = nil,
-        uploads: [CommandUpload] = []
+        uploads: [CommandUpload] = [],
+        mediaKeys: [MediaKey] = []
     ) {
         self.authorId = authorId
         self.canvasId = canvasId
@@ -60,6 +62,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         self.uploadTags = uploadTags
         self.uploadDescription = uploadDescription
         self.uploads = uploads
+        self.mediaKeys = mediaKeys
     }
 }
 
@@ -144,6 +147,15 @@ extension CreateCollaborationCommand: LocalCommand {
         if let statusId = statusId {
             collaboration.status = try realm.object(ofType: Status.self, forPrimaryKey: statusId)
                 .or(error: ModelError.statusNotFound)
+        }
+    }
+}
+
+/// Add pending uploads for all the media keys
+extension CreateCollaborationCommand: PendingUploadCommand {
+    func addPendingUploads(_ pendingUploadsModel: PendingUploadsModel) async throws {
+        for mediaKey in mediaKeys {
+            try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
         }
     }
 }

@@ -99,7 +99,9 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
             coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
             uploadTags: [.init(id: "tag1", name: "tag 1")],
             uploadDescription: "upload description",
-            uploads: [.init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1)]
+            uploads: [.init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1)],
+            mediaKeys: [.localFilesKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg,
+                                       annotated: false)]
         ))
     }
 
@@ -244,6 +246,11 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
                 .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1),
                 .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.2),
                 .init(id: "upload3", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.3),
+            ],
+            mediaKeys: [
+                .localFilesKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg, annotated: false),
+                .localFilesKey(projectId: model.projectId, uploadId: "upload2", fileType: .jpeg, annotated: false),
+                .localFilesKey(projectId: model.projectId, uploadId: "upload3", fileType: .jpeg, annotated: false),
             ]
         ))
     }

@@ -259,16 +259,16 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// Perform given PendingUpload and remove if succeeded or update with error if failed
     /// - Returns: `true` if it was performed
     /// To be invoked from the writeQueue
-    func _performUpload(_ upload: PendingUpload) async throws {
+    func _performUpload(_ pendingUpload: PendingUpload) async throws {
         // increase the retry count
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { _ in
-            upload.retryCount += 1
-            upload.nextAttemptAt = Date.now.timeIntervalSince1970
-                + min(pow(2, Double(upload.retryCount)), self.maxBackoff)
+            pendingUpload.retryCount += 1
+            pendingUpload.nextAttemptAt = Date.now.timeIntervalSince1970
+                + min(pow(2, Double(pendingUpload.retryCount)), self.maxBackoff)
         }
 
         let mediaKey = try await _asyncOnQueue(queue: writeQueue) {
-            upload.mediaKey
+            pendingUpload.mediaKey
         }
         let uploadRef = mediaCache.storage.reference(withPath: mediaKey.storagePath)
         let cacheFileURL = localFiles.fileURL(forKey: mediaKey)
@@ -293,38 +293,53 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             )
             try await projectModel.start()
 
+            var uploadExists = false
             try await projectModel.write { realm in
-                if realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) == nil {
-                    throw "Upload object not yet in the local Database"
+                uploadExists = realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) != nil
+            }
+
+            if uploadExists {
+                let resultMetadata = try await uploadRef.putFileAsync(from: cacheFileURL, metadata: metadata)
+                Logger.storage.debug("Uploaded file: \(mediaKey, privacy: .public)")
+
+                let storageVersion = String(resultMetadata.generation)
+
+                // pending upload can be removed
+                try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
+                    realm.delete(pendingUpload)
                 }
-            }
 
-            let resultMetadata = try await uploadRef.putFileAsync(from: cacheFileURL, metadata: metadata)
-            Logger.storage.debug("Uploaded file: \(mediaKey, privacy: .public)")
+                try await _moveFileFromLocalFilesToMediaCache(forKey: mediaKey, storageVersion: storageVersion)
 
-            let storageVersion = String(resultMetadata.generation)
-
-            // pending upload can be removed
-            try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
-                realm.delete(upload)
-            }
-
-            try await _moveFileFromLocalFilesToMediaCache(forKey: mediaKey, storageVersion: storageVersion)
-
-            // update the Upload in project model to store the storageVersion
-            try await projectModel.write { realm in
-                guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) else {
-                    throw "Trying to upload a file but Upload doesn't exist"
+                // update the Upload in project model to store the storageVersion
+                try await projectModel.write { realm in
+                    guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) else {
+                        Logger.storage
+                            .debug(
+                                "No Upload object in the database, not updating localStorageVersion for pending upload: \(mediaKey, privacy: .public)"
+                            )
+                        return
+                    }
+                    upload.localStorageVersion.setMain(annotated: mediaKey.annotated, value: storageVersion)
                 }
-                upload.localStorageVersion.setMain(annotated: mediaKey.annotated, value: storageVersion)
+            } else {
+                // Upload in Firestore is gone, remove the pending upload and local files
+                Logger.storage.debug(
+                    "No Upload object in the database, ignoring (and removing) pending upload: \(mediaKey, privacy: .public)"
+                )
+                try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
+                    realm.delete(pendingUpload)
+                }
+                await _removeFileFromLocalFiles(forKey: mediaKey)
             }
+
         } catch {
             Logger.storage.error("Error uploading file: \(error.localizedDescription)")
             // store the error for pending upload
             try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { _ in
-                guard !upload.isInvalidated else { return }
-                upload.isUploading = false
-                upload.lastErrorMessage = error.localizedDescription
+                guard !pendingUpload.isInvalidated else { return }
+                pendingUpload.isUploading = false
+                pendingUpload.lastErrorMessage = error.localizedDescription
             }
         }
     }
@@ -350,6 +365,14 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 storeInDiskCache: true
             )
             try await mediaCache.moveFileFromLocalFilesToMediaCache(from: localThumbnailKey, to: storageKey)
+        }
+    }
+
+    private func _removeFileFromLocalFiles(forKey localKey: MediaKey) async {
+        let thumbnails: [Int?] = [nil, 0, 1]
+        for thumbnail in thumbnails {
+            let localThumbnailKey = localKey.forThumbnail(thumbnail)
+            await localFiles.removeFile(forKey: localThumbnailKey)
         }
     }
 }

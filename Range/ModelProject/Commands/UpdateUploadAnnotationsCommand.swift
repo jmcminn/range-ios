@@ -9,6 +9,7 @@ struct UpdateUploadAnnotationsCommand: Command, Codable, Equatable {
 
     let uploadId: String
     var annotations: Annotations?
+    let mediaKey: MediaKey
 }
 
 extension UpdateUploadAnnotationsCommand: LocalCommand {
@@ -17,6 +18,13 @@ extension UpdateUploadAnnotationsCommand: LocalCommand {
             throw ModelError.uploadNotFound
         }
         upload.annotations = annotations
+    }
+}
+
+/// Add pending upload for the media key
+extension UpdateUploadAnnotationsCommand: PendingUploadCommand {
+    func addPendingUploads(_ pendingUploadsModel: PendingUploadsModel) async throws {
+        try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
     }
 }
 

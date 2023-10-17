@@ -29,7 +29,12 @@ extension ProjectModel {
             }
         }
 
-        // 3. Store the action for server side execution (will not fail).
+        // 3. Add pending uploads
+        if let pendingUploadCommand = command as? PendingUploadCommand {
+            try await pendingUploadCommand.addPendingUploads(pendingUploadsModel)
+        }
+
+        // 4. Store the action for server side execution (will not fail).
         pendingActionsModel.addAction(data: actionData)
     }
 
@@ -85,21 +90,20 @@ extension ProjectModel {
         }
 
         for photoToAdd in photosToAdd {
-            try await pendingUploadsModel.addPendingUpload(forKey: photoToAdd.mediaKey)
-            if let annotatedMediaKey = photoToAdd.annotatedMediaKey {
-                try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
-            }
             analytics?._trackProjectEvent(name: "media uploaded", self, [
                 "mediaType": photoToAdd.mediaKey.fileType.rawValue,
             ])
         }
+
+        let mediaKeys = photosToAdd.map(\.mediaKey) + photosToAdd.compactMap(\.annotatedMediaKey)
 
         return AddUploadsToCollaborationCommand(
             authorId: userId,
             collaborationId: collaboration.id,
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: description,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
+            mediaKeys: mediaKeys
         )
     }
 
@@ -112,7 +116,6 @@ extension ProjectModel {
                                               fileType: fileType, annotated: false)
 
         try await localFiles.store(data, forKey: mediaKey)
-        try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
         analytics?._trackProjectEvent(name: "media uploaded", self, [
             "mediaType": fileType.rawValue,
         ])
@@ -121,7 +124,8 @@ extension ProjectModel {
             authorId: userId,
             collaborationId: collaboration.id,
             tags: [],
-            uploads: [CommandUpload(id: uploadId, fileType: fileType, fileSize: Int64(data.count), name: name)]
+            uploads: [CommandUpload(id: uploadId, fileType: fileType, fileSize: Int64(data.count), name: name)],
+            mediaKeys: [mediaKey]
         )
     }
 
@@ -169,11 +173,8 @@ extension ProjectModel {
                 "canvasType": canvasSource.type.rawValue,
             ])
         }
+
         for photoToAdd in photosToAdd {
-            try await pendingUploadsModel.addPendingUpload(forKey: photoToAdd.mediaKey)
-            if let annotatedMediaKey = photoToAdd.annotatedMediaKey {
-                try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
-            }
             analytics?._trackProjectEvent(name: "media uploaded", self, [
                 "mediaType": photoToAdd.mediaKey.fileType.rawValue,
             ])
@@ -186,6 +187,8 @@ extension ProjectModel {
             }
             status = initialStatus
         }
+
+        let mediaKeys = photosToAdd.map(\.mediaKey) + photosToAdd.compactMap(\.annotatedMediaKey)
 
         return CreateCollaborationCommand(
             authorId: userId,
@@ -200,7 +203,8 @@ extension ProjectModel {
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadTags: uploadTags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: uploadDescription,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
+            mediaKeys: mediaKeys
         )
     }
 
@@ -466,7 +470,7 @@ extension ProjectModel {
             return try Data(contentsOf: imageUrl)
         }
         // store annotated image in LocalFiles and schedule upload to Storage
-        func storeAnnotatedImageData(_ data: Data) async throws {
+        func storeAnnotatedImageData(_ data: Data) async throws -> MediaKey {
             // store the info about annotated image in LocalFiles
             // it has to be done before adding pending upload, as when the file is uploaded
             // the localStorageVersion will be replaced with the real one so we need the correct
@@ -476,7 +480,7 @@ extension ProjectModel {
                     upload.localStorageVersion.setMainToLocalFile(annotated: true)
                 }
             }
-            // store annotated image locally and add to pending uploads
+            // store annotated image locally
             let annotatedMediaKey = MediaKey.localFilesKey(
                 projectId: projectId,
                 uploadId: upload.id,
@@ -484,7 +488,7 @@ extension ProjectModel {
                 annotated: true
             )
             try await localFiles.store(data, forKey: annotatedMediaKey)
-            try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
+            return annotatedMediaKey
         }
 
         let imageData = try await fetchImageData()
@@ -500,8 +504,8 @@ extension ProjectModel {
             // so just upload non annotated as annotated for now
             annotatedImageData = imageData
         }
-        try await storeAnnotatedImageData(annotatedImageData)
+        let mediaKey = try await storeAnnotatedImageData(annotatedImageData)
 
-        return UpdateUploadAnnotationsCommand(uploadId: uploadId, annotations: annotations)
+        return UpdateUploadAnnotationsCommand(uploadId: uploadId, annotations: annotations, mediaKey: mediaKey)
     }
 }

@@ -11,7 +11,7 @@ var _thumbnail1Size: Int = 650
 /// 1 - 650x650>
 /// see the [generate thumbnails function repo](https://gitlab.com/range.io/range.io/-/blob/master/modules/firebase-functions-generate-thumbnails/src/generate-thumbnails-from-upload.js#L27)
 /// for more details///
-struct MediaKey: CustomStringConvertible, Equatable {
+struct MediaKey: CustomStringConvertible, Equatable, Codable {
     let projectId: String
     let uploadId: String
     let fileType: Upload.FileType

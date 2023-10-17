@@ -24,6 +24,12 @@ protocol LocalCommand: Command {
     func apply(inRealm realm: Realm) throws
 }
 
+/// A protocol for commands that add files to PendingUploadsModel
+protocol PendingUploadCommand: Command {
+    /// Add pending uploads to given PendingUploadsModel
+    func addPendingUploads(_: PendingUploadsModel) async throws
+}
+
 enum FirestoreCommandError: Error, LocalizedError {
     // not applied because some preconditions are not met and will not be met,
     // the command should be ignored (removed from pending)

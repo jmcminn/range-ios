@@ -19,6 +19,7 @@ struct AddUploadsToCollaborationCommand: Command, Codable, Equatable {
     var tags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
+    var mediaKeys: [MediaKey] // to add to pending uploads
 }
 
 /// Creates/updates the tags, creates the Uploads and links with Collaboration
@@ -61,6 +62,15 @@ extension AddUploadsToCollaborationCommand: LocalCommand {
             upload.tags.append(objectsIn: tags)
             tags.forEach { t in t.uploads.insert(upload) }
             collaboration.uploads.insert(upload)
+        }
+    }
+}
+
+/// Add pending uploads for all the media keys
+extension AddUploadsToCollaborationCommand: PendingUploadCommand {
+    func addPendingUploads(_ pendingUploadsModel: PendingUploadsModel) async throws {
+        for mediaKey in mediaKeys {
+            try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
         }
     }
 }

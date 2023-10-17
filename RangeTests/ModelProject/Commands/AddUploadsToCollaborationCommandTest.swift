@@ -13,7 +13,8 @@ final class AddUploadsToCollaborationCommandRealmTest: ProjectModelTestCase {
         uploads: [
             .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
             .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
-        ]
+        ],
+        mediaKeys: []
     )
 
     func testApply_noCollaboration() throws {
@@ -90,7 +91,8 @@ final class AddUploadsToCollaborationCommandFirestoreTest: XCTestCase {
         uploads: [
             .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
             .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
-        ]
+        ],
+        mediaKeys: []
     )
 
     func testApply_noCollaboration() throws {
