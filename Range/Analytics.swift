@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import Segment
 import UIKit
 
@@ -7,16 +8,22 @@ var analytics: Segment.Analytics?
 
 func setupAnalytics() {
     let runningTests = UserDefaults.standard.bool(forKey: "isTest")
-
-    // only setup analytics if running the app and not tests
-    if !runningTests {
-        let config = Configuration(writeKey: "ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd")
-            .trackApplicationLifecycleEvents(false)
-            .flushAt(3)
-            .flushInterval(10)
-
-        analytics = Analytics(configuration: config)
+    guard !runningTests else {
+        // only setup analytics if running the app and not tests
+        return
     }
+
+    guard let segmentKey: String = try? AppConfiguration.value(for: "SegmentKey"), segmentKey.isEmpty == false else {
+        Logger.settings.debug("No segment key provided! Not starting analytics")
+        return
+    }
+
+    let config = Configuration(writeKey: segmentKey)
+        .trackApplicationLifecycleEvents(false)
+        .flushAt(3)
+        .flushInterval(10)
+
+    analytics = Analytics(configuration: config)
 }
 
 extension Analytics {

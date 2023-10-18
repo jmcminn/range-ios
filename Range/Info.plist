@@ -17,6 +17,8 @@
 	<string>$(FIREBASE_PROJECT)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>SegmentKey</key>
+	<string>$(SEGMENT_KEY)</string>
 	<key>SentryEnv</key>
 	<string>$(SENTRY_ENV)</string>
 	<key>ShowDebugOptions</key>

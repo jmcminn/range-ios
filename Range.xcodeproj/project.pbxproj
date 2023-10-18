@@ -2760,6 +2760,7 @@
 		0A37836C291A62320018BF3C /* Debug demo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range demo";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.demo.entitlements;
@@ -2772,7 +2773,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range demo";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -2792,7 +2793,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SENTRY_ENV = "";
+				SEGMENT_KEY = "";
 				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -2901,6 +2902,7 @@
 		0A378370291A623C0018BF3C /* Release demo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range demo";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.demo.entitlements;
@@ -2913,7 +2915,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range demo";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -2933,6 +2935,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SEGMENT_KEY = ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd;
 				SENTRY_ENV = beta;
 				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -3104,6 +3107,7 @@
 		0A632ED327E49639001A019B /* Debug production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = Range;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.production.entitlements;
@@ -3116,7 +3120,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3136,7 +3140,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.range.App;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SENTRY_ENV = "";
 				SHOW_DEBUG_OPTIONS = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3151,6 +3154,7 @@
 		0A632ED427E49639001A019B /* Release production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = Range;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.production.entitlements;
@@ -3163,7 +3167,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3183,6 +3187,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.range.App;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SEGMENT_KEY = H9H2qZ1Oo0Ds2CfKMO2eUeDOK5hGRnyA;
 				SENTRY_ENV = production;
 				SHOW_DEBUG_OPTIONS = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -3336,6 +3341,7 @@
 		0A724F33288806DF00708C6B /* Debug firebase emulator */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range emulator";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.dev.entitlements;
@@ -3348,7 +3354,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range emulator";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3368,7 +3374,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-emulator";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SENTRY_ENV = "";
+				SEGMENT_KEY = "";
 				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3483,6 +3489,7 @@
 		0A859CFA29D5FCC900CCAEC5 /* Debug custom */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range custom";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.custom.entitlements;
@@ -3495,7 +3502,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range custom";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3515,7 +3522,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-custom";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SENTRY_ENV = "";
+				SEGMENT_KEY = "";
 				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3624,6 +3631,7 @@
 		0A99BF2F28C88C4E00DB3F96 /* Release dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.dev.entitlements;
@@ -3636,7 +3644,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3656,6 +3664,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SEGMENT_KEY = ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd;
 				SENTRY_ENV = development;
 				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -3771,6 +3780,7 @@
 		0A99BF3328C890B700DB3F96 /* Debug dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.dev.entitlements;
@@ -3783,7 +3793,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range dev";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3803,7 +3813,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SENTRY_ENV = development;
+				SEGMENT_KEY = ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd;
 				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3918,6 +3928,7 @@
 		0ACE196A296C7E0F00D223EB /* Debug staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range staging";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.staging.entitlements;
@@ -3930,7 +3941,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range staging";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3950,6 +3961,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-staging";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SEGMENT_KEY = "";
 				SENTRY_ENV = "";
 				SHOW_DEBUG_OPTIONS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -4059,6 +4071,7 @@
 		0ACE196E296C7EC600D223EB /* Release staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Range staging";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Range/Range.staging.entitlements;
@@ -4071,7 +4084,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Range staging";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -4091,6 +4104,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "io.range.App-staging";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SEGMENT_KEY = ioHVDkDzfasMREAU3crS2Nu1k8DH7fFd;
 				SENTRY_ENV = staging;
 				SHOW_DEBUG_OPTIONS = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
