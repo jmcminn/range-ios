@@ -165,14 +165,12 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
             }
         }
 
-        if _debugSettings.photoAnnotationsEnabled {
-            view.addSubview(cancelButton)
-            cancelButton.snp.makeConstraints { make in
-                make.height.equalTo(40)
-                make.width.greaterThanOrEqualTo(40)
-                make.centerY.equalTo(currentPageLabel)
-                make.leading.equalToSuperview().inset(16)
-            }
+        view.addSubview(cancelButton)
+        cancelButton.snp.makeConstraints { make in
+            make.height.equalTo(40)
+            make.width.greaterThanOrEqualTo(40)
+            make.centerY.equalTo(currentPageLabel)
+            make.leading.equalToSuperview().inset(16)
         }
         if let annotationsSettingsButton = annotationsSettingsButton {
             view.addSubview(annotationsSettingsButton)
@@ -199,40 +197,28 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
     }
 
     private func setupButtons() {
-        if _debugSettings.photoAnnotationsEnabled {
-            cancelButton = UIButton(
-                configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
-                primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
-                    self?.onCancel?()
-                }
-            )
-            confirmButton = UIButton(
-                configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
-                primaryAction: UIAction(title: String(localized: "Done")) { [weak self] _ in
-                    guard let self = self else { return }
-                    let resultAnnotations = self.annotationsEditorPerPage.map { $0.getAnnotations() }
-                    self.onDone?(resultAnnotations)
-                }
-            )
+        cancelButton = UIButton(
+            configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
+            primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
+                self?.onCancel?()
+            }
+        )
+        confirmButton = UIButton(
+            configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
+            primaryAction: UIAction(title: String(localized: "Done")) { [weak self] _ in
+                guard let self = self else { return }
+                let resultAnnotations = self.annotationsEditorPerPage.map { $0.getAnnotations() }
+                self.onDone?(resultAnnotations)
+            }
+        )
 
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(updateDoneButtonEnabled),
-                name: AnnotationsEditor.AnnotationsUpdatedNotificationName,
-                object: nil
-            )
-            updateDoneButtonEnabled()
-        } else {
-            confirmButton = UIButton(
-                configuration: UIButton.Configuration.iconButton(
-                    backgroundColor: .Neutral_10, foregroundColor: .Neutral_04,
-                    strokeColor: .Neutral_07, imagePointSize: 14
-                ),
-                primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
-                    self?.onCancel?()
-                }
-            )
-        }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateDoneButtonEnabled),
+            name: AnnotationsEditor.AnnotationsUpdatedNotificationName,
+            object: nil
+        )
+        updateDoneButtonEnabled()
 
         let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
         if showDebugOptions {

@@ -61,15 +61,10 @@ final class DebugSettings: ObservableObject {
         }
     }
 
-    let photoAnnotationsEnabled: Bool
-
     let appVersion: String
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-
-        // show photo annotations when the debug options are available (dev, demo)
-        photoAnnotationsEnabled = try! AppConfiguration.bool(for: "ShowDebugOptions")
 
         defaults.register(defaults: [
             Keys.openLastProjectOnStart: false,
