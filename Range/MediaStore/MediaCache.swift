@@ -77,7 +77,7 @@ class MediaCache {
         guard !key.isFromLocalFiles else { throw "Requested key is not a storage key" }
 
         // 2. try the media cache
-        if mediaCache.imageCachedType(forKey: key.cacheKey) == .disk {
+        if mediaCache.diskStorage.isCached(forKey: key.cacheKey) {
             Logger.cache.trace("Reading \(key) from media cache")
             return mediaCache.diskStorage.cacheFileURL(forKey: key.cacheKey)
         }
