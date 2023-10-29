@@ -47,6 +47,18 @@ class LocalFiles {
         try await cache._asyncStoreToDisk(data, forKey: key.cacheKey)
     }
 
+    /// generate and store thumbnails for given key
+    /// does nothing if it's not an image
+    func generateAndStoreThumbnails(_ data: Data, forKey key: MediaKey) async throws {
+        guard key.fileType.isImage else { return }
+        if let thumbnail0Data = resizeImage(imageData: data, maxResolution: _thumbnail0Size) {
+            try await store(thumbnail0Data, forKey: key.forThumbnail(0))
+        }
+        if let thumbnail1Data = resizeImage(imageData: data, maxResolution: _thumbnail1Size) {
+            try await store(thumbnail1Data, forKey: key.forThumbnail(1))
+        }
+    }
+
     func hasFile(forKey key: MediaKey) -> Bool {
         cache.isCached(forKey: key.cacheKey)
     }
@@ -55,8 +67,13 @@ class LocalFiles {
         await cache._asyncRemoveImage(forKey: key.cacheKey)
     }
 
-    func removeFile(forKey key: MediaKey, completionHandler: (() -> Void)?) {
-        cache.removeImage(forKey: key.cacheKey, completionHandler: completionHandler)
+    /// Remove file for given key. If file is an image it also remove the thumbnails
+    func removeFileAndThumbnails(forKey key: MediaKey) async {
+        await removeFile(forKey: key)
+        if key.fileType.isImage {
+            await removeFile(forKey: key.forThumbnail(0))
+            await removeFile(forKey: key.forThumbnail(1))
+        }
     }
 
     func fileURL(forKey key: MediaKey) -> URL {

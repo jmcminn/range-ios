@@ -62,10 +62,13 @@ class PhotosToAddViewModel: NSObject {
     /// If the index is invalid it does nothing
     func remove(photoAtIndex index: Int) {
         guard index >= 0, index < photos.count else { return }
-        // remove and don't wait for the result
-        localFiles.removeFile(forKey: photos[index].mediaKey, completionHandler: nil)
-        if let annotatedMediaKey = photos[index].annotatedMediaKey {
-            localFiles.removeFile(forKey: annotatedMediaKey, completionHandler: nil)
+        // remove local files and don't wait for the result
+        let photoToRemove = photos[index]
+        Task {
+            await localFiles.removeFileAndThumbnails(forKey: photoToRemove.mediaKey)
+            if let annotatedMediaKey = photoToRemove.annotatedMediaKey {
+                await localFiles.removeFileAndThumbnails(forKey: annotatedMediaKey)
+            }
         }
         photos.remove(at: index)
         DispatchQueue.main.async {
@@ -87,10 +90,13 @@ class PhotosToAddViewModel: NSObject {
     func clear(removeFromCache: Bool) {
         // remove the photos from local cache if we don't need them, don't wait for completion
         if removeFromCache {
-            photos.forEach {
-                localFiles.removeFile(forKey: $0.mediaKey, completionHandler: nil)
-                if let annotatedMediaKey = $0.annotatedMediaKey {
-                    localFiles.removeFile(forKey: annotatedMediaKey, completionHandler: nil)
+            let photosToRemove = photos
+            Task {
+                for photo in photosToRemove {
+                    await localFiles.removeFileAndThumbnails(forKey: photo.mediaKey)
+                    if let annotatedMediaKey = photo.annotatedMediaKey {
+                        await localFiles.removeFileAndThumbnails(forKey: annotatedMediaKey)
+                    }
                 }
             }
         }
@@ -119,6 +125,7 @@ class PhotosToAddViewModel: NSObject {
         )
 
         try await localFiles.store(data, forKey: mediaKey)
+        try await localFiles.generateAndStoreThumbnails(data, forKey: mediaKey)
 
         return PhotoToAdd(
             assetIdentifier: result.assetIdentifier,

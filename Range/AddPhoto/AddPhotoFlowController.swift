@@ -178,21 +178,22 @@ class AddPhotoFlowController {
         )
 
         // store the image in local cache
-        Task {
+        Task { @MainActor in
             do {
-                try await localFiles.store(data, forKey: mediaKey)
-                DispatchQueue.main.async {
-                    if !UserDefaults.multiPhotoSessionEnabled {
-                        // clear when not multi-photo session
-                        self.photosToAddViewModel.clear(removeFromCache: true)
-                    }
-                    self.photosToAddViewModel.add(photoToAdd)
-
-                    if !UserDefaults.multiPhotoSessionEnabled {
-                        self.nextStepAfterCamera()
-                    }
-                    completion(.success(()))
+                if !UserDefaults.multiPhotoSessionEnabled {
+                    // clear when not multi-photo session
+                    self.photosToAddViewModel.clear(removeFromCache: true)
                 }
+
+                try await localFiles.store(data, forKey: mediaKey)
+                try await localFiles.generateAndStoreThumbnails(data, forKey: mediaKey)
+
+                self.photosToAddViewModel.add(photoToAdd)
+
+                if !UserDefaults.multiPhotoSessionEnabled {
+                    self.nextStepAfterCamera()
+                }
+                completion(.success(()))
             } catch {
                 DispatchQueue.main.async {
                     completion(.failure(error))
@@ -311,6 +312,7 @@ class AddPhotoFlowController {
                     thumbnailNumber: mediaKey.thumbnailNumber
                 )
                 try await localFiles.store(annotatedImageData, forKey: annotatedMediaKey)
+                try await localFiles.generateAndStoreThumbnails(annotatedImageData, forKey: annotatedMediaKey)
                 photosToAddViewModel.setAnnotations(
                     photoAnnotations,
                     annotatedMediaKey: annotatedMediaKey,
@@ -533,6 +535,17 @@ class AddPhotoFlowController {
     /// Async function to store the new photo(s) data in the realm DB
     @MainActor
     private func _storeData() async throws {
+        if UserSettings().saveImagesToDevice {
+            let mediaKeysToSave = photosToAddViewModel.photos
+                .filter { $0.assetIdentifier == nil } // save only photos that are not from camera roll already
+                .map(\.mediaKey)
+            for key in mediaKeysToSave {
+                let localFileURL = localFiles.fileURL(forKey: key)
+                let imageData = try Data(contentsOf: localFileURL)
+                guard let image = UIImage(data: imageData) else { throw "Failed to save image to device" }
+                try await image._writeToSavedPhotosAlbum()
+            }
+        }
         if let geometryId = geometryId {
             try await model.run(model.addPhotos(
                 photosToAddViewModel.photos,

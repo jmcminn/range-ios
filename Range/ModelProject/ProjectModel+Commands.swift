@@ -116,6 +116,7 @@ extension ProjectModel {
                                               fileType: fileType, annotated: false)
 
         try await localFiles.store(data, forKey: mediaKey)
+        try await localFiles.generateAndStoreThumbnails(data, forKey: mediaKey)
         analytics?._trackProjectEvent(name: "media uploaded", self, [
             "mediaType": fileType.rawValue,
         ])
@@ -471,16 +472,7 @@ extension ProjectModel {
         }
         // store annotated image in LocalFiles and schedule upload to Storage
         func storeAnnotatedImageData(_ data: Data) async throws -> MediaKey {
-            // store the info about annotated image in LocalFiles
-            // it has to be done before adding pending upload, as when the file is uploaded
-            // the localStorageVersion will be replaced with the real one so we need the correct
-            // order here
-            try await write { realm in
-                if let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
-                    upload.localStorageVersion.setMainToLocalFile(annotated: true)
-                }
-            }
-            // store annotated image locally
+            // first store annotated image locally
             let annotatedMediaKey = MediaKey.localFilesKey(
                 projectId: projectId,
                 uploadId: upload.id,
@@ -488,6 +480,20 @@ extension ProjectModel {
                 annotated: true
             )
             try await localFiles.store(data, forKey: annotatedMediaKey)
+            // store the thumbnail0, so it doesn't have to be fetched and is ready in offline mode
+            try await localFiles.generateAndStoreThumbnails(data, forKey: annotatedMediaKey)
+
+            // store the info about annotated image in LocalFiles
+            // it has to be done before adding pending upload, as when the file is uploaded
+            // the localStorageVersion will be replaced with the real one so we need the correct
+            // order here
+            // this will trigger the UI updates if listening for Upload changes (so the file needs
+            // to be in LocalFiles already)
+            try await write { realm in
+                if let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
+                    upload.localStorageVersion.setMainToLocalFile(annotated: true)
+                }
+            }
             return annotatedMediaKey
         }
 

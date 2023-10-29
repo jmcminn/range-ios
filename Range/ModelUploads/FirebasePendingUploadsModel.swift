@@ -143,25 +143,9 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     }
 
     /// Assumes the upload file is already in the LocalFiles
-    /// For images it stores the thumb data in the disk cache with given key and creates a `PendingUpload` to upload this image
-    /// to Firebase storage
+    /// Creates a `PendingUpload` to upload this image to Firebase storage
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     func addPendingUpload(forKey key: MediaKey) async throws {
-        if key.fileType.isImage {
-            let localFileURL = localFiles.fileURL(forKey: key)
-            let imageData = try Data(contentsOf: localFileURL)
-            if UserSettings().saveImagesToDevice {
-                guard let image = UIImage(data: imageData) else { throw "Failed to save image to device" }
-                try await image._writeToSavedPhotosAlbum()
-            }
-            // store the thumbnail0, so it doesn;t have to be fetched and is ready in offline mode
-            if let thumbnail0Data = resizeImage(imageData: imageData, maxResolution: _thumbnail0Size) {
-                try await localFiles.store(thumbnail0Data, forKey: key.forThumbnail(0))
-            }
-            if let thumbnail1Data = resizeImage(imageData: imageData, maxResolution: _thumbnail1Size) {
-                try await localFiles.store(thumbnail1Data, forKey: key.forThumbnail(1))
-            }
-        }
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
             let pendingUpload = PendingUpload(key)
             let pendingUploads = realm.objects(PendingUpload.self)
@@ -330,7 +314,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
                     realm.delete(pendingUpload)
                 }
-                await _removeFileFromLocalFiles(forKey: mediaKey)
+                await localFiles.removeFileAndThumbnails(forKey: mediaKey)
             }
 
         } catch {
@@ -365,14 +349,6 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 storeInDiskCache: true
             )
             try await mediaCache.moveFileFromLocalFilesToMediaCache(from: localThumbnailKey, to: storageKey)
-        }
-    }
-
-    private func _removeFileFromLocalFiles(forKey localKey: MediaKey) async {
-        let thumbnails: [Int?] = [nil, 0, 1]
-        for thumbnail in thumbnails {
-            let localThumbnailKey = localKey.forThumbnail(thumbnail)
-            await localFiles.removeFile(forKey: localThumbnailKey)
         }
     }
 }
