@@ -7,23 +7,23 @@ final class MediaKeyTest: XCTestCase {
         /// Upload with main and annotated images in LocalFiles
         let upload = Upload(placeholderId: "u1")
         upload.fileType = .jpeg
-        upload.localStorageVersion.setMainToLocalFile(annotated: false)
-        upload.localStorageVersion.setMainToLocalFile(annotated: true)
+        upload.localStorageVersion.setMainToLocalFile(annotated: false, generation: "1")
+        upload.localStorageVersion.setMainToLocalFile(annotated: true, generation: "1")
 
         /// All media keys are from LocalFiles
         for annotated in [true, false] {
             XCTAssertEqual(
                 MediaKey.mediaKey(projectId: "p1", upload: upload, annotated: annotated),
-                MediaKey.localFilesKey(projectId: "p1", uploadId: "u1", fileType: .jpeg, annotated: annotated)
+                MediaKey.localFilesKey(
+                    projectId: "p1", uploadId: "u1", fileType: .jpeg,
+                    annotated: annotated, storageVersion: "1"
+                )
             )
             XCTAssertEqual(
                 MediaKey.mediaKey(projectId: "p1", upload: upload, annotated: false, thumbnailNumber: 0),
                 MediaKey.localFilesKey(
-                    projectId: "p1",
-                    uploadId: "u1",
-                    fileType: .jpeg,
-                    annotated: false,
-                    thumbnailNumber: 0
+                    projectId: "p1", uploadId: "u1", fileType: .jpeg,
+                    annotated: false, thumbnailNumber: 0, storageVersion: "1"
                 )
             )
         }

@@ -27,7 +27,6 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
     var uploadTags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
-    var mediaKeys: [MediaKey] // to add to pending uploads
 
     init(
         authorId: String,
@@ -44,8 +43,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         tags: [CommandTag] = [],
         uploadTags: [CommandTag] = [],
         uploadDescription: String? = nil,
-        uploads: [CommandUpload] = [],
-        mediaKeys: [MediaKey] = []
+        uploads: [CommandUpload] = []
     ) {
         self.authorId = authorId
         self.canvasId = canvasId
@@ -62,7 +60,6 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         self.uploadTags = uploadTags
         self.uploadDescription = uploadDescription
         self.uploads = uploads
-        self.mediaKeys = mediaKeys
     }
 }
 
@@ -120,16 +117,16 @@ extension CreateCollaborationCommand: LocalCommand {
             // After the file is uploaded this will be replaced with the real storage version from
             // backend. Pending uploads wait for the Upload object to be created (fail while it's not there)
             // so it's guaranteed that this will be set BEFORE the real value.
-            localStorageVersion.setMainToLocalFile(annotated: false)
-            if $0.annotations != nil {
-                localStorageVersion.setMainToLocalFile(annotated: true)
+            localStorageVersion.setMainToLocalFile(annotated: false, generation: $0.mediaKey.storageVersion)
+            if let annotatedMediaKey = $0.annotatedMediaKey {
+                localStorageVersion.setMainToLocalFile(annotated: true, generation: annotatedMediaKey.storageVersion)
             }
             let upload = Upload(
-                id: $0.id,
+                id: $0.mediaKey.uploadId,
                 timestamp: Date.now,
                 name: $0.name,
                 description: uploadDescription,
-                correlationId: $0.id,
+                correlationId: $0.mediaKey.uploadId,
                 fileType: .jpeg,
                 imageHeightToWidth: $0.imageHeightToWidth,
                 fileSize: $0.fileSize,
@@ -154,8 +151,11 @@ extension CreateCollaborationCommand: LocalCommand {
 /// Add pending uploads for all the media keys
 extension CreateCollaborationCommand: PendingUploadCommand {
     func addPendingUploads(_ pendingUploadsModel: PendingUploadsModel) async throws {
-        for mediaKey in mediaKeys {
-            try await pendingUploadsModel.addPendingUpload(forKey: mediaKey)
+        for upload in uploads {
+            try await pendingUploadsModel.addPendingUpload(forKey: upload.mediaKey)
+            if let annotatedMediaKey = upload.annotatedMediaKey {
+                try await pendingUploadsModel.addPendingUpload(forKey: annotatedMediaKey)
+            }
         }
     }
 }
@@ -192,7 +192,7 @@ extension CreateCollaborationCommand: FirestoreCommand {
 
         // make it idempotent, only upload if not uploaded yet (this check is too granular, as
         // if any upload is there it means all are there but still it's correct)
-        let newUploads = try uploads.filter { try !ctx.exists(.upload($0.id)) }
+        let newUploads = try uploads.filter { try !ctx.exists(.upload($0.mediaKey.uploadId)) }
 
         // ------------- WRITES ----------------
         if createGeometry {
@@ -240,7 +240,7 @@ extension CreateCollaborationCommand: FirestoreCommand {
                 timestamp: Timestamp(), // doesn't matter, updated to server timestamp after encoding
                 name: $0.name,
                 uploadDescription: uploadDescription,
-                correlationId: $0.id,
+                correlationId: $0.mediaKey.uploadId,
                 tagIds: uploadTagIds,
                 fileTypeString: Upload.FileType.jpeg.rawValue,
                 imageHeightToWidth: $0.imageHeightToWidth,
@@ -249,7 +249,7 @@ extension CreateCollaborationCommand: FirestoreCommand {
             )
             var data = try Firestore.Encoder().encode(firestoreObject)
             data[FirestoreUpdate.CodingKeys.timestamp.rawValue] = FieldValue.serverTimestamp()
-            ctx.setData(data, forDocument: .upload($0.id))
+            ctx.setData(data, forDocument: .upload($0.mediaKey.uploadId))
         }
     }
 }

@@ -162,7 +162,7 @@ class AddPhotoFlowController {
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         let uploadId = generateRealmId()
-        let mediaKey = MediaKey.localFilesKey(
+        let mediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(
             projectId: model.projectId,
             uploadId: uploadId,
             fileType: .jpeg,
@@ -304,7 +304,7 @@ class AddPhotoFlowController {
                     annotatedImageData = imageData
                 }
                 // store annotated image locally and add to pending uploads
-                let annotatedMediaKey = MediaKey.localFilesKey(
+                let annotatedMediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(
                     projectId: mediaKey.projectId,
                     uploadId: mediaKey.uploadId,
                     fileType: mediaKey.fileType,

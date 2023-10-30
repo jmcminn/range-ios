@@ -117,7 +117,7 @@ class PhotosToAddViewModel: NSObject {
             throw CameraRollError.thumbnailGenerationFailed
         }
         let uploadId = generateRealmId()
-        let mediaKey = MediaKey.localFilesKey(
+        let mediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(
             projectId: projectId,
             uploadId: uploadId,
             fileType: .jpeg,

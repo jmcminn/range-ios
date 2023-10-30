@@ -95,15 +95,12 @@ extension ProjectModel {
             ])
         }
 
-        let mediaKeys = photosToAdd.map(\.mediaKey) + photosToAdd.compactMap(\.annotatedMediaKey)
-
         return AddUploadsToCollaborationCommand(
             authorId: userId,
             collaborationId: collaboration.id,
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: description,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
-            mediaKeys: mediaKeys
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
         )
     }
 
@@ -112,8 +109,8 @@ extension ProjectModel {
                   toCollaboration collaboration: Collaboration) async throws -> Command
     {
         let uploadId = generateRealmId()
-        let mediaKey = MediaKey.localFilesKey(projectId: projectId, uploadId: uploadId,
-                                              fileType: fileType, annotated: false)
+        let mediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(projectId: projectId, uploadId: uploadId,
+                                                                    fileType: fileType, annotated: false)
 
         try await localFiles.store(data, forKey: mediaKey)
         try await localFiles.generateAndStoreThumbnails(data, forKey: mediaKey)
@@ -125,8 +122,7 @@ extension ProjectModel {
             authorId: userId,
             collaborationId: collaboration.id,
             tags: [],
-            uploads: [CommandUpload(id: uploadId, fileType: fileType, fileSize: Int64(data.count), name: name)],
-            mediaKeys: [mediaKey]
+            uploads: [CommandUpload(mediaKey: mediaKey, fileSize: Int64(data.count), name: name)]
         )
     }
 
@@ -189,8 +185,6 @@ extension ProjectModel {
             status = initialStatus
         }
 
-        let mediaKeys = photosToAdd.map(\.mediaKey) + photosToAdd.compactMap(\.annotatedMediaKey)
-
         return CreateCollaborationCommand(
             authorId: userId,
             canvasId: canvas.id,
@@ -204,8 +198,7 @@ extension ProjectModel {
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadTags: uploadTags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: uploadDescription,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
-            mediaKeys: mediaKeys
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
         )
     }
 
@@ -473,7 +466,7 @@ extension ProjectModel {
         // store annotated image in LocalFiles and schedule upload to Storage
         func storeAnnotatedImageData(_ data: Data) async throws -> MediaKey {
             // first store annotated image locally
-            let annotatedMediaKey = MediaKey.localFilesKey(
+            let annotatedMediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(
                 projectId: projectId,
                 uploadId: upload.id,
                 fileType: upload.fileType,
@@ -491,7 +484,10 @@ extension ProjectModel {
             // to be in LocalFiles already)
             try await write { realm in
                 if let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
-                    upload.localStorageVersion.setMainToLocalFile(annotated: true)
+                    upload.localStorageVersion.setMainToLocalFile(
+                        annotated: true,
+                        generation: annotatedMediaKey.storageVersion
+                    )
                 }
             }
             return annotatedMediaKey

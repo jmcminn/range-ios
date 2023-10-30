@@ -7,25 +7,27 @@ import XCTest
 
 /// Tests applying `CreateCollaborationCommand` in local Realm db
 final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
-    let command = CreateCollaborationCommand(
-        authorId: "user1",
-        canvasId: "canvas1",
-        geometryId: "geometry1",
-        featureId: "feature1",
-        collaborationId: "collaboration1",
-        coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-        name: "name",
-        collaborationDescription: "description",
-        assigneeId: "user2",
-        dueDateTimestamp: Date(timeIntervalSince1970: 100),
-        tags: [.init(id: "tag3", name: "tag 3")],
-        uploadTags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
-        uploadDescription: "upload description",
-        uploads: [
-            .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
-            .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
-        ]
-    )
+    var command: CreateCollaborationCommand {
+        CreateCollaborationCommand(
+            authorId: "user1",
+            canvasId: "canvas1",
+            geometryId: "geometry1",
+            featureId: "feature1",
+            collaborationId: "collaboration1",
+            coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
+            name: "name",
+            collaborationDescription: "description",
+            assigneeId: "user2",
+            dueDateTimestamp: Date(timeIntervalSince1970: 100),
+            tags: [.init(id: "tag3", name: "tag 3")],
+            uploadTags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
+            uploadDescription: "upload description",
+            uploads: [
+                .init(mediaKey: _mediaKey(uploadId: "upload1"), fileSize: 1024, imageHeightToWidth: 1.0),
+                .init(mediaKey: _mediaKey(uploadId: "upload2"), fileSize: 1024, imageHeightToWidth: 2.0),
+            ]
+        )
+    }
 
     func testApply_noCanvas() throws {
         XCTAssertThrowsError(
@@ -139,25 +141,29 @@ final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
 
 /// Tests applying `CreateCollaborationCommand` in to Firestore (using a mock for FirestoreCommandContext)
 final class CreateCollaborationCommandFirestoreTest: XCTestCase {
-    let command = CreateCollaborationCommand(
-        authorId: "user1",
-        canvasId: "canvas1",
-        geometryId: "geometry1",
-        featureId: "feature1",
-        collaborationId: "collaboration1",
-        coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
-        name: "name",
-        collaborationDescription: "description",
-        assigneeId: "user2",
-        dueDateTimestamp: Date(timeIntervalSince1970: 100),
-        tags: [.init(id: "tag3", name: "tag 3")],
-        uploadTags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
-        uploadDescription: "upload description",
-        uploads: [
-            .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
-            .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
-        ]
-    )
+    var command: CreateCollaborationCommand {
+        CreateCollaborationCommand(
+            authorId: "user1",
+            canvasId: "canvas1",
+            geometryId: "geometry1",
+            featureId: "feature1",
+            collaborationId: "collaboration1",
+            coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
+            name: "name",
+            collaborationDescription: "description",
+            assigneeId: "user2",
+            dueDateTimestamp: Date(timeIntervalSince1970: 100),
+            tags: [.init(id: "tag3", name: "tag 3")],
+            uploadTags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
+            uploadDescription: "upload description",
+            uploads: [
+                .init(mediaKey: _mediaKey(projectId: "p1", uploadId: "upload1"),
+                      fileSize: 1024, imageHeightToWidth: 1.0),
+                .init(mediaKey: _mediaKey(projectId: "p1", uploadId: "upload2"),
+                      fileSize: 1024, imageHeightToWidth: 2.0),
+            ]
+        )
+    }
 
     func testApply_noCanvas() throws {
         // no data exists

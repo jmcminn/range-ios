@@ -428,6 +428,7 @@
 		0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */; };
 		0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
+		0AE883AB2AEFBEDC004992BA /* XCTestCase+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */; };
 		0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF11C972AA5C8C00022D44D /* GrayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF11C962AA5C8C00022D44D /* GrayButton.swift */; };
@@ -893,6 +894,7 @@
 		0ADC183C29633E70007A59CA /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
 		0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyTest.swift; sourceTree = "<group>"; };
+		0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Factory.swift"; sourceTree = "<group>"; };
 		0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPinTypeCardViewController.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF11C962AA5C8C00022D44D /* GrayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayButton.swift; sourceTree = "<group>"; };
@@ -1125,6 +1127,7 @@
 			children = (
 				0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */,
 				0A130EAD28D8A2FC00FF1368 /* DateFormattingTest.swift */,
+				0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2612,6 +2615,7 @@
 			files = (
 				0A82A8EE292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift in Sources */,
 				0A37837E291C08580018BF3C /* AddUploadsToCollaborationCommandTest.swift in Sources */,
+				0AE883AB2AEFBEDC004992BA /* XCTestCase+Factory.swift in Sources */,
 				0A26CC3B2A6971DE004C6DFC /* ProjectModelTestCase.swift in Sources */,
 				0A130EAE28D8A2FC00FF1368 /* DateFormattingTest.swift in Sources */,
 				0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */,

@@ -19,19 +19,20 @@ struct MediaKey: CustomStringConvertible, Equatable, Codable {
     let annotated: Bool
     /// optional thumbnail number (main file if nil)
     private(set) var thumbnailNumber: Int?
-    /// Storage version (required for MediaCache, nil for LocalFiles)
-    let storageVersion: String?
+    /// Storage version
+    let storageVersion: String
     /// Flag to decide if the file should be stored in disk cache (for backward compatibility we may have files that have no storageVersion,
     /// we still want to display them, but we'll store them in memory cache only, as disk cache is storageVersion based)
     /// Only for MediaCache keys (isFromLocalFiles = false)
     let storeInDiskCache: Bool
     /// Is the file from LocalFiles (true) or MediaCache (false)
-    var isFromLocalFiles: Bool { storageVersion == nil }
+    let isFromLocalFiles: Bool
     /// cache key needs the extension so the files are stored with extension and can be opened by QuickLook
     var cacheKey: String {
-        if let storageVersion = storageVersion {
+        if !storageVersion.isEmpty {
             return "\(storagePath).\(storageVersion).\(fileType.rawValue)"
         } else {
+            // backward compatibility for local files stored with no storageVersion
             return "\(storagePath).\(fileType.rawValue)"
         }
     }
@@ -52,8 +53,9 @@ struct MediaKey: CustomStringConvertible, Equatable, Codable {
         fileType: Upload.FileType,
         annotated: Bool,
         thumbnailNumber: Int? = nil,
-        storageVersion: String?,
-        storeInDiskCache: Bool
+        storageVersion: String,
+        storeInDiskCache: Bool,
+        isFromLocalFiles: Bool
     ) {
         self.projectId = projectId
         self.uploadId = uploadId
@@ -62,6 +64,7 @@ struct MediaKey: CustomStringConvertible, Equatable, Codable {
         self.thumbnailNumber = thumbnailNumber
         self.storageVersion = storageVersion
         self.storeInDiskCache = storeInDiskCache
+        self.isFromLocalFiles = isFromLocalFiles
     }
 
     /// Create a copy for different thumbnail
@@ -80,7 +83,30 @@ struct MediaKey: CustomStringConvertible, Equatable, Codable {
 /// Factory functions
 extension MediaKey {
     /// Create MediaKey for LocalFiles access
+    /// This function is meant to be used for accessing existing local files, so the storage version is required (to be read from Upload.localStorageVersion)
     static func localFilesKey(
+        projectId: String,
+        uploadId: String,
+        fileType: Upload.FileType,
+        annotated: Bool,
+        thumbnailNumber: Int? = nil,
+        storageVersion: String
+    ) -> MediaKey {
+        MediaKey(
+            projectId: projectId,
+            uploadId: uploadId,
+            fileType: fileType,
+            annotated: annotated,
+            thumbnailNumber: thumbnailNumber,
+            storageVersion: storageVersion,
+            storeInDiskCache: false,
+            isFromLocalFiles: true
+        )
+    }
+
+    /// Create MediaKey for LocalFiles access
+    /// This function is meant to be used for newly created files that are about to be saved in local files, so the storage version is generated
+    static func localFilesKeyWithAutoStorageVersion(
         projectId: String,
         uploadId: String,
         fileType: Upload.FileType,
@@ -93,8 +119,9 @@ extension MediaKey {
             fileType: fileType,
             annotated: annotated,
             thumbnailNumber: thumbnailNumber,
-            storageVersion: nil,
-            storeInDiskCache: false
+            storageVersion: "\(Int64(Date().timeIntervalSince1970 * 1000))",
+            storeInDiskCache: false,
+            isFromLocalFiles: true
         )
     }
 
@@ -116,7 +143,8 @@ extension MediaKey {
             annotated: annotated,
             thumbnailNumber: thumbnailNumber,
             storageVersion: storageVersion,
-            storeInDiskCache: storeInDiskCache
+            storeInDiskCache: storeInDiskCache,
+            isFromLocalFiles: false
         )
     }
 
@@ -174,12 +202,14 @@ extension MediaKey {
         if let localStorageVersion = upload.localStorageVersion.getMain(annotated: annotated),
            _isStorageVersionLocalFile(version: localStorageVersion)
         {
+            let generation = _getLocalFileStorageVersionGeneration(version: localStorageVersion)
             return localFilesKey(
                 projectId: projectId,
                 uploadId: upload.id,
                 fileType: upload.fileType,
                 annotated: annotated,
-                thumbnailNumber: thumbnailNumber
+                thumbnailNumber: thumbnailNumber,
+                storageVersion: generation
             )
         }
 

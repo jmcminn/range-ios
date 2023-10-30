@@ -5,17 +5,18 @@ import XCTest
 
 /// Tests applying `AddUploadsToCollaborationCommand` in local Realm db
 final class AddUploadsToCollaborationCommandRealmTest: ProjectModelTestCase {
-    let command = AddUploadsToCollaborationCommand(
-        authorId: "user1",
-        collaborationId: "collaboration1",
-        tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
-        uploadDescription: "upload description",
-        uploads: [
-            .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
-            .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
-        ],
-        mediaKeys: []
-    )
+    var command: AddUploadsToCollaborationCommand {
+        AddUploadsToCollaborationCommand(
+            authorId: "user1",
+            collaborationId: "collaboration1",
+            tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
+            uploadDescription: "upload description",
+            uploads: [
+                .init(mediaKey: _mediaKey(uploadId: "upload1"), fileSize: 1024, imageHeightToWidth: 1.0),
+                .init(mediaKey: _mediaKey(uploadId: "upload2"), fileSize: 1024, imageHeightToWidth: 2.0),
+            ]
+        )
+    }
 
     func testApply_noCollaboration() throws {
         XCTAssertThrowsError(
@@ -83,17 +84,20 @@ final class AddUploadsToCollaborationCommandRealmTest: ProjectModelTestCase {
 
 /// Tests applying `AddUploadsToCollaborationCommand` in to Firestore (using a mock for FirestoreCommandContext)
 final class AddUploadsToCollaborationCommandFirestoreTest: XCTestCase {
-    let command = AddUploadsToCollaborationCommand(
-        authorId: "user1",
-        collaborationId: "collaboration1",
-        tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
-        uploadDescription: "upload description",
-        uploads: [
-            .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.0),
-            .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 2.0),
-        ],
-        mediaKeys: []
-    )
+    var command: AddUploadsToCollaborationCommand {
+        AddUploadsToCollaborationCommand(
+            authorId: "user1",
+            collaborationId: "collaboration1",
+            tags: [.init(id: "tag1", name: "tag 1"), .init(id: "tag2", name: "tag 2")],
+            uploadDescription: "upload description",
+            uploads: [
+                .init(mediaKey: _mediaKey(projectId: "p1", uploadId: "upload1"),
+                      fileSize: 1024, imageHeightToWidth: 1.0),
+                .init(mediaKey: _mediaKey(projectId: "p1", uploadId: "upload2"),
+                      fileSize: 1024, imageHeightToWidth: 2.0),
+            ]
+        )
+    }
 
     func testApply_noCollaboration() throws {
         // no data exists

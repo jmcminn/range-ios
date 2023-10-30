@@ -79,8 +79,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
             isTask: false,
             photosToAdd: [PhotoToAdd(
                 timestamp: Date(timeIntervalSince1970: 1234),
-                mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
-                                                 fileType: .jpeg, annotated: false),
+                mediaKey: _mediaKey(uploadId: "upload1"),
                 thumbnail: UIImage(),
                 height2Width: 1, fileSize: 1024
             )],
@@ -99,9 +98,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
             coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
             uploadTags: [.init(id: "tag1", name: "tag 1")],
             uploadDescription: "upload description",
-            uploads: [.init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1)],
-            mediaKeys: [.localFilesKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg,
-                                       annotated: false)]
+            uploads: [.init(mediaKey: _mediaKey(uploadId: "upload1"), fileSize: 1024, imageHeightToWidth: 1)]
         ))
     }
 
@@ -111,8 +108,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         do {
             _ = try await model.addPhotos(
                 [PhotoToAdd(timestamp: Date.now,
-                            mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
-                                                             fileType: .jpeg, annotated: false),
+                            mediaKey: _mediaKey(uploadId: "upload1"),
                             thumbnail: UIImage(),
                             height2Width: 1, fileSize: 1024)],
                 tags: [],
@@ -143,8 +139,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         do {
             _ = try await model.addPhotos(
                 [PhotoToAdd(timestamp: Date.now,
-                            mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
-                                                             fileType: .jpeg, annotated: false),
+                            mediaKey: _mediaKey(uploadId: "upload1"),
                             thumbnail: UIImage(),
                             height2Width: 1, fileSize: 1024)],
                 tags: [], description: "", toCollaborationForGeometryId: "geometry1"
@@ -177,8 +172,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         do {
             _ = try await model.addPhotos(
                 [PhotoToAdd(timestamp: Date.now,
-                            mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
-                                                             fileType: .jpeg, annotated: false),
+                            mediaKey: _mediaKey(uploadId: "upload1"),
                             thumbnail: UIImage(),
                             height2Width: 1, fileSize: 1024)],
                 tags: [],
@@ -214,21 +208,18 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         let command = try await model.addPhotos(
             [
                 PhotoToAdd(timestamp: Date(timeIntervalSince1970: 1234),
-                           mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload1",
-                                                            fileType: .jpeg, annotated: false),
+                           mediaKey: _mediaKey(uploadId: "upload1"),
                            thumbnail: UIImage(),
                            height2Width: 1, fileSize: 1024),
                 PhotoToAdd(
                     timestamp: Date(timeIntervalSince1970: 1235),
-                    mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload2",
-                                                     fileType: .jpeg, annotated: false),
+                    mediaKey: _mediaKey(uploadId: "upload2"),
                     thumbnail: UIImage(),
                     height2Width: 1.2, fileSize: 1024
                 ),
                 PhotoToAdd(
                     timestamp: Date(timeIntervalSince1970: 1236),
-                    mediaKey: MediaKey.localFilesKey(projectId: model.projectId, uploadId: "upload3",
-                                                     fileType: .jpeg, annotated: false),
+                    mediaKey: _mediaKey(uploadId: "upload3"),
                     thumbnail: UIImage(),
                     height2Width: 1.3, fileSize: 1024
                 ),
@@ -243,14 +234,9 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
             tags: [.init(id: "tag1", name: "tag 1")],
             uploadDescription: "upload description",
             uploads: [
-                .init(id: "upload1", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1),
-                .init(id: "upload2", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.2),
-                .init(id: "upload3", fileType: .jpeg, fileSize: 1024, imageHeightToWidth: 1.3),
-            ],
-            mediaKeys: [
-                .localFilesKey(projectId: model.projectId, uploadId: "upload1", fileType: .jpeg, annotated: false),
-                .localFilesKey(projectId: model.projectId, uploadId: "upload2", fileType: .jpeg, annotated: false),
-                .localFilesKey(projectId: model.projectId, uploadId: "upload3", fileType: .jpeg, annotated: false),
+                .init(mediaKey: _mediaKey(uploadId: "upload1"), fileSize: 1024, imageHeightToWidth: 1),
+                .init(mediaKey: _mediaKey(uploadId: "upload2"), fileSize: 1024, imageHeightToWidth: 1.2),
+                .init(mediaKey: _mediaKey(uploadId: "upload3"), fileSize: 1024, imageHeightToWidth: 1.3),
             ]
         ))
     }

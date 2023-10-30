@@ -25,35 +25,35 @@ struct CommandTag: Codable, Equatable {
 
 /// `Upload` data required for upload creation
 struct CommandUpload: Codable, Equatable {
-    var id: String
-    var fileType: Upload.FileType
+    var mediaKey: MediaKey
     var fileSize: Int64
     var name: String?
     var imageHeightToWidth: Double?
+    var annotatedMediaKey: MediaKey?
     var annotations: Annotations?
 
     init(
-        id: String,
-        fileType: Upload.FileType,
+        mediaKey: MediaKey,
         fileSize: Int64,
         name: String? = nil,
         imageHeightToWidth: Double? = nil,
+        annotatedMediaKey: MediaKey? = nil,
         annotations: Annotations? = nil
     ) {
-        self.id = id
-        self.fileType = fileType
+        self.mediaKey = mediaKey
         self.fileSize = fileSize
         self.name = name
         self.imageHeightToWidth = imageHeightToWidth
+        self.annotatedMediaKey = annotatedMediaKey
         self.annotations = annotations
     }
 
     init(fromPhotoToAdd photoToAdd: PhotoToAdd) {
-        id = photoToAdd.mediaKey.uploadId
-        fileType = photoToAdd.mediaKey.fileType
+        mediaKey = photoToAdd.mediaKey
         fileSize = photoToAdd.fileSize
         name = photoToAdd.fileName
         imageHeightToWidth = photoToAdd.height2Width
+        annotatedMediaKey = photoToAdd.annotatedMediaKey
         annotations = photoToAdd.annotations
     }
 }

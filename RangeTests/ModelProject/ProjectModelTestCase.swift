@@ -24,4 +24,8 @@ class ProjectModelTestCase: XCTestCase {
         )
         realm = model.mainRealm
     }
+
+    func _mediaKey(uploadId: String) -> MediaKey {
+        _mediaKey(projectId: model.projectId, uploadId: uploadId)
+    }
 }

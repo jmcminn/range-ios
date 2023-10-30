@@ -6,6 +6,11 @@ func _isStorageVersionLocalFile(version: String) -> Bool {
     version.starts(with: "localFile")
 }
 
+/// Assuming that it's a local file storage version, return the generation (after the "localFile_" prefix)
+func _getLocalFileStorageVersionGeneration(version: String) -> String {
+    String(version.dropFirst("localFile_".count))
+}
+
 /// Utilities for Upload.storageVersion
 extension Map<String, String> {
     func updateFromFirestore(_ storageVersion: [String: String]?) {
@@ -36,8 +41,7 @@ extension Map<String, String> {
 
     /// Sets the main value as a `localFile_<generation>`  where `localFile` is a prefix meaning that this file is in LocalFiles
     /// and generation is a locally generated `generation` (a timestamp)
-    func setMainToLocalFile(annotated: Bool) {
-        let generation = Int64(Date().timeIntervalSince1970 * 1000)
+    func setMainToLocalFile(annotated: Bool, generation: String) {
         setValue("localFile_\(generation)", forKey: annotated ? "annotated" : "main")
     }
 

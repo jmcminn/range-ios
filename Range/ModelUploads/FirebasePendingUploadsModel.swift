@@ -76,7 +76,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         if inMemory {
             config.inMemoryIdentifier = "pendingUploads"
         } else {
-            config.schemaVersion = 3
+            config.schemaVersion = 4
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("pendingUploads")
             config.fileURL!.appendPathExtension("realm")
@@ -107,6 +107,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         }
 
         // version 3 adds 'PendingUpload.annotated'
+        // v4 adds PendingUpload.storageVersion?
     }
 
     /// Starts synchronization - observes all relevant paths and updates the db.
@@ -154,11 +155,23 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
             let pendingUpload = PendingUpload(key)
             let pendingUploads = realm.objects(PendingUpload.self)
-            if pendingUploads.contains(where: { $0 == pendingUpload }) {
-                Logger.storage.debug(
-                    "Pending upload for uploadId \(pendingUpload.uploadId) is already in pending uploads, ignore."
-                )
-                return
+
+            // Potentially drop any previous pending uploads for the same file.
+            // So if we have mulitple pending uploads for an Upload annotations only the most recent
+            // will be processed.
+            // Annotated and not annotated versions don't collide, they are different from the pendingUpload
+            // equality point of view.
+            for upload in pendingUploads {
+                if upload == pendingUpload {
+                    Logger.storage.debug(
+                        "Dropping pending upload for uploadId \(upload.uploadId) as a new version is added to pending uploads."
+                    )
+                    let mediaKeyToDropFromLocalFiles = upload.mediaKey
+                    Task { [weak self] in
+                        await self?.localFiles.removeFileAndThumbnails(forKey: mediaKeyToDropFromLocalFiles)
+                    }
+                    realm.delete(upload)
+                }
             }
             realm.add(pendingUpload)
             self.writeQueue.async {
@@ -369,7 +382,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 annotated: localKey.annotated,
                 thumbnailNumber: thumbnail,
                 storageVersion: storageVersion,
-                storeInDiskCache: true
+                storeInDiskCache: true,
+                isFromLocalFiles: false
             )
             try await mediaCache.moveFileFromLocalFilesToMediaCache(from: localThumbnailKey, to: storageKey)
         }
