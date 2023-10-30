@@ -7,6 +7,7 @@ import Network
 import OSLog
 import Realm
 import RealmSwift
+import Sentry
 import UIKit
 
 /// Manages the PendingUploads and schedules them for upload to Firebase Storage using the `_maybePerformUpload` function.
@@ -52,6 +53,10 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
 
     /// whether this is the first upload after start
     var firstUpload = true
+
+    enum PendingUploadsError: Error {
+        case localFileNotFound
+    }
 
     /// Initializes the pending uploads model
     /// - Parameters:
@@ -255,7 +260,25 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             pendingUpload.mediaKey
         }
         let uploadRef = mediaCache.storage.reference(withPath: mediaKey.storagePath)
+
+        guard localFiles.hasFile(forKey: mediaKey) else {
+            Logger.storage.error("File not found for pending upload \(mediaKey, privacy: .public), aborting!")
+            // remove the pending upload
+            try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
+                realm.delete(pendingUpload)
+            }
+            SentrySDK.capture(error: PendingUploadsError.localFileNotFound) { scope in
+                scope.setExtras([
+                    "projectId": mediaKey.projectId,
+                    "uploadId": mediaKey.uploadId,
+                    "annotated": mediaKey.annotated,
+                ])
+            }
+            return
+        }
+
         let cacheFileURL = localFiles.fileURL(forKey: mediaKey)
+
         let metadata = StorageMetadata()
         metadata.contentType = mediaKey.fileType.mimeType
         // never expires = 1 year as advised by the standard: https://stackoverflow.com/a/25201898
