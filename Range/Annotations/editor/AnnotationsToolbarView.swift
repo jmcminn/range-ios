@@ -26,7 +26,7 @@ struct AnnotationsToolbarView: View {
             )
     }
 
-    private var scribbleButton: some View {
+    private var scribbleToolButton: some View {
         Button(action: { model.toggleScribbleMode() }) {
             Circle()
                 .strokeBorder(model.scribbleMode ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
@@ -35,6 +35,18 @@ struct AnnotationsToolbarView: View {
                 .overlay(Image(systemName: "scribble")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundColor(model.scribbleMode ? .Special_02 : .Neutral_01))
+        }.buttonStyle(.plain)
+    }
+
+    private var textToolButton: some View {
+        Button(action: { model.insertTextAnnotation() }) {
+            Circle()
+                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 48, height: 48)
+                .overlay(Image(systemName: "character.textbox")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(.Neutral_01))
         }.buttonStyle(.plain)
     }
 
@@ -145,7 +157,11 @@ struct AnnotationsToolbarView: View {
     var body: some View {
         VStack {
             HStack(spacing: 4) {
-                scribbleButton
+                scribbleToolButton
+                if model.selectedAnnotation == nil, !model.scribbleMode {
+                    Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
+                    textToolButton
+                }
                 if model.selectedAnnotation != nil || model.scribbleMode {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
                     scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {

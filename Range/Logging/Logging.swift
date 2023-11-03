@@ -6,6 +6,8 @@ extension Logger {
     /// subsystem to be used by all loggers in the app
     private static var subsystem = Bundle.main.bundleIdentifier!
 
+    /// photo annotations related logs
+    static let annotations = Logger(subsystem: subsystem, category: "annotations")
     /// App assets related logs (errors loading images)
     static let assets = Logger(subsystem: subsystem, category: "assets")
     /// authentication logs

@@ -27,7 +27,7 @@ class AnnotationsEditor: NSObject {
 
     // whether the annotations are installed in the host view and ready to be edited
     @objc dynamic var installed: Bool = false
-    @objc dynamic var selectedAnnotation: ScribbleViewModel?
+    @objc dynamic var selectedAnnotation: AnnotationViewModel?
     /// remember the origin of selected annotation when dragging begins (so it can be translated while dragging)
     var dragAnnotationOrigin: CGPoint?
 
@@ -37,9 +37,8 @@ class AnnotationsEditor: NSObject {
     var currentScribblingView: ScribblingView?
 
     /// order in this dictionary is the order of annotations rendering, so last is on top
-    private var annotationsViews = OrderedDictionary<ScribbleViewModel, UIView>()
-    /// for fast annotation lookup (if it's part of this editor)
-    private var annotationsIds = Set<String>()
+    private var annotationViewModels = OrderedDictionary<String, AnnotationViewModel>()
+    private var annotationViews = OrderedDictionary<String, UIView>()
 
     /// Combine listeners for viewModel
     private var subscriptions = Set<AnyCancellable>()
@@ -112,12 +111,12 @@ class AnnotationsEditor: NSObject {
         // show the initial annotations
         if let initialAnnotations = initialAnnotations {
             for annotation in initialAnnotations.annotations {
+                // copy so we don't change the initial annotations (the initial values should not be
+                // changed as we need them to compare new state vs initial, changing them would also
+                // break the "cancel" functionality of the annotations editor)
                 switch annotation {
-                case let .scribble(scribble):
-                    // copy so we don't change the initial annotations (the initial values should not be
-                    // changed as we need them to compare new state vs initial, changing them would also
-                    // break the "cancel" functionality of the annotations editor)
-                    addScribble(scribble.copy() as! ScribbleAnnotation)
+                case let .scribble(scribble): addScribble(scribble.copy() as! ScribbleAnnotation)
+                case let .text(text): addText(text.copy() as! TextAnnotation)
                 }
             }
         }
@@ -143,8 +142,8 @@ class AnnotationsEditor: NSObject {
 
         let scribbleView = ScribbleView(viewModel: scribbleVM)
 
-        annotationsViews[scribbleVM] = scribbleView
-        annotationsIds.insert(scribble.id)
+        annotationViewModels[scribble.id] = scribbleVM
+        annotationViews[scribble.id] = scribbleView
 
         annotationsContainerView.addSubview(scribbleView)
         scribbleView.frame = scribbleVM.viewBounds
@@ -153,12 +152,16 @@ class AnnotationsEditor: NSObject {
         checkAnnotationsUpdated()
     }
 
-    func deleteAnnotation(_ annotation: ScribbleViewModel) {
-        if let view = annotationsViews[annotation] {
+    private func addText(_: TextAnnotation) {
+        // TODO: 1981
+    }
+
+    func deleteAnnotation(_ annotation: AnnotationViewModel) {
+        if let view = annotationViews[annotation.id] {
             view.removeFromSuperview()
         }
-        annotationsViews[annotation] = nil
-        annotationsIds.remove(annotation.scribble.id)
+        annotationViewModels[annotation.id] = nil
+        annotationViews[annotation.id] = nil
         if annotation == selectedAnnotation {
             setSelected(nil)
         }
@@ -168,7 +171,7 @@ class AnnotationsEditor: NSObject {
 
     @objc private func checkAnnotationsUpdated() {
         let initialAnnotations = initialAnnotations?.annotations ?? []
-        let currentAnnotations = annotationsViews.keys.map(\.annotation)
+        let currentAnnotations = annotationViewModels.values.map(\.annotation)
         annotationsUpdated = initialAnnotations != currentAnnotations
     }
 }
@@ -182,14 +185,14 @@ extension AnnotationsEditor {
         let imageHeight = image.size.height
         guard imageWidth > 0, imageHeight > 0 else { return nil }
 
-        if annotationsViews.isEmpty {
+        if annotationViewModels.isEmpty {
             return nil
         } else {
             return Annotations(
                 width: Int(imageWidth),
                 height: Int(imageHeight),
                 scale: scale,
-                annotationsViews.keys.map(\.annotation)
+                annotationViewModels.values.map(\.annotation)
             )
         }
     }
@@ -242,10 +245,10 @@ extension AnnotationsEditor {
         // find tapped annotation
         let location = gesture.location(in: view)
         // strictly contains the tap location
-        var tappedAnnotations = annotationsViews.keys.filter { $0.containsTapLocation(location) }
+        var tappedAnnotations = annotationViewModels.values.filter { $0.containsTapLocation(location) }
         if tappedAnnotations.isEmpty {
             // fallback to "rough containment"
-            tappedAnnotations = annotationsViews.keys.filter { $0.roughlyContainsTapLocation(location) }
+            tappedAnnotations = annotationViewModels.values.filter { $0.roughlyContainsTapLocation(location) }
         }
 
         if tappedAnnotations.count == 0 {
@@ -265,18 +268,18 @@ extension AnnotationsEditor {
     }
 
     /// select given annotation or deselect if nil
-    func setSelected(_ selectedAnnotation: ScribbleViewModel?) {
+    func setSelected(_ selectedAnnotation: AnnotationViewModel?) {
         self.selectedAnnotation = selectedAnnotation
-        for annotation in annotationsViews.keys {
+        for annotation in annotationViewModels.values {
             annotation.selected = annotation == selectedAnnotation
         }
         // the selected annotation should be on top
         if let selectedAnnotation = selectedAnnotation {
-            // change the order in annotations dictionary
-            if let annotationView = annotationsViews.removeValue(forKey: selectedAnnotation) {
-                annotationsViews[selectedAnnotation] = annotationView
+            // change the order in annotation view models
+            if let annotation = annotationViewModels.removeValue(forKey: selectedAnnotation.id) {
+                annotationViewModels[annotation.id] = annotation
                 // move the view to the top
-                annotationsContainerView.bringSubviewToFront(annotationView)
+                annotationsContainerView.bringSubviewToFront(annotationViews[annotation.id]!)
             }
         }
         checkAnnotationsUpdated()
@@ -306,7 +309,7 @@ extension AnnotationsEditor: UIGestureRecognizerDelegate {
         if let dragAnnotationOrigin = dragAnnotationOrigin {
             let translation = gesture.translation(in: view)
             selectedAnnotation.setOrigin(translation.addTo(dragAnnotationOrigin))
-            annotationsViews[selectedAnnotation]?.frame = selectedAnnotation.viewBounds
+            annotationViews[selectedAnnotation.id]?.frame = selectedAnnotation.viewBounds
         }
     }
 }
@@ -315,7 +318,7 @@ extension AnnotationsEditor: UIGestureRecognizerDelegate {
 
 extension AnnotationsEditor: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        for annotation in annotationsViews.keys {
+        for annotation in annotationViewModels.values {
             annotation.zoomScale = scrollView.zoomScale
         }
     }

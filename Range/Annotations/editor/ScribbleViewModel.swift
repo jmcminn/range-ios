@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 /// Holds the scribble annotations data and properties requried for view rendering, selection, etc.
-class ScribbleViewModel: NSObject {
+class ScribbleViewModel: AnnotationViewModel {
     @objc private(set) dynamic var scribble: ScribbleAnnotation
 
     /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
@@ -11,17 +11,8 @@ class ScribbleViewModel: NSObject {
     /// in the annotations editor on iOS.
     /// For example when scale is 2, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
     let scale: Double
-    /// the bounds that contain the path, scaled
-    @objc private(set) dynamic var viewBounds: CGRect = .zero
     /// translated and scaled so it can be drawn in the UI
     private(set) var uiPath: UIBezierPath = .init()
-    /// the current zoom level of the displayed view.
-    /// We need it as not all parts of the ScribbleView should be zoomed when the annotations editor zoom changes (the border should
-    /// keep the visible 2 pixels width)
-    /// The reference (and initial) value is based on the scale value
-    @objc dynamic var zoomScale: Double
-    /// whether this annotation is currently selected
-    @objc dynamic var selected: Bool = false
 
     /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
     var thickness: Annotations.ScribbleThickness? {
@@ -29,13 +20,17 @@ class ScribbleViewModel: NSObject {
         return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
     }
 
+    override var annotation: Annotation {
+        scribble.annotation
+    }
+
     /// Initiates the view model with given scale and path
     init(scale: Double, scribble: ScribbleAnnotation) {
         self.scribble = scribble
         self.scale = scale
-        zoomScale = 1 / scale
-        super.init()
+        super.init(id: scribble.id)
 
+        zoomScale = 1 / scale
         updateFromScribble()
     }
 
@@ -56,7 +51,7 @@ class ScribbleViewModel: NSObject {
 
     /// Moves the annotation to new origin. It updates the `viewBounds` and `path` (which is not local to the annotation coordinate system)
     /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
-    func setOrigin(_ origin: CGPoint) {
+    override func setOrigin(_ origin: CGPoint) {
         let originDelta = origin.deltaTo(viewBounds.origin)
         scribble.path = scribble.path.getTranslatedPath(x: originDelta.x, y: originDelta.y)
         // no need to `updateFromScribble`, it's only a change in origin
@@ -73,12 +68,6 @@ class ScribbleViewModel: NSObject {
         scribble.color = color
     }
 
-    override var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(scribble.id)
-        return hasher.finalize()
-    }
-
     override var debugDescription: String { "Scribble[\(scribble.id)]" }
     override var description: String { "Scribble[\(scribble.id)]" }
 
@@ -86,7 +75,7 @@ class ScribbleViewModel: NSObject {
     /// If multiple annotations are tapped then the `distanceToTapLocation` will be checked and the annotation with smallest distance
     /// will be selected. If multiple annotations report the same distance (most likely 0 for overlapping annotations) then the selection will
     /// be based on the current order and selection state of annotations.
-    func containsTapLocation(_ location: CGPoint) -> Bool {
+    override func containsTapLocation(_ location: CGPoint) -> Bool {
         // ACHTUNG: this approach makes more sense if we want to use convexHull for "roughlyContainsTapLocation"
         // otherwise the viewBounds kind of cover it anyway and multiple matches will still be
         // decided by "distanceToTapLocation".
@@ -107,18 +96,12 @@ class ScribbleViewModel: NSObject {
 
     /// Called when no annotations are returned on tap for `containsTapLocation`.
     /// This may be rough in a sence that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
-    func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
+    override func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
         viewBounds.contains(location)
     }
 
     /// See description for `containsTapLocation`
-    func distanceToTapLocation(_ location: CGPoint) -> Float {
+    override func distanceToTapLocation(_ location: CGPoint) -> Float {
         scribble.path.getSimpleDistanceToPoint(location)
-    }
-}
-
-extension ScribbleViewModel: AnnotationConvertible {
-    var annotation: Annotation {
-        scribble.annotation
     }
 }

@@ -19,6 +19,9 @@ enum AnnotationsRenderer {
                 switch annotation {
                 case let .scribble(scribble):
                     ScribbleRenderer.render(scribble)
+                case let .text(text):
+                    // TODO: 1981
+                    print("Render ", text)
                 }
             }
         }
