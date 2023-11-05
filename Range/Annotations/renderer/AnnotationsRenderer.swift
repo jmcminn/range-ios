@@ -8,7 +8,7 @@ enum AnnotationsRenderer {
         let size = image.size
         let renderer = UIGraphicsImageRenderer(
             size: size,
-            // keep the original scale:
+            // keep the original scale (changing the scale here would change the image resolution):
             format: UIGraphicsImageRendererFormat(for: UITraitCollection(displayScale: 1))
         )
         return renderer.jpegData(withCompressionQuality: 0.75) { _ in
@@ -18,10 +18,9 @@ enum AnnotationsRenderer {
             annotations.annotations.forEach { annotation in
                 switch annotation {
                 case let .scribble(scribble):
-                    ScribbleRenderer.render(scribble)
+                    ScribbleAnnotationRenderer.render(scribble)
                 case let .text(text):
-                    // TODO: 1981
-                    print("Render ", text)
+                    TextAnnotationRenderer.render(text, scale: annotations.scale)
                 }
             }
         }

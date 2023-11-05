@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import OrderedCollections
+import OSLog
 import UIKit
 
 /// Represent annotations editor for 1 photo
@@ -58,6 +59,10 @@ class AnnotationsEditor: NSObject {
         NotificationCenter.default.addObserver(
             self, selector: #selector(checkAnnotationsUpdated),
             name: ScribbleAnnotation.UpdateNotificationName, object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(checkAnnotationsUpdated),
+            name: TextAnnotation.UpdateNotificationName, object: nil
         )
     }
 
@@ -135,25 +140,69 @@ class AnnotationsEditor: NSObject {
     }
 
     private func addScribble(_ scribble: ScribbleAnnotation) {
-        let scribbleVM = ScribbleViewModel(scale: scale, scribble: scribble)
+        let scribbleVM = ScribbleAnnotationViewModel(scale: scale, scribble: scribble)
         if let hostView = hostView {
             scribbleVM.zoomScale = hostView.scrollView.zoomScale
         }
+        let scribbleView = ScribbleAnnotationView(viewModel: scribbleVM)
+        addAnnotation(scribbleVM, view: scribbleView)
+    }
 
-        let scribbleView = ScribbleView(viewModel: scribbleVM)
+    func insertTextAnnotation() {
+        guard let hostView = hostView else {
+            Logger.annotations.error("insertTextAnnotation: hostView not set!")
+            return
+        }
 
-        annotationViewModels[scribble.id] = scribbleVM
-        annotationViews[scribble.id] = scribbleView
+        let text = ""
+        // insert new annotation in the visible center of the screen (to be precise to the left and up,
+        // so it's center is in the center)
+        let centerOfTheScreenInImagePoint = view.convert(CGPoint(
+            x: hostView.frame.midX,
+            y: hostView.frame.midY
+        ), from: hostView)
 
-        annotationsContainerView.addSubview(scribbleView)
-        scribbleView.frame = scribbleVM.viewBounds
+        // TODO: 1981 use latest text size instead of 20
+        let initialTextAnnotationSize = TextAnnotationViewModel.initialAnnotationSize(
+            text: text, fontSize: 20 * scale, scale: scale
+        )
+        // position is top left of the box centered at the screen center
+        let initialPosition = centerOfTheScreenInImagePoint.translate(
+            x: -initialTextAnnotationSize.width / 2,
+            y: -initialTextAnnotationSize.height / 2
+        )
+        // TODO: 1981 font size
+        let textAnnotation = TextAnnotation(
+            text: text,
+            position: initialPosition,
+            fontSize: 20 * scale,
+            color: viewModel.lastPickedScribbleColor
+        )
+        addText(textAnnotation)
+        guard let textAnnotationVM = annotationViewModels[textAnnotation.id] as? TextAnnotationViewModel else { return }
+        setSelected(textAnnotationVM)
+        // start editing
+        textAnnotationVM.textEditing = true
+    }
+
+    private func addText(_ text: TextAnnotation) {
+        let textVM = TextAnnotationViewModel(scale: scale, text: text)
+        if let hostView = hostView {
+            textVM.zoomScale = hostView.scrollView.zoomScale
+        }
+        let textAnnotationView = TextAnnotationView(viewModel: textVM)
+        addAnnotation(textVM, view: textAnnotationView)
+    }
+
+    private func addAnnotation(_ annotation: AnnotationViewModel, view: UIView) {
+        annotationViewModels[annotation.id] = annotation
+        annotationViews[annotation.id] = view
+
+        annotationsContainerView.addSubview(view)
+        view.frame = annotation.viewBounds
         setSelected(nil)
 
         checkAnnotationsUpdated()
-    }
-
-    private func addText(_: TextAnnotation) {
-        // TODO: 1981
     }
 
     func deleteAnnotation(_ annotation: AnnotationViewModel) {
@@ -269,19 +318,34 @@ extension AnnotationsEditor {
 
     /// select given annotation or deselect if nil
     func setSelected(_ selectedAnnotation: AnnotationViewModel?) {
+        let previousSelectedAnnotation = self.selectedAnnotation
+
         self.selectedAnnotation = selectedAnnotation
-        for annotation in annotationViewModels.values {
-            annotation.selected = annotation == selectedAnnotation
-        }
-        // the selected annotation should be on top
-        if let selectedAnnotation = selectedAnnotation {
-            // change the order in annotation view models
-            if let annotation = annotationViewModels.removeValue(forKey: selectedAnnotation.id) {
-                annotationViewModels[annotation.id] = annotation
-                // move the view to the top
-                annotationsContainerView.bringSubviewToFront(annotationViews[annotation.id]!)
+
+        if previousSelectedAnnotation != selectedAnnotation {
+            // unselect the previous one and select new one
+            previousSelectedAnnotation?.selected = false
+            // stop editing previous text annotation if unselected
+            if let previousSelectedAnnotation = previousSelectedAnnotation as? TextAnnotationViewModel {
+                previousSelectedAnnotation.textEditing = false
+            }
+            selectedAnnotation?.selected = true
+            // the selected annotation should be on top
+            if let selectedAnnotation = selectedAnnotation {
+                // change the order in annotation view models
+                if let annotation = annotationViewModels.removeValue(forKey: selectedAnnotation.id) {
+                    annotationViewModels[annotation.id] = annotation
+                    // move the view to the top
+                    annotationsContainerView.bringSubviewToFront(annotationViews[annotation.id]!)
+                }
+            }
+        } else {
+            // same annotation selected again - start editing selected annotation
+            if let textAnnotation = selectedAnnotation as? TextAnnotationViewModel {
+                textAnnotation.textEditing = true
             }
         }
+
         checkAnnotationsUpdated()
     }
 }
@@ -318,6 +382,7 @@ extension AnnotationsEditor: UIGestureRecognizerDelegate {
 
 extension AnnotationsEditor: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        print("XXX zoomScale(\(scrollView.zoomScale)) * scale(\(scale)) = ", scrollView.zoomScale * scale)
         for annotation in annotationViewModels.values {
             annotation.zoomScale = scrollView.zoomScale
         }

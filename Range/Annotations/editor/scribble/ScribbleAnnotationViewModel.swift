@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 /// Holds the scribble annotations data and properties requried for view rendering, selection, etc.
-class ScribbleViewModel: AnnotationViewModel {
+class ScribbleAnnotationViewModel: AnnotationViewModel {
     @objc private(set) dynamic var scribble: ScribbleAnnotation
 
     /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.

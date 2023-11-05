@@ -38,8 +38,11 @@ class AnnotationsEditorViewModel: ObservableObject {
         annotationsEditor?.setScribblingEnabled(scribbleMode)
     }
 
+    @Published private(set) var scribbleAnnotationSelected: Bool = false
+    @Published private(set) var textAnnotationSelected: Bool = false
+
     func setCurrentScribbleThickness(_ thickness: Annotations.ScribbleThickness) {
-        guard let selectedAnnotation = selectedAnnotation as? ScribbleViewModel else {
+        guard let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel else {
             Logger.annotations.warning("setCurrentScribbleThickness called when no scribble annotation selected")
             return
         }
@@ -50,7 +53,7 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     func setCurrentScribbleColor(_ color: UIColor) {
         // TODO: 1981 should work for all annnotations...
-        guard let selectedAnnotation = selectedAnnotation as? ScribbleViewModel else {
+        guard let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel else {
             Logger.annotations.warning("setCurrentScribbleThickness called when no scribble annotation selected")
             return
         }
@@ -60,14 +63,32 @@ class AnnotationsEditorViewModel: ObservableObject {
     }
 
     /// Adds text in the middle of the current viewport, selects it and starts editing
-    func insertTextAnnotation() {}
+    func insertTextAnnotation() {
+        annotationsEditor?.insertTextAnnotation()
+    }
 
     private func onAnnotationSelected(_ annotationVM: AnnotationViewModel?) {
         selectedAnnotation = annotationVM
-        if let selectedAnnotation = selectedAnnotation as? ScribbleViewModel {
+        if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
             // TODO: 1981 some more generic way?
             currentScribbleThickness = selectedAnnotation.thickness ?? lastPickedScribbleThickness
             currentScribbleColor = selectedAnnotation.scribble.color
+        }
+
+        if let selectedAnnotation = selectedAnnotation {
+            switch selectedAnnotation.annotation {
+            case .scribble:
+                scribbleAnnotationSelected = true
+                textAnnotationSelected = false
+            case .text:
+                scribbleAnnotationSelected = false
+                textAnnotationSelected = true
+                // disable scribble mode when text annotation selected
+                if scribbleMode { toggleScribbleMode() }
+            }
+        } else {
+            scribbleAnnotationSelected = false
+            textAnnotationSelected = false
         }
     }
 

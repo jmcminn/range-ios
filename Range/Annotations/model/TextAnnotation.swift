@@ -13,7 +13,10 @@ class TextAnnotation: NSObject, Codable {
     /// text
     var text: String { didSet { postUpdate() }}
     /// position of the top left corner of the text box (including the white background)
-    var position: CGPoint { didSet { postUpdate() }}
+    var position: CGPoint { didSet {
+        position = position.roundCoordinates()
+        postUpdate()
+    }}
     /// font size in in pixels
     var fontSize: Double { didSet { postUpdate() }}
     /// the storage for color, String so it can be encoded/decoded
@@ -36,7 +39,7 @@ class TextAnnotation: NSObject, Codable {
     ) {
         self.id = id
         self.text = text
-        self.position = position
+        self.position = position.roundCoordinates()
         self.fontSize = fontSize
         hexColor = color.hexString
     }
@@ -66,7 +69,13 @@ class TextAnnotation: NSObject, Codable {
 extension TextAnnotation: NSCopying {
     /// Deep copy of the annotation
     func copy(with _: NSZone? = nil) -> Any {
-        TextAnnotation(id: id, text: text, position: position, fontSize: fontSize, color: color)
+        TextAnnotation(
+            id: id,
+            text: text,
+            position: position,
+            fontSize: fontSize,
+            color: color
+        )
     }
 }
 

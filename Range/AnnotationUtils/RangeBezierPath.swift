@@ -111,7 +111,7 @@ class RangeBezierPath: Codable, Equatable {
     }
 
     func getTranslatedPath(x: CGFloat, y: CGFloat) -> RangeBezierPath {
-        RangeBezierPath(elements: elementsWithPointsTransformed { $0.translate(x: x, y) })
+        RangeBezierPath(elements: elementsWithPointsTransformed { $0.translate(x: x, y: y) })
     }
 
     /// Returns the distance to point as if the path was a set of lines (and not curves)

@@ -157,12 +157,21 @@ struct AnnotationsToolbarView: View {
     var body: some View {
         VStack {
             HStack(spacing: 4) {
-                scribbleToolButton
-                if model.selectedAnnotation == nil, !model.scribbleMode {
+                let showScribbleToolButton = model.selectedAnnotation == nil || model.scribbleMode
+                    || model.scribbleAnnotationSelected
+                let showTextToolButton = (model.selectedAnnotation == nil || model.textAnnotationSelected)
+                    && !model.scribbleMode
+                if showScribbleToolButton {
+                    scribbleToolButton
+                }
+                if showScribbleToolButton, showTextToolButton {
                     Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
+                }
+                if showTextToolButton {
                     textToolButton
                 }
-                if model.selectedAnnotation != nil || model.scribbleMode {
+                // TODO: 1981 text font / color buttons for text annotation selected
+                if model.scribbleAnnotationSelected || model.scribbleMode {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
                     scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {
                         scribbleThicknessPicker

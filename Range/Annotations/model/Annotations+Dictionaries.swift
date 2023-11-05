@@ -45,4 +45,13 @@ extension Annotations {
         .Red_03,
         .Green_03,
     ]
+
+    /// Default text padding for text annotations.
+    /// Unscaled
+    /// The size of the white background = text size + textPadding on each side.
+    static var textPadding: Double = 6.0
+
+    /// The corner radius of the white text annotation box.
+    /// Unscaled
+    static var textBoxCornerRadius: Double = 6.0
 }

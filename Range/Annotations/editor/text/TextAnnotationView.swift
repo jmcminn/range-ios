@@ -1,0 +1,146 @@
+import Foundation
+import UIKit
+
+class TextAnnotationView: UIView {
+    let viewModel: TextAnnotationViewModel
+    private var annotationObservation: NSKeyValueObservation?
+    private var viewBoundsObservation: NSKeyValueObservation?
+    private var zoomScaleObservation: NSKeyValueObservation?
+    private var selectedObservation: NSKeyValueObservation?
+    private var textEditingObservation: NSKeyValueObservation?
+    let selectedLayer = CAShapeLayer()
+    var textEditingView: UITextView?
+
+    init(viewModel: TextAnnotationViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
+        backgroundColor = .clear
+        setupSelectedLayer()
+        updateSelectedLayer()
+        annotationObservation = viewModel.text.observe(\.color, changeHandler: { [weak self] _, _ in
+            self?.setNeedsDisplay()
+        })
+        viewBoundsObservation = viewModel.observe(\.viewBounds) { [weak self] _, _ in
+            self?.frame = viewModel.viewBounds
+            self?.updateTextEditingView()
+            self?.updateSelectedLayer()
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }
+        zoomScaleObservation = viewModel.observe(\.zoomScale) { [weak self] _, _ in
+            self?.updateSelectedLayer()
+        }
+        selectedObservation = viewModel.observe(\.selected) { [weak self] _, _ in
+            self?.onSelectedUpdate()
+        }
+        textEditingObservation = viewModel.observe(\.textEditing) { [weak self] _, _ in
+            self?.onTextEditingUpdate()
+        }
+
+        onSelectedUpdate()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func onSelectedUpdate() {
+        isUserInteractionEnabled = viewModel.selected
+        updateSelectedLayer()
+    }
+
+    private func onTextEditingUpdate() {
+        updateSelectedLayer()
+        if viewModel.textEditing {
+            // when editing we show the text view for user to enter the annotation text
+            setupTextEditingView()
+            textEditingView?.isHidden = false
+            textEditingView?.becomeFirstResponder()
+        } else {
+            // when not editing the text view is hidden and the text annotation is fully rendered
+            // by the renderer (see the `draw` function)
+            textEditingView?.resignFirstResponder()
+            textEditingView?.isHidden = true
+        }
+    }
+
+    private func setupTextEditingView() {
+        guard textEditingView == nil else { return }
+        let textView = UITextViewWithNoTextPadding()
+        textView.backgroundColor = .clear
+        textView.delegate = self
+        addSubview(textView)
+        textEditingView = textView
+        updateTextEditingView()
+    }
+
+    private func updateTextEditingView() {
+        guard let textEditingView = textEditingView else { return }
+        textEditingView.text = viewModel.text.text
+        textEditingView.font = UIFont.systemFont(ofSize: viewModel.text.fontSize)
+        textEditingView.tintColor = viewModel.text.color
+        textEditingView.textColor = viewModel.text.color
+        textEditingView.snp.remakeConstraints { make in
+            make.top.leading.equalToSuperview().inset(Annotations.textPadding * viewModel.scale)
+            make.width.equalTo(viewModel.viewBounds.width)
+            make.height.equalTo(viewModel.viewBounds.height)
+        }
+    }
+
+    private func setupSelectedLayer() {
+        selectedLayer.strokeColor = UIColor.Primary_Blue_04.cgColor
+        selectedLayer.fillColor = nil
+    }
+
+    private func updateSelectedLayer() {
+        if viewModel.selected {
+            var selectionFrame = bounds
+            // if  text is editing then we show the selection with some minimal width (so the initial
+            // empty text annotation selection is centered horizontally on the screen and allows
+            // for some text growth before the selection border grows)
+            if viewModel.textEditing {
+                selectionFrame.size.width = max(
+                    selectionFrame.width,
+                    TextAnnotationViewModel.initialBoxWidth * viewModel.scale
+                )
+            }
+            selectedLayer.frame = selectionFrame.insetBy(
+                dx: -5 / viewModel.zoomScale,
+                dy: -6 / viewModel.zoomScale
+            )
+            // the higher the zoom the lower the borderWidth (because zooming in will make it look bigger
+            // and we want to keep the visual width = 1)
+            selectedLayer.lineWidth = 1 / viewModel.zoomScale
+            let lineDashPatternLength = 2 / viewModel.zoomScale
+            selectedLayer.lineDashPattern = [lineDashPatternLength, lineDashPatternLength] as [NSNumber]
+            selectedLayer.path = UIBezierPath(
+                roundedRect: selectedLayer.bounds,
+                cornerRadius: Annotations.textBoxCornerRadius * viewModel.scale
+            ).cgPath
+            layer.addSublayer(selectedLayer)
+        } else {
+            selectedLayer.removeFromSuperlayer()
+        }
+        setNeedsDisplay()
+    }
+
+    override func draw(_: CGRect) {
+        TextAnnotationRenderer.render(
+            text: viewModel.text.text,
+            position: .zero, // rendering in view coordinates
+            fontSize: viewModel.text.fontSize,
+            color: viewModel.text.color,
+            scale: viewModel.scale,
+            backgroundOnly: viewModel.textEditing // when editing the text is rendered with UITextView (to edit)
+        )
+    }
+}
+
+extension TextAnnotationView: UITextViewDelegate {
+    /// Update the view model with any text view updates (text changes). This will trigger recalculating the viewBounds which will
+    /// cause the view to update the annotation box
+    func textViewDidChange(_ textView: UITextView) {
+        viewModel.setText(textView.text)
+    }
+}

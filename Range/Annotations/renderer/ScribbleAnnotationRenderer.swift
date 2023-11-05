@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-enum ScribbleRenderer {
+enum ScribbleAnnotationRenderer {
     /// Renders the ScribbleAnnotation
     static func render(_ scribble: ScribbleAnnotation) {
         render(path: scribble.path.getUIBezierPath(), lineWidth: scribble.lineWidth, color: scribble.color)

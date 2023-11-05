@@ -2,7 +2,7 @@ import Foundation
 
 // source: https://github.com/malcommac/SwiftSimplify
 extension CGPoint {
-    func translate(x: CGFloat, _ y: CGFloat) -> CGPoint {
+    func translate(x: CGFloat, y: CGFloat) -> CGPoint {
         CGPoint(x: self.x + x, y: self.y + y)
     }
 

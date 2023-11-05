@@ -1,14 +1,14 @@
 import Foundation
 import UIKit
 
-class ScribbleView: UIView {
-    let viewModel: ScribbleViewModel
+class ScribbleAnnotationView: UIView {
+    let viewModel: ScribbleAnnotationViewModel
     private var scribbleObservation: NSKeyValueObservation?
     private var viewBoundsObservation: NSKeyValueObservation?
     private var zoomScaleObservation: NSKeyValueObservation?
     private var selectedObservation: NSKeyValueObservation?
 
-    init(viewModel: ScribbleViewModel) {
+    init(viewModel: ScribbleAnnotationViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         backgroundColor = .clear
@@ -58,6 +58,6 @@ class ScribbleView: UIView {
         // lineWidth needs "unscaling" as the whole view is scaled
         let lineWidth = viewModel.scribble.lineWidth / viewModel.scale
 
-        ScribbleRenderer.render(path: viewModel.uiPath, lineWidth: lineWidth, color: viewModel.scribble.color)
+        ScribbleAnnotationRenderer.render(path: viewModel.uiPath, lineWidth: lineWidth, color: viewModel.scribble.color)
     }
 }

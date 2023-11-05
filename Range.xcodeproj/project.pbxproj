@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A010C9F29913AFD0066D35A /* ProjectModel+RealmMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A010C9E29913AFD0066D35A /* ProjectModel+RealmMigration.swift */; };
-		0A0505742A1BC696001AF644 /* ScribbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505732A1BC696001AF644 /* ScribbleView.swift */; };
+		0A0505742A1BC696001AF644 /* ScribbleAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505732A1BC696001AF644 /* ScribbleAnnotationView.swift */; };
 		0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */; };
 		0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */; };
 		0A05057F2A1E2512001AF644 /* CGPoint+Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05057E2A1E2512001AF644 /* CGPoint+Operations.swift */; };
@@ -87,6 +87,10 @@
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */; };
 		0A2B3F552AF3CFF000D3D0D2 /* TextAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */; };
 		0A2B3F572AF3E53C00D3D0D2 /* AnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */; };
+		0A2B3F592AF513DB00D3D0D2 /* TextAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F582AF513DB00D3D0D2 /* TextAnnotationViewModel.swift */; };
+		0A2B3F5D2AF516ED00D3D0D2 /* TextAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F5C2AF516ED00D3D0D2 /* TextAnnotationView.swift */; };
+		0A2B3F5F2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F5E2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift */; };
+		0A2B3F612AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F602AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift */; };
 		0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */; };
 		0A2C7EE42A097126008F1FB9 /* MediaFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */; };
 		0A2C7EE62A0AC858008F1FB9 /* DateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C7EE52A0AC858008F1FB9 /* DateButton.swift */; };
@@ -215,7 +219,7 @@
 		0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */; };
 		0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC7A327F7618D00712518 /* RoundShadowView.swift */; };
 		0A51A44A2AB9F049008C5B84 /* OrganizationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */; };
-		0A5394272A251482008583F0 /* ScribbleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394262A251482008583F0 /* ScribbleViewModel.swift */; };
+		0A5394272A251482008583F0 /* ScribbleAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394262A251482008583F0 /* ScribbleAnnotationViewModel.swift */; };
 		0A5394292A264685008583F0 /* AnnotationsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394282A264685008583F0 /* AnnotationsEditor.swift */; };
 		0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A566EF529BA29480094BD60 /* CanvasSource.swift */; };
 		0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */; };
@@ -270,7 +274,7 @@
 		0A7393832A606C360079A7FB /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393822A606C360079A7FB /* Annotation.swift */; };
 		0A7393852A606CBB0079A7FB /* ScribbleAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */; };
 		0A7393882A61415F0079A7FB /* Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7393872A61415F0079A7FB /* Annotations.swift */; };
-		0A73938B2A64284E0079A7FB /* ScribbleRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */; };
+		0A73938B2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938A2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift */; };
 		0A73938D2A6428630079A7FB /* AnnotationsRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */; };
 		0A73938F2A67C4B50079A7FB /* UploadStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73938E2A67C4B50079A7FB /* UploadStorageVersion.swift */; };
 		0A76BF0029CDC03D009DF0E1 /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */; };
@@ -413,7 +417,6 @@
 		0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */; };
 		0AD8E2642AB35B730079E0DD /* StringPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */; };
 		0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */; };
-		0AD955242A3B608C00B35325 /* AnnotationsToolbarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */; };
 		0AD955262A40AA8F00B35325 /* AnnotationsEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD955252A40AA8F00B35325 /* AnnotationsEditorViewModel.swift */; };
 		0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */; };
 		0AD9B75628620938005ACFD7 /* ProjectModelCommandsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */; };
@@ -468,7 +471,7 @@
 
 /* Begin PBXFileReference section */
 		0A010C9E29913AFD0066D35A /* ProjectModel+RealmMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+RealmMigration.swift"; sourceTree = "<group>"; };
-		0A0505732A1BC696001AF644 /* ScribbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleView.swift; sourceTree = "<group>"; };
+		0A0505732A1BC696001AF644 /* ScribbleAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotationView.swift; sourceTree = "<group>"; };
 		0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point2DRepresentable.swift; sourceTree = "<group>"; };
 		0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolylineSimplify.swift; sourceTree = "<group>"; };
 		0A05057E2A1E2512001AF644 /* CGPoint+Operations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Operations.swift"; sourceTree = "<group>"; };
@@ -548,6 +551,10 @@
 		0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsTagsCommand.swift; sourceTree = "<group>"; };
 		0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotation.swift; sourceTree = "<group>"; };
 		0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationViewModel.swift; sourceTree = "<group>"; };
+		0A2B3F582AF513DB00D3D0D2 /* TextAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotationViewModel.swift; sourceTree = "<group>"; };
+		0A2B3F5C2AF516ED00D3D0D2 /* TextAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotationView.swift; sourceTree = "<group>"; };
+		0A2B3F5E2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotationRenderer.swift; sourceTree = "<group>"; };
+		0A2B3F602AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextViewWithNoTextPadding.swift; sourceTree = "<group>"; };
 		0A2C7EE12A09682A008F1FB9 /* MediaFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFilters.swift; sourceTree = "<group>"; };
 		0A2C7EE32A097126008F1FB9 /* MediaFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A2C7EE52A0AC858008F1FB9 /* DateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateButton.swift; sourceTree = "<group>"; };
@@ -676,7 +683,7 @@
 		0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Properties.swift"; sourceTree = "<group>"; };
 		0A4DC7A327F7618D00712518 /* RoundShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowView.swift; sourceTree = "<group>"; };
 		0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationModel.swift; sourceTree = "<group>"; };
-		0A5394262A251482008583F0 /* ScribbleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleViewModel.swift; sourceTree = "<group>"; };
+		0A5394262A251482008583F0 /* ScribbleAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotationViewModel.swift; sourceTree = "<group>"; };
 		0A5394282A264685008583F0 /* AnnotationsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsEditor.swift; sourceTree = "<group>"; };
 		0A566EF529BA29480094BD60 /* CanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSource.swift; sourceTree = "<group>"; };
 		0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
@@ -735,7 +742,7 @@
 		0A7393822A606C360079A7FB /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotation.swift; sourceTree = "<group>"; };
 		0A7393872A61415F0079A7FB /* Annotations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotations.swift; sourceTree = "<group>"; };
-		0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleRenderer.swift; sourceTree = "<group>"; };
+		0A73938A2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotationRenderer.swift; sourceTree = "<group>"; };
 		0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsRenderer.swift; sourceTree = "<group>"; };
 		0A73938E2A67C4B50079A7FB /* UploadStorageVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadStorageVersion.swift; sourceTree = "<group>"; };
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
@@ -882,7 +889,6 @@
 		0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerCardViewController.swift; sourceTree = "<group>"; };
 		0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerTableViewCell.swift; sourceTree = "<group>"; };
 		0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarView.swift; sourceTree = "<group>"; };
-		0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsToolbarViewController.swift; sourceTree = "<group>"; };
 		0AD955252A40AA8F00B35325 /* AnnotationsEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsEditorViewModel.swift; sourceTree = "<group>"; };
 		0AD9B75328620821005ACFD7 /* ProjectModel+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+Commands.swift"; sourceTree = "<group>"; };
 		0AD9B75528620938005ACFD7 /* ProjectModelCommandsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelCommandsTest.swift; sourceTree = "<group>"; };
@@ -1219,6 +1225,25 @@
 			path = ci_scripts;
 			sourceTree = "<group>";
 		};
+		0A2B3F5A2AF516C600D3D0D2 /* scribble */ = {
+			isa = PBXGroup;
+			children = (
+				0A5394262A251482008583F0 /* ScribbleAnnotationViewModel.swift */,
+				0A0505732A1BC696001AF644 /* ScribbleAnnotationView.swift */,
+				0A0505842A1F838A001AF644 /* ScribblingView.swift */,
+			);
+			path = scribble;
+			sourceTree = "<group>";
+		};
+		0A2B3F5B2AF516DA00D3D0D2 /* text */ = {
+			isa = PBXGroup;
+			children = (
+				0A2B3F582AF513DB00D3D0D2 /* TextAnnotationViewModel.swift */,
+				0A2B3F5C2AF516ED00D3D0D2 /* TextAnnotationView.swift */,
+			);
+			path = text;
+			sourceTree = "<group>";
+		};
 		0A2F32FD2837E85E00D04A1C /* Firestore */ = {
 			isa = PBXGroup;
 			children = (
@@ -1493,6 +1518,7 @@
 				0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */,
 				0ADC183C29633E70007A59CA /* TopViewController.swift */,
 				0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */,
+				0A2B3F602AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
 				0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */,
 			);
@@ -1731,14 +1757,12 @@
 		0A73937D2A606A670079A7FB /* editor */ = {
 			isa = PBXGroup;
 			children = (
+				0A2B3F5A2AF516C600D3D0D2 /* scribble */,
+				0A2B3F5B2AF516DA00D3D0D2 /* text */,
 				0A5394282A264685008583F0 /* AnnotationsEditor.swift */,
-				0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */,
-				0A5394262A251482008583F0 /* ScribbleViewModel.swift */,
-				0A0505732A1BC696001AF644 /* ScribbleView.swift */,
-				0A0505842A1F838A001AF644 /* ScribblingView.swift */,
 				0AD955252A40AA8F00B35325 /* AnnotationsEditorViewModel.swift */,
+				0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */,
 				0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */,
-				0AD955232A3B608C00B35325 /* AnnotationsToolbarViewController.swift */,
 			);
 			path = editor;
 			sourceTree = "<group>";
@@ -1764,7 +1788,8 @@
 			isa = PBXGroup;
 			children = (
 				0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */,
-				0A73938A2A64284E0079A7FB /* ScribbleRenderer.swift */,
+				0A73938A2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift */,
+				0A2B3F5E2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift */,
 			);
 			path = renderer;
 			sourceTree = "<group>";
@@ -2346,6 +2371,7 @@
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,
 				0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
+				0A2B3F592AF513DB00D3D0D2 /* TextAnnotationViewModel.swift in Sources */,
 				0A28A1C0290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
@@ -2362,6 +2388,7 @@
 				0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */,
 				0AD78E002AB9869700710260 /* ProjectsEmptyStateView.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
+				0A2B3F5F2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */,
 				0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */,
@@ -2412,7 +2439,7 @@
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirestoreCanvas.swift in Sources */,
 				0ACACBCA2A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift in Sources */,
-				0A5394272A251482008583F0 /* ScribbleViewModel.swift in Sources */,
+				0A5394272A251482008583F0 /* ScribbleAnnotationViewModel.swift in Sources */,
 				0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */,
 				0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
@@ -2456,12 +2483,14 @@
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
 				0A4D11BB29A5242500D681E7 /* URL+Extensions.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
+				0A2B3F612AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
 				0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */,
 				0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */,
 				0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */,
 				0A7A537F293FB8F70093D913 /* ProjectTableViewCell.swift in Sources */,
 				0A985B1B2A9E358300442617 /* FirestoreUser.swift in Sources */,
+				0A2B3F5D2AF516ED00D3D0D2 /* TextAnnotationView.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A98E45A298AEC7E004F0112 /* MediaCache.swift in Sources */,
 				0A4995B52854C28200E571FB /* TextView.swift in Sources */,
@@ -2480,7 +2509,6 @@
 				0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
-				0AD955242A3B608C00B35325 /* AnnotationsToolbarViewController.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */,
 				0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */,
 				0A4DC76B27EE0ED600712518 /* PDFPageSize.swift in Sources */,
@@ -2517,7 +2545,7 @@
 				0A34C1892845FE9C00BEDC7C /* FirestoreComment.swift in Sources */,
 				0A0D31D728A41AC6007A8D49 /* ThumbnailsViewController.swift in Sources */,
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
-				0A73938B2A64284E0079A7FB /* ScribbleRenderer.swift in Sources */,
+				0A73938B2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift in Sources */,
 				0A0E2066296311A8001782A5 /* PinType.swift in Sources */,
 				0A25D2BA2AB8C02F00A331E1 /* DBMatcher.m in Sources */,
 				0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */,
@@ -2596,7 +2624,7 @@
 				0A30E8B02847AFAB00A50D54 /* PhotoDetailsViewController.swift in Sources */,
 				0A4995C12858D05D00E571FB /* FirestoreTagName.swift in Sources */,
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
-				0A0505742A1BC696001AF644 /* ScribbleView.swift in Sources */,
+				0A0505742A1BC696001AF644 /* ScribbleAnnotationView.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirestoreProjectSummary.swift in Sources */,
 				0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */,
 				0A7A537D293FB3690093D913 /* ProjectsViewController.swift in Sources */,
