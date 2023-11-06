@@ -9,14 +9,6 @@ class TextAnnotationViewModel: AnnotationViewModel {
     /// Unscaled
     static var initialBoxWidth: CGFloat = 84.0
 
-    // TODO: 1981 move to AnnotationViewModel
-    /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
-    /// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
-    /// This doesn't affect the end result of scribbling and generated annotation image, it's only done for the purpose of rendering
-    /// in the annotations editor on iOS.
-    /// For example when scale is 2, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
-    let scale: Double
-
     /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
 //    var thickness: Annotations.ScribbleThickness? {
 //        let lineWidthBasedThickness = scribble.lineWidth / scale
@@ -28,11 +20,10 @@ class TextAnnotationViewModel: AnnotationViewModel {
 
     override var annotation: Annotation { text.annotation }
 
-    /// Initiates the view model with given scale and path
-    init(scale: Double, text: TextAnnotation) {
+    /// Initiates the view model with given annotation and annotationsScale
+    init(text: TextAnnotation, annotationsScale: Double) {
         self.text = text
-        self.scale = scale
-        super.init(id: text.id)
+        super.init(id: text.id, annotationsScale: annotationsScale)
 
         zoomScale = 1
         updateFromAnnotation()
@@ -43,7 +34,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
         viewBounds = CGRect(
             origin: text.position,
             size: TextAnnotationRenderer.annotationSize(
-                text: text.text, fontSize: text.fontSize, scale: scale
+                text: text.text, fontSize: text.fontSize, annotationsScale: annotationsScale
             )
         )
     }
@@ -68,7 +59,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     func setText(_ value: String) {
         text.text = value
         viewBounds.size = TextAnnotationRenderer.annotationSize(
-            text: text.text, fontSize: text.fontSize, scale: scale
+            text: text.text, fontSize: text.fontSize, annotationsScale: annotationsScale
         )
     }
 
@@ -101,9 +92,13 @@ class TextAnnotationViewModel: AnnotationViewModel {
 extension TextAnnotationViewModel {
     /// Calculates the initial size of the annotation for given text with given font.
     /// Uses `TextAnnotationRenderer.annotationSize` function but adjusts for `TextAnnotationViewModel.initialBoxWidth`
-    static func initialAnnotationSize(text: String, fontSize: Double, scale: Double) -> CGSize {
-        var size = TextAnnotationRenderer.annotationSize(text: text, fontSize: fontSize, scale: scale)
-        size.width = max(size.width, ceil(initialBoxWidth * scale))
+    static func initialAnnotationSize(text: String, fontSize: Double, annotationsScale: Double) -> CGSize {
+        var size = TextAnnotationRenderer.annotationSize(
+            text: text,
+            fontSize: fontSize,
+            annotationsScale: annotationsScale
+        )
+        size.width = max(size.width, ceil(initialBoxWidth * annotationsScale))
         return size
     }
 }

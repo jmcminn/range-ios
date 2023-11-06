@@ -1,6 +1,9 @@
 import Foundation
 import UIKit
 
+/// View to render the text annotation.
+/// It also allows for editing of text annotations (when in editing mode it shows a UITextView to allow for text input)
+/// Please note that unlike ScribblingView this view is not transformed, so it is displayed as is, without downscaling using annotationsScale
 class TextAnnotationView: UIView {
     let viewModel: TextAnnotationViewModel
     private var annotationObservation: NSKeyValueObservation?
@@ -82,7 +85,7 @@ class TextAnnotationView: UIView {
         textEditingView.tintColor = viewModel.text.color
         textEditingView.textColor = viewModel.text.color
         textEditingView.snp.remakeConstraints { make in
-            make.top.leading.equalToSuperview().inset(Annotations.textPadding * viewModel.scale)
+            make.top.leading.equalToSuperview().inset(Annotations.textPadding * viewModel.annotationsScale)
             make.width.equalTo(viewModel.viewBounds.width)
             make.height.equalTo(viewModel.viewBounds.height)
         }
@@ -102,7 +105,7 @@ class TextAnnotationView: UIView {
             if viewModel.textEditing {
                 selectionFrame.size.width = max(
                     selectionFrame.width,
-                    TextAnnotationViewModel.initialBoxWidth * viewModel.scale
+                    TextAnnotationViewModel.initialBoxWidth * viewModel.annotationsScale
                 )
             }
             selectedLayer.frame = selectionFrame.insetBy(
@@ -116,7 +119,7 @@ class TextAnnotationView: UIView {
             selectedLayer.lineDashPattern = [lineDashPatternLength, lineDashPatternLength] as [NSNumber]
             selectedLayer.path = UIBezierPath(
                 roundedRect: selectedLayer.bounds,
-                cornerRadius: Annotations.textBoxCornerRadius * viewModel.scale
+                cornerRadius: Annotations.textBoxCornerRadius * viewModel.annotationsScale
             ).cgPath
             layer.addSublayer(selectedLayer)
         } else {
@@ -131,7 +134,7 @@ class TextAnnotationView: UIView {
             position: .zero, // rendering in view coordinates
             fontSize: viewModel.text.fontSize,
             color: viewModel.text.color,
-            scale: viewModel.scale,
+            annotationsScale: viewModel.annotationsScale,
             backgroundOnly: viewModel.textEditing // when editing the text is rendered with UITextView (to edit)
         )
     }

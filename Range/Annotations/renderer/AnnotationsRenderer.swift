@@ -20,7 +20,7 @@ enum AnnotationsRenderer {
                 case let .scribble(scribble):
                     ScribbleAnnotationRenderer.render(scribble)
                 case let .text(text):
-                    TextAnnotationRenderer.render(text, scale: annotations.scale)
+                    TextAnnotationRenderer.render(text, annotationsScale: annotations.scale)
                 }
             }
         }

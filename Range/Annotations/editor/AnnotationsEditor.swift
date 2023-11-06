@@ -24,7 +24,9 @@ class AnnotationsEditor: NSObject {
     /// view hosting all the annotation views
     let view = UIView()
 
-    var scale: Double = 1.0
+    /// The scale applied to annotations. See `Annotations.scale` and `AnnotationViewModel.annotationsScale` for
+    /// description how/why it is used.
+    var annotationsScale: Double = 1.0
 
     // whether the annotations are installed in the host view and ready to be edited
     @objc dynamic var installed: Bool = false
@@ -103,7 +105,7 @@ class AnnotationsEditor: NSObject {
             make.edges.equalToSuperview()
         }
 
-        scale = initialAnnotations?.scale ?? min(imageWidth, imageHeight) / Annotations.referenceViewSize
+        annotationsScale = initialAnnotations?.scale ?? min(imageWidth, imageHeight) / Annotations.referenceViewSize
 
         // for annotation selection
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
@@ -133,14 +135,14 @@ class AnnotationsEditor: NSObject {
     func add(scribbleWithPath path: RangeBezierPath) {
         let scribble = ScribbleAnnotation(
             path: path,
-            lineWidth: viewModel.lastPickedScribbleThickness.lineWidth * scale,
+            lineWidth: viewModel.lastPickedScribbleThickness.lineWidth * annotationsScale,
             color: viewModel.lastPickedScribbleColor
         )
         addScribble(scribble)
     }
 
     private func addScribble(_ scribble: ScribbleAnnotation) {
-        let scribbleVM = ScribbleAnnotationViewModel(scale: scale, scribble: scribble)
+        let scribbleVM = ScribbleAnnotationViewModel(scribble: scribble, annotationsScale: annotationsScale)
         if let hostView = hostView {
             scribbleVM.zoomScale = hostView.scrollView.zoomScale
         }
@@ -164,7 +166,7 @@ class AnnotationsEditor: NSObject {
 
         // TODO: 1981 use latest text size instead of 20
         let initialTextAnnotationSize = TextAnnotationViewModel.initialAnnotationSize(
-            text: text, fontSize: 20 * scale, scale: scale
+            text: text, fontSize: 20 * annotationsScale, annotationsScale: annotationsScale
         )
         // position is top left of the box centered at the screen center
         let initialPosition = centerOfTheScreenInImagePoint.translate(
@@ -175,7 +177,7 @@ class AnnotationsEditor: NSObject {
         let textAnnotation = TextAnnotation(
             text: text,
             position: initialPosition,
-            fontSize: 20 * scale,
+            fontSize: 20 * annotationsScale,
             color: viewModel.lastPickedScribbleColor
         )
         addText(textAnnotation)
@@ -186,7 +188,7 @@ class AnnotationsEditor: NSObject {
     }
 
     private func addText(_ text: TextAnnotation) {
-        let textVM = TextAnnotationViewModel(scale: scale, text: text)
+        let textVM = TextAnnotationViewModel(text: text, annotationsScale: annotationsScale)
         if let hostView = hostView {
             textVM.zoomScale = hostView.scrollView.zoomScale
         }
@@ -240,7 +242,7 @@ extension AnnotationsEditor {
             return Annotations(
                 width: Int(imageWidth),
                 height: Int(imageHeight),
-                scale: scale,
+                scale: annotationsScale,
                 annotationViewModels.values.map(\.annotation)
             )
         }
@@ -256,7 +258,7 @@ extension AnnotationsEditor {
         hostView.scrollView.isScrollEnabled = !enabled
         if enabled {
             currentScribblingView = ScribblingView(
-                scale: scale,
+                scale: annotationsScale,
                 thickness: viewModel.lastPickedScribbleThickness,
                 color: viewModel.lastPickedScribbleColor
             )
@@ -270,7 +272,7 @@ extension AnnotationsEditor {
             view.addSubview(currentScribblingView!)
             currentScribblingView!.snp.makeConstraints { make in
                 make.center.equalToSuperview()
-                make.width.height.equalToSuperview().dividedBy(scale)
+                make.width.height.equalToSuperview().dividedBy(annotationsScale)
             }
 
             if let gestureRecognizer = currentScribblingView?.gestureRecognizer {
@@ -382,7 +384,6 @@ extension AnnotationsEditor: UIGestureRecognizerDelegate {
 
 extension AnnotationsEditor: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        print("XXX zoomScale(\(scrollView.zoomScale)) * scale(\(scale)) = ", scrollView.zoomScale * scale)
         for annotation in annotationViewModels.values {
             annotation.zoomScale = scrollView.zoomScale
         }

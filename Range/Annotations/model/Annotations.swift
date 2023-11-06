@@ -14,6 +14,7 @@ final class Annotations: NSObject, Codable {
 
     /// Scale applied to annotation sizes (like thickness from Annotations+Dictionaries). For example if scale is 2 then scribble annotation
     /// added with ".medium" thickness will have a lineWidth of 2 * medium.lineWidth = 2 * 6 = 12 pixels (when rendered on the photo)
+    /// Calculated as: min(imageWidth, imageHeight) / Annotations.referenceViewSize
     private(set) var scale: Double
     var annotations: [Annotation]
 

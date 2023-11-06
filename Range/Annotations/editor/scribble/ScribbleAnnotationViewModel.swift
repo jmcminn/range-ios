@@ -2,21 +2,21 @@ import Foundation
 import UIKit
 
 /// Holds the scribble annotations data and properties requried for view rendering, selection, etc.
+///
+/// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
+/// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
+/// This doesn't affect the end result of scribbling and generated annotation image, it's only done for the purpose of rendering
+/// in the annotations editor on iOS.
+/// For example when scale is 2, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
 class ScribbleAnnotationViewModel: AnnotationViewModel {
     @objc private(set) dynamic var scribble: ScribbleAnnotation
 
-    /// the scribble view is scaled down (from the view layout perspective), so it's resolution is lower than the underlying photo.
-    /// To preserve the real dimensions the view is transformed (scaled up) so 1 pixel of scribble cover several pixels of photo.
-    /// This doesn't affect the end result of scribbling and generated annotation image, it's only done for the purpose of rendering
-    /// in the annotations editor on iOS.
-    /// For example when scale is 2, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
-    let scale: Double
     /// translated and scaled so it can be drawn in the UI
     private(set) var uiPath: UIBezierPath = .init()
 
     /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
     var thickness: Annotations.ScribbleThickness? {
-        let lineWidthBasedThickness = scribble.lineWidth / scale
+        let lineWidthBasedThickness = scribble.lineWidth / annotationsScale
         return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
     }
 
@@ -24,13 +24,12 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
         scribble.annotation
     }
 
-    /// Initiates the view model with given scale and path
-    init(scale: Double, scribble: ScribbleAnnotation) {
+    /// Initiates the view model with annotation and annotationsScale
+    init(scribble: ScribbleAnnotation, annotationsScale: Double) {
         self.scribble = scribble
-        self.scale = scale
-        super.init(id: scribble.id)
+        super.init(id: scribble.id, annotationsScale: annotationsScale)
 
-        zoomScale = 1 / scale
+        zoomScale = 1 / annotationsScale
         updateFromScribble()
     }
 
@@ -45,7 +44,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
             // translate so it's relative to view origin:
             .getTranslatedPath(x: -viewBounds.origin.x, y: -viewBounds.origin.y)
             // scale down the path (as the view is scaled up):
-            .getScaledPath(multiplier: 1 / scale)
+            .getScaledPath(multiplier: 1 / annotationsScale)
             .getUIBezierPath()
     }
 
@@ -60,7 +59,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
 
     /// Thickness impacts the `viewBounds`, so it also impacts the `uiPath`
     func setThickness(_ thickness: Annotations.ScribbleThickness) {
-        scribble.lineWidth = thickness.lineWidth * scale
+        scribble.lineWidth = thickness.lineWidth * annotationsScale
         updateFromScribble()
     }
 
@@ -90,7 +89,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
         // Do it by creating a stroking path (see it's documentation for details) that is 40 points
         // wide (divided by scale so it doesn't depend on the image resolution) but is 40 screen points.
         let strokePath = scribble.path.getUIBezierPath().cgPath
-            .copy(strokingWithWidth: 40 * scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
+            .copy(strokingWithWidth: 40 * annotationsScale, lineCap: .round, lineJoin: .round, miterLimit: 1)
         return strokePath.contains(location)
     }
 

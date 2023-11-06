@@ -14,7 +14,7 @@ class ScribbleAnnotationView: UIView {
         backgroundColor = .clear
         layer.borderColor = UIColor.Primary_Blue_04.cgColor
         updateBorderWidth()
-        transform = CGAffineTransform(scaleX: viewModel.scale, y: viewModel.scale)
+        transform = CGAffineTransform(scaleX: viewModel.annotationsScale, y: viewModel.annotationsScale)
         scribbleObservation = viewModel.scribble.observe(\.color, changeHandler: { [weak self] _, _ in
             self?.setNeedsDisplay()
         })
@@ -47,7 +47,7 @@ class ScribbleAnnotationView: UIView {
         if viewModel.selected {
             // the higher the zoom the lower the borderWidth (because zooming in will make it look bigger
             // and we want to keep the visual width = 2)
-            layer.borderWidth = 2 / viewModel.scale / viewModel.zoomScale
+            layer.borderWidth = 2 / viewModel.annotationsScale / viewModel.zoomScale
         } else {
             layer.borderWidth = 0
         }
@@ -56,7 +56,7 @@ class ScribbleAnnotationView: UIView {
 
     override func draw(_: CGRect) {
         // lineWidth needs "unscaling" as the whole view is scaled
-        let lineWidth = viewModel.scribble.lineWidth / viewModel.scale
+        let lineWidth = viewModel.scribble.lineWidth / viewModel.annotationsScale
 
         ScribbleAnnotationRenderer.render(path: viewModel.uiPath, lineWidth: lineWidth, color: viewModel.scribble.color)
     }
