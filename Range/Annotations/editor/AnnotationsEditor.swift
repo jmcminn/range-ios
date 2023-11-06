@@ -159,9 +159,13 @@ class AnnotationsEditor: NSObject {
         let text = ""
         // insert new annotation in the visible center of the screen (to be precise to the left and up,
         // so it's center is in the center)
+        // The usage of hostView.bounds and not hostView.frame is important here:
+        // - We want the center of the view but we don't want the offset of the frame.
+        // - Since we can be adding annotations to multiple photos, all FullscreenImageGalleryPageViews
+        //   other than the first one have some non zero x offset.
         let centerOfTheScreenInImagePoint = view.convert(CGPoint(
-            x: hostView.frame.midX,
-            y: hostView.frame.midY
+            x: hostView.bounds.midX,
+            y: hostView.bounds.midY
         ), from: hostView)
 
         // TODO: 1981 use latest text size instead of 20
