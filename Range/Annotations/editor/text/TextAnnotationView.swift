@@ -81,7 +81,7 @@ class TextAnnotationView: UIView {
     private func updateTextEditingView() {
         guard let textEditingView = textEditingView else { return }
         textEditingView.text = viewModel.text.text
-        textEditingView.font = UIFont.systemFont(ofSize: viewModel.text.fontSize)
+        textEditingView.font = TextAnnotationRenderer.annotationFont(ofSize: viewModel.text.fontSize)
         textEditingView.tintColor = viewModel.text.color
         textEditingView.textColor = viewModel.text.color
         textEditingView.snp.remakeConstraints { make in

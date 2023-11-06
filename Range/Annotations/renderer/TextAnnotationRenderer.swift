@@ -46,7 +46,7 @@ enum TextAnnotationRenderer {
         if !backgroundOnly {
             color.set()
             let textFontAttributes = [
-                NSAttributedString.Key.font: UIFont.systemFont(ofSize: fontSize),
+                NSAttributedString.Key.font: annotationFont(ofSize: fontSize),
                 NSAttributedString.Key.foregroundColor: color,
             ] as [NSAttributedString.Key: Any]
             let textPadding = ceil(Annotations.textPadding * annotationsScale)
@@ -62,6 +62,11 @@ enum TextAnnotationRenderer {
 }
 
 extension TextAnnotationRenderer {
+    /// Returns the font used for text annotations
+    static func annotationFont(ofSize size: Double) -> UIFont {
+        .systemFont(ofSize: size, weight: .heavy)
+    }
+
     /// Calculates the size of the annotation for given text with given font. Adds padding for the white box.
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
@@ -85,7 +90,7 @@ extension TextAnnotationRenderer {
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
     static func textSize(text: String, fontSize: Double) -> CGSize {
-        let font = UIFont.systemFont(ofSize: fontSize)
+        let font = annotationFont(ofSize: fontSize)
         let textSize = text._boundingBox(font: font)
         return CGSize(width: ceil(textSize.width), height: ceil(textSize.height))
     }
