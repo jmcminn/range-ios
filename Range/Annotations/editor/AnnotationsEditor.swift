@@ -393,6 +393,10 @@ extension AnnotationsEditor {
            let textAnnotation = self.editingAnnotation as? TextAnnotationViewModel
         {
             textAnnotation.textEditing = false
+            if textAnnotation.text.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                // no text provided (other than spaces), remove:
+                deleteAnnotation(textAnnotation)
+            }
         }
         // update the currently editing
         self.editingAnnotation = editingAnnotation
