@@ -29,11 +29,11 @@ class AnnotationsEditorViewModel: ObservableObject {
     /// This is last user choice, unaffected by the current selected scribble, it is used for drawing
     @Published private(set) var lastPickedScribbleThickness: Annotations.ScribbleThickness = .medium
 
-    /// Current scribble color used for new scribbles (last user choice)
-    /// If a scribble is selected it's the given scribble color
-    @Published private(set) var currentScribbleColor: UIColor = .Pink_03
-    /// This is last user choice, unaffected by the current selected scribble, it is used for drawing
-    @Published private(set) var lastPickedScribbleColor: UIColor = .Pink_03
+    /// Current main color used for annotations (last user choice)
+    /// If an annotation is selected it's the given annotation color
+    @Published private(set) var currentColor: UIColor = .Pink_03
+    /// This is last user choice, unaffected by the current selected annotation, it is used for drawing
+    @Published private(set) var lastPickedColor: UIColor = .Pink_03
 
     @Published private(set) var selectedAnnotation: AnnotationViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
@@ -49,24 +49,21 @@ class AnnotationsEditorViewModel: ObservableObject {
     @Published private(set) var textAnnotationSelected: Bool = false
 
     func setCurrentScribbleThickness(_ thickness: Annotations.ScribbleThickness) {
-        guard let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel else {
-            Logger.annotations.warning("setCurrentScribbleThickness called when no scribble annotation selected")
-            return
-        }
         currentScribbleThickness = thickness
         lastPickedScribbleThickness = thickness
-        selectedAnnotation.setThickness(thickness)
+        if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
+            selectedAnnotation.setThickness(thickness)
+        }
     }
 
-    func setCurrentScribbleColor(_ color: UIColor) {
-        // TODO: 1981 should work for all annnotations...
-        guard let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel else {
-            Logger.annotations.warning("setCurrentScribbleThickness called when no scribble annotation selected")
-            return
+    func setCurrentColor(_ color: UIColor) {
+        currentColor = color
+        lastPickedColor = color
+        if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
+            selectedAnnotation.setColor(color)
+        } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
+            selectedAnnotation.setColor(color)
         }
-        currentScribbleColor = color
-        lastPickedScribbleColor = color
-        selectedAnnotation.setColor(color)
     }
 
     /// Adds text in the middle of the current viewport, selects it and starts editing
@@ -77,9 +74,10 @@ class AnnotationsEditorViewModel: ObservableObject {
     private func onAnnotationSelected(_ annotationVM: AnnotationViewModel?) {
         selectedAnnotation = annotationVM
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
-            // TODO: 1981 some more generic way?
             currentScribbleThickness = selectedAnnotation.thickness ?? lastPickedScribbleThickness
-            currentScribbleColor = selectedAnnotation.scribble.color
+            currentColor = selectedAnnotation.scribble.color
+        } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
+            currentColor = selectedAnnotation.text.color
         }
 
         if let selectedAnnotation = selectedAnnotation {

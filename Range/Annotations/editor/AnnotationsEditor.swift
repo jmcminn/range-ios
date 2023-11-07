@@ -92,7 +92,7 @@ class AnnotationsEditor: NSObject {
         viewModel.$lastPickedScribbleThickness
             .sink { [weak self] in self?.currentScribblingView?.thickness = $0 }
             .store(in: &subscriptions)
-        viewModel.$lastPickedScribbleColor
+        viewModel.$lastPickedColor
             .sink { [weak self] in self?.currentScribblingView?.color = $0 }
             .store(in: &subscriptions)
     }
@@ -170,7 +170,7 @@ class AnnotationsEditor: NSObject {
         let scribble = ScribbleAnnotation(
             path: path,
             lineWidth: viewModel.lastPickedScribbleThickness.lineWidth * annotationsScale,
-            color: viewModel.lastPickedScribbleColor
+            color: viewModel.lastPickedColor
         )
         addScribble(scribble)
     }
@@ -216,7 +216,7 @@ class AnnotationsEditor: NSObject {
             text: text,
             position: initialPosition,
             fontSize: 20 * annotationsScale,
-            color: viewModel.lastPickedScribbleColor
+            color: viewModel.lastPickedColor
         )
         addText(textAnnotation)
         guard let textAnnotationVM = annotationViewModels[textAnnotation.id] as? TextAnnotationViewModel else { return }
@@ -298,7 +298,7 @@ extension AnnotationsEditor {
             currentScribblingView = ScribblingView(
                 scale: annotationsScale,
                 thickness: viewModel.lastPickedScribbleThickness,
-                color: viewModel.lastPickedScribbleColor
+                color: viewModel.lastPickedColor
             )
             currentScribblingView!.onScribbleStarted = { [weak self] in
                 // unselect annotation on scribbling started

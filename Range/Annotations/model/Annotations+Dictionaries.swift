@@ -35,8 +35,8 @@ extension Annotations {
         }
     }
 
-    /// Colors for scribble color picker
-    static var scribbleColors: [UIColor] = [
+    /// Colors for color picker
+    static var colors: [UIColor] = [
         .white,
         .black,
         .Primary_Blue_04,

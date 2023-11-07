@@ -3,7 +3,7 @@ import SwiftUI
 struct AnnotationsToolbarView: View {
     @ObservedObject var model: AnnotationsEditorViewModel
     @State var pickingScribbleThickness: Bool = false
-    @State var pickingScribbleColor: Bool = false
+    @State var pickingColor: Bool = false
 
     /// background for toolbar buttons
     private var panelBackground: some View {
@@ -75,7 +75,7 @@ struct AnnotationsToolbarView: View {
     private var scribbleThicknessButton: some View {
         Button(action: {
             pickingScribbleThickness = true
-            pickingScribbleColor = false // hide the other picker if shown
+            pickingColor = false // hide the other picker if shown
         }) {
             Rectangle()
                 .fill(Color.clear)
@@ -109,33 +109,33 @@ struct AnnotationsToolbarView: View {
         .background(blurredPanelBackground)
     }
 
-    private var scribbleColorButton: some View {
+    private var colorButton: some View {
         Button(action: {
             pickingScribbleThickness = false // hide the other picker if shown
-            pickingScribbleColor = true
+            pickingColor = true
         }) {
             Rectangle()
                 .fill(Color.clear)
                 .frame(width: 48, height: 48)
                 .overlay(Circle()
                     .strokeBorder(Color.Neutral_01, lineWidth: 1)
-                    .background(Circle().fill(Color(model.currentScribbleColor)))
+                    .background(Circle().fill(Color(model.currentColor)))
                     .frame(width: 28, height: 28))
         }
     }
 
-    private var scribbleColorPicker: some View {
+    private var colorPicker: some View {
         VStack(spacing: 8) {
-            ForEach(Annotations.scribbleColors, id: \.hexString) { color in
+            ForEach(Annotations.colors, id: \.hexString) { color in
                 Button(action: {
-                    model.setCurrentScribbleColor(color)
-                    pickingScribbleColor = false
+                    model.setCurrentColor(color)
+                    pickingColor = false
                 }) {
                     Circle()
                         .fill(Color.clear)
                         .frame(width: 48, height: 48)
                         .overlay {
-                            if color == model.currentScribbleColor {
+                            if color == model.currentColor {
                                 Circle()
                                     .strokeBorder(Color.Neutral_01, lineWidth: 6)
                                     .background(Circle().fill(Color(color)))
@@ -170,14 +170,16 @@ struct AnnotationsToolbarView: View {
                 if showTextToolButton {
                     textToolButton
                 }
-                // TODO: 1981 text font / color buttons for text annotation selected
-                if model.scribbleAnnotationSelected || model.scribbleMode {
+                if model.scribbleAnnotationSelected || model.scribbleMode || model.textAnnotationSelected {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
-                    scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {
-                        scribbleThicknessPicker
+                    if model.scribbleAnnotationSelected || model.scribbleMode {
+                        scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {
+                            scribbleThicknessPicker
+                        }
                     }
-                    scribbleColorButton.pickerPopup(isPresented: $pickingScribbleColor) {
-                        scribbleColorPicker
+                    // TODO: 1981 text font selector
+                    colorButton.pickerPopup(isPresented: $pickingColor) {
+                        colorPicker
                     }
                 }
                 if model.selectedAnnotation != nil {
