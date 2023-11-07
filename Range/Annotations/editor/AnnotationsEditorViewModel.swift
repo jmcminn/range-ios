@@ -9,7 +9,9 @@ import UIKit
 ///
 class AnnotationsEditorViewModel: ObservableObject {
     /// currently annotated page in photos gallery
-    var annotationsEditor: AnnotationsEditor? { didSet { currentAnnotationsEditorDidSet() }}
+    var annotationsEditor: AnnotationsEditor? { didSet {
+        currentAnnotationsEditorDidSet(previousAnnotationsEditor: oldValue)
+    }}
 
     // TODO: 1891 is this needed?
     /// Is the AnnotationsToolbarView visible or not (hidden when keyboard is shown)
@@ -114,7 +116,10 @@ class AnnotationsEditorViewModel: ObservableObject {
     }
 
     /// When switching the AnnotationsEditor currently handled by annotation session (so when changing a page in photos gallery)
-    private func currentAnnotationsEditorDidSet() {
+    private func currentAnnotationsEditorDidSet(previousAnnotationsEditor: AnnotationsEditor?) {
+        guard previousAnnotationsEditor != annotationsEditor else { return }
+
+        previousAnnotationsEditor?.isActive = false
         selectedAnnotationObservation?.invalidate()
         editingAnnotationObservation?.invalidate()
         currentAnnotationsEditorInstalledObservation?.invalidate()
@@ -134,6 +139,7 @@ class AnnotationsEditorViewModel: ObservableObject {
                     self?.editingEnabled = annotationsEditor.installed
                 }
             )
+            annotationsEditor.isActive = true
         }
     }
 }

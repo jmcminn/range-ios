@@ -13,6 +13,12 @@ class AnnotationsEditor: NSObject {
     let initialAnnotations: Annotations?
     let viewModel: AnnotationsEditorViewModel
 
+    /// whether this annotations editor is the current active editor (there might be multiple editors, one per gallery page, but only
+    /// one is active at a time)
+    var isActive: Bool = false { didSet {
+        activate(isActive)
+    }}
+
     /// whether the annotations were updated from the initialAnnotations
     private(set) var annotationsUpdated: Bool = false { didSet {
         NotificationCenter.default.post(name: AnnotationsEditor.AnnotationsUpdatedNotificationName, object: self)
@@ -48,6 +54,9 @@ class AnnotationsEditor: NSObject {
 
     /// Combine listeners for viewModel
     private var subscriptions = Set<AnyCancellable>()
+
+    /// The scrollView.contentOffset stored on keyboardWillShow to be reverted on keyboardWillHide
+    private var scrollViewContentOffsetBeforeKeyboardAdjustment: CGPoint?
 
     init(
         hostView: FullscreenImageGalleryPageView,
@@ -134,6 +143,28 @@ class AnnotationsEditor: NSObject {
         installed = true
     }
 
+    /// Setup when editor is activated/deactivated (becomes the current editor)
+    private func activate(_ activate: Bool) {
+        if activate {
+            // install keyboard observers
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(keyboardWillShow),
+                name: UIResponder.keyboardWillShowNotification,
+                object: nil
+            )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(keyboardWillHide),
+                name: UIResponder.keyboardWillHideNotification,
+                object: nil
+            )
+        } else {
+            // remove keyboard observers
+            NotificationCenter.default.removeObserver(self)
+        }
+    }
+
     /// Add a scribble annotation and return its view
     func add(scribbleWithPath path: RangeBezierPath) {
         let scribble = ScribbleAnnotation(
@@ -191,7 +222,7 @@ class AnnotationsEditor: NSObject {
         guard let textAnnotationVM = annotationViewModels[textAnnotation.id] as? TextAnnotationViewModel else { return }
         setSelected(textAnnotationVM)
         // start editing
-        textAnnotationVM.textEditing = true
+        setEditing(textAnnotationVM)
     }
 
     private func addText(_ text: TextAnnotation) {
@@ -334,11 +365,8 @@ extension AnnotationsEditor {
         if previousSelectedAnnotation != selectedAnnotation {
             // unselect the previous one and select new one
             previousSelectedAnnotation?.selected = false
-            // stop editing previous text annotation if unselected
-            if let previousSelectedAnnotation = previousSelectedAnnotation as? TextAnnotationViewModel {
-                editingAnnotation = nil
-                previousSelectedAnnotation.textEditing = false
-            }
+            // stop editing previous text annotation
+            setEditing(nil)
             selectedAnnotation?.selected = true
             // the selected annotation should be on top
             if let selectedAnnotation = selectedAnnotation {
@@ -352,12 +380,26 @@ extension AnnotationsEditor {
         } else {
             // same annotation selected again - start editing selected annotation
             if let textAnnotation = selectedAnnotation as? TextAnnotationViewModel {
-                editingAnnotation = textAnnotation
-                textAnnotation.textEditing = true
+                setEditing(textAnnotation)
             }
         }
 
         checkAnnotationsUpdated()
+    }
+
+    func setEditing(_ editingAnnotation: TextAnnotationViewModel?) {
+        // mark the previous one as not editing
+        if editingAnnotation != self.editingAnnotation,
+           let textAnnotation = self.editingAnnotation as? TextAnnotationViewModel
+        {
+            textAnnotation.textEditing = false
+        }
+        // update the currently editing
+        self.editingAnnotation = editingAnnotation
+        // mark new one as editing
+        if let editingAnnotation = editingAnnotation {
+            editingAnnotation.textEditing = true
+        }
     }
 }
 
@@ -396,5 +438,42 @@ extension AnnotationsEditor: UIScrollViewDelegate {
         for annotation in annotationViewModels.values {
             annotation.zoomScale = scrollView.zoomScale
         }
+    }
+}
+
+// MARK: keyboard handling
+
+extension AnnotationsEditor {
+    /// Adjust the textView constraints when keyboard shows
+    @objc func keyboardWillShow(notification: NSNotification) {
+        // Get required info out of the notification
+        if let userInfo = notification.userInfo,
+           let keyboardEndRect = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? AnyObject)?.cgRectValue,
+           let hostView = hostView,
+           let textAnnotation = editingAnnotation as? TextAnnotationViewModel,
+           let textAnnotationView = annotationViews[textAnnotation.id]
+        {
+            // Transform the keyboard's frame into host view's coordinate system
+            let keyboardEndRectInHostView = hostView.convert(keyboardEndRect, from: view.window)
+            // Get the text annotation frame in host view's coordinate system
+            let textAnnotationFrame = hostView.convert(textAnnotationView.frame, from: view)
+            // Keyboard overlap over the text annotation frame
+            let keyboardOverlap = textAnnotationFrame.maxY - keyboardEndRectInHostView.origin.y
+            if keyboardOverlap > 0 {
+                // adjust the scroll view content offset, add 16 pixels of gap to have some space
+                // between annotation and keyboard
+                scrollViewContentOffsetBeforeKeyboardAdjustment = hostView.scrollView.contentOffset
+                hostView.scrollView.contentOffset.y += keyboardOverlap + 16
+            }
+        }
+    }
+
+    /// Reset textView constraints when the keyboard hides
+    @objc func keyboardWillHide(notification _: NSNotification) {
+        guard let hostView = hostView,
+              let scrollViewContentOffsetBeforeKeyboardAdjustment = scrollViewContentOffsetBeforeKeyboardAdjustment
+        else { return }
+        hostView.scrollView.contentOffset = scrollViewContentOffsetBeforeKeyboardAdjustment
+        self.scrollViewContentOffsetBeforeKeyboardAdjustment = nil
     }
 }

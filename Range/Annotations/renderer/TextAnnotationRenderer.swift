@@ -17,7 +17,6 @@ enum TextAnnotationRenderer {
         )
     }
 
-    // TODO: 1981 store text padding (scaled) in TextAnnotation??? so it can be directly used in renderer?
     /// Renders text with given parameters (to be reused in TextAnnotationView). It requires the parameters in proper scale
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
