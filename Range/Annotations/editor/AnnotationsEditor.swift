@@ -191,6 +191,8 @@ class AnnotationsEditor: NSObject {
         }
 
         let text = ""
+        let fontSize = viewModel.lastPickedTextFontSize.size * annotationsScale
+
         // insert new annotation in the visible center of the screen (to be precise to the left and up,
         // so it's center is in the center)
         // The usage of hostView.bounds and not hostView.frame is important here:
@@ -201,22 +203,16 @@ class AnnotationsEditor: NSObject {
             x: hostView.bounds.midX,
             y: hostView.bounds.midY
         ), from: hostView)
-
-        // TODO: 1981 use latest text size instead of 20
         let initialTextAnnotationSize = TextAnnotationViewModel.initialAnnotationSize(
-            text: text, fontSize: 20 * annotationsScale, annotationsScale: annotationsScale
+            text: text, fontSize: fontSize, annotationsScale: annotationsScale
         )
         // position is top left of the box centered at the screen center
         let initialPosition = centerOfTheScreenInImagePoint.translate(
             x: -initialTextAnnotationSize.width / 2,
             y: -initialTextAnnotationSize.height / 2
         )
-        // TODO: 1981 font size
         let textAnnotation = TextAnnotation(
-            text: text,
-            position: initialPosition,
-            fontSize: 20 * annotationsScale,
-            color: viewModel.lastPickedColor
+            text: text, position: initialPosition, fontSize: fontSize, color: viewModel.lastPickedColor
         )
         addText(textAnnotation)
         guard let textAnnotationVM = annotationViewModels[textAnnotation.id] as? TextAnnotationViewModel else { return }

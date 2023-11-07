@@ -46,6 +46,34 @@ extension Annotations {
         .Green_03,
     ]
 
+    /// text font size, independent of the image size
+    /// The exact font size in pixels depends on the scale used for annotations (which is dependent on the image size)
+    enum FontSize: String, CaseIterable, Codable {
+        case extraLarge, large, medium, small, extraSmall
+
+        /// This are reference values that don't include annotations scaling factor
+        var size: CGFloat {
+            switch self {
+            case .extraSmall: return 12.0
+            case .small: return 16.0
+            case .medium: return 20.0 // reference 100% value
+            case .large: return 26.0
+            case .extraLarge: return 32.0
+            }
+        }
+
+        /// size of the font selector image in the annotations toolbar
+        var toolbarSize: CGFloat {
+            switch self {
+            case .extraSmall: return 12.0
+            case .small: return 16.0
+            case .medium: return 20.0 // reference 100% value
+            case .large: return 26.0
+            case .extraLarge: return 28.0
+            }
+        }
+    }
+
     /// Default text padding for text annotations.
     /// Unscaled
     /// The size of the white background = text size + textPadding on each side.

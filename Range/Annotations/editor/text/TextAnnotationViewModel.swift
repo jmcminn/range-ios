@@ -9,11 +9,11 @@ class TextAnnotationViewModel: AnnotationViewModel {
     /// Unscaled
     static var initialBoxWidth: CGFloat = 84.0
 
-    /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
-//    var thickness: Annotations.ScribbleThickness? {
-//        let lineWidthBasedThickness = scribble.lineWidth / scale
-//        return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
-//    }
+    /// based on the text.fontSize, optional as the font size may potentially not match any predefined font sizes
+    var fontSize: Annotations.FontSize? {
+        let unscaledFontSize = text.fontSize / annotationsScale
+        return Annotations.FontSize.allCases.first { $0.size == unscaledFontSize }
+    }
 
     /// whether the text of the annotation is currently being edited
     @objc dynamic var textEditing: Bool = false
@@ -46,10 +46,10 @@ class TextAnnotationViewModel: AnnotationViewModel {
         viewBounds.origin = origin
     }
 
-    /// Thickness impacts the `viewBounds`, so it also impacts the `uiPath`
-    func setThickness(_: Annotations.ScribbleThickness) {
-//        scribble.lineWidth = thickness.lineWidth * scale
-//        updateFromScribble()
+    /// Font size impacts the `viewBounds`
+    func setFontSize(_ fontSize: Annotations.FontSize) {
+        text.fontSize = fontSize.size * annotationsScale
+        updateFromAnnotation()
     }
 
     func setColor(_ color: UIColor) {

@@ -4,6 +4,7 @@ struct AnnotationsToolbarView: View {
     @ObservedObject var model: AnnotationsEditorViewModel
     @State var pickingScribbleThickness: Bool = false
     @State var pickingColor: Bool = false
+    @State var pickingTextFontSize: Bool = false
 
     /// background for toolbar buttons
     private var panelBackground: some View {
@@ -76,6 +77,7 @@ struct AnnotationsToolbarView: View {
         Button(action: {
             pickingScribbleThickness = true
             pickingColor = false // hide the other picker if shown
+            pickingTextFontSize = false
         }) {
             Rectangle()
                 .fill(Color.clear)
@@ -113,6 +115,7 @@ struct AnnotationsToolbarView: View {
         Button(action: {
             pickingScribbleThickness = false // hide the other picker if shown
             pickingColor = true
+            pickingTextFontSize = false
         }) {
             Rectangle()
                 .fill(Color.clear)
@@ -154,6 +157,45 @@ struct AnnotationsToolbarView: View {
         .background(blurredPanelBackground)
     }
 
+    private var textFontSizeButton: some View {
+        Button(action: {
+            pickingScribbleThickness = false
+            pickingColor = false
+            pickingTextFontSize = true
+        }) {
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 48, height: 48)
+                .overlay(Image(systemName: "textformat")
+                    .font(.system(size: model.currentTextFontSize.toolbarSize, weight: .bold))
+                    .frame(width: 30, height: 10)
+                    .foregroundColor(.Neutral_01))
+        }
+    }
+
+    private var textFontSizePicker: some View {
+        VStack(spacing: 8) {
+            ForEach(Annotations.FontSize.allCases, id: \.rawValue) { fontSize in
+                Button(action: {
+                    model.setCurrentFontSize(fontSize)
+                    pickingTextFontSize = false
+                }) {
+                    Circle()
+                        .fill(fontSize == model.currentTextFontSize
+                            ? Color.Neutral_01.opacity(0.2) : Color.clear)
+                        .frame(width: 48, height: 48)
+                        .overlay {
+                            Image(systemName: "textformat")
+                                .font(.system(size: fontSize.toolbarSize, weight: .bold))
+                                .foregroundColor(.Neutral_01)
+                        }
+                }
+            }
+        }
+        .padding(8)
+        .background(blurredPanelBackground)
+    }
+
     var body: some View {
         VStack {
             HStack(spacing: 4) {
@@ -177,7 +219,11 @@ struct AnnotationsToolbarView: View {
                             scribbleThicknessPicker
                         }
                     }
-                    // TODO: 1981 text font selector
+                    if model.textAnnotationSelected {
+                        textFontSizeButton.pickerPopup(isPresented: $pickingTextFontSize) {
+                            textFontSizePicker
+                        }
+                    }
                     colorButton.pickerPopup(isPresented: $pickingColor) {
                         colorPicker
                     }

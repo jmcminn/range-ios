@@ -35,6 +35,12 @@ class AnnotationsEditorViewModel: ObservableObject {
     /// This is last user choice, unaffected by the current selected annotation, it is used for drawing
     @Published private(set) var lastPickedColor: UIColor = .Pink_03
 
+    /// Current text font size used for new annotations (last user choice)
+    /// If a text annotation is selected it's the given annotation text font size
+    @Published private(set) var currentTextFontSize: Annotations.FontSize = .medium
+    /// This is last user choice, unaffected by the current selected annotation, it is used for new annotations
+    @Published private(set) var lastPickedTextFontSize: Annotations.FontSize = .medium
+
     @Published private(set) var selectedAnnotation: AnnotationViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
     private var editingAnnotationObservation: NSKeyValueObservation?
@@ -66,6 +72,14 @@ class AnnotationsEditorViewModel: ObservableObject {
         }
     }
 
+    func setCurrentFontSize(_ fontSize: Annotations.FontSize) {
+        currentTextFontSize = fontSize
+        lastPickedTextFontSize = fontSize
+        if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
+            selectedAnnotation.setFontSize(fontSize)
+        }
+    }
+
     /// Adds text in the middle of the current viewport, selects it and starts editing
     func insertTextAnnotation() {
         annotationsEditor?.insertTextAnnotation()
@@ -77,6 +91,7 @@ class AnnotationsEditorViewModel: ObservableObject {
             currentScribbleThickness = selectedAnnotation.thickness ?? lastPickedScribbleThickness
             currentColor = selectedAnnotation.scribble.color
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
+            currentTextFontSize = selectedAnnotation.fontSize ?? lastPickedTextFontSize
             currentColor = selectedAnnotation.text.color
         }
 
