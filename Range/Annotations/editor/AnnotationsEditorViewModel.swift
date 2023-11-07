@@ -11,6 +11,10 @@ class AnnotationsEditorViewModel: ObservableObject {
     /// currently annotated page in photos gallery
     var annotationsEditor: AnnotationsEditor? { didSet { currentAnnotationsEditorDidSet() }}
 
+    // TODO: 1891 is this needed?
+    /// Is the AnnotationsToolbarView visible or not (hidden when keyboard is shown)
+    @Published private(set) var toolbarVisible: Bool = true
+
     /// is the editing enabled for the current AnnotationsView (on if it's `installed`)
     @Published private(set) var editingEnabled: Bool = false
 
@@ -31,6 +35,7 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     @Published private(set) var selectedAnnotation: AnnotationViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
+    private var editingAnnotationObservation: NSKeyValueObservation?
     private var currentAnnotationsEditorInstalledObservation: NSKeyValueObservation?
 
     func toggleScribbleMode() {
@@ -92,6 +97,10 @@ class AnnotationsEditorViewModel: ObservableObject {
         }
     }
 
+    private func editingAnnotationChanged(_ annotationVM: AnnotationViewModel?) {
+        toolbarVisible = annotationVM == nil
+    }
+
     /// Unselect the currently selected annotation
     func unselectAnnotation() {
         annotationsEditor?.setSelected(nil)
@@ -107,12 +116,17 @@ class AnnotationsEditorViewModel: ObservableObject {
     /// When switching the AnnotationsEditor currently handled by annotation session (so when changing a page in photos gallery)
     private func currentAnnotationsEditorDidSet() {
         selectedAnnotationObservation?.invalidate()
+        editingAnnotationObservation?.invalidate()
         currentAnnotationsEditorInstalledObservation?.invalidate()
         onAnnotationSelected(annotationsEditor?.selectedAnnotation)
+        editingAnnotationChanged(annotationsEditor?.editingAnnotation)
         editingEnabled = annotationsEditor?.installed ?? false
         if let annotationsEditor = annotationsEditor {
             selectedAnnotationObservation = annotationsEditor.observe(\.selectedAnnotation) { [weak self] _, _ in
                 self?.onAnnotationSelected(annotationsEditor.selectedAnnotation)
+            }
+            editingAnnotationObservation = annotationsEditor.observe(\.editingAnnotation) { [weak self] _, _ in
+                self?.editingAnnotationChanged(annotationsEditor.editingAnnotation)
             }
             currentAnnotationsEditorInstalledObservation = annotationsEditor.observe(
                 \.installed,

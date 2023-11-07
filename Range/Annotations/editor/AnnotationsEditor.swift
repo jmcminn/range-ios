@@ -30,7 +30,10 @@ class AnnotationsEditor: NSObject {
 
     // whether the annotations are installed in the host view and ready to be edited
     @objc dynamic var installed: Bool = false
+    // annotation currently selected by user
     @objc dynamic var selectedAnnotation: AnnotationViewModel?
+    // annotaiton currently edited by user (only for annotations that are edited in place = text annotations)
+    @objc dynamic var editingAnnotation: AnnotationViewModel?
     /// remember the origin of selected annotation when dragging begins (so it can be translated while dragging)
     var dragAnnotationOrigin: CGPoint?
 
@@ -333,6 +336,7 @@ extension AnnotationsEditor {
             previousSelectedAnnotation?.selected = false
             // stop editing previous text annotation if unselected
             if let previousSelectedAnnotation = previousSelectedAnnotation as? TextAnnotationViewModel {
+                editingAnnotation = nil
                 previousSelectedAnnotation.textEditing = false
             }
             selectedAnnotation?.selected = true
@@ -348,6 +352,7 @@ extension AnnotationsEditor {
         } else {
             // same annotation selected again - start editing selected annotation
             if let textAnnotation = selectedAnnotation as? TextAnnotationViewModel {
+                editingAnnotation = textAnnotation
                 textAnnotation.textEditing = true
             }
         }
