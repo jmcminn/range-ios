@@ -73,6 +73,8 @@ class TextAnnotationView: UIView {
         let textView = UITextViewWithNoTextPadding()
         textView.backgroundColor = .clear
         textView.delegate = self
+        textView.keyboardAppearance = .dark
+        textView.inputAccessoryView = setupInputAccessoryView()
         addSubview(textView)
         textEditingView = textView
         updateTextEditingView()
@@ -136,6 +138,37 @@ class TextAnnotationView: UIView {
             annotationsScale: viewModel.annotationsScale,
             backgroundOnly: viewModel.textEditing // when editing the text is rendered with UITextView (to edit)
         )
+    }
+
+    /// Create "Done" button that will be shown above the keyboard
+    private func setupInputAccessoryView() -> UIView {
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.isUserInteractionEnabled = false
+        // width doesn't matter, will take as much as the keyboard
+        blurEffectView.frame = CGRect(x: 0, y: 0, width: 100, height: 48)
+
+        let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)
+            .applying(UIImage.SymbolConfiguration(weight: .semibold))
+        var buttonConfig = UIButton.Configuration.filled()
+        buttonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 0, bottom: 14, trailing: 0)
+        buttonConfig.baseBackgroundColor = .clear
+        buttonConfig.baseForegroundColor = .white
+        buttonConfig.preferredSymbolConfigurationForImage = imageConfig
+        buttonConfig.imagePlacement = .leading
+        buttonConfig.imagePadding = 5
+        let saveTextButton = UIButton(
+            configuration: buttonConfig,
+            primaryAction: UIAction(title: "Save Text", image: UIImage(systemName: "checkmark")) { [weak self] _ in
+                self?.endEditing(false)
+            }
+        )
+        blurEffectView.contentView.addSubview(saveTextButton)
+        saveTextButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        return blurEffectView
     }
 }
 
