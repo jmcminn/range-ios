@@ -85,7 +85,8 @@ class TextAnnotationView: UIView {
         textEditingView.tintColor = viewModel.text.color
         textEditingView.textColor = viewModel.text.color
         textEditingView.snp.remakeConstraints { make in
-            make.top.leading.equalToSuperview().inset(Annotations.textPadding * viewModel.annotationsScale)
+            make.top.equalToSuperview().inset(Annotations.textVerticalPadding * viewModel.annotationsScale)
+            make.leading.equalToSuperview().inset(Annotations.textHorizontalPadding * viewModel.annotationsScale)
             make.width.equalTo(viewModel.viewBounds.width)
             make.height.equalTo(viewModel.viewBounds.height)
         }

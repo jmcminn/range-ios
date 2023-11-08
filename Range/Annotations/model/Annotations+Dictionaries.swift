@@ -77,7 +77,8 @@ extension Annotations {
     /// Default text padding for text annotations.
     /// Unscaled
     /// The size of the white background = text size + textPadding on each side.
-    static var textPadding: Double = 6.0
+    static var textHorizontalPadding: Double = 6.0
+    static var textVerticalPadding: Double = 3.0
 
     /// The corner radius of the white text annotation box.
     /// Unscaled

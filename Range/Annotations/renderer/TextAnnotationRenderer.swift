@@ -48,10 +48,11 @@ enum TextAnnotationRenderer {
                 NSAttributedString.Key.font: annotationFont(ofSize: fontSize),
                 NSAttributedString.Key.foregroundColor: color,
             ] as [NSAttributedString.Key: Any]
-            let textPadding = ceil(Annotations.textPadding * annotationsScale)
+            let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsScale)
+            let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsScale)
             text.draw(
                 in: CGRect(
-                    origin: position.translate(x: textPadding, y: textPadding),
+                    origin: position.translate(x: textHorizontalPadding, y: textVerticalPadding),
                     size: textSize(text: text, fontSize: fontSize)
                 ),
                 withAttributes: textFontAttributes
@@ -76,10 +77,11 @@ extension TextAnnotationRenderer {
         annotationsScale: Double
     ) -> CGSize {
         let textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize)
-        let scaledPadding = ceil(Annotations.textPadding * annotationsScale)
+        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsScale)
+        let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsScale)
         let boxSize = CGSize(
-            width: textSize.width + 2 * scaledPadding,
-            height: textSize.height + 2 * scaledPadding
+            width: textSize.width + 2 * textHorizontalPadding,
+            height: textSize.height + 2 * textVerticalPadding
         )
         return boxSize
     }
