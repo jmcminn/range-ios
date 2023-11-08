@@ -51,9 +51,6 @@ class AnnotationsEditorViewModel: ObservableObject {
         annotationsEditor?.setScribblingEnabled(scribbleMode)
     }
 
-    @Published private(set) var scribbleAnnotationSelected: Bool = false
-    @Published private(set) var textAnnotationSelected: Bool = false
-
     func setCurrentScribbleThickness(_ thickness: Annotations.ScribbleThickness) {
         currentScribbleThickness = thickness
         lastPickedScribbleThickness = thickness
@@ -95,20 +92,9 @@ class AnnotationsEditorViewModel: ObservableObject {
             currentColor = selectedAnnotation.text.color
         }
 
-        if let selectedAnnotation = selectedAnnotation {
-            switch selectedAnnotation.annotation {
-            case .scribble:
-                scribbleAnnotationSelected = true
-                textAnnotationSelected = false
-            case .text:
-                scribbleAnnotationSelected = false
-                textAnnotationSelected = true
-                // disable scribble mode when text annotation selected
-                if scribbleMode { toggleScribbleMode() }
-            }
-        } else {
-            scribbleAnnotationSelected = false
-            textAnnotationSelected = false
+        if let selectedAnnotation = selectedAnnotation, selectedAnnotation.type != .scribble {
+            // disable scribble mode when an non-scribble annotation is selected
+            if scribbleMode { toggleScribbleMode() }
         }
     }
 

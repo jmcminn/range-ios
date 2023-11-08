@@ -35,6 +35,11 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
         fatalError("annotation to be provided by subclasses")
     }
 
+    /// The AnnotationType of this annotation
+    var type: AnnotationType {
+        fatalError("type to be provided by subclasses")
+    }
+
     init(id: String, annotationsGeometry: AnnotationsGeometry) {
         self.id = id
         self.annotationsGeometry = annotationsGeometry

@@ -199,27 +199,45 @@ struct AnnotationsToolbarView: View {
     var body: some View {
         VStack {
             HStack(spacing: 4) {
-                let showScribbleToolButton = model.selectedAnnotation == nil || model.scribbleMode
-                    || model.scribbleAnnotationSelected
-                let showTextToolButton = (model.selectedAnnotation == nil || model.textAnnotationSelected)
-                    && !model.scribbleMode
+                // helper variables to make the conditions below easier to read
+                let annotationSelected = model.selectedAnnotation != nil
+                let scribbleMode = model.scribbleMode
+                let scribbleSelected = model.selectedAnnotation?.type == .scribble
+                let textSelected = model.selectedAnnotation?.type == .text
+                let arrowSelected = model.selectedAnnotation?.type == .arrow
+
+                let showScribbleToolButton = scribbleMode || !annotationSelected || scribbleSelected
+                let showTextToolButton = !scribbleMode && (!annotationSelected || textSelected)
+                let showArrowToolButton = !scribbleMode && (!annotationSelected || arrowSelected)
+
+                // The IFs below are bad... but we want to make sure that we only have one place
+                // in code that adds any tool button, this way when it's kept visible when switching
+                // modes, selecting annotations, etc (basically changing the toolbar layout) it'll be
+                // properly animated to new place (instead of disappear and appear in new place)
                 if showScribbleToolButton {
                     scribbleToolButton
+                    if showArrowToolButton || showTextToolButton {
+                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
+                    }
                 }
-                if showScribbleToolButton, showTextToolButton {
-                    Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
-                }
-                if showTextToolButton {
-                    textToolButton
-                }
-                if model.scribbleAnnotationSelected || model.scribbleMode || model.textAnnotationSelected {
+                // TODO: 1982
+//                if showArrowToolButton {
+//                    arrowToolButton
+//                    if showTextToolButton {
+//                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
+//                    }
+//                }
+                if showTextToolButton { textToolButton }
+
+                if scribbleMode || annotationSelected {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
-                    if model.scribbleAnnotationSelected || model.scribbleMode {
+                    if scribbleMode || scribbleSelected || textSelected {
+                        // TODO: 1982 now it's line thickness ? reused for arrow and scribble...
                         scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {
                             scribbleThicknessPicker
                         }
                     }
-                    if model.textAnnotationSelected {
+                    if textSelected {
                         textFontSizeButton.pickerPopup(isPresented: $pickingTextFontSize) {
                             textFontSizePicker
                         }
@@ -228,7 +246,7 @@ struct AnnotationsToolbarView: View {
                         colorPicker
                     }
                 }
-                if model.selectedAnnotation != nil {
+                if annotationSelected {
                     Spacer().frame(width: 8)
                     Divider().frame(width: 1, height: 48).overlay(Color.Neutral_07)
                     Spacer().frame(width: 8)

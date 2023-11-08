@@ -20,9 +20,8 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
         return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
     }
 
-    override var annotation: Annotation {
-        scribble.annotation
-    }
+    override var annotation: Annotation { scribble.annotation }
+    override var type: AnnotationType { scribble.type }
 
     /// Initiates the view model with annotation and annotationsScale
     init(scribble: ScribbleAnnotation, annotationsGeometry: AnnotationsGeometry) {

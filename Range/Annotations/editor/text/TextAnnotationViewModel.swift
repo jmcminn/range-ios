@@ -19,6 +19,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     @objc dynamic var textEditing: Bool = false
 
     override var annotation: Annotation { text.annotation }
+    override var type: AnnotationType { text.type }
 
     /// Initiates the view model with given annotation and annotationsGeometry
     init(text: TextAnnotation, annotationsGeometry: AnnotationsGeometry) {
