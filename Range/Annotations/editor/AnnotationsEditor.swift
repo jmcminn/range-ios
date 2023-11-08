@@ -90,7 +90,7 @@ class AnnotationsEditor: NSObject {
     }
 
     private func subscribeToViewModel() {
-        viewModel.$lastPickedScribbleThickness
+        viewModel.$lastPickedLineThickness
             .sink { [weak self] in self?.currentScribblingView?.thickness = $0 }
             .store(in: &subscriptions)
         viewModel.$lastPickedColor
@@ -175,7 +175,7 @@ class AnnotationsEditor: NSObject {
     func add(scribbleWithPath path: RangeBezierPath) {
         let scribble = ScribbleAnnotation(
             path: path,
-            lineWidth: viewModel.lastPickedScribbleThickness.lineWidth * annotationsGeometry.scale,
+            lineWidth: viewModel.lastPickedLineThickness.lineWidth * annotationsGeometry.scale,
             color: viewModel.lastPickedColor
         )
         addScribble(scribble)
@@ -305,7 +305,7 @@ extension AnnotationsEditor {
         if enabled {
             currentScribblingView = ScribblingView(
                 scale: annotationsGeometry.scale,
-                thickness: viewModel.lastPickedScribbleThickness,
+                thickness: viewModel.lastPickedLineThickness,
                 color: viewModel.lastPickedColor
             )
             currentScribblingView!.onScribbleStarted = { [weak self] in

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AnnotationsToolbarView: View {
     @ObservedObject var model: AnnotationsEditorViewModel
-    @State var pickingScribbleThickness: Bool = false
+    @State var pickingLineThickness: Bool = false
     @State var pickingColor: Bool = false
     @State var pickingTextFontSize: Bool = false
 
@@ -73,9 +73,9 @@ struct AnnotationsToolbarView: View {
         }
     }
 
-    private var scribbleThicknessButton: some View {
+    private var lineThicknessButton: some View {
         Button(action: {
-            pickingScribbleThickness = true
+            pickingLineThickness = true
             pickingColor = false // hide the other picker if shown
             pickingTextFontSize = false
         }) {
@@ -83,20 +83,20 @@ struct AnnotationsToolbarView: View {
                 .fill(Color.clear)
                 .frame(width: 48, height: 48)
                 .overlay(RoundedRectangle(cornerRadius: 1000)
-                    .frame(width: 30, height: model.currentScribbleThickness.toolbarWidth)
+                    .frame(width: 30, height: model.currentLineThickness.toolbarWidth)
                     .foregroundColor(.Neutral_01))
         }
     }
 
-    private var scribbleThicknessPicker: some View {
+    private var lineThicknessPicker: some View {
         VStack(spacing: 8) {
-            ForEach(Annotations.ScribbleThickness.allCases, id: \.rawValue) { thickness in
+            ForEach(Annotations.LineThickness.allCases, id: \.rawValue) { thickness in
                 Button(action: {
-                    model.setCurrentScribbleThickness(thickness)
-                    pickingScribbleThickness = false
+                    model.setCurrentLineThickness(thickness)
+                    pickingLineThickness = false
                 }) {
                     Circle()
-                        .fill(thickness == model.currentScribbleThickness
+                        .fill(thickness == model.currentLineThickness
                             ? Color.Neutral_01.opacity(0.2) : Color.clear)
                         .frame(width: 48, height: 48)
                         .overlay {
@@ -113,7 +113,7 @@ struct AnnotationsToolbarView: View {
 
     private var colorButton: some View {
         Button(action: {
-            pickingScribbleThickness = false // hide the other picker if shown
+            pickingLineThickness = false // hide the other picker if shown
             pickingColor = true
             pickingTextFontSize = false
         }) {
@@ -159,7 +159,7 @@ struct AnnotationsToolbarView: View {
 
     private var textFontSizeButton: some View {
         Button(action: {
-            pickingScribbleThickness = false
+            pickingLineThickness = false
             pickingColor = false
             pickingTextFontSize = true
         }) {
@@ -233,8 +233,8 @@ struct AnnotationsToolbarView: View {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
                     if scribbleMode || scribbleSelected || textSelected {
                         // TODO: 1982 now it's line thickness ? reused for arrow and scribble...
-                        scribbleThicknessButton.pickerPopup(isPresented: $pickingScribbleThickness) {
-                            scribbleThicknessPicker
+                        lineThicknessButton.pickerPopup(isPresented: $pickingLineThickness) {
+                            lineThicknessPicker
                         }
                     }
                     if textSelected {

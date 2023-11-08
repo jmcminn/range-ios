@@ -15,9 +15,9 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     private(set) var uiPath: UIBezierPath = .init()
 
     /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
-    var thickness: Annotations.ScribbleThickness? {
+    var thickness: Annotations.LineThickness? {
         let lineWidthBasedThickness = scribble.lineWidth / annotationsGeometry.scale
-        return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
+        return Annotations.LineThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
     }
 
     override var annotation: Annotation { scribble.annotation }
@@ -57,7 +57,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Thickness impacts the `viewFrame`, so it also impacts the `uiPath`
-    func setThickness(_ thickness: Annotations.ScribbleThickness) {
+    func setThickness(_ thickness: Annotations.LineThickness) {
         scribble.lineWidth = thickness.lineWidth * annotationsGeometry.scale
         updateFromScribble()
     }

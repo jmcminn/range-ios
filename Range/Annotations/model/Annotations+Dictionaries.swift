@@ -6,12 +6,12 @@ extension Annotations {
     /// The scale property of the Annotations is calculated based on this property, so scale = min(imageHeight, imageWidth)/referenceViewSize
     static var referenceViewSize: Double = 400.0
 
-    /// Scribble thickness, independent of the image size
+    /// Scribble/arrow thickness, independent of the image size
     /// The exact thickness in pixels depends on the scale used for annotations (which is dependent on the image size)
-    enum ScribbleThickness: String, CaseIterable, Codable {
+    enum LineThickness: String, CaseIterable, Codable {
         case thin, light, medium, bold, heavy
 
-        /// When rendering the scribble this is the width of the inner line, the outline is hardcoded to be `2 * lineWidth`
+        /// When rendering the scribble/arrow this is the width of the inner line, the outline is hardcoded to be `2 * lineWidth`
         /// This are reference values that don't include annotations scaling factor
         var lineWidth: CGFloat {
             switch self {

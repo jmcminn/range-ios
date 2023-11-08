@@ -23,11 +23,11 @@ class AnnotationsEditorViewModel: ObservableObject {
     /// Is the scribble mode enabled
     @Published private(set) var scribbleMode: Bool = false
 
-    /// Current scribble thickness used for new scribbles (last user choice)
-    /// If a scribble is selected it's the given scribble thickness
-    @Published private(set) var currentScribbleThickness: Annotations.ScribbleThickness = .medium
-    /// This is last user choice, unaffected by the current selected scribble, it is used for drawing
-    @Published private(set) var lastPickedScribbleThickness: Annotations.ScribbleThickness = .medium
+    /// Current line thickness used for new scribbles and arrows (last user choice)
+    /// If an annotation is selected it's the given annotation thickness
+    @Published private(set) var currentLineThickness: Annotations.LineThickness = .medium
+    /// This is last user choice, unaffected by the current selected annotation, it is used for drawing
+    @Published private(set) var lastPickedLineThickness: Annotations.LineThickness = .medium
 
     /// Current main color used for annotations (last user choice)
     /// If an annotation is selected it's the given annotation color
@@ -51,9 +51,9 @@ class AnnotationsEditorViewModel: ObservableObject {
         annotationsEditor?.setScribblingEnabled(scribbleMode)
     }
 
-    func setCurrentScribbleThickness(_ thickness: Annotations.ScribbleThickness) {
-        currentScribbleThickness = thickness
-        lastPickedScribbleThickness = thickness
+    func setCurrentLineThickness(_ thickness: Annotations.LineThickness) {
+        currentLineThickness = thickness
+        lastPickedLineThickness = thickness
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
             selectedAnnotation.setThickness(thickness)
         }
@@ -85,7 +85,7 @@ class AnnotationsEditorViewModel: ObservableObject {
     private func onAnnotationSelected(_ annotationVM: AnnotationViewModel?) {
         selectedAnnotation = annotationVM
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
-            currentScribbleThickness = selectedAnnotation.thickness ?? lastPickedScribbleThickness
+            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
             currentColor = selectedAnnotation.scribble.color
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             currentTextFontSize = selectedAnnotation.fontSize ?? lastPickedTextFontSize

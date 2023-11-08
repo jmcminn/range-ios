@@ -7,7 +7,7 @@ class ScribblingView: UIView {
     /// The view is scaled (transformed) by this constant (multiplied)
     let scale: Double
     /// the thickness of the line
-    var thickness: Annotations.ScribbleThickness
+    var thickness: Annotations.LineThickness
     /// the inner color of the line
     var color: UIColor
     /// points recorded for annotation (not scaled)
@@ -22,7 +22,7 @@ class ScribblingView: UIView {
     /// Callback called with bezier path (not scaled) created whenever user completes a drag gesture
     var onScribbleCreated: ((RangeBezierPath) -> Void)?
 
-    init(scale: Double, thickness: Annotations.ScribbleThickness, color: UIColor) {
+    init(scale: Double, thickness: Annotations.LineThickness, color: UIColor) {
         self.scale = scale
         self.thickness = thickness
         self.color = color
