@@ -113,10 +113,8 @@ class TextAnnotationView: UIView {
                 dy: -6 / viewModel.zoomScale
             )
             // the higher the zoom the lower the borderWidth (because zooming in will make it look bigger
-            // and we want to keep the visual width = 1)
-            selectedLayer.lineWidth = 1 / viewModel.zoomScale
-            let lineDashPatternLength = 2 / viewModel.zoomScale
-            selectedLayer.lineDashPattern = [lineDashPatternLength, lineDashPatternLength] as [NSNumber]
+            // and we want to keep the visual width = 2)
+            selectedLayer.lineWidth = 2 / viewModel.zoomScale
             selectedLayer.path = UIBezierPath(
                 roundedRect: selectedLayer.bounds,
                 cornerRadius: Annotations.textBoxCornerRadius * viewModel.annotationsScale
