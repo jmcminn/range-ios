@@ -31,9 +31,9 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     /// Current main color used for annotations (last user choice)
     /// If an annotation is selected it's the given annotation color
-    @Published private(set) var currentColor: UIColor = .Pink_03
+    @Published private(set) var currentColor: UIColor = .Red_03
     /// This is last user choice, unaffected by the current selected annotation, it is used for drawing
-    @Published private(set) var lastPickedColor: UIColor = .Pink_03
+    @Published private(set) var lastPickedColor: UIColor = .Red_03
 
     /// Current text font size used for new annotations (last user choice)
     /// If a text annotation is selected it's the given annotation text font size
