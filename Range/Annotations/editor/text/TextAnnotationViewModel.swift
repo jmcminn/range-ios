@@ -26,20 +26,19 @@ class TextAnnotationViewModel: AnnotationViewModel {
         super.init(id: text.id, annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1
-        updateViewBounds()
+        updateViewFrame()
     }
 
-    /// Moves the annotation to new origin. It updates the `viewBounds` and `path` (which is not local to the annotation coordinate system)
-    /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
+    /// Moves the annotation to new origin. It updates the `viewFrame`.
     override func setOrigin(_ origin: CGPoint) {
         text.position = origin
-        updateViewBounds()
+        updateViewFrame()
     }
 
-    /// Font size impacts the `viewBounds`
+    /// Font size impacts the `viewFrame`
     func setFontSize(_ fontSize: Annotations.FontSize) {
         text.fontSize = fontSize.size * annotationsGeometry.scale
-        updateViewBounds()
+        updateViewFrame()
     }
 
     func setColor(_ color: UIColor) {
@@ -48,12 +47,12 @@ class TextAnnotationViewModel: AnnotationViewModel {
 
     func setText(_ value: String) {
         text.text = value
-        updateViewBounds()
+        updateViewFrame()
     }
 
     /// Update view bounds from annotation data
-    private func updateViewBounds() {
-        viewBounds = CGRect(
+    private func updateViewFrame() {
+        viewFrame = CGRect(
             origin: text.position,
             size: TextAnnotationRenderer.annotationSize(
                 position: text.position,
@@ -72,13 +71,13 @@ class TextAnnotationViewModel: AnnotationViewModel {
     /// will be selected. If multiple annotations report the same distance (most likely 0 for overlapping annotations) then the selection will
     /// be based on the current order and selection state of annotations.
     override func containsTapLocation(_ location: CGPoint) -> Bool {
-        viewBounds.contains(location)
+        viewFrame.contains(location)
     }
 
     /// Called when no annotations are returned on tap for `containsTapLocation`.
     /// This may be rough in a sence that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
     override func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
-        viewBounds.contains(location)
+        viewFrame.contains(location)
     }
 
     /// See description for `containsTapLocation`

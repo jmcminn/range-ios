@@ -4,7 +4,7 @@ import UIKit
 class ScribbleAnnotationView: UIView {
     let viewModel: ScribbleAnnotationViewModel
     private var scribbleObservation: NSKeyValueObservation?
-    private var viewBoundsObservation: NSKeyValueObservation?
+    private var viewFrameObservation: NSKeyValueObservation?
     private var zoomScaleObservation: NSKeyValueObservation?
     private var selectedObservation: NSKeyValueObservation?
 
@@ -21,8 +21,8 @@ class ScribbleAnnotationView: UIView {
         scribbleObservation = viewModel.scribble.observe(\.color, changeHandler: { [weak self] _, _ in
             self?.setNeedsDisplay()
         })
-        viewBoundsObservation = viewModel.observe(\.viewBounds) { [weak self] _, _ in
-            self?.frame = viewModel.viewBounds
+        viewFrameObservation = viewModel.observe(\.viewFrame) { [weak self] _, _ in
+            self?.frame = viewModel.viewFrame
             self?.setNeedsLayout()
             self?.setNeedsDisplay()
         }

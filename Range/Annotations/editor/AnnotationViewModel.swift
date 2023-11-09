@@ -21,8 +21,8 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
     /// whether this annotation is currently selected
     @objc dynamic var selected: Bool = false
 
-    /// the bounds that contain the path, scaled
-    @objc dynamic var viewBounds: CGRect = .zero
+    /// The frame for annotation view, scaled = in image coordinates.
+    @objc dynamic var viewFrame: CGRect = .zero
 
     /// the current zoom level of the displayed view.
     /// We need it as not all parts of the annotation view should be zoomed when the annotations editor zoom changes (the border should
@@ -40,7 +40,7 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
         self.annotationsGeometry = annotationsGeometry
     }
 
-    /// Moves the annotation to new origin. It updates the `viewBounds` and `path` (which is not local to the annotation coordinate system)
+    /// Moves the annotation to new origin. It updates the `viewFrame` and `path` (which is not local to the annotation coordinate system)
     /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
     func setOrigin(_: CGPoint) {
         fatalError("setOrigin to be provided by subclasses")

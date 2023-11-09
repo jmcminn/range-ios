@@ -245,7 +245,7 @@ class AnnotationsEditor: NSObject {
         annotationViews[annotation.id] = view
 
         annotationsContainerView.addSubview(view)
-        view.frame = annotation.viewBounds
+        view.frame = annotation.viewFrame
         setSelected(nil)
 
         checkAnnotationsUpdated()
@@ -420,7 +420,7 @@ extension AnnotationsEditor: UIGestureRecognizerDelegate {
         let location = gesture.location(in: gesture.view)
         // if it's a drag of selected annotation then start recognizing this gesture (and block
         // other gestures like drawing or changing the gallery pages)
-        if let selectedAnnotation = selectedAnnotation, selectedAnnotation.viewBounds.contains(location) {
+        if let selectedAnnotation = selectedAnnotation, selectedAnnotation.viewFrame.contains(location) {
             return true
         }
         return false
@@ -430,13 +430,13 @@ extension AnnotationsEditor: UIGestureRecognizerDelegate {
         guard let selectedAnnotation = selectedAnnotation else { return }
 
         if gesture.state == .began {
-            dragAnnotationOrigin = selectedAnnotation.viewBounds.origin
+            dragAnnotationOrigin = selectedAnnotation.viewFrame.origin
         }
 
         if let dragAnnotationOrigin = dragAnnotationOrigin {
             let translation = gesture.translation(in: view)
             selectedAnnotation.setOrigin(translation.addTo(dragAnnotationOrigin))
-            annotationViews[selectedAnnotation.id]?.frame = selectedAnnotation.viewBounds
+            annotationViews[selectedAnnotation.id]?.frame = selectedAnnotation.viewFrame
         }
     }
 }
@@ -477,6 +477,8 @@ extension AnnotationsEditor {
             }
         }
     }
+
+    // TODO: 2029 listen for viewFrame when editing a text annotation and adjust contentOffset on overlap
 
     /// Reset textView constraints when the keyboard hides
     @objc func keyboardWillHide(notification _: NSNotification) {

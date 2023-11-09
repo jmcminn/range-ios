@@ -7,7 +7,7 @@ import UIKit
 class TextAnnotationView: UIView {
     let viewModel: TextAnnotationViewModel
     private var annotationObservation: NSKeyValueObservation?
-    private var viewBoundsObservation: NSKeyValueObservation?
+    private var viewFrameObservation: NSKeyValueObservation?
     private var zoomScaleObservation: NSKeyValueObservation?
     private var selectedObservation: NSKeyValueObservation?
     private var textEditingObservation: NSKeyValueObservation?
@@ -23,8 +23,8 @@ class TextAnnotationView: UIView {
         annotationObservation = viewModel.text.observe(\.color, changeHandler: { [weak self] _, _ in
             self?.setNeedsDisplay()
         })
-        viewBoundsObservation = viewModel.observe(\.viewBounds) { [weak self] _, _ in
-            self?.frame = viewModel.viewBounds
+        viewFrameObservation = viewModel.observe(\.viewFrame) { [weak self] _, _ in
+            self?.frame = viewModel.viewFrame
             self?.updateTextEditingView()
             self?.updateSelectedLayer()
             self?.setNeedsLayout()
@@ -91,8 +91,8 @@ class TextAnnotationView: UIView {
         textEditingView.snp.remakeConstraints { make in
             make.top.equalToSuperview().inset(textVerticalPadding)
             make.leading.equalToSuperview().inset(textHorizontalPadding)
-            make.width.equalTo(viewModel.viewBounds.width - 2 * textHorizontalPadding)
-            make.height.equalTo(viewModel.viewBounds.height - 2 * textVerticalPadding)
+            make.width.equalTo(viewModel.viewFrame.width - 2 * textHorizontalPadding)
+            make.height.equalTo(viewModel.viewFrame.height - 2 * textVerticalPadding)
         }
     }
 
@@ -176,7 +176,7 @@ class TextAnnotationView: UIView {
 }
 
 extension TextAnnotationView: UITextViewDelegate {
-    /// Update the view model with any text view updates (text changes). This will trigger recalculating the viewBounds which will
+    /// Update the view model with any text view updates (text changes). This will trigger recalculating the viewFrame which will
     /// cause the view to update the annotation box
     func textViewDidChange(_ textView: UITextView) {
         viewModel.setText(textView.text)

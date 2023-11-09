@@ -39,25 +39,25 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
         let scribbleBoundsNoThickness = scribble.path.getUIBezierPath().bounds.integral
         // view bounds need to be extended to cover the whole width of the line
         let lineWidth = scribble.lineWidth
-        viewBounds = scribbleBoundsNoThickness.insetBy(dx: -lineWidth, dy: -lineWidth)
+        viewFrame = scribbleBoundsNoThickness.insetBy(dx: -lineWidth, dy: -lineWidth)
         uiPath = scribble.path
             // translate so it's relative to view origin:
-            .getTranslatedPath(x: -viewBounds.origin.x, y: -viewBounds.origin.y)
+            .getTranslatedPath(x: -viewFrame.origin.x, y: -viewFrame.origin.y)
             // scale down the path (as the view is scaled up):
             .getScaledPath(multiplier: 1 / annotationsGeometry.scale)
             .getUIBezierPath()
     }
 
-    /// Moves the annotation to new origin. It updates the `viewBounds` and `path` (which is not local to the annotation coordinate system)
+    /// Moves the annotation to new origin. It updates the `viewFrame` and `path` (which is not local to the annotation coordinate system)
     /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
     override func setOrigin(_ origin: CGPoint) {
-        let originDelta = origin.deltaTo(viewBounds.origin)
+        let originDelta = origin.deltaTo(viewFrame.origin)
         scribble.path = scribble.path.getTranslatedPath(x: originDelta.x, y: originDelta.y)
         // no need to `updateFromScribble`, it's only a change in origin
-        viewBounds.origin = origin
+        viewFrame.origin = origin
     }
 
-    /// Thickness impacts the `viewBounds`, so it also impacts the `uiPath`
+    /// Thickness impacts the `viewFrame`, so it also impacts the `uiPath`
     func setThickness(_ thickness: Annotations.ScribbleThickness) {
         scribble.lineWidth = thickness.lineWidth * annotationsGeometry.scale
         updateFromScribble()
@@ -76,11 +76,11 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     /// be based on the current order and selection state of annotations.
     override func containsTapLocation(_ location: CGPoint) -> Bool {
         // ACHTUNG: this approach makes more sense if we want to use convexHull for "roughlyContainsTapLocation"
-        // otherwise the viewBounds kind of cover it anyway and multiple matches will still be
+        // otherwise the viewFrame kind of cover it anyway and multiple matches will still be
         // decided by "distanceToTapLocation".
         // The only advantage of path.copy(strokingWithWidth) is that
         // it creates a little bigger "tap area" in case of horizontal or vertical lines, which would
-        // have a very small viewBounds.
+        // have a very small viewFrame.
         // Switching to convextHull in "roughlyContainsTapLocation" would be better as we would actually
         // see less shapes reporting as tapped, for example if there's a diagonal line and user taps
         // in the free corner, the bounds approach will report as tapped, while the convexHull would not.
@@ -96,7 +96,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     /// Called when no annotations are returned on tap for `containsTapLocation`.
     /// This may be rough in a sence that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
     override func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
-        viewBounds.contains(location)
+        viewFrame.contains(location)
     }
 
     /// See description for `containsTapLocation`
