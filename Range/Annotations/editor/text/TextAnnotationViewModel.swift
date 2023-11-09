@@ -26,30 +26,20 @@ class TextAnnotationViewModel: AnnotationViewModel {
         super.init(id: text.id, annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1
-        updateFromAnnotation()
-    }
-
-    /// Update view bounds from annotation data
-    private func updateFromAnnotation() {
-        viewBounds = CGRect(
-            origin: text.position,
-            size: TextAnnotationRenderer.annotationSize(
-                text: text.text, fontSize: text.fontSize, annotationsGeometry: annotationsGeometry
-            )
-        )
+        updateViewBounds()
     }
 
     /// Moves the annotation to new origin. It updates the `viewBounds` and `path` (which is not local to the annotation coordinate system)
     /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
     override func setOrigin(_ origin: CGPoint) {
         text.position = origin
-        viewBounds.origin = origin
+        updateViewBounds()
     }
 
     /// Font size impacts the `viewBounds`
     func setFontSize(_ fontSize: Annotations.FontSize) {
         text.fontSize = fontSize.size * annotationsGeometry.scale
-        updateFromAnnotation()
+        updateViewBounds()
     }
 
     func setColor(_ color: UIColor) {
@@ -58,8 +48,19 @@ class TextAnnotationViewModel: AnnotationViewModel {
 
     func setText(_ value: String) {
         text.text = value
-        viewBounds.size = TextAnnotationRenderer.annotationSize(
-            text: text.text, fontSize: text.fontSize, annotationsGeometry: annotationsGeometry
+        updateViewBounds()
+    }
+
+    /// Update view bounds from annotation data
+    private func updateViewBounds() {
+        viewBounds = CGRect(
+            origin: text.position,
+            size: TextAnnotationRenderer.annotationSize(
+                position: text.position,
+                text: text.text,
+                fontSize: text.fontSize,
+                annotationsGeometry: annotationsGeometry
+            )
         )
     }
 
@@ -92,10 +93,13 @@ class TextAnnotationViewModel: AnnotationViewModel {
 extension TextAnnotationViewModel {
     /// Calculates the initial size of the annotation for given text with given font.
     /// Uses `TextAnnotationRenderer.annotationSize` function but adjusts for `TextAnnotationViewModel.initialBoxWidth`
-    static func initialAnnotationSize(text: String, fontSize: Double,
+    static func initialAnnotationSize(position: CGPoint,
+                                      text: String,
+                                      fontSize: Double,
                                       annotationsGeometry: AnnotationsGeometry) -> CGSize
     {
         var size = TextAnnotationRenderer.annotationSize(
+            position: position,
             text: text,
             fontSize: fontSize,
             annotationsGeometry: annotationsGeometry

@@ -22,21 +22,28 @@ enum TextAnnotationRenderer {
     ///   - fontSize a SCALED font size, the scale is only applied to constants
     ///   - annotationsGeometry geometry.scale required to render the unscaled constants, geometry.width required to calculate the box size and text wrapping
     ///   - backgroundOnly when editing the text we only want the renderer to show the background as the text is displayed in a UITextView
+    ///   - renderingOffset - When rendering in TextAnnotationView the rendering must be done in view local coordinates. We still need the real position to calculate the text wrapping but then the renderer should offset all the operations by renderingOffset (which is just -position)
     static func render(
         text: String,
         position: CGPoint,
         fontSize: Double,
         color: UIColor,
         annotationsGeometry: AnnotationsGeometry,
-        backgroundOnly: Bool
+        backgroundOnly: Bool,
+        renderingOffset: CGPoint = .zero
     ) {
         // background
         UIColor.white.set()
         let annotationsScale = annotationsGeometry.scale
-        let annotationSize = annotationSize(text: text, fontSize: fontSize, annotationsGeometry: annotationsGeometry)
+        let annotationSize = annotationSize(
+            position: position,
+            text: text,
+            fontSize: fontSize,
+            annotationsGeometry: annotationsGeometry
+        )
         let cornerRadius = Annotations.textBoxCornerRadius * annotationsGeometry.scale
         let backgroundRect = UIBezierPath(
-            roundedRect: CGRect(origin: position, size: annotationSize),
+            roundedRect: CGRect(origin: position.addTo(renderingOffset), size: annotationSize),
             byRoundingCorners: .allCorners,
             cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)
         )
@@ -49,16 +56,17 @@ enum TextAnnotationRenderer {
                 NSAttributedString.Key.font: annotationFont(ofSize: fontSize),
                 NSAttributedString.Key.foregroundColor: color,
             ] as [NSAttributedString.Key: Any]
+
             let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsGeometry.scale)
             let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsGeometry.scale)
-            text.draw(
-                in: CGRect(
-                    origin: position.translate(x: textHorizontalPadding, y: textVerticalPadding),
-                    // TODO: 2029 max width
-                    size: textSize(text: text, fontSize: fontSize)
-                ),
-                withAttributes: textFontAttributes
+            let textRect = CGRect(
+                origin: position.translate(x: textHorizontalPadding, y: textVerticalPadding).addTo(renderingOffset),
+                size: CGSize(
+                    width: annotationSize.width - 2 * textHorizontalPadding,
+                    height: annotationSize.height - 2 * textVerticalPadding
+                )
             )
+            text.draw(in: textRect, withAttributes: textFontAttributes)
         }
     }
 }
@@ -74,14 +82,16 @@ extension TextAnnotationRenderer {
     ///   - fontSize a SCALED font size, the scale is only applied to constants
     ///   - annotationsScale to be used for unscaled constants that are not stored in the TextAnnotation (corner radius, padding)
     static func annotationSize(
+        position: CGPoint,
         text: String,
         fontSize: Double,
         annotationsGeometry: AnnotationsGeometry
     ) -> CGSize {
-        // TODO: 2029 calculate maxWidth from geometry and position
-        let textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize)
         let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsGeometry.scale)
         let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsGeometry.scale)
+        // we want the text to wrap on the edge of the photo, so we need to constrain the width (accounting for padding)
+        let maxTextWidth = Double(annotationsGeometry.imageWidth) - position.x - 2 * textHorizontalPadding
+        let textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize, maxWidth: maxTextWidth)
         let boxSize = CGSize(
             width: textSize.width + 2 * textHorizontalPadding,
             height: textSize.height + 2 * textVerticalPadding
@@ -93,7 +103,7 @@ extension TextAnnotationRenderer {
     /// Returns the size with width and height rounded up to Int
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
-    static func textSize(text: String, fontSize: Double, maxWidth: CGFloat = .greatestFiniteMagnitude) -> CGSize {
+    fileprivate static func textSize(text: String, fontSize: Double, maxWidth: CGFloat) -> CGSize {
         let font = annotationFont(ofSize: fontSize)
         let textSize = text._boundingBox(font: font, maxWidth: maxWidth)
         return CGSize(width: ceil(textSize.width), height: ceil(textSize.height))

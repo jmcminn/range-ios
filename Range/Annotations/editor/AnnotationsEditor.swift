@@ -207,7 +207,13 @@ class AnnotationsEditor: NSObject {
             x: hostView.bounds.midX,
             y: hostView.bounds.midY
         ), from: hostView)
+        // to calculate the initial position we need to know the size. But to calculate the size
+        // we would need to know the position (because of the text wrapping on image bounds).
+        // So let's calculate the size using the center of the screen and the adjust the position
+        // using the resulting size. This shouldn't really matter as the initial size is very small
+        // and the text is empty so the width shouldn't be affected by image boundary based text wrapping
         let initialTextAnnotationSize = TextAnnotationViewModel.initialAnnotationSize(
+            position: centerOfTheScreenInImagePoint,
             text: text, fontSize: fontSize, annotationsGeometry: annotationsGeometry
         )
         // position is top left of the box centered at the screen center

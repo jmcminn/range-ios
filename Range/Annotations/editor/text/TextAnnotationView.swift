@@ -86,12 +86,13 @@ class TextAnnotationView: UIView {
         textEditingView.font = TextAnnotationRenderer.annotationFont(ofSize: viewModel.text.fontSize)
         textEditingView.tintColor = viewModel.text.color
         textEditingView.textColor = viewModel.text.color
+        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * viewModel.annotationsGeometry.scale)
+        let textVerticalPadding = ceil(Annotations.textVerticalPadding * viewModel.annotationsGeometry.scale)
         textEditingView.snp.remakeConstraints { make in
-            make.top.equalToSuperview().inset(Annotations.textVerticalPadding * viewModel.annotationsGeometry.scale)
-            make.leading.equalToSuperview()
-                .inset(Annotations.textHorizontalPadding * viewModel.annotationsGeometry.scale)
-            make.width.equalTo(viewModel.viewBounds.width)
-            make.height.equalTo(viewModel.viewBounds.height)
+            make.top.equalToSuperview().inset(textVerticalPadding)
+            make.leading.equalToSuperview().inset(textHorizontalPadding)
+            make.width.equalTo(viewModel.viewBounds.width - 2 * textHorizontalPadding)
+            make.height.equalTo(viewModel.viewBounds.height - 2 * textVerticalPadding)
         }
     }
 
@@ -133,11 +134,12 @@ class TextAnnotationView: UIView {
     override func draw(_: CGRect) {
         TextAnnotationRenderer.render(
             text: viewModel.text.text,
-            position: .zero, // rendering in view coordinates
+            position: viewModel.text.position,
             fontSize: viewModel.text.fontSize,
             color: viewModel.text.color,
             annotationsGeometry: viewModel.annotationsGeometry,
-            backgroundOnly: viewModel.textEditing // when editing the text is rendered with UITextView (to edit)
+            backgroundOnly: viewModel.textEditing, // when editing the text is rendered with UITextView (to edit)
+            renderingOffset: viewModel.text.position.multiplyBy(-1) // rendering in view coordinates
         )
     }
 
