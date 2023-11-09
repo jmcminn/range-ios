@@ -160,14 +160,14 @@ class TextAnnotationView: UIView {
         buttonConfig.preferredSymbolConfigurationForImage = imageConfig
         buttonConfig.imagePlacement = .leading
         buttonConfig.imagePadding = 5
-        let saveTextButton = UIButton(
+        let doneButton = UIButton(
             configuration: buttonConfig,
-            primaryAction: UIAction(title: "Save Text", image: UIImage(systemName: "checkmark")) { [weak self] _ in
+            primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
                 self?.endEditing(false)
             }
         )
-        blurEffectView.contentView.addSubview(saveTextButton)
-        saveTextButton.snp.makeConstraints { make in
+        blurEffectView.contentView.addSubview(doneButton)
+        doneButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
