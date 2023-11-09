@@ -56,6 +56,8 @@ class AnnotationsEditor: NSObject {
 
     /// The scrollView.contentOffset stored on keyboardWillShow to be reverted on keyboardWillHide
     private var scrollViewContentOffsetBeforeKeyboardAdjustment: CGPoint?
+    /// text frame observation
+    private var textAnnotationFrameObservation: NSKeyValueObservation?
 
     init(
         hostView: FullscreenImageGalleryPageView,
@@ -460,13 +462,12 @@ extension AnnotationsEditor {
         if let userInfo = notification.userInfo,
            let keyboardEndRect = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? AnyObject)?.cgRectValue,
            let hostView = hostView,
-           let textAnnotation = editingAnnotation as? TextAnnotationViewModel,
-           let textAnnotationView = annotationViews[textAnnotation.id]
+           let textAnnotation = editingAnnotation as? TextAnnotationViewModel
         {
             // Transform the keyboard's frame into host view's coordinate system
             let keyboardEndRectInHostView = hostView.convert(keyboardEndRect, from: view.window)
             // Get the text annotation frame in host view's coordinate system
-            let textAnnotationFrame = hostView.convert(textAnnotationView.frame, from: view)
+            let textAnnotationFrame = hostView.convert(textAnnotation.viewFrame, from: view)
             // Keyboard overlap over the text annotation frame
             let keyboardOverlap = textAnnotationFrame.maxY - keyboardEndRectInHostView.origin.y
             if keyboardOverlap > 0 {
@@ -475,13 +476,22 @@ extension AnnotationsEditor {
                 scrollViewContentOffsetBeforeKeyboardAdjustment = hostView.scrollView.contentOffset
                 hostView.scrollView.contentOffset.y += keyboardOverlap + 16
             }
+            // observe the frame to adjust the content offset if the new line of text is obscured by the keyboard
+            textAnnotationFrameObservation = textAnnotation.observe(\.viewFrame) { [weak self] _, _ in
+                guard let self = self else { return }
+                let textAnnotationFrame = hostView.convert(textAnnotation.viewFrame, from: self.view)
+                let keyboardOverlap = textAnnotationFrame.maxY - keyboardEndRectInHostView.origin.y
+                if keyboardOverlap > 0 {
+                    hostView.scrollView.contentOffset.y += keyboardOverlap + 16
+                }
+            }
         }
     }
 
-    // TODO: 2029 listen for viewFrame when editing a text annotation and adjust contentOffset on overlap
-
     /// Reset textView constraints when the keyboard hides
     @objc func keyboardWillHide(notification _: NSNotification) {
+        textAnnotationFrameObservation?.invalidate()
+        textAnnotationFrameObservation = nil
         guard let hostView = hostView,
               let scrollViewContentOffsetBeforeKeyboardAdjustment = scrollViewContentOffsetBeforeKeyboardAdjustment
         else { return }
