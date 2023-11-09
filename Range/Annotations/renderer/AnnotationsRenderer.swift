@@ -15,12 +15,17 @@ enum AnnotationsRenderer {
             let drawRect = CGRect(origin: .zero, size: size)
             image.draw(in: drawRect)
 
+            let annotationsGeometry = AnnotationsGeometry(
+                imageWidth: annotations.width,
+                imageHeight: annotations.height,
+                scale: annotations.scale
+            )
             annotations.annotations.forEach { annotation in
                 switch annotation {
                 case let .scribble(scribble):
                     ScribbleAnnotationRenderer.render(scribble)
                 case let .text(text):
-                    TextAnnotationRenderer.render(text, annotationsScale: annotations.scale)
+                    TextAnnotationRenderer.render(text, annotationsGeometry: annotationsGeometry)
                 }
             }
         }

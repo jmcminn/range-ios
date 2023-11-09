@@ -6,6 +6,9 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
     /// The unique id of the annotation
     let id: String
 
+    /// annotationsGeometry is required for annotation to render and calculate it's size. All annotationes requried the scale, some annotations
+    /// additinally need to know the image size (to calculate text wrapping, etc.)
+    ///
     /// The scale used for annotations constants (like line thickness, font size, etc.)
     /// This is constant and determined when annotations are first saved for given image.
     /// This value determines the real values of size describing properties, like ScribbleAnnotation.lineWidth. So the line width is one of
@@ -13,7 +16,7 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
     /// This is done so the thickness of line (of size of a font) is visually "correct", no matter what is the resolution of the image.
     /// (it wouldn't make sense to use the .medium scribble thickness, which is 6 pixels, without adjusting for an image that is 2000x3000 pixels,
     /// the thickness needs to be scaled, in this scale the scale = 5, so the actual line thickness in pixels is 6*5=30)
-    let annotationsScale: Double
+    let annotationsGeometry: AnnotationsGeometry
 
     /// whether this annotation is currently selected
     @objc dynamic var selected: Bool = false
@@ -32,9 +35,9 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
         fatalError("annotation to be provided by subclasses")
     }
 
-    init(id: String, annotationsScale: Double) {
+    init(id: String, annotationsGeometry: AnnotationsGeometry) {
         self.id = id
-        self.annotationsScale = annotationsScale
+        self.annotationsGeometry = annotationsGeometry
     }
 
     /// Moves the annotation to new origin. It updates the `viewBounds` and `path` (which is not local to the annotation coordinate system)

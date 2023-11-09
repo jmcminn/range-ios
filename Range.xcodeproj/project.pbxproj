@@ -371,6 +371,7 @@
 		0AA438512AA1F91C0015B278 /* BlueGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */; };
 		0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */; };
 		0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */; };
+		0AAB2DE92AFCCCD70017A12D /* AnnotationsGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB2DE82AFCCCD70017A12D /* AnnotationsGeometry.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
 		0AAF04BB2A334CEA00E8C39D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 0AAF04BA2A334CEA00E8C39D /* Lottie */; };
@@ -846,6 +847,7 @@
 		0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueGradientButton.swift; sourceTree = "<group>"; };
 		0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommand.swift; sourceTree = "<group>"; };
 		0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommandTest.swift; sourceTree = "<group>"; };
+		0AAB2DE82AFCCCD70017A12D /* AnnotationsGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsGeometry.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AAF04BC2A3354F200E8C39D /* PassthroughGradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassthroughGradientView.swift; sourceTree = "<group>"; };
@@ -1787,6 +1789,7 @@
 		0A7393892A6428390079A7FB /* renderer */ = {
 			isa = PBXGroup;
 			children = (
+				0AAB2DE82AFCCCD70017A12D /* AnnotationsGeometry.swift */,
 				0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */,
 				0A73938A2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift */,
 				0A2B3F5E2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift */,
@@ -2522,6 +2525,7 @@
 				0A985B172A9CC31A00442617 /* FirestoreSuspendedParticipants.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeButton.swift in Sources */,
 				0A1F1B7C2A288E2700A2E613 /* AnnotationsDevSettingsView.swift in Sources */,
+				0AAB2DE92AFCCCD70017A12D /* AnnotationsGeometry.swift in Sources */,
 				0A8322402A41EDC80076D032 /* CanvasPickerTableViewCell.swift in Sources */,
 				0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */,
 				0A187AED2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift in Sources */,

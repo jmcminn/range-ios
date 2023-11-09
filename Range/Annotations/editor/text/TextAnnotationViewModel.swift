@@ -11,7 +11,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
 
     /// based on the text.fontSize, optional as the font size may potentially not match any predefined font sizes
     var fontSize: Annotations.FontSize? {
-        let unscaledFontSize = text.fontSize / annotationsScale
+        let unscaledFontSize = text.fontSize / annotationsGeometry.scale
         return Annotations.FontSize.allCases.first { $0.size == unscaledFontSize }
     }
 
@@ -20,10 +20,10 @@ class TextAnnotationViewModel: AnnotationViewModel {
 
     override var annotation: Annotation { text.annotation }
 
-    /// Initiates the view model with given annotation and annotationsScale
-    init(text: TextAnnotation, annotationsScale: Double) {
+    /// Initiates the view model with given annotation and annotationsGeometry
+    init(text: TextAnnotation, annotationsGeometry: AnnotationsGeometry) {
         self.text = text
-        super.init(id: text.id, annotationsScale: annotationsScale)
+        super.init(id: text.id, annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1
         updateFromAnnotation()
@@ -34,7 +34,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
         viewBounds = CGRect(
             origin: text.position,
             size: TextAnnotationRenderer.annotationSize(
-                text: text.text, fontSize: text.fontSize, annotationsScale: annotationsScale
+                text: text.text, fontSize: text.fontSize, annotationsGeometry: annotationsGeometry
             )
         )
     }
@@ -48,7 +48,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
 
     /// Font size impacts the `viewBounds`
     func setFontSize(_ fontSize: Annotations.FontSize) {
-        text.fontSize = fontSize.size * annotationsScale
+        text.fontSize = fontSize.size * annotationsGeometry.scale
         updateFromAnnotation()
     }
 
@@ -59,7 +59,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     func setText(_ value: String) {
         text.text = value
         viewBounds.size = TextAnnotationRenderer.annotationSize(
-            text: text.text, fontSize: text.fontSize, annotationsScale: annotationsScale
+            text: text.text, fontSize: text.fontSize, annotationsGeometry: annotationsGeometry
         )
     }
 
@@ -92,13 +92,15 @@ class TextAnnotationViewModel: AnnotationViewModel {
 extension TextAnnotationViewModel {
     /// Calculates the initial size of the annotation for given text with given font.
     /// Uses `TextAnnotationRenderer.annotationSize` function but adjusts for `TextAnnotationViewModel.initialBoxWidth`
-    static func initialAnnotationSize(text: String, fontSize: Double, annotationsScale: Double) -> CGSize {
+    static func initialAnnotationSize(text: String, fontSize: Double,
+                                      annotationsGeometry: AnnotationsGeometry) -> CGSize
+    {
         var size = TextAnnotationRenderer.annotationSize(
             text: text,
             fontSize: fontSize,
-            annotationsScale: annotationsScale
+            annotationsGeometry: annotationsGeometry
         )
-        size.width = max(size.width, ceil(initialBoxWidth * annotationsScale))
+        size.width = max(size.width, ceil(initialBoxWidth * annotationsGeometry.scale))
         return size
     }
 }

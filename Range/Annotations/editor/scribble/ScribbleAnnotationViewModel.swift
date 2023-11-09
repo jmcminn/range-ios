@@ -16,7 +16,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
 
     /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
     var thickness: Annotations.ScribbleThickness? {
-        let lineWidthBasedThickness = scribble.lineWidth / annotationsScale
+        let lineWidthBasedThickness = scribble.lineWidth / annotationsGeometry.scale
         return Annotations.ScribbleThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
     }
 
@@ -25,11 +25,11 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Initiates the view model with annotation and annotationsScale
-    init(scribble: ScribbleAnnotation, annotationsScale: Double) {
+    init(scribble: ScribbleAnnotation, annotationsGeometry: AnnotationsGeometry) {
         self.scribble = scribble
-        super.init(id: scribble.id, annotationsScale: annotationsScale)
+        super.init(id: scribble.id, annotationsGeometry: annotationsGeometry)
 
-        zoomScale = 1 / annotationsScale
+        zoomScale = 1 / annotationsGeometry.scale
         updateFromScribble()
     }
 
@@ -44,7 +44,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
             // translate so it's relative to view origin:
             .getTranslatedPath(x: -viewBounds.origin.x, y: -viewBounds.origin.y)
             // scale down the path (as the view is scaled up):
-            .getScaledPath(multiplier: 1 / annotationsScale)
+            .getScaledPath(multiplier: 1 / annotationsGeometry.scale)
             .getUIBezierPath()
     }
 
@@ -59,7 +59,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
 
     /// Thickness impacts the `viewBounds`, so it also impacts the `uiPath`
     func setThickness(_ thickness: Annotations.ScribbleThickness) {
-        scribble.lineWidth = thickness.lineWidth * annotationsScale
+        scribble.lineWidth = thickness.lineWidth * annotationsGeometry.scale
         updateFromScribble()
     }
 
@@ -89,7 +89,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
         // Do it by creating a stroking path (see it's documentation for details) that is 40 points
         // wide (divided by scale so it doesn't depend on the image resolution) but is 40 screen points.
         let strokePath = scribble.path.getUIBezierPath().cgPath
-            .copy(strokingWithWidth: 40 * annotationsScale, lineCap: .round, lineJoin: .round, miterLimit: 1)
+            .copy(strokingWithWidth: 40 * annotationsGeometry.scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
         return strokePath.contains(location)
     }
 

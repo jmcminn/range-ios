@@ -87,8 +87,9 @@ class TextAnnotationView: UIView {
         textEditingView.tintColor = viewModel.text.color
         textEditingView.textColor = viewModel.text.color
         textEditingView.snp.remakeConstraints { make in
-            make.top.equalToSuperview().inset(Annotations.textVerticalPadding * viewModel.annotationsScale)
-            make.leading.equalToSuperview().inset(Annotations.textHorizontalPadding * viewModel.annotationsScale)
+            make.top.equalToSuperview().inset(Annotations.textVerticalPadding * viewModel.annotationsGeometry.scale)
+            make.leading.equalToSuperview()
+                .inset(Annotations.textHorizontalPadding * viewModel.annotationsGeometry.scale)
             make.width.equalTo(viewModel.viewBounds.width)
             make.height.equalTo(viewModel.viewBounds.height)
         }
@@ -108,7 +109,7 @@ class TextAnnotationView: UIView {
             if viewModel.textEditing {
                 selectionFrame.size.width = max(
                     selectionFrame.width,
-                    TextAnnotationViewModel.initialBoxWidth * viewModel.annotationsScale
+                    TextAnnotationViewModel.initialBoxWidth * viewModel.annotationsGeometry.scale
                 )
             }
             selectedLayer.frame = selectionFrame.insetBy(
@@ -120,7 +121,7 @@ class TextAnnotationView: UIView {
             selectedLayer.lineWidth = 2 / viewModel.zoomScale
             selectedLayer.path = UIBezierPath(
                 roundedRect: selectedLayer.bounds,
-                cornerRadius: Annotations.textBoxCornerRadius * viewModel.annotationsScale
+                cornerRadius: Annotations.textBoxCornerRadius * viewModel.annotationsGeometry.scale
             ).cgPath
             layer.addSublayer(selectedLayer)
         } else {
@@ -135,7 +136,7 @@ class TextAnnotationView: UIView {
             position: .zero, // rendering in view coordinates
             fontSize: viewModel.text.fontSize,
             color: viewModel.text.color,
-            annotationsScale: viewModel.annotationsScale,
+            annotationsGeometry: viewModel.annotationsGeometry,
             backgroundOnly: viewModel.textEditing // when editing the text is rendered with UITextView (to edit)
         )
     }

@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 
 extension String {
-    func _boundingBox(font: UIFont) -> CGSize {
-        let constraintRect = CGSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
+    func _boundingBox(font: UIFont, maxWidth: CGFloat = .greatestFiniteMagnitude) -> CGSize {
+        let constraintRect = CGSize(width: maxWidth, height: .greatestFiniteMagnitude)
         return (self as NSString).boundingRect(
             with: constraintRect,
             options: [.usesLineFragmentOrigin, .usesFontLeading],
