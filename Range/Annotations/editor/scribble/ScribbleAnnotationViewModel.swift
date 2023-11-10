@@ -49,7 +49,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
 
     /// Moves the annotation to new origin. It updates the `viewFrame` and `path` (which is not local to the annotation coordinate system)
     /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
-    override func setOrigin(_ origin: CGPoint) {
+    override func handleDrag(_: String, updatedDragOriginPoint origin: CGPoint) {
         let originDelta = origin.deltaTo(viewFrame.origin)
         scribble.path = scribble.path.getTranslatedPath(x: originDelta.x, y: originDelta.y)
         // no need to `updateFromScribble`, it's only a change in origin

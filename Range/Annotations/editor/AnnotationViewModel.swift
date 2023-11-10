@@ -45,12 +45,6 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
         self.annotationsGeometry = annotationsGeometry
     }
 
-    /// Moves the annotation to new origin. It updates the `viewFrame` and `path` (which is not local to the annotation coordinate system)
-    /// Please note that `uiPath` doesn't change when moving the scribble (as it's relative to the origin)
-    func setOrigin(_: CGPoint) {
-        fatalError("setOrigin to be provided by subclasses")
-    }
-
     /// Whether this annotation contains tap location and should be considered as tapped.
     /// If multiple annotations are tapped then the `distanceToTapLocation` will be checked and the annotation with smallest distance
     /// will be selected. If multiple annotations report the same distance (most likely 0 for overlapping annotations) then the selection will
@@ -68,5 +62,27 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
     /// See description for `containsTapLocation`
     func distanceToTapLocation(_: CGPoint) -> Float {
         fatalError("distanceToTapLocation to be provided by subclasses")
+    }
+
+    /// If this selected annotation wants to be dragged given the gesture start point it should return a non nil String handle and the origin
+    /// point for dragging.
+    /// This handle will be later passed on drag finished.
+    /// By default the implementation checks for gesture point being in viewFrame and returns "main" as a result.
+    /// Some annotations may have some other dragging requirements - they may have some control points that control annotation
+    /// size, direction, etc. So they can return different handles based on the drag location.
+    func shouldHandleDrag(startGestureLocation: CGPoint) -> (String, CGPoint)? {
+        if viewFrame.contains(startGestureLocation) {
+            return ("main", viewFrame.origin)
+        } else {
+            return nil
+        }
+    }
+
+    /// Called when dragging.
+    /// - Parameters:
+    ///   - stringHandle  the string returned from `shouldHandleDrag`
+    ///   - updatedDragOriginPoint the origin point returned from `shouldHandleDrag` with the current drag translation applied
+    func handleDrag(_: String, updatedDragOriginPoint _: CGPoint) {
+        fatalError("handleDrag to be provided by subclasses")
     }
 }

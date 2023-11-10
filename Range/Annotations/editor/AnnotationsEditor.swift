@@ -41,6 +41,8 @@ class AnnotationsEditor: NSObject {
     @objc dynamic var editingAnnotation: AnnotationViewModel?
     /// remember the origin of selected annotation when dragging begins (so it can be translated while dragging)
     var dragAnnotationOrigin: CGPoint?
+    /// Handle returned by the annotation view model accepting the drag gesture
+    var dragHandle: String?
 
     /// subview of `view` to which annotations are added
     let annotationsContainerView = UIView()
@@ -467,26 +469,29 @@ extension AnnotationsEditor {
 extension AnnotationsEditor: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gesture: UIGestureRecognizer) -> Bool {
         let location = gesture.location(in: gesture.view)
+
         // if it's a drag of selected annotation then start recognizing this gesture (and block
         // other gestures like drawing or changing the gallery pages)
-        if let selectedAnnotation = selectedAnnotation, selectedAnnotation.viewFrame.contains(location) {
+        if let selectedAnnotation = selectedAnnotation,
+           let (dragHandle, dragAnnotationOrigin) = selectedAnnotation.shouldHandleDrag(startGestureLocation: location)
+        {
+            self.dragHandle = dragHandle
+            self.dragAnnotationOrigin = dragAnnotationOrigin
             return true
         }
+
+        dragHandle = nil
         return false
     }
 
     @objc private func panGesture(gesture: UIPanGestureRecognizer) {
-        guard let selectedAnnotation = selectedAnnotation else { return }
+        guard let selectedAnnotation = selectedAnnotation,
+              let dragHandle = dragHandle,
+              let dragAnnotationOrigin = dragAnnotationOrigin else { return }
 
-        if gesture.state == .began {
-            dragAnnotationOrigin = selectedAnnotation.viewFrame.origin
-        }
-
-        if let dragAnnotationOrigin = dragAnnotationOrigin {
-            let translation = gesture.translation(in: view)
-            selectedAnnotation.setOrigin(translation.addTo(dragAnnotationOrigin))
-            annotationViews[selectedAnnotation.id]?.frame = selectedAnnotation.viewFrame
-        }
+        let translation = gesture.translation(in: view)
+        let updatedDragOriginPoint = translation.addTo(dragAnnotationOrigin)
+        selectedAnnotation.handleDrag(dragHandle, updatedDragOriginPoint: updatedDragOriginPoint)
     }
 }
 

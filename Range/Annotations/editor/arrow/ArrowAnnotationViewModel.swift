@@ -34,7 +34,7 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Moves the annotation to new origin. It updates the `viewFrame`.
-    override func setOrigin(_ origin: CGPoint) {
+    override func handleDrag(_: String, updatedDragOriginPoint origin: CGPoint) {
         let originDelta = origin.deltaTo(viewFrame.origin)
         arrow.startPoint = arrow.startPoint.addTo(originDelta)
         arrow.endPoint = arrow.endPoint.addTo(originDelta)

@@ -31,7 +31,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Moves the annotation to new origin. It updates the `viewFrame`.
-    override func setOrigin(_ origin: CGPoint) {
+    override func handleDrag(_: String, updatedDragOriginPoint origin: CGPoint) {
         text.position = origin
         updateViewFrame()
     }
