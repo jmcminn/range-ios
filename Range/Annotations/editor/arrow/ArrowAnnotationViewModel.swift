@@ -33,11 +33,36 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
         updateViewFrame()
     }
 
+    /// Overridden to allow dragging by start/end point
+    override func shouldHandleDrag(startGestureLocation: CGPoint) -> (String, CGPoint)? {
+        // the distance between control point and gesture start should be <= 40 (visible points)
+        // `points_distance * zoomScale <= 40` // * zoom scale to get us in the screen resolution and out of scrollView zoom dependent values
+        // => `points_distance <= 40/zoomScale`
+        // => `squared_points_distance <= (40/zoomScale)^2 = maxSquaredDistance
+        let maxSquaredDistance = pow(40.0 / zoomScale, 2)
+
+        // recognize control points drag first
+        if CGPointDistanceSquared(from: startGestureLocation, to: arrow.startPoint) <= maxSquaredDistance {
+            return ("startPoint", arrow.startPoint)
+        } else if CGPointDistanceSquared(from: startGestureLocation, to: arrow.endPoint) <= maxSquaredDistance {
+            return ("endPoint", arrow.endPoint)
+        }
+        // fallback to the view drag
+        return super.shouldHandleDrag(startGestureLocation: startGestureLocation)
+    }
+
     /// Moves the annotation to new origin. It updates the `viewFrame`.
-    override func handleDrag(_: String, updatedDragOriginPoint origin: CGPoint) {
-        let originDelta = origin.deltaTo(viewFrame.origin)
-        arrow.startPoint = arrow.startPoint.addTo(originDelta)
-        arrow.endPoint = arrow.endPoint.addTo(originDelta)
+    override func handleDrag(_ dragHandle: String, updatedDragOriginPoint origin: CGPoint) {
+        if dragHandle == "startPoint" {
+            arrow.startPoint = origin
+        } else if dragHandle == "endPoint" {
+            arrow.endPoint = origin
+        } else {
+            // move the whole annotation
+            let originDelta = origin.deltaTo(viewFrame.origin)
+            arrow.startPoint = arrow.startPoint.addTo(originDelta)
+            arrow.endPoint = arrow.endPoint.addTo(originDelta)
+        }
         updateViewFrame()
     }
 
