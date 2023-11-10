@@ -32,9 +32,13 @@ class TextAnnotationView: UIView {
         }
         zoomScaleObservation = viewModel.observe(\.zoomScale) { [weak self] _, _ in
             self?.updateSelectedLayer()
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
         }
         selectedObservation = viewModel.observe(\.selected) { [weak self] _, _ in
             self?.onSelectedUpdate()
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
         }
         textEditingObservation = viewModel.observe(\.textEditing) { [weak self] _, _ in
             self?.onTextEditingUpdate()
