@@ -226,6 +226,9 @@
 		0A58DDB9299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */; };
 		0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */; };
 		0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */; };
+		0A59570F2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */; };
+		0A5957112AFD29C40047E669 /* ArrowAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */; };
+		0A5957132AFE53BB0047E669 /* RangeBezierPath+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */; };
 		0A598C1B29C067F400DB2849 /* FirestoreCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */; };
 		0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */; };
 		0A5C06882AA1F10A005A04CF /* StartAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06872AA1F10A005A04CF /* StartAuthView.swift */; };
@@ -371,6 +374,8 @@
 		0AA438512AA1F91C0015B278 /* BlueGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */; };
 		0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */; };
 		0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */; };
+		0AAB2DE32AFC006B0017A12D /* ArrowAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB2DE22AFC006B0017A12D /* ArrowAnnotation.swift */; };
+		0AAB2DE52AFC02310017A12D /* ArrowAnnotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB2DE42AFC02310017A12D /* ArrowAnnotationRenderer.swift */; };
 		0AAB2DE92AFCCCD70017A12D /* AnnotationsGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB2DE82AFCCCD70017A12D /* AnnotationsGeometry.swift */; };
 		0AABC34B28A174D6006A50AF /* PendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */; };
 		0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */; };
@@ -691,6 +696,9 @@
 		0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A58DDBA299E84F3001AD7B4 /* UploadPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPreviewViewController.swift; sourceTree = "<group>"; };
 		0A58DDBC299FC464001AD7B4 /* DocumentThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentThumbnailGenerator.swift; sourceTree = "<group>"; };
+		0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationViewModel.swift; sourceTree = "<group>"; };
+		0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationView.swift; sourceTree = "<group>"; };
+		0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RangeBezierPath+Factory.swift"; sourceTree = "<group>"; };
 		0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSource.swift; sourceTree = "<group>"; };
 		0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListSelectAllTasksView.swift; sourceTree = "<group>"; };
 		0A5C06872AA1F10A005A04CF /* StartAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAuthView.swift; sourceTree = "<group>"; };
@@ -847,6 +855,8 @@
 		0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueGradientButton.swift; sourceTree = "<group>"; };
 		0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommand.swift; sourceTree = "<group>"; };
 		0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommandTest.swift; sourceTree = "<group>"; };
+		0AAB2DE22AFC006B0017A12D /* ArrowAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotation.swift; sourceTree = "<group>"; };
+		0AAB2DE42AFC02310017A12D /* ArrowAnnotationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationRenderer.swift; sourceTree = "<group>"; };
 		0AAB2DE82AFCCCD70017A12D /* AnnotationsGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsGeometry.swift; sourceTree = "<group>"; };
 		0AABC34A28A174D6006A50AF /* PendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUploadsModel.swift; sourceTree = "<group>"; };
 		0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingUploadsModel.swift; sourceTree = "<group>"; };
@@ -990,6 +1000,7 @@
 				0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */,
 				0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */,
 				0A0505862A1FAEFB001AF644 /* RangeBezierPath.swift */,
+				0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */,
 				0A7393702A5D99980079A7FB /* SVGPathDCommand.swift */,
 				0A7393722A5D99A20079A7FB /* SVGPathDLexer.swift */,
 			);
@@ -1749,6 +1760,7 @@
 			children = (
 				0A7393872A61415F0079A7FB /* Annotations.swift */,
 				0A7393822A606C360079A7FB /* Annotation.swift */,
+				0AAB2DE22AFC006B0017A12D /* ArrowAnnotation.swift */,
 				0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */,
 				0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */,
 				0A7393802A606BF60079A7FB /* Annotations+Dictionaries.swift */,
@@ -1759,6 +1771,7 @@
 		0A73937D2A606A670079A7FB /* editor */ = {
 			isa = PBXGroup;
 			children = (
+				0AAB2DE72AFC03BD0017A12D /* arrow */,
 				0A2B3F5A2AF516C600D3D0D2 /* scribble */,
 				0A2B3F5B2AF516DA00D3D0D2 /* text */,
 				0A5394282A264685008583F0 /* AnnotationsEditor.swift */,
@@ -1791,6 +1804,7 @@
 			children = (
 				0AAB2DE82AFCCCD70017A12D /* AnnotationsGeometry.swift */,
 				0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */,
+				0AAB2DE42AFC02310017A12D /* ArrowAnnotationRenderer.swift */,
 				0A73938A2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift */,
 				0A2B3F5E2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift */,
 			);
@@ -1924,6 +1938,15 @@
 				0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */,
 			);
 			path = ModelActions;
+			sourceTree = "<group>";
+		};
+		0AAB2DE72AFC03BD0017A12D /* arrow */ = {
+			isa = PBXGroup;
+			children = (
+				0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */,
+				0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */,
+			);
+			path = arrow;
 			sourceTree = "<group>";
 		};
 		0ABFD8AC28EDB945008CDA74 /* Settings */ = {
@@ -2287,6 +2310,7 @@
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
+				0AAB2DE32AFC006B0017A12D /* ArrowAnnotation.swift in Sources */,
 				0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */,
 				0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
@@ -2430,6 +2454,7 @@
 				0A130EA128D4D57400FF1368 /* CollaborationCreatedFeedItemCell.swift in Sources */,
 				0A5394292A264685008583F0 /* AnnotationsEditor.swift in Sources */,
 				0A7FC4192844E6A80097888A /* FirestoreStatusName.swift in Sources */,
+				0A5957132AFE53BB0047E669 /* RangeBezierPath+Factory.swift in Sources */,
 				0A671F9728E9CBC800F78B34 /* PinDisplayOptions.swift in Sources */,
 				0A36CDFB299C0E2B0004758E /* RangeLocalFileImageDataProvider.swift in Sources */,
 				0A34073329C86907007299A7 /* TypeScaleTableViewCell.swift in Sources */,
@@ -2459,6 +2484,7 @@
 				0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */,
 				0ABFD8B028EEB826008CDA74 /* TagsSearchView.swift in Sources */,
 				0A05312429375BEC00738BA3 /* Throttler.swift in Sources */,
+				0AAB2DE52AFC02310017A12D /* ArrowAnnotationRenderer.swift in Sources */,
 				0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
 				0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */,
@@ -2503,6 +2529,7 @@
 				0A83D90E2AB0BF20003A8DCE /* ResetPasswordView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirestoreParticipant.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
+				0A5957112AFD29C40047E669 /* ArrowAnnotationView.swift in Sources */,
 				0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */,
 				0A671F9928E9CE5500F78B34 /* PinPoint.swift in Sources */,
 				0A130EA728D7409800FF1368 /* Date+Formatting.swift in Sources */,
@@ -2610,6 +2637,7 @@
 				0A1F8E8C28D0CAB00066F08F /* CollaborationFlowController.swift in Sources */,
 				0A3714DF29504FA6004ED1B0 /* ProjectFlowController+Actions.swift in Sources */,
 				0A45BB012AAA2BE000B86B85 /* TranslucentButton.swift in Sources */,
+				0A59570F2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift in Sources */,
 				0A7393812A606BF60079A7FB /* Annotations+Dictionaries.swift in Sources */,
 				0A0E206429630B7C001782A5 /* SelectPinTypeButton.swift in Sources */,
 				0A97232B27FC839400D744F4 /* CardConfiguration.swift in Sources */,

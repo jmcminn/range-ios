@@ -83,4 +83,7 @@ extension Annotations {
     /// The corner radius of the white text annotation box.
     /// Unscaled
     static var textBoxCornerRadius: Double = 6.0
+
+    /// The length of a single arrow tip line (the angle between tip line and arrow line is 45deg)
+    static var arrowTipLength: Double = 32.0
 }

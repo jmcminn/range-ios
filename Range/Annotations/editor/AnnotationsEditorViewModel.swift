@@ -13,7 +13,6 @@ class AnnotationsEditorViewModel: ObservableObject {
         currentAnnotationsEditorDidSet(previousAnnotationsEditor: oldValue)
     }}
 
-    // TODO: 1891 is this needed?
     /// Is the AnnotationsToolbarView visible or not (hidden when keyboard is shown)
     @Published private(set) var toolbarVisible: Bool = true
 
@@ -56,6 +55,8 @@ class AnnotationsEditorViewModel: ObservableObject {
         lastPickedLineThickness = thickness
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
             selectedAnnotation.setThickness(thickness)
+        } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
+            selectedAnnotation.setThickness(thickness)
         }
     }
 
@@ -66,6 +67,8 @@ class AnnotationsEditorViewModel: ObservableObject {
             selectedAnnotation.setColor(color)
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             selectedAnnotation.setColor(color)
+        } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
+            selectedAnnotation.setColor(color)
         }
     }
 
@@ -75,6 +78,11 @@ class AnnotationsEditorViewModel: ObservableObject {
         if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             selectedAnnotation.setFontSize(fontSize)
         }
+    }
+
+    /// Adds arrow in the middle of the current viewport and selects it
+    func insertArrowAnnotation() {
+        annotationsEditor?.insertArrowAnnotation()
     }
 
     /// Adds text in the middle of the current viewport, selects it and starts editing
@@ -90,6 +98,9 @@ class AnnotationsEditorViewModel: ObservableObject {
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             currentTextFontSize = selectedAnnotation.fontSize ?? lastPickedTextFontSize
             currentColor = selectedAnnotation.text.color
+        } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
+            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
+            currentColor = selectedAnnotation.arrow.color
         }
 
         if let selectedAnnotation = selectedAnnotation, selectedAnnotation.type != .scribble {

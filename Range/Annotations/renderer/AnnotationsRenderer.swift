@@ -22,10 +22,9 @@ enum AnnotationsRenderer {
             )
             annotations.annotations.forEach { annotation in
                 switch annotation {
-                case let .scribble(scribble):
-                    ScribbleAnnotationRenderer.render(scribble)
-                case let .text(text):
-                    TextAnnotationRenderer.render(text, annotationsGeometry: annotationsGeometry)
+                case let .arrow(arrow): ArrowAnnotationRenderer.render(arrow, annotationsGeometry: annotationsGeometry)
+                case let .scribble(scribble): ScribbleAnnotationRenderer.render(scribble)
+                case let .text(text): TextAnnotationRenderer.render(text, annotationsGeometry: annotationsGeometry)
                 }
             }
         }

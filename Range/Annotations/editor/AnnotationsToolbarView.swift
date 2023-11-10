@@ -39,6 +39,18 @@ struct AnnotationsToolbarView: View {
         }.buttonStyle(.plain)
     }
 
+    private var arrowToolButton: some View {
+        Button(action: { model.insertArrowAnnotation() }) {
+            Circle()
+                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 48, height: 48)
+                .overlay(Image(systemName: "arrow.up.left")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(.Neutral_01))
+        }.buttonStyle(.plain)
+    }
+
     private var textToolButton: some View {
         Button(action: { model.insertTextAnnotation() }) {
             Circle()
@@ -220,19 +232,17 @@ struct AnnotationsToolbarView: View {
                         Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
                     }
                 }
-                // TODO: 1982
-//                if showArrowToolButton {
-//                    arrowToolButton
-//                    if showTextToolButton {
-//                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
-//                    }
-//                }
+                if showArrowToolButton {
+                    arrowToolButton
+                    if showTextToolButton {
+                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
+                    }
+                }
                 if showTextToolButton { textToolButton }
 
                 if scribbleMode || annotationSelected {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
-                    if scribbleMode || scribbleSelected || textSelected {
-                        // TODO: 1982 now it's line thickness ? reused for arrow and scribble...
+                    if scribbleMode || scribbleSelected || arrowSelected {
                         lineThicknessButton.pickerPopup(isPresented: $pickingLineThickness) {
                             lineThicknessPicker
                         }

@@ -79,6 +79,10 @@ class AnnotationsEditor: NSObject {
             self, selector: #selector(checkAnnotationsUpdated),
             name: TextAnnotation.UpdateNotificationName, object: nil
         )
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(checkAnnotationsUpdated),
+            name: ArrowAnnotation.UpdateNotificationName, object: nil
+        )
     }
 
     deinit {
@@ -140,6 +144,7 @@ class AnnotationsEditor: NSObject {
                 // changed as we need them to compare new state vs initial, changing them would also
                 // break the "cancel" functionality of the annotations editor)
                 switch annotation {
+                case let .arrow(arrow): addArrow(arrow.copy() as! ArrowAnnotation)
                 case let .scribble(scribble): addScribble(scribble.copy() as! ScribbleAnnotation)
                 case let .text(text): addText(text.copy() as! TextAnnotation)
                 }
@@ -188,6 +193,48 @@ class AnnotationsEditor: NSObject {
         }
         let scribbleView = ScribbleAnnotationView(viewModel: scribbleVM)
         addAnnotation(scribbleVM, view: scribbleView)
+    }
+
+    func insertArrowAnnotation() {
+        guard let hostView = hostView else {
+            Logger.annotations.error("insertTextAnnotation: hostView not set!")
+            return
+        }
+        // insert new arrow annotation in the visible center of the screen
+        // the startPoint will be on the left in 1/4 of the screen, then endPoint on the right in 3/4
+        // the y coordinate will be in the middle
+        //
+        // The usage of hostView.bounds and not hostView.frame is important here:
+        // - We want the center of the view but we don't want the offset of the frame.
+        // - Since we can be adding annotations to multiple photos, all FullscreenImageGalleryPageViews
+        //   other than the first one have some non zero x offset.
+        let startPoint = view.convert(CGPoint(
+            x: (hostView.bounds.minX + hostView.bounds.midX) / 2,
+            y: hostView.bounds.midY
+        ), from: hostView)
+        let endPoint = view.convert(CGPoint(
+            x: (hostView.bounds.midX + hostView.bounds.maxX) / 2,
+            y: hostView.bounds.midY
+        ), from: hostView)
+
+        let annotation = ArrowAnnotation(
+            startPoint: startPoint,
+            endPoint: endPoint,
+            lineWidth: viewModel.lastPickedLineThickness.lineWidth * annotationsGeometry.scale,
+            color: viewModel.lastPickedColor
+        )
+        addArrow(annotation)
+        guard let annotationVM = annotationViewModels[annotation.id] as? ArrowAnnotationViewModel else { return }
+        setSelected(annotationVM)
+    }
+
+    private func addArrow(_ arrow: ArrowAnnotation) {
+        let arrowVM = ArrowAnnotationViewModel(arrow: arrow, annotationsGeometry: annotationsGeometry)
+        if let hostView = hostView {
+            arrowVM.zoomScale = hostView.scrollView.zoomScale
+        }
+        let arrowAnnotationView = ArrowAnnotationView(viewModel: arrowVM)
+        addAnnotation(arrowVM, view: arrowAnnotationView)
     }
 
     func insertTextAnnotation() {
