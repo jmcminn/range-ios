@@ -33,8 +33,12 @@ enum TextAnnotationRenderer {
         renderingOffset: CGPoint = .zero
     ) {
         // background
-        UIColor.white.set()
-        let annotationsScale = annotationsGeometry.scale
+        // box is black for white text, for all other colors it's white
+        if color.hexString == UIColor.white.hexString {
+            UIColor.black.set()
+        } else {
+            UIColor.white.set()
+        }
         let annotationSize = annotationSize(
             position: position,
             text: text,

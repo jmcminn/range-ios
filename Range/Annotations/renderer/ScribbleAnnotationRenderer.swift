@@ -14,7 +14,12 @@ enum ScribbleAnnotationRenderer {
 
         // outline
         path.lineWidth = 2 * lineWidth
-        UIColor.white.set()
+        // if scribble color is white then we outline with black
+        if color.hexString == UIColor.white.hexString {
+            UIColor.black.set()
+        } else {
+            UIColor.white.set()
+        }
         path.stroke()
 
         // line
