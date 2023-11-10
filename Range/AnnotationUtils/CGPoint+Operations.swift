@@ -58,6 +58,22 @@ extension CGPoint {
         CGPoint(x: x.rounded(), y: y.rounded())
     }
 
+    /// Returns angle between this point and given location.
+    /// It gives the positive angle growing when moving counter clockwise from positive x axis
+    func angle(from location: CGPoint) -> Double {
+        let deltaY = location.y - y
+        let deltaX = x - location.x
+        let angle = atan2(deltaY, deltaX) * 180 / .pi
+        return angle
+    }
+
+    func moving(distance: Double, at angle: Double) -> CGPoint {
+        .init(
+            x: x + distance * __cospi(angle / 180),
+            y: y - distance * __sinpi(angle / 180)
+        )
+    }
+
 //    static func fromString(string: String) -> CGPoint {
 //        var s = string.stringByReplacingOccurrencesOfString("{", withString: "")
 //        s = s.stringByReplacingOccurrencesOfString("}", withString: "")
