@@ -10,6 +10,8 @@ class ArrowAnnotationView: UIView {
     let arrowLayer = CAShapeLayer() // colored arrow shape
     let outlineLayer = CAShapeLayer() // the white outline for arrow (or black if arrow is white)
     let selectionLayer = CAShapeLayer() // the blue selection outer outline
+    // the circular views denoting start and end points when the annotation is selected
+    let controlPointViews = [UIView(), UIView()]
 
     init(viewModel: ArrowAnnotationViewModel) {
         self.viewModel = viewModel
@@ -17,15 +19,22 @@ class ArrowAnnotationView: UIView {
         setupLayers()
         updateLayers()
 
+        setupControlPoints()
+        updateControlPoints()
+
+        onSelectedUpdate()
+
         colorObservation = viewModel.arrow.observe(\.color, changeHandler: { [weak self] _, _ in
             self?.updateLayers()
         })
         viewFrameObservation = viewModel.observe(\.viewFrame) { [weak self] _, _ in
             self?.frame = viewModel.viewFrame
             self?.updateLayers()
+            self?.updateControlPoints()
         }
         zoomScaleObservation = viewModel.observe(\.zoomScale) { [weak self] _, _ in
             self?.updateLayers()
+            self?.updateControlPoints()
         }
         selectedObservation = viewModel.observe(\.selected) { [weak self] _, _ in
             self?.onSelectedUpdate()
@@ -41,6 +50,9 @@ class ArrowAnnotationView: UIView {
 
     private func onSelectedUpdate() {
         isUserInteractionEnabled = viewModel.selected
+        for view in controlPointViews {
+            view.isHidden = !viewModel.selected
+        }
         updateLayers()
     }
 
@@ -71,6 +83,34 @@ class ArrowAnnotationView: UIView {
         for layer in [arrowLayer, outlineLayer, selectionLayer] {
             layer.frame = bounds
             layer.path = path
+        }
+
+        setNeedsLayout()
+        setNeedsDisplay()
+    }
+
+    private func setupControlPoints() {
+        for view in controlPointViews {
+            view.backgroundColor = .white
+            view.layer.borderColor = UIColor.Primary_Blue_04.cgColor
+            addSubview(view)
+        }
+    }
+
+    private func updateControlPoints() {
+        let size = viewModel.arrow.lineWidth * 4 / 3
+        controlPointViews[0].snp.remakeConstraints { make in
+            make.center.equalTo(viewModel.arrow.startPoint.deltaTo(viewModel.viewFrame.origin))
+            make.width.height.equalTo(size)
+        }
+        controlPointViews[1].snp.remakeConstraints { make in
+            make.center.equalTo(viewModel.arrow.endPoint.deltaTo(viewModel.viewFrame.origin))
+            make.width.height.equalTo(size)
+        }
+
+        for view in controlPointViews {
+            view.layer.cornerRadius = size / 2
+            view.layer.borderWidth = size / 4
         }
 
         setNeedsLayout()
