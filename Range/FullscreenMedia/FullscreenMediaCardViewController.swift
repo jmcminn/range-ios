@@ -548,8 +548,14 @@ extension FullscreenMediaCardViewController {
         summaryVC.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
         summaryVC.scrollView.delegate = self
         summaryVC.onPhotoSelected = { [weak self] in
-            // when photo is selected we show the iOS provided preview
-            self?.showPreview()
+            guard let self = self else { return }
+            if self.upload.isImage {
+                // when it's an image then open annotations
+                self.showAnnotationsEditor()
+            } else {
+                // otherwise use the Quick Look Preview
+                self.showPreview()
+            }
         }
         summaryVC.onAnnotationsSelected = { [weak self] in
             // if annotations are selected we show the same editor as in the photo flow
