@@ -61,6 +61,10 @@ class AnnotationsEditor: NSObject {
     /// text frame observation
     private var textAnnotationFrameObservation: NSKeyValueObservation?
 
+    /// Gesture recognizers for tapping and dragging the annotations
+    private var tapGestureRecognizer: UITapGestureRecognizer?
+    private var panGestureRecognizer: UIPanGestureRecognizer?
+
     init(
         hostView: FullscreenImageGalleryPageView,
         initialAnnotations: Annotations?,
@@ -131,14 +135,6 @@ class AnnotationsEditor: NSObject {
             scale: annotationsScale
         )
 
-        // for annotation selection
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
-
-        // for annotation dragging
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGesture))
-        panGestureRecognizer.delegate = self
-        view.addGestureRecognizer(panGestureRecognizer)
-
         // show the initial annotations
         if let initialAnnotations = initialAnnotations {
             for annotation in initialAnnotations.annotations {
@@ -158,6 +154,7 @@ class AnnotationsEditor: NSObject {
 
     /// Setup when editor is activated/deactivated (becomes the current editor)
     private func activate(_ activate: Bool) {
+        guard let hostView = hostView else { return }
         if activate {
             // install keyboard observers
             NotificationCenter.default.addObserver(
@@ -172,9 +169,26 @@ class AnnotationsEditor: NSObject {
                 name: UIResponder.keyboardWillHideNotification,
                 object: nil
             )
+            // for annotation selection
+            tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+            hostView.scrollView.addGestureRecognizer(tapGestureRecognizer!)
+
+            // for annotation dragging
+            panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGesture))
+            panGestureRecognizer!.delegate = self
+            hostView.scrollView.addGestureRecognizer(panGestureRecognizer!)
+
         } else {
             // remove keyboard observers
             NotificationCenter.default.removeObserver(self)
+
+            // remove scroll view gesture recognizers
+            if let tapGestureRecognizer = tapGestureRecognizer {
+                hostView.scrollView.removeGestureRecognizer(tapGestureRecognizer)
+            }
+            if let panGestureRecognizer = panGestureRecognizer {
+                hostView.scrollView.removeGestureRecognizer(panGestureRecognizer)
+            }
         }
     }
 
@@ -470,7 +484,7 @@ extension AnnotationsEditor {
 
 extension AnnotationsEditor: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gesture: UIGestureRecognizer) -> Bool {
-        let location = gesture.location(in: gesture.view)
+        let location = gesture.location(in: view)
 
         // if it's a drag of selected annotation then start recognizing this gesture (and block
         // other gestures like drawing or changing the gallery pages)
