@@ -108,13 +108,13 @@ class TextAnnotationView: UIView {
     private func updateSelectedLayer() {
         if viewModel.selected {
             var selectionFrame = bounds
-            // if  text is editing then we show the selection with some minimal width (so the initial
+            // if text is editing then we show the selection with some minimal width (so the initial
             // empty text annotation selection is centered horizontally on the screen and allows
             // for some text growth before the selection border grows)
             if viewModel.textEditing {
                 selectionFrame.size.width = max(
                     selectionFrame.width,
-                    TextAnnotationViewModel.initialBoxWidth * viewModel.annotationsGeometry.scale
+                    TextAnnotationRenderer.emptyTextBoxWidth * viewModel.annotationsGeometry.scale
                 )
             }
             selectedLayer.frame = selectionFrame.insetBy(

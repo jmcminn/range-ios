@@ -2,6 +2,10 @@ import Foundation
 import UIKit
 
 enum TextAnnotationRenderer {
+    /// The initial size for the box when calculating the annotation placement and the selection box when the text is empty (before user started typing)
+    /// Unscaled
+    static var emptyTextBoxWidth: CGFloat = 84.0
+
     /// Renders the TextAnnotation
     /// - Parameters:
     ///    - text text annotation, it's values are scaled
@@ -82,6 +86,9 @@ extension TextAnnotationRenderer {
     }
 
     /// Calculates the size of the annotation for given text with given font. Adds padding for the white box.
+    ///
+    /// For empty text adjusts width using `TextAnnotationRenderer.emptyTextBoxWidth`
+    ///
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
     ///   - annotationsScale to be used for unscaled constants that are not stored in the TextAnnotation (corner radius, padding)
@@ -95,7 +102,13 @@ extension TextAnnotationRenderer {
         let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsGeometry.scale)
         // we want the text to wrap on the edge of the photo, so we need to constrain the width (accounting for padding)
         let maxTextWidth = Double(annotationsGeometry.imageWidth) - position.x - 2 * textHorizontalPadding
-        let textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize, maxWidth: maxTextWidth)
+
+        var textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize, maxWidth: maxTextWidth)
+        // make empty text box take some initial width
+        if text.isEmpty {
+            textSize.width = max(textSize.width, ceil(emptyTextBoxWidth * annotationsGeometry.scale))
+        }
+
         let boxSize = CGSize(
             width: textSize.width + 2 * textHorizontalPadding,
             height: textSize.height + 2 * textVerticalPadding
