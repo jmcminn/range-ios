@@ -197,11 +197,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }
 
         // ----- Photo pins ------------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Photo Pins")), control: showPhotoPinsSwitch)
+        add(label: createLabel(text: String(localized: "Show Photo pins")), control: showPhotoPinsSwitch)
         addSeparator()
 
         // ----- Task pins (+ statuses) ------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Task Pins")), control: showTaskPinsSwitch)
+        add(label: createLabel(text: String(localized: "Show Task pins")), control: showTaskPinsSwitch)
         addSeparator(leftInset: 16)
         for (index, status) in statuses.enumerated() {
             if let statusLabel = statusLabels[status], let statusSwitch = statusSwitches[status] {
@@ -227,12 +227,12 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         addSeparator()
 
         // ----- Pins I've created -----------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Only Show Pins I've Created")),
+        add(label: createLabel(text: String(localized: "Only show pins I've created")),
             control: showOnlyCreatedByUserSwitch)
         addSeparator()
 
         // ----- Archived pins ---------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Archived Pins")), control: showArchivedPinsSwitch)
+        add(label: createLabel(text: String(localized: "Show Archived pins")), control: showArchivedPinsSwitch)
     }
 
     /// Adds given label and control to the stack view with proper insets

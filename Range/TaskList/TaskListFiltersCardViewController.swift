@@ -211,7 +211,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         addSeparator()
 
         // ----- Overdue tasks ---------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Overdue Tasks")), control: showOverdueSwitch)
+        add(label: createLabel(text: String(localized: "Show Overdue tasks")), control: showOverdueSwitch)
         addSeparator()
 
         // ----- Canvas ----------------------------------------------------------------------------
@@ -230,12 +230,12 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         addSeparator()
 
         // ----- Tasks I've created ----------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Only Show Tasks I've Created")),
+        add(label: createLabel(text: String(localized: "Only show tasks I've created")),
             control: showOnlyCreatedByUserSwitch)
         addSeparator()
 
         // ----- Archived pins ---------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Archived Tasks")), control: showArchivedSwitch)
+        add(label: createLabel(text: String(localized: "Show Archived tasks")), control: showArchivedSwitch)
     }
 
     /// Adds given label to the stack view with proper insets
