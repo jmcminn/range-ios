@@ -93,21 +93,19 @@ extension TextAnnotationRenderer {
     ///   - fontSize a SCALED font size, the scale is only applied to constants
     ///   - annotationsScale to be used for unscaled constants that are not stored in the TextAnnotation (corner radius, padding)
     static func annotationSize(
-        position: CGPoint,
+        position _: CGPoint,
         text: String,
         fontSize: Double,
         annotationsGeometry: AnnotationsGeometry
     ) -> CGSize {
-        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsGeometry.scale)
-        let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsGeometry.scale)
-        // we want the text to wrap on the edge of the photo, so we need to constrain the width (accounting for padding)
-        let maxTextWidth = Double(annotationsGeometry.imageWidth) - position.x - 2 * textHorizontalPadding
-
-        var textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize, maxWidth: maxTextWidth)
+        var textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize)
         // make empty text box take some initial width
         if text.isEmpty {
             textSize.width = max(textSize.width, ceil(emptyTextBoxWidth * annotationsGeometry.scale))
         }
+
+        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsGeometry.scale)
+        let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsGeometry.scale)
 
         let boxSize = CGSize(
             width: textSize.width + 2 * textHorizontalPadding,
@@ -120,7 +118,9 @@ extension TextAnnotationRenderer {
     /// Returns the size with width and height rounded up to Int
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
-    fileprivate static func textSize(text: String, fontSize: Double, maxWidth: CGFloat) -> CGSize {
+    fileprivate static func textSize(text: String, fontSize: Double,
+                                     maxWidth: CGFloat = .greatestFiniteMagnitude) -> CGSize
+    {
         let font = annotationFont(ofSize: fontSize)
         let textSize = text._boundingBox(font: font, maxWidth: maxWidth)
         return CGSize(width: ceil(textSize.width), height: ceil(textSize.height))
