@@ -406,6 +406,13 @@ extension AnnotationsEditor {
     @objc private func viewTapped(gesture: UIGestureRecognizer) {
         // find tapped annotation
         let location = gesture.location(in: view)
+
+        let tappedAnnotation = tappedAnnotation(atLocation: location)
+        setSelected(tappedAnnotation)
+    }
+
+    /// Discover annotation when tapping at given location
+    private func tappedAnnotation(atLocation location: CGPoint) -> AnnotationViewModel? {
         // strictly contains the tap location
         var tappedAnnotations = annotationViewModels.values.filter { $0.containsTapLocation(location) }
         if tappedAnnotations.isEmpty {
@@ -414,18 +421,17 @@ extension AnnotationsEditor {
         }
 
         if tappedAnnotations.count == 0 {
-            // deselect all
-            setSelected(nil)
+            return nil
         } else if tappedAnnotations.count == 1 {
             // select if only one annotation matches
-            setSelected(tappedAnnotations[0])
+            return tappedAnnotations[0]
         } else {
             // decide which annotation to select by doing some more exact tap recognition
             // and select the annotation closest to tap location
             let distancesToTap = tappedAnnotations.map { $0.distanceToTapLocation(location) }
             let minIndex = zip(distancesToTap.indices, distancesToTap).min(by: { $0.1 < $1.1 })?.0 ?? 0
             let closestAnnotation = tappedAnnotations[minIndex]
-            setSelected(closestAnnotation)
+            return closestAnnotation
         }
     }
 
@@ -484,13 +490,29 @@ extension AnnotationsEditor {
 
 extension AnnotationsEditor: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gesture: UIGestureRecognizer) -> Bool {
+        // when in scribble mode we don't want to recognize dragging
+        guard !viewModel.scribbleMode else { return false }
+
         let location = gesture.location(in: view)
 
-        // if it's a drag of selected annotation then start recognizing this gesture (and block
-        // other gestures like drawing or changing the gallery pages)
+        // 1. give priority to currently selected annotation and check if it should drag
+        // (and block other gestures like drawing or changing the gallery pages)
         if let selectedAnnotation = selectedAnnotation,
            let (dragHandle, dragAnnotationOrigin) = selectedAnnotation.shouldHandleDrag(startGestureLocation: location)
         {
+            self.dragHandle = dragHandle
+            self.dragAnnotationOrigin = dragAnnotationOrigin
+            return true
+        }
+
+        // 2. if the selected annotation is not being dragged or there's no selected annotation
+        // then check if any other annotation should be autoselected and dragged
+        if let annotationAtLocation = tappedAnnotation(atLocation: location),
+           annotationAtLocation != selectedAnnotation,
+           let (dragHandle, dragAnnotationOrigin) = annotationAtLocation
+           .shouldHandleDrag(startGestureLocation: location)
+        {
+            setSelected(annotationAtLocation)
             self.dragHandle = dragHandle
             self.dragAnnotationOrigin = dragAnnotationOrigin
             return true
