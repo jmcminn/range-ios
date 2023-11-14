@@ -106,6 +106,9 @@ class AnnotationsEditor: NSObject {
         viewModel.$lastPickedColor
             .sink { [weak self] in self?.currentScribblingView?.color = $0 }
             .store(in: &subscriptions)
+        viewModel.$gesturesMode
+            .sink { [weak self] in self?.setGesturesMode($0) }
+            .store(in: &subscriptions)
     }
 
     /// Adds the view to hostView
@@ -363,11 +366,13 @@ extension AnnotationsEditor {
 // MARK: - scribble
 
 extension AnnotationsEditor {
-    func setScribblingEnabled(_ enabled: Bool) {
+    func setGesturesMode(_ mode: AnnotationsEditorViewModel.GesturesMode) {
         guard let hostView = hostView else { return }
 
-        hostView.scrollView.isScrollEnabled = !enabled
-        if enabled {
+        let scribbling = mode == .scribbling
+
+        hostView.scrollView.isScrollEnabled = !scribbling
+        if scribbling {
             currentScribblingView = ScribblingView(
                 scale: annotationsGeometry.scale,
                 thickness: viewModel.lastPickedLineThickness,
@@ -490,8 +495,8 @@ extension AnnotationsEditor {
 
 extension AnnotationsEditor: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gesture: UIGestureRecognizer) -> Bool {
-        // when in scribble mode we don't want to recognize dragging
-        guard !viewModel.scribbleMode else { return false }
+        // Only recognize the annotations dragging when in .normal gestures mode (so no scribbling, etc.)
+        guard viewModel.gesturesMode == .normal else { return false }
 
         let location = gesture.location(in: view)
 

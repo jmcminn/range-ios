@@ -28,14 +28,14 @@ struct AnnotationsToolbarView: View {
     }
 
     private var scribbleToolButton: some View {
-        Button(action: { model.toggleScribbleMode() }) {
+        Button(action: { model.gesturesMode = (model.gesturesMode == .scribbling ? .normal : .scribbling) }) {
             Circle()
-                .strokeBorder(model.scribbleMode ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
+                .strokeBorder(model.gesturesMode == .scribbling ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "scribble")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(model.scribbleMode ? .Special_02 : .Neutral_01))
+                    .foregroundColor(model.gesturesMode == .scribbling ? .Special_02 : .Neutral_01))
         }.buttonStyle(.plain)
     }
 
@@ -213,7 +213,7 @@ struct AnnotationsToolbarView: View {
             HStack(spacing: 4) {
                 // helper variables to make the conditions below easier to read
                 let annotationSelected = model.selectedAnnotation != nil
-                let scribbleMode = model.scribbleMode
+                let scribbleMode = model.gesturesMode == .scribbling
                 let scribbleSelected = model.selectedAnnotation?.type == .scribble
                 let textSelected = model.selectedAnnotation?.type == .text
                 let arrowSelected = model.selectedAnnotation?.type == .arrow
@@ -267,7 +267,7 @@ struct AnnotationsToolbarView: View {
             .padding(16)
             .background(panelBackground)
             .animation(.default, value: model.selectedAnnotation)
-            .animation(.default, value: model.scribbleMode)
+            .animation(.default, value: model.gesturesMode)
         }
         .disabled(!model.editingEnabled)
     }

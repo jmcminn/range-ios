@@ -260,10 +260,10 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
     }
 
     private func setupAnnotationsViewModel() {
-        annotationsViewModelScribbleModeSubscriber = annotationsEditorViewModel.$scribbleMode
-            .sink { [weak self] scribbleMode in
-                // disable scrolling between pages when scribbling
-                self?.scrollView.isScrollEnabled = !scribbleMode
+        annotationsViewModelScribbleModeSubscriber = annotationsEditorViewModel.$gesturesMode
+            .sink { [weak self] gesturesMode in
+                // disable scrolling between pages when scribbling or drawing other annotations
+                self?.scrollView.isScrollEnabled = gesturesMode == .normal
             }
     }
 

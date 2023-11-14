@@ -13,14 +13,21 @@ class AnnotationsEditorViewModel: ObservableObject {
         currentAnnotationsEditorDidSet(previousAnnotationsEditor: oldValue)
     }}
 
+    /// The enum for different modes of recognizing user gestures
+    enum GesturesMode {
+        case normal // the user can select and drag annotations
+        case scribbling // the user gestures are recognized as drawing a scribble
+        case arrowDrawing // the user gestures are recognized as drawing an arrow
+    }
+
     /// Is the AnnotationsToolbarView visible or not (hidden when keyboard is shown)
     @Published private(set) var toolbarVisible: Bool = true
 
     /// is the editing enabled for the current AnnotationsView (on if it's `installed`)
     @Published private(set) var editingEnabled: Bool = false
 
-    /// Is the scribble mode enabled
-    @Published private(set) var scribbleMode: Bool = false
+    /// The currently selected gestures mode of operation
+    @Published var gesturesMode: GesturesMode = .normal
 
     /// Current line thickness used for new scribbles and arrows (last user choice)
     /// If an annotation is selected it's the given annotation thickness
@@ -44,11 +51,6 @@ class AnnotationsEditorViewModel: ObservableObject {
     private var selectedAnnotationObservation: NSKeyValueObservation?
     private var editingAnnotationObservation: NSKeyValueObservation?
     private var currentAnnotationsEditorInstalledObservation: NSKeyValueObservation?
-
-    func toggleScribbleMode() {
-        scribbleMode.toggle()
-        annotationsEditor?.setScribblingEnabled(scribbleMode)
-    }
 
     func setCurrentLineThickness(_ thickness: Annotations.LineThickness) {
         currentLineThickness = thickness
@@ -105,7 +107,7 @@ class AnnotationsEditorViewModel: ObservableObject {
 
         if let selectedAnnotation = selectedAnnotation, selectedAnnotation.type != .scribble {
             // disable scribble mode when an non-scribble annotation is selected
-            if scribbleMode { toggleScribbleMode() }
+            if gesturesMode == .scribbling { gesturesMode = .normal }
         }
     }
 
