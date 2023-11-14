@@ -49,7 +49,7 @@ extension Annotations {
     /// text font size, independent of the image size
     /// The exact font size in pixels depends on the scale used for annotations (which is dependent on the image size)
     enum FontSize: String, CaseIterable, Codable {
-        case extraLarge, large, medium, small, extraSmall
+        case extraSmall, small, medium, large, extraLarge
 
         /// This are reference values that don't include annotations scaling factor
         var size: CGFloat {
