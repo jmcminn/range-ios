@@ -98,7 +98,7 @@ class ArrowAnnotationView: UIView {
     }
 
     private func updateControlPoints() {
-        let size = viewModel.arrow.lineWidth * 4 / 3
+        let size = viewModel.controlPointSize
         controlPointViews[0].snp.remakeConstraints { make in
             make.center.equalTo(viewModel.arrow.startPoint.deltaTo(viewModel.viewFrame.origin))
             make.width.height.equalTo(size)
