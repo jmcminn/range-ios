@@ -27,7 +27,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     private var statusSwitches = [Status: UISwitch]()
     private let filterByTagsSwitch = UISwitch()
     private let tagsView: SelectedTagsView
-    private let showOverdueSwitch = UISwitch()
+    private let showOnlyOverdueSwitch = UISwitch()
     private let showOnlyCreatedByUserSwitch = UISwitch()
     private let showArchivedSwitch = UISwitch()
 
@@ -110,8 +110,8 @@ class TaskListFiltersCardViewController: SheetCardViewController {
             self?.onFilterByTagsSwitchAction()
         }), for: .valueChanged)
 
-        showOverdueSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.filters.showOverdue.toggle()
+        showOnlyOverdueSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.filters.showOnlyOverdue.toggle()
         }), for: .valueChanged)
 
         showOnlyCreatedByUserSwitch.addAction(.init(handler: { [weak self] _ in
@@ -138,7 +138,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         }
         filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
-        showOverdueSwitch.setOn(filters.showOverdue, animated: false)
+        showOnlyOverdueSwitch.setOn(filters.showOnlyOverdue, animated: false)
         showArchivedSwitch.setOn(filters.showArchived, animated: false)
         usersView.setVisible(filters.assigneeFilterType == .select, animated: false)
         canvasesView.setVisible(filters.canvasFilter != nil, animated: false)
@@ -211,7 +211,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         addSeparator()
 
         // ----- Overdue tasks ---------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Overdue tasks")), control: showOverdueSwitch)
+        add(label: createLabel(text: String(localized: "Only show overdue tasks")), control: showOnlyOverdueSwitch)
         addSeparator()
 
         // ----- Canvas ----------------------------------------------------------------------------

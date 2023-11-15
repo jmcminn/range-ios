@@ -19,7 +19,7 @@ class TaskListFilters: Codable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
         case assigneeFilterType, assigneeFilter, canvasFilter, hiddenStatuses,
-             tagsFilter, showOverdue, showOnlyCreatedByUser, showArchived
+             tagsFilter, showOnlyOverdue, showOnlyCreatedByUser, showArchived
     }
 
     weak var model: ProjectModel?
@@ -82,8 +82,8 @@ class TaskListFilters: Codable, Equatable {
     /// If not nil and not empty then only match the collaborations that have (or their upload have) all of given tags (tag ids).
     var tagsFilter: [String]? = nil { didSet { postUpdate() }}
 
-    /// Whether to show overdue tasks
-    var showOverdue: Bool = true { didSet { postUpdate() } }
+    /// Whether to show onlye the overdue tasks or all of them
+    var showOnlyOverdue: Bool = false { didSet { postUpdate() } }
 
     /// Whether to show only the tasks created by the current user
     var showOnlyCreatedByUser: Bool = false { didSet { postUpdate() } }
@@ -109,7 +109,7 @@ class TaskListFilters: Codable, Equatable {
         canvasFilter = defaults.canvasFilter
         hiddenStatuses = defaults.hiddenStatuses
         tagsFilter = defaults.tagsFilter
-        showOverdue = defaults.showOverdue
+        showOnlyOverdue = defaults.showOnlyOverdue
         showOnlyCreatedByUser = defaults.showOnlyCreatedByUser
         showArchived = defaults.showArchived
         postUpdate()
@@ -121,7 +121,7 @@ class TaskListFilters: Codable, Equatable {
         if lhs.canvasFilter != rhs.canvasFilter { return false }
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
-        if lhs.showOverdue != rhs.showOverdue { return false }
+        if lhs.showOnlyOverdue != rhs.showOnlyOverdue { return false }
         if lhs.showOnlyCreatedByUser != rhs.showOnlyCreatedByUser { return false }
         if lhs.showArchived != rhs.showArchived { return false }
         return true
@@ -151,7 +151,7 @@ extension TaskListFilters {
             if !matchCanvas(canvasFilter, collaboration: collaboration) { return false }
         }
 
-        if !showOverdue, collaboration.isOverdue { return false }
+        if showOnlyOverdue, !collaboration.isOverdue { return false }
         if showOnlyCreatedByUser, collaboration.author?.id != model?.userId { return false }
         if let tagsFilter = tagsFilter, !tagsFilter.isEmpty {
             if !matchTags(tagsFilter, collaboration: collaboration) { return false }
