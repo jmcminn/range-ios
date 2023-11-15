@@ -22,6 +22,8 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private let showTaskPinsSwitch = UISwitch()
     private var statusLabels = [Status: UILabel]()
     private var statusSwitches = [Status: UISwitch]()
+    private var showOnlyOverdueLabel: UILabel!
+    private let showOnlyOverdueSwitch = UISwitch()
     private var filterByAssigneeLabel: UILabel!
     private let filterByAssigneeSwitch = UISwitch()
     private let usersView: SelectedUsersView
@@ -94,6 +96,10 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             self?.updateTaskPinsEnabled()
         }), for: .valueChanged)
 
+        showOnlyOverdueSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.canvasFilters.showOnlyOverdue.toggle()
+        }), for: .valueChanged)
+
         filterByAssigneeSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByAssigneeSwitchAction()
         }), for: .valueChanged)
@@ -122,6 +128,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
                 statusSwitch.setOn(canvasFilters.show(status), animated: false)
             }
         }
+        showOnlyOverdueSwitch.setOn(canvasFilters.showOnlyOverdue, animated: false)
         filterByAssigneeSwitch.setOn(canvasFilters.assigneeFilter != nil, animated: false)
         filterByTagsSwitch.setOn(canvasFilters.tagsFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(canvasFilters.showOnlyCreatedByUser, animated: false)
@@ -164,6 +171,8 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             statusLabels[status]?.isEnabled = enabled
             statusSwitches[status]?.isEnabled = enabled
         }
+        showOnlyOverdueLabel.isEnabled = enabled
+        showOnlyOverdueSwitch.isEnabled = enabled
         filterByAssigneeLabel.isEnabled = enabled
         filterByAssigneeSwitch.isEnabled = enabled
         if enabled {
@@ -210,6 +219,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             }
         }
         addSeparator(leftInset: 16)
+
+        // ----- Overdue tasks ---------------------------------------------------------------------
+        showOnlyOverdueLabel = createLabel(text: String(localized: "Only show overdue tasks"))
+        add(label: showOnlyOverdueLabel, control: showOnlyOverdueSwitch)
+        addSeparator()
 
         // ----- Assignee --------------------------------------------------------------------------
         filterByAssigneeLabel = createLabel(text: String(localized: "Filter by Assignee"))

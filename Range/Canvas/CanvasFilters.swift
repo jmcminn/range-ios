@@ -7,8 +7,8 @@ class CanvasFilters: Codable, Equatable {
     static let UpdateNotificationName = Notification.Name("io.range.App.CanvasFiltersUpdated")
 
     private enum CodingKeys: String, CodingKey {
-        case showPhotoPins, showTaskPins, hiddenStatuses, assigneeFilter, tagsFilter, showOnlyCreatedByUser,
-             showArchivedPins
+        case showPhotoPins, showTaskPins, hiddenStatuses, showOnlyOverdue, assigneeFilter,
+             tagsFilter, showOnlyCreatedByUser, showArchivedPins
     }
 
     weak var model: ProjectModel?
@@ -37,6 +37,9 @@ class CanvasFilters: Codable, Equatable {
         !hiddenStatuses.contains(status.id)
     }
 
+    /// Whether to show only the overdue tasks or all of them
+    var showOnlyOverdue: Bool = false { didSet { postUpdate() } }
+
     /// This is not nil when user enabled filtering by assignee.
     /// If not nil and not empty then only match the collaborations that have any of given assignees (or doesn't have assignee if filter
     /// contains a special UserViewModel.unassignedUserId)
@@ -63,6 +66,7 @@ class CanvasFilters: Codable, Equatable {
         showPhotoPins = defaults.showPhotoPins
         showTaskPins = defaults.showTaskPins
         hiddenStatuses = defaults.hiddenStatuses
+        showOnlyOverdue = defaults.showOnlyOverdue
         assigneeFilter = defaults.assigneeFilter
         tagsFilter = defaults.tagsFilter
         showOnlyCreatedByUser = defaults.showOnlyCreatedByUser
@@ -74,6 +78,7 @@ class CanvasFilters: Codable, Equatable {
         if lhs.showPhotoPins != rhs.showPhotoPins { return false }
         if lhs.showTaskPins != rhs.showTaskPins { return false }
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
+        if lhs.showOnlyOverdue != rhs.showOnlyOverdue { return false }
         if lhs.assigneeFilter != rhs.assigneeFilter { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
         if lhs.showOnlyCreatedByUser != rhs.showOnlyCreatedByUser { return false }
@@ -98,6 +103,7 @@ extension CanvasFilters {
             if let assigneeFilter = assigneeFilter, !assigneeFilter.isEmpty {
                 if !matchAssignee(assigneeFilter, collaboration: collaboration) { return false }
             }
+            if showOnlyOverdue, !collaboration.isOverdue { return false }
         } else {
             // photo pin filters
             if !showPhotoPins { return false }
