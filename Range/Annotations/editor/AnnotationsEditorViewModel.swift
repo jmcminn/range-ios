@@ -27,7 +27,7 @@ class AnnotationsEditorViewModel: ObservableObject {
     @Published private(set) var editingEnabled: Bool = false
 
     /// The currently selected gestures mode of operation
-    @Published var gesturesMode: GesturesMode = .normal
+    @Published private(set) var gesturesMode: GesturesMode = .normal
 
     /// Current line thickness used for new scribbles and arrows (last user choice)
     /// If an annotation is selected it's the given annotation thickness
@@ -51,6 +51,37 @@ class AnnotationsEditorViewModel: ObservableObject {
     private var selectedAnnotationObservation: NSKeyValueObservation?
     private var editingAnnotationObservation: NSKeyValueObservation?
     private var currentAnnotationsEditorInstalledObservation: NSKeyValueObservation?
+
+    func setGesturesMode(_ mode: GesturesMode) {
+        gesturesMode = mode
+        updateCurrentAttributesBasedOnGesturesModeAndSelection()
+    }
+
+    /// The currentColor, thicknes, etc represent the user choices but also reflect the state of currently selected annotation and depend
+    /// on the current gesturesMode.
+    /// This function is called to update them whenever selection or gesturesMode changes.
+    private func updateCurrentAttributesBasedOnGesturesModeAndSelection() {
+        // if there's a selected annotation the attributes of this view model reflect the annotation
+        // state, no matter if user is currently scribbling, etc (using potentially a different color...)
+        if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
+            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
+            currentColor = selectedAnnotation.scribble.color
+        } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
+            currentTextFontSize = selectedAnnotation.fontSize ?? lastPickedTextFontSize
+            currentColor = selectedAnnotation.text.color
+        } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
+            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
+            currentColor = selectedAnnotation.arrow.color
+        }
+
+        // If there's no selected annotation and user is in drawing mode we want the current ui color
+        // to reflect what's being used by the tool
+        if gesturesMode != .normal, selectedAnnotation == nil {
+            currentLineThickness = lastPickedLineThickness
+            currentTextFontSize = lastPickedTextFontSize
+            currentColor = lastPickedColor
+        }
+    }
 
     func setCurrentLineThickness(_ thickness: Annotations.LineThickness) {
         currentLineThickness = thickness
@@ -89,16 +120,6 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     private func onAnnotationSelected(_ annotationVM: AnnotationViewModel?) {
         selectedAnnotation = annotationVM
-        if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
-            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
-            currentColor = selectedAnnotation.scribble.color
-        } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
-            currentTextFontSize = selectedAnnotation.fontSize ?? lastPickedTextFontSize
-            currentColor = selectedAnnotation.text.color
-        } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
-            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
-            currentColor = selectedAnnotation.arrow.color
-        }
 
         if let selectedAnnotation = selectedAnnotation {
             if selectedAnnotation.type != .scribble, gesturesMode == .scribbling {
@@ -109,6 +130,8 @@ class AnnotationsEditorViewModel: ObservableObject {
                 gesturesMode = .normal
             }
         }
+
+        updateCurrentAttributesBasedOnGesturesModeAndSelection()
     }
 
     private func editingAnnotationChanged(_ annotationVM: AnnotationViewModel?) {

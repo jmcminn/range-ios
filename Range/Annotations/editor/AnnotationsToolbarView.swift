@@ -28,7 +28,7 @@ struct AnnotationsToolbarView: View {
     }
 
     private var scribbleToolButton: some View {
-        Button(action: { model.gesturesMode = (model.gesturesMode == .scribbling ? .normal : .scribbling) }) {
+        Button(action: { model.setGesturesMode(model.gesturesMode == .scribbling ? .normal : .scribbling) }) {
             Circle()
                 .strokeBorder(model.gesturesMode == .scribbling ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
@@ -40,7 +40,7 @@ struct AnnotationsToolbarView: View {
     }
 
     private var arrowToolButton: some View {
-        Button(action: { model.gesturesMode = (model.gesturesMode == .arrowDrawing ? .normal : .arrowDrawing) }) {
+        Button(action: { model.setGesturesMode(model.gesturesMode == .arrowDrawing ? .normal : .arrowDrawing) }) {
             Circle()
                 .strokeBorder(model.gesturesMode == .arrowDrawing ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
