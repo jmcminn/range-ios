@@ -49,6 +49,9 @@ class AnnotationsEditor: NSObject {
     /// The view for drawing (on top of annotationsView)
     var currentScribblingView: ScribblingView?
 
+    /// handles the arrow drawing when in .arrowDrawing GesturesMode
+    var arrowDrawing: ArrowDrawing?
+
     /// order in this dictionary is the order of annotations rendering, so last is on top
     private var annotationViewModels = OrderedDictionary<String, AnnotationViewModel>()
     private var annotationViews = OrderedDictionary<String, UIView>()
@@ -214,46 +217,14 @@ class AnnotationsEditor: NSObject {
         addAnnotation(scribbleVM, view: scribbleView)
     }
 
-    func insertArrowAnnotation() {
-        guard let hostView = hostView else {
-            Logger.annotations.error("insertTextAnnotation: hostView not set!")
-            return
-        }
-        // insert new arrow annotation in the visible center of the screen
-        // the startPoint will be on the left in 1/4 of the screen, then endPoint on the right in 3/4
-        // the y coordinate will be in the middle
-        //
-        // The usage of hostView.bounds and not hostView.frame is important here:
-        // - We want the center of the view but we don't want the offset of the frame.
-        // - Since we can be adding annotations to multiple photos, all FullscreenImageGalleryPageViews
-        //   other than the first one have some non zero x offset.
-        let startPoint = view.convert(CGPoint(
-            x: (hostView.bounds.minX + hostView.bounds.midX) / 2,
-            y: hostView.bounds.midY
-        ), from: hostView)
-        let endPoint = view.convert(CGPoint(
-            x: (hostView.bounds.midX + hostView.bounds.maxX) / 2,
-            y: hostView.bounds.midY
-        ), from: hostView)
-
-        let annotation = ArrowAnnotation(
-            startPoint: startPoint,
-            endPoint: endPoint,
-            lineWidth: viewModel.lastPickedLineThickness.lineWidth * annotationsGeometry.scale,
-            color: viewModel.lastPickedColor
-        )
-        addArrow(annotation)
-        guard let annotationVM = annotationViewModels[annotation.id] as? ArrowAnnotationViewModel else { return }
-        setSelected(annotationVM)
-    }
-
-    private func addArrow(_ arrow: ArrowAnnotation) {
+    private func addArrow(_ arrow: ArrowAnnotation) -> ArrowAnnotationViewModel {
         let arrowVM = ArrowAnnotationViewModel(arrow: arrow, annotationsGeometry: annotationsGeometry)
         if let hostView = hostView {
             arrowVM.zoomScale = hostView.scrollView.zoomScale
         }
         let arrowAnnotationView = ArrowAnnotationView(viewModel: arrowVM)
         addAnnotation(arrowVM, view: arrowAnnotationView)
+        return arrowVM
     }
 
     func insertTextAnnotation() {
@@ -369,10 +340,17 @@ extension AnnotationsEditor {
     func setGesturesMode(_ mode: AnnotationsEditorViewModel.GesturesMode) {
         guard let hostView = hostView else { return }
 
-        let scribbling = mode == .scribbling
+        // scrolling between multiple photos is only enabled in normal mode, when adding a scribble
+        // or arrow we want the scroll disabled
+        hostView.scrollView.isScrollEnabled = mode == .normal
 
-        hostView.scrollView.isScrollEnabled = !scribbling
-        if scribbling {
+        setScribbling(enabled: mode == .scribbling)
+        setArrowDrawing(enabled: mode == .arrowDrawing)
+    }
+
+    private func setScribbling(enabled: Bool) {
+        guard let hostView = hostView else { return }
+        if enabled {
             currentScribblingView = ScribblingView(
                 scale: annotationsGeometry.scale,
                 thickness: viewModel.lastPickedLineThickness,
@@ -401,6 +379,40 @@ extension AnnotationsEditor {
             }
             currentScribblingView?.removeFromSuperview()
             currentScribblingView = nil
+        }
+    }
+}
+
+// MARK: - arrow drawing
+
+extension AnnotationsEditor {
+    private func setArrowDrawing(enabled: Bool) {
+        guard let hostView = hostView else { return }
+        if enabled {
+            let arrowDrawing = ArrowDrawing()
+            arrowDrawing.onDrawingBegan = { [weak self] in
+                // unselect annotation on drawing started
+                self?.setSelected(nil)
+            }
+            arrowDrawing.onAnnotationCreated = { [weak self] startPoint, endPoint in
+                guard let self = self else { return nil }
+                let annotation = ArrowAnnotation(
+                    startPoint: startPoint,
+                    endPoint: endPoint,
+                    lineWidth: self.viewModel.lastPickedLineThickness.lineWidth * self.annotationsGeometry.scale,
+                    color: self.viewModel.lastPickedColor
+                )
+                return addArrow(annotation)
+            }
+            if let gestureRecognizer = arrowDrawing.gestureRecognizer {
+                hostView.imageView.addGestureRecognizer(gestureRecognizer)
+            }
+            self.arrowDrawing = arrowDrawing
+        } else {
+            guard let arrowDrawing = arrowDrawing else { return }
+            if let gestureRecognizer = arrowDrawing.gestureRecognizer {
+                hostView.imageView.removeGestureRecognizer(gestureRecognizer)
+            }
         }
     }
 }

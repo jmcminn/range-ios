@@ -75,6 +75,11 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
         updateViewFrame()
     }
 
+    func setEndPoint(_ endPoint: CGPoint) {
+        arrow.endPoint = endPoint
+        updateViewFrame()
+    }
+
     func setColor(_ color: UIColor) {
         arrow.color = color
     }

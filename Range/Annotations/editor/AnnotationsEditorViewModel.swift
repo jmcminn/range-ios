@@ -82,11 +82,6 @@ class AnnotationsEditorViewModel: ObservableObject {
         }
     }
 
-    /// Adds arrow in the middle of the current viewport and selects it
-    func insertArrowAnnotation() {
-        annotationsEditor?.insertArrowAnnotation()
-    }
-
     /// Adds text in the middle of the current viewport, selects it and starts editing
     func insertTextAnnotation() {
         annotationsEditor?.insertTextAnnotation()

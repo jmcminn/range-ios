@@ -229,6 +229,7 @@
 		0A59570F2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */; };
 		0A5957112AFD29C40047E669 /* ArrowAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */; };
 		0A5957132AFE53BB0047E669 /* RangeBezierPath+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */; };
+		0A5957172B04F1A30047E669 /* ArrowDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957162B04F1A30047E669 /* ArrowDrawing.swift */; };
 		0A598C1B29C067F400DB2849 /* FirestoreCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */; };
 		0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */; };
 		0A5C06882AA1F10A005A04CF /* StartAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06872AA1F10A005A04CF /* StartAuthView.swift */; };
@@ -699,6 +700,7 @@
 		0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationViewModel.swift; sourceTree = "<group>"; };
 		0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationView.swift; sourceTree = "<group>"; };
 		0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RangeBezierPath+Factory.swift"; sourceTree = "<group>"; };
+		0A5957162B04F1A30047E669 /* ArrowDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowDrawing.swift; sourceTree = "<group>"; };
 		0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSource.swift; sourceTree = "<group>"; };
 		0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListSelectAllTasksView.swift; sourceTree = "<group>"; };
 		0A5C06872AA1F10A005A04CF /* StartAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAuthView.swift; sourceTree = "<group>"; };
@@ -1945,6 +1947,7 @@
 			children = (
 				0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */,
 				0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */,
+				0A5957162B04F1A30047E669 /* ArrowDrawing.swift */,
 			);
 			path = arrow;
 			sourceTree = "<group>";
@@ -2441,6 +2444,7 @@
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
 				0A34072C29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift in Sources */,
 				0A374DEC2927DA550036C184 /* DeleteUploadsCommand.swift in Sources */,
+				0A5957172B04F1A30047E669 /* ArrowDrawing.swift in Sources */,
 				0A2F330E283CE8C800D04A1C /* RoundShadowButton.swift in Sources */,
 				0A130EB428DB1C2800FF1368 /* TagCollectionViewCell.swift in Sources */,
 				0A36CDF7299BD2260004758E /* LocalFiles.swift in Sources */,
