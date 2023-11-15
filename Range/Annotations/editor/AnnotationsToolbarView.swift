@@ -35,6 +35,7 @@ struct AnnotationsToolbarView: View {
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "scribble")
                     .font(.system(size: 22, weight: .semibold))
+                    .offset(x: -1, y: -1)
                     .foregroundColor(model.gesturesMode == .scribbling ? .Special_02 : .Neutral_01))
         }.buttonStyle(.plain)
     }
