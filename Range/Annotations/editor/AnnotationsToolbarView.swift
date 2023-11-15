@@ -40,14 +40,14 @@ struct AnnotationsToolbarView: View {
     }
 
     private var arrowToolButton: some View {
-        Button(action: { model.insertArrowAnnotation() }) {
+        Button(action: { model.gesturesMode = (model.gesturesMode == .arrowDrawing ? .normal : .arrowDrawing) }) {
             Circle()
-                .strokeBorder(Color.Neutral_07, lineWidth: 1)
+                .strokeBorder(model.gesturesMode == .arrowDrawing ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
                 .background(Circle().fill(Color.Neutral_09))
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "arrow.up.left")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(.Neutral_01))
+                    .foregroundColor(model.gesturesMode == .arrowDrawing ? .Special_02 : .Neutral_01))
         }.buttonStyle(.plain)
     }
 
@@ -212,18 +212,21 @@ struct AnnotationsToolbarView: View {
         VStack {
             HStack(spacing: 4) {
                 // helper variables to make the conditions below easier to read
-                let annotationSelected = model.selectedAnnotation != nil
+                let normalMode = model.gesturesMode == .normal
                 let scribbleMode = model.gesturesMode == .scribbling
+                let arrowDrawMode = model.gesturesMode == .arrowDrawing
+
+                let annotationSelected = model.selectedAnnotation != nil
                 let scribbleSelected = model.selectedAnnotation?.type == .scribble
                 let textSelected = model.selectedAnnotation?.type == .text
                 let arrowSelected = model.selectedAnnotation?.type == .arrow
 
-                let showScribbleToolButton = scribbleMode || !annotationSelected || scribbleSelected
-                let showTextToolButton = !scribbleMode && (!annotationSelected || textSelected)
-                let showArrowToolButton = !scribbleMode && (!annotationSelected || arrowSelected)
+                let showScribbleToolButton = scribbleMode || scribbleSelected || (!annotationSelected && normalMode)
+                let showTextToolButton = textSelected || (!annotationSelected && normalMode)
+                let showArrowToolButton = arrowDrawMode || arrowSelected || (!annotationSelected && normalMode)
 
-                // The IFs below are bad... but we want to make sure that we only have one place
-                // in code that adds any tool button, this way when it's kept visible when switching
+                // The nested IFs below are bad... but we want to make sure that we only have one place
+                // in code that adds any tool button, this way it's kept visible when switching
                 // modes, selecting annotations, etc (basically changing the toolbar layout) it'll be
                 // properly animated to new place (instead of disappear and appear in new place)
                 if showScribbleToolButton {
@@ -240,9 +243,9 @@ struct AnnotationsToolbarView: View {
                 }
                 if showTextToolButton { textToolButton }
 
-                if scribbleMode || annotationSelected {
+                if scribbleMode || arrowDrawMode || annotationSelected {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
-                    if scribbleMode || scribbleSelected || arrowSelected {
+                    if scribbleMode || scribbleSelected || arrowDrawMode || arrowSelected {
                         lineThicknessButton.pickerPopup(isPresented: $pickingLineThickness) {
                             lineThicknessPicker
                         }

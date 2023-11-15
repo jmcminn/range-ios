@@ -105,9 +105,14 @@ class AnnotationsEditorViewModel: ObservableObject {
             currentColor = selectedAnnotation.arrow.color
         }
 
-        if let selectedAnnotation = selectedAnnotation, selectedAnnotation.type != .scribble {
-            // disable scribble mode when an non-scribble annotation is selected
-            if gesturesMode == .scribbling { gesturesMode = .normal }
+        if let selectedAnnotation = selectedAnnotation {
+            if selectedAnnotation.type != .scribble, gesturesMode == .scribbling {
+                // disable scribble mode when an non-scribble annotation is selected
+                gesturesMode = .normal
+            } else if selectedAnnotation.type != .arrow, gesturesMode == .arrowDrawing {
+                // disable arrow drawing mode when an non-arrow annotation is selected
+                gesturesMode = .normal
+            }
         }
     }
 
