@@ -229,7 +229,10 @@
 		0A59570F2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */; };
 		0A5957112AFD29C40047E669 /* ArrowAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */; };
 		0A5957132AFE53BB0047E669 /* RangeBezierPath+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */; };
+		0A5957152B02830D0047E669 /* OptionSelectorCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957142B02830D0047E669 /* OptionSelectorCollectionView.swift */; };
 		0A5957172B04F1A30047E669 /* ArrowDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957162B04F1A30047E669 /* ArrowDrawing.swift */; };
+		0A59571C2B0626D90047E669 /* OptionSelectorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59571B2B0626D90047E669 /* OptionSelectorCollectionViewCell.swift */; };
+		0A59571E2B062C340047E669 /* SelfSizingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59571D2B062C340047E669 /* SelfSizingCollectionView.swift */; };
 		0A5957202B06502E0047E669 /* DateOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59571F2B06502E0047E669 /* DateOptions.swift */; };
 		0A5957252B0657440047E669 /* DateOptionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957242B0657440047E669 /* DateOptionsTest.swift */; };
 		0A598C1B29C067F400DB2849 /* FirestoreCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */; };
@@ -702,7 +705,10 @@
 		0A59570E2AFD29BC0047E669 /* ArrowAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationViewModel.swift; sourceTree = "<group>"; };
 		0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationView.swift; sourceTree = "<group>"; };
 		0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RangeBezierPath+Factory.swift"; sourceTree = "<group>"; };
+		0A5957142B02830D0047E669 /* OptionSelectorCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSelectorCollectionView.swift; sourceTree = "<group>"; };
 		0A5957162B04F1A30047E669 /* ArrowDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowDrawing.swift; sourceTree = "<group>"; };
+		0A59571B2B0626D90047E669 /* OptionSelectorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionSelectorCollectionViewCell.swift; sourceTree = "<group>"; };
+		0A59571D2B062C340047E669 /* SelfSizingCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSizingCollectionView.swift; sourceTree = "<group>"; };
 		0A59571F2B06502E0047E669 /* DateOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOptions.swift; sourceTree = "<group>"; };
 		0A5957242B0657440047E669 /* DateOptionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOptionsTest.swift; sourceTree = "<group>"; };
 		0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSource.swift; sourceTree = "<group>"; };
@@ -1540,6 +1546,7 @@
 				0A2B3F602AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
 				0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */,
+				0A59571D2B062C340047E669 /* SelfSizingCollectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1548,6 +1555,8 @@
 			isa = PBXGroup;
 			children = (
 				0A59571F2B06502E0047E669 /* DateOptions.swift */,
+				0A5957142B02830D0047E669 /* OptionSelectorCollectionView.swift */,
+				0A59571B2B0626D90047E669 /* OptionSelectorCollectionViewCell.swift */,
 			);
 			path = Filters;
 			sourceTree = "<group>";
@@ -2409,6 +2418,7 @@
 				0A4DC79827F5B06200712518 /* Colors.swift in Sources */,
 				0A06D7EC29CC5A1400CE3B91 /* GridView.swift in Sources */,
 				0A06D7EA29CB55FB00CE3B91 /* MovePinFlowController.swift in Sources */,
+				0A59571E2B062C340047E669 /* SelfSizingCollectionView.swift in Sources */,
 				0A3831DD28E467B2001AF38A /* NameUpdateFeedItemCell.swift in Sources */,
 				0AB8557628F98EB600491E20 /* DueDateButton.swift in Sources */,
 				0A4995D0285B647600E571FB /* TagsViewModel.swift in Sources */,
@@ -2564,6 +2574,7 @@
 				0A4DC79627F572CF00712518 /* ActionSelectorViewController.swift in Sources */,
 				0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
+				0A5957152B02830D0047E669 /* OptionSelectorCollectionView.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */,
 				0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */,
@@ -2684,6 +2695,7 @@
 				0A4DC78827F4955900712518 /* ModalCardPresentationController.swift in Sources */,
 				0A0505742A1BC696001AF644 /* ScribbleAnnotationView.swift in Sources */,
 				0A2F32FF2837E8E500D04A1C /* FirestoreProjectSummary.swift in Sources */,
+				0A59571C2B0626D90047E669 /* OptionSelectorCollectionViewCell.swift in Sources */,
 				0AD9B75428620821005ACFD7 /* ProjectModel+Commands.swift in Sources */,
 				0A7A537D293FB3690093D913 /* ProjectsViewController.swift in Sources */,
 				0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */,
