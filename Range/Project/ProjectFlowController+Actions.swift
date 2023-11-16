@@ -305,8 +305,8 @@ extension ProjectFlowController: ProjectFlowActions {
             if error != nil { ToastWindow.shared.showError(text: "Failed to complete the task") }
             else {
                 ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed")
-                let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-                feedbackGenerator.impactOccurred()
+                let feedbackGenerator = UINotificationFeedbackGenerator()
+                feedbackGenerator.notificationOccurred(.success)
             }
         }
     }
@@ -329,8 +329,8 @@ extension ProjectFlowController: ProjectFlowActions {
                 else {
                     ToastWindow.shared
                         .showWarning(text: "Task Completed. You do not have permissions to archive this task.")
-                    let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-                    feedbackGenerator.impactOccurred()
+                    let feedbackGenerator = UINotificationFeedbackGenerator()
+                    feedbackGenerator.notificationOccurred(.success)
                 }
             }
         } else {
@@ -344,8 +344,8 @@ extension ProjectFlowController: ProjectFlowActions {
                 if error != nil { ToastWindow.shared.showError(text: "Failed to complete and archive the task") }
                 else {
                     ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived")
-                    let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-                    feedbackGenerator.impactOccurred()
+                    let feedbackGenerator = UINotificationFeedbackGenerator()
+                    feedbackGenerator.notificationOccurred(.success)
                 }
             }
         }
