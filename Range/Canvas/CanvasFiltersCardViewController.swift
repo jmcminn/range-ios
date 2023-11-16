@@ -18,6 +18,10 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
 
+    private let showCreatedInLastNDaysSwitch = UISwitch()
+    private let dateCreatedSelectorView: OptionSelectorCollectionView
+    private let showUpdatedInLastNDaysSwitch = UISwitch()
+    private let dateUpdatedSelectorView: OptionSelectorCollectionView
     private let showPhotoPinsSwitch = UISwitch()
     private let showTaskPinsSwitch = UISwitch()
     private var statusLabels = [Status: UILabel]()
@@ -41,6 +45,24 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     init(model: ProjectModel, canvasFilters filters: CanvasFilters) {
         self.model = model
         self.filters = filters
+
+        dateCreatedSelectorView = OptionSelectorCollectionView(
+            options: DateOptions.buildOptionItems(DateOptions.defaultDaysOptions) { days in
+                filters.showCreatedInLastNDays = days
+            }
+        )
+        dateCreatedSelectorView.selectedItem = filters.showCreatedInLastNDays != nil
+            ? DateOptions.defaultDaysOptions.firstIndex(of: filters.showCreatedInLastNDays!)
+            : nil
+
+        dateUpdatedSelectorView = OptionSelectorCollectionView(
+            options: DateOptions.buildOptionItems(DateOptions.defaultDaysOptions) { days in
+                filters.showUpdatedInLastNDays = days
+            }
+        )
+        dateUpdatedSelectorView.selectedItem = filters.showUpdatedInLastNDays != nil
+            ? DateOptions.defaultDaysOptions.firstIndex(of: filters.showUpdatedInLastNDays!)
+            : nil
 
         statuses = (model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
 
@@ -87,6 +109,27 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
         setupViews()
 
+        showCreatedInLastNDaysSwitch.addAction(.init(handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.dateCreatedSelectorView.isHidden = !self.showCreatedInLastNDaysSwitch.isOn
+            // The switch state is not reflected in the filters, so from the model point of view
+            // there's no difference between switch of, and switch on but nothing selected
+            // It's ok, we maintain switch on + empty selection only in the UI state, so if user closes
+            // the filters view with nothing selected they'll see a switch off when reopened.
+            if !self.showCreatedInLastNDaysSwitch.isOn {
+                self.filters.showCreatedInLastNDays = nil
+                self.dateCreatedSelectorView.selectedItem = nil
+            }
+        }), for: .valueChanged)
+        showUpdatedInLastNDaysSwitch.addAction(.init(handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.dateUpdatedSelectorView.isHidden = !self.showUpdatedInLastNDaysSwitch.isOn
+            if !self.showUpdatedInLastNDaysSwitch.isOn {
+                self.filters.showUpdatedInLastNDays = nil
+                self.dateUpdatedSelectorView.selectedItem = nil
+            }
+        }), for: .valueChanged)
+
         showPhotoPinsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.filters.showPhotoPins.toggle()
         }), for: .valueChanged)
@@ -121,6 +164,10 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     }
 
     private func updateControlsStateFromFilters() {
+        showCreatedInLastNDaysSwitch.setOn(filters.showCreatedInLastNDays != nil, animated: false)
+        dateCreatedSelectorView.isHidden = !showCreatedInLastNDaysSwitch.isOn
+        showUpdatedInLastNDaysSwitch.setOn(filters.showUpdatedInLastNDays != nil, animated: false)
+        dateUpdatedSelectorView.isHidden = !showUpdatedInLastNDaysSwitch.isOn
         showPhotoPinsSwitch.setOn(filters.showPhotoPins, animated: false)
         showTaskPinsSwitch.setOn(filters.showTaskPins, animated: false)
         for status in statuses {
@@ -205,6 +252,22 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             make.top.bottom.leading.trailing.equalToSuperview().inset(16)
         }
 
+        // ----- Pins created in the last ... ------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show pins created in the...")),
+            control: showCreatedInLastNDaysSwitch,
+            bottomInset: 4) // the rest = 9 is added below the selection view
+        addDateCreatedSelectorView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Pins updated in the last ... ------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show pins updated in the...")),
+            control: showUpdatedInLastNDaysSwitch,
+            bottomInset: 4) // the rest = 9 is added below the selection view
+        addDateUpdatedSelectorView()
+        addSpace(height: 9)
+        addSeparator()
+
         // ----- Photo pins ------------------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Show Photo pins")), control: showPhotoPinsSwitch)
         addSeparator()
@@ -287,6 +350,22 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         separator.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(leftInset)
             make.height.equalTo(1)
+        }
+    }
+
+    private func addDateCreatedSelectorView() {
+        dateCreatedSelectorView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(dateCreatedSelectorView)
+        dateCreatedSelectorView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+        }
+    }
+
+    private func addDateUpdatedSelectorView() {
+        dateUpdatedSelectorView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(dateUpdatedSelectorView)
+        dateUpdatedSelectorView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
         }
     }
 

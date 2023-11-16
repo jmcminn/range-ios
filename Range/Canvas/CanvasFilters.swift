@@ -7,11 +7,19 @@ class CanvasFilters: Codable, Equatable {
     static let UpdateNotificationName = Notification.Name("io.range.App.CanvasFiltersUpdated")
 
     private enum CodingKeys: String, CodingKey {
-        case showPhotoPins, showTaskPins, hiddenStatuses, showOnlyOverdue, assigneeFilter,
+        case showCreatedInLastNDays, showUpdatedInLastNDays, showPhotoPins,
+             showTaskPins, hiddenStatuses, showOnlyOverdue, assigneeFilter,
              tagsFilter, showOnlyCreatedByUser, showArchivedPins
     }
 
     weak var model: ProjectModel?
+
+    /// When present only match collaborations created in the last n days. Where last n days means:
+    /// Created between the beginning of "today minus n days" and now. So if n = 1 it means created since yesterday morning
+    var showCreatedInLastNDays: Int? = nil { didSet { postUpdate() }}
+
+    /// When present only match collaborations updated in the last n days.
+    var showUpdatedInLastNDays: Int? = nil { didSet { postUpdate() }}
 
     /// Whether to show photo pins
     var showPhotoPins: Bool = true { didSet { postUpdate() } }
@@ -63,6 +71,8 @@ class CanvasFilters: Codable, Equatable {
     /// Reset the filters to default values
     func resetToDefaults() {
         let defaults = CanvasFilters()
+        showCreatedInLastNDays = defaults.showCreatedInLastNDays
+        showUpdatedInLastNDays = defaults.showUpdatedInLastNDays
         showPhotoPins = defaults.showPhotoPins
         showTaskPins = defaults.showTaskPins
         hiddenStatuses = defaults.hiddenStatuses
@@ -75,6 +85,8 @@ class CanvasFilters: Codable, Equatable {
     }
 
     static func == (lhs: CanvasFilters, rhs: CanvasFilters) -> Bool {
+        if lhs.showCreatedInLastNDays != rhs.showCreatedInLastNDays { return false }
+        if lhs.showUpdatedInLastNDays != rhs.showUpdatedInLastNDays { return false }
         if lhs.showPhotoPins != rhs.showPhotoPins { return false }
         if lhs.showTaskPins != rhs.showTaskPins { return false }
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
@@ -94,6 +106,18 @@ class CanvasFilters: Codable, Equatable {
 /// Extension for CanvasFilters to check if given Collaboration matches the filters
 extension CanvasFilters {
     func match(_ collaboration: Collaboration) -> Bool {
+        if let showCreatedInLastNDays = showCreatedInLastNDays,
+           !DateOptions.isTimestampInLastNDays(showCreatedInLastNDays, timestamp: collaboration.timestamp)
+        {
+            return false
+        }
+
+        if let showUpdatedInLastNDays = showUpdatedInLastNDays,
+           !DateOptions.isTimestampInLastNDays(showUpdatedInLastNDays, timestamp: collaboration.lastUpdatedTimestamp)
+        {
+            return false
+        }
+
         if !showArchivedPins, collaboration.isArchived { return false }
 
         if let status = collaboration.status {
