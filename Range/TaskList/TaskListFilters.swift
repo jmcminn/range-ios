@@ -18,8 +18,8 @@ class TaskListFilters: Codable, Equatable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case assigneeFilterType, assigneeFilter, canvasFilter, hiddenStatuses,
-             tagsFilter, showOnlyOverdue, showOnlyCreatedByUser, showArchived
+        case assigneeFilterType, assigneeFilter, showCreatedInLastNDays, showUpdatedInLastNDays,
+             canvasFilter, hiddenStatuses, tagsFilter, showOnlyOverdue, showOnlyCreatedByUser, showArchived
     }
 
     weak var model: ProjectModel?
@@ -56,6 +56,12 @@ class TaskListFilters: Codable, Equatable {
         self.assigneeFilter = assigneeFilter
         postUpdate()
     }
+
+    /// When present only match collaborations created in the last n days.
+    var showCreatedInLastNDays: Int? = nil { didSet { postUpdate() }}
+
+    /// When present only match collaborations updated in the last n days.
+    var showUpdatedInLastNDays: Int? = nil { didSet { postUpdate() }}
 
     /// Filter by canvas, if nil or empty then all canvases allowed
     var canvasFilter: [String]? = nil { didSet { postUpdate() }}
@@ -106,6 +112,8 @@ class TaskListFilters: Codable, Equatable {
         let defaults = TaskListFilters(model: model)
         assigneeFilterType = defaults.assigneeFilterType
         assigneeFilter = defaults.assigneeFilter
+        showCreatedInLastNDays = defaults.showCreatedInLastNDays
+        showUpdatedInLastNDays = defaults.showUpdatedInLastNDays
         canvasFilter = defaults.canvasFilter
         hiddenStatuses = defaults.hiddenStatuses
         tagsFilter = defaults.tagsFilter
@@ -118,6 +126,8 @@ class TaskListFilters: Codable, Equatable {
     static func == (lhs: TaskListFilters, rhs: TaskListFilters) -> Bool {
         if lhs.assigneeFilterType != rhs.assigneeFilterType { return false }
         if lhs.assigneeFilter != rhs.assigneeFilter { return false }
+        if lhs.showCreatedInLastNDays != rhs.showCreatedInLastNDays { return false }
+        if lhs.showUpdatedInLastNDays != rhs.showUpdatedInLastNDays { return false }
         if lhs.canvasFilter != rhs.canvasFilter { return false }
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
@@ -147,6 +157,19 @@ extension TaskListFilters {
             // only show tasks
             return false
         }
+
+        if let showCreatedInLastNDays = showCreatedInLastNDays,
+           !DateOptions.isTimestampInLastNDays(showCreatedInLastNDays, timestamp: collaboration.timestamp)
+        {
+            return false
+        }
+
+        if let showUpdatedInLastNDays = showUpdatedInLastNDays,
+           !DateOptions.isTimestampInLastNDays(showUpdatedInLastNDays, timestamp: collaboration.lastUpdatedTimestamp)
+        {
+            return false
+        }
+
         if let canvasFilter = canvasFilter, !canvasFilter.isEmpty {
             if !matchCanvas(canvasFilter, collaboration: collaboration) { return false }
         }

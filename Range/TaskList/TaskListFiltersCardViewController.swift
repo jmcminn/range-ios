@@ -20,6 +20,10 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     private let stackView = UIStackView()
 
     private var assigneeFilterTypeToggle: SegmentedControl!
+    private let showCreatedInLastNDaysSwitch = UISwitch()
+    private let dateCreatedSelectorView: OptionSelectorCollectionView
+    private let showUpdatedInLastNDaysSwitch = UISwitch()
+    private let dateUpdatedSelectorView: OptionSelectorCollectionView
     private let usersView: SelectedUsersView
     private let filterByCanvasSwitch = UISwitch()
     private let canvasesView: SelectedCanvasesView
@@ -37,9 +41,27 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - filters:                         TaskListFilters
-    init(model: ProjectModel, taskListFilters: TaskListFilters) {
+    init(model: ProjectModel, taskListFilters filters: TaskListFilters) {
         self.model = model
-        filters = taskListFilters
+        self.filters = filters
+
+        dateCreatedSelectorView = OptionSelectorCollectionView(
+            options: DateOptions.buildOptionItems(DateOptions.defaultDaysOptions) { days in
+                filters.showCreatedInLastNDays = days
+            }
+        )
+        dateCreatedSelectorView.selectedItem = filters.showCreatedInLastNDays != nil
+            ? DateOptions.defaultDaysOptions.firstIndex(of: filters.showCreatedInLastNDays!)
+            : nil
+
+        dateUpdatedSelectorView = OptionSelectorCollectionView(
+            options: DateOptions.buildOptionItems(DateOptions.defaultDaysOptions) { days in
+                filters.showUpdatedInLastNDays = days
+            }
+        )
+        dateUpdatedSelectorView.selectedItem = filters.showUpdatedInLastNDays != nil
+            ? DateOptions.defaultDaysOptions.firstIndex(of: filters.showUpdatedInLastNDays!)
+            : nil
 
         statuses = (model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
 
@@ -106,6 +128,22 @@ class TaskListFiltersCardViewController: SheetCardViewController {
 
         setupViews()
 
+        showCreatedInLastNDaysSwitch.addAction(.init(handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.dateCreatedSelectorView.isHidden = !self.showCreatedInLastNDaysSwitch.isOn
+            if !self.showCreatedInLastNDaysSwitch.isOn {
+                self.filters.showCreatedInLastNDays = nil
+                self.dateCreatedSelectorView.selectedItem = nil
+            }
+        }), for: .valueChanged)
+        showUpdatedInLastNDaysSwitch.addAction(.init(handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.dateUpdatedSelectorView.isHidden = !self.showUpdatedInLastNDaysSwitch.isOn
+            if !self.showUpdatedInLastNDaysSwitch.isOn {
+                self.filters.showUpdatedInLastNDays = nil
+                self.dateUpdatedSelectorView.selectedItem = nil
+            }
+        }), for: .valueChanged)
         filterByTagsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByTagsSwitchAction()
         }), for: .valueChanged)
@@ -130,6 +168,10 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         let assigneeFilterTypeToggleOptionIndex = TaskListFilters.AssigneeFilterType.allCases
             .lastIndex(of: filters.assigneeFilterType) ?? 0
         assigneeFilterTypeToggle.setSelectedSegmentIndex(assigneeFilterTypeToggleOptionIndex, animated: true)
+        showCreatedInLastNDaysSwitch.setOn(filters.showCreatedInLastNDays != nil, animated: false)
+        dateCreatedSelectorView.isHidden = !showCreatedInLastNDaysSwitch.isOn
+        showUpdatedInLastNDaysSwitch.setOn(filters.showUpdatedInLastNDays != nil, animated: false)
+        dateUpdatedSelectorView.isHidden = !showUpdatedInLastNDaysSwitch.isOn
         filterByCanvasSwitch.setOn(filters.canvasFilter != nil, animated: false)
         for status in statuses {
             if let statusSwitch = statusSwitches[status] {
@@ -197,6 +239,22 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         add(label: createLabel(text: String(localized: "Filter by Assignee")), bottomInset: 13)
         addAssigneeFilterTypeView()
         addUsersView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Tasks created in the last ... -----------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show tasks created in the...")),
+            control: showCreatedInLastNDaysSwitch,
+            bottomInset: 4) // the rest = 9 is added below the selection view
+        addDateCreatedSelectorView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Tasks updated in the last ... -----------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show tasks updated in the...")),
+            control: showUpdatedInLastNDaysSwitch,
+            bottomInset: 4) // the rest = 9 is added below the selection view
+        addDateUpdatedSelectorView()
         addSpace(height: 9)
         addSeparator()
 
@@ -303,6 +361,22 @@ class TaskListFiltersCardViewController: SheetCardViewController {
             make.height.equalTo(32)
         }
         stackView.setCustomSpacing(9, after: wrapper)
+    }
+
+    private func addDateCreatedSelectorView() {
+        dateCreatedSelectorView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(dateCreatedSelectorView)
+        dateCreatedSelectorView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+        }
+    }
+
+    private func addDateUpdatedSelectorView() {
+        dateUpdatedSelectorView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(dateUpdatedSelectorView)
+        dateUpdatedSelectorView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+        }
     }
 
     private func addUsersView() {
