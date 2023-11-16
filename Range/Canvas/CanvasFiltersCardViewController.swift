@@ -8,7 +8,7 @@ import UIKit
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class CanvasFiltersCardViewController: SheetCardViewController {
     unowned let model: ProjectModel
-    private let canvasFilters: CanvasFilters
+    private let filters: CanvasFilters
     private let statuses: [Status]
     private let usersViewModel: UsersViewModel
     private let tagsViewModel: TagsViewModel
@@ -38,21 +38,21 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - canvasFilters:                         CanvasFilters
-    init(model: ProjectModel, canvasFilters: CanvasFilters) {
+    init(model: ProjectModel, canvasFilters filters: CanvasFilters) {
         self.model = model
-        self.canvasFilters = canvasFilters
+        self.filters = filters
 
         statuses = (model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
 
         let usersViewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: true)
         // preselect users from filters
-        canvasFilters.assigneeFilter?.forEach { usersViewModel.set(userWithId: $0, selected: true) }
+        filters.assigneeFilter?.forEach { usersViewModel.set(userWithId: $0, selected: true) }
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)
         self.usersViewModel = usersViewModel
 
         let tagsViewModel = TagsViewModel(model: model)
         // preselect tags from the filter
-        canvasFilters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
+        filters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
 
@@ -79,7 +79,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             let statusSwitch = UISwitch()
             statusSwitch.addAction(.init(handler: { [weak self] action in
                 guard let sender = action.sender as? UISwitch else { return }
-                self?.canvasFilters.set(status, shown: sender.isOn)
+                self?.filters.set(status, shown: sender.isOn)
             }), for: .valueChanged)
             statusSwitches[status] = statusSwitch
             statusLabels[status] = createLabel(text: status.name)
@@ -88,16 +88,16 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         setupViews()
 
         showPhotoPinsSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.canvasFilters.showPhotoPins.toggle()
+            self?.filters.showPhotoPins.toggle()
         }), for: .valueChanged)
 
         showTaskPinsSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.canvasFilters.showTaskPins.toggle()
+            self?.filters.showTaskPins.toggle()
             self?.updateTaskPinsEnabled()
         }), for: .valueChanged)
 
         showOnlyOverdueSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.canvasFilters.showOnlyOverdue.toggle()
+            self?.filters.showOnlyOverdue.toggle()
         }), for: .valueChanged)
 
         filterByAssigneeSwitch.addAction(.init(handler: { [weak self] _ in
@@ -109,11 +109,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }), for: .valueChanged)
 
         showOnlyCreatedByUserSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.canvasFilters.showOnlyCreatedByUser.toggle()
+            self?.filters.showOnlyCreatedByUser.toggle()
         }), for: .valueChanged)
 
         showArchivedPinsSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.canvasFilters.showArchivedPins.toggle()
+            self?.filters.showArchivedPins.toggle()
         }), for: .valueChanged)
 
         updateControlsStateFromFilters()
@@ -121,20 +121,20 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     }
 
     private func updateControlsStateFromFilters() {
-        showPhotoPinsSwitch.setOn(canvasFilters.showPhotoPins, animated: false)
-        showTaskPinsSwitch.setOn(canvasFilters.showTaskPins, animated: false)
+        showPhotoPinsSwitch.setOn(filters.showPhotoPins, animated: false)
+        showTaskPinsSwitch.setOn(filters.showTaskPins, animated: false)
         for status in statuses {
             if let statusSwitch = statusSwitches[status] {
-                statusSwitch.setOn(canvasFilters.show(status), animated: false)
+                statusSwitch.setOn(filters.show(status), animated: false)
             }
         }
-        showOnlyOverdueSwitch.setOn(canvasFilters.showOnlyOverdue, animated: false)
-        filterByAssigneeSwitch.setOn(canvasFilters.assigneeFilter != nil, animated: false)
-        filterByTagsSwitch.setOn(canvasFilters.tagsFilter != nil, animated: false)
-        showOnlyCreatedByUserSwitch.setOn(canvasFilters.showOnlyCreatedByUser, animated: false)
-        showArchivedPinsSwitch.setOn(canvasFilters.showArchivedPins, animated: false)
-        usersView.setVisible(canvasFilters.assigneeFilter != nil, animated: false)
-        tagsView.setVisible(canvasFilters.tagsFilter != nil, animated: false)
+        showOnlyOverdueSwitch.setOn(filters.showOnlyOverdue, animated: false)
+        filterByAssigneeSwitch.setOn(filters.assigneeFilter != nil, animated: false)
+        filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
+        showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
+        showArchivedPinsSwitch.setOn(filters.showArchivedPins, animated: false)
+        usersView.setVisible(filters.assigneeFilter != nil, animated: false)
+        tagsView.setVisible(filters.tagsFilter != nil, animated: false)
         updateTaskPinsEnabled()
     }
 
@@ -153,11 +153,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     }
 
     @objc func canvasFiltersUpdated() {
-        resetButton.isHidden = canvasFilters.hasDefaultValues
+        resetButton.isHidden = filters.hasDefaultValues
 
         let pinsOnCanvasCount = model.currentCanvas.pins
             .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
-            .filter(canvasFilters.match) // apply filter
+            .filter(filters.match) // apply filter
             .count
         subtitleLabel?.text = pinsOnCanvasCount == 1
             ? String(localized: "1 pin on canvas")
@@ -166,7 +166,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
     /// Update the enabled state of task filters (statuses and assignee)
     private func updateTaskPinsEnabled() {
-        let enabled = canvasFilters.showTaskPins
+        let enabled = filters.showTaskPins
         for status in statuses {
             statusLabels[status]?.isEnabled = enabled
             statusSwitches[status]?.isEnabled = enabled
@@ -176,7 +176,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         filterByAssigneeLabel.isEnabled = enabled
         filterByAssigneeSwitch.isEnabled = enabled
         if enabled {
-            usersView.setVisible(canvasFilters.assigneeFilter != nil)
+            usersView.setVisible(filters.assigneeFilter != nil)
         } else {
             usersView.setVisible(false)
         }
@@ -376,7 +376,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         resetButton = ButtonWithTapAreaInsets(
             configuration: config,
             primaryAction: UIAction(title: String(localized: "Reset")) { [weak self] _ in
-                self?.canvasFilters.resetToDefaults()
+                self?.filters.resetToDefaults()
                 self?.updateControlsStateFromFilters()
             }
         )
@@ -424,12 +424,12 @@ extension CanvasFiltersCardViewController: UsersViewModelDelegate {
     /// Called when "Filter by Assignee" switch is toggled
     private func onFilterByAssigneeSwitchAction() {
         if filterByAssigneeSwitch.isOn {
-            canvasFilters.assigneeFilter = []
+            filters.assigneeFilter = []
             usersView.setVisible(true)
             showUsersPicker()
         } else {
             usersViewModel.clearSelection()
-            canvasFilters.assigneeFilter = nil
+            filters.assigneeFilter = nil
             usersView.setVisible(false)
         }
         if let cardDragging = cardDragging {
@@ -457,7 +457,7 @@ extension CanvasFiltersCardViewController: UsersViewModelDelegate {
         selected _: Bool,
         indexInSelectedUsers _: Int
     ) {
-        canvasFilters.assigneeFilter = viewModel.selectedUsers.map(\.id)
+        filters.assigneeFilter = viewModel.selectedUsers.map(\.id)
     }
 }
 
@@ -467,12 +467,12 @@ extension CanvasFiltersCardViewController: TagsViewModelDelegate {
     /// Called when "Filter by Tags" switch is toggled
     private func onFilterByTagsSwitchAction() {
         if filterByTagsSwitch.isOn {
-            canvasFilters.tagsFilter = []
+            filters.tagsFilter = []
             tagsView.setVisible(true)
             showTagsSelector()
         } else {
             tagsViewModel.clearSelection()
-            canvasFilters.tagsFilter = nil
+            filters.tagsFilter = nil
             tagsView.setVisible(false)
         }
         if let cardDragging = cardDragging {
@@ -497,6 +497,6 @@ extension CanvasFiltersCardViewController: TagsViewModelDelegate {
 
     /// Updates tags filters when the tagsViewModel is updated
     func tagsViewModel(_ viewModel: TagsViewModel, tag _: TagViewModel, selected _: Bool, indexInSelectedTags _: Int) {
-        canvasFilters.tagsFilter = viewModel.selectedTags.map(\.id)
+        filters.tagsFilter = viewModel.selectedTags.map(\.id)
     }
 }
