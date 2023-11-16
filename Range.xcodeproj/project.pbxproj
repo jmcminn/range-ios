@@ -230,6 +230,8 @@
 		0A5957112AFD29C40047E669 /* ArrowAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */; };
 		0A5957132AFE53BB0047E669 /* RangeBezierPath+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */; };
 		0A5957172B04F1A30047E669 /* ArrowDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957162B04F1A30047E669 /* ArrowDrawing.swift */; };
+		0A5957202B06502E0047E669 /* DateOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59571F2B06502E0047E669 /* DateOptions.swift */; };
+		0A5957252B0657440047E669 /* DateOptionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5957242B0657440047E669 /* DateOptionsTest.swift */; };
 		0A598C1B29C067F400DB2849 /* FirestoreCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */; };
 		0A5C06862AA0E944005A04CF /* TaskListSelectAllTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */; };
 		0A5C06882AA1F10A005A04CF /* StartAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5C06872AA1F10A005A04CF /* StartAuthView.swift */; };
@@ -701,6 +703,8 @@
 		0A5957102AFD29C40047E669 /* ArrowAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotationView.swift; sourceTree = "<group>"; };
 		0A5957122AFE53BB0047E669 /* RangeBezierPath+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RangeBezierPath+Factory.swift"; sourceTree = "<group>"; };
 		0A5957162B04F1A30047E669 /* ArrowDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowDrawing.swift; sourceTree = "<group>"; };
+		0A59571F2B06502E0047E669 /* DateOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOptions.swift; sourceTree = "<group>"; };
+		0A5957242B0657440047E669 /* DateOptionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOptionsTest.swift; sourceTree = "<group>"; };
 		0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSource.swift; sourceTree = "<group>"; };
 		0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListSelectAllTasksView.swift; sourceTree = "<group>"; };
 		0A5C06872AA1F10A005A04CF /* StartAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAuthView.swift; sourceTree = "<group>"; };
@@ -1540,6 +1544,22 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		0A5957182B0527F30047E669 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				0A59571F2B06502E0047E669 /* DateOptions.swift */,
+			);
+			path = Filters;
+			sourceTree = "<group>";
+		};
+		0A5957212B06570F0047E669 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				0A5957242B0657440047E669 /* DateOptionsTest.swift */,
+			);
+			path = Filters;
+			sourceTree = "<group>";
+		};
 		0A632E9F27E49636001A019B = {
 			isa = PBXGroup;
 			children = (
@@ -1584,6 +1604,7 @@
 				0A7121B0290BB8330013E2F8 /* DatePicker */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0A147E81294E268100B5833A /* Feed */,
+				0A5957182B0527F30047E669 /* Filters */,
 				0AFA1A47294A09F100491492 /* FullscreenMedia */,
 				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
 				0AF812B72840D52A00F7BD09 /* Logging */,
@@ -1632,6 +1653,7 @@
 				0A7393742A5DAB8B0079A7FB /* AnnotationUtils */,
 				0A3680DA29ED9A9700CD1D98 /* Canvas */,
 				0A130EAC28D8A2BC00FF1368 /* Extensions */,
+				0A5957212B06570F0047E669 /* Filters */,
 				0A4995BB2857697F00E571FB /* HeaderExpand */,
 				0A4DC76627EDCCFB00712518 /* Math */,
 				0AE007A02A6DA11900EA3232 /* MediaStore */,
@@ -2667,6 +2689,7 @@
 				0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
 				0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */,
+				0A5957202B06502E0047E669 /* DateOptions.swift in Sources */,
 				0AB855832900040700491E20 /* AssigneeUpdateFeedItemCell.swift in Sources */,
 				0A48ACDF281C117D0044E06E /* CanvasContainerViewController.swift in Sources */,
 				0A632EAE27E49636001A019B /* SceneDelegate.swift in Sources */,
@@ -2711,6 +2734,7 @@
 				0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */,
 				0A3831DB28E44FF5001AF38A /* FirestoreUpdateTest.swift in Sources */,
 				0A374DE62927BA730036C184 /* DeleteCollaborationCommandTest.swift in Sources */,
+				0A5957252B0657440047E669 /* DateOptionsTest.swift in Sources */,
 				0A456230283E344D00BA8D21 /* ProjectModelTest.swift in Sources */,
 				0A374DEA2927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift in Sources */,
 				0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */,
