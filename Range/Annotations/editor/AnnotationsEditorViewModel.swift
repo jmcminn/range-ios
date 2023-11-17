@@ -31,26 +31,35 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     /// Current line thickness used for new scribbles and arrows (last user choice)
     /// If an annotation is selected it's the given annotation thickness
-    @Published private(set) var currentLineThickness: Annotations.LineThickness = .medium
+    @Published private(set) var currentLineThickness: Annotations.LineThickness
     /// This is last user choice, unaffected by the current selected annotation, it is used for drawing
-    @Published private(set) var lastPickedLineThickness: Annotations.LineThickness = .medium
+    @Published private(set) var lastPickedLineThickness: Annotations.LineThickness
 
     /// Current main color used for annotations (last user choice)
     /// If an annotation is selected it's the given annotation color
-    @Published private(set) var currentColor: UIColor = .Red_03
+    @Published private(set) var currentColor: UIColor
     /// This is last user choice, unaffected by the current selected annotation, it is used for drawing
-    @Published private(set) var lastPickedColor: UIColor = .Red_03
+    @Published private(set) var lastPickedColor: UIColor
 
     /// Current text font size used for new annotations (last user choice)
     /// If a text annotation is selected it's the given annotation text font size
-    @Published private(set) var currentTextFontSize: Annotations.FontSize = .medium
+    @Published private(set) var currentTextFontSize: Annotations.FontSize
     /// This is last user choice, unaffected by the current selected annotation, it is used for new annotations
-    @Published private(set) var lastPickedTextFontSize: Annotations.FontSize = .medium
+    @Published private(set) var lastPickedTextFontSize: Annotations.FontSize
 
     @Published private(set) var selectedAnnotation: AnnotationViewModel? = nil
     private var selectedAnnotationObservation: NSKeyValueObservation?
     private var editingAnnotationObservation: NSKeyValueObservation?
     private var currentAnnotationsEditorInstalledObservation: NSKeyValueObservation?
+
+    init() {
+        currentLineThickness = UserDefaults.lastPickedAnnotationLineThickness
+        lastPickedLineThickness = UserDefaults.lastPickedAnnotationLineThickness
+        currentColor = UserDefaults.lastPickedAnnotationColor
+        lastPickedColor = UserDefaults.lastPickedAnnotationColor
+        currentTextFontSize = UserDefaults.lastPickedAnnotationFontSize
+        lastPickedTextFontSize = UserDefaults.lastPickedAnnotationFontSize
+    }
 
     func setGesturesMode(_ mode: GesturesMode) {
         gesturesMode = mode
@@ -86,6 +95,7 @@ class AnnotationsEditorViewModel: ObservableObject {
     func setCurrentLineThickness(_ thickness: Annotations.LineThickness) {
         currentLineThickness = thickness
         lastPickedLineThickness = thickness
+        UserDefaults.lastPickedAnnotationLineThickness = thickness
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
             selectedAnnotation.setThickness(thickness)
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
@@ -96,6 +106,7 @@ class AnnotationsEditorViewModel: ObservableObject {
     func setCurrentColor(_ color: UIColor) {
         currentColor = color
         lastPickedColor = color
+        UserDefaults.lastPickedAnnotationColor = color
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
             selectedAnnotation.setColor(color)
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
@@ -108,6 +119,7 @@ class AnnotationsEditorViewModel: ObservableObject {
     func setCurrentFontSize(_ fontSize: Annotations.FontSize) {
         currentTextFontSize = fontSize
         lastPickedTextFontSize = fontSize
+        UserDefaults.lastPickedAnnotationFontSize = fontSize
         if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             selectedAnnotation.setFontSize(fontSize)
         }

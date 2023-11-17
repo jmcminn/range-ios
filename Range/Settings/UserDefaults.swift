@@ -1,6 +1,7 @@
 import Foundation
 import OrderedCollections
 import OSLog
+import UIKit
 
 /// Store implicit user preferences (not available in settings but based on recent user actions)
 extension UserDefaults {
@@ -37,6 +38,10 @@ extension UserDefaults {
         case cardOnboardingComplete
         /// the prefix used for storing last copied tasks (array of ids) for a projects, will be followe by a project id
         case lastCopiedTasksPrefix = "lastCopiedTasks_"
+        /// Annotation editor user choices
+        case lastPickedAnnotationColor
+        case lastPickedAnnotationLineThickness
+        case lastPickedAnnotationFontSize
     }
 
     /// Ids of the organizations (array of strings) shown to the user when the organization selector was presented for the last time
@@ -347,5 +352,56 @@ extension UserDefaults {
             orderedTaskIds.elements,
             forKey: lastCopiedTasksKey(forProjectId: projectId)
         )
+    }
+
+    static var lastPickedAnnotationColor: UIColor {
+        get {
+            if let colorHex = UserDefaults.standard
+                .object(forKey: UserDefaultsConstants.lastPickedAnnotationColor.rawValue) as? String
+            {
+                return UIColor(hexString: colorHex)
+            }
+            return .Red_03
+        }
+        set {
+            UserDefaults.standard.set(
+                newValue.hexString,
+                forKey: UserDefaultsConstants.lastPickedAnnotationColor.rawValue
+            )
+        }
+    }
+
+    static var lastPickedAnnotationLineThickness: Annotations.LineThickness {
+        get {
+            if let rawValue = UserDefaults.standard
+                .object(forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue) as? String
+            {
+                return Annotations.LineThickness(rawValue: rawValue) ?? .medium
+            }
+            return .medium
+        }
+        set {
+            UserDefaults.standard.setValue(
+                newValue.rawValue,
+                forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue
+            )
+        }
+    }
+
+    static var lastPickedAnnotationFontSize: Annotations.FontSize {
+        get {
+            if let rawValue = UserDefaults.standard
+                .object(forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue) as? String
+            {
+                return Annotations.FontSize(rawValue: rawValue) ?? .medium
+            }
+            return .medium
+        }
+        set {
+            UserDefaults.standard.setValue(
+                newValue.rawValue,
+                forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue
+            )
+        }
     }
 }
