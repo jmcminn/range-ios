@@ -211,6 +211,18 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
                 self.onDone?(resultAnnotations)
             }
         )
+        // add configuration handler to change the text color when disabled
+        confirmButton.configurationUpdateHandler = { button in
+            var config = button.configuration
+            config?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+                var container = incoming
+                container.foregroundColor = button.state == .disabled
+                    ? .Neutral_04.withAlphaComponent(0.4)
+                    : .Neutral_04
+                return container
+            }
+            button.configuration = config
+        }
 
         NotificationCenter.default.addObserver(
             self,
@@ -246,16 +258,17 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
 
     @objc private func updateDoneButtonEnabled() {
         confirmButton.isEnabled = annotationsEditorPerPage.contains(where: \.annotationsUpdated)
+        confirmButton.setNeedsUpdateConfiguration()
     }
 
     static var cancelDoneButtonConfig: UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
-        config.baseBackgroundColor = .Neutral_10
         config.baseForegroundColor = .Neutral_04
         config.cornerStyle = .fixed
         config.background.cornerRadius = 20
         config.background.strokeColor = .Neutral_07
+        config.background.backgroundColor = .Neutral_10
         return config
     }
 
