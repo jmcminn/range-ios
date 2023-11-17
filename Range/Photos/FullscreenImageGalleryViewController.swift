@@ -33,10 +33,15 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
     private var photoKeys: [PhotoKey?]
 
     var onCancel: (() -> Void)?
-    /// Passes updated annotations for each photo
-    var onDone: (([Annotations?]) -> Void)?
-    /// Handler that accepts removal of photo at given index by returning `true`
-    let removePhotoHandler: ((Int) -> Bool)?
+    /// Passes removedPhotosIndices (see it's description for how to handle them, empty if photo removal not enabled)
+    /// and updated annotations for each photo (for not removed photos only)
+    var onDone: (([Int], [Annotations?]) -> Void)?
+    /// Whether to show the remove photos button
+    let removePhotosEnabled: Bool
+
+    /// The indices of removed photos (the indices are added as user is removing the photos.
+    /// ACHTUNG: The index at position N+1 is the index in the array of photos with removals 0..N already applied)
+    var removedPhotosIndices: [Int] = []
 
     /// views representing pages for images
     private var pages: [FullscreenImageGalleryPageView]
@@ -92,11 +97,11 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
     init(imageDataProviderFactory: @escaping (PhotoKey) -> RangeImageDataProvider,
          photoKeys: [PhotoKey?],
          annotations: [Annotations?],
-         removePhotoHandler: ((Int) -> Bool)? = nil)
+         removePhotosEnabled: Bool)
     {
         self.imageDataProviderFactory = imageDataProviderFactory
         self.photoKeys = photoKeys
-        self.removePhotoHandler = removePhotoHandler
+        self.removePhotosEnabled = removePhotosEnabled
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
         let annotationsEditorViewModel = AnnotationsEditorViewModel()
         self.annotationsEditorViewModel = annotationsEditorViewModel
@@ -156,7 +161,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
             make.trailing.equalToSuperview().inset(16)
         }
 
-        if removePhotoHandler != nil {
+        if removePhotosEnabled {
             view.addSubview(deleteButton)
             deleteButton.snp.makeConstraints { make in
                 make.width.height.equalTo(40)
@@ -208,7 +213,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
             primaryAction: UIAction(title: String(localized: "Done")) { [weak self] _ in
                 guard let self = self else { return }
                 let resultAnnotations = self.annotationsEditorPerPage.map { $0.getAnnotations() }
-                self.onDone?(resultAnnotations)
+                self.onDone?(removedPhotosIndices, resultAnnotations)
             }
         )
         // add configuration handler to change the text color when disabled
@@ -257,7 +262,8 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
     }
 
     @objc private func updateDoneButtonEnabled() {
-        confirmButton.isEnabled = annotationsEditorPerPage.contains(where: \.annotationsUpdated)
+        confirmButton.isEnabled = !removedPhotosIndices.isEmpty || annotationsEditorPerPage
+            .contains(where: \.annotationsUpdated)
         confirmButton.setNeedsUpdateConfiguration()
     }
 
@@ -419,8 +425,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
     /// Removes the currently showing photo from view model and adjusts the layout
     private func removePhoto() {
         let photoIndexToRemove = primaryVisiblePage
-        guard let removePhotoHandler = removePhotoHandler,
-              removePhotoHandler(photoIndexToRemove) == true else { return }
+        removedPhotosIndices.append(photoIndexToRemove)
         photoKeys.remove(at: photoIndexToRemove)
         annotationsEditorPerPage.remove(at: photoIndexToRemove)
         let removedPage = pages.remove(at: photoIndexToRemove)
@@ -440,6 +445,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
             removedPage.imageView.image = nil
             removedPage.removeFromSuperview()
         }
+        updateDoneButtonEnabled()
     }
 
     func scrollViewDidScroll(_: UIScrollView) {

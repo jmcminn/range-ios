@@ -571,12 +571,12 @@ extension FullscreenMediaCardViewController {
             },
             photoKeys: [mediaKey],
             annotations: [upload.annotations],
-            removePhotoHandler: nil
+            removePhotosEnabled: false
         )
         vc.onCancel = { [weak vc] in
             vc?.dismiss(animated: true)
         }
-        vc.onDone = { [weak self, weak vc] annotations in
+        vc.onDone = { [weak self, weak vc] _, annotations in
             if let self = self, let annotations = annotations.first {
                 self.update(annotations: annotations)
             }

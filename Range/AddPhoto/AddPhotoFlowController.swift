@@ -222,8 +222,18 @@ class AddPhotoFlowController {
         vc.onCancel = { [weak vc] in
             vc?.dismiss(animated: true)
         }
-        vc.onDone = { [weak self, weak vc] annotations in
+
+        vc.onDone = { [weak self, weak vc] removedPhotosIndices, annotations in
             guard let self = self else { return }
+            // remove any photos removed in photos preview, please note that indices are stored
+            // in order they were removed, so the removals should be replayed in this order
+            for index in removedPhotosIndices {
+                guard index < self.photosToAddViewModel.photos.count else {
+                    ToastWindow.shared.showError(text: "Failed to save changes")
+                    return
+                }
+                self.photosToAddViewModel.remove(photoAtIndex: index)
+            }
             vc?.dismiss(animated: true)
             Task { @MainActor in
                 do {
@@ -242,9 +252,20 @@ class AddPhotoFlowController {
         let vc = createPhotosReviewViewController()
 
         // hides photos review controller and possibly updates the annotations
-        let hideReviewController: (Bool, [Annotations?])
-            -> Void = { [weak self, weak vc] updateAnnotations, annotations in
+        let hideReviewController: ([Int], Bool, [Annotations?])
+            -> Void = { [weak self, weak vc] removedPhotosIndices, updateAnnotations, annotations in
                 guard let self = self, let vc = vc else { return }
+
+                // remove any photos removed in photos preview, please note that indices are stored
+                // in order they were removed, so the removals should be replayed in this order
+                for index in removedPhotosIndices {
+                    guard index < self.photosToAddViewModel.photos.count else {
+                        ToastWindow.shared.showError(text: "Failed to save changes")
+                        return
+                    }
+                    self.photosToAddViewModel.remove(photoAtIndex: index)
+                }
+
                 if let detailsVC = self.detailsVC {
                     // when hiding the photos review make sure that image gallery in details screen
                     // shows the same page as the last viewed on photos review
@@ -263,10 +284,10 @@ class AddPhotoFlowController {
             }
 
         vc.onCancel = {
-            hideReviewController(false, [])
+            hideReviewController([], false, [])
         }
-        vc.onDone = { annotations in
-            hideReviewController(true, annotations)
+        vc.onDone = { removedPhotosIndices, annotations in
+            hideReviewController(removedPhotosIndices, true, annotations)
         }
 
         let galleryVC = detailsVC.headerVC.galleryVC!
@@ -329,12 +350,7 @@ class AddPhotoFlowController {
             },
             photoKeys: photosToAddViewModel.photos.map(\.mediaKey),
             annotations: photosToAddViewModel.photos.map(\.annotations),
-            removePhotoHandler: { [weak self] photoIndex in
-                guard let self = self else { return false }
-                guard photoIndex < self.photosToAddViewModel.photos.count else { return false }
-                self.photosToAddViewModel.remove(photoAtIndex: photoIndex)
-                return true
-            }
+            removePhotosEnabled: true
         )
     }
 
