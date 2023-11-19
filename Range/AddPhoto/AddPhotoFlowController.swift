@@ -229,8 +229,7 @@ class AddPhotoFlowController {
             // in order they were removed, so the removals should be replayed in this order
             for index in removedPhotosIndices {
                 guard index < self.photosToAddViewModel.photos.count else {
-                    ToastWindow.shared.showError(text: "Failed to save changes")
-                    return
+                    fatalError("Tried to remove photo with out of bounds index \(index)")
                 }
                 self.photosToAddViewModel.remove(photoAtIndex: index)
             }
@@ -260,8 +259,7 @@ class AddPhotoFlowController {
                 // in order they were removed, so the removals should be replayed in this order
                 for index in removedPhotosIndices {
                     guard index < self.photosToAddViewModel.photos.count else {
-                        ToastWindow.shared.showError(text: "Failed to save changes")
-                        return
+                        fatalError("Tried to remove photo with out of bounds index \(index)")
                     }
                     self.photosToAddViewModel.remove(photoAtIndex: index)
                 }
