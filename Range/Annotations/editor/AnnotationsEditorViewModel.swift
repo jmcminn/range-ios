@@ -133,14 +133,9 @@ class AnnotationsEditorViewModel: ObservableObject {
     private func onAnnotationSelected(_ annotationVM: AnnotationViewModel?) {
         selectedAnnotation = annotationVM
 
-        if let selectedAnnotation = selectedAnnotation {
-            if selectedAnnotation.type != .scribble, gesturesMode == .scribbling {
-                // disable scribble mode when an non-scribble annotation is selected
-                gesturesMode = .normal
-            } else if selectedAnnotation.type != .arrow, gesturesMode == .arrowDrawing {
-                // disable arrow drawing mode when an non-arrow annotation is selected
-                gesturesMode = .normal
-            }
+        if selectedAnnotation != nil, gesturesMode != .normal {
+            // Back to normal gestures mode = disable any toggled tool when user selects an annotation
+            setGesturesMode(.normal)
         }
 
         updateCurrentAttributesBasedOnGesturesModeAndSelection()
