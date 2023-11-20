@@ -13,6 +13,8 @@ class TextAnnotationView: UIView {
     private var textEditingObservation: NSKeyValueObservation?
     let selectedLayer = CAShapeLayer()
     var textEditingView: UITextView?
+    
+    var onEditingEnded: (() -> Void)?
 
     init(viewModel: TextAnnotationViewModel) {
         self.viewModel = viewModel
@@ -167,7 +169,7 @@ class TextAnnotationView: UIView {
         let doneButton = UIButton(
             configuration: buttonConfig,
             primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
-                self?.endEditing(false)
+                self?.onEditingEnded?()
             }
         )
         blurEffectView.contentView.addSubview(doneButton)

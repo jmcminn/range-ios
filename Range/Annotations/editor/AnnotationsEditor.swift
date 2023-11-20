@@ -279,6 +279,9 @@ class AnnotationsEditor: NSObject {
             textVM.zoomScale = hostView.scrollView.zoomScale
         }
         let textAnnotationView = TextAnnotationView(viewModel: textVM)
+        textAnnotationView.onEditingEnded = { [weak self] in
+            self?.setEditing(nil)
+        }
         addAnnotation(textVM, view: textAnnotationView)
     }
 
