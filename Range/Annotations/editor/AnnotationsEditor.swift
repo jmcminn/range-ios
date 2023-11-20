@@ -110,7 +110,7 @@ class AnnotationsEditor: NSObject {
             .sink { [weak self] in self?.currentScribblingView?.color = $0 }
             .store(in: &subscriptions)
         viewModel.$gesturesMode
-            .sink { [weak self] in self?.setGesturesMode($0) }
+            .sink { [weak self] in self?.onGesturesModeSet($0) }
             .store(in: &subscriptions)
     }
 
@@ -337,7 +337,7 @@ extension AnnotationsEditor {
 // MARK: - scribble
 
 extension AnnotationsEditor {
-    func setGesturesMode(_ mode: AnnotationsEditorViewModel.GesturesMode) {
+    private func onGesturesModeSet(_ mode: AnnotationsEditorViewModel.GesturesMode) {
         guard let hostView = hostView else { return }
 
         // scrolling between multiple photos is only enabled in normal mode, when adding a scribble
@@ -362,6 +362,8 @@ extension AnnotationsEditor {
             }
             currentScribblingView!.onScribbleCreated = { [weak self] path in
                 self?.add(scribbleWithPath: path)
+                // End scribble mode after scribble created
+                self?.viewModel.setGesturesMode(.normal)
             }
             view.addSubview(currentScribblingView!)
             currentScribblingView!.snp.makeConstraints { make in
@@ -403,6 +405,10 @@ extension AnnotationsEditor {
                     color: self.viewModel.lastPickedColor
                 )
                 return addArrow(annotation)
+            }
+            arrowDrawing.onDrawingEnded = { [weak self] in
+                // end arrow drawing mode when the arrow drawing ended
+                self?.viewModel.setGesturesMode(.normal)
             }
             if let gestureRecognizer = arrowDrawing.gestureRecognizer {
                 hostView.imageView.addGestureRecognizer(gestureRecognizer)
