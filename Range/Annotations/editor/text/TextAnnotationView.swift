@@ -151,7 +151,7 @@ class TextAnnotationView: UIView {
     private func setupInputAccessoryView() -> UIView {
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.isUserInteractionEnabled = false
+        blurEffectView.isUserInteractionEnabled = true
         // width doesn't matter, will take as much as the keyboard
         blurEffectView.frame = CGRect(x: 0, y: 0, width: 100, height: 48)
 
