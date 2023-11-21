@@ -42,6 +42,9 @@ extension UserDefaults {
         case lastPickedAnnotationColor
         case lastPickedAnnotationLineThickness
         case lastPickedAnnotationFontSize
+        /// Recent annotations texts. 10 recent items. Each item is a [annotationId, annotationText] array, so we can update the entry
+        /// if a text for given annotation was updated, instead of adding new text and keeping the old.
+        case recentAnnotationTexts
     }
 
     /// Ids of the organizations (array of strings) shown to the user when the organization selector was presented for the last time
@@ -352,56 +355,5 @@ extension UserDefaults {
             orderedTaskIds.elements,
             forKey: lastCopiedTasksKey(forProjectId: projectId)
         )
-    }
-
-    static var lastPickedAnnotationColor: UIColor {
-        get {
-            if let colorHex = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationColor.rawValue) as? String
-            {
-                return UIColor(hexString: colorHex)
-            }
-            return .Red_03
-        }
-        set {
-            UserDefaults.standard.set(
-                newValue.hexString,
-                forKey: UserDefaultsConstants.lastPickedAnnotationColor.rawValue
-            )
-        }
-    }
-
-    static var lastPickedAnnotationLineThickness: Annotations.LineThickness {
-        get {
-            if let rawValue = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue) as? String
-            {
-                return Annotations.LineThickness(rawValue: rawValue) ?? .medium
-            }
-            return .medium
-        }
-        set {
-            UserDefaults.standard.setValue(
-                newValue.rawValue,
-                forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue
-            )
-        }
-    }
-
-    static var lastPickedAnnotationFontSize: Annotations.FontSize {
-        get {
-            if let rawValue = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue) as? String
-            {
-                return Annotations.FontSize(rawValue: rawValue) ?? .medium
-            }
-            return .medium
-        }
-        set {
-            UserDefaults.standard.setValue(
-                newValue.rawValue,
-                forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue
-            )
-        }
     }
 }

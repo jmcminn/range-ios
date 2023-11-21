@@ -13,7 +13,7 @@ class TextAnnotationView: UIView {
     private var textEditingObservation: NSKeyValueObservation?
     let selectedLayer = CAShapeLayer()
     var textEditingView: UITextView?
-    
+
     var onEditingEnded: (() -> Void)?
 
     init(viewModel: TextAnnotationViewModel) {
@@ -164,8 +164,24 @@ class TextAnnotationView: UIView {
         buttonConfig.baseBackgroundColor = .clear
         buttonConfig.baseForegroundColor = .white
         buttonConfig.preferredSymbolConfigurationForImage = imageConfig
-        buttonConfig.imagePlacement = .leading
+        buttonConfig.imagePlacement = .trailing
         buttonConfig.imagePadding = 5
+
+        let recentTextButton = UIButton(
+            configuration: buttonConfig,
+            primaryAction: UIAction(title: "Recent Text",
+                                    image: UIImage(systemName: "chevron.down.circle")) { [weak self] _ in
+                // TODO: 2070
+//                self?.endEditing(false)
+            }
+        )
+        blurEffectView.contentView.addSubview(recentTextButton)
+        recentTextButton.snp.makeConstraints { make in
+            make.top.bottom.leading.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.5)
+        }
+
+        buttonConfig.imagePlacement = .leading
         let doneButton = UIButton(
             configuration: buttonConfig,
             primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
@@ -174,7 +190,8 @@ class TextAnnotationView: UIView {
         )
         blurEffectView.contentView.addSubview(doneButton)
         doneButton.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.bottom.trailing.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.5)
         }
 
         return blurEffectView

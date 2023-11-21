@@ -306,7 +306,12 @@ class AddPhotoFlowController {
     private func updateAnnotations(_ photosAnnotations: [Annotations?]) async throws {
         for index in photosAnnotations.indices {
             let photoAnnotations = photosAnnotations[index]
-            if photosToAddViewModel.photos[index].annotations != photoAnnotations {
+            let previousPhotoAnnotations = photosToAddViewModel.photos[index].annotations
+            if previousPhotoAnnotations != photoAnnotations {
+                UserDefaults.addRecentAnnotationTexts(
+                    UserDefaults.getUpdatedTextAnnotations(previousPhotoAnnotations, photoAnnotations)
+                )
+
                 let mediaKey = photosToAddViewModel.photos[index].mediaKey
                 let localFileURL = localFiles.fileURL(forKey: mediaKey)
                 let imageData = try Data(contentsOf: localFileURL)

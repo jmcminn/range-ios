@@ -34,6 +34,16 @@ final class Annotations: NSObject, Codable {
         if annotations != rhs.annotations { return false }
         return true
     }
+
+    /// A convenience function to extract all text annotations
+    func getTextAnnotations() -> [TextAnnotation] {
+        annotations.compactMap {
+            if case let .text(textAnnotation) = $0 {
+                return textAnnotation
+            }
+            return nil
+        }
+    }
 }
 
 /// Store Annotations in the Realm as a JSON string
