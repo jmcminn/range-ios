@@ -427,6 +427,8 @@ extension AnnotationsEditor {
 
         let tappedAnnotation = tappedAnnotation(atLocation: location)
         setSelected(tappedAnnotation)
+
+        viewModel.setGesturesMode(.normal)
     }
 
     /// Discover annotation when tapping at given location

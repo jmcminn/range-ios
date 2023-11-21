@@ -63,6 +63,10 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     func setGesturesMode(_ mode: GesturesMode) {
         gesturesMode = mode
+        if gesturesMode != .normal {
+            // enabling any toggle tool deselects the currently selected annotation
+            annotationsEditor?.setSelected(nil)
+        }
         updateCurrentAttributesBasedOnGesturesModeAndSelection()
     }
 
