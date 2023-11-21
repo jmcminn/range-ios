@@ -46,6 +46,7 @@ class AnnotationsEditor: NSObject {
 
     /// subview of `view` to which annotations are added
     let annotationsContainerView = UIView()
+
     /// The view for drawing (on top of annotationsView)
     var currentScribblingView: ScribblingView?
 
@@ -362,8 +363,6 @@ extension AnnotationsEditor {
             }
             currentScribblingView!.onScribbleCreated = { [weak self] path in
                 self?.add(scribbleWithPath: path)
-                // End scribble mode after scribble created
-                self?.viewModel.setGesturesMode(.normal)
             }
             view.addSubview(currentScribblingView!)
             currentScribblingView!.snp.makeConstraints { make in
@@ -405,10 +404,6 @@ extension AnnotationsEditor {
                     color: self.viewModel.lastPickedColor
                 )
                 return addArrow(annotation)
-            }
-            arrowDrawing.onDrawingEnded = { [weak self] in
-                // end arrow drawing mode when the arrow drawing ended
-                self?.viewModel.setGesturesMode(.normal)
             }
             if let gestureRecognizer = arrowDrawing.gestureRecognizer {
                 hostView.imageView.addGestureRecognizer(gestureRecognizer)
