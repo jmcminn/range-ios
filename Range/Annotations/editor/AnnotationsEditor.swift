@@ -58,7 +58,7 @@ class AnnotationsEditor: NSObject {
     private var annotationViews = OrderedDictionary<String, UIView>()
 
     /// Combine listeners for viewModel
-    private var subscriptions = Set<AnyCancellable>()
+    var subscriptions = Set<AnyCancellable>()
 
     /// The scrollView.contentOffset stored on keyboardWillShow to be reverted on keyboardWillHide
     private var scrollViewContentOffsetBeforeKeyboardAdjustment: CGPoint?
@@ -68,6 +68,8 @@ class AnnotationsEditor: NSObject {
     /// Gesture recognizers for tapping and dragging the annotations
     private var tapGestureRecognizer: UITapGestureRecognizer?
     private var panGestureRecognizer: UIPanGestureRecognizer?
+
+    private var textAnnotationInputAccessoryView: UIView!
 
     init(
         hostView: FullscreenImageGalleryPageView,
@@ -93,6 +95,8 @@ class AnnotationsEditor: NSObject {
             self, selector: #selector(checkAnnotationsUpdated),
             name: ArrowAnnotation.UpdateNotificationName, object: nil
         )
+
+        textAnnotationInputAccessoryView = setupTextAnnotationInputAccessoryView()
     }
 
     deinit {
@@ -218,7 +222,7 @@ class AnnotationsEditor: NSObject {
         addAnnotation(scribbleVM, view: scribbleView)
     }
 
-    private func addArrow(_ arrow: ArrowAnnotation) -> ArrowAnnotationViewModel {
+    @discardableResult private func addArrow(_ arrow: ArrowAnnotation) -> ArrowAnnotationViewModel {
         let arrowVM = ArrowAnnotationViewModel(arrow: arrow, annotationsGeometry: annotationsGeometry)
         if let hostView = hostView {
             arrowVM.zoomScale = hostView.scrollView.zoomScale
@@ -278,10 +282,10 @@ class AnnotationsEditor: NSObject {
         if let hostView = hostView {
             textVM.zoomScale = hostView.scrollView.zoomScale
         }
-        let textAnnotationView = TextAnnotationView(viewModel: textVM)
-        textAnnotationView.onEditingEnded = { [weak self] in
-            self?.setEditing(nil)
-        }
+        let textAnnotationView = TextAnnotationView(
+            viewModel: textVM,
+            inputAccessoryView: textAnnotationInputAccessoryView
+        )
         addAnnotation(textVM, view: textAnnotationView)
     }
 

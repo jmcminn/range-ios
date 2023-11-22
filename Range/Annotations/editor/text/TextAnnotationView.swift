@@ -14,10 +14,11 @@ class TextAnnotationView: UIView {
     let selectedLayer = CAShapeLayer()
     var textEditingView: UITextView?
 
-    var onEditingEnded: (() -> Void)?
+    let textViewInputAccessoryView: UIView
 
-    init(viewModel: TextAnnotationViewModel) {
+    init(viewModel: TextAnnotationViewModel, inputAccessoryView: UIView) {
         self.viewModel = viewModel
+        self.textViewInputAccessoryView = inputAccessoryView
         super.init(frame: .zero)
         backgroundColor = .clear
         setupSelectedLayer()
@@ -80,7 +81,7 @@ class TextAnnotationView: UIView {
         textView.backgroundColor = .clear
         textView.delegate = self
         textView.keyboardAppearance = .dark
-        textView.inputAccessoryView = setupInputAccessoryView()
+        textView.inputAccessoryView = textViewInputAccessoryView
         addSubview(textView)
         textEditingView = textView
         updateTextEditingView()
@@ -147,54 +148,6 @@ class TextAnnotationView: UIView {
             backgroundOnly: viewModel.textEditing, // when editing the text is rendered with UITextView (to edit)
             renderingOffset: viewModel.text.position.multiplyBy(-1) // rendering in view coordinates
         )
-    }
-
-    /// Create "Done" button that will be shown above the keyboard
-    private func setupInputAccessoryView() -> UIView {
-        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.isUserInteractionEnabled = true
-        // width doesn't matter, will take as much as the keyboard
-        blurEffectView.frame = CGRect(x: 0, y: 0, width: 100, height: 48)
-
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .footnote)
-            .applying(UIImage.SymbolConfiguration(weight: .semibold))
-        var buttonConfig = UIButton.Configuration.filled()
-        buttonConfig.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 0, bottom: 14, trailing: 0)
-        buttonConfig.baseBackgroundColor = .clear
-        buttonConfig.baseForegroundColor = .white
-        buttonConfig.preferredSymbolConfigurationForImage = imageConfig
-        buttonConfig.imagePlacement = .trailing
-        buttonConfig.imagePadding = 5
-
-        let recentTextButton = UIButton(
-            configuration: buttonConfig,
-            primaryAction: UIAction(title: "Recent Text",
-                                    image: UIImage(systemName: "chevron.down.circle")) { [weak self] _ in
-                // TODO: 2070
-//                self?.endEditing(false)
-            }
-        )
-        blurEffectView.contentView.addSubview(recentTextButton)
-        recentTextButton.snp.makeConstraints { make in
-            make.top.bottom.leading.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.5)
-        }
-
-        buttonConfig.imagePlacement = .leading
-        let doneButton = UIButton(
-            configuration: buttonConfig,
-            primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
-                self?.onEditingEnded?()
-            }
-        )
-        blurEffectView.contentView.addSubview(doneButton)
-        doneButton.snp.makeConstraints { make in
-            make.top.bottom.trailing.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.5)
-        }
-
-        return blurEffectView
     }
 }
 

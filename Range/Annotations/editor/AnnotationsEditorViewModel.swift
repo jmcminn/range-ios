@@ -23,6 +23,8 @@ class AnnotationsEditorViewModel: ObservableObject {
     /// Is the AnnotationsToolbarView visible or not (hidden when keyboard is shown)
     @Published private(set) var toolbarVisible: Bool = true
 
+    @Published var recentTextSelectorVisible: Bool = false
+
     /// is the editing enabled for the current AnnotationsView (on if it's `installed`)
     @Published private(set) var editingEnabled: Bool = false
 

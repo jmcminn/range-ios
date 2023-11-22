@@ -448,6 +448,7 @@
 		0AE883AB2AEFBEDC004992BA /* XCTestCase+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */; };
 		0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */; };
 		0AE9A8B12B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B02B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift */; };
+		0AE9A8B32B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF11C972AA5C8C00022D44D /* GrayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF11C962AA5C8C00022D44D /* GrayButton.swift */; };
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
@@ -932,6 +933,7 @@
 		0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Factory.swift"; sourceTree = "<group>"; };
 		0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPinTypeCardViewController.swift; sourceTree = "<group>"; };
 		0AE9A8B02B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Annotations.swift"; sourceTree = "<group>"; };
+		0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnotationsEditor+TextInputAccessoryView.swift"; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF11C962AA5C8C00022D44D /* GrayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayButton.swift; sourceTree = "<group>"; };
 		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
@@ -1811,6 +1813,7 @@
 				0A2B3F5A2AF516C600D3D0D2 /* scribble */,
 				0A2B3F5B2AF516DA00D3D0D2 /* text */,
 				0A5394282A264685008583F0 /* AnnotationsEditor.swift */,
+				0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */,
 				0AD955252A40AA8F00B35325 /* AnnotationsEditorViewModel.swift */,
 				0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */,
 				0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */,
@@ -2668,6 +2671,7 @@
 				0A985B192A9E354500442617 /* User.swift in Sources */,
 				0A144F4C2A4C577A000F7593 /* VisualEffectView.swift in Sources */,
 				0A187AE92A7BFE3800EC179C /* Organization.swift in Sources */,
+				0AE9A8B32B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift in Sources */,
 				0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */,
 				0A4995BA28574CC600E571FB /* HeaderExpanderCalculator.swift in Sources */,
 				0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */,
