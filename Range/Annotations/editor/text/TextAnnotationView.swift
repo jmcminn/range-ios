@@ -18,7 +18,7 @@ class TextAnnotationView: UIView {
 
     init(viewModel: TextAnnotationViewModel, inputAccessoryView: UIView) {
         self.viewModel = viewModel
-        self.textViewInputAccessoryView = inputAccessoryView
+        textViewInputAccessoryView = inputAccessoryView
         super.init(frame: .zero)
         backgroundColor = .clear
         setupSelectedLayer()
@@ -58,6 +58,16 @@ class TextAnnotationView: UIView {
     private func onSelectedUpdate() {
         isUserInteractionEnabled = viewModel.selected
         updateSelectedLayer()
+    }
+
+    // Insert text at cursor or replace the current selection
+    func insertText(_ text: String) {
+        guard let textView = textEditingView else { return }
+        if let selectedTextRange = textView.selectedTextRange {
+            textView.replace(selectedTextRange, withText: text)
+        } else {
+            textView.insertText(text)
+        }
     }
 
     private func onTextEditingUpdate() {

@@ -9,9 +9,20 @@ struct FullscreenImageGalleryView: View {
         ZStack {
             imageGalleryView
                 .ignoresSafeArea(.all)
-            VStack {
-                Spacer()
-                if annotationsEditorViewModel.toolbarVisible {
+            if annotationsEditorViewModel.recentTextSelectorVisible {
+                VStack {
+                    Spacer()
+                    HStack {
+                        RecentTextSelectorView(model: annotationsEditorViewModel)
+                            .padding(8)
+                            .padding(.top, 40) // so it doesn't go over the top bar
+                        Spacer()
+                    }
+                }
+            }
+            if annotationsEditorViewModel.toolbarVisible {
+                VStack {
+                    Spacer()
                     AnnotationsToolbarView(model: annotationsEditorViewModel)
                         .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))
                         .animation(.default, value: annotationsEditorViewModel.toolbarVisible)

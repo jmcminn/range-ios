@@ -232,6 +232,15 @@ class AnnotationsEditor: NSObject {
         return arrowVM
     }
 
+    /// insert the text into currently editing annotation
+    func recentAnnotationTextSelected(_ text: String) {
+        if let editingAnnotation = editingAnnotation,
+           let textAnnotationView = annotationViews[editingAnnotation.id] as? TextAnnotationView
+        {
+            textAnnotationView.insertText(text)
+        }
+    }
+
     func insertTextAnnotation() {
         guard let hostView = hostView else {
             Logger.annotations.error("insertTextAnnotation: hostView not set!")
@@ -436,6 +445,7 @@ extension AnnotationsEditor {
         setSelected(tappedAnnotation)
 
         viewModel.setGesturesMode(.normal)
+        viewModel.recentTextSelectorVisible = false
     }
 
     /// Discover annotation when tapping at given location

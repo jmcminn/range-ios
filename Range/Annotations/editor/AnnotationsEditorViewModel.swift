@@ -131,6 +131,11 @@ class AnnotationsEditorViewModel: ObservableObject {
         }
     }
 
+    func recentAnnotationTextSelected(_ text: String) {
+        recentTextSelectorVisible = false
+        annotationsEditor?.recentAnnotationTextSelected(text)
+    }
+
     /// Adds text in the middle of the current viewport, selects it and starts editing
     func insertTextAnnotation() {
         annotationsEditor?.insertTextAnnotation()
