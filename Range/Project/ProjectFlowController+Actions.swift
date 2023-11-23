@@ -1,4 +1,5 @@
 import Foundation
+import Lottie
 import OSLog
 import RealmSwift
 import UIKit
@@ -301,12 +302,31 @@ extension ProjectFlowController: ProjectFlowActions {
         }
         model.run(
             model.update(status: completedStatus, forCollaboration: collaboration)
-        ) { error in
+        ) { [weak self] error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to complete the task") }
             else {
                 ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed")
-                let feedbackGenerator = UINotificationFeedbackGenerator()
-                feedbackGenerator.notificationOccurred(.success)
+                self?.playCheckmarkAnimation()
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            }
+        }
+    }
+
+    /// Play the Lottie checkmark animation
+    private func playCheckmarkAnimation() {
+        let checkmarkAnimationView = LottieAnimationView(asset: "checkmark_animation")
+        canvasContainer.controls.addSubview(checkmarkAnimationView)
+        checkmarkAnimationView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(96)
+        }
+        checkmarkAnimationView.loopMode = .playOnce
+        // after it's finished playing fade out the view and remove from superview
+        checkmarkAnimationView.play { _ in
+            UIView.animate(withDuration: 0.2) {
+                checkmarkAnimationView.alpha = 0
+            } completion: { _ in
+                checkmarkAnimationView.removeFromSuperview()
             }
         }
     }
@@ -324,13 +344,13 @@ extension ProjectFlowController: ProjectFlowActions {
             // user has no rights to archive, update status only and notify the user
             model.run(
                 model.update(status: completedStatus, forCollaboration: collaboration)
-            ) { error in
+            ) { [weak self] error in
                 if error != nil { ToastWindow.shared.showError(text: "Failed to complete the task") }
                 else {
                     ToastWindow.shared
                         .showWarning(text: "Task Completed. You do not have permissions to archive this task.")
-                    let feedbackGenerator = UINotificationFeedbackGenerator()
-                    feedbackGenerator.notificationOccurred(.success)
+                    self?.playCheckmarkAnimation()
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
             }
         } else {
@@ -340,12 +360,12 @@ extension ProjectFlowController: ProjectFlowActions {
                     forCollaborations: [collaboration.id],
                     andArchiveCollaborations: [collaboration.id]
                 )
-            ) { error in
+            ) { [weak self] error in
                 if error != nil { ToastWindow.shared.showError(text: "Failed to complete and archive the task") }
                 else {
                     ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived")
-                    let feedbackGenerator = UINotificationFeedbackGenerator()
-                    feedbackGenerator.notificationOccurred(.success)
+                    self?.playCheckmarkAnimation()
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
             }
         }
