@@ -517,17 +517,20 @@ extension CollaborationViewController {
 // MARK: - name text field delegate
 
 extension CollaborationViewController: UITextViewDelegate {
-    func textViewDidEndEditing(_: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) {
         // this is needed as user could switch to another field with keyboard still visible. In this
         // case we want to update this card immediately (and not wait for the keyboard to be hidden)
         keyboardHeightInWindow = 0
         guard let cardDragging = cardDragging else { return }
         cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
+        // auto save when editing ended
+        onNameUpdated?((textView.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn _: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
-            onNameUpdated?((textView.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+            // new line means end of editing
+//            onNameUpdated?((textView.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
             textView.resignFirstResponder()
             return false
         }

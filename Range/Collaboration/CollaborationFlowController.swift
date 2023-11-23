@@ -155,7 +155,6 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     }
 
     func showCollaborationWindow(_ collaboration: Collaboration, animated: Bool) {
-        self.collaboration = collaboration
         geometryNotificationToken?.invalidate()
         if let geometry = collaboration.feature.first?.geometry.first {
             geometryNotificationToken = geometry.observe { [weak self] change in
@@ -184,6 +183,9 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             hideCollaborationWindow(animated: false)
             setCollaborationHeaderCoverHidden(true, animated: false)
             setBottomCardHidden(true, animated: false)
+            // switch to new collaboration after hiding the previous view.
+            // We may still want to save some data when closing the collaboration view
+            self.collaboration = collaboration
             collaborationCardDraggingDelegateId = collaborationVC.cardDragging?.addDelegate(self)
             collaborationVC.showCard(animated: false)
             if let previousCardHeight = previousCardHeight, let newCardDragging = collaborationVC.cardDragging {
@@ -192,6 +194,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
                 newCardDragging.setPosition(newCardDragging.position, withVelocity: 0, animated: true)
             }
         } else {
+            self.collaboration = collaboration
             collaborationCardDraggingDelegateId = collaborationVC.cardDragging?.addDelegate(self)
             collaborationVC.showCard(animated: animated)
         }
@@ -206,7 +209,6 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
 
     /// Hide the currently shown collaboration window (and the header cover)
     func hideCollaborationWindow(animated: Bool, completion: (() -> Void)? = nil) {
-        collaboration = nil
         geometryNotificationToken?.invalidate()
         geometryNotificationToken = nil
         if let collaborationVC = collaborationVC {
@@ -224,6 +226,9 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         } else {
             completion?()
         }
+        // set collaboration to nil after triggering the hide card. We may still want to save some
+        // data when closing the collaboration view
+        collaboration = nil
         setCollaborationHeaderCoverHidden(true, animated: animated)
         setBottomCardHidden(true, animated: animated)
         removeCollaborationHeaderCover()
