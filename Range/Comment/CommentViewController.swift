@@ -48,9 +48,9 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
     }
 
     private var textView = UITextViewWithPlaceholder(placeholderText: "")
-    private var flagButton: ButtonWithTapAreaInsets!
-    private var commentButton: ButtonWithTapAreaInsets!
-    private var cancelButton: ButtonWithTapAreaInsets!
+    private var flagButton: RangeButton!
+    private var commentButton: RangeButton!
+    private var cancelButton: RangeButton!
 
     /// how high is the currently visible part of the keyboard
     private var keyboardHeightInWindow: CGFloat = 0
@@ -238,7 +238,7 @@ extension CommentViewController {
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         var config = UIButton.Configuration.plain()
         config.preferredSymbolConfigurationForImage = imageConfig
-        flagButton = ButtonWithTapAreaInsets(
+        flagButton = RangeButton(
             configuration: config,
             primaryAction: UIAction(image: UIImage(systemName: "flag")) { [weak self] _ in
                 guard let self = self else { return }
@@ -269,12 +269,14 @@ extension CommentViewController {
             outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
             return outgoing
         }
-        cancelButton = ButtonWithTapAreaInsets(
+        cancelButton = RangeButton(
             configuration: config,
             primaryAction: UIAction(title: "Cancel") { [weak self] _ in
                 self?.onCancel?()
             }
         )
+        .withCustomRangeHighlightColor()
+
         // more vertical tap area as button is only 32 points high
         cancelButton.tapAreaInsets = UIEdgeInsets(top: -16, left: 0, bottom: -16, right: 0)
     }
@@ -291,7 +293,7 @@ extension CommentViewController {
             return outgoing
         }
         let commentButtonText = mode == .edit ? "Save" : "Comment"
-        commentButton = ButtonWithTapAreaInsets(
+        commentButton = RangeButton(
             configuration: commentConfig,
             primaryAction: UIAction(title: commentButtonText) { [weak self] _ in
                 self?.onDone?()

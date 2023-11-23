@@ -4,7 +4,7 @@ import UIKit
 
 /// Badge for a collaboration that display uploads count and a flag.
 /// It observes the collaboration and reloads if it's updated.
-class CollaborationBadgeButton: ButtonWithTapAreaInsets {
+class CollaborationBadgeButton: RangeButton {
     private let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
     private var geometryNotificationToken: NotificationToken?

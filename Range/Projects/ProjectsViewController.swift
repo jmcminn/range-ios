@@ -211,12 +211,14 @@ class ProjectsViewController: UIViewController {
         config.baseBackgroundColor = .Primary_Blue_03
         config.background.strokeColor = .dynamicColor(light: .Primary_Blue_03, dark: .Primary_Blue_06)
 
-        let button = ButtonWithTapAreaInsets(
+        let button = RangeButton(
             configuration: config,
             primaryAction: UIAction(title: String(model.organization.name.prefix(1).uppercased())) { [weak self] _ in
                 self?.onOrganizationButtonTap?()
             }
         )
+        .withCustomRangeHighlightColor()
+
         button.snp.makeConstraints { make in
             make.width.height.equalTo(32)
         }

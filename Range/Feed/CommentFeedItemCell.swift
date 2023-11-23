@@ -12,7 +12,7 @@ class CommentFeedItemCell: UITableViewCell {
     let timestampLabel = UILabel()
     var moreButton: UIButton!
     let noteBackground = NoteBackgroundView()
-    var completeButton: ButtonWithTapAreaInsets!
+    var completeButton: RangeButton!
     let commentTextLabel = LabelWithTextInsets()
     let completedLabel = LabelWithTextInsets()
 
@@ -93,7 +93,7 @@ class CommentFeedItemCell: UITableViewCell {
 
         noteBackground.backgroundColor = .dynamic(.Neutral_08)
 
-        completeButton = ButtonWithTapAreaInsets(
+        completeButton = RangeButton(
             configuration: UIButton.Configuration.iconButton(
                 backgroundColor: .Green_04, strokeColor: .Green_04, cornerRadius: 16
             ),

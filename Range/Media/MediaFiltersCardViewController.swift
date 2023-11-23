@@ -13,7 +13,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
     private let tagsViewModel: TagsViewModel
     private let canvasesViewModel: CanvasesViewModel
 
-    private var resetButton: ButtonWithTapAreaInsets!
+    private var resetButton: RangeButton!
 
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
@@ -398,13 +398,15 @@ class MediaFiltersCardViewController: SheetCardViewController {
             outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
             return outgoing
         }
-        resetButton = ButtonWithTapAreaInsets(
+        resetButton = RangeButton(
             configuration: config,
             primaryAction: UIAction(title: String(localized: "Reset")) { [weak self] _ in
                 self?.mediaFilters.resetToDefaults()
                 self?.updateControlsStateFromFilters()
             }
         )
+        .withCustomRangeHighlightColor()
+
         // more vertical tap area as button is only 30 points high
         resetButton.tapAreaInsets = UIEdgeInsets(top: -10, left: 0, bottom: -10, right: 0)
 

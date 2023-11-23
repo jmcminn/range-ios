@@ -325,7 +325,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     }
 
     private func setupCloseButton() {
-        closeButton = ButtonWithTapAreaInsets(
+        closeButton = RangeButton(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
                 guard let self = self else { return }
@@ -333,6 +333,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
                 self.onClose?()
             }
         )
+        .withCustomRangeHighlightColor()
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 

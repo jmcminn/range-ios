@@ -282,7 +282,7 @@ extension CollaborationViewController {
 
 extension CollaborationViewController {
     private func setupMoreButton() {
-        moreButton = ButtonWithTapAreaInsets(
+        moreButton = RangeButton(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { [weak self] _ in
                 guard let self = self else { return }
@@ -292,6 +292,7 @@ extension CollaborationViewController {
                 )
             }
         )
+        .withCustomRangeHighlightColor()
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 
@@ -307,12 +308,13 @@ extension CollaborationViewController {
     }
 
     private func setupCloseButton() {
-        closeButton = ButtonWithTapAreaInsets(
+        closeButton = RangeButton(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
                 self?.onClose?()
             }
         )
+        .withCustomRangeHighlightColor()
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 

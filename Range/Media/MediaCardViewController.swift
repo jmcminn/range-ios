@@ -33,7 +33,7 @@ class MediaCardViewController: SheetCardViewController {
         ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
     }
 
-    private var selectButton: ButtonWithTapAreaInsets!
+    private var selectButton: RangeButton!
     private var mode: Mode = .normal
 
     private var bulkActionsBottomBar: UIView?
@@ -261,12 +261,14 @@ class MediaCardViewController: SheetCardViewController {
             outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
             return outgoing
         }
-        selectButton = ButtonWithTapAreaInsets(
+        selectButton = RangeButton(
             configuration: config,
             primaryAction: UIAction(title: String(localized: "Select")) { [weak self] _ in
                 self?.toggleMode()
             }
         )
+        .withCustomRangeHighlightColor()
+
         // more vertical tap area as button is only 30 points high
         selectButton.tapAreaInsets = UIEdgeInsets(top: -10, left: 0, bottom: -10, right: 0)
 

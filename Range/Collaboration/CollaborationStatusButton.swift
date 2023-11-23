@@ -3,7 +3,7 @@ import RealmSwift
 import UIKit
 
 /// Button displaying the status name and a chevron.down icon with a background in status color.
-class CollaborationStatusButton: ButtonWithTapAreaInsets {
+class CollaborationStatusButton: RangeButton {
     private let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
 

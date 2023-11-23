@@ -488,7 +488,7 @@ extension FullscreenMediaCardViewController {
         timestampLabel.adjustsFontForContentSizeCategory = true
         timestampLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
-        moreButton = ButtonWithTapAreaInsets(
+        moreButton = RangeButton(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { [weak self] _ in
                 guard let self = self else { return }
@@ -498,14 +498,16 @@ extension FullscreenMediaCardViewController {
                 )
             }
         )
+        .withCustomRangeHighlightColor()
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
 
-        closeButton = ButtonWithTapAreaInsets(
+        closeButton = RangeButton(
             configuration: UIButton.Configuration.closeButton(),
             primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
                 self?.dismissCard()
             }
         )
+        .withCustomRangeHighlightColor()
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 

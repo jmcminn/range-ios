@@ -13,7 +13,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     private let usersViewModel: UsersViewModel
     private let tagsViewModel: TagsViewModel
 
-    private var resetButton: ButtonWithTapAreaInsets!
+    private var resetButton: RangeButton!
 
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
@@ -452,13 +452,15 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             outgoing.font = UIFont.preferredFont(forTextStyle: .subheadline)
             return outgoing
         }
-        resetButton = ButtonWithTapAreaInsets(
+        resetButton = RangeButton(
             configuration: config,
             primaryAction: UIAction(title: String(localized: "Reset")) { [weak self] _ in
                 self?.filters.resetToDefaults()
                 self?.updateControlsStateFromFilters()
             }
         )
+        .withCustomRangeHighlightColor()
+
         // more vertical tap area as button is only 30 points high
         resetButton.tapAreaInsets = UIEdgeInsets(top: -10, left: 0, bottom: -10, right: 0)
 
