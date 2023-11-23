@@ -17,7 +17,7 @@ class Status: Object, WithPlaceholder, WithId {
     @Persisted var placeholder: Bool = false
 
     /// Couldn't add CustomPersistable for UIColor, so we store the `hexColor` in db and add `color` variable to store UIColor.
-    lazy var color = UIColor(hexString: hexColor)
+    lazy var color = UIColor(hexString: hexColor) ?? .black
 
     // initial first, completed last, otherwise keep the ordering
     static var uiSortingOrder: (Status, Status) -> Bool = { s1, s2 in

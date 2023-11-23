@@ -23,7 +23,7 @@ class TextAnnotation: NSObject, Codable {
     private var hexColor: String
     /// inner color (the outline is always white) - UIColor wrapping the hexColor
     @objc dynamic var color: UIColor {
-        get { UIColor(hexString: hexColor) }
+        get { UIColor(hexString: hexColor) ?? .black }
         set {
             hexColor = newValue.hexString
             postUpdate()

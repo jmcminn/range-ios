@@ -8,7 +8,7 @@ extension UserDefaults {
             if let colorHex = UserDefaults.standard
                 .object(forKey: UserDefaultsConstants.lastPickedAnnotationColor.rawValue) as? String
             {
-                return UIColor(hexString: colorHex)
+                return UIColor(hexString: colorHex) ?? .Red_03
             }
             return .Red_03
         }
