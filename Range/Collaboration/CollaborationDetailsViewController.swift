@@ -361,13 +361,13 @@ extension UIViewController {
             imagePlacement: .leading,
             cornerRadius: 8
         )
-        let addCommentButton = UIButton(
+        let addCommentButton = RangeButton(
             configuration: blackButtonConfig,
             primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { [weak self] _ in
                 UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addCommentAction),
                                                 to: nil, from: self, for: nil)
             }
-        )
+        ).withCustomRangeHighlightColor()
         ctas.addSubview(addCommentButton)
 
         var blueButtonConfig = UIButton.Configuration.blueButton(
@@ -376,26 +376,26 @@ extension UIViewController {
             cornerRadius: 8
         )
         blueButtonConfig.attributedTitle = AttributedString("Add Photos", attributes: titleAttributes)
-        let addPhotosButton = UIButton(
+        let addPhotosButton = RangeButton(
             configuration: blueButtonConfig,
             primaryAction: UIAction(image: UIImage(systemName: "camera")) { [weak self] _ in
                 UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addPhotosAction),
                                                 to: nil, from: self, for: nil)
             }
-        )
+        ).withCustomRangeHighlightColor()
         ctas.addSubview(addPhotosButton)
         addPhotosButton.snp.makeConstraints { make in
             make.trailing.top.bottom.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
         }
 
-        let addAttachmentButton = UIButton(
+        let addAttachmentButton = RangeButton(
             configuration: blackButtonConfig,
             primaryAction: UIAction(image: UIImage(systemName: "paperclip")) { [weak self] _ in
                 UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addAttachmentAction),
                                                 to: nil, from: self, for: nil)
             }
-        )
+        ).withCustomRangeHighlightColor()
         ctas.addSubview(addAttachmentButton)
         // layout buttons so addComment and addAttachment buttons take 25% and addPhotos take 50% space
         // (+ there's 16 points space between each button, the leading and trailing spacing is already

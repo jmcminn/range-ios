@@ -250,7 +250,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
             )
         }
 
-        deleteButton = UIButton(
+        deleteButton = RangeButton(
             configuration: UIButton.Configuration.iconButton(
                 backgroundColor: .Neutral_10, foregroundColor: .Red_03,
                 strokeColor: .Neutral_07, imagePointSize: 14
@@ -258,7 +258,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
             primaryAction: UIAction(image: UIImage(systemName: "trash")) { [weak self] _ in
                 self?.removePhoto()
             }
-        )
+        ).withCustomRangeHighlightColor()
     }
 
     @objc private func updateDoneButtonEnabled() {

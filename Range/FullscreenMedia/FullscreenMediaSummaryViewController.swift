@@ -301,10 +301,10 @@ class FullscreenMediaSummaryViewController: UIViewController {
     private func createAddButton(title: String, handler: @escaping UIActionHandler) -> UIView {
         var config = UIButton.Configuration.blackButton()
         config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)
-        let button = UIButton(
+        let button = RangeButton(
             configuration: UIButton.Configuration.blackButton(),
             primaryAction: UIAction(title: title, handler: handler)
-        )
+        ).withCustomRangeHighlightColor()
         let wrapperView = UIView()
         wrapperView.addSubview(button)
         button.snp.makeConstraints { make in

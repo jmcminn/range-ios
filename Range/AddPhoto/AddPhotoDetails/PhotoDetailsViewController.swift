@@ -443,20 +443,20 @@ extension PhotoDetailsViewController {
             make.height.equalTo(1)
         }
 
-        let backButton = UIButton(
+        let backButton = RangeButton(
             configuration: UIButton.Configuration.grayButton(),
             primaryAction: UIAction(
                 title: String(localized: "Back"),
                 image: UIImage(systemName: "arrow.backward")
             ) { [weak self] _ in self?.onBack?() }
-        )
-        nextButton = UIButton(
+        ).withCustomRangeHighlightColor()
+        nextButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(
                 title: nextButtonLabel,
                 image: nextButtonImage
             ) { [weak self] _ in self?.onNext?() }
-        )
+        ).withCustomRangeHighlightColor()
         bottomBar.addSubview(backButton)
         bottomBar.addSubview(nextButton)
         backButton.setContentHuggingPriority(.defaultLow, for: .horizontal)

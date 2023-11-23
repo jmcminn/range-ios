@@ -114,8 +114,10 @@ extension UIColor {
         case UIColor.Orange_03.hexString: return .Orange_04
         case UIColor.Primary_Blue_03.hexString: return .Primary_Blue_04
         case UIColor.Primary_Blue_04.hexString: return .Primary_Blue_06
+        case UIColor.Neutral_10.hexString: return .Neutral_09
         case UIColor.Neutral_09.hexString: return .Neutral_08
         case UIColor.Neutral_02.hexString: return .Neutral_03
+        case UIColor.Neutral_01.hexString: return .Neutral_02
         default:
             fatalError("highlight color not defined for \(hexString)")
         }

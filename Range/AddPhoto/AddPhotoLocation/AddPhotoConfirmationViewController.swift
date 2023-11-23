@@ -59,18 +59,18 @@ class AddPhotoConfirmationViewController: UIViewController, NonModalCardCoordina
         containerView.backgroundColor = .dynamic(.Neutral_10)
         updateColors()
 
-        backButton = UIButton(
+        backButton = RangeButton(
             configuration: UIButton.Configuration.grayButton(),
             primaryAction: UIAction(title: "Back", image: UIImage(systemName: "arrow.backward")) { [weak self] _ in
                 self?.onBack?()
             }
-        )
-        doneButton = UIButton(
+        ).withCustomRangeHighlightColor()
+        doneButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(title: "Done", image: UIImage(systemName: "checkmark")) { [weak self] _ in
                 self?.onDone?()
             }
-        )
+        ).withCustomRangeHighlightColor()
         containerView.addSubview(backButton)
         containerView.addSubview(doneButton)
 

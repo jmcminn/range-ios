@@ -241,18 +241,18 @@ extension SearchAndSelectTagsViewController {
         safeAreaCover.backgroundColor = bottomBar.backgroundColor
         bottomBar.addSubview(safeAreaCover)
 
-        let cancelButton = UIButton(
+        let cancelButton = RangeButton(
             configuration: UIButton.Configuration.grayButton(),
             primaryAction: UIAction(
                 title: String(localized: "Cancel")
             ) { [weak self] _ in self?.onCancel?() }
-        )
-        let confirmButton = UIButton(
+        ).withCustomRangeHighlightColor()
+        let confirmButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(
                 title: String(localized: "Confirm")
             ) { [weak self] _ in self?.onConfirm?() }
-        )
+        ).withCustomRangeHighlightColor()
         bottomBar.addSubview(cancelButton)
         bottomBar.addSubview(confirmButton)
         cancelButton.setContentHuggingPriority(.defaultLow, for: .horizontal)

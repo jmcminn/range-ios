@@ -37,16 +37,16 @@ class AddPinConfirmationViewController: UIViewController, NonModalCardCoordinati
         containerView.backgroundColor = .dynamic(.Neutral_10)
         updateColors()
 
-        cancelButton = UIButton(
+        cancelButton = RangeButton(
             configuration: UIButton.Configuration.grayButton(),
             primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in self?.onCancel?() }
-        )
-        confirmButton = UIButton(
+        ).withCustomRangeHighlightColor()
+        confirmButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
             primaryAction: UIAction(title: String(localized: "Confirm")) { [weak self] _ in
                 self?.onConfirm?()
             }
-        )
+        ).withCustomRangeHighlightColor()
         containerView.addSubview(cancelButton)
         containerView.addSubview(confirmButton)
         cancelButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)

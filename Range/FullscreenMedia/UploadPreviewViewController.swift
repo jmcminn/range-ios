@@ -149,12 +149,12 @@ class UploadPreviewViewController: UIViewController {
     private func setupDownloadButton() {
         var config = UIButton.Configuration.blackButton(cornerRadius: 100)
         config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
-        downloadButton = UIButton(
+        downloadButton = RangeButton(
             configuration: config,
             primaryAction: UIAction(title: String(localized: "Tap to download"), handler: { [weak self] _ in
                 self?.generateThumbnail()
             })
-        )
+        ).withCustomRangeHighlightColor()
     }
 
     private func setupImageView() {

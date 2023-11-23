@@ -520,12 +520,12 @@ extension TaskListCardViewController {
             make.leading.equalToSuperview().inset(16)
         }
 
-        let button = UIButton(
+        let button = RangeButton(
             configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(
                 image: UIImage(systemName: "ellipsis")
             ) { [weak self] _ in self?.showBulkActions() }
-        )
+        ).withCustomRangeHighlightColor()
 
         bottomBar.addSubview(button)
         button.snp.makeConstraints { make in

@@ -119,7 +119,7 @@ extension DatePickerCardViewController {
     private func setupButtons() {
         if showRemoveDateOption {
             // remove current date button
-            leftButton = UIButton(
+            leftButton = RangeButton(
                 configuration: UIButton.Configuration.redButton(),
                 primaryAction: UIAction(
                     title: String(localized: "Remove Date"),
@@ -130,21 +130,22 @@ extension DatePickerCardViewController {
                     self?.onDatePicked?(self?.selectedDate)
                 }
             )
+            .withCustomRangeHighlightColor()
         } else {
             // no initial date, just cancel
-            leftButton = UIButton(
+            leftButton = RangeButton(
                 configuration: UIButton.Configuration.grayButton(),
                 primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
                     self?.dismissCard()
                 }
-            )
+            ).withCustomRangeHighlightColor()
         }
-        doneButton = UIButton(
+        doneButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
             primaryAction: UIAction(title: "Done") { [weak self] _ in
                 self?.dismissCard()
                 self?.onDatePicked?(self?.selectedDate)
             }
-        )
+        ).withCustomRangeHighlightColor()
     }
 }

@@ -75,10 +75,10 @@ class TextView: UIView {
         // the width doesn't matter, it'll be equal to the keyboard(screen) width
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 80))
         view.backgroundColor = .dynamic(.Neutral_10)
-        let doneButton = UIButton(
+        let doneButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(),
             primaryAction: UIAction(title: doneText) { [weak self] _ in self?.onDone?() }
-        )
+        ).withCustomRangeHighlightColor()
         view.addSubview(doneButton)
         doneButton.snp.makeConstraints { make in
             make.height.equalTo(48)
@@ -90,10 +90,10 @@ class TextView: UIView {
             }
         }
         if showCancelButton {
-            let cancelButton = UIButton(
+            let cancelButton = RangeButton(
                 configuration: UIButton.Configuration.grayButton(),
                 primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in self?.onCancel?() }
-            )
+            ).withCustomRangeHighlightColor()
             view.addSubview(cancelButton)
             cancelButton.snp.makeConstraints { make in
                 make.top.height.width.equalTo(doneButton)

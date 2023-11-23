@@ -136,35 +136,39 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     }
 
     private func setupAddPinButton() {
-        addPinButton = UIButton(
+        addPinButton = RangeButton(
             configuration: UIButton.Configuration.blackButton(imagePlacement: .leading),
             primaryAction: UIAction(title: String(localized: "Add Pin"),
                                     image: UIImage(systemName: "mappin.and.ellipse")) { [weak self] _ in
                 self?.onAddPin?()
             }
         )
+        .withCustomRangeHighlightColor()
     }
 
     private func setupExpandButton() {
         var config = UIButton.Configuration.blackButton()
         config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)
-        expandButton = UIButton(
+        expandButton = RangeButton(
             configuration: config,
             primaryAction: UIAction(image: UIImage(systemName: "chevron.up")) { [weak self] _ in
                 self?.toggleCardExpanded()
             }
         )
+        .withCustomRangeHighlightColor()
+
         expandButton.setContentHuggingPriority(.required, for: .horizontal)
     }
 
     private func setupPhotoButton() {
-        photoButton = UIButton(
+        photoButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(imagePlacement: .leading),
             primaryAction: UIAction(title: String(localized: "Capture"),
                                     image: UIImage(systemName: "camera")) { [weak self] _ in
                 self?.onCamera?()
             }
         )
+        .withCustomRangeHighlightColor()
     }
 
     private func toggleCardExpanded() {

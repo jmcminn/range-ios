@@ -302,13 +302,13 @@ extension CopyTaskCardViewController {
             make.leading.trailing.equalToSuperview().inset(36)
         }
 
-        let addTaskPinButton = UIButton(
+        let addTaskPinButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(horizontalInsets: 32),
             primaryAction: UIAction(title: String(localized: "Add Task Pin")) { [weak self] _ in
                 self?.onAddTaskPin?()
                 self?.dismissCard()
             }
-        )
+        ).withCustomRangeHighlightColor()
         view.addSubview(addTaskPinButton)
         addTaskPinButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()

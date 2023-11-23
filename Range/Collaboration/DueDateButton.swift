@@ -42,7 +42,7 @@ class DueDateButton: UIButton {
     override open var isHighlighted: Bool {
         didSet {
             backgroundColor = isHighlighted
-                ? .dynamic(.Neutral_07)
+                ? .dynamic(.Neutral_08)
                 : .dynamic(.Neutral_09)
         }
     }
