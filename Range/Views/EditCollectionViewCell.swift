@@ -40,7 +40,7 @@ class EditCollectionViewCell: UICollectionViewCell {
     static let imageToLabelDistance: CGFloat = 3
     private let font = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
 
-    private let tagBackgroundView = UIView()
+    let tagBackgroundView = UIView()
     private let imageView = UIImageView()
     private let label = UILabel()
 
@@ -116,5 +116,9 @@ class EditCollectionViewCell: UICollectionViewCell {
     /// Update colors that doesn't automatically adapt to appearance change
     private func updateColors() {
         tagBackgroundView.layer.borderColor = UIColor.dynamic(.Neutral_07).cgColor
+    }
+
+    override func prepareForReuse() {
+        tagBackgroundView.backgroundColor = .dynamic(.Neutral_10)
     }
 }

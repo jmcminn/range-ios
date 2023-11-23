@@ -17,6 +17,8 @@ class TagsView: UIView {
 
     /// Should it always show a special cell saying "add" at the beginning of tags (even if tags results are empty)
     var showAddTagCell: Bool = false
+    /// To customize background color for the "add" cell
+    var addTagBackgroundColor: UIColor?
     var tags: Results<Tag>? {
         didSet {
             applyNewSnapshot(animatingDifferences: false)
@@ -184,6 +186,9 @@ extension TagsView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagAddCell",
                                                           for: indexPath) as! EditCollectionViewCell
             cell.setVariant(.addTag)
+            if let addTagBackgroundColor = addTagBackgroundColor {
+                cell.tagBackgroundView.backgroundColor = addTagBackgroundColor
+            }
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell",

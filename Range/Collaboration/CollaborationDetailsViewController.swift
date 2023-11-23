@@ -282,6 +282,7 @@ extension CollaborationDetailsViewController {
     private func setupTagsView() {
         tagsView = TagsView()
         tagsView.showAddTagCell = true
+        tagsView.addTagBackgroundColor = .dynamic(.Neutral_09)
         tagsView.tags = collaboration.tags.where { $0.placeholder == false }
         tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
     }
