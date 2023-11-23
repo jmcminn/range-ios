@@ -10,6 +10,7 @@ import UIKit
 extension Color {
     static let Archived = Color("Archived")
     static let Green_01 = Color("Green_01")
+    static let Green_02 = Color("Green_02")
     static let Green_03 = Color("Green_03")
     static let Green_04 = Color("Green_04")
     static let Neutral_01 = Color("Neutral_01")
@@ -42,6 +43,7 @@ extension Color {
 extension UIColor {
     static let Archived = UIColor(named: "Archived")!
     static let Green_01 = UIColor(named: "Green_01")!
+    static let Green_02 = UIColor(named: "Green_02")!
     static let Green_03 = UIColor(named: "Green_03")!
     static let Green_04 = UIColor(named: "Green_04")!
     /// white
@@ -99,6 +101,23 @@ extension UIColor {
         case .Neutral_02: return .Neutral_09
         case .Neutral_01: return .Neutral_10
         default: fatalError("Neutral colors range from 1 to 10")
+        }
+    }
+}
+
+/// Highlight colors
+extension UIColor {
+    var _highlightColor: UIColor {
+        // Can't compare the UIColor directly, need to compare the components, so we can as well compare the hex representation
+        switch hexString {
+        case UIColor.Green_01.hexString: return .Green_02
+        case UIColor.Orange_03.hexString: return .Orange_04
+        case UIColor.Primary_Blue_03.hexString: return .Primary_Blue_04
+        case UIColor.Primary_Blue_04.hexString: return .Primary_Blue_06
+        case UIColor.Neutral_09.hexString: return .Neutral_08
+        case UIColor.Neutral_02.hexString: return .Neutral_03
+        default:
+            fatalError("highlight color not defined for \(hexString)")
         }
     }
 }
