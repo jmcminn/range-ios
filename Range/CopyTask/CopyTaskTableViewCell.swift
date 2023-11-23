@@ -25,6 +25,9 @@ class CopyTaskTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .dynamic(.Neutral_10)
 
+        selectedBackgroundView = UIView()
+        selectedBackgroundView?.backgroundColor = .dynamic(.Neutral_08)
+
         setupViews()
 
         [badgeView, nameLabel, descriptionLabel, detailsScrollView, tagsScrollView, bottomStroke]

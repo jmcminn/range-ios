@@ -105,7 +105,7 @@ extension OrganizationSelectorCardViewController: UITableViewDelegate, UITableVi
             forRowAt: indexPath,
             backgroundColor: selected ? .dynamic(.Neutral_08) : .dynamic(.Neutral_09),
             borderColor: selected ? .Primary_Blue_04 : .dynamic(.Neutral_07),
-            selectedBackgroundColor: .systemGray4 // this is what selectedBackgroundView uses by default
+            selectedBackgroundColor: .dynamic(.Neutral_08)
         )
     }
 

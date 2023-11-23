@@ -67,7 +67,7 @@ class SelectPinTypeButton: UIControl {
 
     private func updateHighlightedColor() {
         backgroundColor = isHighlighted
-            ? .dynamic(.Neutral_07)
+            ? .dynamic(.Neutral_08)
             : .dynamic(.Neutral_09)
     }
 

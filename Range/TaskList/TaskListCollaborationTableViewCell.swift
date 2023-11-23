@@ -36,6 +36,9 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             setupSelectionViews()
         }
 
+        selectedBackgroundView = UIView()
+        selectedBackgroundView?.backgroundColor = .dynamic(.Neutral_08)
+
         setupViews()
 
         [nameLabel, detailsScrollView, lastUpdatedLabel, bottomStroke].forEach(contentView.addSubview)
