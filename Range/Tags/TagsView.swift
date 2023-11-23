@@ -74,6 +74,7 @@ class TagsView: UIView {
         layout.minimumInteritemSpacing = 8
         layout.minimumLineSpacing = 8
         collectionView.delegate = self
+        collectionView.backgroundColor = backgroundColor
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "TagCell")
