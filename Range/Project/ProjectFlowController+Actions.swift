@@ -318,16 +318,11 @@ extension ProjectFlowController: ProjectFlowActions {
         canvasContainer.controls.addSubview(checkmarkAnimationView)
         checkmarkAnimationView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(96)
+            make.width.height.equalTo(192)
         }
         checkmarkAnimationView.loopMode = .playOnce
-        // after it's finished playing fade out the view and remove from superview
         checkmarkAnimationView.play { _ in
-            UIView.animate(withDuration: 0.2) {
-                checkmarkAnimationView.alpha = 0
-            } completion: { _ in
-                checkmarkAnimationView.removeFromSuperview()
-            }
+            checkmarkAnimationView.removeFromSuperview()
         }
     }
 
