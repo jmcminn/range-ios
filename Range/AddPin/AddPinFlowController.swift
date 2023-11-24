@@ -9,8 +9,8 @@ class AddPinFlowController {
 
     private var pinTypeOption: PinTypeOption?
 
-    /// in .copyTask mode this is the collaboration that we want to copy data from:
-    private var taskToCopy: Collaboration?
+    /// in .copyPin mode this is the collaboration that we want to copy data from:
+    private var pinToCopy: Collaboration?
 
     /// called when the flow finishes, if pin was added the id of the created geometry is returned. If cancelled nil is passed
     var onStop: ((String?, PinTypeOption?) -> Void)?
@@ -50,7 +50,7 @@ class AddPinFlowController {
             if let pinTypeOption = pinTypeOption {
                 self.pinTypeOption = pinTypeOption
                 if pinTypeOption == .copyPin {
-                    self.selectTaskToCopy()
+                    self.selectPinToCopy()
                 } else {
                     self.showPinPlacementUI()
                 }
@@ -61,22 +61,22 @@ class AddPinFlowController {
         .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
-    private func selectTaskToCopy() {
-        let copyTaskCardVC = CopyTaskCardViewController(projectModel: model)
-        copyTaskCardVC.onTaskSelected = { [weak self] task in
+    private func selectPinToCopy() {
+        let copyPinCardVC = CopyPinCardViewController(projectModel: model)
+        copyPinCardVC.onPinSelected = { [weak self] pin in
             guard let self = self else { return }
-            self.taskToCopy = task
+            self.pinToCopy = pin
             self.showPinPlacementUI()
         }
-        copyTaskCardVC.onAddTaskPin = { [weak self] in
+        copyPinCardVC.onAddTaskPin = { [weak self] in
             guard let self = self else { return }
             self.pinTypeOption = .createTask
             self.showPinPlacementUI()
         }
-        copyTaskCardVC.onClose = { [weak self] in
+        copyPinCardVC.onClose = { [weak self] in
             self?.onStop?(nil, nil)
         }
-        copyTaskCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        copyPinCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     private func showPinPlacementUI() {
@@ -128,7 +128,15 @@ class AddPinFlowController {
         switch pinTypeOption {
         case .createPhoto: title = String(localized: "Add Photo Pin")
         case .createTask: title = String(localized: "Add Task Pin")
-        case .copyPin: title = String(localized: "Add Task Pin")
+        case .copyPin:
+            guard let pinToCopy = pinToCopy else {
+                fatalError("pin to copy not selected")
+            }
+            if pinToCopy.status == nil {
+                title = String(localized: "Add Photo Pin")
+            } else {
+                title = String(localized: "Add Task Pin")
+            }
         }
         controls.showTopViewController(iconName: "mappin.and.ellipse", title: title, animated: true)
     }
@@ -199,10 +207,10 @@ class AddPinFlowController {
             collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
         case .copyPin:
             // empty collaboration with initial status if taskToCopy is a task
-            guard let taskToCopy = taskToCopy else {
-                fatalError("task to copy not selected")
+            guard let pinToCopy = pinToCopy else {
+                fatalError("pin to copy not selected")
             }
-            if taskToCopy.status != nil {
+            if pinToCopy.status != nil {
                 collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
             }
         }
@@ -267,8 +275,8 @@ class AddPinFlowController {
                 isTask: true
             )
         case .copyPin:
-            guard let taskToCopy = taskToCopy else {
-                fatalError("task to copy not selected")
+            guard let pinToCopy = pinToCopy else {
+                fatalError("pin to copy not selected")
             }
             // TODO: 2066 not always task
             command = try await model.createCollaboration(
@@ -276,13 +284,13 @@ class AddPinFlowController {
                 in: canvas,
                 withGeometryId: geometryId,
                 isTask: true,
-                name: taskToCopy.name,
-                collaborationDescription: taskToCopy.collaborationDescription,
-                assignee: taskToCopy.assignee?.participation == .active ? taskToCopy.assignee : nil,
-                dueDate: taskToCopy.dueDateTimestamp,
-                tags: taskToCopy.tags.map(TagViewModel.init(fromTag:))
+                name: pinToCopy.name,
+                collaborationDescription: pinToCopy.collaborationDescription,
+                assignee: pinToCopy.assignee?.participation == .active ? pinToCopy.assignee : nil,
+                dueDate: pinToCopy.dueDateTimestamp,
+                tags: pinToCopy.tags.map(TagViewModel.init(fromTag:))
             )
-            UserDefaults.addLastCopiedTask(taskToCopy.id, forProjectId: model.projectId)
+            UserDefaults.addLastCopiedTask(pinToCopy.id, forProjectId: model.projectId)
         }
         try await model.run(command)
     }

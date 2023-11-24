@@ -5,10 +5,10 @@ import Realm
 import RealmSwift
 import UIKit
 
-/// Card view controller presenting a list of tasks created by user, so user can select which task to copy.
+/// Card view controller presenting a list of collaborations created by user, so user can select which collaboration to copy.
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
-class CopyTaskCardViewController: SheetCardViewController {
+class CopyPinCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
 
     private var mostRecentUsedToggle: SegmentedControl!
@@ -18,11 +18,11 @@ class CopyTaskCardViewController: SheetCardViewController {
     /// collaborations after making them unique and applying searchTerms
     private var searchedCollaborations: [Collaboration] = []
 
-    /// for the "Most Used" tab, shown only the tasks that were used to copy task on this device, ordered so most recently used is at the top
+    /// for the "Most Used" tab, shown only the collaborations that were used to copy on this device, ordered so most recently used is at the top
     /// this is already filtered by searchTerms
-    private var lastCopiedTasks: [Collaboration] = []
+    private var lastCopiedPins: [Collaboration] = []
 
-    /// Calculated from user search term input, this is what is actually applied to tasks.
+    /// Calculated from user search term input, this is what is actually applied to collaborations.
     /// It's an array of case/diactric insensitive and trimmed components of the search term
     /// If empty then it counts as matched.
     private var searchTerms: [String] = []
@@ -31,11 +31,11 @@ class CopyTaskCardViewController: SheetCardViewController {
     private var notificationToken: NotificationToken?
 
     private let tableView = UITableView(frame: .zero, style: .plain)
-    private var noTasksView: UIView?
+    private var noPinsView: UIView?
 
-    /// Callback for task selected
-    var onTaskSelected: ((Collaboration) -> Void)?
-    /// Callback when there were no tasks to copy and user selected "Add Task Pin" instead
+    /// Callback for pin selected
+    var onPinSelected: ((Collaboration) -> Void)?
+    /// Callback when there were no pins to copy and user selected "Add Task Pin" instead
     var onAddTaskPin: (() -> Void)?
 
     /// Initializer
@@ -52,7 +52,7 @@ class CopyTaskCardViewController: SheetCardViewController {
 
         super.init(
             icon: UIImage(systemName: "mappin.and.ellipse"),
-            title: String(localized: "Select Task to Copy"),
+            title: String(localized: "Select Pin to Copy"),
             showSearchView: true
         )
     }
@@ -78,7 +78,7 @@ class CopyTaskCardViewController: SheetCardViewController {
         }
 
         observeCollaborations()
-        updateNoTasksViewVisibility()
+        updateNoPinsViewVisibility()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -102,7 +102,7 @@ class CopyTaskCardViewController: SheetCardViewController {
     }
 
     /// Define String value based on Collaboration name, description, dueDate, assignee and tags.
-    /// The Copy task card only display collaborations that are unique with respect to this value.
+    /// The Copy pin card only display collaborations that are unique with respect to this value.
     private func uniqueProjection(_ collaboration: Collaboration) -> String {
         var values = [String]()
         values.append(collaboration.name)
@@ -129,17 +129,17 @@ class CopyTaskCardViewController: SheetCardViewController {
         uniqueCollaborations = collaborations.uniqued(on: uniqueProjection)
         searchedCollaborations = uniqueCollaborations.filter(matchSearchTerms)
 
-        // last copied tasks need to filter by UserDefaults.lastCopiedTasks first and then apply
-        // .uniqued, otherwise .uniqued may filter out the task ids from lastCopiedTasks and prefer
-        // the task with same data but different it...
-        lastCopiedTasks =
-            UserDefaults.lastCopiedTasks(forProjectId: projectModel.projectId).compactMap { taskId in
-                collaborations.first { $0.id == taskId }
+        // last copied pins need to filter by UserDefaults.lastCopiedTasks first and then apply
+        // .uniqued, otherwise .uniqued may filter out the pin ids from lastCopiedTasks and prefer
+        // the pin with same data but different id...
+        lastCopiedPins =
+            UserDefaults.lastCopiedTasks(forProjectId: projectModel.projectId).compactMap { pinId in
+                collaborations.first { $0.id == pinId }
             }
             .uniqued(on: uniqueProjection)
             .filter(matchSearchTerms)
 
-        updateNoTasksViewVisibility()
+        updateNoPinsViewVisibility()
 
         tableView.reloadData()
     }
@@ -149,7 +149,7 @@ class CopyTaskCardViewController: SheetCardViewController {
         if cardPosition == .max {
             if uniqueCollaborations.isEmpty {
                 view.layoutIfNeeded()
-                return baseHeight + (noTasksView?.frame.height ?? 0.0)
+                return baseHeight + (noPinsView?.frame.height ?? 0.0)
             } else {
                 // just make it max, so it doesn't depend on the content height
                 return Double.greatestFiniteMagnitude
@@ -195,20 +195,20 @@ class CopyTaskCardViewController: SheetCardViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.register(CopyTaskTableViewCell.self, forCellReuseIdentifier: "TaskCell")
+        tableView.register(CopyPinTableViewCell.self, forCellReuseIdentifier: "PinCell")
         tableView.keyboardDismissMode = .onDrag
     }
 }
 
 // MARK: table view delegate
 
-extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource {
-    var tasksToDisplay: [Collaboration] {
+extension CopyPinCardViewController: UITableViewDelegate, UITableViewDataSource {
+    var pinsToDisplay: [Collaboration] {
         // display all or last copied depending on the current toggle selection
         if mostRecentUsedToggle.selectedSegmentIndex == 0 {
             return searchedCollaborations
         } else {
-            return lastCopiedTasks
+            return lastCopiedPins
         }
     }
 
@@ -217,14 +217,14 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        tasksToDisplay.count
+        pinsToDisplay.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! CopyTaskTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PinCell", for: indexPath) as! CopyPinTableViewCell
         let index = indexPath.row
-        if index < tasksToDisplay.count {
-            cell.setCollaboration(tasksToDisplay[index], projectModel: projectModel)
+        if index < pinsToDisplay.count {
+            cell.setCollaboration(pinsToDisplay[index], projectModel: projectModel)
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in
             guard let self = self else { return }
@@ -232,7 +232,7 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
                 ofType: Collaboration.self,
                 forPrimaryKey: collaborationId
             ) else { return }
-            self.onTaskSelected?(collaboration)
+            self.onPinSelected?(collaboration)
             self.dismissCard()
         }
         return cell
@@ -241,32 +241,32 @@ extension CopyTaskCardViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let selectedTask = tasksToDisplay[indexPath.row]
-        onTaskSelected?(selectedTask)
+        let selectedPin = pinsToDisplay[indexPath.row]
+        onPinSelected?(selectedPin)
         dismissCard()
     }
 }
 
-// MARK: - no tasks view
+// MARK: - no pins view
 
-extension CopyTaskCardViewController {
-    private func updateNoTasksViewVisibility() {
-        let showNoTasks = uniqueCollaborations.isEmpty
-        if showNoTasks {
-            if noTasksView == nil {
-                setupNoTasksView()
+extension CopyPinCardViewController {
+    private func updateNoPinsViewVisibility() {
+        let showNoPins = uniqueCollaborations.isEmpty
+        if showNoPins {
+            if noPinsView == nil {
+                setupNoPinsView()
             }
-            noTasksView?.isHidden = false
+            noPinsView?.isHidden = false
         } else {
-            noTasksView?.isHidden = true
+            noPinsView?.isHidden = true
         }
         if let cardDragging = cardDragging {
-            // animate the card to adjust for no tasks visibility
+            // animate the card to adjust for no pins visibility
             cardDragging.setPosition(cardDragging.position, withVelocity: 0)
         }
     }
 
-    private func setupNoTasksView() {
+    private func setupNoPinsView() {
         let view = UIView()
         view.backgroundColor = .dynamic(.Neutral_09)
 
@@ -282,7 +282,7 @@ extension CopyTaskCardViewController {
         titleLabel.textColor = .dynamic(.Neutral_04)
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
-        titleLabel.text = String(localized: "There are no tasks to copy...")
+        titleLabel.text = String(localized: "There are no pins to copy...")
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(questionPin.snp.bottom).offset(16)
@@ -295,7 +295,7 @@ extension CopyTaskCardViewController {
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textAlignment = .center
         descriptionLabel
-            .text = String(localized: "In order to copy an existing task, you need to add a task pin first.")
+            .text = String(localized: "In order to copy an existing pin, you need to add a pin first.")
         view.addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
@@ -330,13 +330,13 @@ extension CopyTaskCardViewController {
             make.leading.trailing.equalToSuperview()
         }
 
-        noTasksView = view
+        noPinsView = view
     }
 }
 
-// MARK: - filtering tasks by search term
+// MARK: - filtering pins by search term
 
-extension CopyTaskCardViewController: SearchViewDelegate {
+extension CopyPinCardViewController: SearchViewDelegate {
     func searchView(_: SearchView, textDidChange text: String) {
         // calculate search terms from user entered search text
         let textTrimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)

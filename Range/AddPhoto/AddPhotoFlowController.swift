@@ -40,8 +40,8 @@ class AddPhotoFlowController {
     var photoDescription: String = ""
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
     var geometryId: String?
-    /// task to copy data from when in .copyTask mode
-    var taskToCopy: Collaboration?
+    /// pin to copy data from when in .copyPin mode
+    var pinToCopy: Collaboration?
     /// whether to create photo or task collaboration
     var pinTypeOption: PinTypeOption = .createPhoto {
         didSet {
@@ -574,16 +574,17 @@ class AddPhotoFlowController {
             UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
+            // TODO: 2066 fix isTask
             try await model.run(model.createCollaboration(
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: model.currentCanvas,
                 withGeometryId: geometryId,
                 isTask: pinTypeOption.pinType == .task,
-                name: taskToCopy?.name,
-                collaborationDescription: taskToCopy?.collaborationDescription,
-                assignee: taskToCopy?.assignee?.participation == .active ? taskToCopy?.assignee : nil,
-                dueDate: taskToCopy?.dueDateTimestamp,
-                tags: taskToCopy?.tags.map(TagViewModel.init(fromTag:)) ?? [],
+                name: pinToCopy?.name,
+                collaborationDescription: pinToCopy?.collaborationDescription,
+                assignee: pinToCopy?.assignee?.participation == .active ? pinToCopy?.assignee : nil,
+                dueDate: pinToCopy?.dueDateTimestamp,
+                tags: pinToCopy?.tags.map(TagViewModel.init(fromTag:)) ?? [],
                 photosToAdd: photosToAddViewModel.photos,
                 uploadTags: tagsViewModel.selectedTags,
                 uploadDescription: photoDescription
@@ -593,8 +594,8 @@ class AddPhotoFlowController {
             shouldEditCollaboration = pinTypeOption != .copyPin
             UserDefaults.lastPhotoPinId = geometryId
             UserDefaults.lastPinTypeOption = pinTypeOption
-            if let taskToCopy = taskToCopy {
-                UserDefaults.addLastCopiedTask(taskToCopy.id, forProjectId: model.projectId)
+            if let pinToCopy = pinToCopy {
+                UserDefaults.addLastCopiedTask(pinToCopy.id, forProjectId: model.projectId)
             }
         }
         UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)
@@ -690,19 +691,19 @@ extension AddPhotoFlowController {
         confirmationCardVC!.onDone = { [weak self] in
             guard let self = self else { return }
             if self.pinTypeOption == .copyPin {
-                let copyTaskCardVC = CopyTaskCardViewController(projectModel: self.model)
-                copyTaskCardVC.onTaskSelected = { [weak self] task in
+                let copyPinCardVC = CopyPinCardViewController(projectModel: self.model)
+                copyPinCardVC.onPinSelected = { [weak self] pin in
                     guard let self = self else { return }
-                    // handle copy task
-                    self.taskToCopy = task
+                    // handle copy pin
+                    self.pinToCopy = pin
                     self.finalizeFromConfirmationCard()
                 }
-                copyTaskCardVC.onAddTaskPin = {
+                copyPinCardVC.onAddTaskPin = {
                     if let switchPinTypeCardVC = self.switchPinTypeCardVC {
                         switchPinTypeCardVC.selectPinTypeOption(.createTask, animated: true)
                     }
                 }
-                copyTaskCardVC.installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
+                copyPinCardVC.installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
             } else {
                 self.finalizeFromConfirmationCard()
             }

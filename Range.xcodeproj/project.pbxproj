@@ -344,8 +344,8 @@
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
 		0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */; };
-		0A9341C229A7D4B9006166C1 /* CopyTaskCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C129A7D4B9006166C1 /* CopyTaskCardViewController.swift */; };
-		0A9341C429A8A464006166C1 /* CopyTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C329A8A464006166C1 /* CopyTaskTableViewCell.swift */; };
+		0A9341C229A7D4B9006166C1 /* CopyPinCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */; };
+		0A9341C429A8A464006166C1 /* CopyPinTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C329A8A464006166C1 /* CopyPinTableViewCell.swift */; };
 		0A9341C629A8A50D006166C1 /* PillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C529A8A50D006166C1 /* PillView.swift */; };
 		0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */; };
 		0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */; };
@@ -832,8 +832,8 @@
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
 		0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersCardViewController.swift; sourceTree = "<group>"; };
-		0A9341C129A7D4B9006166C1 /* CopyTaskCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyTaskCardViewController.swift; sourceTree = "<group>"; };
-		0A9341C329A8A464006166C1 /* CopyTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyTaskTableViewCell.swift; sourceTree = "<group>"; };
+		0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPinCardViewController.swift; sourceTree = "<group>"; };
+		0A9341C329A8A464006166C1 /* CopyPinTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPinTableViewCell.swift; sourceTree = "<group>"; };
 		0A9341C529A8A50D006166C1 /* PillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillView.swift; sourceTree = "<group>"; };
 		0A9382A62935FE2200FD032C /* CanvasSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableViewCell.swift; sourceTree = "<group>"; };
@@ -1616,7 +1616,7 @@
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0ABFD8B528F00A46008CDA74 /* Comment */,
-				0A9341C029A7D41C006166C1 /* CopyTask */,
+				0A9341C029A7D41C006166C1 /* CopyPin */,
 				0A7121B0290BB8330013E2F8 /* DatePicker */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0A147E81294E268100B5833A /* Feed */,
@@ -1934,13 +1934,13 @@
 			path = CanvasPicker;
 			sourceTree = "<group>";
 		};
-		0A9341C029A7D41C006166C1 /* CopyTask */ = {
+		0A9341C029A7D41C006166C1 /* CopyPin */ = {
 			isa = PBXGroup;
 			children = (
-				0A9341C129A7D4B9006166C1 /* CopyTaskCardViewController.swift */,
-				0A9341C329A8A464006166C1 /* CopyTaskTableViewCell.swift */,
+				0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */,
+				0A9341C329A8A464006166C1 /* CopyPinTableViewCell.swift */,
 			);
-			path = CopyTask;
+			path = CopyPin;
 			sourceTree = "<group>";
 		};
 		0A97232327FC507200D744F4 /* Camera */ = {
@@ -2401,7 +2401,7 @@
 				0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */,
 				0A4DC76527EDCACA00712518 /* MapboxZoomConverter.swift in Sources */,
 				0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */,
-				0A9341C229A7D4B9006166C1 /* CopyTaskCardViewController.swift in Sources */,
+				0A9341C229A7D4B9006166C1 /* CopyPinCardViewController.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
 				0A36CDFD299C11B50004758E /* RangeMediaCacheImageDataProvider.swift in Sources */,
@@ -2450,7 +2450,7 @@
 				0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */,
 				0A7393782A5FDE450079A7FB /* UpdateUploadAnnotationsCommand.swift in Sources */,
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
-				0A9341C429A8A464006166C1 /* CopyTaskTableViewCell.swift in Sources */,
+				0A9341C429A8A464006166C1 /* CopyPinTableViewCell.swift in Sources */,
 				0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */,
 				0AE9A8B12B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift in Sources */,
 				0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */,

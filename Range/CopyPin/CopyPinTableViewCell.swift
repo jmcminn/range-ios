@@ -7,7 +7,7 @@ import UIKit
 // + reuse tags but with variable height and smaller vertical insets
 
 /// Table cell for displaying collaboration data
-class CopyTaskTableViewCell: UITableViewCell {
+class CopyPinTableViewCell: UITableViewCell {
     private let badgeView = UIView()
     private let nameLabel = UILabel()
     private let descriptionLabel = LabelWithTextInsets()
