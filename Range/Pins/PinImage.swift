@@ -16,6 +16,7 @@ enum PinImage {
     case pinTaskWithNote(color: UIColor)
     case pinTaskWithOverdue(color: UIColor)
     case pinArchivedTask
+    case copyPin
 
     private static var imageCache: [String: UIImage] = [:]
 
@@ -49,6 +50,8 @@ enum PinImage {
             return "marker.selected.task.overdue." + color.toHexString()
         case .pinArchivedTask:
             return "marker.selected.task.archived"
+        case .copyPin:
+            return "marker.copyPin"
         }
     }
 
@@ -134,6 +137,8 @@ enum PinImage {
                 bgColor: .Archived,
                 image: "task.selected.overlay"
             )
+        case .copyPin:
+            return getAndCacheImage(named: id)
         }
     }
 

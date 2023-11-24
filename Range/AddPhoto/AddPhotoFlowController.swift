@@ -46,7 +46,7 @@ class AddPhotoFlowController {
     var pinTypeOption: PinTypeOption = .createPhoto {
         didSet {
             pinsDisplay?.photoPinView?.pinType = pinTypeOption.pinType
-            confirmationCardVC?.showNextButton = pinTypeOption == .copyTask
+            confirmationCardVC?.showNextButton = pinTypeOption == .copyPin
         }
     }
 
@@ -590,7 +590,7 @@ class AddPhotoFlowController {
             ))
             resultGeometryId = geometryId
             newCollaborationCreated = true
-            shouldEditCollaboration = pinTypeOption != .copyTask
+            shouldEditCollaboration = pinTypeOption != .copyPin
             UserDefaults.lastPhotoPinId = geometryId
             UserDefaults.lastPinTypeOption = pinTypeOption
             if let taskToCopy = taskToCopy {
@@ -689,7 +689,7 @@ extension AddPhotoFlowController {
         }
         confirmationCardVC!.onDone = { [weak self] in
             guard let self = self else { return }
-            if self.pinTypeOption == .copyTask {
+            if self.pinTypeOption == .copyPin {
                 let copyTaskCardVC = CopyTaskCardViewController(projectModel: self.model)
                 copyTaskCardVC.onTaskSelected = { [weak self] task in
                     guard let self = self else { return }
@@ -713,14 +713,14 @@ extension AddPhotoFlowController {
             cardConfig: CardConfiguration(interactive: false, showSafeAreaBlur: true)
         )
         confirmationCardVC!.showCard(animated: true)
-        confirmationCardVC!.showNextButton = pinTypeOption == .copyTask
+        confirmationCardVC!.showNextButton = pinTypeOption == .copyPin
     }
 
     private func showPinTypeSelector() {
         guard let confirmationCardVC = confirmationCardVC else { return }
         if switchPinTypeCardVC == nil {
             let pinTypeVC = SwitchPinTypeCardViewController(
-                availableTypes: [.createPhoto, .createTask, .copyTask],
+                availableTypes: [.createPhoto, .createTask, .copyPin],
                 confirmationVC: confirmationCardVC
             )
             pinTypeVC.onPinTypeChange = { [weak self] pinTypeOption in

@@ -50,11 +50,14 @@ class PhotoPin: PassthroughView {
     }
 
     private func onPinTypeUpdated() {
-        imageView.isHidden = pinType == .task
+        imageView.isHidden = pinType != .photo
 
-        let pinImage: PinImage = pinType == .photo
-            ? .pinPhoto(count: 0)
-            : .pinTask(color: taskPinColor)
+        let pinImage: PinImage
+        switch pinType {
+        case .photo: pinImage = .pinPhoto(count: 0)
+        case .task: pinImage = .pinTask(color: taskPinColor)
+        case .photoOrTask: pinImage = .copyPin
+        }
         pinView.image = pinImage.image
     }
 

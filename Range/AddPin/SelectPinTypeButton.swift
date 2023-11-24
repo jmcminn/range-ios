@@ -37,16 +37,16 @@ class SelectPinTypeButton: UIControl {
         imageView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(13)
             make.bottom.lessThanOrEqualToSuperview().inset(13)
-            make.leading.equalToSuperview().inset(12)
+            make.centerX.equalTo(24)
         }
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(13)
-            make.leading.equalTo(imageView.snp.trailing).offset(12)
+            make.leading.equalToSuperview().offset(48)
             make.trailing.equalToSuperview().inset(12)
         }
         subtitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
-            make.leading.equalTo(imageView.snp.trailing).offset(12)
+            make.leading.equalToSuperview().offset(48)
             make.trailing.equalToSuperview().inset(12)
             make.bottom.equalToSuperview().inset(13)
         }

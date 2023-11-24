@@ -7,7 +7,7 @@ import UIKit
 class SelectPinTypeCardViewController: SheetCardViewController {
     private let photoPinButton = SelectPinTypeButton(type: .createPhoto)
     private let taskPinButton = SelectPinTypeButton(type: .createTask)
-    private let copyTaskPinButton = SelectPinTypeButton(type: .copyTask)
+    private let copyTaskPinButton = SelectPinTypeButton(type: .copyPin)
 
     /// Callback for pin selected, optional = nil when the selector was dismissed
     var onPinTypeSelected: ((PinTypeOption?) -> Void)?
@@ -69,6 +69,6 @@ class SelectPinTypeCardViewController: SheetCardViewController {
 
     @objc private func copyTaskPinSelected() {
         dismissCard()
-        onPinTypeSelected?(.copyTask)
+        onPinTypeSelected?(.copyPin)
     }
 }

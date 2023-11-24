@@ -26,6 +26,11 @@ extension PinDisplayOptions {
     /// offset for pins (not circles) the distance between the image bottom and the tip of the pin
     static let pinYOffset = -4.0
 
+    /// Display options for copy pin (copy task or photo)
+    static func copyPinDisplayOptions() -> PinDisplayOptions {
+        PinDisplayOptions(pinImage: .copyPin, alpha: 1, anchor: .bottom, offsetY: pinYOffset)
+    }
+
     /// pin display options provider for regular display of pins
     static func regularPinDisplayOptionsProvider(collaboration: Collaboration, selected: Bool,
                                                  anythingSelected: Bool) -> PinDisplayOptions

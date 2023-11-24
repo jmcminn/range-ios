@@ -565,7 +565,7 @@ extension ProjectFlowController {
             self.setUIState(.default, animated: true)
             if let geometryId = geometryId {
                 // don't edit name if it was .taskCopy
-                self.selectCollaboration(forGeometryId: geometryId, andEditName: pinTypeOption != .copyTask)
+                self.selectCollaboration(forGeometryId: geometryId, andEditName: pinTypeOption != .copyPin)
             }
             self.addPinFlow = nil
         }

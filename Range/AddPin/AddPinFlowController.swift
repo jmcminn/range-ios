@@ -49,7 +49,7 @@ class AddPinFlowController {
             guard let self = self else { return }
             if let pinTypeOption = pinTypeOption {
                 self.pinTypeOption = pinTypeOption
-                if pinTypeOption == .copyTask {
+                if pinTypeOption == .copyPin {
                     self.selectTaskToCopy()
                 } else {
                     self.showPinPlacementUI()
@@ -128,7 +128,7 @@ class AddPinFlowController {
         switch pinTypeOption {
         case .createPhoto: title = String(localized: "Add Photo Pin")
         case .createTask: title = String(localized: "Add Task Pin")
-        case .copyTask: title = String(localized: "Add Task Pin")
+        case .copyPin: title = String(localized: "Add Task Pin")
         }
         controls.showTopViewController(iconName: "mappin.and.ellipse", title: title, animated: true)
     }
@@ -189,15 +189,22 @@ class AddPinFlowController {
         }
         // prepare collaboration depending on the pin type option, so we can use PinDisplayOptions
         // to get the pin for given collaboration
-        let collaboration: Collaboration
+        let collaboration = Collaboration(placeholderId: "")
         switch pinTypeOption {
         case .createPhoto:
             // empty collaboration
-            collaboration = Collaboration(placeholderId: "")
-        case .createTask, .copyTask:
+            break
+        case .createTask:
             // empty collaboration with initial status
-            collaboration = Collaboration(placeholderId: "")
             collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
+        case .copyPin:
+            // empty collaboration with initial status if taskToCopy is a task
+            guard let taskToCopy = taskToCopy else {
+                fatalError("task to copy not selected")
+            }
+            if taskToCopy.status != nil {
+                collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
+            }
         }
         let pinDisplayOptions = PinDisplayOptions.regularPinDisplayOptionsProvider(
             collaboration: collaboration,
@@ -259,10 +266,11 @@ class AddPinFlowController {
                 withGeometryId: geometryId,
                 isTask: true
             )
-        case .copyTask:
+        case .copyPin:
             guard let taskToCopy = taskToCopy else {
                 fatalError("task to copy not selected")
             }
+            // TODO: 2066 not always task
             command = try await model.createCollaboration(
                 at: coordinates,
                 in: canvas,
