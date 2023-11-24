@@ -97,26 +97,4 @@ extension UserDefaults {
             forKey: UserDefaultsConstants.recentAnnotationTexts.rawValue
         )
     }
-
-    /// Get all added/updated text annotations comparing the Annotations before and after the change
-    /// The result of this function can be passed to `addRecentAnnotationTexts`
-    static func getUpdatedTextAnnotations(_ oldAnnotations: Annotations?,
-                                          _ newAnnotations: Annotations?) -> [TextAnnotation]
-    {
-        guard let newAnnotations = newAnnotations else { return [] }
-        let newTextAnnotations = newAnnotations.getTextAnnotations()
-
-        guard let oldAnnotations = oldAnnotations else { // everything is new
-            return newTextAnnotations
-        }
-        let oldTextAnnotations = oldAnnotations.getTextAnnotations()
-
-        return newTextAnnotations.filter { new in
-            // included if it's new, or has updated text
-            if let old = oldTextAnnotations.first(where: { $0.id == new.id }) {
-                return old.text != new.text
-            }
-            return true
-        }
-    }
 }

@@ -55,14 +55,6 @@ struct RecentTextSelectorView: View {
         .init(text: "Fix that", position: .zero, fontSize: 0, color: .white),
         .init(text: "Fix this", position: .zero, fontSize: 0, color: .white),
         .init(text: "Paint defect", position: .zero, fontSize: 0, color: .white),
-        .init(text: "Paint defect1", position: .zero, fontSize: 0, color: .white),
-        .init(text: "Paint defect2", position: .zero, fontSize: 0, color: .white),
-        .init(text: "Paint defect3", position: .zero, fontSize: 0, color: .white),
-        .init(text: "Paint defect4", position: .zero, fontSize: 0, color: .white),
-        .init(text: "Paint defect5", position: .zero, fontSize: 0, color: .white),
-        .init(text: "Paint defect6", position: .zero, fontSize: 0, color: .white),
-        .init(text: "Paint defect7", position: .zero, fontSize: 0, color: .white),
-//        .init(text: "Paint defect\nwith new line", position: .zero, fontSize: 0, color: .white),
     ])
     return RecentTextSelectorView(model: AnnotationsEditorViewModel())
 }

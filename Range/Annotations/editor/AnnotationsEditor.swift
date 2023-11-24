@@ -506,12 +506,19 @@ extension AnnotationsEditor {
     func setEditing(_ editingAnnotation: TextAnnotationViewModel?) {
         // mark the previous one as not editing
         if editingAnnotation != self.editingAnnotation,
-           let textAnnotation = self.editingAnnotation as? TextAnnotationViewModel
+           let textAnnotationVM = self.editingAnnotation as? TextAnnotationViewModel
         {
-            textAnnotation.textEditing = false
-            if textAnnotation.text.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let textBeforeEditing = textAnnotationVM.textOnEditingStarted
+            textAnnotationVM.textEditing = false
+            if textAnnotationVM.text.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 // no text provided (other than spaces), remove:
-                deleteAnnotation(textAnnotation)
+                deleteAnnotation(textAnnotationVM)
+            } else {
+                // store the text in recent texts when editing ended
+                // but only if it has changed during the editing session
+                if textBeforeEditing != textAnnotationVM.text.text {
+                    UserDefaults.addRecentAnnotationTexts([textAnnotationVM.text])
+                }
             }
         }
         // update the currently editing

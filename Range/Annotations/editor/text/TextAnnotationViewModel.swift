@@ -12,14 +12,23 @@ class TextAnnotationViewModel: AnnotationViewModel {
     }
 
     /// whether the text of the annotation is currently being edited
-    @objc dynamic var textEditing: Bool = false
+    @objc dynamic var textEditing: Bool = false { didSet {
+        if textEditing {
+            textOnEditingStarted = text.text
+        }
+    }}
 
     override var annotation: Annotation { text.annotation }
     override var type: AnnotationType { text.type }
 
+    /// Every time the text annotation enters the editing mode (`textEditing` set to `true`) the text value is stored in this property.
+    /// At the end of editing it can be used to check if there's any changes.
+    private(set) var textOnEditingStarted: String
+
     /// Initiates the view model with given annotation and annotationsGeometry
     init(text: TextAnnotation, annotationsGeometry: AnnotationsGeometry) {
         self.text = text
+        textOnEditingStarted = text.text
         super.init(id: text.id, annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1

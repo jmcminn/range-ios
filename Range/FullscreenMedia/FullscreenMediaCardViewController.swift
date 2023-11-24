@@ -581,9 +581,6 @@ extension FullscreenMediaCardViewController {
         vc.onDone = { [weak self, weak vc] _, annotations in
             if let self = self, let annotations = annotations.first {
                 self.update(annotations: annotations)
-                UserDefaults.addRecentAnnotationTexts(
-                    UserDefaults.getUpdatedTextAnnotations(self.upload.annotations, annotations)
-                )
             }
             vc?.dismiss(animated: true)
         }
