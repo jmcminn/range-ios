@@ -278,19 +278,18 @@ class AddPinFlowController {
             guard let pinToCopy = pinToCopy else {
                 fatalError("pin to copy not selected")
             }
-            // TODO: 2066 not always task
             command = try await model.createCollaboration(
                 at: coordinates,
                 in: canvas,
                 withGeometryId: geometryId,
-                isTask: true,
+                isTask: pinToCopy.status != nil,
                 name: pinToCopy.name,
                 collaborationDescription: pinToCopy.collaborationDescription,
                 assignee: pinToCopy.assignee?.participation == .active ? pinToCopy.assignee : nil,
                 dueDate: pinToCopy.dueDateTimestamp,
                 tags: pinToCopy.tags.map(TagViewModel.init(fromTag:))
             )
-            UserDefaults.addLastCopiedTask(pinToCopy.id, forProjectId: model.projectId)
+            UserDefaults.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
         }
         try await model.run(command)
     }

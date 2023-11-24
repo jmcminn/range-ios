@@ -36,8 +36,9 @@ extension UserDefaults {
         case taskListFiltersPrefix = "taskListFilters_"
         /// whether the card onboarding was complete (action card for project needs to be maximized)
         case cardOnboardingComplete
-        /// the prefix used for storing last copied tasks (array of ids) for a projects, will be followe by a project id
-        case lastCopiedTasksPrefix = "lastCopiedTasks_"
+        /// the prefix used for storing last copied pins (array of ids) for a projects, will be followed by a project id
+        /// it's stored as lastCopiedTasks_ for backward compatibility (it used to store tasks only)
+        case lastCopiedPinsPrefix = "lastCopiedTasks_"
         /// Annotation editor user choices
         case lastPickedAnnotationColor
         case lastPickedAnnotationLineThickness
@@ -334,26 +335,26 @@ extension UserDefaults {
         cardOnboardingComplete = false
     }
 
-    /// construct key used for storing last copied tasks ids for given project
-    private static func lastCopiedTasksKey(forProjectId projectId: String) -> String {
-        UserDefaultsConstants.lastCopiedTasksPrefix.rawValue + projectId
+    /// construct key used for storing last copied pin ids for given project
+    private static func lastCopiedPinsKey(forProjectId projectId: String) -> String {
+        UserDefaultsConstants.lastCopiedPinsPrefix.rawValue + projectId
     }
 
-    /// Returns the last copied tasks ids for given project. The most recently copied task id is at the beginning of the array
-    static func lastCopiedTasks(forProjectId projectId: String) -> [String] {
-        UserDefaults.standard.array(forKey: lastCopiedTasksKey(forProjectId: projectId)) as? [String] ?? []
+    /// Returns the last copied pin ids for given project. The most recently copied pin id is at the beginning of the array
+    static func lastCopiedPins(forProjectId projectId: String) -> [String] {
+        UserDefaults.standard.array(forKey: lastCopiedPinsKey(forProjectId: projectId)) as? [String] ?? []
     }
 
-    /// adds given task id to last copied tasks ids for given project
-    /// If task id exist in recent tasks ids it will be reinserted at the beginning (so it's "more recent")
-    static func addLastCopiedTask(_ taskId: String, forProjectId projectId: String) {
-        var orderedTaskIds = OrderedSet(lastCopiedTasks(forProjectId: projectId))
-        orderedTaskIds.remove(taskId) // remove, so it gets added at the beginning
-        orderedTaskIds.insert(taskId, at: 0)
+    /// adds given task id to last copied pin ids for given project
+    /// If pin id exist in recent pin ids it will be reinserted at the beginning (so it's "more recent")
+    static func addLastCopiedPin(_ pinId: String, forProjectId projectId: String) {
+        var orderedPinIds = OrderedSet(lastCopiedPins(forProjectId: projectId))
+        orderedPinIds.remove(pinId) // remove, so it gets added at the beginning
+        orderedPinIds.insert(pinId, at: 0)
         // store in user defaults
         UserDefaults.standard.set(
-            orderedTaskIds.elements,
-            forKey: lastCopiedTasksKey(forProjectId: projectId)
+            orderedPinIds.elements,
+            forKey: lastCopiedPinsKey(forProjectId: projectId)
         )
     }
 }

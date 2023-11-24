@@ -8,7 +8,9 @@ import UIKit
 
 /// Table cell for displaying collaboration data
 class CopyPinTableViewCell: UITableViewCell {
-    private let badgeView = UIView()
+    private let taskBadgeView = UIView()
+    private let photoBadgeView = UIView()
+    private let numberOfUploadsLabel = UILabel()
     private let nameLabel = UILabel()
     private let descriptionLabel = LabelWithTextInsets()
     private let detailsScrollView = UIScrollView()
@@ -30,30 +32,35 @@ class CopyPinTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [badgeView, nameLabel, descriptionLabel, detailsScrollView, tagsScrollView, bottomStroke]
+        [taskBadgeView, photoBadgeView, nameLabel, descriptionLabel, detailsScrollView, tagsScrollView, bottomStroke]
             .forEach(contentView.addSubview)
 
-        badgeView.snp.makeConstraints { make in
+        taskBadgeView.snp.makeConstraints { make in
             make.width.height.equalTo(20)
             make.leading.equalToSuperview().inset(14)
             make.centerY.equalTo(nameLabel.snp.centerY)
         }
 
+        photoBadgeView.snp.makeConstraints { make in
+            make.width.height.equalTo(22)
+            make.center.equalTo(taskBadgeView)
+        }
+
         nameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
-            make.leading.equalTo(badgeView.snp.trailing).offset(8)
+            make.leading.equalTo(44)
             make.trailing.equalToSuperview().inset(14)
         }
 
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom)
-            make.leading.equalTo(badgeView.snp.trailing).offset(8)
+            make.leading.equalTo(nameLabel)
             make.trailing.equalToSuperview().inset(14)
         }
 
         detailsScrollView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualTo(descriptionLabel.snp.bottom).offset(4)
-            make.top.greaterThanOrEqualTo(badgeView.snp.bottom).offset(4)
+            make.top.greaterThanOrEqualTo(taskBadgeView.snp.bottom).offset(4)
             make.leading.trailing.equalToSuperview()
         }
 
@@ -75,12 +82,21 @@ class CopyPinTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
-        badgeView.layer.cornerRadius = 10
+        taskBadgeView.layer.cornerRadius = 10
         let tickView = UIImageView(image: UIImage(named: "tick.smaller"))
-        badgeView.addSubview(tickView)
+        taskBadgeView.addSubview(tickView)
         tickView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
+
+        photoBadgeView.layer.cornerRadius = 11
+        photoBadgeView.backgroundColor = .Pink_03
+        photoBadgeView.addSubview(numberOfUploadsLabel)
+        numberOfUploadsLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        numberOfUploadsLabel.textColor = .white
+        numberOfUploadsLabel.font = .systemFont(ofSize: 13.5, weight: .bold)
 
         nameLabel.font = .preferredFont(forTextStyle: .headline)
         nameLabel.textColor = .dynamic(.Neutral_04)
@@ -130,10 +146,6 @@ class CopyPinTableViewCell: UITableViewCell {
     func setCollaboration(_ collaboration: Collaboration, projectModel: ProjectModel) {
         collaborationId = collaboration.id
 
-        let initialStatusColor = projectModel.mainRealm.objects(Status.self).first(where: { $0.isInitial })?
-            .color ?? .Primary_Blue_04
-
-        badgeView.backgroundColor = initialStatusColor
         nameLabel.text = collaboration.name.isEmpty
             ? (collaboration.status == nil
                 ? String(localized: "Untitled photos...")
@@ -149,31 +161,44 @@ class CopyPinTableViewCell: UITableViewCell {
         }
 
         let detailsBgColor = UIColor.dynamic(.Neutral_09)
-        if let assignee = collaboration.assignee, assignee.participation == .active {
-            detailsStackView.addArrangedSubview(PillView(
-                iconName: "person", text: assignee.displayName,
-                verticalPadding: 4, backgroundColor: detailsBgColor
-            ))
+        if collaboration.status != nil {
+            // task
+            let initialStatusColor = projectModel.mainRealm.objects(Status.self).first(where: { $0.isInitial })?
+                .color ?? .Primary_Blue_04
+            taskBadgeView.backgroundColor = initialStatusColor
+            photoBadgeView.isHidden = true
+
+            if let assignee = collaboration.assignee, assignee.participation == .active {
+                detailsStackView.addArrangedSubview(PillView(
+                    iconName: "person", text: assignee.displayName,
+                    verticalPadding: 4, backgroundColor: detailsBgColor
+                ))
+            } else {
+                detailsStackView.addArrangedSubview(PillView(
+                    iconName: "person", text: String(localized: "No Assignee"),
+                    verticalPadding: 4, backgroundColor: detailsBgColor,
+                    style: .disabled
+                ))
+            }
+            if let dueDateTimestamp = collaboration.dueDateTimestamp {
+                detailsStackView.addArrangedSubview(PillView(
+                    iconName: "calendar",
+                    text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectModel.projectSummary.timeZone),
+                    verticalPadding: 4, backgroundColor: detailsBgColor,
+                    style: collaboration.isOverdue ? .red : .default
+                ))
+            } else {
+                detailsStackView.addArrangedSubview(PillView(
+                    iconName: "calendar", text: String(localized: "No Due Date"),
+                    verticalPadding: 4, backgroundColor: detailsBgColor,
+                    style: .disabled
+                ))
+            }
         } else {
-            detailsStackView.addArrangedSubview(PillView(
-                iconName: "person", text: String(localized: "No Assignee"),
-                verticalPadding: 4, backgroundColor: detailsBgColor,
-                style: .disabled
-            ))
-        }
-        if let dueDateTimestamp = collaboration.dueDateTimestamp {
-            detailsStackView.addArrangedSubview(PillView(
-                iconName: "calendar",
-                text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectModel.projectSummary.timeZone),
-                verticalPadding: 4, backgroundColor: detailsBgColor,
-                style: collaboration.isOverdue ? .red : .default
-            ))
-        } else {
-            detailsStackView.addArrangedSubview(PillView(
-                iconName: "calendar", text: String(localized: "No Due Date"),
-                verticalPadding: 4, backgroundColor: detailsBgColor,
-                style: .disabled
-            ))
+            // photo
+            photoBadgeView.isHidden = false
+            let uploadsCount = collaboration.uploads.count
+            numberOfUploadsLabel.text = uploadsCount < 9 ? String(uploadsCount) : "9⁺"
         }
 
         let tagsBgColor = UIColor.Primary_Blue_01

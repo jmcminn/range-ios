@@ -574,12 +574,12 @@ class AddPhotoFlowController {
             UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
-            // TODO: 2066 fix isTask
+            let isTask = (pinTypeOption.pinType == .task) || (pinTypeOption == .copyPin && pinToCopy?.status != nil)
             try await model.run(model.createCollaboration(
                 at: canvasContainer.annotationsMapView.cameraState.center,
                 in: model.currentCanvas,
                 withGeometryId: geometryId,
-                isTask: pinTypeOption.pinType == .task,
+                isTask: isTask,
                 name: pinToCopy?.name,
                 collaborationDescription: pinToCopy?.collaborationDescription,
                 assignee: pinToCopy?.assignee?.participation == .active ? pinToCopy?.assignee : nil,
@@ -595,7 +595,7 @@ class AddPhotoFlowController {
             UserDefaults.lastPhotoPinId = geometryId
             UserDefaults.lastPinTypeOption = pinTypeOption
             if let pinToCopy = pinToCopy {
-                UserDefaults.addLastCopiedTask(pinToCopy.id, forProjectId: model.projectId)
+                UserDefaults.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
             }
         }
         UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)

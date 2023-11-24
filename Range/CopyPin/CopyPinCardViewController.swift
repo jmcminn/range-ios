@@ -45,9 +45,6 @@ class CopyPinCardViewController: SheetCardViewController {
     init(projectModel: ProjectModel) {
         self.projectModel = projectModel
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
-            .where { (c: Query<Collaboration>) -> Query<Bool> in
-                c.status != nil
-            }
             .sorted(by: \Collaboration.timestamp, ascending: false)
 
         super.init(
@@ -101,7 +98,7 @@ class CopyPinCardViewController: SheetCardViewController {
         }
     }
 
-    /// Define String value based on Collaboration name, description, dueDate, assignee and tags.
+    /// Define String value based on Collaboration name, description, dueDate, assignee, tags and whether it's a task or photo pin.
     /// The Copy pin card only display collaborations that are unique with respect to this value.
     private func uniqueProjection(_ collaboration: Collaboration) -> String {
         var values = [String]()
@@ -119,6 +116,7 @@ class CopyPinCardViewController: SheetCardViewController {
         for tag in collaboration.tags {
             values.append(tag.id)
         }
+        values.append(collaboration.status != nil ? "task" : "photo")
         return String(values.joined(by: "_"))
     }
 
@@ -133,7 +131,7 @@ class CopyPinCardViewController: SheetCardViewController {
         // .uniqued, otherwise .uniqued may filter out the pin ids from lastCopiedTasks and prefer
         // the pin with same data but different id...
         lastCopiedPins =
-            UserDefaults.lastCopiedTasks(forProjectId: projectModel.projectId).compactMap { pinId in
+            UserDefaults.lastCopiedPins(forProjectId: projectModel.projectId).compactMap { pinId in
                 collaborations.first { $0.id == pinId }
             }
             .uniqued(on: uniqueProjection)
