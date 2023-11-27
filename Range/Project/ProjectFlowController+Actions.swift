@@ -314,15 +314,14 @@ extension ProjectFlowController: ProjectFlowActions {
 
     /// Play the Lottie checkmark animation
     private func playCheckmarkAnimation() {
-        let checkmarkAnimationView = LottieAnimationView(asset: "checkmark_animation")
         canvasContainer.controls.addSubview(checkmarkAnimationView)
         checkmarkAnimationView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(192)
         }
         checkmarkAnimationView.loopMode = .playOnce
-        checkmarkAnimationView.play { _ in
-            checkmarkAnimationView.removeFromSuperview()
+        checkmarkAnimationView.play { [weak self] _ in
+            self?.checkmarkAnimationView.removeFromSuperview()
         }
     }
 

@@ -1,5 +1,6 @@
 import Combine
 import Kingfisher
+import Lottie
 import OSLog
 import Realm
 import RealmSwift
@@ -78,6 +79,8 @@ final class ProjectFlowController: UIViewController {
     let canvasFilters: CanvasFilters
     // Default filters, never updated, for comparison of current filters output vs the default one for filters indicator badge
     let defaultCanvasFilters: CanvasFilters
+
+    let checkmarkAnimationView = LottieAnimationView(asset: "checkmark_animation")
 
     /// Arbitrary way of deciding whether user is currently editing the project (so in the middle of some meaningful action that should not
     /// be aborted without confirmation)
