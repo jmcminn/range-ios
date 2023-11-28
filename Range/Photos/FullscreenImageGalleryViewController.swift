@@ -237,8 +237,7 @@ class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScroll
         )
         updateDoneButtonEnabled()
 
-        let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
-        if showDebugOptions {
+        if AppConfiguration.showDebugOptions {
             annotationsSettingsButton = UIButton(
                 configuration: UIButton.Configuration.iconButton(
                     backgroundColor: .Neutral_10, foregroundColor: .Neutral_04,

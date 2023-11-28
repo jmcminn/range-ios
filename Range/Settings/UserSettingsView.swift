@@ -34,7 +34,7 @@ struct UserSettingsView: View {
                         .padding(.bottom, 6)
                 }
             }
-            if try! AppConfiguration.bool(for: "ShowDebugOptions") {
+            if AppConfiguration.showDebugOptions {
                 Section {
                     Button(action: UserDefaults.resetOnboarding) {
                         Text("Reset onboarding")

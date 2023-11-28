@@ -420,8 +420,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     fileprivate func setupActionCardVC() -> ProjectActionCardViewController {
-        let showDebugOptions: Bool = try! AppConfiguration.bool(for: "ShowDebugOptions")
-        let additionalCardActions = showDebugOptions
+        let additionalCardActions = AppConfiguration.showDebugOptions
             ? [
                 ActionItem(
                     title: "Toggle Light/Dark mode",

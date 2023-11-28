@@ -140,7 +140,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         #if DEBUG
             // use DebugWindow in DEBUG mode (= running from Xcode) and only for environments for
             // which ShowDebugOptions is true (excluding staging and production)
-            if try! AppConfiguration.bool(for: "ShowDebugOptions") {
+            if AppConfiguration.showDebugOptions {
                 window = DebugWindow(windowScene: windowScene)
             } else {
                 window = UIWindow(windowScene: windowScene)

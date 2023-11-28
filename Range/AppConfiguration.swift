@@ -6,6 +6,11 @@ enum AppConfiguration {
         case missingKey, invalidValue
     }
 
+    /// Whether the development/testing options/controls should be visible
+    static var showDebugOptions: Bool {
+        try! AppConfiguration.bool(for: "ShowDebugOptions")
+    }
+
     /// Bool needs a special handling because it cannot be expressed in Info.plist property derived from user defined build setting.
     /// So instead it'll be a String of NO/YES (by convention)
     static func bool(for key: String) throws -> Bool {
