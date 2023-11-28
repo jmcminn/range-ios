@@ -5,15 +5,17 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down, tap on the close button or choosing any action.
 class SelectPinTypeCardViewController: SheetCardViewController {
+    private let showCopyPinOption: Bool
     private let photoPinButton = SelectPinTypeButton(type: .createPhoto)
     private let taskPinButton = SelectPinTypeButton(type: .createTask)
-    private let copyTaskPinButton = SelectPinTypeButton(type: .copyPin)
+    private let copyPinButton = SelectPinTypeButton(type: .copyPin)
 
     /// Callback for pin selected, optional = nil when the selector was dismissed
     var onPinTypeSelected: ((PinTypeOption?) -> Void)?
 
     /// Initializer
-    init(onPinTypeSelected: ((PinTypeOption?) -> Void)? = nil) {
+    init(showCopyPinOption: Bool = true, onPinTypeSelected: ((PinTypeOption?) -> Void)? = nil) {
+        self.showCopyPinOption = showCopyPinOption
         self.onPinTypeSelected = onPinTypeSelected
         super.init(icon: UIImage(systemName: "mappin.and.ellipse"), title: String(localized: "Add Pin"))
         onClose = { [weak self] in self?.onPinTypeSelected?(nil) }
@@ -38,11 +40,13 @@ class SelectPinTypeCardViewController: SheetCardViewController {
             make.leading.trailing.equalToSuperview().inset(16)
         }
 
-        copyTaskPinButton.addTarget(self, action: #selector(copyTaskPinSelected), for: .touchUpInside)
-        containerView.addSubview(copyTaskPinButton)
-        copyTaskPinButton.snp.makeConstraints { make in
-            make.top.equalTo(taskPinButton.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview().inset(16)
+        if showCopyPinOption {
+            copyPinButton.addTarget(self, action: #selector(copyTaskPinSelected), for: .touchUpInside)
+            containerView.addSubview(copyPinButton)
+            copyPinButton.snp.makeConstraints { make in
+                make.top.equalTo(taskPinButton.snp.bottom).offset(12)
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
         }
     }
 
@@ -52,7 +56,7 @@ class SelectPinTypeCardViewController: SheetCardViewController {
         if cardPosition == .max {
             view.layoutIfNeeded()
             baseHeight += photoPinButton.frame.height + 16.0 + taskPinButton.frame.height
-                + 16.0 + copyTaskPinButton.frame.height
+                + (showCopyPinOption ? 16.0 + copyPinButton.frame.height : 0.0)
         }
         return baseHeight
     }

@@ -44,20 +44,23 @@ class AddPinFlowController {
         selectPinTypeOption()
     }
 
-    private func selectPinTypeOption() {
-        SelectPinTypeCardViewController(onPinTypeSelected: { [weak self] pinTypeOption in
-            guard let self = self else { return }
-            if let pinTypeOption = pinTypeOption {
-                self.pinTypeOption = pinTypeOption
-                if pinTypeOption == .copyPin {
-                    self.selectPinToCopy()
+    private func selectPinTypeOption(showCopyPinOption: Bool = true) {
+        SelectPinTypeCardViewController(
+            showCopyPinOption: showCopyPinOption,
+            onPinTypeSelected: { [weak self] pinTypeOption in
+                guard let self = self else { return }
+                if let pinTypeOption = pinTypeOption {
+                    self.pinTypeOption = pinTypeOption
+                    if pinTypeOption == .copyPin {
+                        self.selectPinToCopy()
+                    } else {
+                        self.showPinPlacementUI()
+                    }
                 } else {
-                    self.showPinPlacementUI()
+                    self.onStop?(nil, nil)
                 }
-            } else {
-                self.onStop?(nil, nil)
             }
-        })
+        )
         .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
@@ -68,10 +71,10 @@ class AddPinFlowController {
             self.pinToCopy = pin
             self.showPinPlacementUI()
         }
-        copyPinCardVC.onAddTaskPin = { [weak self] in
+        copyPinCardVC.onAddPin = { [weak self] in
             guard let self = self else { return }
-            self.pinTypeOption = .createTask
-            self.showPinPlacementUI()
+            // update the SelectPinTypeCardViewController to not show the copy pin
+            self.selectPinTypeOption(showCopyPinOption: false)
         }
         copyPinCardVC.onClose = { [weak self] in
             self?.onStop?(nil, nil)

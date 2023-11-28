@@ -35,8 +35,8 @@ class CopyPinCardViewController: SheetCardViewController {
 
     /// Callback for pin selected
     var onPinSelected: ((Collaboration) -> Void)?
-    /// Callback when there were no pins to copy and user selected "Add Task Pin" instead
-    var onAddTaskPin: (() -> Void)?
+    /// Callback when there were no pins to copy and user selected "Add Pin" instead
+    var onAddPin: (() -> Void)?
 
     /// Initializer
     ///
@@ -300,15 +300,15 @@ extension CopyPinCardViewController {
             make.leading.trailing.equalToSuperview().inset(36)
         }
 
-        let addTaskPinButton = RangeButton(
+        let addPinButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(horizontalInsets: 32),
-            primaryAction: UIAction(title: String(localized: "Add Task Pin")) { [weak self] _ in
-                self?.onAddTaskPin?()
+            primaryAction: UIAction(title: String(localized: "Add Pin")) { [weak self] _ in
+                self?.onAddPin?()
                 self?.dismissCard()
             }
         ).withCustomRangeHighlightColor()
-        view.addSubview(addTaskPinButton)
-        addTaskPinButton.snp.makeConstraints { make in
+        view.addSubview(addPinButton)
+        addPinButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(descriptionLabel.snp.bottom).offset(24)
             make.bottom.equalToSuperview().inset(58)
