@@ -15,6 +15,7 @@ class ProjectCanvasControls: PassthroughView {
         case canvasFiltersButton = 1006
         case canvasFiltersIndicatorBadge = 1007
         case cardOnboardingView = 1008
+        case locationSimulationButton = 1009
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -375,5 +376,40 @@ extension ProjectCanvasControls {
             make.centerX.equalToSuperview().offset(16)
             make.centerY.equalToSuperview().offset(-16)
         }
+    }
+}
+
+// MARK: - location simulation
+
+extension ProjectCanvasControls {
+    /// Access to currently showing button, or nil if not showing
+    var locationSimulationButton: RoundShadowButton? {
+        subviews.first { $0.tag == ViewTag.locationSimulationButton.rawValue } as? RoundShadowButton
+    }
+
+    func showLocationSimulationButton(aboveView: UIView) {
+        let button =
+            RoundShadowButton(image: UIImage(systemName: "dot.circle.and.hand.point.up.left.fill") ?? UIImage())
+        button.tag = ViewTag.locationSimulationButton.rawValue
+        button.addTarget(self, action: #selector(locationSimulationButtonTapped), for: .touchUpInside)
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(12)
+            make.bottom.equalTo(aboveView.snp.top).offset(-12)
+        }
+    }
+
+    func hideLocationSimulationButton() {
+        guard let button = locationSimulationButton else { return }
+        button.removeFromSuperview()
+    }
+
+    @objc private func locationSimulationButtonTapped() {
+        guard let button = locationSimulationButton else { return }
+        button.isSelected.toggle()
+
+        // TODO: 2142
+//        UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
+//                                        to: nil, from: canvasSelectorButton, for: nil)
     }
 }

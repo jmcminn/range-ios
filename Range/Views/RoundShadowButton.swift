@@ -4,10 +4,13 @@ import UIKit
 /// Round button with an image that changes its shadow when pressed
 class RoundShadowButton: UIControl {
     private let size: CGFloat
+    private let imageTintColor: UIColor
+    private var imageView: UIImageView!
 
     ///
     init(image: UIImage, size: CGFloat = 48, imageTintColor: UIColor = .Neutral_04) {
         self.size = size
+        self.imageTintColor = imageTintColor
         super.init(frame: .zero)
 
         backgroundColor = .clear
@@ -29,7 +32,7 @@ class RoundShadowButton: UIControl {
 
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 19)
             .applying(UIImage.SymbolConfiguration(weight: .regular))
-        let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(imageConfig))
+        imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(imageConfig))
         imageView.tintColor = imageTintColor
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
@@ -62,6 +65,13 @@ class RoundShadowButton: UIControl {
     override var isHighlighted: Bool {
         didSet {
             layer.shadowOpacity = isHighlighted ? 0.4 : 0.1
+        }
+    }
+
+    /// Update the image color when selected
+    override var isSelected: Bool {
+        didSet {
+            imageView.tintColor = isSelected ? .Primary_Blue_04 : imageTintColor
         }
     }
 

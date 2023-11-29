@@ -47,6 +47,8 @@ final class ProjectFlowController: UIViewController {
 
     /// To observed changes in model.currentCanvas
     private var currentCanvasObservation: NSKeyValueObservation?
+    /// Observe canvas source to update UI based on the canvas source type
+    private var currentCanvasSourceObservation: NSKeyValueObservation?
     /// Observe the currently selected model.currentCanvas
     private var canvasNotificationToken: NotificationToken?
     /// Token for notifications about changes in the canvas geometries
@@ -197,6 +199,10 @@ final class ProjectFlowController: UIViewController {
             actionCardDraggingDelegateId = actionCardVC.cardDragging?.addDelegate(self)
         }
 
+        if AppConfiguration.showDebugOptions {
+            controls.showLocationSimulationButton(aboveView: actionCardVC.view)
+        }
+
         controls.showCanvasSelectorButton(aboveView: actionCardVC.view)
         controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
         controls.showCanvasFiltersButton(aboveView: controls.canvasSourceSelectorButton!)
@@ -211,6 +217,7 @@ final class ProjectFlowController: UIViewController {
         setUIState(.default, animated: false)
 
         updateCanvasSourceSelectorVisibility()
+        updateLocationSimulationButtonVisibility()
         collaborationFlow.start()
         observeDebugSettings()
         observeCanvas()
@@ -218,6 +225,8 @@ final class ProjectFlowController: UIViewController {
         currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self = self else { return }
             guard !self.model.currentCanvas.isInvalidated else { return }
+            self.observeCurrentCanvasSource()
+            self.updateLocationSimulationButtonVisibility()
             self.updateCanvasSourceSelectorVisibility()
             self.updateTopIndicatorView()
             // observe if the current canvas is removed
@@ -228,6 +237,7 @@ final class ProjectFlowController: UIViewController {
             )
             self.updateFiltersIndicatorBadge()
         }
+        observeCurrentCanvasSource()
 
         canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
 
@@ -241,6 +251,18 @@ final class ProjectFlowController: UIViewController {
         analytics?.screen(title: "project canvas", properties: [
             "projectType": model.projectSummary.projectType,
         ])
+    }
+
+    /// Observe when canvas source is switched to different canvas source
+    private func observeCurrentCanvasSource() {
+        currentCanvasSourceObservation?.invalidate()
+        currentCanvasSourceObservation = model.currentCanvas
+            .observe(\.currentCanvasSource, options: [.old]) { [weak self] _, _ in
+                guard let self = self else { return }
+                Task { @MainActor in
+                    self.updateLocationSimulationButtonVisibility()
+                }
+            }
     }
 
     /// Iterates over all pdf canvas sources and triggers the pdf file download.
@@ -386,6 +408,11 @@ final class ProjectFlowController: UIViewController {
         } else {
             controls.hideTopIndicatorView(animated: true)
         }
+    }
+
+    fileprivate func updateLocationSimulationButtonVisibility() {
+        guard let locationSimulationButton = controls.locationSimulationButton else { return }
+        locationSimulationButton.isHidden = model.currentCanvas.currentCanvasSource.type == .pdf
     }
 
     var canvasSourceSelectorHidden: Bool { model.currentCanvas.canvasSources.count <= 1 }
