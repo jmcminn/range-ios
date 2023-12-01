@@ -116,12 +116,13 @@ class CanvasViewController: UIViewController {
 //            """
     }
 
-    /// Current location provider, nil when displaying PDF canvas
-    private(set) var locationProvider: RangeLocationProvider?
+    /// Current location provider
+    private let locationProvider: LocationProvider
 
-    init(model: ProjectModel, canvasFileLoader: CanvasFileLoader) async throws {
+    init(model: ProjectModel, canvasFileLoader: CanvasFileLoader, locationProvider: LocationProvider) async throws {
         self.model = model
         self.canvasFileLoader = canvasFileLoader
+        self.locationProvider = locationProvider
         canvas = model.currentCanvas
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
@@ -466,12 +467,7 @@ class CanvasViewController: UIViewController {
             mapView.location.options.puckType = nil
         } else {
             // location support enabled
-            if locationProvider == nil {
-                // initialize on first use. Keep the same instance if the canvas/source changes,
-                // so we have continuity in location gathering and simulation
-                locationProvider = RangeLocationProvider()
-            }
-            mapView.location.overrideLocationProvider(with: locationProvider!)
+            mapView.location.overrideLocationProvider(with: locationProvider)
             let blueDotPrototype = Puck2DConfiguration(
                 topImage: UIImage()
                     .addCircleBackground(
@@ -694,11 +690,6 @@ class CanvasViewController: UIViewController {
         let xOffset = -(syncViewsCenter.x - pdfScrollView.center.x * pdfScale)
         let yOffset = -(syncViewsCenter.y - pdfScrollView.center.y * pdfScale)
         pdfScrollView.contentOffset = CGPoint(x: xOffset, y: yOffset)
-    }
-
-    func setSimulatedLocation(_ location: CGPoint) {
-        let mapLocation = mapView.mapboxMap.coordinate(for: location)
-        locationProvider?.setSimulatedLocation(mapLocation)
     }
 
     func setFollowMeMode(enabled: Bool) {

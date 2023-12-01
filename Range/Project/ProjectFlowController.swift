@@ -98,6 +98,9 @@ final class ProjectFlowController: UIViewController {
             || canvasContainer.children.contains(where: { $0 is SearchAndSelectTagsViewController })
     }
 
+    /// Location provider for tracking user on map canvases
+    private let locationProvider = RangeLocationProvider()
+
     /// Initialize ProjectFlowController
     /// This can throw if project model cannot be loaded or started
     ///
@@ -151,7 +154,8 @@ final class ProjectFlowController: UIViewController {
         canvasContainer = try await CanvasContainerViewController(
             model: model,
             canvasFilters: canvasFilters,
-            canvasFileLoader: canvasFileLoader
+            canvasFileLoader: canvasFileLoader,
+            locationProvider: locationProvider
         )
         collaborationFlow = CollaborationFlowController(
             model: model,
@@ -182,6 +186,12 @@ final class ProjectFlowController: UIViewController {
     /// views/cards sizes
     override func viewDidLayoutSubviews() {
         start()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        controls.followMeModeButton?.isHidden = !followMeModeButtonVisible
+        controls.locationSimulationButton?.isHidden = !locationSimulationButtonVisible
     }
 
     private func start() {
@@ -219,8 +229,8 @@ final class ProjectFlowController: UIViewController {
         setUIState(.default, animated: false)
 
         updateCanvasSourceSelectorVisibility()
-        controls.followMeModeButton?.isHidden = followMeModeButtonHidden
-        controls.locationSimulationButton?.isHidden = locationSimulationButtonHidden
+        controls.followMeModeButton?.isHidden = !followMeModeButtonVisible
+        controls.locationSimulationButton?.isHidden = !locationSimulationButtonVisible
         collaborationFlow.start()
         observeDebugSettings()
         observeCanvas()
@@ -229,8 +239,8 @@ final class ProjectFlowController: UIViewController {
             guard let self = self else { return }
             guard !self.model.currentCanvas.isInvalidated else { return }
             self.observeCurrentCanvasSource()
-            self.controls.followMeModeButton?.isHidden = self.followMeModeButtonHidden
-            self.controls.locationSimulationButton?.isHidden = self.locationSimulationButtonHidden
+            self.controls.followMeModeButton?.isHidden = !followMeModeButtonVisible
+            self.controls.locationSimulationButton?.isHidden = !locationSimulationButtonVisible
             self.updateCanvasSourceSelectorVisibility()
             self.updateTopIndicatorView()
             // observe if the current canvas is removed
@@ -257,6 +267,12 @@ final class ProjectFlowController: UIViewController {
         ])
 
         canvasContainer.annotationsMapView.viewport.addStatusObserver(self)
+        // visibility of location related controls depends on the location authorization
+        locationProvider.onAuthorizationUpdate = { [weak self] in
+            guard let self = self else { return }
+            self.controls.followMeModeButton?.isHidden = !self.followMeModeButtonVisible
+            self.controls.locationSimulationButton?.isHidden = !self.locationSimulationButtonVisible
+        }
     }
 
     /// Observe when canvas source is switched to different canvas source
@@ -266,8 +282,8 @@ final class ProjectFlowController: UIViewController {
             .observe(\.currentCanvasSource, options: [.old]) { [weak self] _, _ in
                 guard let self = self else { return }
                 Task { @MainActor in
-                    self.controls.followMeModeButton?.isHidden = self.followMeModeButtonHidden
-                    self.controls.locationSimulationButton?.isHidden = self.locationSimulationButtonHidden
+                    self.controls.followMeModeButton?.isHidden = !self.followMeModeButtonVisible
+                    self.controls.locationSimulationButton?.isHidden = !self.locationSimulationButtonVisible
                 }
             }
     }
@@ -389,8 +405,6 @@ final class ProjectFlowController: UIViewController {
 
         if state == .default {
             actionCardVC.showCard(animated: animated)
-            controls.followMeModeButton?.isHidden = followMeModeButtonHidden
-            controls.locationSimulationButton?.isHidden = locationSimulationButtonHidden
             controls.canvasSelectorButton?.isHidden = false
             controls.canvasSourceSelectorButton?.isHidden = canvasSourceSelectorHidden
             controls.canvasFiltersButton?.isHidden = false
@@ -403,29 +417,25 @@ final class ProjectFlowController: UIViewController {
             taskListVC?.dismissCard()
         } else if state == .fullScreenCanvas {
             actionCardVC.hideCard(animated: animated)
-            controls.followMeModeButton?.isHidden = true
-            controls.locationSimulationButton?.isHidden = true
             controls.canvasSelectorButton?.isHidden = true
             controls.canvasSourceSelectorButton?.isHidden = true
             controls.canvasFiltersButton?.isHidden = true
         } else if state == .locationSimulation {
             // location simulation hides the pins so user can tap anywhere in the canvas to simulate user position
             actionCardVC.hideCard(animated: animated)
-            controls.followMeModeButton?.isHidden = followMeModeButtonHidden
-            controls.locationSimulationButton?.isHidden = locationSimulationButtonHidden
             controls.canvasSelectorButton?.isHidden = true
             controls.canvasSourceSelectorButton?.isHidden = true
             controls.canvasFiltersButton?.isHidden = true
             pinsDisplay?.stop()
         } else {
             actionCardVC.hideCard(animated: animated)
-            controls.followMeModeButton?.isHidden = true
-            controls.locationSimulationButton?.isHidden = true
             controls.canvasSelectorButton?.isHidden = true
             controls.canvasSourceSelectorButton?.isHidden = true
             controls.canvasFiltersButton?.isHidden = true
             pinsDisplay?.stop()
         }
+        controls.followMeModeButton?.isHidden = !followMeModeButtonVisible
+        controls.locationSimulationButton?.isHidden = !locationSimulationButtonVisible
     }
 
     // Update for current canvas. Hide if not a pdf.
@@ -437,12 +447,19 @@ final class ProjectFlowController: UIViewController {
         }
     }
 
-    var followMeModeButtonHidden: Bool {
-        model.currentCanvas.currentCanvasSource.type == .pdf
+    var followMeModeButtonVisible: Bool {
+        (uiState == .default || uiState == .locationSimulation) &&
+            model.currentCanvas.currentCanvasSource.type != .pdf &&
+            (locationProvider.authorizationStatus == .authorizedAlways
+                || locationProvider.authorizationStatus == .authorizedWhenInUse)
     }
 
-    var locationSimulationButtonHidden: Bool {
-        !AppConfiguration.showDebugOptions || model.currentCanvas.currentCanvasSource.type == .pdf
+    var locationSimulationButtonVisible: Bool {
+        (uiState == .default || uiState == .locationSimulation) &&
+            AppConfiguration.showDebugOptions &&
+            model.currentCanvas.currentCanvasSource.type != .pdf &&
+            (locationProvider.authorizationStatus == .authorizedAlways ||
+                locationProvider.authorizationStatus == .authorizedWhenInUse)
     }
 
     var canvasSourceSelectorHidden: Bool { model.currentCanvas.canvasSources.count <= 1 }
@@ -560,7 +577,8 @@ extension ProjectFlowController: CanvasViewControllerDelegate {
 
     func canvasTapRecognized(at point: CGPoint) {
         guard uiState == .locationSimulation else { return }
-        canvasContainer.canvasViewController.setSimulatedLocation(point)
+        let mapLocation = canvasContainer.annotationsMapView.mapboxMap.coordinate(for: point)
+        locationProvider.setSimulatedLocation(mapLocation)
     }
 }
 

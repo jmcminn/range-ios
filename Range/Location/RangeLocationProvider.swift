@@ -22,6 +22,8 @@ class RangeLocationProvider: NSObject {
     private var realLocationWhenSimulationStarted: CLLocationCoordinate2D?
     private(set) var simulatedLocation: CLLocationCoordinate2D?
 
+    var onAuthorizationUpdate: (() -> Void)?
+
     override init() {
         locationProvider = CLLocationManager()
         privateLocationProviderOptions = LocationOptions()
@@ -133,6 +135,7 @@ extension RangeLocationProvider: CLLocationManagerDelegate {
 
     public func locationManagerDidChangeAuthorization(_: CLLocationManager) {
         delegate?.locationProviderDidChangeAuthorization(self)
+        onAuthorizationUpdate?()
     }
 
     public func locationManagerShouldDisplayHeadingCalibration(_: CLLocationManager) -> Bool {
