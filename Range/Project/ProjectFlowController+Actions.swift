@@ -1,5 +1,6 @@
 import Foundation
 import Lottie
+import MapboxMaps
 import OSLog
 import RealmSwift
 import UIKit
@@ -68,6 +69,10 @@ final class FlowEvent: UIEvent {
     func markTaskCompletedAction(sender: Any?, event: FlowEvent)
     /// Sets the status for given collaboration to complete and archive it
     func markTaskCompletedAndArchiveAction(sender: Any?, event: FlowEvent)
+    /// Toggle follow me mode on/off
+    func toggleFollowMeModeAction()
+    /// Toggle location simulation on/off. When on the taps on canvas are interpreted as setting the user (blue dot) location
+    func toggleLocationSimulationAction()
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -740,6 +745,35 @@ extension ProjectFlowController {
                 progressAlertController.dismiss(animated: true)
                 ToastWindow.shared.showError(text: "Failed to fetch media to share")
             }
+        }
+    }
+}
+
+// MARK: - Location
+
+extension ProjectFlowController: ViewportStatusObserver {
+    func viewportStatusDidChange(
+        from _: MapboxMaps.ViewportStatus,
+        to toStatus: MapboxMaps.ViewportStatus,
+        reason _: MapboxMaps.ViewportStatusChangeReason
+    ) {
+        guard let followMeModeButton = controls.followMeModeButton else { return }
+        followMeModeButton.isSelected = toStatus._isOrTransitionsToFollowMeMode
+    }
+
+    func toggleFollowMeModeAction() {
+        guard let followMeModeButton = controls.followMeModeButton else { return }
+        followMeModeButton.isSelected.toggle()
+        canvasContainer.canvasViewController.setFollowMeMode(enabled: followMeModeButton.isSelected)
+    }
+
+    func toggleLocationSimulationAction() {
+        guard let locationSimulationButton = controls.locationSimulationButton else { return }
+        locationSimulationButton.isSelected.toggle()
+        if locationSimulationButton.isSelected {
+            setUIState(.locationSimulation, animated: true)
+        } else {
+            setUIState(.default, animated: true)
         }
     }
 }

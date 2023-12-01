@@ -16,6 +16,7 @@ class ProjectCanvasControls: PassthroughView {
         case canvasFiltersIndicatorBadge = 1007
         case cardOnboardingView = 1008
         case locationSimulationButton = 1009
+        case followMeModeButton = 1010
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -379,6 +380,38 @@ extension ProjectCanvasControls {
     }
 }
 
+// MARK: - follow me mode
+
+extension ProjectCanvasControls {
+    /// Access to currently showing button, or nil if not showing
+    var followMeModeButton: RoundShadowButton? {
+        subviews.first { $0.tag == ViewTag.followMeModeButton.rawValue } as? RoundShadowButton
+    }
+
+    func showFollowMeModeButton(aboveView: UIView) {
+        let button = RoundShadowButton(
+            image: UIImage(systemName: "location") ?? UIImage(),
+            selectedImage: UIImage(systemName: "location.fill")
+        )
+        button.tag = ViewTag.followMeModeButton.rawValue
+        button.addTarget(self, action: #selector(followMeModeButtonTapped), for: .touchUpInside)
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(12)
+            make.bottom.equalTo(aboveView.snp.top).offset(-12)
+        }
+    }
+
+    func hideFollowMeModeButton() {
+        followMeModeButton?.removeFromSuperview()
+    }
+
+    @objc private func followMeModeButtonTapped() {
+        UIApplication.shared.sendAction(#selector(ProjectFlowActions.toggleFollowMeModeAction),
+                                        to: nil, from: locationSimulationButton, for: nil)
+    }
+}
+
 // MARK: - location simulation
 
 extension ProjectCanvasControls {
@@ -405,11 +438,7 @@ extension ProjectCanvasControls {
     }
 
     @objc private func locationSimulationButtonTapped() {
-        guard let button = locationSimulationButton else { return }
-        button.isSelected.toggle()
-
-        // TODO: 2142
-//        UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasAction),
-//                                        to: nil, from: canvasSelectorButton, for: nil)
+        UIApplication.shared.sendAction(#selector(ProjectFlowActions.toggleLocationSimulationAction),
+                                        to: nil, from: locationSimulationButton, for: nil)
     }
 }

@@ -200,6 +200,7 @@ extension GeometriesViewAnnotationPinsDisplay {
     }
 
     /// Update the PinView for current selection state and add/update in mapbox view annotations
+    /// The selected pin is always on top because it has the ViewAnnotationOptions.selected set to true.
     private func displayPinView(pinView: PinView?, update: Bool = false) {
         guard let pinView = pinView else { return }
         let collaboration = pinView.collaboration

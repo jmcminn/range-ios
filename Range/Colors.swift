@@ -9,6 +9,7 @@ import UIKit
 
 extension Color {
     static let Archived = Color("Archived")
+    static let BlueDotBlue = Color("BlueDotBlue")
     static let Green_01 = Color("Green_01")
     static let Green_02 = Color("Green_02")
     static let Green_03 = Color("Green_03")
@@ -42,6 +43,7 @@ extension Color {
 
 extension UIColor {
     static let Archived = UIColor(named: "Archived")!
+    static let BlueDotBlue = UIColor(named: "BlueDotBlue")!
     static let Green_01 = UIColor(named: "Green_01")!
     static let Green_02 = UIColor(named: "Green_02")!
     static let Green_03 = UIColor(named: "Green_03")!

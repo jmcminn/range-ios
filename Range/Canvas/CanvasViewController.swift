@@ -116,6 +116,9 @@ class CanvasViewController: UIViewController {
 //            """
     }
 
+    /// Current location provider, nil when displaying PDF canvas
+    private(set) var locationProvider: RangeLocationProvider?
+
     init(model: ProjectModel, canvasFileLoader: CanvasFileLoader) async throws {
         self.model = model
         self.canvasFileLoader = canvasFileLoader
@@ -164,6 +167,7 @@ class CanvasViewController: UIViewController {
         guard canvas.id != model.currentCanvas.id else { return }
         let previousCanvas = canvas
         canvas = model.currentCanvas
+        setFollowMeMode(enabled: false)
         observeCurrentCanvasSource()
         observeCanvasSourceChanges()
         await onCanvasSourceChange(previousCanvasSource: previousCanvas.currentCanvasSource)
@@ -229,6 +233,7 @@ class CanvasViewController: UIViewController {
             .observe(\.currentCanvasSource, options: [.old]) { [weak self] _, change in
                 guard let self = self else { return }
                 self.observeCanvasSourceChanges()
+                setFollowMeMode(enabled: false)
 
                 guard let previousCanvasSource = change.oldValue ?? nil else {
                     return
@@ -455,6 +460,27 @@ class CanvasViewController: UIViewController {
         case let .droneDeploy(droneDeploySource):
             loadMapboxStyle(forDroneDeploySource: droneDeploySource)
         }
+
+        if canvas.currentCanvasSource.type == .pdf {
+            // no location support
+            mapView.location.options.puckType = nil
+        } else {
+            // location support enabled
+            if locationProvider == nil {
+                // initialize on first use. Keep the same instance if the canvas/source changes,
+                // so we have continuity in location gathering and simulation
+                locationProvider = RangeLocationProvider()
+            }
+            mapView.location.overrideLocationProvider(with: locationProvider!)
+            let blueDotPrototype = Puck2DConfiguration(
+                topImage: UIImage()
+                    .addCircleBackground(
+                        bgSize: CGSize(width: 16, height: 16), bgColor: .BlueDotBlue, strokeColor: .BlueDotBlue
+                    ),
+                shadowImage: UIImage(named: "bluedot_background")
+            )
+            mapView.location.options.puckType = .puck2D(blueDotPrototype)
+        }
     }
 
     /// resets the camera for given canvas source
@@ -625,6 +651,7 @@ class CanvasViewController: UIViewController {
 
     /// Animate to given cameraCenter and mapboxZoom.
     func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {
+        setFollowMeMode(enabled: false)
         // HACK: dispatch async on main queue is a hack, otherwise the mapbox was not reacting
         // when invoking this method on callback from gesture manager delegate
         DispatchQueue.main.async {
@@ -667,6 +694,25 @@ class CanvasViewController: UIViewController {
         let xOffset = -(syncViewsCenter.x - pdfScrollView.center.x * pdfScale)
         let yOffset = -(syncViewsCenter.y - pdfScrollView.center.y * pdfScale)
         pdfScrollView.contentOffset = CGPoint(x: xOffset, y: yOffset)
+    }
+
+    func setSimulatedLocation(_ location: CGPoint) {
+        let mapLocation = mapView.mapboxMap.coordinate(for: location)
+        locationProvider?.setSimulatedLocation(mapLocation)
+    }
+
+    func setFollowMeMode(enabled: Bool) {
+        if enabled {
+            // enable mapbox viewport managed follow puck mode
+            let state = mapView.viewport.makeFollowPuckViewportState(
+                // don't update zoom, bearing or pitch based on blue dot
+                options: FollowPuckViewportStateOptions(zoom: nil, bearing: nil, pitch: nil)
+            )
+            mapView.viewport.transition(to: state)
+        } else {
+            // back to idle mode
+            mapView.viewport.idle()
+        }
     }
 }
 
