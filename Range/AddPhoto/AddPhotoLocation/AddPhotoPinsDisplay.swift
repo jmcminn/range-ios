@@ -11,6 +11,7 @@ import UIKit
 /// pin showing the photo being added) and tooltip views.
 /// It also listen for map interaction events and auto select pins that are closest to the screen center (and within the `pinsSearchRectSize`)
 class AddPhotoPinsDisplay {
+    unowned let canvas: Canvas
     unowned let canvasContainer: CanvasContainerViewController
     unowned let canvasVC: CanvasViewController
     unowned let model: ProjectModel
@@ -45,6 +46,7 @@ class AddPhotoPinsDisplay {
     ///   - canvasContainer:    handler will add pins to this canvas view
     ///   - image:              image to be displayed on the new photo pin
     init(canvas: Canvas, canvasContainer: CanvasContainerViewController, model: ProjectModel, image: UIImage) {
+        self.canvas = canvas
         self.canvasContainer = canvasContainer
         canvasVC = canvasContainer.canvasViewController
         self.model = model
@@ -67,8 +69,8 @@ class AddPhotoPinsDisplay {
     func start() {
         installPhotoPinView()
         geometriesPinsDisplay.start(onInitialLoad: { [weak self] in
-            // on first load we need to see if there's a pin matching lastPhotoPinId
-            self?.selectInitialPin()
+            // on first load we need to see if there's an initial location for the new pin to preselect
+            self?.selectInitialLocation()
         })
         canvasDelegateId = canvasVC.addDelegate(self)
     }
@@ -82,24 +84,31 @@ class AddPhotoPinsDisplay {
         hideTooltip()
     }
 
-    /// Checks if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.
-    /// Otherwise show photo pin in the center of the screen
-    private func selectInitialPin() {
-        if let lastPhotoPinId = UserDefaults.lastPhotoPinId,
-           let lastPhotoPin = geometriesPinsDisplay.pinForGeometryId(lastPhotoPinId)
+    /// Initial location for pin placement in photo flow:
+    /// 1. When placing a pin on the map, the default location is the user location (if withing the range of the project)
+    /// 2. When placing on the PDF or user location is not known (or not within the project range) then try to add photos to the pin that was last
+    /// used (check if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.)
+    /// 3. Otherwise show photo pin in the center of the screen
+    private func selectInitialLocation() {
+        if canvas.currentCanvasSource.type != .pdf, let userLocation = canvasVC.mapView.location.latestLocation {
+            canvasVC.animatePanAndZoom(
+                cameraCenter: userLocation.coordinate,
+                mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
+            )
+            updatePhotoPinVisibility()
+            showCurrentLocationPhotoPinTooltip()
+        } else if let lastPhotoPinId = UserDefaults.lastPhotoPinId,
+                  let lastPhotoPin = geometriesPinsDisplay.pinForGeometryId(lastPhotoPinId)
         {
             geometriesPinsDisplay.setSelectedPin(lastPhotoPin)
             canvasVC.animatePanAndZoom(
                 cameraCenter: lastPhotoPin.point.coordinates,
                 mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
             )
-        } else {
-            updatePhotoPinVisibility()
-        }
-        if selectedPin != nil {
             showSelectedPinTooltip()
         } else {
-            showPhotoPinTooltip()
+            updatePhotoPinVisibility()
+            showNewLocationPhotoPinTooltip()
         }
     }
 
@@ -168,11 +177,21 @@ extension AddPhotoPinsDisplay {
         selectedPinTooltip = tooltip
     }
 
+    /// Show tooltip above the photo pin when it's placed initially on user location (over the blue dot)
+    private func showCurrentLocationPhotoPinTooltip() {
+        showPhotoPinTooltip(text: "Current location", color: .Secondary_02)
+    }
+
+    /// Show tooltip above the photo pin for 'new location' case
+    private func showNewLocationPhotoPinTooltip() {
+        showPhotoPinTooltip(text: "New location", color: .Green_03)
+    }
+
     /// Shows the tooltip for the photo pin as a native view added to the canvasContainer content
-    private func showPhotoPinTooltip() {
+    private func showPhotoPinTooltip(text: String, color: UIColor) {
         hideTooltip()
         guard photoPinTooltip == nil else { return } // already shown
-        let tooltip = MapTooltipView(text: "New location", boxColor: .Green_03)
+        let tooltip = MapTooltipView(text: text, boxColor: color)
         canvasContainer.content.addSubview(tooltip)
         tooltip.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -253,7 +272,7 @@ extension AddPhotoPinsDisplay: CanvasViewControllerDelegate {
                     )
                 }
             } else {
-                showPhotoPinTooltip()
+                showNewLocationPhotoPinTooltip()
             }
         }
     }
