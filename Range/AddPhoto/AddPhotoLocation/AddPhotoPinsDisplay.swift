@@ -11,7 +11,6 @@ import UIKit
 /// pin showing the photo being added) and tooltip views.
 /// It also listen for map interaction events and auto select pins that are closest to the screen center (and within the `pinsSearchRectSize`)
 class AddPhotoPinsDisplay {
-    unowned let canvas: Canvas
     unowned let canvasContainer: CanvasContainerViewController
     unowned let canvasVC: CanvasViewController
     unowned let model: ProjectModel
@@ -42,18 +41,17 @@ class AddPhotoPinsDisplay {
     private var canvasDelegateId: UUID?
 
     /// - Parameters:
-    ///   - canvas:             handler will add pins for this canvas
     ///   - canvasContainer:    handler will add pins to this canvas view
+    ///   - model:              will display pins for currentCanvas
     ///   - image:              image to be displayed on the new photo pin
-    init(canvas: Canvas, canvasContainer: CanvasContainerViewController, model: ProjectModel, image: UIImage) {
-        self.canvas = canvas
+    init(canvasContainer: CanvasContainerViewController, model: ProjectModel, image: UIImage) {
         self.canvasContainer = canvasContainer
         canvasVC = canvasContainer.canvasViewController
         self.model = model
         self.image = image
         geometriesPinsDisplay = _createGeometriesPinsDisplay(
             usingNativeViews: _debugSettings.nativeViewsForPins,
-            canvas: canvas,
+            canvas: model.currentCanvas,
             canvasViewController: canvasContainer.canvasViewController,
             deselectOnCanvasTap: false,
             canvasFilters: canvasContainer.canvasFilters,
@@ -90,7 +88,10 @@ class AddPhotoPinsDisplay {
     /// used (check if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.)
     /// 3. Otherwise show photo pin in the center of the screen
     private func selectInitialLocation() {
-        if canvas.currentCanvasSource.type != .pdf, let userLocation = canvasVC.mapView.location.latestLocation {
+        if model.currentCanvas.currentCanvasSource.type != .pdf,
+           let userLocation = canvasVC.mapView.location.latestLocation,
+           model.isLocationInCurrentCanvasSourceRange(userLocation.coordinate)
+        {
             canvasVC.animatePanAndZoom(
                 cameraCenter: userLocation.coordinate,
                 mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom

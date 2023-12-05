@@ -183,4 +183,19 @@ class ProjectModel: NSObject, RealmModel {
     private func getCurrentUser() -> Participant? {
         mainRealm.object(ofType: Participant.self, forPrimaryKey: userId)
     }
+
+    /// gets the center of canvas source if it's the map, otherwise (for pdfs) returns the center of project
+    var currentCanvasSourceCenter: CLLocationCoordinate2D {
+        switch currentCanvas.currentCanvasSource.data {
+        case .pdf: return projectSummary.center
+        case let .mapbox(mapboxData): return mapboxData.center.decodedCoordinates
+        case let .droneDeploy(droneDeployData): return droneDeployData.center.decodedCoordinates
+        }
+    }
+
+    /// Checks if given location is in range of current canvas source.
+    /// Calculates the distance between given location and currentCanvasSourceCenter and checks if it's smaller than a given hardcoded value.
+    func isLocationInCurrentCanvasSourceRange(_ location: CLLocationCoordinate2D) -> Bool {
+        location.distance(to: currentCanvasSourceCenter) <= 1000
+    }
 }

@@ -640,7 +640,6 @@ extension AddPhotoFlowController {
 
     private func createAddPhotoPinsDisplay() {
         pinsDisplay = AddPhotoPinsDisplay(
-            canvas: model.currentCanvas,
             canvasContainer: canvasContainer,
             model: model,
             image: photosToAddViewModel.photos.first!.thumbnail

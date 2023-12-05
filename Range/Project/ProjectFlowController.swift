@@ -273,6 +273,8 @@ final class ProjectFlowController: UIViewController {
             self.controls.followMeModeButton?.isHidden = !self.followMeModeButtonVisible
             self.controls.locationSimulationButton?.isHidden = !self.locationSimulationButtonVisible
         }
+        // visibility of location related controls depends on the user proximity to canvas center
+        canvasContainer.annotationsMapView.location.addLocationConsumer(newConsumer: self)
     }
 
     /// Observe when canvas source is switched to different canvas source
@@ -448,18 +450,22 @@ final class ProjectFlowController: UIViewController {
     }
 
     var followMeModeButtonVisible: Bool {
-        (uiState == .default || uiState == .locationSimulation) &&
-            model.currentCanvas.currentCanvasSource.type != .pdf &&
-            (locationProvider.authorizationStatus == .authorizedAlways
-                || locationProvider.authorizationStatus == .authorizedWhenInUse)
+        guard uiState == .default || uiState == .locationSimulation else { return false }
+        guard model.currentCanvas.currentCanvasSource.type != .pdf else { return false }
+        guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
+            .authorizationStatus == .authorizedWhenInUse else { return false }
+        guard let userLocation = canvasContainer.annotationsMapView.location.latestLocation else { return false }
+        guard model.isLocationInCurrentCanvasSourceRange(userLocation.coordinate) else { return false }
+        return true
     }
 
     var locationSimulationButtonVisible: Bool {
-        (uiState == .default || uiState == .locationSimulation) &&
-            AppConfiguration.showDebugOptions &&
-            model.currentCanvas.currentCanvasSource.type != .pdf &&
-            (locationProvider.authorizationStatus == .authorizedAlways ||
-                locationProvider.authorizationStatus == .authorizedWhenInUse)
+        guard AppConfiguration.showDebugOptions else { return false }
+        guard uiState == .default || uiState == .locationSimulation else { return false }
+        guard model.currentCanvas.currentCanvasSource.type != .pdf else { return false }
+        guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
+            .authorizationStatus == .authorizedWhenInUse else { return false }
+        return true
     }
 
     var canvasSourceSelectorHidden: Bool { model.currentCanvas.canvasSources.count <= 1 }
