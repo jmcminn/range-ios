@@ -37,6 +37,10 @@ class ScribbleAnnotation: NSObject, Codable {
         hexColor = color.hexString
     }
 
+    func duplicate(withOffset offset: CGPoint) -> ScribbleAnnotation {
+        .init(path: path.getTranslatedPath(x: offset.x, y: offset.y), lineWidth: lineWidth, color: color)
+    }
+
     override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ScribbleAnnotation else { return false }
         if id != rhs.id { return false }

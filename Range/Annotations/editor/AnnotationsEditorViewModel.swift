@@ -161,6 +161,12 @@ class AnnotationsEditorViewModel: ObservableObject {
         annotationsEditor?.setSelected(nil)
     }
 
+    /// Duplicates the currently selected annotation
+    func duplicateAnnotation() {
+        guard let annotationVM = annotationsEditor?.selectedAnnotation else { return }
+        annotationsEditor?.duplicateAnnotation(annotationVM)
+    }
+
     /// Deletes the currently selected annotation
     func deleteAnnotation() {
         if let annotation = annotationsEditor?.selectedAnnotation {

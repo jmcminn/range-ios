@@ -44,6 +44,10 @@ class TextAnnotation: NSObject, Codable {
         hexColor = color.hexString
     }
 
+    func duplicate(withOffset offset: CGPoint) -> TextAnnotation {
+        .init(text: text, position: position.addTo(offset), fontSize: fontSize, color: color)
+    }
+
     override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TextAnnotation else { return false }
         if id != rhs.id { return false }

@@ -213,13 +213,14 @@ class AnnotationsEditor: NSObject {
         addScribble(scribble)
     }
 
-    private func addScribble(_ scribble: ScribbleAnnotation) {
+    @discardableResult private func addScribble(_ scribble: ScribbleAnnotation) -> ScribbleAnnotationViewModel {
         let scribbleVM = ScribbleAnnotationViewModel(scribble: scribble, annotationsGeometry: annotationsGeometry)
         if let hostView = hostView {
             scribbleVM.zoomScale = hostView.scrollView.zoomScale
         }
         let scribbleView = ScribbleAnnotationView(viewModel: scribbleVM)
         addAnnotation(scribbleVM, view: scribbleView)
+        return scribbleVM
     }
 
     @discardableResult private func addArrow(_ arrow: ArrowAnnotation) -> ArrowAnnotationViewModel {
@@ -279,14 +280,13 @@ class AnnotationsEditor: NSObject {
         let textAnnotation = TextAnnotation(
             text: text, position: initialPosition, fontSize: fontSize, color: viewModel.lastPickedColor
         )
-        addText(textAnnotation)
-        guard let textAnnotationVM = annotationViewModels[textAnnotation.id] as? TextAnnotationViewModel else { return }
+        let textAnnotationVM = addText(textAnnotation)
         setSelected(textAnnotationVM)
         // start editing
         setEditing(textAnnotationVM)
     }
 
-    private func addText(_ text: TextAnnotation) {
+    @discardableResult private func addText(_ text: TextAnnotation) -> TextAnnotationViewModel {
         let textVM = TextAnnotationViewModel(text: text, annotationsGeometry: annotationsGeometry)
         if let hostView = hostView {
             textVM.zoomScale = hostView.scrollView.zoomScale
@@ -296,6 +296,7 @@ class AnnotationsEditor: NSObject {
             inputAccessoryView: textAnnotationInputAccessoryView
         )
         addAnnotation(textVM, view: textAnnotationView)
+        return textVM
     }
 
     private func addAnnotation(_ annotation: AnnotationViewModel, view: UIView) {
@@ -307,6 +308,18 @@ class AnnotationsEditor: NSObject {
         setSelected(nil)
 
         checkAnnotationsUpdated()
+    }
+
+    func duplicateAnnotation(_ annotationVM: AnnotationViewModel) {
+        let offsetSize = Annotations.duplicateAnnotationOffset * annotationsGeometry.scale
+        let offset = CGPoint(x: offsetSize, y: offsetSize)
+
+        let duplicatedVM = switch annotationVM.annotation {
+        case let .arrow(arrow): addArrow(arrow.duplicate(withOffset: offset))
+        case let .scribble(scribble): addScribble(scribble.duplicate(withOffset: offset))
+        case let .text(text): addText(text.duplicate(withOffset: offset))
+        }
+        setSelected(duplicatedVM)
     }
 
     func deleteAnnotation(_ annotation: AnnotationViewModel) {

@@ -47,6 +47,15 @@ class ArrowAnnotation: NSObject, Codable {
         hexColor = color.hexString
     }
 
+    func duplicate(withOffset offset: CGPoint) -> ArrowAnnotation {
+        .init(
+            startPoint: startPoint.addTo(offset),
+            endPoint: endPoint.addTo(offset),
+            lineWidth: lineWidth,
+            color: color
+        )
+    }
+
     override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ArrowAnnotation else { return false }
         if id != rhs.id { return false }

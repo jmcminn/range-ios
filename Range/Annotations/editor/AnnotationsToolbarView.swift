@@ -64,6 +64,17 @@ struct AnnotationsToolbarView: View {
         }.buttonStyle(.plain)
     }
 
+    private var duplicateButton: some View {
+        Button(action: { model.duplicateAnnotation() }) {
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 48, height: 48)
+                .overlay(Image(systemName: "plus.square.on.square")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(.Neutral_01))
+        }
+    }
+
     private var deleteButton: some View {
         Button(action: { model.deleteAnnotation() }) {
             Rectangle()
@@ -211,7 +222,7 @@ struct AnnotationsToolbarView: View {
 
     var body: some View {
         VStack {
-            HStack(spacing: 4) {
+            HStack(spacing: 0) {
                 // helper variables to make the conditions below easier to read
                 let normalMode = model.gesturesMode == .normal
                 let scribbleMode = model.gesturesMode == .scribbling
@@ -261,9 +272,10 @@ struct AnnotationsToolbarView: View {
                     }
                 }
                 if annotationSelected {
-                    Spacer().frame(width: 8)
+                    Spacer().frame(width: 4)
                     Divider().frame(width: 1, height: 48).overlay(Color.Neutral_07)
-                    Spacer().frame(width: 8)
+                    Spacer().frame(width: 4)
+                    duplicateButton
                     deleteButton
                     unselectButton
                 }
