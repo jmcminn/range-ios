@@ -85,7 +85,7 @@ extension Annotations {
     static var textBoxCornerRadius: Double = 6.0
 
     /// The length of a single arrow tip line (the angle between tip line and arrow line is 45deg)
-    static var arrowTipLength: Double = 32.0
+    static var arrowTipLength: Double = 16.0
 
     /// Unscaled offset to add to x/y position of annotation when duplicating it
     static var duplicateAnnotationOffset: Double = 20.0
