@@ -17,6 +17,8 @@
 	<string>$(FIREBASE_PROJECT)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>MBXAccessToken</key>
+	<string>pk.eyJ1IjoicmFuZ2UtbWFwYm94IiwiYSI6ImNsZXBkbmZycTA3aGYzcm1qZmtsZmFxaGoifQ.Tf0zWjw79qKgcFLh7XCTRQ</string>
 	<key>SegmentKey</key>
 	<string>$(SEGMENT_KEY)</string>
 	<key>SentryEnv</key>

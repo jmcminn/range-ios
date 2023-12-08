@@ -395,15 +395,9 @@ class CanvasViewController: UIViewController {
             center: model.projectSummary.center,
             zoom: initialMapboxZoom
         )
-        // We only need the access token if using mapbox resources, so it's not needed when displaying
-        // the PDF background but we always provide the token as the mapView is reused when switching canvases/sources
-        let resourceOptions = ResourceOptions(
-            accessToken: "pk.eyJ1IjoicmFuZ2UtbWFwYm94IiwiYSI6ImNsZXBkbmZycTA3aGYzcm1qZmtsZmFxaGoifQ.Tf0zWjw79qKgcFLh7XCTRQ"
-        )
         mapView = MapView(
             frame: view.bounds,
-            mapInitOptions: MapInitOptions(resourceOptions: resourceOptions, cameraOptions: cameraOptions)
-//            mapInitOptions: MapInitOptions(resourceOptions: resourceOptions)
+            mapInitOptions: MapInitOptions(cameraOptions: cameraOptions)
         )
 
         do {
