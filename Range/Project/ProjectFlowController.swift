@@ -440,9 +440,9 @@ final class ProjectFlowController: UIViewController {
         controls.locationSimulationButton?.isHidden = !locationSimulationButtonVisible
     }
 
-    // Update for current canvas. Hide if not a pdf.
+    // Update for current canvas.
     fileprivate func updateTopIndicatorView() {
-        if model.currentCanvas.currentCanvasSource.type == .pdf, uiState != .fullScreenCanvas {
+        if uiState != .fullScreenCanvas {
             controls.showTopIndicatorView(text: model.currentCanvas.name, animated: true)
         } else {
             controls.hideTopIndicatorView(animated: true)
