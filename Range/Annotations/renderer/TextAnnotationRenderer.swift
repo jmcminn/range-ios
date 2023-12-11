@@ -82,7 +82,7 @@ enum TextAnnotationRenderer {
 extension TextAnnotationRenderer {
     /// Returns the font used for text annotations
     static func annotationFont(ofSize size: Double) -> UIFont {
-        .systemFont(ofSize: size, weight: .heavy)
+        UIFont(name: "Inter-Bold", size: size)!
     }
 
     /// Calculates the size of the annotation for given text with given font. Adds padding for the white box.

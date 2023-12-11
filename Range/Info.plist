@@ -25,6 +25,10 @@
 	<string>$(SENTRY_ENV)</string>
 	<key>ShowDebugOptions</key>
 	<string>$(SHOW_DEBUG_OPTIONS)</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>fonts/Inter-Bold.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
