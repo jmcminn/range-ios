@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import UIKit
 
 /// Functions for handling Annotations related UserDefaults (see the UserDefaults.swift file for the definition of the UserDefaultsConstants)
@@ -95,6 +96,68 @@ extension UserDefaults {
         UserDefaults.standard.set(
             entries,
             forKey: UserDefaultsConstants.recentAnnotationTexts.rawValue
+        )
+    }
+
+    /// return at most last 10 recent text annotations. The most recent annotation is at the end of the array
+    static func recentTextAnnotations() -> [TextAnnotation] {
+        /// the annotations are stored as an array of annotations encoded as JSON strings
+        guard let textAnnotationStrings = (UserDefaults.standard
+            .array(forKey: UserDefaultsConstants.recentAnnotations.rawValue) as? [String])
+        else {
+            return []
+        }
+        let jsonDecoder = JSONDecoder()
+        return textAnnotationStrings.compactMap { annotationString in
+            guard let annotationData = annotationString.data(using: .utf8),
+                  let annotation = try? jsonDecoder.decode(TextAnnotation.self, from: annotationData)
+            else {
+                Logger.settings.error("Failed to decode recent annotation: \(annotationString)")
+                return nil
+            }
+            return annotation
+        }
+    }
+
+    /// Adds given text annotation to recent annotations
+    /// If element with given id exist in recent annotations it will be reinserted at the end (so it's "more recent")
+    /// Only 10 most recent items are kept
+    /// The items in the recent annotations list are deduplicated by text/fontSize/color
+    static func addRecentTextAnnotation(_ annotation: TextAnnotation) {
+        var entries = recentTextAnnotations()
+        // Remove existing entry with id matching the updated annotation
+        entries.removeAll { entry in
+            annotation.id == entry.id
+        }
+        // Remove any annotations with duplicated content.
+        // Text annotation is a duplicate from this point of view if it has the same text, font size and color.
+        // Removing the duplicates is done after removing items with same id, to deduplicate first by id
+        // and then by content.
+        entries.removeAll { entry in
+            entry.text == annotation.text && entry.fontSize == annotation.fontSize
+                && entry.hexColor == annotation.hexColor
+        }
+        // Add updated annotation to the end of the array (to make it most recent),
+        entries.append(annotation)
+        // keep last 10 at most
+        if entries.count > 10 {
+            entries.removeFirst(entries.count - 10)
+        }
+        let jsonEncoder = JSONEncoder()
+        // convert TextAnnotation(s) to json strings
+        let entriesStrings: [String] = entries.compactMap { entry in
+            guard let entryData = try? jsonEncoder.encode(entry),
+                  let entryString = String(data: entryData, encoding: .utf8)
+            else {
+                Logger.settings.error("Failed to encode recent annotation: \(entry)")
+                return nil
+            }
+            return entryString
+        }
+        // store in user defaults for given project key
+        UserDefaults.standard.set(
+            entriesStrings,
+            forKey: UserDefaultsConstants.recentAnnotations.rawValue
         )
     }
 }

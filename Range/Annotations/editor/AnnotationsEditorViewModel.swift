@@ -117,6 +117,7 @@ class AnnotationsEditorViewModel: ObservableObject {
             selectedAnnotation.setColor(color)
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             selectedAnnotation.setColor(color)
+            UserDefaults.addRecentTextAnnotation(selectedAnnotation.text)
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
             selectedAnnotation.setColor(color)
         }
@@ -128,6 +129,7 @@ class AnnotationsEditorViewModel: ObservableObject {
         UserDefaults.lastPickedAnnotationFontSize = fontSize
         if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             selectedAnnotation.setFontSize(fontSize)
+            UserDefaults.addRecentTextAnnotation(selectedAnnotation.text)
         }
     }
 

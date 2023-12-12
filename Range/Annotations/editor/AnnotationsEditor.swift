@@ -317,7 +317,11 @@ class AnnotationsEditor: NSObject {
         let duplicatedVM = switch annotationVM.annotation {
         case let .arrow(arrow): addArrow(arrow.duplicate(withOffset: offset))
         case let .scribble(scribble): addScribble(scribble.duplicate(withOffset: offset))
-        case let .text(text): addText(text.duplicate(withOffset: offset))
+        case let .text(text): { // this syntax is a hack for non expression branch of switch expression
+                let duplicate = text.duplicate(withOffset: offset)
+                UserDefaults.addRecentTextAnnotation(duplicate)
+                return addText(duplicate)
+            }()
         }
         setSelected(duplicatedVM)
     }
@@ -531,6 +535,7 @@ extension AnnotationsEditor {
                 // but only if it has changed during the editing session
                 if textBeforeEditing != textAnnotationVM.text.text {
                     UserDefaults.addRecentAnnotationTexts([textAnnotationVM.text])
+                    UserDefaults.addRecentTextAnnotation(textAnnotationVM.text)
                 }
             }
         }

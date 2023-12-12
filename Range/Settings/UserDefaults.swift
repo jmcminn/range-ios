@@ -45,7 +45,12 @@ extension UserDefaults {
         case lastPickedAnnotationFontSize
         /// Recent annotations texts. 10 recent items. Each item is a [annotationId, annotationText] array, so we can update the entry
         /// if a text for given annotation was updated, instead of adding new text and keeping the old.
+        /// It's stored separately from recentAnnotations as what might be considered a duplicate from the text point of view is not necessarily
+        /// a duplicated annotation (as it might have a different color for example). We could store just recentAnnotations and deduplicate by text only when
+        /// using for recent annotations texts, but then we could end up with lower number of items than 10.
         case recentAnnotationTexts
+        /// Recently inserted/updated annotations. 10 recent items. Stores an array of [TextAnnotation]
+        case recentAnnotations
     }
 
     /// Ids of the organizations (array of strings) shown to the user when the organization selector was presented for the last time

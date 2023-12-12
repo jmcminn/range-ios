@@ -20,7 +20,7 @@ class TextAnnotation: NSObject, Codable {
     /// font size in in pixels
     var fontSize: Double { didSet { postUpdate() }}
     /// the storage for color, String so it can be encoded/decoded
-    private var hexColor: String
+    private(set) var hexColor: String
     /// inner color (the outline is always white) - UIColor wrapping the hexColor
     @objc dynamic var color: UIColor {
         get { UIColor(hexString: hexColor) ?? .black }
