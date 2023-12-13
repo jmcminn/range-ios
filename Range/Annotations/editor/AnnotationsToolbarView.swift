@@ -258,30 +258,11 @@ struct AnnotationsToolbarView: View {
                     selectingRecentAnnotation
                 let showRecentAnnotationToolButton = (!annotationSelected && normalMode) || selectingRecentAnnotation
 
-                // The nested IFs below are bad... but we want to make sure that we only have one place
-                // in code that adds any tool button, this way it's kept visible when switching
-                // modes, selecting annotations, etc (basically changing the toolbar layout) it'll be
-                // properly animated to new place (instead of disappear and appear in new place)
-                if showScribbleToolButton {
-                    scribbleToolButton
-                    if showArrowToolButton || showTextToolButton {
-                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
-                    }
-                }
-                if showArrowToolButton {
-                    arrowToolButton
-                    if showTextToolButton {
-                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
-                    }
-                }
-                if showTextToolButton {
-                    textToolButton
-                    if showRecentAnnotationToolButton {
-                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
-                    }
-                }
-                if showRecentAnnotationToolButton {
-                    recentAnnotationToolButton
+                HStack(spacing: 32) {
+                    if showRecentAnnotationToolButton { recentAnnotationToolButton }
+                    if showTextToolButton { textToolButton }
+                    if showScribbleToolButton { scribbleToolButton }
+                    if showArrowToolButton { arrowToolButton }
                 }
 
                 if scribbleMode || arrowDrawMode || annotationSelected {
