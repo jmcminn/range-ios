@@ -64,6 +64,21 @@ struct AnnotationsToolbarView: View {
         }.buttonStyle(.plain)
     }
 
+    private var recentAnnotationToolButton: some View {
+        Button(action: { model.recentAnnotationsSelectorVisible.toggle() }) {
+            Circle()
+                .strokeBorder(
+                    model.recentAnnotationsSelectorVisible ? Color.Special_02 : Color.Neutral_07,
+                    lineWidth: 1
+                )
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 48, height: 48)
+                .overlay(Image(systemName: "clock.arrow.circlepath")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(model.recentAnnotationsSelectorVisible ? .Special_02 : .Neutral_01))
+        }.buttonStyle(.plain)
+    }
+
     private var duplicateButton: some View {
         Button(action: { model.duplicateAnnotation() }) {
             Rectangle()
@@ -228,14 +243,20 @@ struct AnnotationsToolbarView: View {
                 let scribbleMode = model.gesturesMode == .scribbling
                 let arrowDrawMode = model.gesturesMode == .arrowDrawing
 
+                let selectingRecentAnnotation = model.recentAnnotationsSelectorVisible
+
                 let annotationSelected = model.selectedAnnotation != nil
                 let scribbleSelected = model.selectedAnnotation?.type == .scribble
                 let textSelected = model.selectedAnnotation?.type == .text
                 let arrowSelected = model.selectedAnnotation?.type == .arrow
 
-                let showScribbleToolButton = scribbleMode || scribbleSelected || (!annotationSelected && normalMode)
-                let showTextToolButton = textSelected || (!annotationSelected && normalMode)
-                let showArrowToolButton = arrowDrawMode || arrowSelected || (!annotationSelected && normalMode)
+                let showScribbleToolButton = scribbleMode || scribbleSelected || (!annotationSelected && normalMode) ||
+                    selectingRecentAnnotation
+                let showTextToolButton = textSelected || (!annotationSelected && normalMode) ||
+                    selectingRecentAnnotation
+                let showArrowToolButton = arrowDrawMode || arrowSelected || (!annotationSelected && normalMode) ||
+                    selectingRecentAnnotation
+                let showRecentAnnotationToolButton = (!annotationSelected && normalMode) || selectingRecentAnnotation
 
                 // The nested IFs below are bad... but we want to make sure that we only have one place
                 // in code that adds any tool button, this way it's kept visible when switching
@@ -253,7 +274,15 @@ struct AnnotationsToolbarView: View {
                         Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
                     }
                 }
-                if showTextToolButton { textToolButton }
+                if showTextToolButton {
+                    textToolButton
+                    if showRecentAnnotationToolButton {
+                        Spacer().frame(minWidth: 8, idealWidth: 32, maxWidth: 32)
+                    }
+                }
+                if showRecentAnnotationToolButton {
+                    recentAnnotationToolButton
+                }
 
                 if scribbleMode || arrowDrawMode || annotationSelected {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
@@ -284,6 +313,7 @@ struct AnnotationsToolbarView: View {
             .background(panelBackground)
             .animation(.default, value: model.selectedAnnotation)
             .animation(.default, value: model.gesturesMode)
+            .animation(.default, value: model.recentAnnotationsSelectorVisible)
         }
         .disabled(!model.editingEnabled)
     }

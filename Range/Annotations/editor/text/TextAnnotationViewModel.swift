@@ -6,10 +6,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     @objc private(set) dynamic var text: TextAnnotation
 
     /// based on the text.fontSize, optional as the font size may potentially not match any predefined font sizes
-    var fontSize: Annotations.FontSize? {
-        let unscaledFontSize = text.fontSize / annotationsGeometry.scale
-        return Annotations.FontSize.allCases.first { $0.size == unscaledFontSize }
-    }
+    var fontSize: Annotations.FontSize? { text.fontSizeEnum(annotationsGeometry) }
 
     /// whether the text of the annotation is currently being edited
     @objc dynamic var textEditing: Bool = false { didSet {
@@ -61,10 +58,9 @@ class TextAnnotationViewModel: AnnotationViewModel {
         viewFrame = CGRect(
             origin: text.position,
             size: TextAnnotationRenderer.annotationSize(
-                position: text.position,
                 text: text.text,
                 fontSize: text.fontSize,
-                annotationsGeometry: annotationsGeometry
+                annotationScale: annotationsGeometry.scale
             )
         )
     }

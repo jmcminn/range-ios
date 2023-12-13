@@ -17,8 +17,15 @@ class TextAnnotation: NSObject, Codable {
         position = position.roundCoordinates()
         postUpdate()
     }}
-    /// font size in in pixels
+    /// font size in in pixels (this value is stored when saving the annotation)
     var fontSize: Double { didSet { postUpdate() }}
+    /// One of the FontSize values if fontSize matches any of them.
+    /// Requires annotationsScale to be calculated as it's an unscaled value and fontSize is scaled
+    func fontSizeEnum(_ annotationsGeometry: AnnotationsGeometry) -> Annotations.FontSize? {
+        let unscaledFontSize = fontSize / annotationsGeometry.scale
+        return Annotations.FontSize.allCases.first { $0.size == unscaledFontSize }
+    }
+
     /// the storage for color, String so it can be encoded/decoded
     private(set) var hexColor: String
     /// inner color (the outline is always white) - UIColor wrapping the hexColor

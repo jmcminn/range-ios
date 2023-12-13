@@ -190,6 +190,11 @@ class AnnotationsEditor: NSObject {
             hostView.scrollView.addGestureRecognizer(panGestureRecognizer!)
 
         } else {
+            // hide any selectors and stop editing
+            viewModel.recentTextSelectorVisible = false
+            viewModel.recentAnnotationsSelectorVisible = false
+            setEditing(nil)
+
             // remove keyboard observers
             NotificationCenter.default.removeObserver(self)
 
@@ -261,16 +266,10 @@ class AnnotationsEditor: NSObject {
             x: hostView.bounds.midX,
             y: hostView.bounds.midY
         ), from: hostView)
-        // to calculate the initial position we need to know the size. But to calculate the size
-        // we would need to know the position (because of the text wrapping on image bounds).
-        // So let's calculate the size using the center of the screen and the adjust the position
-        // using the resulting size. This shouldn't really matter as the initial size is very small
-        // and the text is empty so the width shouldn't be affected by image boundary based text wrapping
         let initialTextAnnotationSize = TextAnnotationRenderer.annotationSize(
-            position: centerOfTheScreenInImagePoint,
             text: text,
             fontSize: fontSize,
-            annotationsGeometry: annotationsGeometry
+            annotationScale: annotationsGeometry.scale
         )
         // position is top left of the box centered at the screen center
         let initialPosition = centerOfTheScreenInImagePoint.translate(
@@ -463,6 +462,7 @@ extension AnnotationsEditor {
 
         viewModel.setGesturesMode(.normal)
         viewModel.recentTextSelectorVisible = false
+        viewModel.recentAnnotationsSelectorVisible = false
     }
 
     /// Discover annotation when tapping at given location
@@ -555,6 +555,8 @@ extension AnnotationsEditor: UIGestureRecognizerDelegate {
         // Only recognize the annotations dragging when in .normal gestures mode (so no scribbling, etc.)
         guard viewModel.gesturesMode == .normal else { return false }
 
+        viewModel.recentTextSelectorVisible = false
+        viewModel.recentAnnotationsSelectorVisible = false
         let location = gesture.location(in: view)
 
         // 1. give priority to currently selected annotation and check if it should drag

@@ -154,7 +154,7 @@ class TextAnnotationView: UIView {
             position: viewModel.text.position,
             fontSize: viewModel.text.fontSize,
             color: viewModel.text.color,
-            annotationsGeometry: viewModel.annotationsGeometry,
+            annotationScale: viewModel.annotationsGeometry.scale,
             backgroundOnly: viewModel.textEditing, // when editing the text is rendered with UITextView (to edit)
             renderingOffset: viewModel.text.position.multiplyBy(-1) // rendering in view coordinates
         )

@@ -22,6 +22,11 @@ struct FullscreenImageGalleryView: View {
             }
             if annotationsEditorViewModel.toolbarVisible {
                 VStack {
+                    if annotationsEditorViewModel.recentAnnotationsSelectorVisible {
+                        RecentAnnotationsSelectorView(model: annotationsEditorViewModel)
+                            .padding(16)
+                            .padding(.top, 40) // so it doesn't go over the top bar
+                    }
                     Spacer()
                     AnnotationsToolbarView(model: annotationsEditorViewModel)
                         .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))

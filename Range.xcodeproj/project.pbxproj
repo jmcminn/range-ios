@@ -342,6 +342,8 @@
 		0A88198B291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */; };
 		0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */; };
 		0A88198F291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */; };
+		0A88730B2B299B24006DF885 /* RecentAnnotationsSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88730A2B299B24006DF885 /* RecentAnnotationsSelectorView.swift */; };
+		0A88730D2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88730C2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift */; };
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
 		0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */; };
@@ -832,6 +834,8 @@
 		0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsTagsCommandTest.swift; sourceTree = "<group>"; };
 		0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommandTest.swift; sourceTree = "<group>"; };
 		0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsDueDateCommandTest.swift; sourceTree = "<group>"; };
+		0A88730A2B299B24006DF885 /* RecentAnnotationsSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentAnnotationsSelectorView.swift; sourceTree = "<group>"; };
+		0A88730C2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentAnnotationViewRepresentable.swift; sourceTree = "<group>"; };
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
 		0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersCardViewController.swift; sourceTree = "<group>"; };
@@ -1824,6 +1828,8 @@
 				0AD955252A40AA8F00B35325 /* AnnotationsEditorViewModel.swift */,
 				0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */,
 				0AD955212A3B605700B35325 /* AnnotationsToolbarView.swift */,
+				0A88730A2B299B24006DF885 /* RecentAnnotationsSelectorView.swift */,
+				0A88730C2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift */,
 				0AE9A8B42B0E2ADE00AF7E46 /* RecentTextSelectorView.swift */,
 			);
 			path = editor;
@@ -2548,6 +2554,7 @@
 				0AAB2DE52AFC02310017A12D /* ArrowAnnotationRenderer.swift in Sources */,
 				0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */,
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
+				0A88730D2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift in Sources */,
 				0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */,
 				0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */,
 				0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */,
@@ -2564,6 +2571,7 @@
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
 				0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */,
 				0A05057F2A1E2512001AF644 /* CGPoint+Operations.swift in Sources */,
+				0A88730B2B299B24006DF885 /* RecentAnnotationsSelectorView.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
 				0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,

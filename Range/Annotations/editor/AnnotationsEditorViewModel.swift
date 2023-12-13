@@ -24,6 +24,7 @@ class AnnotationsEditorViewModel: ObservableObject {
     @Published private(set) var toolbarVisible: Bool = true
 
     @Published var recentTextSelectorVisible: Bool = false
+    @Published var recentAnnotationsSelectorVisible: Bool = false
 
     /// is the editing enabled for the current AnnotationsView (on if it's `installed`)
     @Published private(set) var editingEnabled: Bool = false
@@ -69,6 +70,7 @@ class AnnotationsEditorViewModel: ObservableObject {
             // enabling any toggle tool deselects the currently selected annotation
             annotationsEditor?.setSelected(nil)
         }
+        recentAnnotationsSelectorVisible = false
         updateCurrentAttributesBasedOnGesturesModeAndSelection()
     }
 
@@ -131,6 +133,10 @@ class AnnotationsEditorViewModel: ObservableObject {
             selectedAnnotation.setFontSize(fontSize)
             UserDefaults.addRecentTextAnnotation(selectedAnnotation.text)
         }
+    }
+
+    func recentTextAnnotationSelected(_ annotation: TextAnnotation) {
+        print("TODO: 2213", annotation)
     }
 
     func recentAnnotationTextSelected(_ text: String) {

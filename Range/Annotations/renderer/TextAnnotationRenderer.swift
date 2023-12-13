@@ -16,7 +16,7 @@ enum TextAnnotationRenderer {
             position: text.position,
             fontSize: text.fontSize,
             color: text.color,
-            annotationsGeometry: annotationsGeometry,
+            annotationScale: annotationsGeometry.scale,
             backgroundOnly: false
         )
     }
@@ -24,7 +24,7 @@ enum TextAnnotationRenderer {
     /// Renders text with given parameters (to be reused in TextAnnotationView). It requires the parameters in proper scale
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
-    ///   - annotationsGeometry geometry.scale required to render the unscaled constants, geometry.width required to calculate the box size and text wrapping
+    ///   - annotationScale required to render the unscaled constants
     ///   - backgroundOnly when editing the text we only want the renderer to show the background as the text is displayed in a UITextView
     ///   - renderingOffset - When rendering in TextAnnotationView the rendering must be done in view local coordinates. We still need the real position to calculate the text wrapping but then the renderer should offset all the operations by renderingOffset (which is just -position)
     static func render(
@@ -32,7 +32,7 @@ enum TextAnnotationRenderer {
         position: CGPoint,
         fontSize: Double,
         color: UIColor,
-        annotationsGeometry: AnnotationsGeometry,
+        annotationScale: Double,
         backgroundOnly: Bool,
         renderingOffset: CGPoint = .zero
     ) {
@@ -44,12 +44,11 @@ enum TextAnnotationRenderer {
             UIColor.white.set()
         }
         let annotationSize = annotationSize(
-            position: position,
             text: text,
             fontSize: fontSize,
-            annotationsGeometry: annotationsGeometry
+            annotationScale: annotationScale
         )
-        let cornerRadius = Annotations.textBoxCornerRadius * annotationsGeometry.scale
+        let cornerRadius = Annotations.textBoxCornerRadius * annotationScale
         let backgroundRect = UIBezierPath(
             roundedRect: CGRect(origin: position.addTo(renderingOffset), size: annotationSize),
             byRoundingCorners: .allCorners,
@@ -65,8 +64,8 @@ enum TextAnnotationRenderer {
                 NSAttributedString.Key.foregroundColor: color,
             ] as [NSAttributedString.Key: Any]
 
-            let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsGeometry.scale)
-            let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsGeometry.scale)
+            let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationScale)
+            let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationScale)
             let textRect = CGRect(
                 origin: position.translate(x: textHorizontalPadding, y: textVerticalPadding).addTo(renderingOffset),
                 size: CGSize(
@@ -91,21 +90,20 @@ extension TextAnnotationRenderer {
     ///
     /// - Parameters:
     ///   - fontSize a SCALED font size, the scale is only applied to constants
-    ///   - annotationsScale to be used for unscaled constants that are not stored in the TextAnnotation (corner radius, padding)
+    ///   - annotationScale to be used for unscaled constants that are not stored in the TextAnnotation (corner radius, padding)
     static func annotationSize(
-        position _: CGPoint,
         text: String,
         fontSize: Double,
-        annotationsGeometry: AnnotationsGeometry
+        annotationScale: Double
     ) -> CGSize {
         var textSize = TextAnnotationRenderer.textSize(text: text, fontSize: fontSize)
         // make empty text box take some initial width
         if text.isEmpty {
-            textSize.width = max(textSize.width, ceil(emptyTextBoxWidth * annotationsGeometry.scale))
+            textSize.width = max(textSize.width, ceil(emptyTextBoxWidth * annotationScale))
         }
 
-        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationsGeometry.scale)
-        let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationsGeometry.scale)
+        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationScale)
+        let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationScale)
 
         let boxSize = CGSize(
             width: textSize.width + 2 * textHorizontalPadding,
