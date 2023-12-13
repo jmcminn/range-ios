@@ -136,7 +136,8 @@ class AnnotationsEditorViewModel: ObservableObject {
     }
 
     func recentTextAnnotationSelected(_ annotation: TextAnnotation) {
-        print("TODO: 2213", annotation)
+        recentAnnotationsSelectorVisible = false
+        annotationsEditor?.recentTextAnnotationSelected(annotation)
     }
 
     func recentAnnotationTextSelected(_ text: String) {

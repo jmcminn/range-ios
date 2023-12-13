@@ -238,6 +238,29 @@ class AnnotationsEditor: NSObject {
         return arrowVM
     }
 
+    /// insert a duplicate of given annotation centered in the current viewport
+    func recentTextAnnotationSelected(_ annotation: TextAnnotation) {
+        guard let hostView = hostView else { return }
+        let newAnnotation = annotation.duplicate(withOffset: .zero)
+        // calculate the position
+        let centerOfTheScreenInImagePoint = view.convert(CGPoint(
+            x: hostView.bounds.midX,
+            y: hostView.bounds.midY
+        ), from: hostView)
+        let annotationSize = TextAnnotationRenderer.annotationSize(
+            text: newAnnotation.text,
+            fontSize: newAnnotation.fontSize,
+            annotationScale: annotationsGeometry.scale
+        )
+        // position is top left of the box centered at the screen center
+        newAnnotation.position = centerOfTheScreenInImagePoint.translate(
+            x: -annotationSize.width / 2,
+            y: -annotationSize.height / 2
+        )
+        UserDefaults.addRecentTextAnnotation(newAnnotation)
+        addText(newAnnotation)
+    }
+
     /// insert the text into currently editing annotation
     func recentAnnotationTextSelected(_ text: String) {
         if let editingAnnotation = editingAnnotation,
