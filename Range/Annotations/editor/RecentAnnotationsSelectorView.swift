@@ -24,10 +24,7 @@ struct RecentAnnotationsSelectorView: View {
             ScrollView {
                 ScrollViewReader { proxy in
                     VStack(alignment: .leading, spacing: 0) {
-                        ForEach(
-                            UserDefaults.recentTextAnnotations(),
-                            id: \.id
-                        ) { annotation in
+                        ForEach(UserDefaults.defaultAndRecentTextAnnotations(), id: \.id) { annotation in
                             Button(action: { model.recentTextAnnotationSelected(annotation) }) {
                                 // scroll view for each annotation as annotation might be wider than the parent view
                                 ScrollView(.horizontal) {

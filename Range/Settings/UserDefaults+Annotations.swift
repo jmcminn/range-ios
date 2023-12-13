@@ -99,6 +99,36 @@ extension UserDefaults {
         )
     }
 
+    /// The default list of text annotations shown in the RecenAnnotationsSelectorView.
+    static func defaultRecentTextAnnotations() -> [TextAnnotation] {
+        [
+            TextAnnotation(
+                text: "Fix this", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .Red_03
+            ),
+            TextAnnotation(
+                text: "Before", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .Pink_03
+            ),
+            TextAnnotation(
+                text: "After", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .Green_03
+            ),
+            TextAnnotation(
+                text: "🔨", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
+            ),
+            TextAnnotation(
+                text: "👍", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
+            ),
+            TextAnnotation(
+                text: "👎", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
+            ),
+            TextAnnotation(
+                text: "❌", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
+            ),
+            TextAnnotation(
+                text: "✅", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
+            ),
+        ]
+    }
+
     /// return at most last 10 recent text annotations. The most recent annotation is at the end of the array
     /// The annotations stored here are not scaled!!
     static func recentTextAnnotations() -> [TextAnnotation] {
@@ -118,6 +148,21 @@ extension UserDefaults {
             }
             return annotation
         }
+    }
+
+    /// Returns the sum of `defaultRecentTextAnnotations` and `recentTextAnnotations`
+    /// If they contain items with same text/fontSize/color, the item from `recentTextAnnotations` is returned
+    static func defaultAndRecentTextAnnotations() -> [TextAnnotation] {
+        var defaultAnnotations = defaultRecentTextAnnotations()
+        let recentAnnotations = recentTextAnnotations()
+        defaultAnnotations.removeAll { defaultAnnotation in
+            recentAnnotations.contains { annotation in
+                defaultAnnotation.text == annotation.text &&
+                    defaultAnnotation.fontSize == annotation.fontSize &&
+                    defaultAnnotation.hexColor == annotation.hexColor
+            }
+        }
+        return defaultAnnotations + recentAnnotations
     }
 
     /// Adds given text annotation to recent annotations
