@@ -242,6 +242,8 @@ class AnnotationsEditor: NSObject {
     func recentTextAnnotationSelected(_ annotation: TextAnnotation) {
         guard let hostView = hostView else { return }
         let newAnnotation = annotation.duplicate(withOffset: .zero)
+        // recent annotations are stored unscaled
+        newAnnotation.fontSize = annotation.fontSize * annotationsGeometry.scale
         // calculate the position
         let centerOfTheScreenInImagePoint = view.convert(CGPoint(
             x: hostView.bounds.midX,
@@ -257,7 +259,7 @@ class AnnotationsEditor: NSObject {
             x: -annotationSize.width / 2,
             y: -annotationSize.height / 2
         )
-        UserDefaults.addRecentTextAnnotation(newAnnotation)
+        UserDefaults.addRecentTextAnnotation(newAnnotation, annotationsGeometry)
         addText(newAnnotation)
     }
 
@@ -341,7 +343,7 @@ class AnnotationsEditor: NSObject {
         case let .scribble(scribble): addScribble(scribble.duplicate(withOffset: offset))
         case let .text(text): { // this syntax is a hack for non expression branch of switch expression
                 let duplicate = text.duplicate(withOffset: offset)
-                UserDefaults.addRecentTextAnnotation(duplicate)
+                UserDefaults.addRecentTextAnnotation(duplicate, annotationsGeometry)
                 return addText(duplicate)
             }()
         }
@@ -558,7 +560,7 @@ extension AnnotationsEditor {
                 // but only if it has changed during the editing session
                 if textBeforeEditing != textAnnotationVM.text.text {
                     UserDefaults.addRecentAnnotationTexts([textAnnotationVM.text])
-                    UserDefaults.addRecentTextAnnotation(textAnnotationVM.text)
+                    UserDefaults.addRecentTextAnnotation(textAnnotationVM.text, annotationsGeometry)
                 }
             }
         }

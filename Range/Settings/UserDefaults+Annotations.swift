@@ -100,6 +100,7 @@ extension UserDefaults {
     }
 
     /// return at most last 10 recent text annotations. The most recent annotation is at the end of the array
+    /// The annotations stored here are not scaled!!
     static func recentTextAnnotations() -> [TextAnnotation] {
         /// the annotations are stored as an array of annotations encoded as JSON strings
         guard let textAnnotationStrings = (UserDefaults.standard
@@ -123,7 +124,21 @@ extension UserDefaults {
     /// If element with given id exist in recent annotations it will be reinserted at the end (so it's "more recent")
     /// Only 10 most recent items are kept
     /// The items in the recent annotations list are deduplicated by text/fontSize/color
-    static func addRecentTextAnnotation(_ annotation: TextAnnotation) {
+    /// - Parameters:
+    ///   - annotation: the annotation to save
+    ///   - annotationsGeometry: we need the annotations scale to unscale the annotation font size
+    static func addRecentTextAnnotation(_ annotation: TextAnnotation, _ annotationsGeometry: AnnotationsGeometry) {
+        let fontSize = annotation.fontSize / annotationsGeometry.scale
+
+        // we need to store a copy, so we don't change the original annotation
+        let annotation = TextAnnotation(
+            id: annotation.id,
+            text: annotation.text,
+            position: .zero,
+            fontSize: fontSize,
+            color: annotation.color
+        )
+
         var entries = recentTextAnnotations()
         // Remove existing entry with id matching the updated annotation
         entries.removeAll { entry in

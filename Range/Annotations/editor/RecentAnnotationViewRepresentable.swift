@@ -2,11 +2,12 @@ import Foundation
 import SwiftUI
 
 /// Provides annotations rendering for SwiftUI (so we can render the annotations when displaying in RecentAnnotationsSelectorView)
+/// Assumes that the TextAnnotation is unscaled and renders with the font size provided in the annotation
 struct RecentAnnotationViewRepresentable: UIViewRepresentable {
     let view: AnnotationReadonlyView
 
-    init(textAnnotation: TextAnnotation, annotationsGeometry: AnnotationsGeometry) {
-        view = AnnotationReadonlyView(textAnnotation: textAnnotation, annotationsGeometry: annotationsGeometry)
+    init(textAnnotation: TextAnnotation) {
+        view = AnnotationReadonlyView(textAnnotation: textAnnotation)
     }
 
     func makeUIView(context _: Context) -> AnnotationReadonlyView {
@@ -24,9 +25,9 @@ class AnnotationReadonlyView: UIView {
     let annotation: TextAnnotation
     override var intrinsicContentSize: CGSize { annotationSize }
 
-    init(textAnnotation: TextAnnotation, annotationsGeometry: AnnotationsGeometry) {
-        fontSize = if let fontSize = textAnnotation.fontSizeEnum(annotationsGeometry) { fontSize.toolbarSize }
-        else { textAnnotation.fontSize / annotationsGeometry.scale }
+    init(textAnnotation: TextAnnotation) {
+        fontSize = if let fontSize = textAnnotation.fontSizeEnum(1) { fontSize.toolbarSize }
+        else { textAnnotation.fontSize }
 
         annotationSize = TextAnnotationRenderer.annotationSize(
             text: textAnnotation.text,

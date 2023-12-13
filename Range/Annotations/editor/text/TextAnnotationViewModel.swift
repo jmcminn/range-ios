@@ -6,7 +6,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     @objc private(set) dynamic var text: TextAnnotation
 
     /// based on the text.fontSize, optional as the font size may potentially not match any predefined font sizes
-    var fontSize: Annotations.FontSize? { text.fontSizeEnum(annotationsGeometry) }
+    var fontSize: Annotations.FontSize? { text.fontSizeEnum(annotationsGeometry.scale) }
 
     /// whether the text of the annotation is currently being edited
     @objc dynamic var textEditing: Bool = false { didSet {

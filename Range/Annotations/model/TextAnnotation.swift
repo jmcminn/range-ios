@@ -21,8 +21,8 @@ class TextAnnotation: NSObject, Codable {
     var fontSize: Double { didSet { postUpdate() }}
     /// One of the FontSize values if fontSize matches any of them.
     /// Requires annotationsScale to be calculated as it's an unscaled value and fontSize is scaled
-    func fontSizeEnum(_ annotationsGeometry: AnnotationsGeometry) -> Annotations.FontSize? {
-        let unscaledFontSize = fontSize / annotationsGeometry.scale
+    func fontSizeEnum(_ annotationScale: Double) -> Annotations.FontSize? {
+        let unscaledFontSize = fontSize / annotationScale
         return Annotations.FontSize.allCases.first { $0.size == unscaledFontSize }
     }
 

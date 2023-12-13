@@ -9,34 +9,41 @@ struct RecentAnnotationsSelectorView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Recent Text Annotations")
                 .foregroundStyle(.white)
-                .font(.body.bold())
+                .font(.body.weight(.semibold))
                 .padding([.horizontal, .top], 16)
-                .padding(.bottom, 8) // 8 is already included in the scrollView content
+            if UserDefaults.recentTextAnnotations().isEmpty {
+                Text("You have no recent text annotations. Get started with some suggestions below.")
+                    .foregroundStyle(.white.opacity(0.75))
+                    .font(.footnote.weight(.medium))
+                    .padding(.top, 4)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8) // 8 is already included in the scrollView content
+            } else {
+                Spacer(minLength: 8) // 8 is already included in the scrollView content
+            }
             ScrollView {
                 ScrollViewReader { proxy in
-                    if let annotationsEditor = model.annotationsEditor {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(UserDefaults.recentTextAnnotations(), id: \.id) { annotation in
-                                Button(action: { model.recentTextAnnotationSelected(annotation) }) {
-                                    // scroll view for each annotation as annotation might be wider than the parent view
-                                    ScrollView(.horizontal) {
-                                        RecentAnnotationViewRepresentable(
-                                            textAnnotation: annotation,
-                                            annotationsGeometry: annotationsEditor.annotationsGeometry
-                                        )
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(
+                            UserDefaults.recentTextAnnotations(),
+                            id: \.id
+                        ) { annotation in
+                            Button(action: { model.recentTextAnnotationSelected(annotation) }) {
+                                // scroll view for each annotation as annotation might be wider than the parent view
+                                ScrollView(.horizontal) {
+                                    RecentAnnotationViewRepresentable(textAnnotation: annotation)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
-                                    }
                                 }
-                                .id(annotation.id)
                             }
+                            .id(annotation.id)
                         }
-                        Spacer(minLength: 8).id("bottomSpacer")
-                            .onAppear {
-                                // scroll to the bottom of the list, last item is the most recent
-                                proxy.scrollTo("bottomSpacer", anchor: .bottom)
-                            }
                     }
+                    Spacer(minLength: 8).id("bottomSpacer")
+                        .onAppear {
+                            // scroll to the bottom of the list, last item is the most recent
+                            proxy.scrollTo("bottomSpacer", anchor: .bottom)
+                        }
                 }
             }
         }
@@ -48,20 +55,5 @@ struct RecentAnnotationsSelectorView: View {
 }
 
 #Preview {
-    let annotationsGeometry = AnnotationsGeometry(imageWidth: 100, imageHeight: 100, scale: 2)
-    UserDefaults.addRecentTextAnnotation(TextAnnotation(
-        id: "1",
-        text: "Fix this",
-        position: .zero, // position is not relevant when rendering recent annotations list
-        fontSize: Annotations.FontSize.large.size * annotationsGeometry.scale,
-        color: Annotations.colors[2]
-    ))
-    UserDefaults.addRecentTextAnnotation(TextAnnotation(
-        id: "2",
-        text: "Paint defect",
-        position: .zero,
-        fontSize: Annotations.FontSize.small.size * annotationsGeometry.scale,
-        color: Annotations.colors[3]
-    ))
-    return RecentAnnotationsSelectorView(model: AnnotationsEditorViewModel())
+    RecentAnnotationsSelectorView(model: AnnotationsEditorViewModel())
 }
