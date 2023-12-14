@@ -12,10 +12,10 @@
     {
       "identity" : "analytics-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/segmentio/analytics-swift",
+      "location" : "git@github.com:segmentio/analytics-swift.git",
       "state" : {
-        "revision" : "efc111b5fccaebd1063ef0db6d206c252da387ec",
-        "version" : "1.4.8"
+        "revision" : "266c374bd9c55a3101e0b5f04a9f8cab4eee747a",
+        "version" : "1.5.0"
       }
     },
     {
@@ -109,6 +109,15 @@
       }
     },
     {
+      "identity" : "jsonsafeencoder-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/jsonsafeencoder-swift.git",
+      "state" : {
+        "revision" : "8b70dc8c01b7b041912e30e29d2b488a43f782ac",
+        "version" : "1.0.1"
+      }
+    },
+    {
       "identity" : "kingfisher",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher.git",
@@ -140,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-common-ios.git",
       "state" : {
-        "revision" : "add9e5cb01a0aa23f1081b3c53719593bb80e3cb",
-        "version" : "23.8.3"
+        "revision" : "66c604ce480a5d2e98dbe017b49886652d4d89a2",
+        "version" : "24.0.0"
       }
     },
     {
@@ -149,8 +158,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-core-maps-ios.git",
       "state" : {
-        "revision" : "d9307e875eea20128b303df6f6d7a2f87934fca2",
-        "version" : "10.16.1"
+        "revision" : "5c19a597907deb167eed89d737de878db9088f52",
+        "version" : "11.0.0"
       }
     },
     {
@@ -158,8 +167,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-maps-ios.git",
       "state" : {
-        "revision" : "36d57a20f6aec28d5758f4e59ac8d3a25a695fd2",
-        "version" : "10.16.1"
+        "revision" : "b28c6331eb03145e49098ae63162db13c02cca8a",
+        "version" : "11.0.0"
       }
     },
     {

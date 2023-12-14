@@ -1,5 +1,6 @@
 import CoreLocation
 @_spi(Restricted) @_spi(Experimental) import MapboxMaps
+import MetalKit
 import OSLog
 import PDFKit
 import RealmSwift
@@ -52,15 +53,15 @@ class CanvasViewController: UIViewController {
 
     /// observers for pdf/mapbox views. They're being activated/deactivated when switching who drives the interactions
     private var canvasTapGestureRecognizer: UITapGestureRecognizer?
-    private var mapboxCameraChangedObserver: Cancelable?
+    private var cancelables = Set<AnyCancelable>()
     /// Size of an imaginary square that helps synchronize pdf zoom/offset with mapbox map (and actually with 2 mapbox annotations
     /// placed at the corners of this square). See `setupSyncAnnotationViews` for more details
     private let syncSquareSize: Double = 200
     /// For setting up the pdf sync we need mapbox started with some reference zoom (defined by this property)
     private let initialMapboxZoom: Double = 19.0
     // 2 annotation views used for .mapAnnotations pdf<->map sync
-    private var topLeftSyncAnnotationView: UIView?
-    private var bottomRightSyncAnnotationView: UIView?
+    private var topLeftSyncViewAnnotation: ViewAnnotation?
+    private var bottomRightSyncViewAnnotation: ViewAnnotation?
     // observe the bottom right sync view
     private var bottomRightSyncAnnotationViewObservation: NSKeyValueObservation?
 
@@ -177,7 +178,7 @@ class CanvasViewController: UIViewController {
     /// Canvas source changed, reload the view
     private func onCanvasSourceChange(previousCanvasSource: CanvasSource) async {
         // store the camera state so it can be reused when switching back to same canvas source
-        cameraStateCache[previousCanvasSource.id] = mapView.cameraState
+        cameraStateCache[previousCanvasSource.id] = mapView.mapboxMap.cameraState
         let fromPdfToPdf = previousCanvasSource.type == .pdf && canvas.currentCanvasSource.type == .pdf
         if !fromPdfToPdf {
             // if switching from pdf to other pdf the map view remains the same (empty style and configuration for pdf background)
@@ -416,10 +417,10 @@ class CanvasViewController: UIViewController {
         canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
         mapView.addGestureRecognizer(canvasTapGestureRecognizer!)
         mapView.gestures.delegate = self
-        mapboxCameraChangedObserver = mapView.mapboxMap.onEvery(event: .cameraChanged, handler: { [weak self] _ in
+        mapView.mapboxMap.onCameraChanged.observe { [weak self] _ in
             guard let self = self, let currentCameraChangeReason = self.currentCameraChangeReason else { return }
             self.delegates.values.forEach { $0.canvasCameraChanged(reason: currentCameraChangeReason) }
-        })
+        }.store(in: &cancelables)
     }
 
     /// Reload the style and do other changes when canvas source changes
@@ -461,7 +462,8 @@ class CanvasViewController: UIViewController {
             mapView.location.options.puckType = nil
         } else {
             // location support enabled
-            mapView.location.overrideLocationProvider(with: locationProvider)
+            // TODO: 2235
+//            mapView.location.overrideLocationProvider(with: locationProvider)
             let blueDotPrototype = Puck2DConfiguration(
                 topImage: UIImage()
                     .addCircleBackground(
@@ -488,13 +490,9 @@ class CanvasViewController: UIViewController {
 
     /// For current mapView load style appropriate for pdf canvas source
     private func loadMapboxStyle(forPdfSource _: PdfCanvasSourceData) {
-        mapView.mapboxMap.loadStyleJSON(annotationsStyle) { result in
-            switch result {
-            case .success:
-                Logger.mapbox.debug("annotations style loaded successfully")
-            case let .failure(error):
-                Logger.mapbox
-                    .error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
+        mapView.mapboxMap.loadStyle(annotationsStyle) { error in
+            if let error = error {
+                Logger.mapbox.error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
@@ -504,11 +502,8 @@ class CanvasViewController: UIViewController {
             Logger.mapbox.error("invalid mapbox style \(source.styleUrl)")
             return
         }
-        mapView.mapboxMap.loadStyleURI(styleURI) { result in
-            switch result {
-            case .success:
-                Logger.mapbox.debug("mapbox style \(source.styleUrl) loaded successfully")
-            case let .failure(error):
+        mapView.mapboxMap.loadStyle(styleURI) { error in
+            if let error = error {
                 Logger.mapbox.error(
                     "failed to load mapbox style \(source.styleUrl) load failed: \(error.localizedDescription, privacy: .public)"
                 )
@@ -521,34 +516,32 @@ class CanvasViewController: UIViewController {
             Logger.mapbox.error("invalid mapbox style \(source.styleUrl)")
             return
         }
-        mapView.mapboxMap.loadStyleURI(styleURI) { [weak self] result in
-            if case let .failure(error) = result {
+        mapView.mapboxMap.loadStyle(styleURI) { [weak self] error in
+            if let error = error {
                 Logger.mapbox.error(
                     "failed to load mapbox style \(source.styleUrl) load failed: \(error.localizedDescription, privacy: .public)"
                 )
                 return
             }
-            Logger.mapbox.debug("mapbox style \(source.styleUrl) loaded successfully")
 
             guard let self = self else { return }
             // Update the drone deploy layer source with drone deploy
             let droneDeployLayerId = "Custom endpoint layer"
             do {
-                let droneDeployLayer = try self.mapView.mapboxMap.style.layer(withId: droneDeployLayerId)
+                let droneDeployLayer = try self.mapView.mapboxMap.layer(withId: droneDeployLayerId)
                 let newDroneDeploySourceId = "droneDeploySource"
-                var droneDeploySource = RasterSource()
+                var droneDeploySource = RasterSource(id: newDroneDeploySourceId)
                 droneDeploySource.tiles = [source.tilesetUrl]
                 droneDeploySource.tileSize = 256
-                try self.mapView.mapboxMap.style.addSource(droneDeploySource, id: newDroneDeploySourceId)
-                var newDroneDeployLayer = RasterLayer(id: "droneDeployLayer")
-                newDroneDeployLayer.source = newDroneDeploySourceId
+                try self.mapView.mapboxMap.addSource(droneDeploySource)
+                var newDroneDeployLayer = RasterLayer(id: "droneDeployLayer", source: newDroneDeploySourceId)
                 newDroneDeployLayer.minZoom = droneDeployLayer.minZoom
                 newDroneDeployLayer.maxZoom = droneDeployLayer.maxZoom
-                try self.mapView.mapboxMap.style.addLayer(
+                try self.mapView.mapboxMap.addLayer(
                     newDroneDeployLayer,
                     layerPosition: LayerPosition.above(droneDeployLayerId)
                 )
-                try self.mapView.mapboxMap.style.removeLayer(withId: droneDeployLayerId)
+                try self.mapView.mapboxMap.removeLayer(withId: droneDeployLayerId)
             } catch {
                 Logger.mapbox.error("Couldn't update the drone deploy layer \(droneDeployLayerId), \(error)")
             }
@@ -559,36 +552,36 @@ class CanvasViewController: UIViewController {
     /// These are just to special annotations placed in the top left and bottom right corners of a square that has a side length = `syncSquareSize` points (in screen coordiantes)
     /// and is centered at the mapView center
     private func setupSyncAnnotationViews() {
-        do {
-            // this is the size in screen coordiantes. It needs to be very big as mapbox only tracks
-            // annotations that are currently on screen. Such big size guarantess that no matter
-            // what zoom and center this annotation view is partially on screen (but still not visible
-            // as it's an empty view with alpha = 0)
-            let annotationViewSize = CGSize(width: 100_001, height: 100_001)
+        // this is the size in screen coordiantes. It needs to be very big as mapbox only tracks
+        // annotations that are currently on screen. Such big size guarantess that no matter
+        // what zoom and center this annotation view is partially on screen (but still not visible
+        // as it's an empty view with alpha = 0)
+        let annotationViewSize = CGSize(width: 100_001, height: 100_001)
 
-            let topLeft = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
-            topLeft.backgroundColor = .clear
-            try mapView.viewAnnotations.add(topLeft, options: ViewAnnotationOptions(
-                geometry: Turf.Point(mapView.mapboxMap.coordinate(for: CGPoint(
-                    x: mapView.center.x - syncSquareSize / 2,
-                    y: mapView.center.y - syncSquareSize / 2
-                ))),
-                allowOverlap: true
-            ))
-            topLeftSyncAnnotationView = topLeft
+        let topLeft = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
+        topLeft.backgroundColor = .clear
+        let topLeftViewAnnotation = ViewAnnotation(coordinate: mapView.mapboxMap.coordinate(for: CGPoint(
+            x: mapView.center.x - syncSquareSize / 2,
+            y: mapView.center.y - syncSquareSize / 2
+        )), view: topLeft)
+        topLeftViewAnnotation.allowOverlap = true
+        topLeftViewAnnotation.allowOverlapWithPuck = true
+        mapView.viewAnnotations.add(topLeftViewAnnotation)
+        topLeftSyncViewAnnotation = topLeftViewAnnotation
 
-            let bottomRight = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
-            bottomRight.backgroundColor = .clear
-            try mapView.viewAnnotations.add(bottomRight, options: ViewAnnotationOptions(
-                geometry: Turf.Point(mapView.mapboxMap.coordinate(for: CGPoint(
-                    x: mapView.center.x + syncSquareSize / 2,
-                    y: mapView.center.y + syncSquareSize / 2
-                ))),
-                allowOverlap: true
-            ))
-            bottomRightSyncAnnotationView = bottomRight
+        let bottomRight = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
+        bottomRight.backgroundColor = .clear
+        let bottomRightViewAnnotation = ViewAnnotation(coordinate: mapView.mapboxMap.coordinate(for: CGPoint(
+            x: mapView.center.x + syncSquareSize / 2,
+            y: mapView.center.y + syncSquareSize / 2
+        )), view: bottomRight)
+        bottomRightViewAnnotation.allowOverlap = true
+        bottomRightViewAnnotation.allowOverlapWithPuck = true
+        mapView.viewAnnotations.add(bottomRightViewAnnotation)
 
-            // show topLeft/bottomRight dots to help debug
+        bottomRightSyncViewAnnotation = bottomRightViewAnnotation
+
+        // show topLeft/bottomRight dots to help debug
 //            let dotFrame = CGRect(origin: CGPoint(x: 50000 - 3, y: 50000 - 3), size: CGSize(width: 7, height: 7))
 //            let topLeftDot = UIView(frame: dotFrame)
 //            topLeftDot.layer.cornerRadius = 3.5
@@ -599,11 +592,8 @@ class CanvasViewController: UIViewController {
 //            bottomRightDot.backgroundColor = .Green_03
 //            bottomRight.addSubview(bottomRightDot)
 
-            bottomRightSyncAnnotationViewObservation = bottomRight.observe(\.frame) { [weak self] _, _ in
-                self?.syncPDFViewWithAnnotationViews()
-            }
-        } catch {
-            Logger.mapbox.error("error adding mapbox sync view: \(error)")
+        bottomRightSyncAnnotationViewObservation = bottomRight.observe(\.frame) { [weak self] _, _ in
+            self?.syncPDFViewWithAnnotationViews()
         }
     }
 
@@ -611,14 +601,10 @@ class CanvasViewController: UIViewController {
     private func tearDownSyncAnnotationViews() {
         bottomRightSyncAnnotationViewObservation?.invalidate()
 
-        if let topLeft = topLeftSyncAnnotationView {
-            mapView.viewAnnotations.remove(topLeft)
-            topLeftSyncAnnotationView = nil
-        }
-        if let bottomRight = bottomRightSyncAnnotationView {
-            mapView.viewAnnotations.remove(bottomRight)
-            bottomRightSyncAnnotationView = nil
-        }
+        topLeftSyncViewAnnotation?.remove()
+        topLeftSyncViewAnnotation = nil
+        bottomRightSyncViewAnnotation?.remove()
+        bottomRightSyncViewAnnotation = nil
     }
 
     override func viewWillLayoutSubviews() {
@@ -665,8 +651,8 @@ class CanvasViewController: UIViewController {
     /// from current on screen positions of the annotation views, without doing any mapbox camera/zoom or geocoordinates calculations.
     private func syncPDFViewWithAnnotationViews() {
         guard let pdfScrollView = pdfScrollView,
-              let topLeftCenter = topLeftSyncAnnotationView?.center,
-              let bottomRightCenter = bottomRightSyncAnnotationView?.center else { return }
+              let topLeftCenter = topLeftSyncViewAnnotation?.view.center,
+              let bottomRightCenter = bottomRightSyncViewAnnotation?.view.center else { return }
 
         let syncViewsDistance = bottomRightCenter.x - topLeftCenter.x
         guard syncViewsDistance > 0 else { return }

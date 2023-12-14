@@ -154,7 +154,7 @@ class MovePinFlowController {
                         self.onStop?(geometryId)
                     }
                 }
-                let coordinates = canvasContainer.annotationsMapView.cameraState.center
+                let coordinates = canvasContainer.annotationsMapView.mapboxMap.cameraState.center
                 let canvas = model.currentCanvas!
                 let command = try model.update(
                     coordinates: coordinates,

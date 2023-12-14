@@ -33,7 +33,7 @@ class AddPhotoPinsDisplay {
     private(set) var photoPinView: PhotoPin?
 
     /// tooltip shown for a currently selected pin
-    private var selectedPinTooltip: MapTooltipView?
+    private var selectedPinTooltip: ViewAnnotation?
     /// tooltip shown for photoPinView
     private var photoPinTooltip: MapTooltipView?
 
@@ -138,7 +138,7 @@ extension AddPhotoPinsDisplay {
     /// Hide tooltip if any presented (either feature or photo tooltip)
     private func hideTooltip() {
         if let tooltip = selectedPinTooltip {
-            canvasVC.mapView.viewAnnotations.remove(tooltip)
+            tooltip.remove()
             selectedPinTooltip = nil
         }
         if let tooltip = photoPinTooltip {
@@ -161,21 +161,21 @@ extension AddPhotoPinsDisplay {
             height: UIView.layoutFittingExpandedSize.height
         )
         let tooltipSize = tooltip.systemLayoutSizeFitting(fittingSize)
-        let tooltipOptions = ViewAnnotationOptions(
-            geometry: pin.point,
+        tooltip.frame = CGRect(origin: .zero, size: CGSize(
             width: tooltipSize.width.rounded(.up), // with no rounding the text was truncated...
-            height: tooltipSize.height.rounded(.up),
-            allowOverlap: true,
-            anchor: .bottom,
-            offsetY: 53,
-            selected: true
-        )
+            height: tooltipSize.height.rounded(.up)
+        ))
+        let tooltipAnnotation = ViewAnnotation(coordinate: pin.point.coordinates, view: tooltip)
+        tooltipAnnotation.selected = true
+        tooltipAnnotation.allowOverlap = true
+        tooltipAnnotation.allowOverlapWithPuck = true
+        tooltipAnnotation.variableAnchors = [.init(anchor: .bottom, offsetY: 53)]
         tooltip.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
         UIView.animate(withDuration: 0.2) {
             tooltip.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
-        try? canvasVC.mapView.viewAnnotations.add(tooltip, options: tooltipOptions)
-        selectedPinTooltip = tooltip
+        canvasVC.mapView.viewAnnotations.add(tooltipAnnotation)
+        selectedPinTooltip = tooltipAnnotation
     }
 
     /// Show tooltip above the photo pin when it's placed initially on user location (over the blue dot)

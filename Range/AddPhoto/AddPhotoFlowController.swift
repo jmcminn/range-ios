@@ -576,7 +576,7 @@ class AddPhotoFlowController {
             let geometryId = generateRealmId()
             let isTask = (pinTypeOption.pinType == .task) || (pinTypeOption == .copyPin && pinToCopy?.status != nil)
             try await model.run(model.createCollaboration(
-                at: canvasContainer.annotationsMapView.cameraState.center,
+                at: canvasContainer.annotationsMapView.mapboxMap.cameraState.center,
                 in: model.currentCanvas,
                 withGeometryId: geometryId,
                 isTask: isTask,

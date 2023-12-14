@@ -5,7 +5,7 @@ import OSLog
 /// Conform PointAnnotation to WithId, so it can be used in Realm.updateArray (see Realm extension)
 extension PointAnnotation: WithId {}
 
-internal extension Style {
+internal extension StyleManager {
     /// Wrapper for addImage function that adds given pinImage and  logs all the errors instead of throwing
     func addPinImage(_ pinImage: PinImage) {
         let id = pinImage.id

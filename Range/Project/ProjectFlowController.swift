@@ -268,13 +268,15 @@ final class ProjectFlowController: UIViewController {
 
         canvasContainer.annotationsMapView.viewport.addStatusObserver(self)
         // visibility of location related controls depends on the location authorization
-        locationProvider.onAuthorizationUpdate = { [weak self] in
-            guard let self = self else { return }
-            self.controls.followMeModeButton?.isHidden = !self.followMeModeButtonVisible
-            self.controls.locationSimulationButton?.isHidden = !self.locationSimulationButtonVisible
-        }
+        // TODO: 2235
+//        locationProvider.onAuthorizationUpdate = { [weak self] in
+//            guard let self = self else { return }
+//            self.controls.followMeModeButton?.isHidden = !self.followMeModeButtonVisible
+//            self.controls.locationSimulationButton?.isHidden = !self.locationSimulationButtonVisible
+//        }
         // visibility of location related controls depends on the user proximity to canvas center
-        canvasContainer.annotationsMapView.location.addLocationConsumer(newConsumer: self)
+        // TODO: 2235
+//        canvasContainer.annotationsMapView.location.addLocationConsumer(newConsumer: self)
     }
 
     /// Observe when canvas source is switched to different canvas source
@@ -452,8 +454,9 @@ final class ProjectFlowController: UIViewController {
     var followMeModeButtonVisible: Bool {
         guard uiState == .default || uiState == .locationSimulation else { return false }
         guard model.currentCanvas.currentCanvasSource.type != .pdf else { return false }
-        guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
-            .authorizationStatus == .authorizedWhenInUse else { return false }
+        // TODO: 2235
+//        guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
+//            .authorizationStatus == .authorizedWhenInUse else { return false }
         guard let userLocation = canvasContainer.annotationsMapView.location.latestLocation else { return false }
         guard model.isLocationInCurrentCanvasSourceRange(userLocation.coordinate) else { return false }
         return true
@@ -463,8 +466,9 @@ final class ProjectFlowController: UIViewController {
         guard AppConfiguration.showDebugOptions else { return false }
         guard uiState == .default || uiState == .locationSimulation else { return false }
         guard model.currentCanvas.currentCanvasSource.type != .pdf else { return false }
-        guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
-            .authorizationStatus == .authorizedWhenInUse else { return false }
+        // TODO: 2235
+//        guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
+//            .authorizationStatus == .authorizedWhenInUse else { return false }
         return true
     }
 
@@ -584,7 +588,8 @@ extension ProjectFlowController: CanvasViewControllerDelegate {
     func canvasTapRecognized(at point: CGPoint) {
         guard uiState == .locationSimulation else { return }
         let mapLocation = canvasContainer.annotationsMapView.mapboxMap.coordinate(for: point)
-        locationProvider.setSimulatedLocation(mapLocation)
+        // TODO: 2235
+//        locationProvider.setSimulatedLocation(mapLocation)
     }
 }
 
@@ -613,7 +618,7 @@ extension ProjectFlowController {
 extension ProjectFlowController {
     /// Reports the current canvas and position so it can be displayed on other devices
     private func reportPresence() {
-        let coordinates = canvasContainer.annotationsMapView.cameraState.center
+        let coordinates = canvasContainer.annotationsMapView.mapboxMap.cameraState.center
         modelFirestoreSync.reportPresence(coordinates: coordinates)
     }
 

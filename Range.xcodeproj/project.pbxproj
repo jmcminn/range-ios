@@ -76,7 +76,6 @@
 		0A1FCF0229EEED87005EA59E /* SelectedUserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1FCF0129EEED87005EA59E /* SelectedUserCollectionViewCell.swift */; };
 		0A22CF1C2930CE4D0084332B /* CanvasFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A22CF1B2930CE4D0084332B /* CanvasFileLoader.swift */; };
 		0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A24A55828E192D800B5413F /* UIBezierPath+Corners.swift */; };
-		0A2599D12B0E5AB3007C1F3B /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 0A2599D02B0E5AB3007C1F3B /* Segment */; };
 		0A25D2B52AB8C02F00A331E1 /* adjacency_graphs.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A25D2AB2AB8C02F00A331E1 /* adjacency_graphs.json */; };
 		0A25D2B62AB8C02F00A331E1 /* DBPasswordStrengthMeterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2AC2AB8C02F00A331E1 /* DBPasswordStrengthMeterView.m */; };
 		0A25D2B72AB8C02F00A331E1 /* frequency_lists.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A25D2AD2AB8C02F00A331E1 /* frequency_lists.json */; };
@@ -455,6 +454,7 @@
 		0AE9A8B12B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B02B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift */; };
 		0AE9A8B32B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */; };
 		0AE9A8B52B0E2ADE00AF7E46 /* RecentTextSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B42B0E2ADE00AF7E46 /* RecentTextSelectorView.swift */; };
+		0AEC91AA2B2B0D9500AE2329 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 0AEC91A92B2B0D9500AE2329 /* Segment */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF11C972AA5C8C00022D44D /* GrayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF11C962AA5C8C00022D44D /* GrayButton.swift */; };
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
@@ -985,7 +985,7 @@
 				0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */,
 				0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */,
 				0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */,
-				0A2599D12B0E5AB3007C1F3B /* Segment in Frameworks */,
+				0AEC91AA2B2B0D9500AE2329 /* Segment in Frameworks */,
 				0A06241529534AA0004B6512 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				0ACF0F2A2ACC3E0A001AE5B0 /* FirebaseRemoteConfig in Frameworks */,
 			);
@@ -2211,7 +2211,7 @@
 				0A45BB052AAB3F7000B86B85 /* GoogleSignInSwift */,
 				0ACF0F292ACC3E0A001AE5B0 /* FirebaseRemoteConfig */,
 				0ACF0F2B2ACC3E0A001AE5B0 /* FirebaseRemoteConfigSwift */,
-				0A2599D02B0E5AB3007C1F3B /* Segment */,
+				0AEC91A92B2B0D9500AE2329 /* Segment */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -2296,7 +2296,7 @@
 				0ACE1966296C7AD400D223EB /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				0A45BB042AAB3F6F00B86B85 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
-				0A2599CF2B0E5AB3007C1F3B /* XCRemoteSwiftPackageReference "analytics-swift" */,
+				0AEC91A82B2B0D9500AE2329 /* XCRemoteSwiftPackageReference "analytics-swift" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -4385,14 +4385,6 @@
 				minimumVersion = 10.0.0;
 			};
 		};
-		0A2599CF2B0E5AB3007C1F3B /* XCRemoteSwiftPackageReference "analytics-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/segmentio/analytics-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.8;
-			};
-		};
 		0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
@@ -4430,7 +4422,7 @@
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 10.9.0;
+				minimumVersion = 11.0.0;
 			};
 		};
 		0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
@@ -4465,6 +4457,14 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		0AEC91A82B2B0D9500AE2329 /* XCRemoteSwiftPackageReference "analytics-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:segmentio/analytics-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -4497,11 +4497,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFunctions;
-		};
-		0A2599D02B0E5AB3007C1F3B /* Segment */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0A2599CF2B0E5AB3007C1F3B /* XCRemoteSwiftPackageReference "analytics-swift" */;
-			productName = Segment;
 		};
 		0A2F32F52837BF2F00D04A1C /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -4572,6 +4567,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseRemoteConfigSwift;
+		};
+		0AEC91A92B2B0D9500AE2329 /* Segment */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0AEC91A82B2B0D9500AE2329 /* XCRemoteSwiftPackageReference "analytics-swift" */;
+			productName = Segment;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

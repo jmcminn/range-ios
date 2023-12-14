@@ -20,6 +20,9 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     private let canvasFilters: CanvasFilters
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
+    /// PointAnnotation.userInfo doesn't allow to store Collaboration object, so we store the id and store the mapping (id=>collaboration) in the dictionary
+    private var collaborations = [String: Collaboration]()
+
     /// Token for notifications about changes in the canvas geometries
     private var geometriesNotificationToken: NotificationToken?
 
@@ -95,7 +98,9 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         PinPoint(fromPointAnnotation: pinsAnnotationManager.annotations.first(where: { $0.id == geometryId }))
     }
 
-    func findPin(closestToPoint point: CGPoint, searchSquareSize: CGFloat, completion: @escaping (PinPoint?) -> Void) {
+    func findPin(closestToPoint point: CGPoint, searchSquareSize: CGFloat,
+                 completion: @escaping (PinPoint?) -> Void)
+    {
         /// The rectangle used for searching pins, centered at given point with the side size equal to searchSquareSize
         let pinsSearchRect = CGRect(
             x: point.x - searchSquareSize / 2.0,
@@ -112,11 +117,12 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
                 return
             }
             let closestPin = queriedFeatures
-                .filter { $0.source == self.annotationsId }
-                .compactMap { self.convertFeatureToPin($0.feature) }
+                .filter { $0.queriedFeature.source == self.annotationsId }
+                .compactMap { self.convertFeatureToPin($0.queriedFeature.feature) }
                 .filter {
                     // skip pins not matching filters
-                    guard let collaboration = $0.userInfo?["collaboration"] as? Collaboration else { return false }
+                    guard let collaborationId = $0.userInfo?["collaborationId"] as? String,
+                          let collaboration = self.collaborations[collaborationId] else { return false }
                     return self.canvasFilters.match(collaboration)
                 }
                 .compactMap(PinPoint.init(fromPointAnnotation:))
@@ -224,8 +230,9 @@ extension GeometriesAnnotationPinsDisplay {
             return nil
         }
         var pin = PointAnnotation(id: geometry.id, point: point)
+        collaborations[collaboration.id] = collaboration
         pin.userInfo = [
-            "collaboration": collaboration,
+            "collaborationId": collaboration.id,
         ]
         setPointAnnotationSelection(&pin)
         return pin
@@ -247,7 +254,8 @@ extension GeometriesAnnotationPinsDisplay {
 
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPointAnnotationSelection(_ pin: inout PointAnnotation) {
-        guard let collaboration = pin.userInfo?["collaboration"] as? Collaboration else { return }
+        guard let collaborationId = pin.userInfo?["collaborationId"] as? String,
+              let collaboration = collaborations[collaborationId] else { return }
         let selected = pin.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
         let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
@@ -263,7 +271,7 @@ extension GeometriesAnnotationPinsDisplay {
         // show selected above non selected
         pin.symbolSortKey = selected ? 2 : 1
         // add the image to the style
-        canvasVC.mapView.mapboxMap.style.addPinImage(pinImage)
+        canvasVC.mapView.mapboxMap.addPinImage(pinImage)
         pin.iconImage = pinImage.id
         pin.iconOffset = [0, -pinOptions.offsetY]
         pin.iconAnchor = pinOptions.anchor._asIconAnchor()
@@ -307,10 +315,11 @@ extension GeometriesAnnotationPinsDisplay {
             // take any of the selected features with "pins" source
             guard case let .success(queriedFeatures) = result else { completion(nil); return }
             let feature = queriedFeatures
-                .compactMap { self.convertFeatureToPin($0.feature) }
+                .compactMap { self.convertFeatureToPin($0.queriedFeature.feature) }
                 .filter {
                     // skip pins not matching filters
-                    guard let collaboration = $0.userInfo?["collaboration"] as? Collaboration else { return false }
+                    guard let collaborationId = $0.userInfo?["collaborationId"] as? String,
+                          let collaboration = self.collaborations[collaborationId] else { return false }
                     return self.canvasFilters.match(collaboration)
                 }
                 .first
