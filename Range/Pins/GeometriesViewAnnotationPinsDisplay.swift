@@ -38,7 +38,7 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
 
     /// array of pinViews (for native view annotations) matching the current geometries (optional as creating pin view can fail if
     /// geometry is not a point)
-    private var pinViews: [PinView?] = []
+    private var pinAnnotations: [ViewAnnotation?] = []
 
     /// - Parameters:
     ///   - canvasViewController:    will add pins to this canvas
@@ -81,17 +81,18 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
         }
         geometriesNotificationToken?.invalidate()
 
-        pinViews.forEach {
-            if let view = $0 { canvasVC.mapView.viewAnnotations.remove(view) }
-        }
+        pinAnnotations.forEach { $0?.remove() }
     }
 
     @objc func canvasFiltersUpdated() {
-        updatePinViews()
+        updatePinAnnotations()
     }
 
     func pinForGeometryId(_ geometryId: String) -> PinPoint? {
-        PinPoint(fromPinView: pinViews.compacted().first(where: { $0.id == geometryId }))
+        let pinView = pinAnnotations
+            .compactMap { $0?.view as? PinView }
+            .first { $0.id == geometryId }
+        return PinPoint(fromPinView: pinView)
     }
 
     func findPin(closestToPoint point: CGPoint, searchSquareSize: CGFloat, completion: @escaping (PinPoint?) -> Void) {
@@ -104,11 +105,9 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
         )
 
         let pinView: PinView? =
-            pinViews.compacted()
-                .filter {
-                    // only currently visible
-                    !$0.isHidden
-                }
+            pinAnnotations.compacted()
+                .filter(\.visible)
+                .compactMap { $0.view as? PinView }
                 .filter {
                     // only the ones with the tip of the pin in the search rect
                     pinsSearchRect.contains(CGPoint(x: $0.frame.midX, y: $0.frame.maxY - 4))
@@ -158,18 +157,22 @@ extension GeometriesViewAnnotationPinsDisplay {
     func setSelectedPin(_ pinPoint: PinPoint?) {
         guard pinPoint?.id != selectedPin?.id else { return }
         selectedPin = pinPoint
-        updatePinViews()
+        updatePinAnnotations()
         onSelectedPinChange?(pinPoint)
     }
 
     /// Create and show initial pin views
     private func initiatePinViews(forGeometries geometries: Results<Geometry>) {
-        pinViews = geometries.map {
-            let pinView = PinView(geometry: $0)
-            pinView?.delegate = self
-            return pinView
-        }
-        pinViews.forEach { displayPinView(pinView: $0) }
+        pinAnnotations = geometries
+            .map {
+                if let pinView = PinView(geometry: $0) {
+                    pinView.delegate = self
+                    return createPinAnnotation(forPinView: pinView)
+                } else {
+                    return nil
+                }
+            }
+        pinAnnotations.compacted().forEach { canvasVC.mapView.viewAnnotations.add($0) }
     }
 
     private func updatePinViews(
@@ -180,89 +183,71 @@ extension GeometriesViewAnnotationPinsDisplay {
     ) {
         for deletionIndex in deletions.sorted(by: >) {
             // remove the existing element
-            guard deletionIndex < pinViews.count else { return }
-            if let view = pinViews[deletionIndex] {
-                canvasVC.mapView.viewAnnotations.remove(view)
+            guard deletionIndex < pinAnnotations.count else { return }
+            if let annotation = pinAnnotations[deletionIndex] {
+                annotation.remove()
             }
-            pinViews.remove(at: deletionIndex)
+            pinAnnotations.remove(at: deletionIndex)
         }
         for insertionIndex in insertions {
-            let pinView = PinView(geometry: geometries[insertionIndex])
-            pinView?.delegate = self
-            pinViews.insert(pinView, at: insertionIndex)
-            displayPinView(pinView: pinView)
+            if let pinView = PinView(geometry: geometries[insertionIndex]) {
+                pinView.delegate = self
+                let annotation = createPinAnnotation(forPinView: pinView)
+                pinAnnotations.insert(annotation, at: insertionIndex)
+                canvasVC.mapView.viewAnnotations.add(annotation)
+            } else {
+                pinAnnotations.insert(nil, at: insertionIndex)
+            }
         }
         for modificationIndex in modifications {
-            guard modificationIndex < pinViews.count else { return }
-            pinViews[modificationIndex]?.setGeometry(geometries[modificationIndex])
-            displayPinView(pinView: pinViews[modificationIndex], update: true)
+            guard modificationIndex < pinAnnotations.count else { return }
+            if let annotation = pinAnnotations[modificationIndex], let pinView = annotation.view as? PinView {
+                pinView.setGeometry(geometries[modificationIndex])
+                updatePinAnnotation(annotation)
+            }
         }
     }
 
-    /// Update the PinView for current selection state and add/update in mapbox view annotations
-    /// The selected pin is always on top because it has the ViewAnnotationOptions.selected set to true.
-    private func displayPinView(pinView: PinView?, update: Bool = false) {
-        guard let pinView = pinView else { return }
-        let collaboration = pinView.collaboration
+    /// Creates a new ViewAnnotation with given PinView and configures it using `updateAnnotation`
+    private func createPinAnnotation(forPinView pinView: PinView) -> ViewAnnotation {
+        let annotation = ViewAnnotation(coordinate: pinView.point.coordinates, view: pinView)
+        annotation.allowOverlap = true
+        annotation.allowOverlapWithPuck = true
+        updatePinAnnotation(annotation)
+        return annotation
+    }
+
+    /// Updates the ViewAnnotation and PinView properties based on selection, visibility and properties of pin geometry and collaboration
+    /// The selected pin is always on top because it has the ViewAnnotation.selected set to true.
+    private func updatePinAnnotation(_ annotation: ViewAnnotation) {
+        guard let pinView = annotation.view as? PinView else { return }
         let selected = pinView.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
-        let pinOptions = geometryPinDisplayOptionsProvider(collaboration, selected, anythingSelected)
+        let pinOptions = geometryPinDisplayOptionsProvider(pinView.collaboration, selected, anythingSelected)
         var visible = pinView.id != ignoredGeometryId
-        if !selected, !canvasFilters.match(collaboration) {
+        if !selected, !canvasFilters.match(pinView.collaboration) {
             // hide the pin if it doesn't match filters
             // BUT: only if it is not selected. So even if its filtered out, still show it if it's selected
             visible = false
         }
-        // The pinView doesn't animate the image properly when this code is run withing animation block, so disable
-        // animations for pinView updates.
-        UIView.performWithoutAnimation {
-            let newImage = pinOptions.pinImage.image
-            let imageSizeChanged: Bool
-            if let previousSize = pinView.image?.size, let newSize = newImage?.size, previousSize != newSize {
-                imageSizeChanged = true
-            } else {
-                imageSizeChanged = false
-            }
-            // if image size has changed for pin, we need to remove it and add again as the views
-            // cannot be updated live. The same applies to anchor/offset but currently the only
-            // case we have is that selecting/unselecting changes the pin (size) and also anchor/offset
-            // so it's enough to check for size change.
-            if imageSizeChanged {
-                canvasVC.mapView.viewAnnotations.remove(pinView)
-            }
-            pinView.image = newImage
-            pinView.sizeToFit()
-            pinView.alpha = pinOptions.alpha
-            let options = ViewAnnotationOptions(
-                geometry: pinView.point,
-                width: pinView.bounds.width,
-                height: pinView.bounds.height,
-                allowOverlap: true,
-                visible: visible,
-                anchor: pinOptions.anchor,
-                offsetY: pinOptions.offsetY,
-                selected: selected
-            )
-            do {
-                if update, !imageSizeChanged {
-                    try canvasVC.mapView.viewAnnotations.update(pinView, options: options)
-                } else {
-                    try canvasVC.mapView.viewAnnotations.add(pinView, options: options)
-                }
-            } catch {
-                Logger.mapbox.error(
-                    "error \(update ? "updating" : "adding") view annotation: \(error.localizedDescription, privacy: .public)"
-                )
-            }
+        let newImage = pinOptions.pinImage.image
+        let imageSizeChanged = if let previousSize = pinView.image?.size,
+                                  let newSize = newImage?.size,
+                                  previousSize != newSize { true } else { false }
+        pinView.image = newImage
+        pinView.alpha = pinOptions.alpha
+        annotation.selected = selected
+        annotation.visible = visible
+        annotation.annotatedFeature = .geometry(pinView.point)
+        annotation.variableAnchors = [.init(anchor: pinOptions.anchor, offsetY: pinOptions.offsetY)]
+        if imageSizeChanged {
+            annotation.setNeedsUpdateSize()
         }
     }
 
     /// Updates the visuals of currently presented PinView pins
-    private func updatePinViews() {
-        pinViews.forEach { pinView in
-            guard let pinView = pinView else { return }
-            displayPinView(pinView: pinView, update: true)
-        }
+    private func updatePinAnnotations() {
+        pinAnnotations.compacted().forEach { updatePinAnnotation($0) }
     }
 }
 
@@ -282,12 +267,11 @@ extension GeometriesViewAnnotationPinsDisplay: CanvasViewControllerDelegate, Pin
     /// select tapped pin
     func pinViewTapped(_ pinView: PinView) {
         guard selectionEnabled else { return }
-        if pinView.id != selectedPin?.id {
-            setSelectedPin(PinPoint(fromPinView: pinView))
-            canvasVC.animatePanAndZoom(
-                cameraCenter: pinView.point.coordinates,
-                mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
-            )
-        }
+        guard pinView.id != selectedPin?.id else { return }
+        setSelectedPin(PinPoint(fromPinView: pinView))
+        canvasVC.animatePanAndZoom(
+            cameraCenter: pinView.point.coordinates,
+            mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
+        )
     }
 }
