@@ -25,7 +25,7 @@ class CanvasContainerViewController: UIViewController {
         model: ProjectModel,
         canvasFilters: CanvasFilters,
         canvasFileLoader: CanvasFileLoader,
-        locationProvider: LocationProvider
+        locationProvider: LocationProvider & HeadingProvider
     ) async throws {
         canvasViewController = try await CanvasViewController(
             model: model,

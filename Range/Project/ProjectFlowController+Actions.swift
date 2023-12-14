@@ -751,9 +751,8 @@ extension ProjectFlowController {
 
 // MARK: - Location
 
-// TODO: 2235
-extension ProjectFlowController: ViewportStatusObserver { // }, LocationConsumer {
-    func locationUpdate(newLocation _: MapboxMaps.Location) {
+extension ProjectFlowController: ViewportStatusObserver, LocationObserver {
+    func onLocationUpdateReceived(for _: [MapboxMaps.Location]) {
         controls.followMeModeButton?.isHidden = !followMeModeButtonVisible
     }
 

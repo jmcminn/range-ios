@@ -118,9 +118,13 @@ class CanvasViewController: UIViewController {
     }
 
     /// Current location provider
-    private let locationProvider: LocationProvider
+    private let locationProvider: LocationProvider & HeadingProvider
 
-    init(model: ProjectModel, canvasFileLoader: CanvasFileLoader, locationProvider: LocationProvider) async throws {
+    init(
+        model: ProjectModel,
+        canvasFileLoader: CanvasFileLoader,
+        locationProvider: LocationProvider & HeadingProvider
+    ) async throws {
         self.model = model
         self.canvasFileLoader = canvasFileLoader
         self.locationProvider = locationProvider
@@ -462,8 +466,7 @@ class CanvasViewController: UIViewController {
             mapView.location.options.puckType = nil
         } else {
             // location support enabled
-            // TODO: 2235
-//            mapView.location.overrideLocationProvider(with: locationProvider)
+            mapView.location.override(provider: locationProvider)
             let blueDotPrototype = Puck2DConfiguration(
                 topImage: UIImage()
                     .addCircleBackground(
@@ -472,6 +475,7 @@ class CanvasViewController: UIViewController {
                 shadowImage: UIImage(named: "bluedot_background")
             )
             mapView.location.options.puckType = .puck2D(blueDotPrototype)
+            mapView.location.options.puckBearingEnabled = true
         }
     }
 

@@ -3,153 +3,111 @@ import Foundation
 import MapboxMaps
 
 /// Custom Mapbox LocationProvider based on AppleLocationProvider but with added supported for simulated location
-// TODO: 2235
-class RangeLocationProvider: LocationProvider {
-    public func addLocationObserver(for _: LocationObserver) {}
+/// It wraps the AppleLocationProvider and exposes it's heading handling as is. For location it intercepts the location updates and observers
+/// and adjusts the location when simulated location is provided, before passing the information to observers
+class RangeLocationProvider: NSObject, LocationProvider, HeadingProvider, LocationObserver, CLLocationManagerDelegate {
+    // Real location provider used for location, heading and authorization
+    private let appleLocationProvider = AppleLocationProvider()
 
-    public func removeLocationObserver(for _: LocationObserver) {}
+    // Last location received from AppleLocationProvider
+    private var lastLocation: MapboxMaps.Location?
+    // Observers registered for location updates
+    private var locationObservers = NSHashTable<LocationObserver>.weakObjects()
+
+    // for simulating the location
+    private var realLocationWhenSimulationStarted: CLLocationCoordinate2D?
+    private(set) var simulatedLocation: CLLocationCoordinate2D?
+
+    // We need the instance of CLLocationManager to listen for and expose the authorizationStatus.
+    // AppleLocationProvider is not exposing its instance...
+    private let locationManager: CLLocationManager
+    var onAuthorizationUpdate: (() -> Void)?
+    var authorizationStatus: CLAuthorizationStatus { locationManager.authorizationStatus }
+
+    override init() {
+        locationManager = CLLocationManager()
+        super.init()
+
+        locationManager.delegate = self
+        appleLocationProvider.addLocationObserver(for: self)
+    }
+
+    /// Set simulated location but still track the real location. Report the user movement but relative to the simulated location.
+    /// Setting the simulatedLocation resets the realLocationWhenSimulationStarted so we have the new reference point the next time
+    /// the real location is updated
+    func setSimulatedLocation(_ location: CLLocationCoordinate2D) {
+        realLocationWhenSimulationStarted = nil
+        simulatedLocation = location
+        // trigger the location update
+        onLocationUpdateReceived(for: [])
+    }
+
+    /// Get the heading from proxied AppleLocationProvider
+    var latestHeading: MapboxMaps.Heading? {
+        appleLocationProvider.latestHeading
+    }
+
+    /// Add heading observer to the proxied AppleLocationProvider
+    func add(headingObserver: MapboxMaps.HeadingObserver) {
+        appleLocationProvider.add(headingObserver: headingObserver)
+    }
+
+    /// Remove heading observer from the proxied AppleLocationProvider
+    func remove(headingObserver: MapboxMaps.HeadingObserver) {
+        appleLocationProvider.remove(headingObserver: headingObserver)
+    }
+
+    /// Store LocationObserver
+    public func addLocationObserver(for observer: LocationObserver) {
+        locationObservers.add(observer)
+    }
+
+    public func removeLocationObserver(for observer: LocationObserver) {
+        locationObservers.remove(observer)
+    }
 
     public func getLastObservedLocation() -> MapboxMaps.Location? {
-        nil
+        lastLocation
+    }
+
+    /// When location update received from AppleLocationProvider we update the locations if we currently simulate the location and
+    /// pass the updated ones to observers.
+    /// When not simulating the location the locations are passed as is to the observers
+    func onLocationUpdateReceived(for locations: [MapboxMaps.Location]) {
+        var locationsToReport = locations
+
+        if let simulatedLocation = simulatedLocation {
+            // the location is simulated
+            if let realLocationWhenSimulationStarted = realLocationWhenSimulationStarted {
+                // report location relative to the realLocationWhenSimulationStarted
+                locationsToReport = locations.map { location in
+                    let latDelta = location.coordinate.latitude - realLocationWhenSimulationStarted.latitude
+                    let lngDelta = location.coordinate.longitude - realLocationWhenSimulationStarted.longitude
+                    let location = CLLocation(
+                        latitude: simulatedLocation.latitude + latDelta,
+                        longitude: simulatedLocation.longitude + lngDelta
+                    )
+                    return MapboxMaps.Location(clLocation: location)
+                }
+            } else {
+                // report the simulated location but store the real one once when it's available
+                realLocationWhenSimulationStarted = locations.last?.coordinate
+                locationsToReport = [
+                    MapboxMaps.Location(clLocation:
+                        CLLocation(latitude: simulatedLocation.latitude,
+                                   longitude: simulatedLocation.longitude)),
+                ]
+            }
+        }
+
+        if let location = locationsToReport.last {
+            lastLocation = location
+        }
+
+        locationObservers.allObjects.forEach { $0.onLocationUpdateReceived(for: locationsToReport) }
+    }
+
+    func locationManagerDidChangeAuthorization(_: CLLocationManager) {
+        onAuthorizationUpdate?()
     }
 }
-
-// class RangeLocationProvider: NSObject {
-//    private var locationProvider: CLLocationManager
-//    private var privateLocationProviderOptions: LocationOptions {
-//        didSet {
-//            locationProvider.distanceFilter = privateLocationProviderOptions.distanceFilter
-//            locationProvider.desiredAccuracy = privateLocationProviderOptions.desiredAccuracy
-//            locationProvider.activityType = privateLocationProviderOptions.activityType
-//        }
-//    }
-//
-//    private weak var delegate: LocationProviderDelegate?
-//
-//    public var headingOrientation: CLDeviceOrientation {
-//        didSet { locationProvider.headingOrientation = headingOrientation }
-//    }
-//
-//    private var realLocationWhenSimulationStarted: CLLocationCoordinate2D?
-//    private(set) var simulatedLocation: CLLocationCoordinate2D?
-//
-//    var onAuthorizationUpdate: (() -> Void)?
-//
-//    override init() {
-//        locationProvider = CLLocationManager()
-//        privateLocationProviderOptions = LocationOptions()
-//        headingOrientation = locationProvider.headingOrientation
-//        super.init()
-//        locationProvider.delegate = self
-//    }
-//
-//    /// Set simulated location but still track the real location. Report the user movement but relative to the simulated location.
-//    /// Setting the simulatedLocation resets the realLocationWhenSimulationStarted so we have the new reference point the next time
-//    /// the real location is updated
-//    func setSimulatedLocation(_ location: CLLocationCoordinate2D) {
-//        simulatedLocation = location
-//        // trigger the location update
-//        locationManager(locationProvider, didUpdateLocations: [])
-//    }
-// }
-//
-// extension RangeLocationProvider: LocationProvider {
-//    public var locationProviderOptions: LocationOptions {
-//        get { privateLocationProviderOptions }
-//        set { privateLocationProviderOptions = newValue }
-//    }
-//
-//    public var authorizationStatus: CLAuthorizationStatus {
-//        locationProvider.authorizationStatus
-//    }
-//
-//    public var accuracyAuthorization: CLAccuracyAuthorization {
-//        locationProvider.accuracyAuthorization
-//    }
-//
-//    public var heading: CLHeading? {
-//        locationProvider.heading
-//    }
-//
-//    public func setDelegate(_ delegate: LocationProviderDelegate) {
-//        self.delegate = delegate
-//    }
-//
-//    public func requestAlwaysAuthorization() {
-//        locationProvider.requestAlwaysAuthorization()
-//    }
-//
-//    public func requestWhenInUseAuthorization() {
-//        locationProvider.requestWhenInUseAuthorization()
-//    }
-//
-//    public func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String) {
-//        locationProvider.requestTemporaryFullAccuracyAuthorization(withPurposeKey: purposeKey)
-//    }
-//
-//    public func startUpdatingLocation() {
-//        locationProvider.startUpdatingLocation()
-//    }
-//
-//    public func stopUpdatingLocation() {
-//        locationProvider.stopUpdatingLocation()
-//    }
-//
-//    public func startUpdatingHeading() {
-//        locationProvider.startUpdatingHeading()
-//    }
-//
-//    public func stopUpdatingHeading() {
-//        locationProvider.stopUpdatingHeading()
-//    }
-//
-//    public func dismissHeadingCalibrationDisplay() {
-//        locationProvider.dismissHeadingCalibrationDisplay()
-//    }
-// }
-//
-// extension RangeLocationProvider: CLLocationManagerDelegate {
-//    public func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        if let simulatedLocation = simulatedLocation {
-//            // the location is simulated
-//            if let realLocationWhenSimulationStarted = realLocationWhenSimulationStarted,
-//               let realLocation = locations.last
-//            {
-//                // report location relative to the realLocationWhenSimulationStarted
-//                let latDelta = realLocation.coordinate.latitude - realLocationWhenSimulationStarted.latitude
-//                let lngDelta = realLocation.coordinate.longitude - realLocationWhenSimulationStarted.longitude
-//                let location = CLLocation(
-//                    latitude: simulatedLocation.latitude + latDelta,
-//                    longitude: simulatedLocation.longitude + lngDelta
-//                )
-//                delegate?.locationProvider(self, didUpdateLocations: [location])
-//            } else {
-//                // report the simulated location but store the real one once when it's available
-//                realLocationWhenSimulationStarted = locations.last?.coordinate
-//                let location = CLLocation(latitude: simulatedLocation.latitude, longitude: simulatedLocation.longitude)
-//                delegate?.locationProvider(self, didUpdateLocations: [location])
-//            }
-//
-//        } else {
-//            // no simulation
-//            delegate?.locationProvider(self, didUpdateLocations: locations)
-//        }
-//    }
-//
-//    public func locationManager(_: CLLocationManager, didUpdateHeading heading: CLHeading) {
-//        delegate?.locationProvider(self, didUpdateHeading: heading)
-//    }
-//
-//    public func locationManager(_: CLLocationManager, didFailWithError error: Error) {
-//        delegate?.locationProvider(self, didFailWithError: error)
-//    }
-//
-//    public func locationManagerDidChangeAuthorization(_: CLLocationManager) {
-//        delegate?.locationProviderDidChangeAuthorization(self)
-//        onAuthorizationUpdate?()
-//    }
-//
-//    public func locationManagerShouldDisplayHeadingCalibration(_: CLLocationManager) -> Bool {
-//        false
-//    }
-// }
