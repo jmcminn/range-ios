@@ -1,5 +1,8 @@
 import SwiftUI
 
+/// A custom view for Translucent button.
+/// Not implemented as one of the `ButtonStyles` as I couldn't get the button to react to the whole width taps (where it's transparent too)
+/// when using ButtonStyle
 struct TranslucentButton: View {
     var text: String
     var clicked: () -> Void /// use closure for callback

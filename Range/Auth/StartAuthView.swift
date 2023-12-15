@@ -91,7 +91,13 @@ struct StartAuthView: View {
                         .padding(.bottom, 48)
 
                     VStack(alignment: .center, spacing: 24) {
-                        GrayButton(text: "Continue with Google", imageName: "Google", clicked: googleLoginAction)
+                        Button(action: googleLoginAction) {
+                            HStack {
+                                Image("Google")
+                                Text("Continue with Google")
+                            }
+                        }
+                        .buttonStyle(GrayButtonStyle())
 
                         HStack(alignment: .center, spacing: 12) {
                             Rectangle().frame(height: 1).foregroundColor(.dynamic(.Neutral_07))
@@ -101,9 +107,11 @@ struct StartAuthView: View {
                         .padding(0)
                         .frame(maxWidth: .infinity, alignment: .center)
 
-                        GrayButton(text: "Log in", clicked: loginAction)
+                        Button("Log in", action: loginAction)
+                            .buttonStyle(GrayButtonStyle())
 
-                        BlueGradientButton(text: "Sign up", clicked: signUpAction)
+                        Button("Sign up", action: signUpAction)
+                            .buttonStyle(BlueGradientButtonStyle())
 
                         Text(descriptionAttributedString())
                             .font(.caption)

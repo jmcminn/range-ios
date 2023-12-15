@@ -102,10 +102,11 @@ struct EmailSignUpView: View {
                         .font(.title3)
                         .accentColor(Color.Secondary_02)
 
-                        BlueGradientButton(text: "Continue", clicked: {
+                        Button("Continue") {
                             focusedField = nil
                             continueAction()
-                        })
+                        }
+                        .buttonStyle(BlueGradientButtonStyle())
 
                         Text(descriptionAttributedString())
                             .font(.caption)

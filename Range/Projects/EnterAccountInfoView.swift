@@ -106,10 +106,11 @@ struct EnterAccountInfoView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .multilineTextAlignment(.leading)
 
-                        BlueGradientButton(text: "Create Account", clicked: {
+                        Button("Create Account") {
                             focusedField = nil
                             createAccountAction()
-                        })
+                        }
+                        .buttonStyle(BlueGradientButtonStyle())
 
                         TranslucentButton(text: "Log out", clicked: logOutAction)
                     }

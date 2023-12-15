@@ -83,10 +83,11 @@ struct ResetPasswordView: View {
                         .font(.title3)
                         .accentColor(Color.Secondary_02)
 
-                        BlueGradientButton(text: "Reset Password", clicked: {
+                        Button("Reset Password") {
                             focusedField = nil
                             updatePasswordAction()
-                        })
+                        }
+                        .buttonStyle(BlueGradientButtonStyle())
                     }
                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
                     .disabled(viewModel.isProcessing)

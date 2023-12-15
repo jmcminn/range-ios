@@ -3,6 +3,11 @@ import UIKit
 
 /// Round button with an image that changes its shadow when pressed
 class RoundShadowButton: UIControl {
+    enum Variant {
+        case darkBlurred, blue
+    }
+
+    private let variant: Variant
     private let image: UIImage
     private let selectedImage: UIImage?
     private let size: CGFloat
@@ -14,25 +19,37 @@ class RoundShadowButton: UIControl {
     }
 
     ///
-    init(image: UIImage, selectedImage: UIImage? = nil, size: CGFloat = 48, imageTintColor: UIColor = .Neutral_04) {
+    init(
+        image: UIImage,
+        selectedImage: UIImage? = nil,
+        size: CGFloat = 48,
+        imageTintColor: UIColor = .Neutral_04,
+        variant: Variant = .darkBlurred
+    ) {
+        self.variant = variant
         self.image = image
         self.selectedImage = selectedImage
         self.size = size
         self.imageTintColor = imageTintColor
         super.init(frame: .zero)
 
-        backgroundColor = .clear
         layer.cornerRadius = size / 2.0
         layer.borderWidth = 1
 
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.isUserInteractionEnabled = false
-        blurEffectView.layer.cornerRadius = layer.cornerRadius
-        blurEffectView.clipsToBounds = true
-        addSubview(blurEffectView)
-        blurEffectView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        if variant == .darkBlurred {
+            backgroundColor = .clear
+            let blurEffect = UIBlurEffect(style: .dark)
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            blurEffectView.isUserInteractionEnabled = false
+            blurEffectView.layer.cornerRadius = layer.cornerRadius
+            blurEffectView.clipsToBounds = true
+            addSubview(blurEffectView)
+            blurEffectView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        } else {
+            backgroundColor = .Primary_Blue_04
+            layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
         }
 
         setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
@@ -61,6 +78,7 @@ class RoundShadowButton: UIControl {
 
     /// Update colors that do not automatically adjust when appearance changes
     private func updateColors() {
+        guard variant == .darkBlurred else { return }
         if traitCollection.userInterfaceStyle == .dark {
             // make it white in dark mode "so it doesn't get lost in the grid background"
             layer.borderColor = UIColor(white: 1, alpha: 0.2).cgColor
@@ -73,6 +91,9 @@ class RoundShadowButton: UIControl {
     override var isHighlighted: Bool {
         didSet {
             layer.shadowOpacity = isHighlighted ? 0.4 : 0.1
+            if variant == .blue {
+                backgroundColor = isHighlighted ? .Primary_Blue_04._highlightColor : .Primary_Blue_04
+            }
         }
     }
 

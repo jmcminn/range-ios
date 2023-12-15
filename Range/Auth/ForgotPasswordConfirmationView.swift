@@ -49,7 +49,8 @@ struct ForgotPasswordConfirmationView: View {
 
                     Spacer()
 
-                    BlueGradientButton(text: "Back to sign in", clicked: backToSignInAction)
+                    Button("Back to sign in", action: backToSignInAction)
+                        .buttonStyle(BlueGradientButtonStyle())
                 }
                 .multilineTextAlignment(.center)
                 .padding(20)

@@ -11,11 +11,13 @@ struct ProjectsEmptyStateView: View {
         case .noOrganization:
             return "You do not belong to an Organization. Organizations are first created in the desktop web app, where you will also create your first project.\n\nLog in at app.range.io/login on a dekstop computer to get started."
         case .noProjectsAdmin:
-            return "Your Organization currently has no projects. Projects are first created in the web app and then will appear here."
+            return "Your Organization has no projects. Create a new project to get started."
         case .noProjectsCollaborator:
             return "Your Organization admins have been notified and will be assigning you projects which will show up here."
         }
     }
+
+    let createProjectAction: () -> Void
 
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
@@ -28,6 +30,11 @@ struct ProjectsEmptyStateView: View {
             Text(stateDescription)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.dynamic(.Neutral_05))
+
+            if state == .noProjectsAdmin {
+                Button("Create Project", action: createProjectAction)
+                    .buttonStyle(BlueButtonStyle())
+            }
 
             VStack(alignment: .center, spacing: 16) {
                 Text("Learn about Range")
@@ -84,6 +91,8 @@ struct ProjectsEmptyStateView: View {
 
 struct ProjectsEmptyStateView_Previews: PreviewProvider {
     static var previews: some View {
-        ProjectsEmptyStateView(state: .noOrganization)
+        ProjectsEmptyStateView(state: .noOrganization, createProjectAction: {})
+        ProjectsEmptyStateView(state: .noProjectsAdmin, createProjectAction: {})
+        ProjectsEmptyStateView(state: .noProjectsCollaborator, createProjectAction: {})
     }
 }

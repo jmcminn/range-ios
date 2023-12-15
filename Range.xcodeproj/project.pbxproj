@@ -380,7 +380,6 @@
 		0AA424322913C6F40088E2B1 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424312913C6F40088E2B1 /* Action.swift */; };
 		0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424332913C7030088E2B1 /* ActionCommand.swift */; };
 		0AA42437291431470088E2B1 /* PendingActionsModelImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */; };
-		0AA438512AA1F91C0015B278 /* BlueGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */; };
 		0AA5A1212965904300E19ECA /* UpdateGeometryLocationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */; };
 		0AA5A123296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */; };
 		0AAB2DE32AFC006B0017A12D /* ArrowAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB2DE22AFC006B0017A12D /* ArrowAnnotation.swift */; };
@@ -455,8 +454,9 @@
 		0AE9A8B32B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */; };
 		0AE9A8B52B0E2ADE00AF7E46 /* RecentTextSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B42B0E2ADE00AF7E46 /* RecentTextSelectorView.swift */; };
 		0AEC91AA2B2B0D9500AE2329 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 0AEC91A92B2B0D9500AE2329 /* Segment */; };
+		0AEC91AE2B2C910D00AE2329 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91AD2B2C910D00AE2329 /* ButtonStyles.swift */; };
+		0AEC91B02B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91AF2B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
-		0AF11C972AA5C8C00022D44D /* GrayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF11C962AA5C8C00022D44D /* GrayButton.swift */; };
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
 		0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
@@ -874,7 +874,6 @@
 		0AA424312913C6F40088E2B1 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		0AA424332913C7030088E2B1 /* ActionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCommand.swift; sourceTree = "<group>"; };
 		0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModelImpl.swift; sourceTree = "<group>"; };
-		0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueGradientButton.swift; sourceTree = "<group>"; };
 		0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommand.swift; sourceTree = "<group>"; };
 		0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateGeometryLocationCommandTest.swift; sourceTree = "<group>"; };
 		0AAB2DE22AFC006B0017A12D /* ArrowAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowAnnotation.swift; sourceTree = "<group>"; };
@@ -944,8 +943,9 @@
 		0AE9A8B02B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Annotations.swift"; sourceTree = "<group>"; };
 		0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnotationsEditor+TextInputAccessoryView.swift"; sourceTree = "<group>"; };
 		0AE9A8B42B0E2ADE00AF7E46 /* RecentTextSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentTextSelectorView.swift; sourceTree = "<group>"; };
+		0AEC91AD2B2C910D00AE2329 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
+		0AEC91AF2B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectsFlowController+Actions.swift"; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
-		0AF11C962AA5C8C00022D44D /* GrayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayButton.swift; sourceTree = "<group>"; };
 		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
 		0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCollaborationTableViewCell.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
@@ -1184,9 +1184,8 @@
 		0A144F4A2A4C575E000F7593 /* ViewsSwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				0AEC91AD2B2C910D00AE2329 /* ButtonStyles.swift */,
 				0A45BB022AAB2B0E00B86B85 /* BackButton.swift */,
-				0AA438502AA1F91C0015B278 /* BlueGradientButton.swift */,
-				0AF11C962AA5C8C00022D44D /* GrayButton.swift */,
 				0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */,
 				0A83D9112AB33A54003A8DCE /* DropdownButton.swift */,
 				0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */,
@@ -2043,6 +2042,7 @@
 			isa = PBXGroup;
 			children = (
 				0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */,
+				0AEC91AF2B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift */,
 				0A7A537C293FB3690093D913 /* ProjectsViewController.swift */,
 				0A187AE62A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift */,
 				0A7A537E293FB8F70093D913 /* ProjectTableViewCell.swift */,
@@ -2476,6 +2476,7 @@
 				0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
 				0A966F9E28DDEAF100E50284 /* CommentFeedItemCell.swift in Sources */,
+				0AEC91AE2B2C910D00AE2329 /* ButtonStyles.swift in Sources */,
 				0A83D9122AB33A54003A8DCE /* DropdownButton.swift in Sources */,
 				0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */,
 				0AD78E002AB9869700710260 /* ProjectsEmptyStateView.swift in Sources */,
@@ -2500,7 +2501,6 @@
 				0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */,
 				0A82A8E6292178E000A4BBCE /* CreateCollaborationCommand.swift in Sources */,
 				0A05312B2937B2FA00738BA3 /* ImageMediaCollectionViewCell.swift in Sources */,
-				0AF11C972AA5C8C00022D44D /* GrayButton.swift in Sources */,
 				0AC12BE72B14DA86009C63FA /* RangeLocationProvider.swift in Sources */,
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */,
@@ -2565,7 +2565,6 @@
 				0A58DDBD299FC464001AD7B4 /* DocumentThumbnailGenerator.swift in Sources */,
 				0A9341C629A8A50D006166C1 /* PillView.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
-				0AA438512AA1F91C0015B278 /* BlueGradientButton.swift in Sources */,
 				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
 				0A34073529C89E41007299A7 /* UIFont.TextStyle+Extensions.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
@@ -2579,6 +2578,7 @@
 				0A4DC78527F490CA00712518 /* Canvas.swift in Sources */,
 				0AFCD61A2939285F004843AA /* String+Size.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
+				0AEC91B02B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift in Sources */,
 				0A4D11BB29A5242500D681E7 /* URL+Extensions.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A2B3F612AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift in Sources */,

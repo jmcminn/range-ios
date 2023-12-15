@@ -196,7 +196,9 @@ class ProjectsFlowController: UINavigationController {
             }
             projectsNavC.setViewControllers([projectsVC], animated: false)
         } else {
-            let emptyStateView = ProjectsEmptyStateView(state: .noOrganization)
+            let emptyStateView = ProjectsEmptyStateView(state: .noOrganization, createProjectAction: { [weak self] in
+                self?.createProjectAction()
+            })
             projectsNavC.setViewControllers([UIHostingController(rootView: emptyStateView)], animated: false)
         }
     }
@@ -520,4 +522,10 @@ extension ProjectsFlowController {
             }
         }
     }
+}
+
+// MARK: - Create project
+
+extension ProjectsFlowController {
+    func startCreateProjectFlow() {}
 }

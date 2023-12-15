@@ -67,10 +67,11 @@ struct ForgotPasswordView: View {
                         .font(.title3)
                         .accentColor(Color.Secondary_02)
 
-                        BlueGradientButton(text: "Send me the link", clicked: {
+                        Button("Send me the link") {
                             focusedField = nil
                             sendLinkAction()
-                        })
+                        }
+                        .buttonStyle(BlueGradientButtonStyle())
                     }
                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
                     .disabled(viewModel.isProcessing)

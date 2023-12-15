@@ -90,10 +90,11 @@ struct EmailAuthView: View {
                         .font(.title3)
                         .accentColor(Color.Secondary_02)
 
-                        BlueGradientButton(text: "Log In", clicked: {
+                        Button("Log In") {
                             focusedField = nil
                             authenticateAction()
-                        })
+                        }
+                        .buttonStyle(BlueGradientButtonStyle())
 
                         TranslucentButton(text: "Forgot password?", clicked: {
                             focusedField = nil

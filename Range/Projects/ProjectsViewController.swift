@@ -15,6 +15,12 @@ class ProjectsViewController: UIViewController {
     /// label shown as title view for navigation bar
     private let titleLabel = UILabel()
 
+    private let createProjectButton = RoundShadowButton(
+        image: UIImage(systemName: "plus") ?? UIImage(),
+        imageTintColor: .white,
+        variant: .blue
+    )
+
     var onProjectSelected: ((ProjectSummary) -> Void)?
     var onOrganizationButtonTap: (() -> Void)?
     var onViewWillAppear: (() -> Void)?
@@ -77,6 +83,7 @@ class ProjectsViewController: UIViewController {
         setupOrganizationSelectorButton()
         setupTitleView()
         updateTitleLabel()
+        setupCreateProjectButton()
 
         observeProjects()
         tableView.reloadData()
@@ -142,6 +149,19 @@ class ProjectsViewController: UIViewController {
         tableView.register(ProjectTableViewCell.self, forCellReuseIdentifier: "ProjectCell")
     }
 
+    private func setupCreateProjectButton() {
+        createProjectButton.addTarget(
+            nil,
+            action: #selector(ProjectsFlowActions.createProjectAction),
+            for: .touchUpInside
+        )
+        view.addSubview(createProjectButton)
+        createProjectButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-12)
+        }
+    }
+
     /// Setup custom navigationItem.titleView with UILabel subview so we can set attributedText for title
     private func setupTitleView() {
         let titleView = UIView()
@@ -179,6 +199,7 @@ class ProjectsViewController: UIViewController {
         if projects.isEmpty {
             navigationItem.searchController = nil
             tableView.isHidden = true
+            createProjectButton.isHidden = true
 
             if let emptyStateViewController = emptyStateViewController {
                 remove(childController: emptyStateViewController)
@@ -186,7 +207,14 @@ class ProjectsViewController: UIViewController {
             let emptyState: ProjectsEmptyStateView.State = model.currentUser.organizationRole == .Admin
                 ? .noProjectsAdmin
                 : .noProjectsCollaborator
-            let emptyStateView = ProjectsEmptyStateView(state: emptyState)
+            let emptyStateView = ProjectsEmptyStateView(state: emptyState, createProjectAction: { [weak self] in
+                UIApplication.shared.sendAction(
+                    #selector(ProjectsFlowActions.createProjectAction),
+                    to: nil,
+                    from: self,
+                    for: nil
+                )
+            })
             emptyStateViewController = UIHostingController(rootView: emptyStateView)
             add(childController: emptyStateViewController!)
             emptyStateViewController!.view.snp.makeConstraints { make in
@@ -195,6 +223,7 @@ class ProjectsViewController: UIViewController {
         } else {
             navigationItem.searchController = searchController
             tableView.isHidden = false
+            createProjectButton.isHidden = false
             if let emptyStateViewController = emptyStateViewController {
                 remove(childController: emptyStateViewController)
             }
