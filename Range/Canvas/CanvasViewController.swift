@@ -413,7 +413,8 @@ class CanvasViewController: UIViewController {
 
         mapView.ornaments.options.attributionButton.visibility = .hidden
         mapView.ornaments.options.scaleBar.visibility = .hidden
-        mapView.ornaments.options.compass.margins = CGPoint(x: 8, y: 48)
+        // compass y position is hardcoded to be below top bar and canvas name banner
+        mapView.ornaments.options.compass.margins = CGPoint(x: 8, y: 86)
 
         mapView.isUserInteractionEnabled = true
         view.addSubview(mapView)
