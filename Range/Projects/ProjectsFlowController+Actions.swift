@@ -10,6 +10,11 @@ import Foundation
 
 extension ProjectsFlowController: ProjectsFlowActions {
     func createProjectAction() {
-        print("TODO: 2240")
+        let createProjectFC = CreateProjectFlowController()
+        createProjectFC.onCancelled = { [weak createProjectFC] in
+            createProjectFC?.dismiss(animated: true)
+        }
+        createProjectFC.modalPresentationStyle = .fullScreen
+        present(createProjectFC, animated: true)
     }
 }

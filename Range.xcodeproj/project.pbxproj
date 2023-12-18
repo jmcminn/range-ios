@@ -344,6 +344,7 @@
 		0A88730B2B299B24006DF885 /* RecentAnnotationsSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88730A2B299B24006DF885 /* RecentAnnotationsSelectorView.swift */; };
 		0A88730D2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88730C2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift */; };
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
+		0A8CC5CD2B30920D00D26716 /* RepresentedSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */; };
 		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
 		0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */; };
 		0A9341C229A7D4B9006166C1 /* CopyPinCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */; };
@@ -456,6 +457,8 @@
 		0AEC91AA2B2B0D9500AE2329 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 0AEC91A92B2B0D9500AE2329 /* Segment */; };
 		0AEC91AE2B2C910D00AE2329 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91AD2B2C910D00AE2329 /* ButtonStyles.swift */; };
 		0AEC91B02B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91AF2B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift */; };
+		0AEC91B32B2CA24A00AE2329 /* CreateProjectFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91B22B2CA24A00AE2329 /* CreateProjectFlowController.swift */; };
+		0AEC91B52B2CABCB00AE2329 /* CreateProjectStep1View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91B42B2CABCB00AE2329 /* CreateProjectStep1View.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
 		0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */; };
@@ -837,6 +840,7 @@
 		0A88730A2B299B24006DF885 /* RecentAnnotationsSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentAnnotationsSelectorView.swift; sourceTree = "<group>"; };
 		0A88730C2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentAnnotationViewRepresentable.swift; sourceTree = "<group>"; };
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
+		0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentedSearchView.swift; sourceTree = "<group>"; };
 		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
 		0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPinCardViewController.swift; sourceTree = "<group>"; };
@@ -945,6 +949,8 @@
 		0AE9A8B42B0E2ADE00AF7E46 /* RecentTextSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentTextSelectorView.swift; sourceTree = "<group>"; };
 		0AEC91AD2B2C910D00AE2329 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		0AEC91AF2B2C9C7500AE2329 /* ProjectsFlowController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectsFlowController+Actions.swift"; sourceTree = "<group>"; };
+		0AEC91B22B2CA24A00AE2329 /* CreateProjectFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectFlowController.swift; sourceTree = "<group>"; };
+		0AEC91B42B2CABCB00AE2329 /* CreateProjectStep1View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectStep1View.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
 		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
 		0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCollaborationTableViewCell.swift; sourceTree = "<group>"; };
@@ -1189,6 +1195,7 @@
 				0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */,
 				0A83D9112AB33A54003A8DCE /* DropdownButton.swift */,
 				0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */,
+				0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */,
 			);
 			path = ViewsSwiftUI;
 			sourceTree = "<group>";
@@ -1624,6 +1631,7 @@
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0ABFD8B528F00A46008CDA74 /* Comment */,
 				0A9341C029A7D41C006166C1 /* CopyPin */,
+				0AEC91B12B2CA23600AE2329 /* CreateProject */,
 				0A7121B0290BB8330013E2F8 /* DatePicker */,
 				0A4DC77F27F48FBA00712518 /* Extensions */,
 				0A147E81294E268100B5833A /* Feed */,
@@ -2141,6 +2149,15 @@
 			path = MediaStore;
 			sourceTree = "<group>";
 		};
+		0AEC91B12B2CA23600AE2329 /* CreateProject */ = {
+			isa = PBXGroup;
+			children = (
+				0AEC91B22B2CA24A00AE2329 /* CreateProjectFlowController.swift */,
+				0AEC91B42B2CABCB00AE2329 /* CreateProjectStep1View.swift */,
+			);
+			path = CreateProject;
+			sourceTree = "<group>";
+		};
 		0AF722AD296EE61900A18F75 /* TaskList */ = {
 			isa = PBXGroup;
 			children = (
@@ -2377,6 +2394,7 @@
 				0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */,
 				0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
+				0AEC91B52B2CABCB00AE2329 /* CreateProjectStep1View.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */,
 				0AC89D7A290944EC00D3CCA1 /* UpdateCommentTextCommand.swift in Sources */,
@@ -2404,6 +2422,7 @@
 				0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
+				0A8CC5CD2B30920D00D26716 /* RepresentedSearchView.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A73938D2A6428630079A7FB /* AnnotationsRenderer.swift in Sources */,
@@ -2582,6 +2601,7 @@
 				0A4D11BB29A5242500D681E7 /* URL+Extensions.swift in Sources */,
 				0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */,
 				0A2B3F612AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift in Sources */,
+				0AEC91B32B2CA24A00AE2329 /* CreateProjectFlowController.swift in Sources */,
 				0A4D0D352805B618007A249F /* CardDragging.swift in Sources */,
 				0A6DB6A3292E08700017D511 /* TextCardViewController.swift in Sources */,
 				0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */,

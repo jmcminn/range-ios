@@ -2,6 +2,16 @@
 import Foundation
 import SwiftUI
 
+/// Extensions for better syntax of applying a style to a button (so instead of `.buttonStyle(GrayButtonStyle())` one
+/// can use `.buttonStyle(._gray)`
+extension ButtonStyle where Self == BlueButtonStyle {
+    static var _blue: BlueButtonStyle { BlueButtonStyle() }
+}
+
+extension ButtonStyle where Self == GrayButtonStyle {
+    static var _gray: GrayButtonStyle { GrayButtonStyle() }
+}
+
 struct BlueButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

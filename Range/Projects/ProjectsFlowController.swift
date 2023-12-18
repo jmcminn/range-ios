@@ -523,9 +523,3 @@ extension ProjectsFlowController {
         }
     }
 }
-
-// MARK: - Create project
-
-extension ProjectsFlowController {
-    func startCreateProjectFlow() {}
-}
