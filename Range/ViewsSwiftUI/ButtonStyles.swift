@@ -13,17 +13,23 @@ extension ButtonStyle where Self == GrayButtonStyle {
 }
 
 struct BlueButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) var isEnabled
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 16)
             .padding(.vertical, 13)
             .frame(maxWidth: .infinity, alignment: .center)
-            .foregroundStyle(.white)
-            .background(configuration.isPressed ? Color.Primary_Blue_06 : Color.Primary_Blue_04)
+            .foregroundStyle(isEnabled ? .white : .white.opacity(0.5))
+            .background(
+                isEnabled
+                    ? (configuration.isPressed ? Color.Primary_Blue_06 : Color.Primary_Blue_04)
+                    : Color.Primary_Blue_02
+            )
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.Primary_Blue_06, lineWidth: 1)
+                    .stroke(isEnabled ? Color.Primary_Blue_06 : Color.Primary_Blue_02, lineWidth: 1)
             )
     }
 }

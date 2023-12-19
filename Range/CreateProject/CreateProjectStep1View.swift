@@ -2,6 +2,9 @@
 import SwiftUI
 
 struct CreateProjectStep1View: View {
+    @State var viewport: Viewport = .followPuck(zoom: 16)
+    @ObservedObject var model: CreateProjectViewModel
+    let onMapTap: (CLLocationCoordinate2D) -> Void
     let cancelAction: () -> Void
     let nextAction: () -> Void
 
@@ -14,10 +17,28 @@ struct CreateProjectStep1View: View {
         .bearingImage(nil)
 
     private var mapView: some View {
-        Map(initialViewport: .followPuck(zoom: 16)) {
+        Map(viewport: $viewport) {
             puck2D
+
+            if let location = model.location {
+                MapViewAnnotation(coordinate: location) {
+                    Image("project_location_pin")
+                }
+                .selected(true)
+                .variableAnchors([
+                    ViewAnnotationAnchorConfig(anchor: .center, offsetY: 29),
+                ])
+                .allowOverlap(true)
+                .allowOverlapWithPuck(true)
+            }
         }
         .mapStyle(mapStyle)
+        .onMapTapGesture { context in
+            onMapTap(context.coordinate)
+            withViewportAnimation(.easeIn(duration: 0.5)) {
+                viewport = .camera(center: context.coordinate)
+            }
+        }
         .ignoresSafeArea()
     }
 
@@ -53,6 +74,7 @@ struct CreateProjectStep1View: View {
                     .buttonStyle(._gray)
                 Button("Next", action: nextAction)
                     .buttonStyle(._blue)
+                    .disabled(model.location == nil)
             }
             .padding(16)
             .background(Color.dynamic(.Neutral_10))
@@ -65,9 +87,16 @@ struct CreateProjectStep1View: View {
             topBar
             bottomBar
         }
+        .navigationBarHidden(true)
     }
 }
 
 #Preview {
-    CreateProjectStep1View(cancelAction: {}, nextAction: {})
+    CreateProjectStep1View(model: CreateProjectViewModel(), onMapTap: { _ in }, cancelAction: {}, nextAction: {})
+}
+
+#Preview("with address") {
+    let model = CreateProjectViewModel()
+    model.address = "25 Harstene Drive, Redwood City"
+    return CreateProjectStep1View(model: model, onMapTap: { _ in }, cancelAction: {}, nextAction: {})
 }
