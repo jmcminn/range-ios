@@ -10,7 +10,8 @@ import Foundation
 
 extension ProjectsFlowController: ProjectsFlowActions {
     func createProjectAction() {
-        let createProjectFC = CreateProjectFlowController()
+        guard let organizationModel = userModel.currentOrganizationModel else { return }
+        let createProjectFC = CreateProjectFlowController(organizationModel)
         createProjectFC.onCancelled = { [weak createProjectFC] in
             createProjectFC?.dismiss(animated: true)
         }

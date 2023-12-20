@@ -3,6 +3,7 @@ import SwiftUI
 struct DropdownButton: View {
     // displayed when text is nil
     var placeholderText: String
+    var font: Font = .title3.bold()
     @Binding var text: String?
     var clicked: () -> Void /// use closure for callback
 
@@ -14,14 +15,14 @@ struct DropdownButton: View {
                         Text(text).frame(maxWidth: .infinity, alignment: .leading)
                         Image(systemName: "chevron.down")
                     }
-                    .font(.title3.bold())
+                    .font(font)
                     .foregroundColor(.dynamic(.Neutral_04))
                 } else {
                     Group {
                         Text(placeholderText).frame(maxWidth: .infinity, alignment: .leading)
                         Image(systemName: "chevron.down")
                     }
-                    .font(.title3.bold())
+                    .font(font)
                     .foregroundColor(.dynamic(.Neutral_05))
                 }
             }

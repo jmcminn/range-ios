@@ -346,6 +346,7 @@
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A8CC5CD2B30920D00D26716 /* RepresentedSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */; };
 		0A8CC5CF2B30A34A00D26716 /* CreateProjectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CC5CE2B30A34A00D26716 /* CreateProjectViewModel.swift */; };
+		0A8CC5D22B31E83300D26716 /* CreateProjectStep2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CC5D12B31E83300D26716 /* CreateProjectStep2View.swift */; };
 		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
 		0A9341BD29A65E5B006166C1 /* CanvasFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */; };
 		0A9341C229A7D4B9006166C1 /* CopyPinCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */; };
@@ -843,6 +844,7 @@
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentedSearchView.swift; sourceTree = "<group>"; };
 		0A8CC5CE2B30A34A00D26716 /* CreateProjectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectViewModel.swift; sourceTree = "<group>"; };
+		0A8CC5D12B31E83300D26716 /* CreateProjectStep2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectStep2View.swift; sourceTree = "<group>"; };
 		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
 		0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPinCardViewController.swift; sourceTree = "<group>"; };
@@ -2155,8 +2157,9 @@
 			isa = PBXGroup;
 			children = (
 				0AEC91B22B2CA24A00AE2329 /* CreateProjectFlowController.swift */,
-				0AEC91B42B2CABCB00AE2329 /* CreateProjectStep1View.swift */,
 				0A8CC5CE2B30A34A00D26716 /* CreateProjectViewModel.swift */,
+				0AEC91B42B2CABCB00AE2329 /* CreateProjectStep1View.swift */,
+				0A8CC5D12B31E83300D26716 /* CreateProjectStep2View.swift */,
 			);
 			path = CreateProject;
 			sourceTree = "<group>";
@@ -2611,6 +2614,7 @@
 				0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */,
 				0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */,
 				0A7A537F293FB8F70093D913 /* ProjectTableViewCell.swift in Sources */,
+				0A8CC5D22B31E83300D26716 /* CreateProjectStep2View.swift in Sources */,
 				0A7BD5572B1A3F28001694A7 /* MapboxViewportStatus+FollowMeMode.swift in Sources */,
 				0A985B1B2A9E358300442617 /* FirestoreUser.swift in Sources */,
 				0A2B3F5D2AF516ED00D3D0D2 /* TextAnnotationView.swift in Sources */,
