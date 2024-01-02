@@ -3,15 +3,33 @@ import SwiftUI
 import UIKit
 
 struct RepresentedSearchView: UIViewRepresentable {
+    @Binding var text: String
     typealias UIViewType = SearchView
     let view = SearchView()
 
-    func makeUIView(context _: Context) -> SearchView {
-        view
+    func makeUIView(context: Context) -> SearchView {
+        view.addDelegate(context.coordinator)
+        return view
     }
 
     func updateUIView(_: SearchView, context _: Context) {
-        // Updates the state of the specified view controller with new information from SwiftUI.
+        view.textField.text = text
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(text: $text)
+    }
+
+    class Coordinator: NSObject, SearchViewDelegate {
+        @Binding var text: String
+
+        init(text: Binding<String>) {
+            _text = text
+        }
+
+        func searchView(_: SearchView, textDidChange text: String) {
+            self.text = text
+        }
     }
 
     func placeholder(_ string: String) -> RepresentedSearchView {

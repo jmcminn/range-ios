@@ -48,7 +48,7 @@ struct CreateProjectStep1View: View {
                 Text("Step 1: ").foregroundColor(.dynamic(.Neutral_05)) +
                     Text("Set Project Location").foregroundColor(.dynamic(.Neutral_04))
 
-                RepresentedSearchView()
+                RepresentedSearchView(text: $model.address)
                     .placeholder("Search for, or select a location...")
                     .frame(height: 48)
             }
@@ -74,7 +74,7 @@ struct CreateProjectStep1View: View {
                     .buttonStyle(._gray)
                 Button("Next", action: nextAction)
                     .buttonStyle(._blue)
-                    .disabled(model.location == nil)
+                    .disabled(model.location == nil || model.address.isEmpty)
             }
             .padding(16)
             .background(Color.dynamic(.Neutral_10))
