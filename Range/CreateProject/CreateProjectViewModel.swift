@@ -18,4 +18,7 @@ class CreateProjectViewModel: ObservableObject {
     @Published var tagSourceName: String? = nil
     /// The id of the project to be used for tag source
     @Published var tagSourceId: String? = nil
+
+    /// whether the project is being currently created
+    @Published var createProjectOngoing = false
 }

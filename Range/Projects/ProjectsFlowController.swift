@@ -204,7 +204,7 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
-    private func loadAndPushProjectFlowController(projectId: String, animated: Bool, completion: (() -> Void)? = nil) {
+    func loadAndPushProjectFlowController(projectId: String, animated: Bool, completion: (() -> Void)? = nil) {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03

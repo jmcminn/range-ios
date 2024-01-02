@@ -1,5 +1,7 @@
+import FirebaseFunctions
 import Foundation
 import OrderedCollections
+import OSLog
 import SwiftUI
 import UIKit
 
@@ -8,6 +10,8 @@ class CreateProjectFlowController: UINavigationController {
     let organizationModel: OrganizationModel
     let viewModel = CreateProjectViewModel()
     var onCancelled: (() -> Void)?
+    /// Callback for project created with given project id
+    var onProjectCreated: ((String) -> Void)?
 
     init(_ organizationModel: OrganizationModel) {
         self.organizationModel = organizationModel
@@ -56,7 +60,11 @@ class CreateProjectFlowController: UINavigationController {
             backAction: { [weak self] in
                 self?.popViewController(animated: true)
             },
-            createProjectAction: {}
+            createProjectAction: { [weak self] in
+                Task {
+                    await self?.showProgressAndCreateProject()
+                }
+            }
         )
     }
 
@@ -104,5 +112,21 @@ class CreateProjectFlowController: UINavigationController {
             title: "What are project tags?",
             description: "Populate your projects tags using gone of your existing projects, or start from scratch and add new tags as you go."
         ).installAndShowCard(in: self)
+    }
+
+    @MainActor
+    private func showProgressAndCreateProject() async {
+        viewModel.createProjectOngoing = true
+        do {
+            defer {
+                viewModel.createProjectOngoing = false
+            }
+            let projectId = try await organizationModel.createProject(viewModel)
+            ToastWindow.shared.showSuccess(text: "Project created")
+            onProjectCreated?(projectId)
+        } catch {
+            ToastWindow.shared.showError(text: "Project creation failed: \(error.localizedDescription)")
+            Logger.functions.error("Project creation failed: \(error.localizedDescription)")
+        }
     }
 }

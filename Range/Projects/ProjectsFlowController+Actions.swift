@@ -15,6 +15,11 @@ extension ProjectsFlowController: ProjectsFlowActions {
         createProjectFC.onCancelled = { [weak createProjectFC] in
             createProjectFC?.dismiss(animated: true)
         }
+        createProjectFC.onProjectCreated = { [weak createProjectFC, weak self] projectId in
+            createProjectFC?.dismiss(animated: true)
+            // redirect to the newly created project
+            self?.loadAndPushProjectFlowController(projectId: projectId, animated: true)
+        }
         createProjectFC.modalPresentationStyle = .fullScreen
         present(createProjectFC, animated: true)
     }

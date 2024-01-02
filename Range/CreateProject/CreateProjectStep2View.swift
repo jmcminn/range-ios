@@ -197,6 +197,12 @@ struct CreateProjectStep2View: View {
             }
         }
         .navigationBarHidden(true)
+        .disabled(model.createProjectOngoing)
+        .overlay {
+            if model.createProjectOngoing {
+                ProgressView()
+            }
+        }
     }
 }
 

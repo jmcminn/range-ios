@@ -192,4 +192,42 @@ class OrganizationModel: NSObject, RealmModel {
     private func getCurrentUser() -> Participant? {
         mainRealm.object(ofType: Participant.self, forPrimaryKey: user.id)
     }
+
+    /// Calls the "createProject" firebase function with given parameters and return the id of the newly created project.
+    @MainActor
+    func createProject(_ model: CreateProjectViewModel) async throws -> String {
+        guard let location = model.location else { throw "Project location not selected" }
+        guard let projectType = model.typeId else { throw "Project type not selected" }
+        let projectId = generateRealmId()
+        let center = [location.longitude, location.latitude]
+        let mapCanvasId = generateRealmId()
+        let mapCanvas = ["id": mapCanvasId, "name": "Satellite Map"]
+        let mapCanvasSource: [String: Any] = [
+            "id": generateRealmId(),
+            "canvas": mapCanvasId,
+            "type": "mapbox",
+            "name": "",
+            "center": center,
+            "zoom": 18,
+            "styleUrl": "mapbox://styles/mapbox/satellite-streets-v11",
+        ]
+        let parameters: [String: Any?] = [
+            "organizationId": organizationId,
+            "projectId": projectId,
+            "projectType": projectType,
+            "name": model.name,
+            "center": center,
+            "address": model.address,
+            "canvasOrder": [mapCanvasId],
+            "description": model.description,
+            "tagSource": model.tagSourceId,
+            "canvases": [mapCanvas],
+            "canvasSources": [mapCanvasSource],
+        ]
+        _ = try await Functions.functions(region: "us-west2")
+            .httpsCallable("createProject")
+            .call(parameters)
+
+        return projectId
+    }
 }
