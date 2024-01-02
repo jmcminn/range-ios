@@ -2,6 +2,11 @@ import Foundation
 
 /// Extension of Participant to check the privileges and answer if given operation can be performed on given object
 extension Participant {
+    /// Only organization Admin can create a project
+    func canCreateProject() -> Bool {
+        organizationRole == .Admin
+    }
+
     /// Only author or Admin can delete a collaboration
     func canDelete(_ collaboration: Collaboration) -> Bool {
         if organizationRole == .Admin { return true }

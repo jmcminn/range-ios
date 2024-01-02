@@ -223,7 +223,7 @@ class ProjectsViewController: UIViewController {
         } else {
             navigationItem.searchController = searchController
             tableView.isHidden = false
-            createProjectButton.isHidden = false
+            createProjectButton.isHidden = !model.currentUser.canCreateProject()
             if let emptyStateViewController = emptyStateViewController {
                 remove(childController: emptyStateViewController)
             }
