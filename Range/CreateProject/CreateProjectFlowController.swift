@@ -1,3 +1,4 @@
+import CoreLocation
 import FirebaseFunctions
 import Foundation
 import OrderedCollections
@@ -29,11 +30,7 @@ class CreateProjectFlowController: UINavigationController {
         CreateProjectStep1View(
             model: viewModel,
             onMapTap: { [weak self] coordinate in
-                /// Mapbox  MapViewAnnotation was not always responding to location changes without resetting to nil... (???)
-                self?.viewModel.location = nil
-                DispatchQueue.main.async {
-                    self?.viewModel.location = coordinate
-                }
+                self?.handleMapTap(coordinate)
             },
             cancelAction: { [weak self] in
                 self?.onCancelled?()
@@ -43,6 +40,32 @@ class CreateProjectFlowController: UINavigationController {
                 self.pushViewController(UIHostingController(rootView: self.step2View()), animated: true)
             }
         )
+    }
+
+    private func handleMapTap(_ coordinate: CLLocationCoordinate2D) {
+        // end editing so the keyboard for address is hidden if shown
+        view.endEditing(true)
+        // reset the address, we'll be fetching a new one
+        viewModel.address = ""
+
+        // Mapbox  MapViewAnnotation was not always responding to location changes without resetting to nil... (???)
+        viewModel.location = nil
+        DispatchQueue.main.async {
+            self.viewModel.location = coordinate
+        }
+        /// Fetch the place name using mapbox reverse geocoding
+        Task { @MainActor in
+            do {
+                if let placeName = try await _placeName(for: coordinate) {
+                    self.viewModel.address = placeName
+                } else {
+                    self.viewModel.address = ""
+                }
+            } catch {
+                Logger.mapbox.error("Failed _placeName: \(error.localizedDescription, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to fetch the address for selected location")
+            }
+        }
     }
 
     private func step2View() -> CreateProjectStep2View {

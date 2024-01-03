@@ -462,6 +462,7 @@
 		0AEC91B32B2CA24A00AE2329 /* CreateProjectFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91B22B2CA24A00AE2329 /* CreateProjectFlowController.swift */; };
 		0AEC91B52B2CABCB00AE2329 /* CreateProjectStep1View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC91B42B2CABCB00AE2329 /* CreateProjectStep1View.swift */; };
 		0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */; };
+		0AF561852B4547C50029120B /* MapSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF561842B4547C50029120B /* MapSearch.swift */; };
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
 		0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
@@ -956,6 +957,7 @@
 		0AEC91B22B2CA24A00AE2329 /* CreateProjectFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectFlowController.swift; sourceTree = "<group>"; };
 		0AEC91B42B2CABCB00AE2329 /* CreateProjectStep1View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectStep1View.swift; sourceTree = "<group>"; };
 		0AECB0B2290833A4004FABA4 /* UpdateNoteCompletedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommand.swift; sourceTree = "<group>"; };
+		0AF561842B4547C50029120B /* MapSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearch.swift; sourceTree = "<group>"; };
 		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
 		0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCollaborationTableViewCell.swift; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
@@ -1644,6 +1646,7 @@
 				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
 				0AC12BE52B14DA6B009C63FA /* Location */,
 				0AF812B72840D52A00F7BD09 /* Logging */,
+				0AF561832B4547A60029120B /* MapSearch */,
 				0A4DC76327EDCA9000712518 /* Math */,
 				0A05312729378FC800738BA3 /* Media */,
 				0A98E458298AEC4F004F0112 /* MediaStore */,
@@ -2164,6 +2167,14 @@
 			path = CreateProject;
 			sourceTree = "<group>";
 		};
+		0AF561832B4547A60029120B /* MapSearch */ = {
+			isa = PBXGroup;
+			children = (
+				0AF561842B4547C50029120B /* MapSearch.swift */,
+			);
+			path = MapSearch;
+			sourceTree = "<group>";
+		};
 		0AF722AD296EE61900A18F75 /* TaskList */ = {
 			isa = PBXGroup;
 			children = (
@@ -2596,6 +2607,7 @@
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
 				0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */,
 				0A05057F2A1E2512001AF644 /* CGPoint+Operations.swift in Sources */,
+				0AF561852B4547C50029120B /* MapSearch.swift in Sources */,
 				0A88730B2B299B24006DF885 /* RecentAnnotationsSelectorView.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
 				0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */,

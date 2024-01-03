@@ -3,17 +3,26 @@ import SwiftUI
 import UIKit
 
 struct RepresentedSearchView: UIViewRepresentable {
-    @Binding var text: String
     typealias UIViewType = SearchView
-    let view = SearchView()
+    @Binding var text: String
+    private var placeholder = ""
+
+    init(text: Binding<String>) {
+        _text = text
+    }
 
     func makeUIView(context: Context) -> SearchView {
+        let view = SearchView()
         view.addDelegate(context.coordinator)
         return view
     }
 
-    func updateUIView(_: SearchView, context _: Context) {
-        view.textField.text = text
+    func updateUIView(_ searchView: SearchView, context _: Context) {
+        searchView.placeholderText = placeholder
+        if searchView.textField.text != text {
+            searchView.textField.text = text
+            searchView.textField.sendActions(for: .editingChanged)
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -33,7 +42,8 @@ struct RepresentedSearchView: UIViewRepresentable {
     }
 
     func placeholder(_ string: String) -> RepresentedSearchView {
-        view.placeholderText = string
-        return self
+        var view = self
+        view.placeholder = string
+        return view
     }
 }
