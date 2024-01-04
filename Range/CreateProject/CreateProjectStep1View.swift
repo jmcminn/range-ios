@@ -33,59 +33,107 @@ struct CreateProjectStep1View: View {
             }
         }
         .mapStyle(mapStyle)
-        .onMapTapGesture { context in
-            onMapTap(context.coordinate)
+        .onMapTapGesture { context in onMapTap(context.coordinate) }
+        .ignoresSafeArea()
+        .onReceive(model.$location) { location in
+            guard let location else { return }
             withViewportAnimation(.easeIn(duration: 0.5)) {
-                viewport = .camera(center: context.coordinate)
+                viewport = .camera(center: location)
             }
         }
-        .ignoresSafeArea()
+    }
+
+    private var placeAutocompletesView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(model.placeAutocompletes, id: \.name) { place in
+                        Button(action: { model.selectPlaceAutocomplete(place) }) {
+                            HStack(alignment: .center, spacing: 9) {
+                                Image("projects_icon")
+                                    .renderingMode(.template)
+                                    .foregroundColor(.dynamic(.Neutral_05))
+                                VStack(alignment: .leading) {
+                                    Text(place.text).font(.body).foregroundColor(.dynamic(.Neutral_04))
+                                    Text(place.description).font(.subheadline).foregroundColor(.dynamic(.Neutral_05))
+                                }
+                                .multilineTextAlignment(.leading)
+                                Spacer()
+                            }
+                            .padding(16)
+                            .background(placeAutocompleteBackground)
+                        }
+                    }
+                }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity)
+        }
+        .background(Color.dynamic(.Neutral_10))
+    }
+
+    /// background for toolbar buttons
+    private var placeAutocompleteBackground: some View {
+        let rectangle = RoundedRectangle(cornerRadius: 12)
+        // cannot add fill and stroke to rectangle, so we need rectange with background rectangle
+        return rectangle
+            .stroke(Color.dynamic(.Neutral_07), lineWidth: 1)
+            .background(rectangle.fill(Color.dynamic(.Neutral_09)))
     }
 
     private var topBar: some View {
-        VStack(spacing: 0) {
-            VStack(spacing: 16) {
+        VStack(spacing: 16) {
+            if !model.addressAutocompleteMode {
                 Text("Step 1: ").foregroundColor(.dynamic(.Neutral_05)) +
                     Text("Set Project Location").foregroundColor(.dynamic(.Neutral_04))
+            }
 
-                RepresentedSearchView(text: $model.address)
+            HStack(spacing: 10) {
+                RepresentedSearchView(text: $model.address, onActivated: model.enableAddressAutocompleteMode)
                     .placeholder("Search for, or select a location...")
                     .frame(height: 48)
+
+                if model.addressAutocompleteMode {
+                    Button("Cancel", action: model.cancelAddressAutocompleteMode)
+                        .font(.body)
+                        .foregroundColor(.Primary_Blue_04)
+                }
             }
-            .font(.subheadline.bold())
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
-            .background(Color.dynamic(.Neutral_10))
-            Divider()
-                .frame(height: 1)
-                .background(Color.dynamic(.Neutral_07))
-            Spacer()
         }
+        .font(.subheadline.bold())
+        .padding(.horizontal, 16)
+        .padding(.bottom, 12)
+        .background(Color.dynamic(.Neutral_10))
     }
 
     private var bottomBar: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            Divider()
-                .frame(height: 1)
-                .background(Color.dynamic(.Neutral_07))
-            HStack(spacing: 16) {
-                Button("Cancel", action: cancelAction)
-                    .buttonStyle(._gray)
-                Button("Next", action: nextAction)
-                    .buttonStyle(._blue)
-                    .disabled(model.location == nil || model.address.isEmpty)
-            }
-            .padding(16)
-            .background(Color.dynamic(.Neutral_10))
+        HStack(spacing: 16) {
+            Button("Cancel", action: cancelAction)
+                .buttonStyle(._gray)
+            Button("Next", action: nextAction)
+                .buttonStyle(._blue)
+                .disabled(model.location == nil || model.address.isEmpty)
         }
+        .padding(16)
+        .background(Color.dynamic(.Neutral_10))
     }
 
     var body: some View {
         ZStack {
             mapView
-            topBar
-            bottomBar
+
+            VStack(spacing: 0) {
+                topBar
+                Divider().frame(height: 1).background(Color.dynamic(.Neutral_07))
+                if model.addressAutocompleteMode {
+                    placeAutocompletesView
+                } else {
+                    Spacer()
+                    Divider().frame(height: 1).background(Color.dynamic(.Neutral_07))
+                    bottomBar
+                }
+            }
+            .animation(.default, value: model.addressAutocompleteMode)
         }
         .navigationBarHidden(true)
     }
@@ -98,5 +146,22 @@ struct CreateProjectStep1View: View {
 #Preview("with address") {
     let model = CreateProjectViewModel()
     model.address = "25 Harstene Drive, Redwood City"
+    return CreateProjectStep1View(model: model, onMapTap: { _ in }, cancelAction: {}, nextAction: {})
+}
+
+#Preview("address autocompletes") {
+    let model = CreateProjectViewModel()
+    model.address = "225 H"
+    model.enableAddressAutocompleteMode()
+    model.placeAutocompletes = [
+        PlaceAutocomplete(id: "1", center: .init(), name: "Redwood City, CA 94065", text: "225 Harstene Drive"),
+        PlaceAutocomplete(id: "2", center: .init(), name: "Redwood City, CA 94065", text: "225 Harstene Drive 2"),
+        PlaceAutocomplete(
+            id: "3",
+            center: .init(),
+            name: "Redwood City, CA 94065 CA Very very Long text ",
+            text: "225 Harstene Drive 3"
+        ),
+    ]
     return CreateProjectStep1View(model: model, onMapTap: { _ in }, cancelAction: {}, nextAction: {})
 }

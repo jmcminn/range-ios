@@ -1,3 +1,4 @@
+import Combine
 import CoreLocation
 import FirebaseFunctions
 import Foundation
@@ -14,11 +15,15 @@ class CreateProjectFlowController: UINavigationController {
     /// Callback for project created with given project id
     var onProjectCreated: ((String) -> Void)?
 
+    var cancellable: AnyCancellable?
+
     init(_ organizationModel: OrganizationModel) {
         self.organizationModel = organizationModel
         super.init(rootViewController: UIViewController())
         isNavigationBarHidden = true
         setViewControllers([UIHostingController(rootView: step1View())], animated: false)
+
+        observeAndAutocompleteAddress()
     }
 
     @available(*, unavailable)
@@ -40,6 +45,32 @@ class CreateProjectFlowController: UINavigationController {
                 self.pushViewController(UIHostingController(rootView: self.step2View()), animated: true)
             }
         )
+    }
+
+    /// Observe changes in address and autocomplete places when model in addressAutocompletionMode
+    private func observeAndAutocompleteAddress() {
+        cancellable = viewModel.$address
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] text in
+                guard let self, self.viewModel.addressAutocompleteMode else { return }
+                if text.count >= 3 {
+                    self.autoCompleteAddress(text)
+                } else {
+                    viewModel.placeAutocompletes = []
+                }
+            }
+    }
+
+    private func autoCompleteAddress(_ name: String) {
+        Task { @MainActor in
+            do {
+                viewModel.placeAutocompletes = try await _placeAutocompletes(for: name)
+            } catch {
+                Logger.mapbox
+                    .error("Failed _placeAutocompletes for \(name): \(error.localizedDescription, privacy: .public)")
+            }
+        }
     }
 
     private func handleMapTap(_ coordinate: CLLocationCoordinate2D) {

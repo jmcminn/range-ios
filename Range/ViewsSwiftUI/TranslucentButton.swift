@@ -4,13 +4,14 @@ import SwiftUI
 /// Not implemented as one of the `ButtonStyles` as I couldn't get the button to react to the whole width taps (where it's transparent too)
 /// when using ButtonStyle
 struct TranslucentButton: View {
+    var font: Font = .body.bold()
     var text: String
     var clicked: () -> Void /// use closure for callback
 
     var body: some View {
         Button(action: clicked) {
             HStack {
-                Text(text).font(.body.bold())
+                Text(text).font(font)
             }
             .foregroundColor(.Primary_Blue_04)
             .padding(.horizontal, 16)

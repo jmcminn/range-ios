@@ -5,10 +5,12 @@ import UIKit
 struct RepresentedSearchView: UIViewRepresentable {
     typealias UIViewType = SearchView
     @Binding var text: String
+    private var onActivated: (() -> Void)?
     private var placeholder = ""
 
-    init(text: Binding<String>) {
+    init(text: Binding<String>, onActivated: (() -> Void)?) {
         _text = text
+        self.onActivated = onActivated
     }
 
     func makeUIView(context: Context) -> SearchView {
@@ -26,18 +28,25 @@ struct RepresentedSearchView: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text)
+        Coordinator(text: $text, onActivated: onActivated)
     }
 
     class Coordinator: NSObject, SearchViewDelegate {
         @Binding var text: String
+        private var onActivated: (() -> Void)?
 
-        init(text: Binding<String>) {
+        init(text: Binding<String>, onActivated: (() -> Void)?) {
             _text = text
+            self.onActivated = onActivated
         }
 
         func searchView(_: SearchView, textDidChange text: String) {
             self.text = text
+        }
+
+        func searchViewActivated(_: SearchView) {
+            // user started editing the text
+            onActivated?()
         }
     }
 
