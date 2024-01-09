@@ -97,11 +97,10 @@ enum ActionCommand: Codable {
         }
     }
 
-    var firestoreCommand: FirestoreCommand {
+    var firestoreCommand: FirestoreCommand? {
         switch self {
         case let .addUploadsToCollaboration(c): return c
         case let .createCollaborationComment(c): return c
-        case let .createCollaboration(c): return c
         case let .createUploadComment(c): return c
         case let .deleteCollaborations(c): return c
         case let .deleteComment(c): return c
@@ -120,6 +119,14 @@ enum ActionCommand: Codable {
         case let .updateUploadAnnotations(c): return c
         case let .updateUploadDescription(c): return c
         case let .updateUploadsTags(c): return c
+        default: return nil
+        }
+    }
+
+    var firebaseFunctionCommand: FirebaseFunctionCommand? {
+        switch self {
+        case let .createCollaboration(c): return c
+        default: return nil
         }
     }
 }

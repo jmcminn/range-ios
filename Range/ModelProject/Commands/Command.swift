@@ -52,3 +52,11 @@ protocol FirestoreCommand {
     /// behavior (like notifying the user...)
     func apply(inFirestore context: FirestoreCommandContext) throws
 }
+
+/// A protocol for commands that can be applied by calling a Firebase callable function
+protocol FirebaseFunctionCommand {
+    /// The name of the function to be called
+    var functionName: String { get }
+    /// Parameters to be passed to function (for given projectId)
+    func functionData(_ projectId: String) -> Any?
+}

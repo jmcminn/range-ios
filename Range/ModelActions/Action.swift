@@ -9,7 +9,7 @@ struct Action: Codable, CustomDebugStringConvertible {
     var command: ActionCommand
 
     var debugDescription: String {
-        "projectId: \(projectId), \(command.firestoreCommand)"
+        "projectId: \(projectId), \(command.localCommand)"
     }
 
     /// Init action for given projectId and command (that should be convertible to ActionCommand)

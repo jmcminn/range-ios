@@ -1,4 +1,5 @@
 import FirebaseFirestore
+import FirebaseFunctions
 import Foundation
 import Network
 import OSLog
@@ -11,6 +12,9 @@ import Sentry
 class PendingActionsModelImpl: PendingActionsModel {
     /// Firestore reference
     let firestore = Firestore.firestore()
+    /// Firebase functions
+    let firebaseFunctions = Functions.functions(region: "us-west2")
+
     /// for encoding/decoding actions as JSON data to store in UserDefaults
     let jsonEncoder = JSONEncoder()
     let jsonDecoder = JSONDecoder()
@@ -234,32 +238,7 @@ class PendingActionsModelImpl: PendingActionsModel {
         performAction(action) { error in
             let goToNext: Bool // is processing of this action done?
             if let error = error {
-                Logger.pendingActions.debug("Action error: \(error)")
-                let obsolete: Bool
-                if let error = error as? FirestoreCommandError, case .obsolete = error {
-                    // obsolete action is dropped so it's done
-                    obsolete = true
-                    Logger.pendingActions
-                        .warning("Dropping obsolete action \(action.debugDescription, privacy: .private)")
-                } else if (error as NSError).domain == FirestoreErrorDomain,
-                          (error as NSError).code == FirestoreErrorCode.permissionDenied.rawValue
-                {
-                    // permission denied => drop the action and notify the user
-                    obsolete = true
-                    Logger.pendingActions
-                        .warning(
-                            "Dropping action, permission denied: \(action.debugDescription, privacy: .private)"
-                        )
-                    let actionName = String(describing: type(of: action.command.localCommand))
-                    // This is a rather technical message shown to the user but it's better than
-                    // nothing... Also this doesn't rollback the local action, but since the action
-                    // is removed from local actions the next sync will overwrite it's results (unless it was creating something)
-                    // So we need something better than that...
-                    ToastWindow.shared.showError(text: "You don't have permission for \(actionName), aborting!")
-                } else {
-                    // there's some non-obsolete error, retry the action
-                    obsolete = false
-                }
+                let dropAction = self.handleActionError(action, error)
                 SentrySDK.capture(error: error) { scope in
                     scope.setExtras([
                         "projectId": action.projectId,
@@ -268,9 +247,9 @@ class PendingActionsModelImpl: PendingActionsModel {
                     ])
                     // the name of the struct implementing the command:
                     scope.setTag(value: String(describing: type(of: action.command.localCommand)), key: "command")
-                    scope.setTag(value: obsolete.description, key: "obsolete")
+                    scope.setTag(value: dropAction.description, key: "dropped")
                 }
-                goToNext = obsolete
+                goToNext = dropAction
             } else {
                 // no error
                 Logger.pendingActions.debug("Action succeeded: \(action.debugDescription, privacy: .private)")
@@ -298,24 +277,85 @@ class PendingActionsModelImpl: PendingActionsModel {
         }
     }
 
+    /// Handles the error by displaying logs, toasts, etc.
+    /// Returns `true` if the action should be dropped because of the error. `false` means the operation should be retried.
+    private func handleActionError(_ action: Action, _ error: Error) -> Bool {
+        Logger.pendingActions.debug("Action error: \(error)")
+        if let error = error as? FirestoreCommandError, case .obsolete = error {
+            // obsolete action is dropped so it's done
+            Logger.pendingActions
+                .warning("Dropping obsolete action \(action.debugDescription, privacy: .private)")
+            return true
+        } else if (error as NSError).domain == FirestoreErrorDomain,
+                  (error as NSError).code == FirestoreErrorCode.permissionDenied.rawValue
+        {
+            // permission denied => drop the action and notify the user
+            Logger.pendingActions
+                .warning(
+                    "Dropping action, permission denied: \(action.debugDescription, privacy: .private)"
+                )
+            let actionName = String(describing: type(of: action.command.localCommand))
+            // This is a rather technical message shown to the user but it's better than
+            // nothing... Also this doesn't rollback the local action, but since the action
+            // is removed from local actions the next sync will overwrite it's results (unless it was creating something)
+            // So we need something better than that...
+            ToastWindow.shared.showError(text: "You don't have permission for \(actionName), aborting!")
+            return true
+        } else if let error = error as NSError?, error.domain == FunctionsErrorDomain,
+                  let code = FunctionsErrorCode(rawValue: error.code),
+                  code == .alreadyExists || code == .notFound || code == .failedPrecondition || code ==
+                  .invalidArgument
+        {
+            // cannot be recovered, either wrong arguments or the function is expecting some documents to exist/not exist
+            // and this expectation is not met
+            let message = error.localizedDescription
+            Logger.pendingActions
+                .warning(
+                    "Dropping action, callable function: \(action.debugDescription, privacy: .private) error: \(error, privacy: .public)"
+                )
+            let actionName = String(describing: type(of: action.command.localCommand))
+            ToastWindow.shared.showError(text: "\(actionName) failed: \(message), aborting!")
+            return true
+        } else {
+            // there's some non-obsolete error, retry the action
+            return false
+        }
+    }
+
     /// To be only called from `maybePerformAction`
     private func performAction(_ action: Action, completion: @escaping (Error?) -> Void) {
-        firestore.runTransaction { transaction, errorPointer -> Any? in
-            let context = TransactionalFirestoreCommandContext(
-                transaction: transaction,
-                firestore: self.firestore,
-                projectId: action.projectId
-            )
-            do {
-                try action.command.firestoreCommand.apply(inFirestore: context)
-            } catch let error as NSError {
-                errorPointer?.pointee = error
-                return false
+        if let firestoreCommand = action.command.firestoreCommand {
+            firestore.runTransaction { transaction, errorPointer -> Any? in
+                let context = TransactionalFirestoreCommandContext(
+                    transaction: transaction,
+                    firestore: self.firestore,
+                    projectId: action.projectId
+                )
+                do {
+                    try firestoreCommand.apply(inFirestore: context)
+                } catch let error as NSError {
+                    errorPointer?.pointee = error
+                    return false
+                }
+
+                // don't return nil, it's supposed to work but it crashes
+                return true
+            } completion: { _, error in
+                completion(error)
             }
-            // don't return nil, it's supposed to work but it crashes
-            return true
-        } completion: { _, error in
-            completion(error)
+        } else if let functionCommand = action.command.firebaseFunctionCommand {
+            Functions.functions(region: "us-west2")
+                .httpsCallable(functionCommand.functionName)
+                .call(functionCommand.functionData(action.projectId)) { _, error in
+                    completion(error)
+                }
+        } else {
+            // assert for debug builds but mark as obsolete in the prod app
+            assertionFailure(
+                "Action command not supported \(String(describing: type(of: action.command.localCommand)))"
+            )
+            completion(FirestoreCommandError
+                .obsolete("Action command not supported \(String(describing: type(of: action.command.localCommand)))"))
         }
     }
 }

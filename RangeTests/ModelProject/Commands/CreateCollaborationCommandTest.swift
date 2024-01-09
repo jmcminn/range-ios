@@ -139,8 +139,8 @@ final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
     }
 }
 
-/// Tests applying `CreateCollaborationCommand` in to Firestore (using a mock for FirestoreCommandContext)
-final class CreateCollaborationCommandFirestoreTest: XCTestCase {
+/// Tests getting the parameters for `CreateCollaborationCommand`Firebase function call
+final class CreateCollaborationCommandFirebaseFunctionTest: XCTestCase {
     var command: CreateCollaborationCommand {
         CreateCollaborationCommand(
             authorId: "user1",
@@ -165,133 +165,41 @@ final class CreateCollaborationCommandFirestoreTest: XCTestCase {
         )
     }
 
-    func testApply_noCanvas() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
-
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("canvas doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
+    func test_functionName() throws {
+        XCTAssertEqual(command.functionName, "createCollaboration")
     }
 
-    func testApply_noUser() throws {
-        // canvas exists but user doesn't
-        let context = TestFirestoreCommandContext(docs: [.canvas("canvas1")])
-
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("user doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
-    }
-
-    func testApply_noAssignee() throws {
-        // canvas exists but user doesn't
-        let context = TestFirestoreCommandContext(docs: [
-            .canvas("canvas1"),
-            .participant("user1"),
-            .tagName("tag1"),
-        ])
-
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("user doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
-    }
-
-    func testApply_successful() throws {
-        // canvas and user exist
-        // there's also tag1 already in firestore
-        let context = TestFirestoreCommandContext(docs: [
-            .canvas("canvas1"),
-            .participant("user1"), .participant("user2"),
-            .tagName("tag1"),
-        ])
-
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 7)
-        AssertOperationsEqual(
-            context.operations[0],
-            .set(.geometry("geometry1"), [
-                "canvas": "canvas1",
-                "annotationType": "photoMarker",
-                "coordinates": "[-96.5,32.5]",
-            ])
-        )
-        AssertOperationsEqual(
-            context.operations[1],
-            .set(.feature("feature1"), [
-                "geometry": "geometry1",
-                "name": "",
-            ])
-        )
-        AssertOperationsEqual(
-            context.operations[2],
-            .set(.tagName("tag3"), ["name": "tag 3"])
-        )
-        AssertOperationsEqual(
-            context.operations[3],
-            .set(.collaboration("collaboration1"), [
-                "feature": "feature1",
-                "author": "user1",
-                "timestamp": FieldValue.serverTimestamp(),
-                "name": "name",
-                "description": "description",
-                "assignee": "user2",
-                "dueDateTimestamp": Timestamp(seconds: 100, nanoseconds: 0),
-                "tags": ["tag3"],
-            ])
-        )
-        AssertOperationsEqual(
-            context.operations[4],
-            .set(.tagName("tag2"), ["name": "tag 2"])
-        )
-        AssertOperationsEqual(
-            context.operations[5],
-            .set(.upload("upload1"), [
-                "parent": "collaboration1", "parentType": "Collaboration",
-                "correlation": "upload1", "author": "user1", "timestamp": FieldValue.serverTimestamp(),
-                "tags": ["tag1", "tag2"], "description": "upload description",
-                "fileType": "jpeg", "imageHeightToWidth": 1.0, "fileSize": 1024,
-            ])
-        )
-        AssertOperationsEqual(
-            context.operations[6],
-            .set(.upload("upload2"), [
-                "parent": "collaboration1", "parentType": "Collaboration",
-                "correlation": "upload2", "author": "user1", "timestamp": FieldValue.serverTimestamp(),
-                "tags": ["tag1", "tag2"], "description": "upload description",
-                "fileType": "jpeg", "imageHeightToWidth": 2.0, "fileSize": 1024,
-            ])
-        )
-    }
-
-    /// Test for idempotency
-    /// All objects already exist, meaning this operation was already run
-    func testApply_noOp() throws {
-        // all objects exist
-        let context = TestFirestoreCommandContext(docs: [
-            .canvas("canvas1"),
-            .participant("user1"), .participant("user2"),
-            .geometry("geometry1"),
-            .feature("feature1"),
-            .collaboration("collaboration1"),
-            .tagName("tag1"), .tagName("tag2"), .tagName("tag3"),
-            .upload("upload1"), .upload("upload2"),
-        ])
-
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 0)
+    func test_functionData() throws {
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1", "canvasId": "canvas1",
+            "geometryId": "geometry1", "featureId": "feature1", "collaborationId": "collaboration1",
+            "coordinates": [-96.5, 32.5], "name": "name", "description": "description",
+            "assigneeId": "user2", "statusId": nil, "dueDateTimestamp": 100_000,
+            "tags": [
+                ["id": "tag3", "name": "tag 3"],
+            ],
+            "uploads": [
+                ["id": "upload1",
+                 "fileType": "jpeg", "fileSize": 1024, "imageHeightToWidth": 1,
+                 "name": nil, "description": "upload description",
+                 "tags": [
+                     ["id": "tag1", "name": "tag 1"],
+                     ["id": "tag2", "name": "tag 2"],
+                 ],
+                 "annotations": nil],
+                ["id": "upload2",
+                 "fileType": "jpeg", "fileSize": 1024, "imageHeightToWidth": 2,
+                 "name": nil, "description": "upload description",
+                 "tags": [
+                     ["id": "tag1", "name": "tag 1"],
+                     ["id": "tag2", "name": "tag 2"],
+                 ],
+                 "annotations": nil],
+            ],
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }
