@@ -15,7 +15,8 @@ class CreateProjectFlowController: UINavigationController {
     /// Callback for project created with given project id
     var onProjectCreated: ((String) -> Void)?
 
-    var cancellable: AnyCancellable?
+    /// combine observers
+    private var subscriptions = Set<AnyCancellable>()
 
     init(_ organizationModel: OrganizationModel) {
         self.organizationModel = organizationModel
@@ -23,6 +24,7 @@ class CreateProjectFlowController: UINavigationController {
         isNavigationBarHidden = true
         setViewControllers([UIHostingController(rootView: step1View())], animated: false)
 
+        observeCameraLocation()
         observeAndAutocompleteAddress()
     }
 
@@ -34,9 +36,6 @@ class CreateProjectFlowController: UINavigationController {
     private func step1View() -> CreateProjectStep1View {
         CreateProjectStep1View(
             model: viewModel,
-            onMapTap: { [weak self] coordinate in
-                self?.handleMapTap(coordinate)
-            },
             cancelAction: { [weak self] in
                 self?.onCancelled?()
             },
@@ -47,9 +46,38 @@ class CreateProjectFlowController: UINavigationController {
         )
     }
 
+    /// Observe changes in camera location and update the project location and address
+    /// throttled and debounced as there's many camera location updates emitted while user is panning the map
+    private func observeCameraLocation() {
+        viewModel.$cameraLocation
+            .removeDuplicates() // remove obvious duplicates where locations are exactly the same
+            .throttle(for: 0.5, scheduler: RunLoop.main,
+                      latest: true) // a lot of updates might be generated at current user position
+            .removeDuplicates(by: { location1, location2 in
+                // treat locations closer than 1meter as duplicates - we don't want to constantly recalculate
+                // location/address if the user is standing still in the follow me mode and there's almost no update to location
+                guard let location1, let location2 else { return false }
+                return location1.distance(to: location2) < 1
+            })
+            .debounce(for: 0.5, scheduler: RunLoop.main) // don't trigger immediately, wait until it settles
+            .sink { [weak self] location in
+                guard let self, let location else { return }
+                if let viewModelLocation = self.viewModel.location, location.distance(to: viewModelLocation) < 1,
+                   !self.viewModel.address.isEmpty
+                {
+                    // we're very close to model location meaning that the camera animated to location selected from autocompletes,
+                    // no need to recalculate the address (if it's there)
+                } else {
+                    // trigger location and address update
+                    updateLocationAndSetAddress(location)
+                }
+            }
+            .store(in: &subscriptions)
+    }
+
     /// Observe changes in address and autocomplete places when model in addressAutocompletionMode
     private func observeAndAutocompleteAddress() {
-        cancellable = viewModel.$address
+        viewModel.$address
             .debounce(for: 1, scheduler: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] text in
@@ -60,6 +88,7 @@ class CreateProjectFlowController: UINavigationController {
                     viewModel.placeAutocompletes = []
                 }
             }
+            .store(in: &subscriptions)
     }
 
     private func autoCompleteAddress(_ name: String) {
@@ -73,7 +102,8 @@ class CreateProjectFlowController: UINavigationController {
         }
     }
 
-    private func handleMapTap(_ coordinate: CLLocationCoordinate2D) {
+    /// When user adjusts the map view we take the current map center and set it as project location and reverse geocode the address for it
+    private func updateLocationAndSetAddress(_ coordinate: CLLocationCoordinate2D) {
         // end editing so the keyboard for address is hidden if shown
         view.endEditing(true)
         // reset the address, we'll be fetching a new one

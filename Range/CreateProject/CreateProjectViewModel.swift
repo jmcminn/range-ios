@@ -6,6 +6,9 @@ class CreateProjectViewModel: ObservableObject {
     /// Whether the create project flow is showing the list of autocompletes for addresses (instead of the map) in the step 1
     @Published private(set) var addressAutocompleteMode = false
 
+    /// To be observed as a base for location/address updates (throttled and debounced as this can change very frequently when panning)
+    @Published var cameraLocation: CLLocationCoordinate2D? = nil
+
     /// project location selected by user
     @Published var location: CLLocationCoordinate2D? = nil
     /// project address

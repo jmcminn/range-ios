@@ -4,7 +4,6 @@ import SwiftUI
 struct CreateProjectStep1View: View {
     @State var viewport: Viewport = .followPuck(zoom: 16)
     @ObservedObject var model: CreateProjectViewModel
-    let onMapTap: (CLLocationCoordinate2D) -> Void
     let cancelAction: () -> Void
     let nextAction: () -> Void
 
@@ -19,21 +18,12 @@ struct CreateProjectStep1View: View {
     private var mapView: some View {
         Map(viewport: $viewport) {
             puck2D
-
-            if let location = model.location {
-                MapViewAnnotation(coordinate: location) {
-                    Image("project_location_pin")
-                }
-                .selected(true)
-                .variableAnchors([
-                    ViewAnnotationAnchorConfig(anchor: .center, offsetY: 29),
-                ])
-                .allowOverlap(true)
-                .allowOverlapWithPuck(true)
-            }
         }
         .mapStyle(mapStyle)
-        .onMapTapGesture { context in onMapTap(context.coordinate) }
+        .onCameraChanged(action: { camera in
+            model.cameraLocation = camera.cameraState.center
+        })
+        .ornamentOptions(.init(compass: .init(margins: CGPoint(x: 8, y: 102))))
         .ignoresSafeArea()
         .onReceive(model.$location) { location in
             guard let location else { return }
@@ -121,6 +111,9 @@ struct CreateProjectStep1View: View {
     var body: some View {
         ZStack {
             mapView
+                .overlay {
+                    Image("project_location_pin").offset(y: -29).allowsHitTesting(false)
+                }
 
             VStack(spacing: 0) {
                 topBar
@@ -140,13 +133,13 @@ struct CreateProjectStep1View: View {
 }
 
 #Preview {
-    CreateProjectStep1View(model: CreateProjectViewModel(), onMapTap: { _ in }, cancelAction: {}, nextAction: {})
+    CreateProjectStep1View(model: CreateProjectViewModel(), cancelAction: {}, nextAction: {})
 }
 
 #Preview("with address") {
     let model = CreateProjectViewModel()
     model.address = "25 Harstene Drive, Redwood City"
-    return CreateProjectStep1View(model: model, onMapTap: { _ in }, cancelAction: {}, nextAction: {})
+    return CreateProjectStep1View(model: model, cancelAction: {}, nextAction: {})
 }
 
 #Preview("address autocompletes") {
@@ -163,5 +156,5 @@ struct CreateProjectStep1View: View {
             text: "225 Harstene Drive 3"
         ),
     ]
-    return CreateProjectStep1View(model: model, onMapTap: { _ in }, cancelAction: {}, nextAction: {})
+    return CreateProjectStep1View(model: model, cancelAction: {}, nextAction: {})
 }
