@@ -31,6 +31,8 @@ class Collaboration: Object, WithPlaceholder, WithId {
     @Persisted var assignee: Participant?
     /// due date timestamp
     @Persisted var dueDateTimestamp: Date?
+    /// identifier for the UI
+    @Persisted var identifier: String?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -72,8 +74,9 @@ class Collaboration: Object, WithPlaceholder, WithId {
         timestamp: Date,
         name: String,
         description: String?,
-        placeholder: Bool = false,
-        dueDateTimestamp: Date? = nil
+        dueDateTimestamp: Date? = nil,
+        identifier: String? = nil,
+        placeholder: Bool = false
     ) {
         super.init()
         self.id = id
@@ -81,6 +84,7 @@ class Collaboration: Object, WithPlaceholder, WithId {
         self.name = name
         collaborationDescription = description
         self.dueDateTimestamp = dueDateTimestamp
+        self.identifier = identifier
         self.placeholder = placeholder
     }
 

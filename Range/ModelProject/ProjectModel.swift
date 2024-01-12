@@ -67,7 +67,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 20
+            config.schemaVersion = 21
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("user_\(userId)_project_\(projectId)")
             config.fileURL!.appendPathExtension("realm")
@@ -197,5 +197,11 @@ class ProjectModel: NSObject, RealmModel {
     /// Calculates the distance between given location and currentCanvasSourceCenter and checks if it's smaller than a given hardcoded value.
     func isLocationInCurrentCanvasSourceRange(_ location: CLLocationCoordinate2D) -> Bool {
         location.distance(to: currentCanvasSourceCenter) <= 1000
+    }
+
+    func collaborationIdentifier(_ collaboration: Collaboration) -> String? {
+        guard let projectIdentifier = projectSummary.identifier,
+              let collaborationIdentifier = collaboration.identifier else { return nil }
+        return "\(projectIdentifier)-\(collaborationIdentifier)"
     }
 }

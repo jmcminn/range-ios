@@ -38,6 +38,8 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
     var timeZone: TimeZone = .init(identifier: "America/Los_Angeles") ?? TimeZone.current
     /// array of canvas ids for sorting the canvases in UI
     @Persisted var canvasOrder: List<String>
+    /// UI identifier for project
+    @Persisted var identifier: String?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -56,6 +58,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         address: String?,
         projectType: ProjectType,
         canvasOrder: [String] = [],
+        identifier: String? = nil,
         placeholder: Bool = false
     ) {
         super.init()
@@ -68,6 +71,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         self.projectType = projectType
         self.canvasOrder.removeAll()
         self.canvasOrder.append(objectsIn: canvasOrder)
+        self.identifier = identifier
         self.placeholder = placeholder
     }
 

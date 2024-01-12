@@ -53,7 +53,8 @@ class OrganizationModel: NSObject, RealmModel {
         // v3 introduces Organization.industry
         // v4 introduces ProjectSummary.projectType
         // v5 introduces ProjectSummary.organizationId
-        config.schemaVersion = 5
+        // v6 introduces ProjectSummary.identifier and Collaboration.identifier
+        config.schemaVersion = 6
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")
