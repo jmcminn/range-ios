@@ -11,6 +11,7 @@ class CopyPinTableViewCell: UITableViewCell {
     private let taskBadgeView = UIView()
     private let photoBadgeView = UIView()
     private let numberOfUploadsLabel = UILabel()
+    private let idLabel = UILabel()
     private let nameLabel = UILabel()
     private let descriptionLabel = LabelWithTextInsets()
     private let detailsScrollView = UIScrollView()
@@ -32,8 +33,17 @@ class CopyPinTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [taskBadgeView, photoBadgeView, nameLabel, descriptionLabel, detailsScrollView, tagsScrollView, bottomStroke]
-            .forEach(contentView.addSubview)
+        [
+            taskBadgeView,
+            photoBadgeView,
+            idLabel,
+            nameLabel,
+            descriptionLabel,
+            detailsScrollView,
+            tagsScrollView,
+            bottomStroke,
+        ]
+        .forEach(contentView.addSubview)
 
         taskBadgeView.snp.makeConstraints { make in
             make.width.height.equalTo(20)
@@ -44,6 +54,12 @@ class CopyPinTableViewCell: UITableViewCell {
         photoBadgeView.snp.makeConstraints { make in
             make.width.height.equalTo(22)
             make.center.equalTo(taskBadgeView)
+        }
+
+        idLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(15)
+            make.leading.equalTo(44)
+            make.trailing.equalToSuperview().inset(14)
         }
 
         nameLabel.snp.makeConstraints { make in
@@ -98,6 +114,10 @@ class CopyPinTableViewCell: UITableViewCell {
         numberOfUploadsLabel.textColor = .white
         numberOfUploadsLabel.font = .systemFont(ofSize: 13.5, weight: .bold)
 
+        idLabel.font = ._preferredFont(forTextStyle: .caption1, symbolicTraits: .traitBold)
+        idLabel.textColor = .dynamic(.Neutral_05)
+        idLabel.adjustsFontForContentSizeCategory = true
+
         nameLabel.font = .preferredFont(forTextStyle: .headline)
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
@@ -145,6 +165,23 @@ class CopyPinTableViewCell: UITableViewCell {
 
     func setCollaboration(_ collaboration: Collaboration, projectModel: ProjectModel) {
         collaborationId = collaboration.id
+
+        if let collaborationID = projectModel.collaborationIdentifier(collaboration) {
+            idLabel.isHidden = false
+            idLabel.text = "ID \(collaborationID)"
+            nameLabel.snp.remakeConstraints { make in
+                make.top.greaterThanOrEqualTo(idLabel.snp.bottom).offset(2)
+                make.leading.equalTo(44)
+                make.trailing.equalToSuperview().inset(14)
+            }
+        } else {
+            idLabel.isHidden = false
+            nameLabel.snp.remakeConstraints { make in
+                make.top.equalToSuperview().inset(15)
+                make.leading.equalTo(44)
+                make.trailing.equalToSuperview().inset(14)
+            }
+        }
 
         nameLabel.text = collaboration.name.isEmpty
             ? (collaboration.status == nil
