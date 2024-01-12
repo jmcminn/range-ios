@@ -319,7 +319,7 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
         ) as! TaskListCollaborationTableViewCell
         if indexPath.row < searchedCollaborations.count {
             let collaboration = searchedCollaborations[indexPath.row]
-            cell.setCollaboration(collaboration, projectTimeZone: projectModel.projectSummary.timeZone)
+            cell.setCollaboration(collaboration, model: projectModel)
             cell.mark(selected: selectedTasks.contains(collaboration.id))
         }
         cell.onCollaborationTapped = { [weak self] collaborationId in

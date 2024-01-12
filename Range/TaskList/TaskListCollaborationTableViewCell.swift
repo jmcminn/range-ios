@@ -14,6 +14,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     }
 
     private var selectedView: UIImageView?
+    private let idLabel = UILabel()
     private let nameLabel = UILabel()
 
     private let detailsScrollView = UIScrollView()
@@ -41,8 +42,13 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [nameLabel, detailsScrollView, lastUpdatedLabel, bottomStroke].forEach(contentView.addSubview)
+        [idLabel, nameLabel, detailsScrollView, lastUpdatedLabel, bottomStroke].forEach(contentView.addSubview)
 
+        idLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(15)
+            make.leading.equalToSuperview().inset(selectable ? 64 : 16)
+            make.trailing.equalToSuperview().inset(14)
+        }
         nameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
             make.leading.equalToSuperview().inset(selectable ? 64 : 16)
@@ -92,6 +98,10 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
+        idLabel.font = ._preferredFont(forTextStyle: .caption1, symbolicTraits: .traitBold)
+        idLabel.textColor = .dynamic(.Neutral_05)
+        idLabel.adjustsFontForContentSizeCategory = true
+
         nameLabel.font = .preferredFont(forTextStyle: .headline)
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
@@ -118,8 +128,26 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
         bottomStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
-    func setCollaboration(_ collaboration: Collaboration, projectTimeZone: TimeZone) {
+    func setCollaboration(_ collaboration: Collaboration, model: ProjectModel) {
         collaborationId = collaboration.id
+
+        if let collaborationID = model.collaborationIdentifier(collaboration) {
+            idLabel.isHidden = false
+            idLabel.text = "ID \(collaborationID)"
+            nameLabel.snp.remakeConstraints { make in
+                make.top.greaterThanOrEqualTo(idLabel.snp.bottom).offset(2)
+                make.leading.equalToSuperview().inset(selectable ? 64 : 16)
+                make.trailing.equalToSuperview().inset(14)
+            }
+        } else {
+            idLabel.isHidden = false
+            nameLabel.snp.remakeConstraints { make in
+                make.top.equalToSuperview().inset(15)
+                make.leading.equalToSuperview().inset(selectable ? 64 : 16)
+                make.trailing.equalToSuperview().inset(14)
+            }
+        }
+
         nameLabel.text = collaboration.name.isEmpty
             ? (collaboration.status == nil
                 ? String(localized: "Untitled photos...")
@@ -143,7 +171,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             if let dueDateTimestamp = collaboration.dueDateTimestamp {
                 detailsStackView.addArrangedSubview(PillView(
                     iconName: "calendar",
-                    text: Date.dueDateFormat2(dueDateTimestamp, timeZone: projectTimeZone),
+                    text: Date.dueDateFormat2(dueDateTimestamp, timeZone: model.projectSummary.timeZone),
                     style: collaboration.isOverdue ? .red : .default
                 ))
             }
