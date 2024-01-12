@@ -3,13 +3,18 @@ import UIKit
 
 class CollaborationButton: UIControl {
     private let badge: CollaborationBadgeButton
+    private let collaborationIdLabel = UILabel()
     private let collaborationNameLabel = UILabel()
     private let canvasNameLabel = UILabel()
     private let disclosureIndicator = UIImageView()
 
-    init(collaboration: Collaboration) {
+    init(model: ProjectModel, collaboration: Collaboration) {
         badge = CollaborationBadgeButton(collaboration)
         super.init(frame: .zero)
+
+        if let collaborationID = model.collaborationIdentifier(collaboration) {
+            collaborationIdLabel.text = "ID: \(collaborationID)"
+        }
 
         setupViews()
 
@@ -34,26 +39,28 @@ class CollaborationButton: UIControl {
         layer.borderWidth = 1
 
         setupBadge()
+        setupCollaborationIdLabel()
         setupCollaborationNameLabel()
         setupCanvasNameLabel()
         setupDisclosureIndicator()
 
-        [badge, collaborationNameLabel, canvasNameLabel, disclosureIndicator].forEach(addSubview)
+        let stackView = UIStackView(arrangedSubviews: [collaborationNameLabel, canvasNameLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 2
+        if collaborationIdLabel.text != nil {
+            stackView.insertArrangedSubview(collaborationIdLabel, at: 0)
+        }
+
+        [badge, stackView, disclosureIndicator].forEach(addSubview)
         badge.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(12)
             make.centerY.equalToSuperview()
         }
-        collaborationNameLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(16)
+        stackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(14)
             make.leading.equalTo(badge.snp.trailing).offset(12)
             make.trailing.equalTo(disclosureIndicator.snp.leading).offset(-8)
-            make.bottom.equalTo(badge.snp.centerY)
-        }
-        canvasNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(collaborationNameLabel.snp.bottom)
-            make.leading.equalTo(collaborationNameLabel)
-            make.trailing.equalTo(collaborationNameLabel)
-            make.bottom.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(14)
         }
         disclosureIndicator.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
@@ -108,6 +115,12 @@ extension CollaborationButton {
         badge.setContentHuggingPriority(.required, for: .horizontal)
         badge.setContentCompressionResistancePriority(.required, for: .horizontal)
         badge.isUserInteractionEnabled = false
+    }
+
+    private func setupCollaborationIdLabel() {
+        collaborationIdLabel.font = ._preferredFont(forTextStyle: .caption1, symbolicTraits: .traitBold)
+        collaborationIdLabel.adjustsFontForContentSizeCategory = true
+        collaborationIdLabel.textColor = .dynamic(.Neutral_05)
     }
 
     private func setupCollaborationNameLabel() {

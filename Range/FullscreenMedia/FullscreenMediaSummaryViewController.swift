@@ -274,7 +274,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     private func setupCollaborationButton(collaboration: Collaboration) {
-        collaborationButton = CollaborationButton(collaboration: collaboration)
+        collaborationButton = CollaborationButton(model: projectModel, collaboration: collaboration)
         collaborationButton.addTarget(self, action: #selector(collaborationTapped), for: .touchUpInside)
     }
 
