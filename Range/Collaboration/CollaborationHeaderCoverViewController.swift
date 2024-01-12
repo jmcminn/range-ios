@@ -10,13 +10,20 @@ class CollaborationHeaderCoverViewController: UIViewController {
     var onClose: (() -> Void)?
 
     private var badgeButton: CollaborationBadgeButton!
+    private let idLabel: UILabel?
     private var nameLabel: UILabel!
     private var moreButton: UIButton!
     private var closeButton: UIButton!
 
     /// - Parameters:
-    init(collaboration: Collaboration) {
+    init(model: ProjectModel, collaboration: Collaboration) {
         self.collaboration = collaboration
+        if let collaborationID = model.collaborationIdentifier(collaboration) {
+            idLabel = UILabel()
+            idLabel?.text = "ID: \(collaborationID)"
+        } else {
+            idLabel = nil
+        }
         super.init(nibName: nil, bundle: nil)
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.onCollaborationUpdated()
@@ -84,12 +91,25 @@ class CollaborationHeaderCoverViewController: UIViewController {
             make.trailing.equalTo(closeButton.snp.leading)
         }
 
+        if let idLabel {
+            setupIDLabel()
+            view.addSubview(idLabel)
+            idLabel.snp.makeConstraints { make in
+                make.bottom.equalTo(badgeButton.snp.centerY).offset(-2)
+                make.leading.equalTo(badgeButton.snp.trailing).offset(10)
+            }
+        }
+
         setupNameLabel()
         view.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(badgeButton.snp.centerY)
-            make.leading.equalTo(badgeButton.snp.trailing).offset(16)
-            make.trailing.equalTo(moreButton.snp.leading).offset(-16)
+            if idLabel != nil {
+                make.top.equalTo(badgeButton.snp.centerY).offset(-2)
+            } else {
+                make.centerY.equalTo(badgeButton.snp.centerY)
+            }
+            make.leading.equalTo(badgeButton.snp.trailing).offset(10)
+            make.trailing.lessThanOrEqualTo(moreButton.snp.leading).offset(-10)
         }
 
         onCollaborationUpdated()
@@ -177,6 +197,12 @@ extension CollaborationHeaderCoverViewController {
                 self?.onClose?()
             }
         )
+    }
+
+    private func setupIDLabel() {
+        idLabel?.font = ._preferredFont(forTextStyle: .caption1, symbolicTraits: .traitBold)
+        idLabel?.textColor = .dynamic(.Neutral_05)
+        idLabel?.adjustsFontForContentSizeCategory = true
     }
 
     private func setupNameLabel() {

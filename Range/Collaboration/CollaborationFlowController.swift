@@ -244,7 +244,10 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             // already added
             return
         }
-        let collaborationHeaderCoverVC = CollaborationHeaderCoverViewController(collaboration: collaboration)
+        let collaborationHeaderCoverVC = CollaborationHeaderCoverViewController(
+            model: model,
+            collaboration: collaboration
+        )
         collaborationHeaderCoverVC.onClose = { [weak self] in
             self?.onCollaborationClose?()
         }

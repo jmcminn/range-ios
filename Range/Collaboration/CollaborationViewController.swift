@@ -30,6 +30,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var archivedLabel: LabelWithTextInsets!
     var moreButton: UIButton!
     var closeButton: UIButton!
+    var idLabel: UILabel?
     var nameTextView: UITextViewWithPlaceholder!
 
     var detailsVC: CollaborationDetailsViewController!
@@ -57,8 +58,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     private enum Constants {
         // distance between views
         static let verticalSpacing = 16.0
-        // height from the top until the top of the name text field
-        static let heightToName = 69.0
+        // distance between idLabel and name
+        static let idToNameVerticalSpacing = 6.0
     }
 
     var roundedShadowView: RoundShadowView {
@@ -75,6 +76,13 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         self.projectModel = projectModel
         self.collaboration = collaboration
         isTaskWindow = collaboration.status != nil
+        if let collaborationID = projectModel.collaborationIdentifier(collaboration) {
+            idLabel = UILabel()
+            idLabel!.text = "ID: \(collaborationID)"
+        } else {
+            idLabel = nil
+        }
+
         super.init(nibName: nil, bundle: nil)
 
         feedVC = FeedViewController(
@@ -148,11 +156,24 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.trailing.equalTo(closeButton.snp.leading).offset(-8)
         }
 
+        if let idLabel {
+            setupIdLabel()
+            containerView.addSubview(idLabel)
+            idLabel.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.top.equalTo(badgeButton.snp.bottom).offset(Constants.verticalSpacing)
+            }
+        }
+
         setupNameTextView()
         containerView.addSubview(nameTextView)
         nameTextView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(badgeButton.snp.bottom).offset(Constants.verticalSpacing)
+            if let idLabel {
+                make.top.equalTo(idLabel.snp.bottom).offset(Constants.idToNameVerticalSpacing)
+            } else {
+                make.top.equalTo(badgeButton.snp.bottom).offset(Constants.verticalSpacing)
+            }
             textViewHeightConstraint = make.height.equalTo(textViewHeight).priority(.high).constraint
         }
 
@@ -318,6 +339,12 @@ extension CollaborationViewController {
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 
+    private func setupIdLabel() {
+        idLabel?.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+        idLabel?.textColor = .dynamic(.Neutral_05)
+        idLabel?.adjustsFontForContentSizeCategory = true
+    }
+
     private func setupNameTextView() {
         nameTextView = UITextViewWithPlaceholder(
             placeholderText: isTaskWindow ? "Add task pin name..." : "Add photo pin name..."
@@ -387,6 +414,24 @@ extension CollaborationViewController: CardPresentable {
         max(keyboardHeightInWindow - cardContainer.safeAreaInsets.bottom, 0)
     }
 
+    // height from the top until the top of the name text field
+    var heightToName: CGFloat {
+        if let idLabel {
+            let fittingSize = CGSize(
+                width: containerView.bounds.width,
+                height: UIView.layoutFittingCompressedSize.height
+            )
+            let idLabelHeight = idLabel.systemLayoutSizeFitting(
+                fittingSize, withHorizontalFittingPriority: .required, verticalFittingPriority: .defaultLow
+            ).height
+            return 69.0 + idLabelHeight + Constants.idToNameVerticalSpacing
+
+        } else {
+            // no dynamically sized views above name text field
+            return 69.0
+        }
+    }
+
     func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
         if cardPosition == .min {
             return 0 // will be hidden when minimized
@@ -397,7 +442,7 @@ extension CollaborationViewController: CardPresentable {
             // The spacing available in details view is actually dependent on the type of collaboration and whether
             // there's a description, but it's at least `descriptionTopSpacing`
             let detailsTopSpace = CollaborationDetailsViewController.Constants.descriptionTopSpacing
-            let baseHeight = Constants.heightToName + textViewHeight + detailsTopSpace
+            let baseHeight = heightToName + textViewHeight + detailsTopSpace
 
             // what's visible in the .medium card position but not when showing keyboard
             let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true)
@@ -414,7 +459,7 @@ extension CollaborationViewController: CardPresentable {
             let fullHeight = cardContainerView.bounds.height
             // the height of the collaboration view header that we want to hide
             // behind the header cover
-            let headerHeight = Constants.heightToName + textViewHeight
+            let headerHeight = heightToName + textViewHeight
             // 50 is the height of headerCover content
             let headerCoverHeight = cardContainerView.safeAreaInsets.top + 50
             // add enough so the "header" hides behind the headerCover
@@ -500,7 +545,7 @@ extension CollaborationViewController {
         // it cannot grow above the screen height (also taking into account the keyboard height)
         let availableSpaceInContainer = cardContainer.frame.height - cardContainer.safeAreaInsets.top
             - cardContainer.safeAreaInsets.bottom
-        let contentHeight = Constants.heightToName
+        let contentHeight = heightToName
         // HACK: this could be calculated but is controlled on the CollaborationFlowController level
         // It's here so when editing a long name we limit the text view height so it doesn't trigger
         // showing the collaboration view header cover (which also displays the name)
