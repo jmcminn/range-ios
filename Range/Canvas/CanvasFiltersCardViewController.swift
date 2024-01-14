@@ -8,7 +8,7 @@ import UIKit
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class CanvasFiltersCardViewController: SheetCardViewController {
     unowned let model: ProjectModel
-    private let filters: CanvasFilters
+    private let filters: CollaborationFilters
     private let statuses: [Status]
     private let usersViewModel: UsersViewModel
     private let tagsViewModel: TagsViewModel
@@ -42,7 +42,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - canvasFilters:                         CanvasFilters
-    init(model: ProjectModel, canvasFilters filters: CanvasFilters) {
+    init(model: ProjectModel, canvasFilters filters: CollaborationFilters) {
         self.model = model
         self.filters = filters
 
@@ -131,11 +131,11 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }), for: .valueChanged)
 
         showPhotoPinsSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.filters.showPhotoPins.toggle()
+            self?.filters.showPhotoCollaborations.toggle()
         }), for: .valueChanged)
 
         showTaskPinsSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.filters.showTaskPins.toggle()
+            self?.filters.showTasks.toggle()
             self?.updateTaskPinsEnabled()
         }), for: .valueChanged)
 
@@ -156,7 +156,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }), for: .valueChanged)
 
         showArchivedPinsSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.filters.showArchivedPins.toggle()
+            self?.filters.showArchived.toggle()
         }), for: .valueChanged)
 
         updateControlsStateFromFilters()
@@ -168,8 +168,8 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         dateCreatedSelectorView.isHidden = !showCreatedInLastNDaysSwitch.isOn
         showUpdatedInLastNDaysSwitch.setOn(filters.showUpdatedInLastNDays != nil, animated: false)
         dateUpdatedSelectorView.isHidden = !showUpdatedInLastNDaysSwitch.isOn
-        showPhotoPinsSwitch.setOn(filters.showPhotoPins, animated: false)
-        showTaskPinsSwitch.setOn(filters.showTaskPins, animated: false)
+        showPhotoPinsSwitch.setOn(filters.showPhotoCollaborations, animated: false)
+        showTaskPinsSwitch.setOn(filters.showTasks, animated: false)
         for status in statuses {
             if let statusSwitch = statusSwitches[status] {
                 statusSwitch.setOn(filters.show(status), animated: false)
@@ -179,7 +179,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         filterByAssigneeSwitch.setOn(filters.assigneeFilter != nil, animated: false)
         filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
-        showArchivedPinsSwitch.setOn(filters.showArchivedPins, animated: false)
+        showArchivedPinsSwitch.setOn(filters.showArchived, animated: false)
         usersView.setVisible(filters.assigneeFilter != nil, animated: false)
         tagsView.setVisible(filters.tagsFilter != nil, animated: false)
         updateTaskPinsEnabled()
@@ -189,7 +189,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(
             self, selector: #selector(canvasFiltersUpdated),
-            name: CanvasFilters.UpdateNotificationName, object: nil
+            name: filters.updateNotificationName, object: nil
         )
         canvasFiltersUpdated()
     }
@@ -213,7 +213,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
     /// Update the enabled state of task filters (statuses and assignee)
     private func updateTaskPinsEnabled() {
-        let enabled = filters.showTaskPins
+        let enabled = filters.showTasks
         for status in statuses {
             statusLabels[status]?.isEnabled = enabled
             statusSwitches[status]?.isEnabled = enabled
@@ -505,12 +505,12 @@ extension CanvasFiltersCardViewController: UsersViewModelDelegate {
     /// Called when "Filter by Assignee" switch is toggled
     private func onFilterByAssigneeSwitchAction() {
         if filterByAssigneeSwitch.isOn {
-            filters.assigneeFilter = []
+            filters.setAssigneeFilter([])
             usersView.setVisible(true)
             showUsersPicker()
         } else {
             usersViewModel.clearSelection()
-            filters.assigneeFilter = nil
+            filters.setAssigneeFilter(nil)
             usersView.setVisible(false)
         }
         if let cardDragging = cardDragging {
@@ -538,7 +538,7 @@ extension CanvasFiltersCardViewController: UsersViewModelDelegate {
         selected _: Bool,
         indexInSelectedUsers _: Int
     ) {
-        filters.assigneeFilter = viewModel.selectedUsers.map(\.id)
+        filters.setAssigneeFilter(viewModel.selectedUsers.map(\.id))
     }
 }
 

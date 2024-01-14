@@ -8,7 +8,7 @@ import UIKit
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class TaskListFiltersCardViewController: SheetCardViewController {
     unowned let model: ProjectModel
-    private let filters: TaskListFilters
+    private let filters: CollaborationFilters
     private let statuses: [Status]
     private let usersViewModel: UsersViewModel
     private let canvasesViewModel: ItemPickerViewModel
@@ -41,7 +41,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - filters:                         TaskListFilters
-    init(model: ProjectModel, taskListFilters filters: TaskListFilters) {
+    init(model: ProjectModel, taskListFilters filters: CollaborationFilters) {
         self.model = model
         self.filters = filters
 
@@ -89,7 +89,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
             subtitle: "tasks in the list"
         )
 
-        let assigneeFilterTypeActionItems = TaskListFilters.AssigneeFilterType.allCases.map { assigneeFilterType in
+        let assigneeFilterTypeActionItems = CollaborationFilters.AssigneeFilterType.allCases.map { assigneeFilterType in
             ActionItem(title: assigneeFilterType.displayName) { [weak self] in
                 guard let self = self else { return }
                 self.filters.assigneeFilterType = assigneeFilterType
@@ -165,7 +165,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     }
 
     private func updateControlsStateFromFilters() {
-        let assigneeFilterTypeToggleOptionIndex = TaskListFilters.AssigneeFilterType.allCases
+        let assigneeFilterTypeToggleOptionIndex = CollaborationFilters.AssigneeFilterType.allCases
             .lastIndex(of: filters.assigneeFilterType) ?? 0
         assigneeFilterTypeToggle.setSelectedSegmentIndex(assigneeFilterTypeToggleOptionIndex, animated: true)
         showCreatedInLastNDaysSwitch.setOn(filters.showCreatedInLastNDays != nil, animated: false)
@@ -191,7 +191,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(
             self, selector: #selector(filtersUpdated),
-            name: TaskListFilters.UpdateNotificationName, object: nil
+            name: filters.updateNotificationName, object: nil
         )
         filtersUpdated()
     }

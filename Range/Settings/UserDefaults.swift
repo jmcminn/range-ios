@@ -257,24 +257,24 @@ extension UserDefaults {
     }
 
     /// Returns the canvas filters for given project or default CanvasFilters if not set yet
-    static func canvasFilters(forProjectId projectId: String) -> CanvasFilters {
+    static func canvasFilters(forModel model: ProjectModel) -> CollaborationFilters {
         guard let canvasFiltersString = UserDefaults.standard
-            .object(forKey: canvasFiltersKey(forProjectId: projectId)) as? String
+            .object(forKey: canvasFiltersKey(forProjectId: model.projectId)) as? String
         else {
-            return CanvasFilters()
+            return CollaborationFilters(model: model, variant: .canvas)
         }
         do {
             let canvasFiltersData = try canvasFiltersString.data(using: .utf8)
                 .or(error: "Failed to get data from canvas filters string")
             let jsonDecoder = JSONDecoder()
-            return try jsonDecoder.decode(CanvasFilters.self, from: canvasFiltersData)
+            return try jsonDecoder.decode(CollaborationFilters.self, from: canvasFiltersData)
         } catch {
             Logger.settings.error("Failed to load canvas filters: \(error)")
-            return CanvasFilters()
+            return CollaborationFilters(model: model, variant: .canvas)
         }
     }
 
-    static func setCanvasFilters(_ canvasFilters: CanvasFilters, forProjectId projectId: String) {
+    static func setCanvasFilters(_ canvasFilters: CollaborationFilters, forProjectId projectId: String) {
         do {
             let jsonEncoder = JSONEncoder()
             let canvasFiltersData = try jsonEncoder.encode(canvasFilters)
@@ -292,26 +292,26 @@ extension UserDefaults {
     }
 
     /// Returns the tasks filters for given project or default TaskListFilters if not set yet
-    static func taskListFilters(forModel model: ProjectModel) -> TaskListFilters {
+    static func taskListFilters(forModel model: ProjectModel) -> CollaborationFilters {
         guard let taskListFiltersString = UserDefaults.standard
             .object(forKey: taskListFiltersKey(forProjectId: model.projectId)) as? String
         else {
-            return TaskListFilters(model: model)
+            return CollaborationFilters(model: model, variant: .taskList)
         }
         do {
             let taskListFiltersData = try taskListFiltersString.data(using: .utf8)
                 .or(error: "Failed to get data from task list filters string")
             let jsonDecoder = JSONDecoder()
-            let filters = try jsonDecoder.decode(TaskListFilters.self, from: taskListFiltersData)
+            let filters = try jsonDecoder.decode(CollaborationFilters.self, from: taskListFiltersData)
             filters.model = model
             return filters
         } catch {
             Logger.settings.error("Failed to load task list filters: \(error)")
-            return TaskListFilters(model: model)
+            return CollaborationFilters(model: model, variant: .taskList)
         }
     }
 
-    static func setTaskListFilters(_ filters: TaskListFilters, forProjectId projectId: String) {
+    static func setTaskListFilters(_ filters: CollaborationFilters, forProjectId projectId: String) {
         do {
             let jsonEncoder = JSONEncoder()
             let filtersData = try jsonEncoder.encode(filters)

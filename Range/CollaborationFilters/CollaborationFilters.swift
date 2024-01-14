@@ -1,9 +1,20 @@
 import Foundation
 
-/// Defines filters for task list
-class TaskListFilters: Codable, Equatable {
+/// Defines Collaborations filters
+class CollaborationFilters: Codable, Equatable {
+    enum Variant: Codable {
+        case taskList // fitlers with defaults for task list
+        case canvas // filters with defaults for canvas
+    }
+
+    let variant: Variant
+
     /// The name for the notification posted in NotificationCenter when the filters change
-    static let UpdateNotificationName = Notification.Name("io.range.App.TaskListFiltersUpdated")
+    var updateNotificationName: Notification.Name {
+        variant == .taskList
+            ? Notification.Name("io.range.App.TaskListFiltersUpdated")
+            : Notification.Name("io.range.App.CanvasFiltersUpdated")
+    }
 
     enum AssigneeFilterType: CaseIterable, Codable {
         case onlyMine, everyone, select
@@ -18,14 +29,22 @@ class TaskListFilters: Codable, Equatable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case assigneeFilterType, assigneeFilter, showCreatedInLastNDays, showUpdatedInLastNDays,
-             canvasFilter, hiddenStatuses, tagsFilter, showOnlyOverdue, showOnlyCreatedByUser, showArchived
+        case variant,
+             assigneeFilterType, assigneeFilter,
+             showCreatedInLastNDays, showUpdatedInLastNDays,
+             showPhotoCollaborations, showTasks, hiddenStatuses,
+             showOnlyOverdue,
+             canvasFilter,
+             tagsFilter,
+             identifiersFilter,
+             showOnlyCreatedByUser,
+             showArchived
     }
 
     weak var model: ProjectModel?
 
     /// 3 value toggle for enabling filtering by assignee
-    var assigneeFilterType = AssigneeFilterType.onlyMine { didSet {
+    var assigneeFilterType: AssigneeFilterType { didSet {
         if assigneeFilterType != oldValue {
             updateAssigneeFilter()
             postUpdate()
@@ -66,6 +85,12 @@ class TaskListFilters: Codable, Equatable {
     /// Filter by canvas, if nil or empty then all canvases allowed
     var canvasFilter: [String]? = nil { didSet { postUpdate() }}
 
+    /// Whether to show photo pins
+    var showPhotoCollaborations: Bool = false { didSet { postUpdate() } }
+
+    /// Whether to show tasks
+    var showTasks: Bool = true { didSet { postUpdate() } }
+
     /// Keep the hidden status (and not shown) so if new status is added it is shown by default
     private var hiddenStatuses = Set<String>()
 
@@ -88,6 +113,11 @@ class TaskListFilters: Codable, Equatable {
     /// If not nil and not empty then only match the collaborations that have (or their upload have) all of given tags (tag ids).
     var tagsFilter: [String]? = nil { didSet { postUpdate() }}
 
+    /// This is not nil when user enabled filtering by collaboration identifiers.
+    /// If not nil and not empty then only match the collaborations that have given id (internal id, not the collaboration identifier, the
+    /// collaboration identifier is only used for displaying at filters UI but at the end this filter specifies the exact ids)
+    var identifiersFilter: [String]? = nil { didSet { postUpdate() }}
+
     /// Whether to show onlye the overdue tasks or all of them
     var showOnlyOverdue: Bool = false { didSet { postUpdate() } }
 
@@ -99,38 +129,47 @@ class TaskListFilters: Codable, Equatable {
 
     /// Use notification center to post the notification about update in filters
     private func postUpdate() {
-        NotificationCenter.default.post(name: TaskListFilters.UpdateNotificationName, object: self)
+        NotificationCenter.default.post(name: updateNotificationName, object: self)
     }
 
-    init(model: ProjectModel?) {
+    init(model: ProjectModel?, variant: Variant) {
         self.model = model
+        self.variant = variant
+        assigneeFilterType = variant == .taskList ? .onlyMine : .select
+        showPhotoCollaborations = variant == .taskList ? false : true
         updateAssigneeFilter() // the initial value depends on the current user in the model
     }
 
     /// Reset the filters to default values
     func resetToDefaults() {
-        let defaults = TaskListFilters(model: model)
+        let defaults = CollaborationFilters(model: model, variant: variant)
         assigneeFilterType = defaults.assigneeFilterType
         assigneeFilter = defaults.assigneeFilter
         showCreatedInLastNDays = defaults.showCreatedInLastNDays
         showUpdatedInLastNDays = defaults.showUpdatedInLastNDays
+        showPhotoCollaborations = defaults.showPhotoCollaborations
+        showTasks = defaults.showTasks
         canvasFilter = defaults.canvasFilter
         hiddenStatuses = defaults.hiddenStatuses
         tagsFilter = defaults.tagsFilter
+        identifiersFilter = defaults.identifiersFilter
         showOnlyOverdue = defaults.showOnlyOverdue
         showOnlyCreatedByUser = defaults.showOnlyCreatedByUser
         showArchived = defaults.showArchived
         postUpdate()
     }
 
-    static func == (lhs: TaskListFilters, rhs: TaskListFilters) -> Bool {
+    static func == (lhs: CollaborationFilters, rhs: CollaborationFilters) -> Bool {
         if lhs.assigneeFilterType != rhs.assigneeFilterType { return false }
         if lhs.assigneeFilter != rhs.assigneeFilter { return false }
         if lhs.showCreatedInLastNDays != rhs.showCreatedInLastNDays { return false }
         if lhs.showUpdatedInLastNDays != rhs.showUpdatedInLastNDays { return false }
-        if lhs.canvasFilter != rhs.canvasFilter { return false }
+        if lhs.showPhotoCollaborations != rhs.showPhotoCollaborations { return false }
+        if lhs.showTasks != rhs.showTasks { return false }
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
+        if lhs.canvasFilter != rhs.canvasFilter { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
+        if lhs.identifiersFilter != rhs.identifiersFilter { return false }
         if lhs.showOnlyOverdue != rhs.showOnlyOverdue { return false }
         if lhs.showOnlyCreatedByUser != rhs.showOnlyCreatedByUser { return false }
         if lhs.showArchived != rhs.showArchived { return false }
@@ -138,24 +177,26 @@ class TaskListFilters: Codable, Equatable {
     }
 
     var hasDefaultValues: Bool {
-        self == TaskListFilters(model: model)
+        self == CollaborationFilters(model: model, variant: variant)
     }
 }
 
 /// Extension for TaskListFilters to check if given Collaboration matches the filters
-extension TaskListFilters {
+extension CollaborationFilters {
     func match(_ collaboration: Collaboration) -> Bool {
         if !showArchived, collaboration.isArchived { return false }
 
         if let status = collaboration.status {
             // task filters
+            if !showTasks { return false }
             if !show(status) { return false }
             if let assigneeFilter = assigneeFilter, !assigneeFilter.isEmpty {
                 if !matchAssignee(assigneeFilter, collaboration: collaboration) { return false }
             }
+            if showOnlyOverdue, !collaboration.isOverdue { return false }
         } else {
-            // only show tasks
-            return false
+            // photo collaboration filters
+            if !showPhotoCollaborations { return false }
         }
 
         if let showCreatedInLastNDays = showCreatedInLastNDays,
@@ -174,10 +215,12 @@ extension TaskListFilters {
             if !matchCanvas(canvasFilter, collaboration: collaboration) { return false }
         }
 
-        if showOnlyOverdue, !collaboration.isOverdue { return false }
         if showOnlyCreatedByUser, collaboration.author?.id != model?.userId { return false }
         if let tagsFilter = tagsFilter, !tagsFilter.isEmpty {
             if !matchTags(tagsFilter, collaboration: collaboration) { return false }
+        }
+        if let identifiersFilter, !identifiersFilter.isEmpty {
+            if !identifiersFilter.contains(collaboration.id) { return false }
         }
         return true
     }

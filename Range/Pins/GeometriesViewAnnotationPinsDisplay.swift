@@ -15,7 +15,7 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
     private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
     private let ignoredGeometryId: String?
-    private let canvasFilters: CanvasFilters
+    private let canvasFilters: CollaborationFilters
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
     /// Token for notifications about changes in the canvas geometries
@@ -48,7 +48,7 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
         selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
         ignoredGeometryId: String? = nil,
-        canvasFilters: CanvasFilters,
+        canvasFilters: CollaborationFilters,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
@@ -68,7 +68,7 @@ class GeometriesViewAnnotationPinsDisplay: GeometriesPinsDisplay {
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(canvasFiltersUpdated),
-            name: CanvasFilters.UpdateNotificationName, object: nil
+            name: canvasFilters.updateNotificationName, object: nil
         )
     }
 

@@ -78,10 +78,10 @@ final class ProjectFlowController: UIViewController {
     private var startedFuturePromise: Future<Void, Never>.Promise?
     var onBack: (() -> Void)?
 
-    // Canvas filters for this project
-    let canvasFilters: CanvasFilters
+    // Canvas pin filters for this project
+    let canvasFilters: CollaborationFilters
     // Default filters, never updated, for comparison of current filters output vs the default one for filters indicator badge
-    let defaultCanvasFilters: CanvasFilters
+    let defaultCanvasFilters: CollaborationFilters
 
     let checkmarkAnimationView = LottieAnimationView(asset: "checkmark_animation")
 
@@ -146,9 +146,9 @@ final class ProjectFlowController: UIViewController {
                 throw error
             }
         }
-        canvasFilters = UserDefaults.canvasFilters(forProjectId: projectId)
+        canvasFilters = UserDefaults.canvasFilters(forModel: model)
         canvasFilters.model = model
-        defaultCanvasFilters = CanvasFilters()
+        defaultCanvasFilters = CollaborationFilters(model: model, variant: .canvas)
         defaultCanvasFilters.model = model
 
         canvasContainer = try await CanvasContainerViewController(
@@ -223,7 +223,7 @@ final class ProjectFlowController: UIViewController {
         // observe the filters and update the filters indicator badge on change
         NotificationCenter.default.addObserver(
             self, selector: #selector(updateFiltersIndicatorBadge),
-            name: CanvasFilters.UpdateNotificationName, object: nil
+            name: canvasFilters.updateNotificationName, object: nil
         )
 
         setUIState(.default, animated: false)

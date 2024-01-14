@@ -16,7 +16,7 @@ protocol GeometriesPinsDisplay: AnyObject {
          selectionEnabled: Bool,
          deselectOnCanvasTap: Bool,
          ignoredGeometryId: String?,
-         canvasFilters: CanvasFilters,
+         canvasFilters: CollaborationFilters,
          geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider)
 
     /// Display the pins and listen for changes
@@ -63,7 +63,7 @@ func _createGeometriesPinsDisplay(
     selectionEnabled: Bool = true,
     deselectOnCanvasTap: Bool,
     ignoredGeometryId: String? = nil,
-    canvasFilters: CanvasFilters,
+    canvasFilters: CollaborationFilters,
     geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
 ) -> GeometriesPinsDisplay {
     usingNativeViews

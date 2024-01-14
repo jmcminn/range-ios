@@ -411,7 +411,7 @@ class ProjectsFlowController: UINavigationController {
             // Reset the task list filters when coming from the push notification... This should be
             // mostly fine as they default to "only mine"...
             UserDefaults.setTaskListFilters(
-                TaskListFilters(model: projectFC.model),
+                CollaborationFilters(model: projectFC.model, variant: .taskList),
                 forProjectId: projectFC.model.projectId
             )
             projectFC.showTaskListAction()

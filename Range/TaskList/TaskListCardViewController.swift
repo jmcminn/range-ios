@@ -40,9 +40,9 @@ class TaskListCardViewController: SheetCardViewController {
     private var notificationToken: NotificationToken?
 
     /// Currently applied filters
-    private let filters: TaskListFilters
+    private let filters: CollaborationFilters
     /// Default filters, never updated, for comparison of current filters output vs the default one for filters indicator badge
-    private let defaultFilters: TaskListFilters
+    private let defaultFilters: CollaborationFilters
     private let filtersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
     private let filtersIndicatorBadge = BadgeView()
 
@@ -64,7 +64,7 @@ class TaskListCardViewController: SheetCardViewController {
         self.projectModel = projectModel
         self.canvasContainer = canvasContainer
         filters = UserDefaults.taskListFilters(forModel: projectModel)
-        defaultFilters = TaskListFilters(model: projectModel)
+        defaultFilters = CollaborationFilters(model: projectModel, variant: .taskList)
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
                 c.placeholder == false && c.status != nil // only tasks
@@ -108,7 +108,7 @@ class TaskListCardViewController: SheetCardViewController {
         updateData()
         NotificationCenter.default.addObserver(
             self, selector: #selector(filtersUpdated),
-            name: TaskListFilters.UpdateNotificationName, object: nil
+            name: filters.updateNotificationName, object: nil
         )
     }
 

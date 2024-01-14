@@ -17,7 +17,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
     private let selectionEnabled: Bool
     private let deselectOnCanvasTap: Bool
     private let ignoredGeometryId: String?
-    private let canvasFilters: CanvasFilters
+    private let canvasFilters: CollaborationFilters
     private let geometryPinDisplayOptionsProvider: GeometryPinDisplayOptionsProvider
 
     /// PointAnnotation.userInfo doesn't allow to store Collaboration object, so we store the id and store the mapping (id=>collaboration) in the dictionary
@@ -55,7 +55,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
         selectionEnabled: Bool = true,
         deselectOnCanvasTap: Bool,
         ignoredGeometryId: String? = nil,
-        canvasFilters: CanvasFilters,
+        canvasFilters: CollaborationFilters,
         geometryPinDisplayOptionsProvider: @escaping GeometryPinDisplayOptionsProvider
     ) {
         self.canvas = canvas
@@ -75,7 +75,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(canvasFiltersUpdated),
-            name: CanvasFilters.UpdateNotificationName, object: nil
+            name: canvasFilters.updateNotificationName, object: nil
         )
     }
 

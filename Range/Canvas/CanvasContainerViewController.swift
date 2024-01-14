@@ -9,7 +9,7 @@ class CanvasContainerViewController: UIViewController {
     /// Displays the canvas (with mapview or pdf background)
     let canvasViewController: CanvasViewController
 
-    let canvasFilters: CanvasFilters
+    let canvasFilters: CollaborationFilters
 
     /// shortcut to access the annotations map view
     var annotationsMapView: MapView {
@@ -23,7 +23,7 @@ class CanvasContainerViewController: UIViewController {
 
     init(
         model: ProjectModel,
-        canvasFilters: CanvasFilters,
+        canvasFilters: CollaborationFilters,
         canvasFileLoader: CanvasFileLoader,
         locationProvider: LocationProvider & HeadingProvider
     ) async throws {

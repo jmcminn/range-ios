@@ -1,10 +1,10 @@
 @testable import Range
 import XCTest
 
-final class CanvasFiltersTest: XCTestCase {
+final class CollaborationFiltersTest: ProjectModelTestCase {
     func testAssigneeFiltersForPhotoPin() {
-        let filters = CanvasFilters()
-        filters.assigneeFilter = ["user1"]
+        let filters = CollaborationFilters(model: model, variant: .canvas)
+        filters.setAssigneeFilter(["user1"])
 
         let photoPin = Collaboration(placeholderId: "collaboration1")
 
@@ -12,8 +12,8 @@ final class CanvasFiltersTest: XCTestCase {
     }
 
     func testAssigneeFiltersForTaskPin() {
-        let filters = CanvasFilters()
-        filters.assigneeFilter = ["user1", "user2"]
+        let filters = CollaborationFilters(model: model, variant: .canvas)
+        filters.setAssigneeFilter(["user1", "user2"])
 
         let unassignedTaskPin = Collaboration(placeholderId: "collaboration1")
         unassignedTaskPin.status = Status(placeholderId: "status1")
@@ -28,7 +28,7 @@ final class CanvasFiltersTest: XCTestCase {
         )
         XCTAssertTrue(filters.match(assignedTaskPin), "assigned task matches the assignee filter with user id")
 
-        filters.assigneeFilter = [UserViewModel.unassignedUserId]
+        filters.setAssigneeFilter([UserViewModel.unassignedUserId])
         XCTAssertTrue(
             filters.match(unassignedTaskPin),
             "unassigned task matches the assignee filter for unnassigned tasks"
@@ -40,7 +40,7 @@ final class CanvasFiltersTest: XCTestCase {
     }
 
     func testEmptyTagFilters() {
-        let filters = CanvasFilters()
+        let filters = CollaborationFilters(model: model, variant: .canvas)
         filters.tagsFilter = []
 
         let collaboration = Collaboration(placeholderId: "collaboration1")
@@ -48,7 +48,7 @@ final class CanvasFiltersTest: XCTestCase {
     }
 
     func testTagFiltersMatchCollaboration() {
-        let filters = CanvasFilters()
+        let filters = CollaborationFilters(model: model, variant: .canvas)
         filters.tagsFilter = ["tag1"]
 
         let collaboration = Collaboration(placeholderId: "collaboration1")
@@ -59,7 +59,7 @@ final class CanvasFiltersTest: XCTestCase {
     }
 
     func testTagFiltersMatchUpload() {
-        let filters = CanvasFilters()
+        let filters = CollaborationFilters(model: model, variant: .canvas)
         filters.tagsFilter = ["tag1"]
 
         let collaboration = Collaboration(placeholderId: "collaboration1")
@@ -77,7 +77,7 @@ final class CanvasFiltersTest: XCTestCase {
     }
 
     func testTagFiltersAllTagsShouldMatch() {
-        let filters = CanvasFilters()
+        let filters = CollaborationFilters(model: model, variant: .canvas)
         filters.tagsFilter = ["tag1", "tag2"]
 
         let collaboration = Collaboration(placeholderId: "collaboration1")
@@ -91,7 +91,7 @@ final class CanvasFiltersTest: XCTestCase {
     }
 
     func testTagFiltersMatchUntagged() {
-        let filters = CanvasFilters()
+        let filters = CollaborationFilters(model: model, variant: .canvas)
         filters.tagsFilter = [TagViewModel.untaggedId]
 
         let collaboration = Collaboration(placeholderId: "collaboration1")

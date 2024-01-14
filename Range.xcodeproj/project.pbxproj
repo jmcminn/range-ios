@@ -137,7 +137,7 @@
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
 		0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */; };
-		0A3680DC29ED9AA600CD1D98 /* CanvasFiltersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680DB29ED9AA600CD1D98 /* CanvasFiltersTest.swift */; };
+		0A3680DC29ED9AA600CD1D98 /* CollaborationFiltersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680DB29ED9AA600CD1D98 /* CollaborationFiltersTest.swift */; };
 		0A36CDF7299BD2260004758E /* LocalFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDF6299BD2260004758E /* LocalFiles.swift */; };
 		0A36CDF9299BD2350004758E /* MediaKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDF8299BD2350004758E /* MediaKey.swift */; };
 		0A36CDFB299C0E2B0004758E /* RangeLocalFileImageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDFA299C0E2A0004758E /* RangeLocalFileImageDataProvider.swift */; };
@@ -318,7 +318,7 @@
 		0A82A8EC292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */; };
 		0A82A8EE292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */; };
 		0A82A8F02922857E00A4BBCE /* UpdateCommentTextCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */; };
-		0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322322A419D6F0076D032 /* TaskListFilters.swift */; };
+		0A8322332A419D6F0076D032 /* CollaborationFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322322A419D6F0076D032 /* CollaborationFilters.swift */; };
 		0A8322352A41A0810076D032 /* TaskListFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */; };
 		0A83D90A2AB0A93A003A8DCE /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D9092AB0A93A003A8DCE /* ForgotPasswordView.swift */; };
 		0A83D90C2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90B2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift */; };
@@ -431,7 +431,6 @@
 		0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */; };
 		0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0255C285079C000106CA5 /* HeaderExpander.swift */; };
 		0AD2CA9B29E6B8C60065D712 /* UIView+FirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */; };
-		0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */; };
 		0AD78E002AB9869700710260 /* ProjectsEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD78DFF2AB9869700710260 /* ProjectsEmptyStateView.swift */; };
 		0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */; };
 		0AD8E2642AB35B730079E0DD /* StringPickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */; };
@@ -627,7 +626,7 @@
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
 		0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCollectionViewCell.swift; sourceTree = "<group>"; };
-		0A3680DB29ED9AA600CD1D98 /* CanvasFiltersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFiltersTest.swift; sourceTree = "<group>"; };
+		0A3680DB29ED9AA600CD1D98 /* CollaborationFiltersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFiltersTest.swift; sourceTree = "<group>"; };
 		0A36CDF6299BD2260004758E /* LocalFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFiles.swift; sourceTree = "<group>"; };
 		0A36CDF8299BD2350004758E /* MediaKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKey.swift; sourceTree = "<group>"; };
 		0A36CDFA299C0E2A0004758E /* RangeLocalFileImageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeLocalFileImageDataProvider.swift; sourceTree = "<group>"; };
@@ -813,7 +812,7 @@
 		0A82A8EB292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCollaborationCommentCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8ED292281BF00A4BBCE /* UpdateNoteCompletedCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNoteCompletedCommandTest.swift; sourceTree = "<group>"; };
 		0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCommentTextCommandTest.swift; sourceTree = "<group>"; };
-		0A8322322A419D6F0076D032 /* TaskListFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListFilters.swift; sourceTree = "<group>"; };
+		0A8322322A419D6F0076D032 /* CollaborationFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFilters.swift; sourceTree = "<group>"; };
 		0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A83D9042AB050FB003A8DCE /* Range.custom.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.custom.entitlements; sourceTree = "<group>"; };
 		0A83D9052AB0513F003A8DCE /* Range.staging.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Range.staging.entitlements; sourceTree = "<group>"; };
@@ -929,7 +928,6 @@
 		0AD02558284E652500106CA5 /* UIScrollViewDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AD0255C285079C000106CA5 /* HeaderExpander.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderExpander.swift; sourceTree = "<group>"; };
 		0AD2CA9A29E6B8C60065D712 /* UIView+FirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FirstResponder.swift"; sourceTree = "<group>"; };
-		0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFilters.swift; sourceTree = "<group>"; };
 		0AD78DFF2AB9869700710260 /* ProjectsEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsEmptyStateView.swift; sourceTree = "<group>"; };
 		0AD8E2612AB35ACC0079E0DD /* StringPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerCardViewController.swift; sourceTree = "<group>"; };
 		0AD8E2632AB35B730079E0DD /* StringPickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPickerTableViewCell.swift; sourceTree = "<group>"; };
@@ -1247,7 +1245,6 @@
 				0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */,
 				0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */,
 				0A34072B29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift */,
-				0AD2CA9C29E7FA4F0065D712 /* CanvasFilters.swift */,
 				0A9341BC29A65E5B006166C1 /* CanvasFiltersCardViewController.swift */,
 			);
 			path = Canvas;
@@ -1371,12 +1368,12 @@
 			path = TypeScale;
 			sourceTree = "<group>";
 		};
-		0A3680DA29ED9A9700CD1D98 /* Canvas */ = {
+		0A3680DA29ED9A9700CD1D98 /* CollaborationFilters */ = {
 			isa = PBXGroup;
 			children = (
-				0A3680DB29ED9AA600CD1D98 /* CanvasFiltersTest.swift */,
+				0A3680DB29ED9AA600CD1D98 /* CollaborationFiltersTest.swift */,
 			);
-			path = Canvas;
+			path = CollaborationFilters;
 			sourceTree = "<group>";
 		};
 		0A374DD6292418070036C184 /* Toast */ = {
@@ -1636,6 +1633,7 @@
 				0A22CF1A2930CD310084332B /* Canvas */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
+				0AAC46D02B547A5200D87549 /* CollaborationFilters */,
 				0ABFD8B528F00A46008CDA74 /* Comment */,
 				0A9341C029A7D41C006166C1 /* CopyPin */,
 				0AEC91B12B2CA23600AE2329 /* CreateProject */,
@@ -1692,7 +1690,7 @@
 			children = (
 				0A7393792A6005970079A7FB /* Annotations */,
 				0A7393742A5DAB8B0079A7FB /* AnnotationUtils */,
-				0A3680DA29ED9A9700CD1D98 /* Canvas */,
+				0A3680DA29ED9A9700CD1D98 /* CollaborationFilters */,
 				0A130EAC28D8A2BC00FF1368 /* Extensions */,
 				0A5957212B06570F0047E669 /* Filters */,
 				0A4995BB2857697F00E571FB /* HeaderExpand */,
@@ -2020,6 +2018,14 @@
 			path = ItemPicker;
 			sourceTree = "<group>";
 		};
+		0AAC46D02B547A5200D87549 /* CollaborationFilters */ = {
+			isa = PBXGroup;
+			children = (
+				0A8322322A419D6F0076D032 /* CollaborationFilters.swift */,
+			);
+			path = CollaborationFilters;
+			sourceTree = "<group>";
+		};
 		0ABFD8AC28EDB945008CDA74 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -2184,7 +2190,6 @@
 				0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */,
 				0A5C06852AA0E944005A04CF /* TaskListSelectAllTasksView.swift */,
 				0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */,
-				0A8322322A419D6F0076D032 /* TaskListFilters.swift */,
 				0A8322342A41A0810076D032 /* TaskListFiltersCardViewController.swift */,
 			);
 			path = TaskList;
@@ -2412,7 +2417,7 @@
 				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
 				0AAB2DE32AFC006B0017A12D /* ArrowAnnotation.swift in Sources */,
 				0AD8E2622AB35ACC0079E0DD /* StringPickerCardViewController.swift in Sources */,
-				0A8322332A419D6F0076D032 /* TaskListFilters.swift in Sources */,
+				0A8322332A419D6F0076D032 /* CollaborationFilters.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0AEC91B52B2CABCB00AE2329 /* CreateProjectStep1View.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
@@ -2685,7 +2690,6 @@
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
 				0A7393832A606C360079A7FB /* Annotation.swift in Sources */,
-				0AD2CA9D29E7FA4F0065D712 /* CanvasFilters.swift in Sources */,
 				0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
 				0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */,
@@ -2841,7 +2845,7 @@
 				0A73937B2A6005AE0079A7FB /* AnnotationsTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirestoreTagNameTest.swift in Sources */,
-				0A3680DC29ED9AA600CD1D98 /* CanvasFiltersTest.swift in Sources */,
+				0A3680DC29ED9AA600CD1D98 /* CollaborationFiltersTest.swift in Sources */,
 				0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */,
 				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
 				0A6DB6A7292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift in Sources */,
