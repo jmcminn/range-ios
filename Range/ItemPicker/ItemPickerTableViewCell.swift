@@ -1,11 +1,11 @@
 import Foundation
 import UIKit
 
-class CanvasPickerTableViewCell: UITableViewCell {
+class ItemPickerTableViewCell: UITableViewCell {
     /// The cell has 2 variants based on the reuseIdentifier
     enum Variant: String {
-        case single = "CanvasCell"
-        case multi = "MultiCanvasCell"
+        case single = "ItemCell"
+        case multi = "MultiselectItemCell"
 
         static func identifier(forMultiselect: Bool) -> String {
             forMultiselect ? multi.rawValue : single.rawValue
@@ -50,17 +50,17 @@ class CanvasPickerTableViewCell: UITableViewCell {
         nameLabel.font = .preferredFont(forTextStyle: .body)
     }
 
-    func setCanvas(_ canvas: CanvasViewModel) {
-        nameLabel.text = canvas.name
+    func setItem(_ item: ItemPickerItem) {
+        nameLabel.text = item.name
         if multiselect {
             selectedIconView.isHidden = false
-            selectedIconView.image = canvas.selected
+            selectedIconView.image = item.selected
                 ? UIImage(named: "checkmark_checked")
                 : UIImage().addCircleBackground(bgSize: CGSize(width: 20, height: 20),
                                                 bgColor: .dynamic(.Neutral_10),
                                                 strokeColor: .dynamic(.Neutral_07))
         } else {
-            selectedIconView.isHidden = !canvas.selected
+            selectedIconView.isHidden = !item.selected
         }
     }
 

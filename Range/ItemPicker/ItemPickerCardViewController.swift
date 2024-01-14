@@ -2,32 +2,40 @@ import Foundation
 import SnapKit
 import UIKit
 
-/// Card view controller presenting a list of canvases to choose from.
+/// Card view controller presenting content from ItemPickerViewModel and allowing for selection.
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
-class CanvasPickerCardViewController: SheetCardViewController {
+class ItemPickerCardViewController: SheetCardViewController {
     /// users to select
-    private let viewModel: CanvasesViewModel
+    private let viewModel: ItemPickerViewModel
 
     // background view for searchView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the list
     private let headerView = UIView()
     // only when viewModel is multiselect
-    private let selectedView: SelectedCanvasesView?
+    private let selectedView: SelectedItemPickerItemsView?
     private let headerStroke = UIView()
     private let tableView = UITableView(frame: .zero, style: .plain)
 
     private static var headerHeight = 0
-    private static var headerHeightWithSelectedCanvases = 44
+    private static var headerHeightWithSelectedItems = 44
     private var headerHeightConstraint: Constraint?
 
-    init(title: String, viewModel: CanvasesViewModel) {
+    init(
+        icon: UIImage?,
+        title: String,
+        searchPlaceholderText: String,
+        viewModel: ItemPickerViewModel,
+        selectedItemsViewConfig: SelectedItemPickerItemsView.Config
+    ) {
         self.viewModel = viewModel
         selectedView = viewModel.multiselect
-            ? SelectedCanvasesView(viewModel: viewModel, showEditCell: false)
+            ? SelectedItemPickerItemsView(viewModel: viewModel, config: selectedItemsViewConfig)
             : nil
 
-        super.init(icon: UIImage(systemName: "square.3.layers.3d"), title: title, showSearchView: true)
+        super.init(icon: icon, title: title, showSearchView: true)
+
+        searchView.placeholderText = searchPlaceholderText
     }
 
     override func viewDidLoad() {
@@ -38,11 +46,11 @@ class CanvasPickerCardViewController: SheetCardViewController {
         headerView.snp.makeConstraints { make in
             make.top.equalTo(sheetHeaderView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            if selectedView != nil, !viewModel.selectedCanvases.isEmpty {
+            if selectedView != nil, !viewModel.selectedItems.isEmpty {
                 self.headerHeightConstraint = make.height
-                    .equalTo(CanvasPickerCardViewController.headerHeightWithSelectedCanvases).constraint
+                    .equalTo(ItemPickerCardViewController.headerHeightWithSelectedItems).constraint
             } else {
-                self.headerHeightConstraint = make.height.equalTo(CanvasPickerCardViewController.headerHeight)
+                self.headerHeightConstraint = make.height.equalTo(ItemPickerCardViewController.headerHeight)
                     .constraint
             }
         }
@@ -50,7 +58,7 @@ class CanvasPickerCardViewController: SheetCardViewController {
         setupSearchView()
 
         if let selectedView = selectedView {
-            selectedView.isHidden = viewModel.selectedCanvases.isEmpty
+            selectedView.isHidden = viewModel.selectedItems.isEmpty
             headerView.addSubview(selectedView)
             selectedView.snp.makeConstraints { make in
                 make.leading.trailing.bottom.equalToSuperview()
@@ -102,7 +110,6 @@ class CanvasPickerCardViewController: SheetCardViewController {
     }
 
     private func setupSearchView() {
-        searchView.placeholderText = "Search for a canvas..."
         searchView.addDelegate(self)
     }
 
@@ -121,15 +128,15 @@ class CanvasPickerCardViewController: SheetCardViewController {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.register(
-            CanvasPickerTableViewCell.self,
-            forCellReuseIdentifier: CanvasPickerTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect)
+            ItemPickerTableViewCell.self,
+            forCellReuseIdentifier: ItemPickerTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect)
         )
         tableView.keyboardDismissMode = .onDrag
     }
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
     private func updateHeaderShadow() {
-        // the view to which the shadow is attached changes when showing selected canvases (because this view is not in sheetHeaderView)
+        // the view to which the shadow is attached changes when showing selected items (because this view is not in sheetHeaderView)
         headerView.layer.shadowOpacity = 0
         sheetHeaderView.layer.shadowOpacity = 0
 
@@ -163,33 +170,33 @@ class CanvasPickerCardViewController: SheetCardViewController {
 
 // MARK: - view model delegate
 
-extension CanvasPickerCardViewController: CanvasesViewModelDelegate {
-    func canvasesViewModel(
-        _ viewModel: CanvasesViewModel,
-        canvas: CanvasViewModel,
+extension ItemPickerCardViewController: ItemPickerViewModelDelegate {
+    func itemPickerViewModel(
+        _ viewModel: ItemPickerViewModel,
+        item: ItemPickerItem,
         selected: Bool,
-        indexInSelectedCanvases _: Int
+        indexInSelectedItems _: Int
     ) {
         guard viewModel.multiselect else { return }
 
         // 1. for multiselect we need to reload rows that are affected by selection
-        let indexPath = IndexPath(item: viewModel.filteredCanvases.firstIndex(of: canvas) ?? 0, section: 0)
+        let indexPath = IndexPath(item: viewModel.filteredItems.firstIndex(of: item) ?? 0, section: 0)
         tableView.reloadRows(at: [indexPath], with: .automatic)
 
-        // 2. show/hide the selected canvases view depending on the list being not empty
-        updateSelectedCanvasesVisibility(canvasSelected: selected)
+        // 2. show/hide the selected items view depending on the list being not empty
+        updateSelectedItemsVisibility(itemSelected: selected)
     }
 
-    func updateSelectedCanvasesVisibility(canvasSelected selected: Bool) {
+    func updateSelectedItemsVisibility(itemSelected selected: Bool) {
         guard let selectedView = selectedView else { return }
-        // only handle first selected canvas (show canvases) or last unselected (hide canvases)
-        guard (selected == true && viewModel.selectedCanvases.count == 1)
-            || (selected == false && viewModel.selectedCanvases.count == 0) else { return }
+        // only handle first selected item (show items) or last unselected (hide items)
+        guard (selected == true && viewModel.selectedItems.count == 1)
+            || (selected == false && viewModel.selectedItems.count == 0) else { return }
 
         selectedView.visibleStateWillTransition()
         if selected {
             // showing the users
-            headerHeightConstraint?.update(offset: CanvasPickerCardViewController.headerHeightWithSelectedCanvases)
+            headerHeightConstraint?.update(offset: ItemPickerCardViewController.headerHeightWithSelectedItems)
             // first animate the header height
             UIView.animate(withDuration: 0.1) {
                 self.view.layoutIfNeeded()
@@ -202,7 +209,7 @@ extension CanvasPickerCardViewController: CanvasesViewModelDelegate {
             // first hide the users
             selectedView.setVisible(false, animated: true) {
                 // then animate the header to its new height
-                self.headerHeightConstraint?.update(offset: CanvasPickerCardViewController.headerHeight)
+                self.headerHeightConstraint?.update(offset: ItemPickerCardViewController.headerHeight)
                 UIView.animate(withDuration: 0.1) {
                     self.view.layoutIfNeeded()
                 } completion: { [weak self] _ in
@@ -213,33 +220,33 @@ extension CanvasPickerCardViewController: CanvasesViewModelDelegate {
     }
 }
 
-// MARK: - filtering users
+// MARK: - filtering items
 
-extension CanvasPickerCardViewController: SearchViewDelegate {
+extension ItemPickerCardViewController: SearchViewDelegate {
     func searchView(_: SearchView, textDidChange text: String) {
         viewModel.filter(by: text)
         tableView.reloadData()
     }
 }
 
-// MARK: - users table view delegate / data source
+// MARK: - items table view delegate / data source
 
-extension CanvasPickerCardViewController: UITableViewDelegate, UITableViewDataSource {
+extension ItemPickerCardViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         1
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        viewModel.filteredCanvases.count
+        viewModel.filteredItems.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: CanvasPickerTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect),
+            withIdentifier: ItemPickerTableViewCell.Variant.identifier(forMultiselect: viewModel.multiselect),
             for: indexPath
-        ) as! CanvasPickerTableViewCell
-        let canvas = viewModel.filteredCanvases[indexPath.row]
-        cell.setCanvas(canvas)
+        ) as! ItemPickerTableViewCell
+        let item = viewModel.filteredItems[indexPath.row]
+        cell.setItem(item)
         return cell
     }
 
@@ -257,13 +264,13 @@ extension CanvasPickerCardViewController: UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if viewModel.multiselect {
-            let canvas = viewModel.filteredCanvases[indexPath.row]
-            viewModel.set(canvasWithId: canvas.id, selected: !canvas.selected)
+            let item = viewModel.filteredItems[indexPath.row]
+            viewModel.set(itemWithId: item.id, selected: !item.selected)
             tableView.reloadRows(at: [indexPath], with: .automatic)
         } else {
-            let canvas = viewModel.filteredCanvases[indexPath.row]
-            if !canvas.selected {
-                viewModel.set(canvasWithId: canvas.id, selected: true)
+            let item = viewModel.filteredItems[indexPath.row]
+            if !item.selected {
+                viewModel.set(itemWithId: item.id, selected: true)
             }
             dismissCard()
             onClose?()

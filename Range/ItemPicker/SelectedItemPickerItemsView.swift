@@ -1,8 +1,18 @@
 import UIKit
 
-/// Displays a horizontally scrollable collection of CanvasViewModel(s).
-class SelectedCanvasesView: UIView {
-    unowned let viewModel: CanvasesViewModel
+/// Displays a horizontally scrollable collection of ItemPickerItem(s).
+class SelectedItemPickerItemsView: UIView {
+    struct Config {
+        // if nil then don't show the edit cell
+        var editCellVariant: EditCollectionViewCell.Variant?
+        // the icon to display to the left of the name for each selected item
+        var itemIconSystemName: String?
+
+        var showEditCell: Bool { editCellVariant != nil }
+    }
+
+    unowned let viewModel: ItemPickerViewModel
+    let config: Config
     var collectionView: UICollectionView!
 
     /// The view can be shown or hidden. But for layout purposes it is important to know about 1 more state - `transitioning`,
@@ -16,13 +26,10 @@ class SelectedCanvasesView: UIView {
     /// current state
     private(set) var visibleState: VisibleState
 
-    /// Should it always show a special cell saying "edit" at the beginning of canvases (even if there's no selected canvases)
-    private let showEditCell: Bool
-
-    init(viewModel: CanvasesViewModel, showEditCell: Bool = false) {
+    init(viewModel: ItemPickerViewModel, config: Config) {
         self.viewModel = viewModel
-        self.showEditCell = showEditCell
-        visibleState = viewModel.selectedCanvases.isEmpty && !showEditCell ? .hidden : .visible
+        self.config = config
+        visibleState = viewModel.selectedItems.isEmpty && !config.showEditCell ? .hidden : .visible
         super.init(frame: .zero)
 
         viewModel.addDelegate(self)
@@ -49,7 +56,7 @@ class SelectedCanvasesView: UIView {
         collectionView.delegate = self
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
-        collectionView.register(SelectedCanvasCollectionViewCell.self, forCellWithReuseIdentifier: "CanvasCell")
+        collectionView.register(SelectedItemPickerItemCollectionViewCell.self, forCellWithReuseIdentifier: "ItemCell")
         collectionView.register(EditCollectionViewCell.self, forCellWithReuseIdentifier: "EditCell")
 
         addSubview(collectionView)
@@ -71,7 +78,7 @@ class SelectedCanvasesView: UIView {
 
 // MARK: - showing/hiding
 
-extension SelectedCanvasesView {
+extension SelectedItemPickerItemsView {
     func visibleStateWillTransition() {
         visibleState = .transitioning
     }
@@ -107,18 +114,18 @@ extension SelectedCanvasesView {
     }
 }
 
-// MARK: - CanvasesViewModel delegate
+// MARK: - ItemPickerViewModelDelegate delegate
 
-extension SelectedCanvasesView: CanvasesViewModelDelegate {
-    /// update selected canvases when view model changes
-    func canvasesViewModel(
-        _: CanvasesViewModel,
-        canvas _: CanvasViewModel,
+extension SelectedItemPickerItemsView: ItemPickerViewModelDelegate {
+    /// update selected item when view model changes
+    func itemPickerViewModel(
+        _: ItemPickerViewModel,
+        item _: ItemPickerItem,
         selected: Bool,
-        indexInSelectedCanvases: Int
+        indexInSelectedItems: Int
     ) {
         let indexPath = IndexPath(
-            item: showEditCell ? 1 + indexInSelectedCanvases : indexInSelectedCanvases,
+            item: config.showEditCell ? 1 + indexInSelectedItems : indexInSelectedItems,
             section: 0
         )
         if selected {
@@ -132,35 +139,35 @@ extension SelectedCanvasesView: CanvasesViewModelDelegate {
 
 // MARK: - UICollectionView data source & delegate
 
-extension SelectedCanvasesView: UICollectionViewDataSource, UICollectionViewDelegate,
+extension SelectedItemPickerItemsView: UICollectionViewDataSource, UICollectionViewDelegate,
     UICollectionViewDelegateFlowLayout
 {
-    func canvas(forIndexPath indexPath: IndexPath) -> CanvasViewModel {
-        viewModel.selectedCanvases[showEditCell ? indexPath.item - 1 : indexPath.item]
+    func item(forIndexPath indexPath: IndexPath) -> ItemPickerItem {
+        viewModel.selectedItems[config.showEditCell ? indexPath.item - 1 : indexPath.item]
     }
 
     func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
-        showEditCell ? 1 + viewModel.selectedCanvases.count : viewModel.selectedCanvases.count
+        config.showEditCell ? 1 + viewModel.selectedItems.count : viewModel.selectedItems.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
-        if showEditCell, indexPath.item == 0 {
+        if let editCellVariant = config.editCellVariant, indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EditCell",
                                                           for: indexPath) as! EditCollectionViewCell
-            cell.setVariant(.editCanvas)
+            cell.setVariant(editCellVariant)
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "CanvasCell",
+                withReuseIdentifier: "ItemCell",
                 for: indexPath
-            ) as! SelectedCanvasCollectionViewCell
-            let canvas = canvas(forIndexPath: indexPath)
-            cell.canvasViewModel = canvas
-            cell.onDeselect = { [weak self, weak canvas] in
-                guard let canvas = canvas else { return }
-                self?.viewModel.set(canvasWithId: canvas.id, selected: false)
+            ) as! SelectedItemPickerItemCollectionViewCell
+            let item = item(forIndexPath: indexPath)
+            cell.setItem(item, imageSystemName: config.itemIconSystemName)
+            cell.onDeselect = { [weak self, weak item] in
+                guard let item else { return }
+                self?.viewModel.set(itemWithId: item.id, selected: false)
             }
             return cell
         }
@@ -170,18 +177,16 @@ extension SelectedCanvasesView: UICollectionViewDataSource, UICollectionViewDele
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize
     {
-        let isEditCell = showEditCell && indexPath.item == 0
+        let isEditCell = config.showEditCell && indexPath.item == 0
 
-        let name = isEditCell
-            ? EditCollectionViewCell.Variant.editCanvas.label
-            : canvas(forIndexPath: indexPath).name
+        let name = isEditCell ? config.editCellVariant!.label : item(forIndexPath: indexPath).name
 
         let nameFont = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
         let nameWidth = name.size(withAttributes: [NSAttributedString.Key.font: nameFont]).width
 
         if isEditCell {
             let imageWidth = UIImage(
-                systemName: EditCollectionViewCell.Variant.editCanvas.image,
+                systemName: config.editCellVariant!.image,
                 withConfiguration: UIImage.SymbolConfiguration(font: nameFont)
             )?.size.width ?? 0
             let contentWidth = imageWidth + EditCollectionViewCell.imageToLabelDistance + nameWidth
@@ -192,10 +197,21 @@ extension SelectedCanvasesView: UICollectionViewDataSource, UICollectionViewDele
                 height: 40
             )
         } else {
+            let imageWidth: CGFloat
+            if let cellIconName = config.itemIconSystemName, let cellImage = UIImage(
+                systemName: cellIconName,
+                withConfiguration: UIImage
+                    .SymbolConfiguration(font: ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold))
+            ) {
+                imageWidth = cellImage.size.width + SelectedItemPickerItemCollectionViewCell.imageToLabelOffset
+            } else {
+                imageWidth = 0
+            }
             return CGSize(
-                width: max(nameWidth, TagCollectionViewCell.minLabelWidth) +
-                    SelectedCanvasCollectionViewCell.leadingLabelInset +
-                    SelectedCanvasCollectionViewCell.trailingLabelInset + 1.0, // +1 to handle any rounding issues
+                width: max(imageWidth + nameWidth, TagCollectionViewCell.minLabelWidth) +
+                    SelectedItemPickerItemCollectionViewCell.leadingInset +
+                    SelectedItemPickerItemCollectionViewCell.trailingLabelInset + 1.0,
+                // +1 to handle any rounding issues
                 height: 40
             )
         }

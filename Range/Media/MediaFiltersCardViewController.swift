@@ -11,7 +11,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
     private let mediaFilters: MediaFilters
     private let usersViewModel: UsersViewModel
     private let tagsViewModel: TagsViewModel
-    private let canvasesViewModel: CanvasesViewModel
+    private let canvasesViewModel: ItemPickerViewModel
 
     private var resetButton: RangeButton!
 
@@ -26,7 +26,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
     private let filterByTagsSwitch = UISwitch()
     private let tagsView: SelectedTagsView
     private let filterByCanvasSwitch = UISwitch()
-    private let canvasesView: SelectedCanvasesView
+    private let canvasesView: SelectedItemPickerItemsView
 
     private var gradientViews = [GradientView]()
 
@@ -55,10 +55,10 @@ class MediaFiltersCardViewController: SheetCardViewController {
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
 
-        let canvasesViewModel = CanvasesViewModel(model: model, multiselect: true)
+        let canvasesViewModel = ItemPickerViewModel(canvasPickerForModel: model, multiselect: true)
         // preselect canvases from filters
-        mediaFilters.canvasFilter?.forEach { canvasesViewModel.set(canvasWithId: $0, selected: true) }
-        canvasesView = SelectedCanvasesView(viewModel: canvasesViewModel, showEditCell: true)
+        mediaFilters.canvasFilter?.forEach { canvasesViewModel.set(itemWithId: $0, selected: true) }
+        canvasesView = SelectedItemPickerItemsView(canvasesViewForModel: canvasesViewModel)
         self.canvasesViewModel = canvasesViewModel
 
         super.init(
@@ -586,7 +586,7 @@ extension MediaFiltersCardViewController: TagsViewModelDelegate {
 
 // MARK: - canvas
 
-extension MediaFiltersCardViewController: CanvasesViewModelDelegate {
+extension MediaFiltersCardViewController: ItemPickerViewModelDelegate {
     /// Called when "Filter by Canvas" switch is toggled
     private func onFilterByCanvasSwitchAction() {
         if filterByCanvasSwitch.isOn {
@@ -611,17 +611,17 @@ extension MediaFiltersCardViewController: CanvasesViewModelDelegate {
     /// Show the picker that operates on canvasesViewModel
     func showCanvasPicker() {
         guard let presentingVC = presentingVC else { return }
-        let pickerCardVC = CanvasPickerCardViewController(title: "Canvas", viewModel: canvasesViewModel)
-        pickerCardVC.installAndShowCard(in: presentingVC)
+        ItemPickerCardViewController(canvasPickerForModel: canvasesViewModel).installAndShowCard(in: presentingVC)
     }
 
     /// Updates canvas filters when the viewModel is updated
-    func canvasesViewModel(
-        _ viewModel: CanvasesViewModel,
-        canvas _: CanvasViewModel,
+    func itemPickerViewModel(
+        _ viewModel: ItemPickerViewModel,
+        item _: ItemPickerItem,
         selected _: Bool,
-        indexInSelectedCanvases _: Int
+        indexInSelectedItems _: Int
     ) {
-        mediaFilters.canvasFilter = viewModel.selectedCanvases.map(\.id)
+        guard viewModel == canvasesViewModel else { return }
+        mediaFilters.canvasFilter = viewModel.selectedItems.map(\.id)
     }
 }

@@ -11,7 +11,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     private let filters: TaskListFilters
     private let statuses: [Status]
     private let usersViewModel: UsersViewModel
-    private let canvasesViewModel: CanvasesViewModel
+    private let canvasesViewModel: ItemPickerViewModel
     private let tagsViewModel: TagsViewModel
 
     private var resetButton: RangeButton!
@@ -26,7 +26,7 @@ class TaskListFiltersCardViewController: SheetCardViewController {
     private let dateUpdatedSelectorView: OptionSelectorCollectionView
     private let usersView: SelectedUsersView
     private let filterByCanvasSwitch = UISwitch()
-    private let canvasesView: SelectedCanvasesView
+    private let canvasesView: SelectedItemPickerItemsView
     private var statusLabels = [Status: UILabel]()
     private var statusSwitches = [Status: UISwitch]()
     private let filterByTagsSwitch = UISwitch()
@@ -71,10 +71,10 @@ class TaskListFiltersCardViewController: SheetCardViewController {
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)
         self.usersViewModel = usersViewModel
 
-        let canvasesViewModel = CanvasesViewModel(model: model, multiselect: true)
+        let canvasesViewModel = ItemPickerViewModel(canvasPickerForModel: model, multiselect: true)
         // preselect canvases from filters
-        filters.canvasFilter?.forEach { canvasesViewModel.set(canvasWithId: $0, selected: true) }
-        canvasesView = SelectedCanvasesView(viewModel: canvasesViewModel, showEditCell: true)
+        filters.canvasFilter?.forEach { canvasesViewModel.set(itemWithId: $0, selected: true) }
+        canvasesView = SelectedItemPickerItemsView(canvasesViewForModel: canvasesViewModel)
         self.canvasesViewModel = canvasesViewModel
 
         let tagsViewModel = TagsViewModel(model: model)
@@ -562,7 +562,7 @@ extension TaskListFiltersCardViewController: UsersViewModelDelegate {
 
 // MARK: - canvas
 
-extension TaskListFiltersCardViewController: CanvasesViewModelDelegate {
+extension TaskListFiltersCardViewController: ItemPickerViewModelDelegate {
     /// Called when "Filter by Canvas" switch is toggled
     private func onFilterByCanvasSwitchAction() {
         if filterByCanvasSwitch.isOn {
@@ -587,18 +587,18 @@ extension TaskListFiltersCardViewController: CanvasesViewModelDelegate {
     /// Show the picker that operates on canvasesViewModel
     func showCanvasPicker() {
         guard let presentingVC = presentingVC else { return }
-        let pickerCardVC = CanvasPickerCardViewController(title: "Canvas", viewModel: canvasesViewModel)
-        pickerCardVC.installAndShowCard(in: presentingVC)
+        ItemPickerCardViewController(canvasPickerForModel: canvasesViewModel).installAndShowCard(in: presentingVC)
     }
 
     /// Updates canvas filters when the viewModel is updated
-    func canvasesViewModel(
-        _ viewModel: CanvasesViewModel,
-        canvas _: CanvasViewModel,
+    func itemPickerViewModel(
+        _ viewModel: ItemPickerViewModel,
+        item _: ItemPickerItem,
         selected _: Bool,
-        indexInSelectedCanvases _: Int
+        indexInSelectedItems _: Int
     ) {
-        filters.canvasFilter = viewModel.selectedCanvases.map(\.id)
+        guard viewModel == canvasesViewModel else { return }
+        filters.canvasFilter = viewModel.selectedItems.map(\.id)
     }
 }
 

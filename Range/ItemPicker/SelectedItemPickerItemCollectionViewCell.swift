@@ -1,9 +1,10 @@
 import Foundation
 import UIKit
 
-class SelectedCanvasCollectionViewCell: UICollectionViewCell {
-    static let leadingLabelInset = 30.0
+class SelectedItemPickerItemCollectionViewCell: UICollectionViewCell {
+    static let leadingInset = 10.0
     static let trailingLabelInset = 30.0
+    static let imageToLabelOffset = 5.0
 
     let imageView = UIImageView()
     let label = UILabel()
@@ -27,15 +28,11 @@ class SelectedCanvasCollectionViewCell: UICollectionViewCell {
 
         let font = UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
 
-        imageView.image = UIImage(
-            systemName: "square.3.layers.3d",
-            withConfiguration: UIImage.SymbolConfiguration(font: font)
-        )
         imageView.tintColor = .dynamic(.Neutral_04)
         contentView.addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().inset(TagCollectionViewCell.leadingLabelInset)
+            make.leading.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.leadingInset)
         }
 
         contentView.addSubview(label)
@@ -44,8 +41,8 @@ class SelectedCanvasCollectionViewCell: UICollectionViewCell {
         label.adjustsFontForContentSizeCategory = true
         label.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().inset(SelectedCanvasCollectionViewCell.leadingLabelInset)
-            make.trailing.equalToSuperview().inset(SelectedCanvasCollectionViewCell.trailingLabelInset)
+            make.leading.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.leadingInset)
+            make.trailing.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.trailingLabelInset)
         }
 
         var unselectButtonConfig = UIButton.Configuration.plain()
@@ -68,18 +65,35 @@ class SelectedCanvasCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    unowned var canvasViewModel: CanvasViewModel? {
-        didSet {
-            if let viewModel = canvasViewModel {
-                label.text = viewModel.name
-            } else {
-                label.text = ""
+    func setItem(_ item: ItemPickerItem, imageSystemName: String?) {
+        label.text = item.name
+        if let imageSystemName, let image = UIImage(
+            systemName: imageSystemName,
+            withConfiguration: UIImage.SymbolConfiguration(font:
+                ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold))
+        ) {
+            imageView.image = image
+            imageView.isHidden = false
+            label.snp.remakeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalTo(imageView.snp.trailing)
+                    .offset(SelectedItemPickerItemCollectionViewCell.imageToLabelOffset)
+                make.trailing.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.trailingLabelInset)
+            }
+        } else {
+            imageView.image = nil
+            imageView.isHidden = true
+            label.snp.remakeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.leadingInset)
+                make.trailing.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.trailingLabelInset)
             }
         }
     }
 
     override func prepareForReuse() {
-        canvasViewModel = nil
+        label.text = nil
+        imageView.image = nil
     }
 
     @available(*, unavailable)
