@@ -5,16 +5,13 @@ import UIKit
 
 /// Convenience extension for creating an ItemPickerViewModel for project canvases
 extension ItemPickerViewModel {
-    convenience init(taskIdentifiersViewModel model: ProjectModel, multiselect: Bool) {
-        let tasks: [Collaboration] = Array(model.mainRealm.objects(Collaboration.self)
-            .where { (c: Query<Collaboration>) -> Query<Bool> in
-                c.placeholder == false && c.status != nil // only tasks
-            })
-
-        let allItems: [ItemPickerItem] = tasks.compactMap {
+    convenience init(collaborationIdentifiers collaborations: [Collaboration], model: ProjectModel, multiselect: Bool) {
+        let allItems: [ItemPickerItem] = collaborations.compactMap {
             guard let collaborationIdentifier = model.collaborationIdentifier($0) else { return nil }
             return ItemPickerItem(id: $0.id, name: collaborationIdentifier)
         }
+        .sorted { item0, item1 in item0.name < item1.name }
+
         self.init(allItems: Array(allItems), multiselect: multiselect)
     }
 }
@@ -25,14 +22,14 @@ extension SelectedItemPickerItemsView {
     }
 }
 
-// extension ItemPickerCardViewController {
-//    convenience init(canvasPickerForModel viewModel: ItemPickerViewModel) {
-//        self.init(
-//            icon: UIImage(systemName: "square.3.layers.3d"),
-//            title: "Canvas",
-//            searchPlaceholderText: "Search for a canvas...",
-//            viewModel: viewModel,
-//            selectedItemsViewConfig: .init(itemIconSystemName: "square.3.layers.3d")
-//        )
-//    }
-// }
+extension ItemPickerCardViewController {
+    convenience init(identifierPickerForModel viewModel: ItemPickerViewModel) {
+        self.init(
+            icon: UIImage(systemName: "number.circle"),
+            title: "ID",
+            searchPlaceholderText: "Search for an ID...",
+            viewModel: viewModel,
+            selectedItemsViewConfig: .init()
+        )
+    }
+}

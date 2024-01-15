@@ -1,4 +1,5 @@
 import Foundation
+import RealmSwift
 
 /// Defines Collaborations filters
 class CollaborationFilters: Codable, Equatable {
@@ -138,6 +139,19 @@ class CollaborationFilters: Codable, Equatable {
         assigneeFilterType = variant == .taskList ? .onlyMine : .select
         showPhotoCollaborations = variant == .taskList ? false : true
         updateAssigneeFilter() // the initial value depends on the current user in the model
+    }
+
+    /// All collaborations for given variant
+    func allCollaborations(_ model: ProjectModel) -> [Collaboration] {
+        if variant == .taskList {
+            return Array(model.mainRealm.objects(Collaboration.self)
+                .where { (c: Query<Collaboration>) -> Query<Bool> in
+                    c.placeholder == false && c.status != nil // only tasks
+                })
+        } else {
+            return model.currentCanvas.pins
+                .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
+        }
     }
 
     /// Reset the filters to default values

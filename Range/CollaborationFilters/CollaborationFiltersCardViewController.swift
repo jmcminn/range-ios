@@ -94,7 +94,11 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
 
-        let identifiersViewModel = ItemPickerViewModel(taskIdentifiersViewModel: model, multiselect: true)
+        let identifiersViewModel = ItemPickerViewModel(
+            collaborationIdentifiers: filters.allCollaborations(model),
+            model: model,
+            multiselect: true
+        )
         filters.identifiersFilter?.forEach { identifiersViewModel.set(itemWithId: $0, selected: true) }
         identifiersView = SelectedItemPickerItemsView(identifiersViewForModel: identifiersViewModel)
         self.identifiersViewModel = identifiersViewModel
@@ -117,6 +121,7 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         usersViewModel.addDelegate(self)
         tagsViewModel.addDelegate(self)
         canvasesViewModel.addDelegate(self)
+        identifiersViewModel.addDelegate(self)
     }
 
     override func viewDidLoad() {
@@ -216,12 +221,14 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         }
         filterByAssigneeSwitch.setOn(filters.assigneeFilter != nil, animated: false)
         filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
+        filterByIdentifiersSwitch.setOn(filters.identifiersFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
         showOnlyOverdueSwitch.setOn(filters.showOnlyOverdue, animated: false)
         showArchivedSwitch.setOn(filters.showArchived, animated: false)
         usersView.setVisible(filters.assigneeFilterType == .select, animated: false)
         canvasesView.setVisible(filters.canvasFilter != nil, animated: false)
         tagsView.setVisible(filters.tagsFilter != nil, animated: false)
+        identifiersView.setVisible(filters.identifiersFilter != nil, animated: false)
         updateTaskPinsEnabled()
     }
 
@@ -242,24 +249,18 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
     @objc func filtersUpdated() {
         resetButton.isHidden = filters.hasDefaultValues
 
+        let filteredCount = filters.allCollaborations(model)
+            .filter(filters.match) // apply filter
+            .count
+
         if filters.variant == .taskList {
-            let tasksCount = model.mainRealm.objects(Collaboration.self)
-                .where { (c: Query<Collaboration>) -> Query<Bool> in
-                    c.placeholder == false && c.status != nil // only tasks
-                }
-                .filter(filters.match) // apply filter
-                .count
-            subtitleLabel?.text = tasksCount == 1
+            subtitleLabel?.text = filteredCount == 1
                 ? String(localized: "1 task in the list")
-                : String(localized: "\(tasksCount) tasks in the list")
+                : String(localized: "\(filteredCount) tasks in the list")
         } else {
-            let pinsOnCanvasCount = model.currentCanvas.pins
-                .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
-                .filter(filters.match) // apply filter
-                .count
-            subtitleLabel?.text = pinsOnCanvasCount == 1
+            subtitleLabel?.text = filteredCount == 1
                 ? String(localized: "1 pin on canvas")
-                : String(localized: "\(pinsOnCanvasCount) pins on canvas")
+                : String(localized: "\(filteredCount) pins on canvas")
         }
     }
 
@@ -365,6 +366,13 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         addSpace(height: 9)
         addSeparator()
 
+        // ----- Identifiers -----------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by task ID")), control: filterByIdentifiersSwitch,
+            bottomInset: 4) // the rest = 9 is added below identifiers view
+        addIdentifiersView()
+        addSpace(height: 9)
+        addSeparator()
+
         // ----- Tasks I've created ----------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Only show tasks I've created")),
             control: showOnlyCreatedByUserSwitch)
@@ -423,6 +431,13 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         add(label: createLabel(text: String(localized: "Filter by Tags")), control: filterByTagsSwitch,
             bottomInset: 4) // the rest = 9 is added below tags view
         addTagsView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Identifiers -----------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by pin ID")), control: filterByIdentifiersSwitch,
+            bottomInset: 4) // the rest = 9 is added below identifiers view
+        addIdentifiersView()
         addSpace(height: 9)
         addSeparator()
 
@@ -552,6 +567,18 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
 
         addLeftRightGradients(to: tagsView)
+    }
+
+    private func addIdentifiersView() {
+        identifiersView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(identifiersView)
+        identifiersView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(40)
+        }
+        identifiersView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(identifiersTapped)))
+
+        addLeftRightGradients(to: identifiersView)
     }
 
     private func addLeftRightGradients(to superView: UIView) {
@@ -813,8 +840,8 @@ extension CollaborationFiltersCardViewController {
     /// Show the picker that operates on canvasesViewModel
     func showIdentifiersPicker() {
         guard let presentingVC = presentingVC else { return }
-        // TODO: 2172
-//        ItemPickerCardViewController(...
+        ItemPickerCardViewController(identifierPickerForModel: identifiersViewModel)
+            .installAndShowCard(in: presentingVC)
     }
 }
 

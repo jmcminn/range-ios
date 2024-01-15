@@ -55,6 +55,7 @@ class ItemPickerCardViewController: SheetCardViewController {
             }
         }
 
+        searchView.textField.text = viewModel.filterString
         setupSearchView()
 
         if let selectedView = selectedView {
