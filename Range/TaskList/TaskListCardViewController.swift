@@ -383,7 +383,7 @@ extension TaskListCardViewController {
     }
 
     @objc func showFiltersCard() {
-        let filtersCardVC = TaskListFiltersCardViewController(model: projectModel, taskListFilters: filters)
+        let filtersCardVC = CollaborationFiltersCardViewController(model: projectModel, filters: filters)
         filtersCardVC.onClose = { [weak self] in
             guard let self = self else { return }
             UserDefaults.setTaskListFilters(self.filters, forProjectId: projectModel.projectId)

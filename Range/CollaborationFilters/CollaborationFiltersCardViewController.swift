@@ -3,46 +3,56 @@ import Foundation
 import RealmSwift
 import UIKit
 
-/// Card view controller presenting filters for canvas
+/// Card view controller presenting collaboration filters.
+/// The configuration of filters to display is determined by CollaborationFilters.Variant - it can either present
+/// the filters relevant for canvas pins or task list.
+///
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
-class CanvasFiltersCardViewController: SheetCardViewController {
+class CollaborationFiltersCardViewController: SheetCardViewController {
     unowned let model: ProjectModel
     private let filters: CollaborationFilters
     private let statuses: [Status]
     private let usersViewModel: UsersViewModel
+    private let canvasesViewModel: ItemPickerViewModel
     private let tagsViewModel: TagsViewModel
+    private let identifiersViewModel: ItemPickerViewModel
 
     private var resetButton: RangeButton!
 
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
 
+    private var assigneeFilterTypeToggle: SegmentedControl!
+    private var filterByAssigneeLabel: UILabel?
+    private let filterByAssigneeSwitch = UISwitch()
     private let showCreatedInLastNDaysSwitch = UISwitch()
     private let dateCreatedSelectorView: OptionSelectorCollectionView
     private let showUpdatedInLastNDaysSwitch = UISwitch()
     private let dateUpdatedSelectorView: OptionSelectorCollectionView
     private let showPhotoPinsSwitch = UISwitch()
     private let showTaskPinsSwitch = UISwitch()
+    private let usersView: SelectedUsersView
+    private let filterByCanvasSwitch = UISwitch()
+    private let canvasesView: SelectedItemPickerItemsView
     private var statusLabels = [Status: UILabel]()
     private var statusSwitches = [Status: UISwitch]()
-    private var showOnlyOverdueLabel: UILabel!
-    private let showOnlyOverdueSwitch = UISwitch()
-    private var filterByAssigneeLabel: UILabel!
-    private let filterByAssigneeSwitch = UISwitch()
-    private let usersView: SelectedUsersView
     private let filterByTagsSwitch = UISwitch()
     private let tagsView: SelectedTagsView
+    private let filterByIdentifiersSwitch = UISwitch()
+    private let identifiersView: SelectedItemPickerItemsView
+    private var showOnlyOverdueLabel: UILabel!
+    private let showOnlyOverdueSwitch = UISwitch()
     private let showOnlyCreatedByUserSwitch = UISwitch()
-    private let showArchivedPinsSwitch = UISwitch()
+    private let showArchivedSwitch = UISwitch()
 
     private var gradientViews = [GradientView]()
 
     /// Initializer
     ///
     /// - Parameters:
-    ///     - canvasFilters:                         CanvasFilters
-    init(model: ProjectModel, canvasFilters filters: CollaborationFilters) {
+    ///     - filters:                         CollaborationFilters
+    init(model: ProjectModel, filters: CollaborationFilters) {
         self.model = model
         self.filters = filters
 
@@ -72,20 +82,41 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)
         self.usersViewModel = usersViewModel
 
+        let canvasesViewModel = ItemPickerViewModel(canvasPickerForModel: model, multiselect: true)
+        // preselect canvases from filters
+        filters.canvasFilter?.forEach { canvasesViewModel.set(itemWithId: $0, selected: true) }
+        canvasesView = SelectedItemPickerItemsView(canvasesViewForModel: canvasesViewModel)
+        self.canvasesViewModel = canvasesViewModel
+
         let tagsViewModel = TagsViewModel(model: model)
         // preselect tags from the filter
         filters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
 
+        let identifiersViewModel = ItemPickerViewModel(taskIdentifiersViewModel: model, multiselect: true)
+        filters.identifiersFilter?.forEach { identifiersViewModel.set(itemWithId: $0, selected: true) }
+        identifiersView = SelectedItemPickerItemsView(identifiersViewForModel: identifiersViewModel)
+        self.identifiersViewModel = identifiersViewModel
+
         super.init(
             icon: UIImage(named: "filter.search"),
-            title: String(localized: "Canvas Filters"),
-            subtitle: "pins on canvas"
+            title: String(localized: filters.variant == .taskList ? "Task List Filters" : "Canvas Filters"),
+            subtitle: filters.variant == .taskList ? "tasks in the list" : "pins on canvas"
         )
+
+        let assigneeFilterTypeActionItems = CollaborationFilters.AssigneeFilterType.allCases.map { assigneeFilterType in
+            ActionItem(title: assigneeFilterType.displayName) { [weak self] in
+                guard let self = self else { return }
+                self.filters.assigneeFilterType = assigneeFilterType
+                self.onAssigneeFilterTypeChanged()
+            }
+        }
+        assigneeFilterTypeToggle = SegmentedControl(items: assigneeFilterTypeActionItems)
 
         usersViewModel.addDelegate(self)
         tagsViewModel.addDelegate(self)
+        canvasesViewModel.addDelegate(self)
     }
 
     override func viewDidLoad() {
@@ -95,6 +126,10 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         addSheetHeaderShadowBasedOnDrivingScrollView()
 
         setupResetButton()
+
+        filterByCanvasSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.onFilterByCanvasSwitchAction()
+        }), for: .valueChanged)
 
         // add a switch per status
         for status in statuses {
@@ -129,7 +164,6 @@ class CanvasFiltersCardViewController: SheetCardViewController {
                 self.dateUpdatedSelectorView.selectedItem = nil
             }
         }), for: .valueChanged)
-
         showPhotoPinsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.filters.showPhotoCollaborations.toggle()
         }), for: .valueChanged)
@@ -138,24 +172,25 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             self?.filters.showTasks.toggle()
             self?.updateTaskPinsEnabled()
         }), for: .valueChanged)
-
-        showOnlyOverdueSwitch.addAction(.init(handler: { [weak self] _ in
-            self?.filters.showOnlyOverdue.toggle()
-        }), for: .valueChanged)
-
         filterByAssigneeSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByAssigneeSwitchAction()
         }), for: .valueChanged)
-
         filterByTagsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByTagsSwitchAction()
+        }), for: .valueChanged)
+        filterByIdentifiersSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.onFilterByIdentifiersSwitchAction()
+        }), for: .valueChanged)
+
+        showOnlyOverdueSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.filters.showOnlyOverdue.toggle()
         }), for: .valueChanged)
 
         showOnlyCreatedByUserSwitch.addAction(.init(handler: { [weak self] _ in
             self?.filters.showOnlyCreatedByUser.toggle()
         }), for: .valueChanged)
 
-        showArchivedPinsSwitch.addAction(.init(handler: { [weak self] _ in
+        showArchivedSwitch.addAction(.init(handler: { [weak self] _ in
             self?.filters.showArchived.toggle()
         }), for: .valueChanged)
 
@@ -164,23 +199,28 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     }
 
     private func updateControlsStateFromFilters() {
+        let assigneeFilterTypeToggleOptionIndex = CollaborationFilters.AssigneeFilterType.allCases
+            .lastIndex(of: filters.assigneeFilterType) ?? 0
+        assigneeFilterTypeToggle.setSelectedSegmentIndex(assigneeFilterTypeToggleOptionIndex, animated: true)
         showCreatedInLastNDaysSwitch.setOn(filters.showCreatedInLastNDays != nil, animated: false)
         dateCreatedSelectorView.isHidden = !showCreatedInLastNDaysSwitch.isOn
         showUpdatedInLastNDaysSwitch.setOn(filters.showUpdatedInLastNDays != nil, animated: false)
         dateUpdatedSelectorView.isHidden = !showUpdatedInLastNDaysSwitch.isOn
         showPhotoPinsSwitch.setOn(filters.showPhotoCollaborations, animated: false)
         showTaskPinsSwitch.setOn(filters.showTasks, animated: false)
+        filterByCanvasSwitch.setOn(filters.canvasFilter != nil, animated: false)
         for status in statuses {
             if let statusSwitch = statusSwitches[status] {
                 statusSwitch.setOn(filters.show(status), animated: false)
             }
         }
-        showOnlyOverdueSwitch.setOn(filters.showOnlyOverdue, animated: false)
         filterByAssigneeSwitch.setOn(filters.assigneeFilter != nil, animated: false)
         filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
-        showArchivedPinsSwitch.setOn(filters.showArchived, animated: false)
-        usersView.setVisible(filters.assigneeFilter != nil, animated: false)
+        showOnlyOverdueSwitch.setOn(filters.showOnlyOverdue, animated: false)
+        showArchivedSwitch.setOn(filters.showArchived, animated: false)
+        usersView.setVisible(filters.assigneeFilterType == .select, animated: false)
+        canvasesView.setVisible(filters.canvasFilter != nil, animated: false)
         tagsView.setVisible(filters.tagsFilter != nil, animated: false)
         updateTaskPinsEnabled()
     }
@@ -188,10 +228,10 @@ class CanvasFiltersCardViewController: SheetCardViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(
-            self, selector: #selector(canvasFiltersUpdated),
+            self, selector: #selector(filtersUpdated),
             name: filters.updateNotificationName, object: nil
         )
-        canvasFiltersUpdated()
+        filtersUpdated()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -199,19 +239,31 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc func canvasFiltersUpdated() {
+    @objc func filtersUpdated() {
         resetButton.isHidden = filters.hasDefaultValues
 
-        let pinsOnCanvasCount = model.currentCanvas.pins
-            .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
-            .filter(filters.match) // apply filter
-            .count
-        subtitleLabel?.text = pinsOnCanvasCount == 1
-            ? String(localized: "1 pin on canvas")
-            : String(localized: "\(pinsOnCanvasCount) pins on canvas")
+        if filters.variant == .taskList {
+            let tasksCount = model.mainRealm.objects(Collaboration.self)
+                .where { (c: Query<Collaboration>) -> Query<Bool> in
+                    c.placeholder == false && c.status != nil // only tasks
+                }
+                .filter(filters.match) // apply filter
+                .count
+            subtitleLabel?.text = tasksCount == 1
+                ? String(localized: "1 task in the list")
+                : String(localized: "\(tasksCount) tasks in the list")
+        } else {
+            let pinsOnCanvasCount = model.currentCanvas.pins
+                .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
+                .filter(filters.match) // apply filter
+                .count
+            subtitleLabel?.text = pinsOnCanvasCount == 1
+                ? String(localized: "1 pin on canvas")
+                : String(localized: "\(pinsOnCanvasCount) pins on canvas")
+        }
     }
 
-    /// Update the enabled state of task filters (statuses and assignee)
+    /// Update the enabled state of task filters (statuses and assignee) - if tasks are disabled by filters then the related controls are also disabled
     private func updateTaskPinsEnabled() {
         let enabled = filters.showTasks
         for status in statuses {
@@ -220,7 +272,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }
         showOnlyOverdueLabel.isEnabled = enabled
         showOnlyOverdueSwitch.isEnabled = enabled
-        filterByAssigneeLabel.isEnabled = enabled
+        filterByAssigneeLabel?.isEnabled = enabled
         filterByAssigneeSwitch.isEnabled = enabled
         if enabled {
             usersView.setVisible(filters.assigneeFilter != nil)
@@ -252,6 +304,77 @@ class CanvasFiltersCardViewController: SheetCardViewController {
             make.top.bottom.leading.trailing.equalToSuperview().inset(16)
         }
 
+        if filters.variant == .taskList {
+            setupTaskListForm()
+        } else {
+            setupCanvasForm()
+        }
+    }
+
+    private func setupTaskListForm() {
+        // ----- Assignee --------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Assignee")), bottomInset: 13)
+        addAssigneeFilterTypeView()
+        addUsersView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Tasks created in the last ... -----------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show tasks created in the...")),
+            control: showCreatedInLastNDaysSwitch,
+            bottomInset: 4) // the rest = 9 is added below the selection view
+        addDateCreatedSelectorView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Tasks updated in the last ... -----------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show tasks updated in the...")),
+            control: showUpdatedInLastNDaysSwitch,
+            bottomInset: 4) // the rest = 9 is added below the selection view
+        addDateUpdatedSelectorView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Statuses --------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Status")), bottomInset: 5)
+        for (index, status) in statuses.enumerated() {
+            if let statusLabel = statusLabels[status], let statusSwitch = statusSwitches[status] {
+                add(label: statusLabel, control: statusSwitch, topInset: index == 0 ? 13 : 5,
+                    bottomInset: index == (statuses.count - 1) ? 13 : 5)
+            }
+        }
+        addSeparator()
+
+        // ----- Overdue tasks ---------------------------------------------------------------------
+        showOnlyOverdueLabel = createLabel(text: String(localized: "Only show overdue tasks"))
+        add(label: showOnlyOverdueLabel, control: showOnlyOverdueSwitch)
+        addSeparator()
+
+        // ----- Canvas ----------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Canvas")),
+            control: filterByCanvasSwitch,
+            bottomInset: 4) // the rest = 9 is added below canvases view
+        addCanvasesView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Tags ------------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Tags")), control: filterByTagsSwitch,
+            bottomInset: 4) // the rest = 9 is added below tags view
+        addTagsView()
+        addSpace(height: 9)
+        addSeparator()
+
+        // ----- Tasks I've created ----------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Only show tasks I've created")),
+            control: showOnlyCreatedByUserSwitch)
+        addSeparator()
+
+        // ----- Archived pins ---------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Show Archived tasks")), control: showArchivedSwitch)
+    }
+
+    private func setupCanvasForm() {
         // ----- Pins created in the last ... ------------------------------------------------------
         add(label: createLabel(text: String(localized: "Show pins created in the...")),
             control: showCreatedInLastNDaysSwitch,
@@ -290,7 +413,7 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
         // ----- Assignee --------------------------------------------------------------------------
         filterByAssigneeLabel = createLabel(text: String(localized: "Filter by Assignee"))
-        add(label: filterByAssigneeLabel, control: filterByAssigneeSwitch,
+        add(label: filterByAssigneeLabel!, control: filterByAssigneeSwitch,
             bottomInset: 4) // the rest = 9 is added below users view
         addUsersView()
         addSpace(height: 9)
@@ -309,7 +432,21 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         addSeparator()
 
         // ----- Archived pins ---------------------------------------------------------------------
-        add(label: createLabel(text: String(localized: "Show Archived pins")), control: showArchivedPinsSwitch)
+        add(label: createLabel(text: String(localized: "Show Archived pins")), control: showArchivedSwitch)
+    }
+
+    /// Adds given label to the stack view with proper insets
+    private func add(label: UILabel, topInset: Double = 13, bottomInset: Double = 13) {
+        // wrapper to add leading/trailing insets
+        let wrapper = UIView()
+        wrapper.addSubview(label)
+        stackView.addArrangedSubview(wrapper)
+        label.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(topInset)
+            make.bottom.equalToSuperview().inset(bottomInset)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.width.equalTo(scrollView).offset(-64)
+        }
     }
 
     /// Adds given label and control to the stack view with proper insets
@@ -353,6 +490,18 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         }
     }
 
+    private func addAssigneeFilterTypeView() {
+        let wrapper = UIView()
+        wrapper.addSubview(assigneeFilterTypeToggle)
+        stackView.addArrangedSubview(wrapper)
+        assigneeFilterTypeToggle.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(32)
+        }
+        stackView.setCustomSpacing(9, after: wrapper)
+    }
+
     private func addDateCreatedSelectorView() {
         dateCreatedSelectorView.backgroundColor = stackView.backgroundColor
         stackView.addArrangedSubview(dateCreatedSelectorView)
@@ -379,6 +528,18 @@ class CanvasFiltersCardViewController: SheetCardViewController {
         usersView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(usersTapped)))
 
         addLeftRightGradients(to: usersView)
+    }
+
+    private func addCanvasesView() {
+        canvasesView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(canvasesView)
+        canvasesView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(40)
+        }
+        canvasesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(canvasesTapped)))
+
+        addLeftRightGradients(to: canvasesView)
     }
 
     private func addTagsView() {
@@ -501,7 +662,19 @@ class CanvasFiltersCardViewController: SheetCardViewController {
 
 // MARK: - assignee
 
-extension CanvasFiltersCardViewController: UsersViewModelDelegate {
+extension CollaborationFiltersCardViewController: UsersViewModelDelegate {
+    /// Called when "Filter by Assignee" type is changed
+    private func onAssigneeFilterTypeChanged() {
+        usersViewModel.set(selectedUsersWithIds: filters.assigneeFilter ?? [])
+        if filters.assigneeFilterType == .select {
+            showUsersPicker()
+        }
+        usersView.setVisible(filters.assigneeFilterType == .select)
+        if let cardDragging = cardDragging {
+            cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
+        }
+    }
+
     /// Called when "Filter by Assignee" switch is toggled
     private func onFilterByAssigneeSwitchAction() {
         if filterByAssigneeSwitch.isOn {
@@ -542,9 +715,40 @@ extension CanvasFiltersCardViewController: UsersViewModelDelegate {
     }
 }
 
+// MARK: - canvas
+
+extension CollaborationFiltersCardViewController {
+    /// Called when "Filter by Canvas" switch is toggled
+    private func onFilterByCanvasSwitchAction() {
+        if filterByCanvasSwitch.isOn {
+            filters.canvasFilter = []
+            canvasesView.setVisible(true)
+            showCanvasPicker()
+        } else {
+            canvasesViewModel.clearSelection()
+            filters.canvasFilter = nil
+            canvasesView.setVisible(false)
+        }
+        if let cardDragging = cardDragging {
+            cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
+        }
+    }
+
+    /// Invoked when selected canvases tapped
+    @objc private func canvasesTapped() {
+        showCanvasPicker()
+    }
+
+    /// Show the picker that operates on canvasesViewModel
+    func showCanvasPicker() {
+        guard let presentingVC = presentingVC else { return }
+        ItemPickerCardViewController(canvasPickerForModel: canvasesViewModel).installAndShowCard(in: presentingVC)
+    }
+}
+
 // MARK: - tags
 
-extension CanvasFiltersCardViewController: TagsViewModelDelegate {
+extension CollaborationFiltersCardViewController: TagsViewModelDelegate {
     /// Called when "Filter by Tags" switch is toggled
     private func onFilterByTagsSwitchAction() {
         if filterByTagsSwitch.isOn {
@@ -579,5 +783,53 @@ extension CanvasFiltersCardViewController: TagsViewModelDelegate {
     /// Updates tags filters when the tagsViewModel is updated
     func tagsViewModel(_ viewModel: TagsViewModel, tag _: TagViewModel, selected _: Bool, indexInSelectedTags _: Int) {
         filters.tagsFilter = viewModel.selectedTags.map(\.id)
+    }
+}
+
+// MARK: - identifiers
+
+extension CollaborationFiltersCardViewController {
+    /// Called when "Filter by identifiers" switch is toggled
+    private func onFilterByIdentifiersSwitchAction() {
+        if filterByIdentifiersSwitch.isOn {
+            filters.identifiersFilter = []
+            identifiersView.setVisible(true)
+            showIdentifiersPicker()
+        } else {
+            identifiersViewModel.clearSelection()
+            filters.identifiersFilter = nil
+            identifiersView.setVisible(false)
+        }
+        if let cardDragging = cardDragging {
+            cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
+        }
+    }
+
+    /// Invoked when selected tags are tapped
+    @objc private func identifiersTapped() {
+        showIdentifiersPicker()
+    }
+
+    /// Show the picker that operates on canvasesViewModel
+    func showIdentifiersPicker() {
+        guard let presentingVC = presentingVC else { return }
+        // TODO: 2172
+//        ItemPickerCardViewController(...
+    }
+}
+
+extension CollaborationFiltersCardViewController: ItemPickerViewModelDelegate {
+    /// Updates canvas filters when the viewModel is updated
+    func itemPickerViewModel(
+        _ viewModel: ItemPickerViewModel,
+        item _: ItemPickerItem,
+        selected _: Bool,
+        indexInSelectedItems _: Int
+    ) {
+        if viewModel == canvasesViewModel {
+            filters.canvasFilter = viewModel.selectedItems.map(\.id)
+        } else if viewModel == identifiersViewModel {
+            filters.identifiersFilter = viewModel.selectedItems.map(\.id)
+        }
     }
 }

@@ -108,7 +108,7 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func selectCanvasFiltersAction() {
-        let canvasFiltersCardVC = CanvasFiltersCardViewController(model: model, canvasFilters: canvasFilters)
+        let canvasFiltersCardVC = CollaborationFiltersCardViewController(model: model, filters: canvasFilters)
         canvasFiltersCardVC.onClose = { [weak self] in
             guard let self = self else { return }
             UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
