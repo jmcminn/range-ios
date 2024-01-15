@@ -112,7 +112,7 @@ struct CreateProjectStep1View: View {
         ZStack {
             mapView
                 .overlay {
-                    Image("project_location_pin").offset(y: -29).allowsHitTesting(false)
+                    Image("project_location_pin").offset(y: -36).allowsHitTesting(false)
                 }
 
             VStack(spacing: 0) {
