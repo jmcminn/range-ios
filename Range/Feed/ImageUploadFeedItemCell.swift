@@ -12,6 +12,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
     var moreButton: UIButton!
     let imageAndDescriptionView = UIView()
     let uploadImageView = UIImageView()
+    let versionPill = PillView(
+        iconName: "photo.on.rectangle.angled", text: "Version", verticalPadding: 0,
+        backgroundColor: .Secondary_02, style: .flat
+    )
     let descriptionLabel = LabelWithTextInsets()
     let descriptionBackground = UIView()
     let descriptionSeparator = UIView()
@@ -38,7 +42,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         [avatarView, authorLabel, timestampLabel, moreButton, imageAndDescriptionView, tagsView]
             .forEach(contentView.addSubview)
 
-        [uploadImageView, descriptionBackground, descriptionSeparator, descriptionLabel, commentsLabel]
+        [uploadImageView, descriptionBackground, descriptionSeparator, descriptionLabel, commentsLabel, versionPill]
             .forEach(imageAndDescriptionView.addSubview)
 
         avatarView.snp.makeConstraints { make in
@@ -67,6 +71,9 @@ class ImageUploadFeedItemCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(16)
             make.top.greaterThanOrEqualTo(avatarView.snp.bottom).offset(14)
             make.top.greaterThanOrEqualTo(timestampLabel.snp.bottom).offset(14)
+        }
+        versionPill.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview().inset(12)
         }
         updateUploadImageViewConstraints(imageHeight2Width: 0.75)
         descriptionBackground.snp.makeConstraints { make in
@@ -204,7 +211,15 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         uploadImageView.kf.cancelDownloadTask()
 
+        versionPill.isHidden = true
         if let upload = upload {
+            if let correlatedUploads = model?.correlatedUploads(upload), correlatedUploads.count > 1,
+               let uploadIndex = correlatedUploads.firstIndex(of: upload)
+            {
+                versionPill.isHidden = false
+                versionPill.label.text = "Version \(uploadIndex + 1)"
+            }
+
             timestampLabel.text = Date.format1(upload.timestamp)
             possiblyUpdateUploadImageViewConstraints(upload: upload)
             if let imageDataProvider = imageDataProvider {

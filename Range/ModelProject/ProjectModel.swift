@@ -204,4 +204,11 @@ class ProjectModel: NSObject, RealmModel {
               let collaborationIdentifier = collaboration.identifier else { return nil }
         return "\(projectIdentifier)-\(collaborationIdentifier)"
     }
+
+    /// Correlated uploads, *includes this Upload* so it's always an array of length at least = 1
+    func correlatedUploads(_ upload: Upload) -> Results<Upload> {
+        mainRealm.objects(Upload.self)
+            .where { $0.correlationId == upload.correlationId }
+            .sorted(by: \.timestamp)
+    }
 }

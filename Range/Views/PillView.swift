@@ -12,8 +12,7 @@ class PillView: UIView {
 
         var borderColor: UIColor? {
             switch self {
-            case .default, .disabled:
-                return .dynamic(.Neutral_07)
+            case .default, .disabled: return .dynamic(.Neutral_07)
             case .red: return .Red_03
             case .tag: return .Primary_Blue_04
             case .flat: return nil
@@ -37,7 +36,7 @@ class PillView: UIView {
     private let style: Style
     private let borderView = UIView()
     private let iconView = UIImageView()
-    private let label = UILabel()
+    private(set) var label = UILabel()
 
     init(
         iconName: String?,
