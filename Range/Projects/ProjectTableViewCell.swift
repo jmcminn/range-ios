@@ -3,6 +3,7 @@ import UIKit
 
 /// Table view cell for displaying ProjectSummary
 class ProjectTableViewCell: UITableViewCell {
+    private let idLabel = UILabel()
     private let nameLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let addressLabel = UILabel()
@@ -13,8 +14,13 @@ class ProjectTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [nameLabel, descriptionLabel, addressLabel].forEach(contentView.addSubview)
+        [idLabel, nameLabel, descriptionLabel, addressLabel].forEach(contentView.addSubview)
 
+        idLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(16)
+            make.leading.equalTo(contentView.snp.leadingMargin).offset(16)
+            make.trailing.equalTo(contentView.snp.trailingMargin).offset(-16)
+        }
         nameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(16)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(16)
@@ -37,6 +43,10 @@ class ProjectTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
+        idLabel.textColor = .dynamic(.Neutral_05)
+        idLabel.font = .preferredFont(forTextStyle: .footnote)
+        idLabel.adjustsFontForContentSizeCategory = true
+
         nameLabel.numberOfLines = 0
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
@@ -52,6 +62,23 @@ class ProjectTableViewCell: UITableViewCell {
 
     func setProject(_ project: ProjectSummary) {
         guard !project.isInvalidated else { return }
+        if let identifier = project.identifier {
+            idLabel.text = "ID \(identifier)"
+            idLabel.isHidden = false
+            nameLabel.snp.remakeConstraints { make in
+                make.top.equalTo(idLabel.snp.bottom).offset(2)
+                make.leading.equalTo(contentView.snp.leadingMargin).offset(16)
+                make.trailing.equalTo(contentView.snp.trailingMargin).offset(-16)
+            }
+        } else {
+            idLabel.text = nil
+            idLabel.isHidden = true
+            nameLabel.snp.remakeConstraints { make in
+                make.top.equalToSuperview().inset(16)
+                make.leading.equalTo(contentView.snp.leadingMargin).offset(16)
+                make.trailing.equalTo(contentView.snp.trailingMargin).offset(-16)
+            }
+        }
         nameLabel.text = project.name
         descriptionLabel.text = project.projectDescription
 
