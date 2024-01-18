@@ -2,6 +2,7 @@ import Foundation
 import QuickLook
 import RealmSwift
 import UIKit
+import Vision
 import WebKit
 
 /// Implementation of QLPreviewItem - required for previewing items with custom title
@@ -46,6 +47,11 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private let noCommentsView = UIView()
 
     private let tabBar = UITabBar()
+    private let updatePhotoButton = RoundShadowButton(
+        image: UIImage(systemName: "camera.viewfinder") ?? UIImage(),
+        imageTintColor: .white,
+        variant: .secondary
+    )
     private var addCommentVC: CommentViewController?
     private let safeAreaCoverView = UIView()
     /// a view below content to cover the space visible when dragging up past the max height
@@ -132,6 +138,8 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         setupTabBar()
         // tab bar is added to view hierarchy on view did appear, because it's added to superview
 
+        setupUpdatePhotoButton()
+
         setupSummaryVC()
         add(childController: summaryVC)
         containerView.insertSubview(summaryVC.view, belowSubview: headerView)
@@ -185,14 +193,13 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         addTabBar()
+        addUpdatePhotoButton()
         addCommentBar()
     }
 
     /// Add tabBar to this card super view (so it doesn't move with the card and is always at the bottom
     private func addTabBar() {
-        guard let presentingView = presentingView else {
-            return
-        }
+        guard let presentingView = presentingView else { return }
         presentingView.addSubview(tabBar)
         tabBar.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
@@ -208,6 +215,15 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
         presentingView.layoutIfNeeded()
         updateSummaryContentScrollInsets()
+    }
+
+    private func addUpdatePhotoButton() {
+        guard let presentingView else { return }
+        presentingView.addSubview(updatePhotoButton)
+        updatePhotoButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(tabBar.snp.top).offset(-6)
+        }
     }
 
     /// Add a CommentViewController behind the tab bar so the text view is visible and user can start adding new comment
@@ -396,6 +412,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         uploadNotificationToken?.invalidate()
         uploadNotificationToken = nil
         tabBar.removeFromSuperview()
+        updatePhotoButton.removeFromSuperview()
         safeAreaCoverView.removeFromSuperview()
         if let addCommentVC = addCommentVC {
             addCommentVC.hideCard(animated: false)
@@ -539,6 +556,10 @@ extension FullscreenMediaCardViewController {
         }
     }
 
+    private func setupUpdatePhotoButton() {
+        updatePhotoButton.addTarget(self, action: #selector(testContours), for: .touchUpInside)
+    }
+
     private func setupSummaryVC() {
         summaryVC = FullscreenMediaSummaryViewController(
             projectModel: projectModel,
@@ -670,5 +691,71 @@ extension FullscreenMediaCardViewController: QLPreviewControllerDataSource, QLPr
         // only transition from image gallery, for docs use normal presentation (because the preview
         // doesn't match the target full screen very well, so it doesn't look good)
         summaryVC.galleryVC?.imageViewForCurrentPage
+    }
+}
+
+extension FullscreenMediaCardViewController {
+    @objc func testContours() {
+        Task {
+            do {
+                guard let mediaKey = MediaKey.mediaKey(
+                    projectId: projectModel.projectId,
+                    upload: upload,
+                    annotated: false,
+                    // TODO: 2345
+                    thumbnailNumber: 1
+                )
+                else {
+                    throw "Failed to load the file"
+                }
+                let mediaURL = try await mediaCache.getCachedFileURL(forKey: mediaKey)
+                let inputImage = CIImage(contentsOf: mediaURL)
+                let contourRequest = VNDetectContoursRequest()
+                contourRequest.revision = VNDetectContourRequestRevision1
+                contourRequest.detectsDarkOnLight = true
+//                contourRequest.contrastAdjustment = 1
+//                contourRequest.contrastPivot = nil
+                contourRequest.maximumImageDimension = 256 // 512
+                let requestHandler = VNImageRequestHandler(url: mediaURL)
+                print("before perform")
+                try requestHandler.perform([contourRequest])
+                let contoursObservation = contourRequest.results?.first as! VNContoursObservation
+                print("contours count: ", contoursObservation.contourCount)
+//                print("contours: ", contoursObservation.topLevelContours.first?.normalizedPath)
+                let image = drawContours(contoursObservation: contoursObservation)
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFit
+//                self.view.addSubview(imageView)
+                summaryVC.galleryVC?.viewForCurrentPage?.imageView.addSubview(imageView)
+//                summaryVC.galleryVC?.viewForCurrentPage?.imageView.image = nil
+                imageView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                }
+            } catch {
+                print("error: \(error)")
+            }
+        }
+    }
+
+    public func drawContours(contoursObservation: VNContoursObservation) -> UIImage {
+        let size = CGSize(width: 512, height: upload.imageHeightToWidth! * 512)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let renderedImage = renderer.image { context in
+            let renderingContext = context.cgContext
+            let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
+            renderingContext.concatenate(flipVertical)
+            renderingContext.scaleBy(x: size.width, y: size.height)
+            renderingContext.setLineWidth(1.0 / CGFloat(size.width))
+            renderingContext.setStrokeColor(UIColor.Pink_03.cgColor)
+            renderingContext.addPath(contoursObservation.normalizedPath)
+            renderingContext.strokePath()
+
+//            renderingContext.setStrokeColor(UIColor.red.cgColor)
+//            for topLevelContour in contoursObservation.topLevelContours {
+//                renderingContext.addPath(topLevelContour.normalizedPath)
+//            }
+//            renderingContext.strokePath()
+        }
+        return renderedImage
     }
 }
