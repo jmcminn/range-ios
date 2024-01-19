@@ -10,4 +10,25 @@ extension UIScrollView {
     var isContentOriginInBounds: Bool {
         contentOffset.y <= -contentInset.top
     }
+
+    var isAtTop: Bool {
+        contentOffset.y <= verticalOffsetForTop
+    }
+
+    var isAtBottom: Bool {
+        contentOffset.y >= verticalOffsetForBottom
+    }
+
+    var verticalOffsetForTop: CGFloat {
+        let topInset = contentInset.top
+        return -topInset
+    }
+
+    var verticalOffsetForBottom: CGFloat {
+        let scrollViewHeight = bounds.height
+        let scrollContentSizeHeight = contentSize.height
+        let bottomInset = contentInset.bottom
+        let scrollViewBottomOffset = scrollContentSizeHeight + bottomInset - scrollViewHeight
+        return scrollViewBottomOffset
+    }
 }

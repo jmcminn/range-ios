@@ -2,7 +2,7 @@ import SnapKit
 import UIKit
 
 /// Round button with an image that changes its shadow when pressed
-class RoundShadowButton: UIControl {
+class RoundShadowButton: ControlWithTapAreaInsets {
     enum Variant {
         case darkBlurred, blue
     }
@@ -24,7 +24,8 @@ class RoundShadowButton: UIControl {
         selectedImage: UIImage? = nil,
         size: CGFloat = 48,
         imageTintColor: UIColor = .Neutral_04,
-        variant: Variant = .darkBlurred
+        variant: Variant = .darkBlurred,
+        withBorder: Bool = true
     ) {
         self.variant = variant
         self.image = image
@@ -34,7 +35,7 @@ class RoundShadowButton: UIControl {
         super.init(frame: .zero)
 
         layer.cornerRadius = size / 2.0
-        layer.borderWidth = 1
+        if withBorder { layer.borderWidth = 1 }
 
         if variant == .darkBlurred {
             backgroundColor = .clear

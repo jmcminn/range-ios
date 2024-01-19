@@ -1,38 +1,72 @@
 import Foundation
 import RealmSwift
+import SnapKit
 import UIKit
 
+/// This class represent the whole content view of the Fullscreen media view
 class FullscreenMediaSummaryViewController: UIViewController {
-    let scrollView = UIScrollView()
-
     private let projectModel: ProjectModel
     private let mediaCache: MediaCache
     private let showCollaborationButton: Bool
     private let upload: Upload
-    private var uploadNotificationToken: NotificationToken?
+    /// For images the upload can have correlated uploads. We want to display them all and mark as versions (1, 2, ...)
+    /// This array also contains the upload
+    private(set) var correlatedUploads: [Upload]
+    var onCorrelatedUploadsUpdated: (() -> Void)?
 
-    private let stackView = UIStackView()
+    var onCurrentUploadChanged: (() -> Void)?
+
+    private var notificationTokens: [NotificationToken] = []
+
+    var onHeightChanged: (() -> Void)?
+    /// for creating the layout and calculating height
+    private var lastView: UIView!
+
+    private(set) var collaborationButton: CollaborationButton?
     private(set) var galleryVC: ImageGalleryViewController<MediaKey>?
-    private var previewWrapperView: UIView?
+    private var galleryCurrentPageObservation: NSKeyValueObservation?
     private var previewBox: UIView?
     private var fileNameLabel: UILabel?
     private(set) var previewVC: UploadPreviewViewController?
-    private(set) var collaborationButton: CollaborationButton!
+
+    private let authorView = UIView()
+    private let avatarView = UIView()
+    private let authorLabel = UILabel()
+    private let timestampLabel = UILabel()
+
     private(set) var descriptionHeader: UIView!
+    private let descriptionOrAddView = UIView()
     private let descriptionLabel = LabelWithTextInsets()
     private(set) var addDescriptionButton: UIView! // visible when there's no description
+
     private(set) var tagsHeader: UIView!
+    private let tagsOrAddView = UIView()
     private let tagsView = TagsView()
     private(set) var addTagsButton: UIView! // visible when there's no description
 
-    var onPhotoSelected: (() -> Void)?
-    var onAnnotationsSelected: (() -> Void)?
+    private var commentsVC: FeedViewController!
+    // shown when there's no comments in the feed
+    private let noCommentsView = UIView()
 
-    var galleryMediaKey: MediaKey? { .autoAnnotatedMediaKey(
-        projectId: projectModel.projectId,
-        upload: upload,
-        thumbnailNumber: 1
-    ) }
+    var onPhotoSelected: ((Upload) -> Void)?
+    var onAnnotationsSelected: ((Upload) -> Void)?
+
+    var galleryMediaKeys: [MediaKey] {
+        correlatedUploads.compactMap {
+            .autoAnnotatedMediaKey(projectId: projectModel.projectId, upload: $0, thumbnailNumber: 1)
+        }
+    }
+
+    /// Currently presented Upload (for images we may present multiple `correlatedUploads` for given `upload`
+    var currentUpload: Upload? {
+        if let galleryVC {
+            let uploadIndex = galleryVC.currentPage
+            guard uploadIndex < correlatedUploads.count else { return nil }
+            return correlatedUploads[uploadIndex]
+        } else {
+            return upload
+        }
+    }
 
     /// Initializer
     init(projectModel: ProjectModel, mediaCache: MediaCache, upload: Upload, showCollaborationButton: Bool) {
@@ -40,6 +74,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         self.mediaCache = mediaCache
         self.showCollaborationButton = showCollaborationButton
         self.upload = upload
+        correlatedUploads = Array(projectModel.correlatedUploads(upload))
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -49,45 +84,26 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     deinit {
-        uploadNotificationToken?.invalidate()
+        galleryCurrentPageObservation?.invalidate()
+        notificationTokens.forEach { $0.invalidate() }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .dynamic(.Neutral_10)
+        view.backgroundColor = .dynamic(.Neutral_09)
+        view.translatesAutoresizingMaskIntoConstraints = false
 
         setupViews()
         updateColors()
 
+        galleryCurrentPageObservation = galleryVC?.observe(\.currentPage) { [weak self] _, _ in
+            self?.onUploadUpdated()
+        }
+        observeUploads()
         onUploadUpdated()
 
-        uploadNotificationToken = upload.observe { [weak self] change in
-            if case .deleted = change {
-            } else {
-                self?.onUploadUpdated()
-            }
-        }
-    }
-
-    private func onUploadUpdated() {
-        let hasDescription = !(upload.uploadDescription ?? "").isEmpty
-        let hasTags = !upload.tags.isEmpty
-
-        fileNameLabel?.text = upload.fileName
-        descriptionLabel.text = upload.uploadDescription
-        tagsView.tags = upload.tags.where { $0.placeholder == false }
-
-        descriptionHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasDescription }
-        descriptionLabel.isHidden = !hasDescription
-        addDescriptionButton.isHidden = hasDescription
-        tagsHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasTags }
-        tagsView.isHidden = !hasTags
-        addTagsButton.isHidden = hasTags
-
-        if let galleryVC = galleryVC {
-            galleryVC.updatePhotoKey(galleryMediaKey, atIndex: 0)
-        }
+        onHeightChanged?()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -102,124 +118,162 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     private func setupViews() {
-        scrollView.alwaysBounceVertical = true
-        view.addSubview(scrollView)
-        scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        stackView.axis = .vertical
-        stackView.spacing = 8
-
-        scrollView.addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        let mediaView: UIView
-        if upload.isImage {
-            setupGalleryVC()
-            mediaView = galleryVC!.view
-        } else {
-            setupPreviewView()
-            mediaView = previewWrapperView!
-        }
-        stackView.addArrangedSubview(mediaView)
-
+        // ---- Collaboration ----------------------------------------------------------------------
         // only add if there's a collaboration and it has a canvas (it should always have a canvas but
         // in case of placeholders or bad data just don't show the button)
         if showCollaborationButton, let collaboration = upload.collaboration.first,
            collaboration.feature.first?.geometry.first?.canvas.first != nil
         {
-            stackView.setCustomSpacing(12, after: mediaView)
-            setupCollaborationButton(collaboration: collaboration)
-            // put collaboration button in a wrapper view to have horizontal margin
-            let collaborationButtonWrapper = UIView()
-            collaborationButtonWrapper.addSubview(collaborationButton)
-            collaborationButton.snp.makeConstraints { make in
-                make.top.bottom.equalToSuperview()
-                make.leading.trailing.equalToSuperview().inset(16)
-            }
-            stackView.addArrangedSubview(collaborationButtonWrapper)
-            stackView.setCustomSpacing(12, after: collaborationButtonWrapper)
-        } else {
-            stackView.setCustomSpacing(20, after: mediaView)
+            addCollaborationButton(collaboration: collaboration)
+            _addSpacer(16, .dynamic(.Neutral_10))
         }
 
+        // ---- Media ------------------------------------------------------------------------------
+        if upload.isImage {
+            addGalleryVC()
+        } else {
+            addPreviewView()
+        }
+        _addSpacer(16, .dynamic(.Neutral_10))
+
+        _addSpacer(1, .dynamic(.Neutral_07))
+
+        // ---- Author  ----------------------------------------------------------------------------
+        setupAuthorView()
+        _addSubview(authorView)
+
+        // ---- Description  -----------------------------------------------------------------------
+        _addSpacer(1, .dynamic(.Neutral_07), inset: true)
+        _addSpacer(12, .dynamic(.Neutral_09))
         descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
         descriptionHeader
             .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
-        stackView.addArrangedSubview(descriptionHeader)
+        _addSubview(descriptionHeader)
+        _addSpacer(12, .dynamic(.Neutral_09))
+        addDescriptionOrAddView()
+        _addSpacer(16, .dynamic(.Neutral_09))
 
-        setupDescriptionLabel()
-        descriptionLabel
-            .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
-        stackView.addArrangedSubview(descriptionLabel)
-        stackView.setCustomSpacing(16, after: descriptionLabel)
-        addDescriptionButton = createAddButton(title: String(localized: "Add description"), handler: { [weak self] _ in
-            self?.descriptionTapped()
-        })
-        stackView.addArrangedSubview(addDescriptionButton)
-        stackView.setCustomSpacing(16, after: addDescriptionButton)
-
+        // ---- Tags  ------------------------------------------------------------------------------
+        _addSpacer(1, .dynamic(.Neutral_07), inset: true)
+        _addSpacer(12, .dynamic(.Neutral_09))
         tagsHeader = createSectionHeaderView(iconName: "tag", title: String(localized: "Tags"))
         tagsHeader.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
-        stackView.addArrangedSubview(tagsHeader)
+        _addSubview(tagsHeader)
+        _addSpacer(12, .dynamic(.Neutral_09))
+        addTagsOrAddView()
+        _addSpacer(16, .dynamic(.Neutral_09))
 
-        tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
-        stackView.addArrangedSubview(tagsView)
-
-        addTagsButton = createAddButton(title: String(localized: "Add Tags"), handler: { [weak self] _ in
-            self?.tagsTapped()
-        })
-        stackView.addArrangedSubview(addTagsButton)
+        // ---- Comments  --------------------------------------------------------------------------
+        _addSpacer(1, .dynamic(.Neutral_07), inset: true)
+        _addSpacer(12, .dynamic(.Neutral_09))
+        let commentsHeader = createSectionHeaderView(iconName: "bubble.right", title: String(localized: "Comments"))
+        // hide edit button for comments
+        commentsHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = true }
+        _addSubview(commentsHeader)
+        _addSpacer(4, .dynamic(.Neutral_09))
     }
 
-    private func setupGalleryVC() {
-        let galleryHeightToWidth = upload.imageHeightToWidth ?? 4.0 / 3.0
+    /// Return the height of the view
+    func height() -> CGFloat {
+        view.layoutIfNeeded()
+        return lastView.frame.maxY
+    }
+
+    /// Adds subview, sets its constraints and sets it as the `lastView`
+    private func _addSubview(_ subview: UIView, inset: Bool = false) {
+        view.addSubview(subview)
+        subview.snp.makeConstraints { [lastView] make in
+            make.leading.trailing.equalToSuperview().inset(inset ? 16 : 0)
+            if let lastView {
+                make.top.equalTo(lastView.snp.bottom)
+            } else {
+                make.top.equalToSuperview()
+            }
+        }
+        lastView = subview
+    }
+
+    /// Adds a spacer below `lastView` and sets it as the lastView
+    private func _addSpacer(_ height: CGFloat, _ backgroundColor: UIColor, inset: Bool = false) {
+        let spacer = UIView()
+        spacer.backgroundColor = backgroundColor
+        view.addSubview(spacer)
+        spacer.snp.makeConstraints { make in
+            make.top.equalTo(lastView.snp.bottom)
+            make.height.equalTo(height)
+            make.leading.trailing.equalToSuperview().inset(inset ? 16 : 0)
+        }
+        lastView = spacer
+    }
+
+    private func addCollaborationButton(collaboration: Collaboration) {
+        collaborationButton = CollaborationButton(model: projectModel, collaboration: collaboration)
+        collaborationButton!.addTarget(self, action: #selector(collaborationTapped), for: .touchUpInside)
+
+        // put collaboration button in a wrapper view to have a different background color on the sides
+        let collaborationButtonWrapper = UIView()
+        collaborationButtonWrapper.backgroundColor = .dynamic(.Neutral_10)
+        collaborationButtonWrapper.addSubview(collaborationButton!)
+        collaborationButton!.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+        _addSubview(collaborationButtonWrapper)
+    }
+
+    private func addGalleryVC() {
+        let galleryHeightToWidth = correlatedUploads.compactMap(\.imageHeightToWidth).max() ?? 4.0 / 3.0
         let galleryVC = ImageGalleryViewController(
             imageDataProviderFactory: { [mediaCache] in
                 mediaCache.imageProvider(forKey: $0)
             },
-            photoKeys: [galleryMediaKey],
+            photoKeys: galleryMediaKeys,
             pageHeight2Width: galleryHeightToWidth
         )
         galleryVC.onPhotoSelected = { [weak self] in
-            self?.onPhotoSelected?()
+            guard let self, let galleryVC = self.galleryVC else { return }
+            self.onPhotoSelected?(correlatedUploads[galleryVC.currentPage])
         }
         galleryVC.onAnnotationsSelected = { [weak self] in
-            self?.onAnnotationsSelected?()
+            guard let self, let galleryVC = self.galleryVC else { return }
+            onAnnotationsSelected?(correlatedUploads[galleryVC.currentPage])
         }
-        add(childController: galleryVC, toView: stackView)
+        galleryVC.onMoreAction = { [weak self] in
+            guard let self, let galleryVC = self.galleryVC else { return }
+            let upload = correlatedUploads[galleryVC.currentPage]
+            UIApplication.shared.sendAction(
+                #selector(ProjectFlowController.moreAction), to: nil, from: self,
+                for: FlowEvent(upload, sourceView: galleryVC.viewForCurrentPage)
+            )
+        }
+        galleryVC.setCurrentPage(correlatedUploads.firstIndex(of: upload) ?? 0)
+        galleryVC.showVersions = correlatedUploads.count > 1
+        add(childController: galleryVC, toView: view)
+        // When showing multiple photos the horizontal margin is bigger to show partially other photos
+        // If one photo only is shown make it take the whole width
+        let horizontalMargin = correlatedUploads.count > 1 ? 44.0 : 16.0
         galleryVC.view.snp.makeConstraints { make in
-            make.width.equalTo(scrollView)
+            if let lastView {
+                make.top.equalTo(lastView.snp.bottom)
+            } else {
+                make.top.equalToSuperview()
+            }
+            make.leading.trailing.equalToSuperview()
             // make the photo take the whole available width
-            make.height.equalTo(scrollView.snp.width).offset(-32.0 * galleryHeightToWidth)
+            make.height.equalTo(view.snp.width)
+                .offset(-2 * horizontalMargin * galleryHeightToWidth)
                 .multipliedBy(galleryHeightToWidth)
         }
+        lastView = galleryVC.view
         self.galleryVC = galleryVC
     }
 
-    private func setupPreviewView() {
-        let previewWrapperView = UIView()
-        previewWrapperView.backgroundColor = .dynamic(.Neutral_10)
-        stackView.addSubview(previewWrapperView)
-        previewWrapperView.snp.makeConstraints { make in
-            make.width.equalTo(scrollView)
-//            make.height.equalTo(276)
-        }
-        self.previewWrapperView = previewWrapperView
-
+    private func addPreviewView() {
         let previewBox = UIView()
         previewBox.layer.cornerRadius = 13
         previewBox.layer.borderWidth = 1
-        previewBox.backgroundColor = .dynamic(.Neutral_09)
+        previewBox.backgroundColor = .dynamic(.Neutral_10)
         previewBox.clipsToBounds = true
-        previewWrapperView.addSubview(previewBox)
-        previewBox.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-        }
         self.previewBox = previewBox
         previewBox.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(previewTapped)))
 
@@ -267,15 +321,20 @@ class FullscreenMediaSummaryViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(10)
         }
         self.fileNameLabel = fileNameLabel
+
+        // put the view in a wrapper view to have a different background color on the sides
+        let wrapperView = UIView()
+        wrapperView.backgroundColor = .dynamic(.Neutral_10)
+        wrapperView.addSubview(previewBox)
+        previewBox.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+        _addSubview(wrapperView)
     }
 
     @objc private func previewTapped() {
-        onPhotoSelected?()
-    }
-
-    private func setupCollaborationButton(collaboration: Collaboration) {
-        collaborationButton = CollaborationButton(model: projectModel, collaboration: collaboration)
-        collaborationButton.addTarget(self, action: #selector(collaborationTapped), for: .touchUpInside)
+        onPhotoSelected?(upload)
     }
 
     @objc private func collaborationTapped() {
@@ -288,6 +347,51 @@ class FullscreenMediaSummaryViewController: UIViewController {
         )
     }
 
+    private func setupAuthorView() {
+        avatarView.layer.cornerRadius = 16
+        avatarView.backgroundColor = .dynamic(.Neutral_07)
+
+        authorLabel.textColor = .dynamic(.Neutral_04)
+        authorLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
+        authorLabel.adjustsFontForContentSizeCategory = true
+        authorLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        timestampLabel.textColor = .dynamic(.Neutral_05)
+        timestampLabel.font = .preferredFont(forTextStyle: .footnote)
+        timestampLabel.adjustsFontForContentSizeCategory = true
+        timestampLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        [avatarView, authorLabel, timestampLabel].forEach(authorView.addSubview)
+        avatarView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16)
+            make.width.height.equalTo(32)
+            make.leading.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().offset(-16).priority(.high)
+        }
+        authorLabel.snp.makeConstraints { make in
+            make.top.greaterThanOrEqualToSuperview().offset(16)
+            make.leading.equalTo(avatarView.snp.trailing).offset(8)
+            make.trailing.equalToSuperview().inset(16)
+            make.bottom.equalTo(avatarView.snp.centerY).priority(.high)
+        }
+        timestampLabel.snp.makeConstraints { make in
+            make.top.equalTo(authorLabel.snp.bottom)
+            make.leading.trailing.equalTo(authorLabel)
+            make.bottom.lessThanOrEqualToSuperview().offset(-16)
+        }
+    }
+
+    /// this view shows either the description label or "add description" button depending on the state
+    private func addDescriptionOrAddView() {
+        setupDescriptionLabel()
+        descriptionLabel
+            .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
+        addDescriptionButton = createAddButton(title: String(localized: "Add description"), handler: { [weak self] _ in
+            self?.descriptionTapped()
+        })
+        _addSubview(descriptionOrAddView)
+    }
+
     private func setupDescriptionLabel() {
         descriptionLabel.font = .preferredFont(forTextStyle: .subheadline)
         descriptionLabel.textColor = .dynamic(.Neutral_04)
@@ -297,22 +401,29 @@ class FullscreenMediaSummaryViewController: UIViewController {
         descriptionLabel.isUserInteractionEnabled = true
     }
 
+    private func addTagsOrAddView() {
+        setupTagsView()
+        tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
+        addTagsButton = createAddButton(title: String(localized: "Add Tags"), handler: { [weak self] _ in
+            self?.tagsTapped()
+        })
+        _addSubview(tagsOrAddView)
+    }
+
+    private func setupTagsView() {
+        tagsView.backgroundColor = .dynamic(.Neutral_09)
+        tagsView.collectionView.backgroundColor = .dynamic(.Neutral_09)
+    }
+
     /// Creates a button but returns a wrapping UIView to add horizontal padding
     private func createAddButton(title: String, handler: @escaping UIActionHandler) -> UIView {
         var config = UIButton.Configuration.blackButton()
         config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)
-        let button = RangeButton(
-            configuration: UIButton.Configuration.blackButton(),
+        config.baseBackgroundColor = .dynamic(.Neutral_10)
+        return RangeButton(
+            configuration: config,
             primaryAction: UIAction(title: title, handler: handler)
         ).withCustomRangeHighlightColor()
-        let wrapperView = UIView()
-        wrapperView.addSubview(button)
-        button.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-        }
-        return wrapperView
-//        expandButton.setContentHuggingPriority(.required, for: .horizontal)
     }
 
     /// Creates a view with an icon, title and edit button
@@ -341,7 +452,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
         editLabel.textColor = .dynamic(.Neutral_04)
         editLabel.adjustsFontForContentSizeCategory = true
         editLabel.text = String(localized: "Edit")
-        editLabel.backgroundColor = .dynamic(.Neutral_09)
+        editLabel.backgroundColor = .dynamic(.Neutral_10)
         editLabel.setContentHuggingPriority(.required, for: .horizontal)
         editLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         editLabel.tag = 66 // mark it so it can be later hidden
@@ -371,16 +482,121 @@ class FullscreenMediaSummaryViewController: UIViewController {
     }
 
     @objc private func descriptionTapped() {
+        guard let currentUpload else { return }
         UIApplication.shared.sendAction(
             #selector(ProjectFlowActions.editDescriptionAction), to: nil, from: self,
-            for: FlowEvent(upload)
+            for: FlowEvent(currentUpload)
         )
     }
 
     @objc private func tagsTapped() {
+        guard let currentUpload else { return }
         UIApplication.shared.sendAction(
             #selector(ProjectFlowActions.editTagsAction), to: nil, from: self,
-            for: FlowEvent(upload)
+            for: FlowEvent(currentUpload)
         )
+    }
+}
+
+// MARK: - uploads observation / updating UI
+
+extension FullscreenMediaSummaryViewController {
+    /// Observe all uploads and authors.
+    /// If upload is deleted, remove from correlatedUploads
+    /// If upload is updated, update the UI
+    /// If author is updated, update the UI
+    private func observeUploads() {
+        notificationTokens.forEach { $0.invalidate() }
+        notificationTokens.removeAll()
+
+        for (index, upload) in correlatedUploads.enumerated() {
+            let uploadNotificationToken = upload.observe { [weak self] change in
+                guard let self else { return }
+                if case .deleted = change {
+                    self.correlatedUploads.remove(at: index)
+                    if correlatedUploads.isEmpty {
+                        // this is the last upload, the card will close
+                    } else {
+                        self.galleryVC?.photoRemoved(atIndex: index)
+                    }
+                    /// reattach the observers as indexes are now different
+                    self.observeUploads()
+                    self.onCorrelatedUploadsUpdated?()
+                } else {
+                    self.onUploadUpdated()
+                }
+            }
+            notificationTokens.append(uploadNotificationToken)
+
+            if let author = upload.author {
+                let authorNotificationToken = author.observe { [weak self] _ in
+                    self?.onUploadUpdated()
+                }
+                notificationTokens.append(authorNotificationToken)
+            }
+        }
+    }
+
+    private func onUploadUpdated() {
+        guard let currentUpload else { return }
+
+        authorLabel.attributedText = NSAttributedString(
+            string: currentUpload.author?.displayName ?? "",
+            attributes: [.strikethroughStyle: currentUpload.author?.strikethroughStyle ?? 0]
+        )
+        timestampLabel.text = Date.format1(currentUpload.timestamp)
+
+        updateDescription()
+        updateTags()
+        fileNameLabel?.text = currentUpload.fileName
+
+        if let galleryVC {
+            galleryVC.updatePhotoKey(galleryMediaKeys[galleryVC.currentPage], atIndex: galleryVC.currentPage)
+        }
+
+        onCurrentUploadChanged?()
+        onHeightChanged?()
+    }
+
+    private func updateDescription() {
+        guard let currentUpload else { return }
+        let hasDescription = !(currentUpload.uploadDescription ?? "").isEmpty
+
+        descriptionHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasDescription }
+        descriptionLabel.text = currentUpload.uploadDescription
+        descriptionOrAddView.subviews.forEach { $0.removeFromSuperview() }
+        if hasDescription {
+            descriptionOrAddView.addSubview(descriptionLabel)
+            descriptionLabel.snp.remakeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        } else {
+            descriptionOrAddView.addSubview(addDescriptionButton)
+            addDescriptionButton.snp.remakeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
+        }
+    }
+
+    private func updateTags() {
+        guard let currentUpload else { return }
+        let hasTags = !currentUpload.tags.isEmpty
+
+        tagsView.tags = currentUpload.tags.where { $0.placeholder == false }
+        tagsHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = !hasTags }
+        tagsOrAddView.subviews.forEach { $0.removeFromSuperview() }
+        if hasTags {
+            tagsOrAddView.addSubview(tagsView)
+            tagsView.snp.remakeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        } else {
+            tagsOrAddView.addSubview(addTagsButton)
+            addTagsButton.snp.remakeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
+        }
     }
 }

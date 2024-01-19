@@ -6,6 +6,7 @@ class ImageGalleryPageView: UIView {
     let onPageTap: (() -> Void)?
     let onPhotoRemove: (() -> Void)?
     let onAnnotationsTap: (() -> Void)?
+    var onMoreAction: (() -> Void)? { didSet { onMoreActionSet() } }
     let imageView = UIImageView()
     /// top/bottom insets for image view, so the side pages in the gallery are lower than the center one.
     /// left/right inset values doesn't matter, but if any is non zero, the image view will be pushed towards the other edge, for example
@@ -24,6 +25,9 @@ class ImageGalleryPageView: UIView {
 
     var removeButton: RoundShadowButton?
     var annotationsButton: RoundShadowButton?
+    var moreButton: RoundShadowButton?
+
+    var versionPill: PillView?
 
     init(onPageTap: (() -> Void)?, onAnnotationsTap: (() -> Void)?, onPhotoRemove: (() -> Void)? = nil) {
         self.onPageTap = onPageTap
@@ -78,6 +82,7 @@ class ImageGalleryPageView: UIView {
         let buttonAlpha = max(1 - imageInset.top / 5.0, 0)
         removeButton?.alpha = buttonAlpha
         annotationsButton?.alpha = buttonAlpha
+        moreButton?.alpha = buttonAlpha
     }
 
     /// calculate image frame so it's aspect ratio is preserved and take all insets into account
@@ -126,6 +131,43 @@ class ImageGalleryPageView: UIView {
 
     @objc private func annotationsButtonTapped() {
         onAnnotationsTap?()
+    }
+
+    func showVersion(_ version: Int) {
+        if let versionPill {
+            versionPill.label.text = "Version \(version)"
+            versionPill.isHidden = false
+        } else {
+            versionPill = PillView(
+                iconName: "photo.on.rectangle.angled", text: "Version \(version)",
+                verticalPadding: 0, backgroundColor: .Secondary_02, style: .flat
+            )
+            imageView.addSubview(versionPill!)
+            versionPill!.snp.makeConstraints { make in
+                make.top.leading.equalToSuperview().inset(8)
+            }
+        }
+    }
+
+    func onMoreActionSet() {
+        guard onMoreAction != nil else { return }
+        let moreButton = RoundShadowButton(
+            image: UIImage(systemName: "ellipsis") ?? UIImage(),
+            size: 32,
+            imageTintColor: .white,
+            variant: .darkBlurred,
+            withBorder: false
+        ).withTapAreaInsets(UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -8))
+        moreButton.addTarget(self, action: #selector(moreButtonTapped), for: .touchUpInside)
+        imageView.addSubview(moreButton)
+        moreButton.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview().inset(8)
+        }
+        self.moreButton = moreButton
+    }
+
+    @objc private func moreButtonTapped() {
+        onMoreAction?()
     }
 }
 

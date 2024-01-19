@@ -90,7 +90,7 @@ class FeedViewController: UIViewController {
     let geometry: Geometry?
     let collaboration: Collaboration?
     let uploads: Results<Upload>?
-    let comments: Results<Comment>?
+    var comments: Results<Comment>?
     let updates: Results<Update>?
     var onFeedUpdated: (() -> Void)?
 
@@ -127,6 +127,9 @@ class FeedViewController: UIViewController {
     private var updatesNotificationToken: NotificationToken?
     private var updateFeedItems = [FeedItem]()
 
+    private let defaultTableFooterView: UIView
+    private let emptyStateView: UIView?
+
     /// Initialize for the collaboration feed = show updates for given collaboration
     init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
         self.mediaCache = mediaCache
@@ -139,6 +142,9 @@ class FeedViewController: UIViewController {
         updates = collaboration.updates.filter(NSPredicate(value: true))
 
         tableView = UITableView(frame: .zero, style: .plain)
+        emptyStateView = nil
+        defaultTableFooterView =
+            UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: distanceBetweenMajorRows)))
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -153,8 +159,18 @@ class FeedViewController: UIViewController {
         self.comments = comments
         updates = nil
         tableView = UITableView(frame: .zero, style: .plain)
+        emptyStateView = NoCommentsView()
+        defaultTableFooterView =
+            UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: distanceBetweenMajorRows)))
 
         super.init(nibName: nil, bundle: nil)
+    }
+
+    /// Reload with new comments.
+    /// To be used when initialized with comments
+    func setComments(_ comments: Results<Comment>) {
+        self.comments = comments
+        observeComments()
     }
 
     @available(*, unavailable)
@@ -216,8 +232,7 @@ class FeedViewController: UIViewController {
         tableView.register(DueDateUpdateFeedItemCell.self, forCellReuseIdentifier: "DueDateUpdate")
 
         // since each section has it's top header, the last one is added as a table footer
-        tableView.tableFooterView =
-            UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: distanceBetweenMajorRows)))
+        tableView.tableFooterView = emptyStateView ?? defaultTableFooterView
         tableView.tableFooterView?.backgroundColor = tableView.backgroundColor
 
         dataSource = UITableViewDiffableDataSource(
@@ -240,6 +255,10 @@ class FeedViewController: UIViewController {
 
     /// Update vertical line height based on content size and last row height
     private func updateVerticalLineHeight() {
+        guard !items.isEmpty else {
+            verticalLine.frame.size.height = 0
+            return
+        }
         // - distanceBetweenMajorRows because it's a table footer view included in the content size
         // - lastRowHeight + 8 because for last row the vertical line should only reach the avatar/dot
         verticalLine.frame.size.height = max(
@@ -361,6 +380,7 @@ class FeedViewController: UIViewController {
 
     private func observeComments() {
         guard let comments = comments else { return }
+        commentsNotificationToken?.invalidate()
         commentsNotificationToken = comments
             .where { $0.placeholder == false }
             .sorted(by: \Comment.timestamp, ascending: _debugSettings.feedSortedAscendingByTimestamp)
@@ -476,6 +496,7 @@ class FeedViewController: UIViewController {
             snapshot.appendItems([item], toSection: item.id)
         }
         self.items = items
+        updateEmptyStateView()
         onFeedUpdated?()
         return snapshot
     }
@@ -483,6 +504,22 @@ class FeedViewController: UIViewController {
     override func traitCollectionDidChange(_: UITraitCollection?) {
         // update the colors
         tableView.reloadData()
+    }
+
+    private func updateEmptyStateView() {
+        if items.isEmpty {
+            if let emptyStateView {
+                tableView.beginUpdates()
+                tableView.tableFooterView = emptyStateView
+                tableView.endUpdates()
+            }
+        } else {
+            if tableView.tableFooterView == emptyStateView {
+                tableView.beginUpdates()
+                tableView.tableFooterView = defaultTableFooterView
+                tableView.endUpdates()
+            }
+        }
     }
 }
 
@@ -610,5 +647,54 @@ extension FeedViewController {
             return cell
         }
         return nil
+    }
+}
+
+class NoCommentsView: UIView {
+    let image = UIImageView(image: UIImage(named: "comments"))
+    let label = UILabel()
+
+    private var _intrinsicContentSize: CGSize? = .zero
+    override var intrinsicContentSize: CGSize { _intrinsicContentSize ?? .zero }
+
+    init() {
+        super.init(frame: .zero)
+
+        addSubview(image)
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = .dynamic(.Neutral_05)
+        label.adjustsFontForContentSizeCategory = true
+        label.text = String(localized: "There are no comments...")
+        addSubview(label)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        image.sizeToFit()
+        label.sizeToFit()
+        image.frame = CGRect(
+            origin: CGPoint(x: (bounds.width - image.frame.width) / 2, y: 0),
+            size: image.frame.size
+        )
+        label.frame = CGRect(
+            origin: CGPoint(x: (bounds.width - label.frame.width) / 2, y: image.frame.maxY + 12),
+            size: label.frame.size
+        )
+
+        let frameHeight = label.frame.maxY + 16
+
+        if frameHeight != frame.height {
+            _intrinsicContentSize = CGSize(
+                width: max(image.frame.width, label.frame.width) + 32,
+                height: label.frame.maxY + 16
+            )
+            frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: frameHeight)
+            invalidateIntrinsicContentSize()
+        }
     }
 }

@@ -10,6 +10,16 @@ class UploadPreviewItem: NSObject, QLPreviewItem {
     var previewItemTitle: String?
 }
 
+/// Fullscreen media view
+/// Comprises of 3 parts:
+/// 1. header - contains slider view
+/// 2. details - implemented in `FullscreenMediaDetailsViewController` - collaboration button, media gallery, author, description, tags
+/// 3. comments - implemented in `FeedViewController`
+///
+/// The details are added as a header for feed table view, so they scroll together with the feed
+///
+/// ACHTUNG: the gallery in the details can have multiple versions of image Upload (linked by correlation it). So this view can present
+/// multiple Uploads. When user selects upload the content of details and comments gets reloaded to show given Upload data.
 class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinating, CardPresentable,
     CardDraggingDelegate
 {
@@ -23,55 +33,42 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private let projectModel: ProjectModel
     private let mediaCache: MediaCache
     private let showCollaborationButton: Bool
+    private var scrollToCommentsInitially: Bool
 
-    /// The view containing the slider, icon, title, subtitle and close button
-    /// It also has some bottom margin added, so any sheet content view can be added directly below it
+    /// The view containing the slider
     private let headerView = UIView()
     private let headerStroke = UIView()
-    private let avatarView = UIView()
-    private let authorLabel = UILabel()
-    private let timestampLabel = UILabel()
-    private var moreButton: UIButton!
-    private var closeButton: UIButton!
 
     enum Mode {
         case summary, comments
     }
 
-    private let initialMode: Mode
-    private var mode = Mode.summary
-    private var summaryVC: FullscreenMediaSummaryViewController!
+    private var detailsVC: FullscreenMediaSummaryViewController!
     private var commentsVC: FeedViewController!
-    // shown when there's no comments in the feed
-    private let noCommentsView = UIView()
 
-    private let tabBar = UITabBar()
     private var addCommentVC: CommentViewController?
     private let safeAreaCoverView = UIView()
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
 
     let upload: Upload
-    private var uploadNotificationToken: NotificationToken?
-    private var authorNotificationToken: NotificationToken?
 
     private var previewItem: UploadPreviewItem?
+    private var lastWidth: CGFloat = 0.0
 
     /// Initializer
     init(projectModel: ProjectModel,
          mediaCache: MediaCache,
          upload: Upload,
          showCollaborationButton: Bool,
-         initialMode: Mode = .summary)
+         scrollToCommentsInitially: Bool = false)
     {
         self.projectModel = projectModel
         self.mediaCache = mediaCache
-        self.showCollaborationButton = showCollaborationButton
         self.upload = upload
-        self.initialMode = initialMode
+        self.showCollaborationButton = showCollaborationButton
+        self.scrollToCommentsInitially = scrollToCommentsInitially
         super.init(nibName: nil, bundle: nil)
-
-        onUploadUpdated()
     }
 
     var roundedShadowView: RoundShadowView {
@@ -99,46 +96,10 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         containerView.addSubview(headerView)
         headerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(21)
         }
         headerView.installSliderView()
 
-        [avatarView, authorLabel, timestampLabel, moreButton, closeButton].forEach(headerView.addSubview)
-        avatarView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(21)
-            make.width.height.equalTo(32)
-            make.leading.equalToSuperview().inset(16)
-        }
-        authorLabel.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualToSuperview().offset(21)
-            make.leading.equalTo(avatarView.snp.trailing).offset(8)
-            make.trailing.equalTo(moreButton.snp.leading).offset(-8)
-            make.bottom.equalTo(avatarView.snp.centerY).priority(.high)
-        }
-        timestampLabel.snp.makeConstraints { make in
-            make.top.equalTo(authorLabel.snp.bottom)
-            make.leading.trailing.equalTo(authorLabel)
-            make.bottom.lessThanOrEqualToSuperview().offset(-16)
-        }
-        moreButton.snp.makeConstraints { make in
-            make.width.height.top.equalTo(avatarView)
-            make.trailing.equalTo(closeButton.snp.leading).offset(-8)
-        }
-        closeButton.snp.makeConstraints { make in
-            make.top.width.height.equalTo(avatarView)
-            make.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().offset(-16).priority(.high)
-        }
-
-        setupTabBar()
-        // tab bar is added to view hierarchy on view did appear, because it's added to superview
-
-        setupSummaryVC()
-        add(childController: summaryVC)
-        containerView.insertSubview(summaryVC.view, belowSubview: headerView)
-        summaryVC.view.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
         setupCommentsVC()
         add(childController: commentsVC)
         containerView.insertSubview(commentsVC.view, belowSubview: headerView)
@@ -146,14 +107,6 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
-
-        setupNoCommentsView()
-        commentsVC.view.addSubview(noCommentsView)
-        noCommentsView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-
-        setMode(initialMode)
 
         bottomView.backgroundColor = .dynamic(.Neutral_10)
         // added to view (rounded view) as the containerView has a layer mask
@@ -166,137 +119,42 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             make.height.equalTo(500)
         }
         updateColors()
+    }
 
-        uploadNotificationToken = upload.observe { [weak self] change in
-            if case .deleted = change {
-                if let cardDragging = self?.cardDragging, cardDragging.isCardHidden == false {
-                    ToastWindow.shared.showWarning(text: "Upload removed")
-                }
-                self?.dismissCard()
-            } else {
-                self?.onUploadUpdated()
-            }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if lastWidth != view.frame.width {
+            lastWidth = view.frame.width
+            updateCommentsHeaderHeight()
         }
-        authorNotificationToken = upload.author?.observe { [weak self] _ in
-            self?.onUploadUpdated()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupDetailsVC()
+
+        if scrollToCommentsInitially {
+            scrollToCommentsInitially = false
+            // give it some time to load and display comments
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.commentsVC.tableView.setContentOffset(
+                    CGPoint(x: 0, y: self.commentsVC.tableView.verticalOffsetForBottom), animated: true
+                )
+            }
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        addTabBar()
-        addCommentBar()
-    }
-
-    /// Add tabBar to this card super view (so it doesn't move with the card and is always at the bottom
-    private func addTabBar() {
-        guard let presentingView = presentingView else {
-            return
-        }
-        presentingView.addSubview(tabBar)
-        tabBar.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(presentingView.safeAreaLayoutGuide.snp.bottom)
-        }
-        // we need a view below bottom bar to cover the save area (so the content is not visible below the tab bar)
-        safeAreaCoverView.backgroundColor = containerView.backgroundColor
-        presentingView.addSubview(safeAreaCoverView)
-        safeAreaCoverView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.top.equalTo(tabBar.snp.bottom)
-        }
-
-        presentingView.layoutIfNeeded()
-        updateSummaryContentScrollInsets()
-    }
-
-    /// Add a CommentViewController behind the tab bar so the text view is visible and user can start adding new comment
-    /// by tapping on the text view and making it first responder (then the card will animate to full height)
-    private func addCommentBar() {
-        guard let presentingVC = presentingVC, let presentingView = presentingView else {
-            return
-        }
-        let addCommentVC = CommentViewController(
-            mode: .addComment,
-            startEditingWhenShown: false,
-            shownAboveView: tabBar
-        )
-        addCommentVC.onHeightUpdated = { [weak self] _ in
-            self?.updateCommentsContentScrollInsets()
-        }
-        addCommentVC.onCancel = { [weak self] in
-            guard let addCommentVC = self?.addCommentVC else { return }
-            // clear the text, close keyboard and reset to medium height (so buttons are not visible)
-            addCommentVC.commentText = ""
-            addCommentVC.view.endEditing(true)
-            addCommentVC.cardDragging?.setPosition(.medium, withVelocity: 0, animated: true)
-        }
-        addCommentVC.onDone = { [weak self] in
-            guard let self = self else { return }
-            // save the comment and cleanup the text view (the same as in onCancel)
-            self.projectModel.run(
-                self.projectModel.addComment(commentText: addCommentVC.commentText, toUpload: self.upload.id)
-            ) { error in
-                if error != nil { ToastWindow.shared.showError(text: "Failed to add the comment") }
-            }
-            addCommentVC.onCancel?()
-        }
-
-        presentingVC.installCard(
-            cardViewController: addCommentVC,
-            inView: presentingView,
-            cardConfig: CardConfiguration(initialCardPosition: .medium, interactive: false, showOverlay: false)
-        )
-        // we want it behind the tab bar
-        presentingView.insertSubview(addCommentVC.view, belowSubview: tabBar)
-        addCommentVC.showCard(animated: true)
-        addCommentVC.view.isHidden = mode == .summary
-        self.addCommentVC = addCommentVC
-
-        presentingView.layoutIfNeeded()
-        updateCommentsContentScrollInsets()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateSummaryContentScrollInsets()
-        updateCommentsContentScrollInsets()
-    }
-
-    /// Calculate the overlap of tab bar and content scroll and set the content inset for summary scroll view.
-    /// This is needed as tab bar is presented on top of the card covering the bottom of the content.
-    private func updateSummaryContentScrollInsets() {
-        guard let presentingView = presentingView else { return }
-        let containerFrame = containerView.convert(containerView.bounds, to: presentingView)
-        // already layed out?
-        guard tabBar.frame.height > 0 else { return }
-        let tabBarOverlap = containerFrame.maxY - tabBar.frame.minY
-        // +16 to have some margin at the bottom
-        summaryVC.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: tabBarOverlap + 16, right: 0)
-        summaryVC.scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: tabBarOverlap, right: 0)
-    }
-
-    /// Similar to `updateSummaryContentScrollInsets` It updates the content inset for comments, in this case it's based on the addCommentVC height
-    private func updateCommentsContentScrollInsets() {
-        guard let presentingView = presentingView else { return }
-        let containerFrame = containerView.convert(containerView.bounds, to: presentingView)
-
-        guard let addCommentVC = addCommentVC, addCommentVC.view.frame.height > 0 else { return }
-        let addCommentOverlap = containerFrame.maxY - addCommentVC.view.frame.minY
-        commentsVC.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: addCommentOverlap, right: 0)
-        commentsVC.tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: addCommentOverlap, right: 0)
-
-        noCommentsView.snp.updateConstraints { make in
-            make.centerY.equalToSuperview().offset(-addCommentOverlap / 2)
-        }
+        setupAddCommentCard()
     }
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`
     private func updateHeaderShadow() {
         guard let scrollView = drivingScrollView() else { return }
         let shadowVisible = scrollView.contentOffset.y > 0
-        // always show for .comments
-        headerStroke.isHidden = mode == .summary && !shadowVisible
+        headerStroke.isHidden = !shadowVisible
         if shadowVisible {
             let darkMode = traitCollection.userInterfaceStyle == .dark
             if darkMode {
@@ -317,14 +175,6 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         } else {
             headerView.layer.shadowOpacity = 0
         }
-    }
-
-    private func onUploadUpdated() {
-        authorLabel.attributedText = NSAttributedString(
-            string: upload.author?.displayName ?? "",
-            attributes: [.strikethroughStyle: upload.author?.strikethroughStyle ?? 0]
-        )
-        timestampLabel.text = Date.format1(upload.timestamp)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -353,21 +203,9 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     // MARK: - card presentable
 
-    func height(forContainer _: UIView, cardPosition: CardPosition) -> CGFloat {
-        if cardPosition == .min {
-            return 0
-        }
-        if cardPosition == .medium {
-            return -1 // not supported
-        }
-
-        // full screen
-        return Double.greatestFiniteMagnitude
-    }
-
     /// Provide some implementation that returns `nil` so the subclasses can override
     func drivingScrollView() -> UIScrollView? {
-        mode == .summary ? summaryVC.scrollView : commentsVC.tableView
+        commentsVC.tableView
     }
 
     // MARK: - card presentation
@@ -392,10 +230,6 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     /// Convenience function for hiding the card and removing the card from the presenting view controller
     func dismissCard() {
-        authorNotificationToken?.invalidate()
-        uploadNotificationToken?.invalidate()
-        uploadNotificationToken = nil
-        tabBar.removeFromSuperview()
         safeAreaCoverView.removeFromSuperview()
         if let addCommentVC = addCommentVC {
             addCommentVC.hideCard(animated: false)
@@ -425,38 +259,84 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     }
 }
 
-// MARK: - tab switching
+// MARK: - content height
 
-extension FullscreenMediaCardViewController: UITabBarDelegate {
-    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        let mode: Mode = item == tabBar.items?[0] ? .summary : .comments
-        if mode != self.mode {
-            setMode(mode)
+extension FullscreenMediaCardViewController {
+    func height(forContainer _: UIView, cardPosition: CardPosition) -> CGFloat {
+        if cardPosition == .min {
+            return 0
         }
+        if cardPosition == .medium {
+            return -1 // not supported
+        }
+
+        // full screen
+        return Double.greatestFiniteMagnitude
     }
 
-    /// set summary or comments
-    private func setMode(_ mode: Mode) {
-        self.mode = mode
-
-        summaryVC.view.isHidden = mode == .comments
-        commentsVC.view.isHidden = mode == .summary
-        addCommentVC?.view.isHidden = mode == .summary
-
-        updateHeaderShadow()
-
-        if let cardDragging = cardDragging {
-            // reset scroll view listeners
-            cardDragging.reloadScrollViewDelegate()
+    /// update the header height based on the details height
+    private func updateCommentsHeaderHeight() {
+        guard let commentsVC, let detailsVC, detailsVC.view.superview != nil else { return }
+        commentsVC.tableView.beginUpdates()
+        let tableWidth = commentsVC.view.frame.width
+        if tableWidth > 0 {
+            commentsVC.tableView.tableHeaderView?.frame.size.width = tableWidth
+            detailsVC.view.snp.remakeConstraints { make in
+                make.top.leading.trailing.equalToSuperview() // enforce width constraint
+                make.bottom.equalToSuperview().priority(.high)
+                make.height.greaterThanOrEqualTo(100)
+            }
         }
+        commentsVC.tableView.tableHeaderView?.frame.size.height = detailsVC.height()
+        commentsVC.tableView.endUpdates()
     }
 }
 
-// MARK: - content scroll delegate
+// MARK: - current upload updated
+
+extension FullscreenMediaCardViewController {
+    private func onCurrentUploadChanged() {
+        guard let currentUpload = detailsVC.currentUpload else { return }
+        commentsVC.setComments(currentUpload.comments.filter(NSPredicate(value: true)))
+    }
+}
+
+// MARK: - scrolling
 
 extension FullscreenMediaCardViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_: UIScrollView) {
         updateHeaderShadow()
+        updateAddCommentCardVisibility()
+    }
+
+    /// Add comment card is only visible if user scrolls to the bottom. Or if user is currently using the card (so it's maximized)
+    private func updateAddCommentCardVisibility() {
+        guard let addCommentVC, let addCommentCardDragging = addCommentVC.cardDragging else { return }
+
+        // don't hide if it's in max position
+        guard addCommentCardDragging.position != .max else { return }
+
+        if commentsVC.tableView.isAtBottom {
+            if addCommentCardDragging.isCardHidden { addCommentVC.showCard(animated: true) }
+        } else {
+            if !addCommentCardDragging.isCardHidden { addCommentVC.hideCard(animated: true) }
+        }
+    }
+
+    /// Update the comments bottom inset, so user can scroll to the bottom of coments when "add comment" bar is visible (potentially with keyboard)
+    private func updateContentScrollInsets() {
+        guard let scrollView = drivingScrollView() else { return }
+
+        var bottomInset = 0.0
+        if let addCommentVC {
+            // 16 to have some distance between comments and the card
+            bottomInset += addCommentVC.height(
+                forContainer: view,
+                cardPosition: addCommentVC.cardDragging?.position ?? .medium
+            )
+        }
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+        scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
     }
 }
 
@@ -474,105 +354,119 @@ extension FullscreenMediaCardViewController {
             make.height.equalTo(1)
         }
         headerStroke.isHidden = true
-
-        avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamic(.Neutral_07)
-
-        authorLabel.textColor = .dynamic(.Neutral_04)
-        authorLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
-        authorLabel.adjustsFontForContentSizeCategory = true
-        authorLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-
-        timestampLabel.textColor = .dynamic(.Neutral_05)
-        timestampLabel.font = .preferredFont(forTextStyle: .footnote)
-        timestampLabel.adjustsFontForContentSizeCategory = true
-        timestampLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-
-        moreButton = RangeButton(
-            configuration: UIButton.Configuration.closeButton(),
-            primaryAction: UIAction(image: UIImage(systemName: "ellipsis")) { [weak self] _ in
-                guard let self = self else { return }
-                UIApplication.shared.sendAction(
-                    #selector(ProjectFlowController.moreAction), to: nil, from: self,
-                    for: FlowEvent(self.upload, sourceView: self.moreButton)
-                )
-            }
-        )
-        .withCustomRangeHighlightColor()
-        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
-
-        closeButton = RangeButton(
-            configuration: UIButton.Configuration.closeButton(),
-            primaryAction: UIAction(image: UIImage(systemName: "xmark")) { [weak self] _ in
-                self?.dismissCard()
-            }
-        )
-        .withCustomRangeHighlightColor()
-        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
     }
 
-    private func setupTabBar() {
-        let items = [
-            UITabBarItem(
-                title: String(localized: "Summary"), image: UIImage(systemName: "info.circle"), tag: 0
-            ),
-            UITabBarItem(
-                title: String(localized: "Comments"), image: UIImage(systemName: "bubble.right"), tag: 1
-            ),
-        ]
-        tabBar.items = items
-        if initialMode == .summary {
-            tabBar.selectedItem = items[0]
-        } else {
-            tabBar.selectedItem = items[1]
-        }
-        tabBar.delegate = self
-        // to hide the default top stroke for tab bar:
-        tabBar.clipsToBounds = true
-        // HACK - add separator to tab bar (maybe not even a hack??)
-        let separator = UIView()
-        separator.backgroundColor = .dynamic(.Neutral_07)
-        tabBar.addSubview(separator)
-        separator.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(1)
-        }
-    }
-
-    private func setupSummaryVC() {
-        summaryVC = FullscreenMediaSummaryViewController(
+    private func setupDetailsVC() {
+        guard detailsVC == nil else { return }
+        detailsVC = FullscreenMediaSummaryViewController(
             projectModel: projectModel,
             mediaCache: mediaCache,
             upload: upload,
             showCollaborationButton: showCollaborationButton
         )
-        summaryVC.scrollView.contentInsetAdjustmentBehavior = .never
-        summaryVC.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
-        summaryVC.scrollView.delegate = self
-        summaryVC.onPhotoSelected = { [weak self] in
+        detailsVC.onHeightChanged = { [weak self] in
+            self?.updateCommentsHeaderHeight()
+        }
+        detailsVC.onCurrentUploadChanged = { [weak self] in
+            self?.onCurrentUploadChanged()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self?.updateAddCommentCardVisibility()
+            }
+        }
+        detailsVC.onPhotoSelected = { [weak self] selectedUpload in
             guard let self = self else { return }
-            if self.upload.isImage {
+            if selectedUpload.isImage {
                 // when it's an image then open annotations
-                self.showAnnotationsEditor()
+                self.showAnnotationsEditor(forUpload: selectedUpload)
             } else {
                 // otherwise use the Quick Look Preview
                 self.showPreview()
             }
         }
-        summaryVC.onAnnotationsSelected = { [weak self] in
+        detailsVC.onAnnotationsSelected = { [weak self] selectedUpload in
             // if annotations are selected we show the same editor as in the photo flow
-            self?.showAnnotationsEditor()
+            self?.showAnnotationsEditor(forUpload: selectedUpload)
         }
+        detailsVC.onCorrelatedUploadsUpdated = { [weak self] in
+            guard let self else { return }
+            if self.detailsVC.correlatedUploads.isEmpty {
+                if let cardDragging = self.cardDragging, cardDragging.isCardHidden == false {
+                    ToastWindow.shared.showWarning(text: "Upload removed")
+                }
+                self.dismissCard()
+            }
+        }
+        let header =
+            UIView(frame: CGRect(origin: .zero, size: CGSize(width: 1000, height: 1000)))
+        header.backgroundColor = containerView.backgroundColor
+        commentsVC.add(childController: detailsVC, toView: header)
+        detailsVC.view.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview()
+            make.bottom.trailing.equalToSuperview().priority(.high)
+            // this is so the autolayout engine doesn't complain when the initial layout is done
+            // when the table header view has width and height = 0
+            make.width.height.greaterThanOrEqualTo(100)
+        }
+        commentsVC.tableView.tableHeaderView = header
+        updateCommentsHeaderHeight()
     }
 
-    private func showAnnotationsEditor() {
-        let mediaKey = MediaKey.mediaKey(projectId: projectModel.projectId, upload: upload, annotated: false)
+    /// Add a CommentViewController card. It'll only be shown when user scrolls to the bottom.
+    /// User can start adding new comment by tapping on the text view and making it first responder (then the card will animate to full height)
+    private func setupAddCommentCard() {
+        guard addCommentVC == nil else { return }
+        let addCommentVC = CommentViewController(
+            mode: .addComment,
+            startEditingWhenShown: false
+        )
+        addCommentVC.onHeightUpdated = { [weak self] _ in
+            self?.updateContentScrollInsets()
+        }
+        addCommentVC.onCancel = { [weak self] in
+            guard let addCommentVC = self?.addCommentVC else { return }
+            // clear the text, close keyboard and reset to medium height (so buttons are not visible)
+            addCommentVC.commentText = ""
+            addCommentVC.view.endEditing(true)
+            addCommentVC.cardDragging?.setPosition(.medium, withVelocity: 0, animated: true)
+        }
+        addCommentVC.onDone = { [weak self] in
+            guard let self = self else { return }
+            // save the comment and cleanup the text view (the same as in onCancel)
+            self.projectModel.run(
+                self.projectModel.addComment(commentText: addCommentVC.commentText, toUpload: self.upload.id)
+            ) { error in
+                if error != nil { ToastWindow.shared.showError(text: "Failed to add the comment") }
+            }
+            addCommentVC.onCancel?()
+            // a little later so the comment is already added
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.commentsVC.tableView.setContentOffset(
+                    CGPoint(x: 0, y: self.commentsVC.tableView.verticalOffsetForBottom),
+                    animated: true
+                )
+            }
+        }
+
+        installCard(
+            cardViewController: addCommentVC,
+            cardConfig: CardConfiguration(initialCardPosition: .medium, interactive: false, showOverlay: false)
+        )
+        self.addCommentVC = addCommentVC
+
+        updateContentScrollInsets()
+        updateAddCommentCardVisibility()
+    }
+
+    /// Show annotations editor for given upload. This is not necessarily the main upload of fullscreen media controller. It might be
+    /// one of the correlated uploads (it's the one currently selected in the gallery view)
+    private func showAnnotationsEditor(forUpload selectedUpload: Upload) {
+        let mediaKey = MediaKey.mediaKey(projectId: projectModel.projectId, upload: selectedUpload, annotated: false)
         let vc = FullscreenImageGalleryViewController(
             imageDataProviderFactory: { [mediaCache] in
                 mediaCache.imageProvider(forKey: $0)
             },
             photoKeys: [mediaKey],
-            annotations: [upload.annotations],
+            annotations: [selectedUpload.annotations],
             removePhotosEnabled: false
         )
         vc.onCancel = { [weak vc] in
@@ -580,7 +474,7 @@ extension FullscreenMediaCardViewController {
         }
         vc.onDone = { [weak self, weak vc] _, annotations in
             if let self = self, let annotations = annotations.first {
-                self.update(annotations: annotations)
+                self.update(annotations: annotations, forUpload: selectedUpload)
             }
             vc?.dismiss(animated: true)
         }
@@ -588,10 +482,10 @@ extension FullscreenMediaCardViewController {
         present(vc, animated: true)
     }
 
-    private func update(annotations: Annotations?) {
+    private func update(annotations: Annotations?, forUpload selectedUpload: Upload) {
         Task { @MainActor in
             do {
-                try await projectModel.run(projectModel.update(annotations: annotations, forUpload: upload))
+                try await projectModel.run(projectModel.update(annotations: annotations, forUpload: selectedUpload))
             } catch {
                 ToastWindow.shared.showError(text: "Failed to update the annotations")
             }
@@ -604,31 +498,13 @@ extension FullscreenMediaCardViewController {
             projectModel: projectModel,
             comments: upload.comments.filter(NSPredicate(value: true))
         )
-        commentsVC.tableView.contentInsetAdjustmentBehavior = .never
-        commentsVC.tableView.automaticallyAdjustsScrollIndicatorInsets = false
-        commentsVC.tableView.forwardDelegateInvocations(to: self)
-    }
-
-    private func setupNoCommentsView() {
-        let image = UIImageView(image: UIImage(named: "comments"))
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.textColor = .dynamic(.Neutral_05)
-        label.adjustsFontForContentSizeCategory = true
-        label.text = String(localized: "There are no comments...")
-        noCommentsView.addSubview(image)
-        image.snp.makeConstraints { make in
-            make.top.centerX.equalToSuperview()
-        }
-        noCommentsView.addSubview(label)
-        label.snp.makeConstraints { make in
-            make.top.equalTo(image.snp.bottom).offset(12)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
         commentsVC.onFeedUpdated = { [weak self] in
-            guard let self = self else { return }
-            self.noCommentsView.isHidden = !self.commentsVC.items.isEmpty
+            self?.updateAddCommentCardVisibility()
         }
+        commentsVC.tableView.backgroundColor = .red
+        commentsVC.tableView.contentInsetAdjustmentBehavior = .automatic
+        commentsVC.tableView.automaticallyAdjustsScrollIndicatorInsets = true
+        commentsVC.tableView.forwardDelegateInvocations(to: self)
     }
 }
 
@@ -669,6 +545,6 @@ extension FullscreenMediaCardViewController: QLPreviewControllerDataSource, QLPr
     func previewController(_: QLPreviewController, transitionViewFor _: QLPreviewItem) -> UIView? {
         // only transition from image gallery, for docs use normal presentation (because the preview
         // doesn't match the target full screen very well, so it doesn't look good)
-        summaryVC.galleryVC?.imageViewForCurrentPage
+        detailsVC.galleryVC?.imageViewForCurrentPage
     }
 }

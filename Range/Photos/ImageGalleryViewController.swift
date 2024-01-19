@@ -15,6 +15,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     /// Photo selected, the index available in the `currentPage`
     var onPhotoSelected: (() -> Void)?
     var onAnnotationsSelected: (() -> Void)?
+    var onMoreAction: (() -> Void)?
 
     // this defines the page size
     let pageHeight2Width: Double
@@ -25,7 +26,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     private let scrollView = UIScrollView()
     private var pages: [ImageGalleryPageView] = []
     private var pageSize: CGSize = .zero
-    private(set) var currentPage: Int = 0 {
+    @objc private(set) dynamic var currentPage: Int = 0 {
         didSet {
             if currentPage != oldValue {
                 loadImages(currentPage: currentPage)
@@ -38,6 +39,9 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
     /// last size for which it calculated the layout, and only recalculate if it has changed
     var previousSize: CGSize = .zero
+
+    /// Whether to label the photos with version (from1 to n, left to right)
+    var showVersions: Bool = false
 
     /// - Parameters
     ///   - imageDataProviderFactory   function returning ImageDataProvider for given PhotoKey
@@ -86,6 +90,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
     /// callback for photo removed at index, removes the photo key, page and recalculates layout and images
     func photoRemoved(atIndex index: Int) {
+        let currentPageBeforeRemoval = primaryVisiblePage
         photoKeys.remove(at: index)
         let removedPage = pages.remove(at: index)
         removedPage.imageView.image = nil
@@ -96,6 +101,12 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         view.layoutIfNeeded()
         // and reloading of images
         currentPage = primaryVisiblePage
+        // page before the current page was removed, we want to keep the visible page, not the index, so
+        // we need to decrement the page (user was looking at image at page 2, image at page 0 was removed, it means
+        // that user should be looking at the same image which is now at page 1)
+        if index < currentPageBeforeRemoval {
+            setCurrentPage(currentPage - 1)
+        }
         // last was deleted, then scroll to previous
         if currentPage >= photoKeys.count {
             setCurrentPage(photoKeys.count - 1)
@@ -133,6 +144,11 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         pages.forEach { $0.imageHeight2Width = pageHeight2Width }
 
         loadImages(currentPage: currentPage)
+
+        for (index, page) in pages.enumerated() {
+            if showVersions { page.showVersion(index + 1) }
+            page.onMoreAction = onMoreAction
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -140,8 +156,8 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
         if pageSize != previousSize {
             let pageFrame = CGRect(
-                x: view.center.x - pageSize.width / 2.0,
-                y: view.center.y - pageSize.height / 2.0,
+                x: (view.bounds.width - pageSize.width) / 2.0,
+                y: (view.bounds.height - pageSize.height) / 2.0,
                 width: pageSize.width,
                 height: pageSize.height
             )

@@ -3,7 +3,7 @@ import SnapKit
 import UIKit
 
 /// Class for adding/editing comment/note
-class CommentViewController: UIViewController, NonModalCardCoordinating {
+class CommentViewController: UIViewController, NonModalCardCoordinating, CardPresentable {
     var cardDragging: NonModalCardDragging? {
         didSet { cardDraggingDelegateId = cardDragging?.addDelegate(self) }
     }
@@ -40,6 +40,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
         }
         set {
             textView.text = newValue
+            updateCommentButtonEnabled()
         }
     }
 
@@ -187,7 +188,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating {
 
     /// The comment button is enabled when the text is not empty (or doesn't consist entirely of whitespace and new lines)
     private func updateCommentButtonEnabled() {
-        commentButton.isEnabled = !commentText.isEmpty
+        commentButton?.isEnabled = !commentText.isEmpty
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -321,13 +322,19 @@ extension CommentViewController: CardDraggingDelegate {
     }
 
     func cardHeightUpdated(_ height: CGFloat) {
+        // hide buttons in medium position (the medium doesn't show the buttons but they may be visible
+        // because of the bottom safe area)
+        flagButton?.isHidden = cardDragging?.position != .max
+        cancelButton?.isHidden = cardDragging?.position != .max
+        commentButton?.isHidden = cardDragging?.position != .max
+
         onHeightUpdated?(height)
     }
 }
 
 // MARK: - Card presentable
 
-extension CommentViewController: CardPresentable {
+extension CommentViewController {
     // subtract bottom safe area insets from keyboard as card dragging adds it to the card anyway
     func extraSpaceForKeyboard(cardContainer: UIView) -> CGFloat {
         max(keyboardHeightInWindow - cardContainer.safeAreaInsets.bottom, 0)

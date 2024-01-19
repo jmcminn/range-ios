@@ -157,12 +157,12 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func showFullscreenMediaCommentsAction(sender _: Any?, event: FlowEvent) {
-        showFullscreenMedia(forEvent: event, initialMode: .comments)
+        showFullscreenMedia(forEvent: event, scrollToCommentsInitially: true)
     }
 
     private func showFullscreenMedia(
         forEvent event: FlowEvent,
-        initialMode mode: FullscreenMediaCardViewController.Mode = .summary
+        scrollToCommentsInitially: Bool = false
     ) {
         guard let upload = event.object as? Upload else { return }
         let fromMedia = event.source == .media
@@ -173,7 +173,7 @@ extension ProjectFlowController: ProjectFlowActions {
             // show button only from media, otherwise it's from collaboration so user can just close
             // the fullscreen media and be back in collaboration
             showCollaborationButton: fromMedia,
-            initialMode: mode
+            scrollToCommentsInitially: scrollToCommentsInitially
         )
         .installAndShowCard(
             in: canvasContainer,
@@ -620,10 +620,6 @@ extension ProjectFlowController {
 
     func deleteUpload(_ upload: Upload) {
         guard !upload.isInvalidated else { return }
-        // hide media/fullscreen
-        if let fullscreenMediaVC = fullscreenMediaVC, fullscreenMediaVC.upload == upload {
-            fullscreenMediaVC.dismissCard()
-        }
         model.run(model.delete(uploads: [upload.id])) { error in
             if error !=
                 nil { ToastWindow.shared.showError(text: "Failed to delete the \(upload.isImage ? "photo" : "file")") }
