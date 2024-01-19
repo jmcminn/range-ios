@@ -63,7 +63,7 @@ class ProjectTableViewCell: UITableViewCell {
     func setProject(_ project: ProjectSummary) {
         guard !project.isInvalidated else { return }
         if let identifier = project.identifier {
-            idLabel.text = "ID \(identifier)"
+            idLabel.text = "ID: \(identifier)"
             idLabel.isHidden = false
             nameLabel.snp.remakeConstraints { make in
                 make.top.equalTo(idLabel.snp.bottom).offset(2)
