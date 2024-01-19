@@ -5,6 +5,12 @@ import UIKit
 /// collection cell for image media
 class ImageMediaCollectionViewCell: UICollectionViewCell {
     let imageView = UIImageView(frame: .zero)
+    let versionView = UIImageView(image: UIImage(
+        systemName: "photo.on.rectangle.angled",
+        withConfiguration: UIImage.SymbolConfiguration(
+            font: UIFont.systemFont(ofSize: 9, weight: .semibold)
+        )
+    ))
     let avatarView = AvatarView()
     private var selectedOverlay: UIView?
 
@@ -21,6 +27,16 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
         imageView.kf.indicatorType = .custom(indicator: ImageLoadingIndicator())
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+
+        versionView.contentMode = .center
+        versionView.backgroundColor = .Secondary_02
+        versionView.layer.cornerRadius = 10
+        versionView.tintColor = .white
+        contentView.addSubview(versionView)
+        versionView.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview().inset(8)
+            make.width.height.equalTo(20)
         }
 
         contentView.addSubview(avatarView)
@@ -43,11 +59,15 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
         mark(selected: false)
     }
 
-    func setUpload(_ upload: Upload, imageDataProvider: RangeImageDataProvider?) {
+    func setUpload(_ upload: Upload, model: ProjectModel, imageDataProvider: RangeImageDataProvider?) {
         imageView.kf.cancelDownloadTask()
         if let imageDataProvider = imageDataProvider {
             imageView.kf.setImage(with: imageDataProvider, options: imageDataProvider.options)
         }
+
+        let correlatedUploads = model.correlatedUploads(upload)
+        versionView.isHidden = correlatedUploads.count == 1
+
         avatarView.setUser(upload.author)
     }
 

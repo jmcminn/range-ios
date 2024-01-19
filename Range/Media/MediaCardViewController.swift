@@ -817,7 +817,7 @@ extension MediaCardViewController {
         if upload.isImage {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell",
                                                           for: indexPath) as! ImageMediaCollectionViewCell
-            cell.setUpload(upload, imageDataProvider: imageProvider(forUpload: upload))
+            cell.setUpload(upload, model: projectModel, imageDataProvider: imageProvider(forUpload: upload))
             cell.mark(selected: selectedUploads.contains(upload.id))
             return cell
         } else {
