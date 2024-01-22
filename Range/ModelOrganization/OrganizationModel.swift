@@ -45,6 +45,9 @@ class OrganizationModel: NSObject, RealmModel {
     /// Exposed for convenience, list of non placeholder ProjectSummary objects from this realm (so all user projects from this organization)
     let projects: Results<ProjectSummary>
 
+    /// throttle fetching the task counts per status for all projects for current organization, report no more frequently than every 10 seconds
+    private var updateStatusCountsThrottler: Throttler?
+
     init(user: User, organizationId: String) throws {
         self.user = user
         self.organizationId = organizationId
@@ -235,8 +238,33 @@ class OrganizationModel: NSObject, RealmModel {
     }
 
     /// Update collaboration counts per status for all projects in this organization
+    /// Throttled: First invocation is immediate, next ones no more often than every 10 seconds
+    func updateStatusCounts() {
+        if let updateStatusCountsThrottler {
+            updateStatusCountsThrottler.throttle { [weak self] in
+                self?.updateStatusCountsAndLogError()
+            }
+        } else {
+            // no throttler yet - first invocation is immediate and create throttler for next ones
+            updateStatusCountsAndLogError()
+            updateStatusCountsThrottler = Throttler(throttleTime: 10)
+        }
+    }
+
+    /// Private function that wraps the async one and logs error
+    private func updateStatusCountsAndLogError() {
+        Task {
+            do {
+                try await updateStatusCounts()
+            } catch {
+                Logger.firestore.debug("failed to update status counts: \(error, privacy: .public)")
+            }
+        }
+    }
+
+    /// Update collaboration counts per status for all projects in this organization
     @MainActor
-    func updateStatusCounts() async throws {
+    private func updateStatusCounts() async throws {
         _ = try await projects.concurrentMapOnMain { project in
             // fetch statuses for given project
             // TODO? this could be a custom getModelElements(as: ...Syncable)... so it returns [Status] given getModelElements(as: FirestoreStatusName)

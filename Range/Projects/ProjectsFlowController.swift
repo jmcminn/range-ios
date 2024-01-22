@@ -192,7 +192,9 @@ class ProjectsFlowController: UINavigationController {
                 self?.loadAndPushProjectFlowController(projectId: project.id, animated: true)
             }
             projectsVC.onViewWillAppear = { [weak self] in
-                self?.autoShowOrganizationSelectorIfNeeded()
+                guard let self else { return }
+                self.userModel.currentOrganizationModel?.updateStatusCounts()
+                self.autoShowOrganizationSelectorIfNeeded()
             }
             projectsNavC.setViewControllers([projectsVC], animated: false)
         } else {
