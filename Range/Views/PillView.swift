@@ -7,14 +7,16 @@ class PillView: UIView {
         case `default`
         case red // red font
         case tag // render similar to tags
+        case flat // white text on provided bg color, no border
         case disabled
 
-        var borderColor: UIColor {
+        var borderColor: UIColor? {
             switch self {
             case .default, .disabled:
                 return .dynamic(.Neutral_07)
             case .red: return .Red_03
             case .tag: return .Primary_Blue_04
+            case .flat: return nil
             }
         }
 
@@ -23,6 +25,7 @@ class PillView: UIView {
             case .default, .tag: return .dynamic(.Neutral_04)
             case .disabled: return .dynamic(.Neutral_05)
             case .red: return .Red_03
+            case .flat: return .white
             }
         }
     }
@@ -37,7 +40,7 @@ class PillView: UIView {
     private let label = UILabel()
 
     init(
-        iconName: String,
+        iconName: String?,
         text: String,
         verticalPadding: Double = 8.0,
         backgroundColor: UIColor = .dynamic(.Neutral_09),
@@ -47,11 +50,15 @@ class PillView: UIView {
         self.style = style
         super.init(frame: .zero)
 
-        borderView.layer.borderWidth = 1
+        if style.borderColor != nil {
+            borderView.layer.borderWidth = 1
+        }
         borderView.backgroundColor = backgroundColor
 
-        iconView.image = UIImage(systemName: iconName, withConfiguration: UIImage.SymbolConfiguration(font: font))
-        iconView.tintColor = style.tintColor
+        if let iconName {
+            iconView.image = UIImage(systemName: iconName, withConfiguration: UIImage.SymbolConfiguration(font: font))
+            iconView.tintColor = style.tintColor
+        }
 
         if let textAttributes = textAttributes {
             label.attributedText = NSAttributedString(string: text, attributes: textAttributes)
@@ -65,18 +72,25 @@ class PillView: UIView {
         updateColors()
 
         addSubview(borderView)
-        borderView.addSubview(iconView)
+        if iconName != nil {
+            borderView.addSubview(iconView)
+            iconView.snp.makeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalToSuperview().inset(8)
+            }
+        }
         borderView.addSubview(label)
         borderView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(verticalPadding)
             make.leading.trailing.equalToSuperview()
         }
-        iconView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().inset(8)
-        }
+
         label.snp.makeConstraints { make in
-            make.leading.equalTo(iconView.snp.trailing).offset(6)
+            if iconName != nil {
+                make.leading.equalTo(iconView.snp.trailing).offset(6)
+            } else {
+                make.leading.equalToSuperview().inset(8)
+            }
             make.trailing.equalToSuperview().inset(8)
             make.top.bottom.equalToSuperview().inset(4)
         }
@@ -101,6 +115,8 @@ class PillView: UIView {
     }
 
     private func updateColors() {
-        borderView.layer.borderColor = style.borderColor.cgColor
+        if let borderColor = style.borderColor {
+            borderView.layer.borderColor = borderColor.cgColor
+        }
     }
 }

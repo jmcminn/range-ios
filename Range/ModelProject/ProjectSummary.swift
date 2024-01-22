@@ -1,6 +1,7 @@
 import CoreLocation
 import Foundation
 import RealmSwift
+import UIKit
 
 /// Realm object for `project/summary`.
 class ProjectSummary: Object, WithPlaceholder, WithId {
@@ -96,6 +97,8 @@ class StatusTaskCount: EmbeddedObject {
     @Persisted var name: String
     @Persisted var hexColor: String
     @Persisted var taskCount: Int
+
+    lazy var color = UIColor(hexString: hexColor) ?? .black
 
     /// Default initializer required by Realm.
     override init() {

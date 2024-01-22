@@ -241,9 +241,12 @@ class OrganizationModel: NSObject, RealmModel {
             // fetch statuses for given project
             // TODO? this could be a custom getModelElements(as: ...Syncable)... so it returns [Status] given getModelElements(as: FirestoreStatusName)
             let statusNames: [Status] = try await self.firestore.collection("projects/\(project.id)/statusNames")
-                .getDocuments().documents.map {
-                    try $0.data(as: FirestoreStatusName.self).modelObject(withId: $0.documentID)
-                }
+                .getDocuments().documents
+                // map document snapshots to Statuses
+                .map { try $0.data(as: FirestoreStatusName.self).modelObject(withId: $0.documentID) }
+                // sort the status names, so the counts are sorted by status reversed
+                .sorted(by: Status.uiSortingOrder)
+                .reversed()
 
             // fetch task count per status
             let statusTaskCounts = try await statusNames.concurrentMapOnMain { status in
