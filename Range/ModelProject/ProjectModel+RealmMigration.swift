@@ -24,6 +24,7 @@ extension ProjectModel {
         // v19 adds ProjectSummary.projectType
         // v20 introduces ProjectSummary.organizationId
         // v21 introduces ProjectSummary.identifier and Collaboration.identifier
+        // v22 introduces ProjectSummary.statusTaskCounts
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource

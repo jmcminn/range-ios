@@ -50,6 +50,15 @@ struct FirestoreProjectSummary: Codable, FirestoreToRealmSyncable {
             canvasOrder: canvasOrder ?? [],
             identifier: identifier
         )
+        // preserve the task counts in Realm (they are local only data)
+        if let existingProject = realm.object(ofType: ProjectSummary.self, forPrimaryKey: id) {
+            existingProject.statusTaskCounts.forEach {
+                // need to recreate the embedded objects, cannot add existing ones to new List
+                projectSummary.statusTaskCounts.append(StatusTaskCount(
+                    id: $0.id, name: $0.name, hexColor: $0.hexColor, taskCount: $0.taskCount
+                ))
+            }
+        }
         realm.add(projectSummary, update: .modified)
     }
 }

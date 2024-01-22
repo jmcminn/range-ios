@@ -42,6 +42,8 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
     @Persisted var identifier: String?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
+    /// Number of tasks per given status. Only available on organization model (not tracked on project model level)
+    @Persisted var statusTaskCounts: List<StatusTaskCount>
 
     /// Default initializer required by Realm.
     override init() {
@@ -86,5 +88,25 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
             projectType: .other,
             placeholder: true
         )
+    }
+}
+
+class StatusTaskCount: EmbeddedObject {
+    @Persisted var id: String
+    @Persisted var name: String
+    @Persisted var hexColor: String
+    @Persisted var taskCount: Int
+
+    /// Default initializer required by Realm.
+    override init() {
+        super.init()
+    }
+
+    init(id: String, name: String, hexColor: String, taskCount: Int) {
+        super.init()
+        self.id = id
+        self.name = name
+        self.hexColor = hexColor
+        self.taskCount = taskCount
     }
 }

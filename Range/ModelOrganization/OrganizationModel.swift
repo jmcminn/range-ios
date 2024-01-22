@@ -54,7 +54,8 @@ class OrganizationModel: NSObject, RealmModel {
         // v4 introduces ProjectSummary.projectType
         // v5 introduces ProjectSummary.organizationId
         // v6 introduces ProjectSummary.identifier and Collaboration.identifier
-        config.schemaVersion = 6
+        // v7 introduces ProjectSummary.statusTaskCounts
+        config.schemaVersion = 7
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")
@@ -64,6 +65,7 @@ class OrganizationModel: NSObject, RealmModel {
             ProjectSummary.self,
             Location.self,
             Participant.self,
+            StatusTaskCount.self,
         ]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
@@ -230,5 +232,33 @@ class OrganizationModel: NSObject, RealmModel {
             .call(parameters)
 
         return projectId
+    }
+
+    /// Update collaboration counts per status for all projects in this organization
+    @MainActor
+    func updateStatusCounts() async throws {
+        _ = try await projects.concurrentMapOnMain { project in
+            // fetch statuses for given project
+            // TODO? this could be a custom getModelElements(as: ...Syncable)... so it returns [Status] given getModelElements(as: FirestoreStatusName)
+            let statusNames: [Status] = try await self.firestore.collection("projects/\(project.id)/statusNames")
+                .getDocuments().documents.map {
+                    try $0.data(as: FirestoreStatusName.self).modelObject(withId: $0.documentID)
+                }
+
+            // fetch task count per status
+            let statusTaskCounts = try await statusNames.concurrentMapOnMain { status in
+                let query = self.firestore.collection("projects/\(project.id)/collaborations")
+                    .whereField("statusName", isEqualTo: status.id)
+                let taskCount = try await query.count.getAggregation(source: .server).count as? Int ?? 0
+                return StatusTaskCount(
+                    id: status.id, name: status.name, hexColor: status.hexColor, taskCount: taskCount
+                )
+            }
+            // save the task counts per status for given project in Realm
+            try self.mainRealm.write {
+                project.statusTaskCounts.removeAll()
+                project.statusTaskCounts.append(objectsIn: statusTaskCounts)
+            }
+        }
     }
 }
