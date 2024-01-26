@@ -43,7 +43,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         case summary, comments
     }
 
-    private var detailsVC: FullscreenMediaSummaryViewController!
+    private var detailsVC: FullscreenMediaDetailsViewController!
     private var commentsVC: FeedViewController!
 
     private var addCommentVC: CommentViewController?
@@ -358,7 +358,7 @@ extension FullscreenMediaCardViewController {
 
     private func setupDetailsVC() {
         guard detailsVC == nil else { return }
-        detailsVC = FullscreenMediaSummaryViewController(
+        detailsVC = FullscreenMediaDetailsViewController(
             projectModel: projectModel,
             mediaCache: mediaCache,
             upload: upload,

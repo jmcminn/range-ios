@@ -4,7 +4,7 @@ import SnapKit
 import UIKit
 
 /// This class represent the whole content view of the Fullscreen media view
-class FullscreenMediaSummaryViewController: UIViewController {
+class FullscreenMediaDetailsViewController: UIViewController {
     private let projectModel: ProjectModel
     private let mediaCache: MediaCache
     private let showCollaborationButton: Bool
@@ -500,7 +500,7 @@ class FullscreenMediaSummaryViewController: UIViewController {
 
 // MARK: - uploads observation / updating UI
 
-extension FullscreenMediaSummaryViewController {
+extension FullscreenMediaDetailsViewController {
     /// Observe all uploads and authors.
     /// If upload is deleted, remove from correlatedUploads
     /// If upload is updated, update the UI
