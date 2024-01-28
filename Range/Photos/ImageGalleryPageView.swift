@@ -11,7 +11,7 @@ class ImageGalleryPageView: UIView {
     /// top/bottom insets for image view, so the side pages in the gallery are lower than the center one.
     /// left/right inset values doesn't matter, but if any is non zero, the image view will be pushed towards the other edge, for example
     /// if left inset is 1 and right is 0 the imageView will be aligned to the right
-    var imageInset: UIEdgeInsets = .zero
+    var pageInset: UIEdgeInsets = .zero
     /// image aspect ratio is required for sizing the imageView. initially it might be set to some sample value, later updated to
     /// real value when the image is loaded
     var imageHeight2Width: Double? {
@@ -74,19 +74,19 @@ class ImageGalleryPageView: UIView {
 
         // default imageHeight2Width to 4/3, it should always be set, not necessarily with the final value
         imageView.frame = imageViewFrame(
-            forImageHeight2Width: imageHeight2Width ?? 4.0 / 3.0, imageInset: imageInset
+            forImageHeight2Width: imageHeight2Width ?? 4.0 / 3.0, pageInset: pageInset
         )
 
         // buttons alpha depends on the inset, so we hide the buttons if the page is shrinking (is not a central page)
         // It's hiding when inset is changing from 0 to 5
-        let buttonAlpha = max(1 - imageInset.top / 5.0, 0)
+        let buttonAlpha = max(1 - pageInset.top / 5.0, 0)
         removeButton?.alpha = buttonAlpha
         annotationsButton?.alpha = buttonAlpha
         moreButton?.alpha = buttonAlpha
     }
 
     /// calculate image frame so it's aspect ratio is preserved and take all insets into account
-    func imageViewFrame(forImageHeight2Width height2Width: Double, imageInset: UIEdgeInsets = .zero) -> CGRect {
+    func imageViewFrame(forImageHeight2Width height2Width: Double, pageInset: UIEdgeInsets = .zero) -> CGRect {
         // always add 8 points of horizontal margin, it gives spacing between pages
         let horizontalMargin = 8.0
 
@@ -104,13 +104,13 @@ class ImageGalleryPageView: UIView {
         }
 
         // now apply the imageInsets
-        let insetImageHeight = max(0, imageSize.height - imageInset.top - imageInset.bottom)
+        let insetImageHeight = max(0, imageSize.height - pageInset.top - pageInset.bottom)
         let insetImageWidth = insetImageHeight / height2Width
 
         // left/right inset depending on the imageInset
-        let insetImageX = imageInset.right > 0
+        let insetImageX = pageInset.right > 0
             ? horizontalMargin
-            : (imageInset.left > 0
+            : (pageInset.left > 0
                 ? bounds.width - horizontalMargin - insetImageWidth
                 : (bounds.width - insetImageWidth) / 2.0)
         return CGRect(

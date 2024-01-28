@@ -15,7 +15,10 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     /// Photo selected, the index available in the `currentPage`
     var onPhotoSelected: (() -> Void)?
     var onAnnotationsSelected: (() -> Void)?
+    /// When set each card will display a "..." button and call this action when tapped
     var onMoreAction: (() -> Void)?
+    /// if set there'll be a special last page added to the gallery for updating the photo (this is for the versioned/correlated photos case)
+    var onUpdatePhotoAction: (() -> Void)?
 
     // this defines the page size
     let pageHeight2Width: Double
@@ -24,7 +27,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     let removePhotoHandler: ((Int) -> Bool)?
 
     private let scrollView = UIScrollView()
-    private var pages: [ImageGalleryPageView] = []
+    private var pages: [UIView] = []
     private var pageSize: CGSize = .zero
     @objc private(set) dynamic var currentPage: Int = 0 {
         didSet {
@@ -93,7 +96,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         let currentPageBeforeRemoval = primaryVisiblePage
         photoKeys.remove(at: index)
         let removedPage = pages.remove(at: index)
-        removedPage.imageView.image = nil
+        (removedPage as? ImageGalleryPageView)?.imageView.image = nil
         removedPage.removeFromSuperview()
         // force the view layout
         previousSize = .zero
@@ -139,15 +142,25 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         scrollView.clipsToBounds = false // show pages that are out of bounds
 
         view.addSubview(scrollView)
+
+        if onUpdatePhotoAction != nil {
+            let updatePhotoPage = ImageGalleryUpdatePhotoPageView()
+            updatePhotoPage.onUpdatePhotoAction = onUpdatePhotoAction
+            pages.append(updatePhotoPage)
+        }
+
         pages.forEach(scrollView.addSubview)
         // set some initial height to width ratio but finally it's set when the image is loaded
-        pages.forEach { $0.imageHeight2Width = pageHeight2Width }
+        pages.compactMap { $0 as? ImageGalleryPageView }
+            .forEach { $0.imageHeight2Width = pageHeight2Width }
 
         loadImages(currentPage: currentPage)
 
         for (index, page) in pages.enumerated() {
-            if showVersions { page.showVersion(index + 1) }
-            page.onMoreAction = onMoreAction
+            if let page = page as? ImageGalleryPageView {
+                if showVersions { page.showVersion(index + 1) }
+                page.onMoreAction = onMoreAction
+            }
         }
     }
 
@@ -164,7 +177,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
             scrollView.frame = pageFrame
             scrollView.contentSize = CGSize(
-                width: pageSize.width * CGFloat(photoKeys.count),
+                width: pageSize.width * CGFloat(pages.count),
                 height: pageSize.height
             )
 
@@ -227,13 +240,18 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         pages.enumerated().forEach { index, view in
             let inset = 30 * abs(Double(index) - offsetFraction)
             let isLeft: Bool = offsetFraction > Double(index)
-            view.imageInset = UIEdgeInsets(
+            let pageInset = UIEdgeInsets(
                 top: inset,
                 left: isLeft ? 2 * inset : 0,
                 bottom: inset,
                 right: isLeft ? 0 : 2 * inset
             )
-            view.setNeedsLayout()
+            if let page = view as? ImageGalleryPageView {
+                page.pageInset = pageInset
+                page.setNeedsLayout()
+            } else if let page = view as? ImageGalleryUpdatePhotoPageView {
+                page.pageInset = pageInset
+            }
         }
     }
 
@@ -244,6 +262,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     private func loadImages(currentPage: Int, force: Bool = false) {
         if currentPage != imagesLastLoadedForPage || force == true {
             pages.enumerated().forEach { index, page in
+                guard let page = page as? ImageGalleryPageView else { return }
                 if index < currentPage - 2 || index > currentPage + 2 {
                     page.imageView.kf.cancelDownloadTask()
                     page.imageView.image = nil
@@ -258,7 +277,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     private func loadImage(atIndex index: Int) {
         guard let photoKey = photoKeys[index] else { return }
         let rangeImageDataProvider = imageDataProviderFactory(photoKey)
-        let page = pages[index]
+        guard let page = pages[index] as? ImageGalleryPageView else { return }
         page.imageView.kf.setImage(
             with: rangeImageDataProvider,
             placeholder: nil, options: rangeImageDataProvider.options, progressBlock: nil,
@@ -290,7 +309,7 @@ extension ImageGalleryViewController {
     /// Access to view for current page, needed for custom transition
     var viewForCurrentPage: ImageGalleryPageView? {
         guard currentPage >= 0, currentPage < pages.count else { return nil }
-        return pages[currentPage]
+        return pages[currentPage] as? ImageGalleryPageView
     }
 
     /// Access to image view for current page, needed for custom transition

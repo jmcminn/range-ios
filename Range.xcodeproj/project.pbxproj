@@ -452,6 +452,7 @@
 		0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AE883AB2AEFBEDC004992BA /* XCTestCase+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */; };
+		0AE8AC562B6664F200885F13 /* ImageGalleryUpdatePhotoPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8AC552B6664F200885F13 /* ImageGalleryUpdatePhotoPageView.swift */; };
 		0AE8B6FE2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */; };
 		0AE9A8B12B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B02B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift */; };
 		0AE9A8B32B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */; };
@@ -948,6 +949,7 @@
 		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
 		0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyTest.swift; sourceTree = "<group>"; };
 		0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Factory.swift"; sourceTree = "<group>"; };
+		0AE8AC552B6664F200885F13 /* ImageGalleryUpdatePhotoPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryUpdatePhotoPageView.swift; sourceTree = "<group>"; };
 		0AE8B6FD2966C7A700FAD537 /* SwitchPinTypeCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPinTypeCardViewController.swift; sourceTree = "<group>"; };
 		0AE9A8B02B0CF4EC00AF7E46 /* UserDefaults+Annotations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Annotations.swift"; sourceTree = "<group>"; };
 		0AE9A8B22B0D1E1300AF7E46 /* AnnotationsEditor+TextInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnotationsEditor+TextInputAccessoryView.swift"; sourceTree = "<group>"; };
@@ -1176,6 +1178,7 @@
 				0A99BF2A28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift */,
 				0A6FAC3A28B7E1F30057995B /* ImageGalleryViewController.swift */,
 				0A6FAC3C28B8EBB10057995B /* ImageGalleryPageView.swift */,
+				0AE8AC552B6664F200885F13 /* ImageGalleryUpdatePhotoPageView.swift */,
 				0A0D31D628A41AC6007A8D49 /* ThumbnailsViewController.swift */,
 				0A47830128A53FE50063040F /* ThumbnailCollectionViewCell.swift */,
 				0A3831DE28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift */,
@@ -2503,6 +2506,7 @@
 				0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */,
 				0A34072F29C8617F007299A7 /* TypeScaleCardViewController.swift in Sources */,
 				0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */,
+				0AE8AC562B6664F200885F13 /* ImageGalleryUpdatePhotoPageView.swift in Sources */,
 				0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A2B3F592AF513DB00D3D0D2 /* TextAnnotationViewModel.swift in Sources */,

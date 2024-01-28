@@ -249,12 +249,15 @@ class FullscreenMediaDetailsViewController: UIViewController {
                 for: FlowEvent(upload, sourceView: galleryVC.viewForCurrentPage)
             )
         }
+        galleryVC.onUpdatePhotoAction = {
+            print("TODO: 2358 update photo action")
+        }
         galleryVC.setCurrentPage(correlatedUploads.firstIndex(of: upload) ?? 0)
         galleryVC.showVersions = correlatedUploads.count > 1
         add(childController: galleryVC, toView: view)
         // When showing multiple photos the horizontal margin is bigger to show partially other photos
-        // If one photo only is shown make it take the whole width
-        let horizontalMargin = correlatedUploads.count > 1 ? 44.0 : 16.0
+        // The same is true for 1 photo only, because then we show the "update photo" page as a 2nd one
+        let horizontalMargin = 44.0
         galleryVC.view.snp.makeConstraints { make in
             if let lastView {
                 make.top.equalTo(lastView.snp.bottom)
