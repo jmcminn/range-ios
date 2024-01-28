@@ -120,6 +120,7 @@ extension UIColor {
         case UIColor.Neutral_09.hexString: return .Neutral_08
         case UIColor.Neutral_02.hexString: return .Neutral_03
         case UIColor.Neutral_01.hexString: return .Neutral_02
+        case UIColor.Secondary_02.hexString: return .Secondary_03
         default:
             fatalError("highlight color not defined for \(hexString)")
         }

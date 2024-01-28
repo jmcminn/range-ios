@@ -51,6 +51,12 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
 
+    private let updatePhotoButton = RoundShadowButton(
+        image: UIImage(systemName: "camera.viewfinder") ?? UIImage(),
+        imageTintColor: .white,
+        variant: .secondary
+    )
+
     let upload: Upload
 
     private var previewItem: UploadPreviewItem?
@@ -118,6 +124,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
             // magic number, just enough so the user won't drag higher than that (beyond the max height)
             make.height.equalTo(500)
         }
+
         updateColors()
     }
 
@@ -148,6 +155,15 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setupAddCommentCard()
+
+        if upload.isImage {
+            // TODO: 2358 photo flow action to add version
+            view.addSubview(updatePhotoButton)
+            updatePhotoButton.snp.makeConstraints { make in
+                make.trailing.equalToSuperview().inset(22)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-22)
+            }
+        }
     }
 
     /// updates shadow color based on the interface style and visibility based on the `bottomStrokeVisible`

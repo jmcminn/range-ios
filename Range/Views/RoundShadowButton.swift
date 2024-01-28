@@ -4,7 +4,7 @@ import UIKit
 /// Round button with an image that changes its shadow when pressed
 class RoundShadowButton: ControlWithTapAreaInsets {
     enum Variant {
-        case darkBlurred, blue
+        case darkBlurred, blue, secondary
     }
 
     private let variant: Variant
@@ -37,7 +37,8 @@ class RoundShadowButton: ControlWithTapAreaInsets {
         layer.cornerRadius = size / 2.0
         if withBorder { layer.borderWidth = 1 }
 
-        if variant == .darkBlurred {
+        switch variant {
+        case .darkBlurred:
             backgroundColor = .clear
             let blurEffect = UIBlurEffect(style: .dark)
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -48,9 +49,12 @@ class RoundShadowButton: ControlWithTapAreaInsets {
             blurEffectView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
-        } else {
+        case .blue:
             backgroundColor = .Primary_Blue_04
             layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+        case .secondary:
+            backgroundColor = .Secondary_02
+            layer.borderColor = UIColor.Secondary_03.cgColor
         }
 
         setShadowWithFigmaValues(x: 0, y: 6, blur: 10, opacity: 0.1)
@@ -94,6 +98,8 @@ class RoundShadowButton: ControlWithTapAreaInsets {
             layer.shadowOpacity = isHighlighted ? 0.4 : 0.1
             if variant == .blue {
                 backgroundColor = isHighlighted ? .Primary_Blue_04._highlightColor : .Primary_Blue_04
+            } else if variant == .secondary {
+                backgroundColor = isHighlighted ? .Secondary_02._highlightColor : .Secondary_02
             }
         }
     }
