@@ -311,9 +311,18 @@ extension FullscreenMediaCardViewController {
 // MARK: - current upload updated
 
 extension FullscreenMediaCardViewController {
-    private func onCurrentUploadChanged() {
-        guard let currentUpload = detailsVC.currentUpload else { return }
-        commentsVC.setComments(currentUpload.comments.filter(NSPredicate(value: true)))
+    private func onCurrentUploadSwitched() {
+        // TODO: 2358 handle no upload (so last card, even if not, then still displaying the placeholders is ok)
+        if let currentUpload = detailsVC.currentUpload {
+            commentsVC.setComments(currentUpload.comments.filter(NSPredicate(value: true)))
+        }
+        // minimize the add comment card when upload switched
+        if let cardDragging = addCommentVC?.cardDragging, cardDragging.position == .max {
+            addCommentVC?.cardDragging?.setPosition(.medium, withVelocity: 0)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.updateAddCommentCardVisibility()
+        }
     }
 }
 
@@ -383,11 +392,8 @@ extension FullscreenMediaCardViewController {
         detailsVC.onHeightChanged = { [weak self] in
             self?.updateCommentsHeaderHeight()
         }
-        detailsVC.onCurrentUploadChanged = { [weak self] in
-            self?.onCurrentUploadChanged()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self?.updateAddCommentCardVisibility()
-            }
+        detailsVC.onCurrentUploadSwitched = { [weak self] in
+            self?.onCurrentUploadSwitched()
         }
         detailsVC.onPhotoSelected = { [weak self] selectedUpload in
             guard let self = self else { return }

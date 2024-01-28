@@ -14,7 +14,8 @@ class FullscreenMediaDetailsViewController: UIViewController {
     private(set) var correlatedUploads: [Upload]
     var onCorrelatedUploadsUpdated: (() -> Void)?
 
-    var onCurrentUploadChanged: (() -> Void)?
+    /// when the there's a new upload selected (or no upload)
+    var onCurrentUploadSwitched: (() -> Void)?
 
     private var notificationTokens: [NotificationToken] = []
 
@@ -67,6 +68,8 @@ class FullscreenMediaDetailsViewController: UIViewController {
             return upload
         }
     }
+
+    var lastReportedCurrentUpload: Upload?
 
     /// Initializer
     init(projectModel: ProjectModel, mediaCache: MediaCache, upload: Upload, showCollaborationButton: Bool) {
@@ -554,7 +557,10 @@ extension FullscreenMediaDetailsViewController {
             galleryVC.updatePhotoKey(galleryMediaKeys[galleryVC.currentPage], atIndex: galleryVC.currentPage)
         }
 
-        onCurrentUploadChanged?()
+        if lastReportedCurrentUpload != currentUpload {
+            lastReportedCurrentUpload = currentUpload
+            onCurrentUploadSwitched?()
+        }
         onHeightChanged?()
     }
 
