@@ -20,6 +20,14 @@ class FullscreenMediaDetailsViewController: UIViewController {
     private var notificationTokens: [NotificationToken] = []
 
     var onHeightChanged: (() -> Void)?
+
+    /// Contains Collaboration button (optional, if not displaying from collaboration window) and images gallery
+    private var headerView = UIView()
+    /// Details of the upload selected in the gallery view
+    private var contentView = UIView()
+    /// shown when "update photo" card is shown in the gallery
+    private var contentPlaceholderView = UIView()
+
     /// for creating the layout and calculating height
     private var lastView: UIView!
 
@@ -50,6 +58,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
     private let noCommentsView = UIView()
 
     var onPhotoSelected: ((Upload) -> Void)?
+    var onUpdatePhotoAction: (() -> Void)?
     var onAnnotationsSelected: ((Upload) -> Void)?
 
     var galleryMediaKeys: [MediaKey] {
@@ -98,13 +107,14 @@ class FullscreenMediaDetailsViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
 
         setupViews()
+        setupContentPlaceholderView()
         updateColors()
 
         galleryCurrentPageObservation = galleryVC?.observe(\.currentPage) { [weak self] _, _ in
-            self?.onUploadUpdated()
+            self?.galleryPageSwitchedHandler()
         }
         observeUploads()
-        onUploadUpdated()
+        galleryPageSwitchedHandler()
 
         onHeightChanged?()
     }
@@ -121,70 +131,133 @@ class FullscreenMediaDetailsViewController: UIViewController {
     }
 
     private func setupViews() {
+        // -----------------------------------------------------------------------------------------
+        // ---- Header -----------------------------------------------------------------------------
+        headerView.backgroundColor = .dynamic(.Neutral_10)
+        view.addSubview(headerView)
+        headerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
+
         // ---- Collaboration ----------------------------------------------------------------------
         // only add if there's a collaboration and it has a canvas (it should always have a canvas but
         // in case of placeholders or bad data just don't show the button)
         if showCollaborationButton, let collaboration = upload.collaboration.first,
            collaboration.feature.first?.geometry.first?.canvas.first != nil
         {
-            addCollaborationButton(collaboration: collaboration)
-            _addSpacer(16, .dynamic(.Neutral_10))
+            setupCollaborationButton(collaboration: collaboration)
+            headerView.addSubview(collaborationButton!)
+            collaborationButton!.snp.makeConstraints { make in
+                make.top.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
         }
-
         // ---- Media ------------------------------------------------------------------------------
         if upload.isImage {
             addGalleryVC()
         } else {
             addPreviewView()
         }
-        _addSpacer(16, .dynamic(.Neutral_10))
+
+        // -----------------------------------------------------------------------------------------
+        // ---- Content ----------------------------------------------------------------------------
+        contentView.backgroundColor = .dynamic(.Neutral_09)
+        view.addSubview(contentView)
 
         _addSpacer(1, .dynamic(.Neutral_07))
-
         // ---- Author  ----------------------------------------------------------------------------
         setupAuthorView()
         _addSubview(authorView)
-
         // ---- Description  -----------------------------------------------------------------------
         _addSpacer(1, .dynamic(.Neutral_07), inset: true)
-        _addSpacer(12, .dynamic(.Neutral_09))
+        _addSpacer(12)
         descriptionHeader = createSectionHeaderView(iconName: "text.quote", title: String(localized: "Description"))
         descriptionHeader
             .addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(descriptionTapped)))
         _addSubview(descriptionHeader)
-        _addSpacer(12, .dynamic(.Neutral_09))
+        _addSpacer(12)
         addDescriptionOrAddView()
-        _addSpacer(16, .dynamic(.Neutral_09))
+        _addSpacer(16)
 
         // ---- Tags  ------------------------------------------------------------------------------
         _addSpacer(1, .dynamic(.Neutral_07), inset: true)
-        _addSpacer(12, .dynamic(.Neutral_09))
+        _addSpacer(12)
         tagsHeader = createSectionHeaderView(iconName: "tag", title: String(localized: "Tags"))
         tagsHeader.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
         _addSubview(tagsHeader)
-        _addSpacer(12, .dynamic(.Neutral_09))
+        _addSpacer(12)
         addTagsOrAddView()
-        _addSpacer(16, .dynamic(.Neutral_09))
+        _addSpacer(16)
 
         // ---- Comments  --------------------------------------------------------------------------
         _addSpacer(1, .dynamic(.Neutral_07), inset: true)
-        _addSpacer(12, .dynamic(.Neutral_09))
+        _addSpacer(12)
         let commentsHeader = createSectionHeaderView(iconName: "bubble.right", title: String(localized: "Comments"))
         // hide edit button for comments
         commentsHeader.subviews.filter { $0.tag == 66 }.forEach { $0.isHidden = true }
         _addSubview(commentsHeader)
-        _addSpacer(4, .dynamic(.Neutral_09))
+        _addSpacer(4)
+
+        contentView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(lastView)
+        }
+    }
+
+    private func setupContentPlaceholderView() {
+        contentPlaceholderView.backgroundColor = .dynamic(.Neutral_09)
+        // separator line
+        let lineView = UIView()
+        lineView.backgroundColor = .dynamic(.Neutral_07)
+        contentPlaceholderView.addSubview(lineView)
+        lineView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        // display 3 placeholder boxes
+        let boxHeights: [Double] = [40, 64, 64]
+        let boxViews = boxHeights.map { _ in
+            let boxView = UIView()
+            boxView.backgroundColor = .dynamic(.Neutral_08)
+            boxView.layer.cornerRadius = 16
+            return boxView
+        }
+        for (index, boxView) in boxViews.enumerated() {
+            contentPlaceholderView.addSubview(boxView)
+            boxView.snp.makeConstraints { make in
+                if index == 0 {
+                    make.top.equalToSuperview().offset(16)
+                } else {
+                    make.top.equalTo(boxViews[index - 1].snp.bottom).offset(16)
+                }
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.height.equalTo(boxHeights[index])
+                if index == boxViews.count - 1 {
+                    make.bottom.equalToSuperview().inset(16)
+                }
+            }
+        }
+        view.addSubview(contentPlaceholderView)
+        contentPlaceholderView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+        }
     }
 
     /// Return the height of the view
     func height() -> CGFloat {
         view.layoutIfNeeded()
-        return lastView.frame.maxY
+        if currentUpload != nil {
+            return headerView.frame.height + lastView.frame.maxY
+        } else {
+            return contentPlaceholderView.frame.maxY
+        }
     }
 
     /// Adds subview, sets its constraints and sets it as the `lastView`
     private func _addSubview(_ subview: UIView, inset: Bool = false) {
-        view.addSubview(subview)
+        contentView.addSubview(subview)
         subview.snp.makeConstraints { [lastView] make in
             make.leading.trailing.equalToSuperview().inset(inset ? 16 : 0)
             if let lastView {
@@ -197,31 +270,27 @@ class FullscreenMediaDetailsViewController: UIViewController {
     }
 
     /// Adds a spacer below `lastView` and sets it as the lastView
-    private func _addSpacer(_ height: CGFloat, _ backgroundColor: UIColor, inset: Bool = false) {
+    private func _addSpacer(_ height: CGFloat, _ backgroundColor: UIColor = .dynamic(.Neutral_09),
+                            inset: Bool = false)
+    {
         let spacer = UIView()
         spacer.backgroundColor = backgroundColor
-        view.addSubview(spacer)
+        contentView.addSubview(spacer)
         spacer.snp.makeConstraints { make in
-            make.top.equalTo(lastView.snp.bottom)
+            if let lastView {
+                make.top.equalTo(lastView.snp.bottom)
+            } else {
+                make.top.equalToSuperview()
+            }
             make.height.equalTo(height)
             make.leading.trailing.equalToSuperview().inset(inset ? 16 : 0)
         }
         lastView = spacer
     }
 
-    private func addCollaborationButton(collaboration: Collaboration) {
+    private func setupCollaborationButton(collaboration: Collaboration) {
         collaborationButton = CollaborationButton(model: projectModel, collaboration: collaboration)
         collaborationButton!.addTarget(self, action: #selector(collaborationTapped), for: .touchUpInside)
-
-        // put collaboration button in a wrapper view to have a different background color on the sides
-        let collaborationButtonWrapper = UIView()
-        collaborationButtonWrapper.backgroundColor = .dynamic(.Neutral_10)
-        collaborationButtonWrapper.addSubview(collaborationButton!)
-        collaborationButton!.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-        }
-        _addSubview(collaborationButtonWrapper)
     }
 
     private func addGalleryVC() {
@@ -249,18 +318,16 @@ class FullscreenMediaDetailsViewController: UIViewController {
                 for: FlowEvent(upload, sourceView: galleryVC.viewForCurrentPage)
             )
         }
-        galleryVC.onUpdatePhotoAction = {
-            print("TODO: 2358 update photo action")
-        }
+        galleryVC.onUpdatePhotoAction = { [weak self] in self?.onUpdatePhotoAction?() }
         galleryVC.setCurrentPage(correlatedUploads.firstIndex(of: upload) ?? 0)
         galleryVC.showVersions = correlatedUploads.count > 1
-        add(childController: galleryVC, toView: view)
+        add(childController: galleryVC, toView: headerView)
         // When showing multiple photos the horizontal margin is bigger to show partially other photos
         // The same is true for 1 photo only, because then we show the "update photo" page as a 2nd one
         let horizontalMargin = 44.0
         galleryVC.view.snp.makeConstraints { make in
-            if let lastView {
-                make.top.equalTo(lastView.snp.bottom)
+            if let collaborationButton {
+                make.top.equalTo(collaborationButton.snp.bottom).offset(16)
             } else {
                 make.top.equalToSuperview()
             }
@@ -269,8 +336,8 @@ class FullscreenMediaDetailsViewController: UIViewController {
             make.height.equalTo(view.snp.width)
                 .offset(-2 * horizontalMargin * galleryHeightToWidth)
                 .multipliedBy(galleryHeightToWidth)
+            make.bottom.equalToSuperview().inset(16)
         }
-        lastView = galleryVC.view
         self.galleryVC = galleryVC
     }
 
@@ -336,7 +403,16 @@ class FullscreenMediaDetailsViewController: UIViewController {
             make.top.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(16)
         }
-        _addSubview(wrapperView)
+        headerView.addSubview(previewBox)
+        previewBox.snp.makeConstraints { make in
+            if let collaborationButton {
+                make.top.equalTo(collaborationButton.snp.bottom).offset(16)
+            } else {
+                make.top.equalToSuperview()
+            }
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(16)
+        }
     }
 
     @objc private func previewTapped() {
@@ -529,23 +605,38 @@ extension FullscreenMediaDetailsViewController {
                     self.observeUploads()
                     self.onCorrelatedUploadsUpdated?()
                 } else {
-                    self.onUploadUpdated()
+                    self.uploadUpdatedHandler()
                 }
             }
             notificationTokens.append(uploadNotificationToken)
 
             if let author = upload.author {
                 let authorNotificationToken = author.observe { [weak self] _ in
-                    self?.onUploadUpdated()
+                    self?.uploadUpdatedHandler()
                 }
                 notificationTokens.append(authorNotificationToken)
             }
         }
     }
 
-    private func onUploadUpdated() {
-        guard let currentUpload else { return }
+    /// Called when the current upload was switched.
+    private func galleryPageSwitchedHandler() {
+        guard lastReportedCurrentUpload != currentUpload else { return }
 
+        lastReportedCurrentUpload = currentUpload
+        uploadUpdatedHandler()
+
+        // switch between upload and placeholder view
+        contentView.isHidden = currentUpload == nil
+        contentPlaceholderView.isHidden = currentUpload != nil
+
+        onCurrentUploadSwitched?()
+        onHeightChanged?()
+    }
+
+    /// Called when the current upload's data was updated
+    private func uploadUpdatedHandler() {
+        guard let currentUpload else { return }
         authorLabel.attributedText = NSAttributedString(
             string: currentUpload.author?.displayName ?? "",
             attributes: [.strikethroughStyle: currentUpload.author?.strikethroughStyle ?? 0]
@@ -558,11 +649,6 @@ extension FullscreenMediaDetailsViewController {
 
         if let galleryVC {
             galleryVC.updatePhotoKey(galleryMediaKeys[galleryVC.currentPage], atIndex: galleryVC.currentPage)
-        }
-
-        if lastReportedCurrentUpload != currentUpload {
-            lastReportedCurrentUpload = currentUpload
-            onCurrentUploadSwitched?()
         }
         onHeightChanged?()
     }

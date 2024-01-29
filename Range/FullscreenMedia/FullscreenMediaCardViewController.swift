@@ -51,11 +51,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     /// a view below content to cover the space visible when dragging up past the max height
     private(set) var bottomView = UIView()
 
-    private let updatePhotoButton = RoundShadowButton(
-        image: UIImage(systemName: "camera.viewfinder") ?? UIImage(),
-        imageTintColor: .white,
-        variant: .secondary
-    )
+    private var updatePhotoButton: RoundShadowButton?
 
     let upload: Upload
 
@@ -156,10 +152,15 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         super.viewDidAppear(animated)
         setupAddCommentCard()
 
-        if upload.isImage {
-            // TODO: 2358 photo flow action to add version
-            view.addSubview(updatePhotoButton)
-            updatePhotoButton.snp.makeConstraints { make in
+        if upload.isImage, updatePhotoButton == nil {
+            updatePhotoButton = RoundShadowButton(
+                image: UIImage(systemName: "camera.viewfinder") ?? UIImage(),
+                imageTintColor: .white,
+                variant: .secondary
+            )
+            updatePhotoButton?.addTarget(self, action: #selector(updatePhotoAction), for: .touchUpInside)
+            view.addSubview(updatePhotoButton!)
+            updatePhotoButton!.snp.makeConstraints { make in
                 make.trailing.equalToSuperview().inset(22)
                 make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-22)
             }
@@ -312,9 +313,12 @@ extension FullscreenMediaCardViewController {
 
 extension FullscreenMediaCardViewController {
     private func onCurrentUploadSwitched() {
-        // TODO: 2358 handle no upload (so last card, even if not, then still displaying the placeholders is ok)
         if let currentUpload = detailsVC.currentUpload {
             commentsVC.setComments(currentUpload.comments.filter(NSPredicate(value: true)))
+            updatePhotoButton?.isHidden = false
+        } else {
+            commentsVC.hideAllContent()
+            updatePhotoButton?.isHidden = true
         }
         // minimize the add comment card when upload switched
         if let cardDragging = addCommentVC?.cardDragging, cardDragging.position == .max {
@@ -337,6 +341,12 @@ extension FullscreenMediaCardViewController: UIScrollViewDelegate {
     /// Add comment card is only visible if user scrolls to the bottom. Or if user is currently using the card (so it's maximized)
     private func updateAddCommentCardVisibility() {
         guard let addCommentVC, let addCommentCardDragging = addCommentVC.cardDragging else { return }
+
+        // hide if there's no current upload
+        guard detailsVC?.currentUpload != nil else {
+            addCommentVC.hideCard(animated: true)
+            return
+        }
 
         // don't hide if it's in max position
         guard addCommentCardDragging.position != .max else { return }
@@ -418,6 +428,7 @@ extension FullscreenMediaCardViewController {
                 self.dismissCard()
             }
         }
+        detailsVC.onUpdatePhotoAction = { [weak self] in self?.updatePhotoAction() }
         let header =
             UIView(frame: CGRect(origin: .zero, size: CGSize(width: 1000, height: 1000)))
         header.backgroundColor = containerView.backgroundColor
@@ -527,6 +538,14 @@ extension FullscreenMediaCardViewController {
         commentsVC.tableView.contentInsetAdjustmentBehavior = .automatic
         commentsVC.tableView.automaticallyAdjustsScrollIndicatorInsets = true
         commentsVC.tableView.forwardDelegateInvocations(to: self)
+    }
+}
+
+// MARK: - update photo
+
+extension FullscreenMediaCardViewController {
+    @objc private func updatePhotoAction() {
+        print("TODO: 2358 update photo action")
     }
 }
 

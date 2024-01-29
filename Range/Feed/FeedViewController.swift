@@ -129,6 +129,8 @@ class FeedViewController: UIViewController {
 
     private let defaultTableFooterView: UIView
     private let emptyStateView: UIView?
+    /// hides everything, even the empty state view
+    private var allContentHidden: Bool = false
 
     /// Initialize for the collaboration feed = show updates for given collaboration
     init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
@@ -169,7 +171,15 @@ class FeedViewController: UIViewController {
     /// Reload with new comments.
     /// To be used when initialized with comments
     func setComments(_ comments: Results<Comment>) {
+        allContentHidden = false
         self.comments = comments
+        observeComments()
+    }
+
+    /// Show nothing, also hide the empty state view
+    func hideAllContent() {
+        allContentHidden = true
+        comments = nil
         observeComments()
     }
 
@@ -379,7 +389,11 @@ class FeedViewController: UIViewController {
     }
 
     private func observeComments() {
-        guard let comments = comments else { return }
+        guard let comments = comments else {
+            commentFeedItems = []
+            dataSource?.apply(prepareSnapshot(), animatingDifferences: false)
+            return
+        }
         commentsNotificationToken?.invalidate()
         commentsNotificationToken = comments
             .where { $0.placeholder == false }
@@ -507,6 +521,11 @@ class FeedViewController: UIViewController {
     }
 
     private func updateEmptyStateView() {
+        if allContentHidden {
+            tableView.beginUpdates()
+            tableView.tableFooterView = nil
+            tableView.endUpdates()
+        } else
         if items.isEmpty {
             if let emptyStateView {
                 tableView.beginUpdates()
