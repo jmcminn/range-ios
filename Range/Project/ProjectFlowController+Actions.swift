@@ -168,12 +168,14 @@ extension ProjectFlowController: ProjectFlowActions {
         let fromMedia = event.source == .media
         fullscreenMediaVC = FullscreenMediaCardViewController(
             projectModel: model,
+            localFiles: localFiles,
             mediaCache: mediaCache,
             upload: upload,
             // show button only from media, otherwise it's from collaboration so user can just close
             // the fullscreen media and be back in collaboration
             showCollaborationButton: fromMedia,
-            scrollToCommentsInitially: scrollToCommentsInitially
+            scrollToCommentsInitially: scrollToCommentsInitially,
+            canvasContainer: canvasContainer
         )
         .installAndShowCard(
             in: canvasContainer,

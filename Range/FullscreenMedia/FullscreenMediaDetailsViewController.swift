@@ -8,16 +8,14 @@ class FullscreenMediaDetailsViewController: UIViewController {
     private let projectModel: ProjectModel
     private let mediaCache: MediaCache
     private let showCollaborationButton: Bool
-    private let upload: Upload
     /// For images the upload can have correlated uploads. We want to display them all and mark as versions (1, 2, ...)
     /// This array also contains the upload
-    private(set) var correlatedUploads: [Upload]
-    var onCorrelatedUploadsUpdated: (() -> Void)?
+    private(set) var correlatedUploads: Results<Upload>
+    private var uploadsNotificationToken: NotificationToken?
+    private let initialUploadIndex: Int
 
     /// when the there's a new upload selected (or no upload)
     var onCurrentUploadSwitched: (() -> Void)?
-
-    private var notificationTokens: [NotificationToken] = []
 
     var onHeightChanged: (() -> Void)?
 
@@ -74,19 +72,25 @@ class FullscreenMediaDetailsViewController: UIViewController {
             guard uploadIndex < correlatedUploads.count else { return nil }
             return correlatedUploads[uploadIndex]
         } else {
-            return upload
+            return correlatedUploads.first
         }
     }
 
     var lastReportedCurrentUpload: Upload?
 
     /// Initializer
-    init(projectModel: ProjectModel, mediaCache: MediaCache, upload: Upload, showCollaborationButton: Bool) {
+    init(
+        projectModel: ProjectModel,
+        mediaCache: MediaCache,
+        correlatedUploads: Results<Upload>,
+        initialUploadIndex: Int,
+        showCollaborationButton: Bool
+    ) {
         self.projectModel = projectModel
         self.mediaCache = mediaCache
+        self.correlatedUploads = correlatedUploads
+        self.initialUploadIndex = initialUploadIndex
         self.showCollaborationButton = showCollaborationButton
-        self.upload = upload
-        correlatedUploads = Array(projectModel.correlatedUploads(upload))
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -97,7 +101,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
 
     deinit {
         galleryCurrentPageObservation?.invalidate()
-        notificationTokens.forEach { $0.invalidate() }
+        uploadsNotificationToken?.invalidate()
     }
 
     override func viewDidLoad() {
@@ -142,7 +146,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
         // ---- Collaboration ----------------------------------------------------------------------
         // only add if there's a collaboration and it has a canvas (it should always have a canvas but
         // in case of placeholders or bad data just don't show the button)
-        if showCollaborationButton, let collaboration = upload.collaboration.first,
+        if showCollaborationButton, let collaboration = currentUpload?.collaboration.first,
            collaboration.feature.first?.geometry.first?.canvas.first != nil
         {
             setupCollaborationButton(collaboration: collaboration)
@@ -153,7 +157,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
             }
         }
         // ---- Media ------------------------------------------------------------------------------
-        if upload.isImage {
+        if let currentUpload, currentUpload.isImage {
             addGalleryVC()
         } else {
             addPreviewView()
@@ -319,7 +323,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
             )
         }
         galleryVC.onUpdatePhotoAction = { [weak self] in self?.onUpdatePhotoAction?() }
-        galleryVC.setCurrentPage(correlatedUploads.firstIndex(of: upload) ?? 0)
+        galleryVC.setCurrentPage(initialUploadIndex)
         galleryVC.showVersions = correlatedUploads.count > 1
         add(childController: galleryVC, toView: headerView)
         // When showing multiple photos the horizontal margin is bigger to show partially other photos
@@ -370,7 +374,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
                 make.bottom.equalToSuperview().offset(-42)
             }
         }
-        previewVC.upload = upload
+        previewVC.upload = currentUpload
         self.previewVC = previewVC
 
         let separator = UIView()
@@ -416,11 +420,12 @@ class FullscreenMediaDetailsViewController: UIViewController {
     }
 
     @objc private func previewTapped() {
-        onPhotoSelected?(upload)
+        guard let currentUpload else { return }
+        onPhotoSelected?(currentUpload)
     }
 
     @objc private func collaborationTapped() {
-        guard let collaboration = upload.collaboration.first else { return }
+        guard let collaboration = currentUpload?.collaboration.first else { return }
         UIApplication.shared.sendAction(
             #selector(ProjectFlowActions.showCollaborationAction),
             to: nil,
@@ -584,37 +589,35 @@ class FullscreenMediaDetailsViewController: UIViewController {
 
 extension FullscreenMediaDetailsViewController {
     /// Observe all uploads and authors.
-    /// If upload is deleted, remove from correlatedUploads
+    /// If upload is deleted, remove from gallery
     /// If upload is updated, update the UI
+    /// If upload is added, insert into gallery and make the current one
     /// If author is updated, update the UI
     private func observeUploads() {
-        notificationTokens.forEach { $0.invalidate() }
-        notificationTokens.removeAll()
-
-        for (index, upload) in correlatedUploads.enumerated() {
-            let uploadNotificationToken = upload.observe { [weak self] change in
-                guard let self else { return }
-                if case .deleted = change {
-                    self.correlatedUploads.remove(at: index)
-                    if correlatedUploads.isEmpty {
-                        // this is the last upload, the card will close
-                    } else {
-                        self.galleryVC?.photoRemoved(atIndex: index)
-                    }
-                    /// reattach the observers as indexes are now different
-                    self.observeUploads()
-                    self.onCorrelatedUploadsUpdated?()
-                } else {
+        uploadsNotificationToken = correlatedUploads.observe { [weak self] change in
+            guard let self = self else { return }
+            switch change {
+            case .initial:
+                // nothing to do
+                break
+            case let .update(_, deletions: deletions, insertions: insertions, modifications: modifications):
+                for deletionIndex in deletions {
+                    self.galleryVC?.photoRemoved(atIndex: deletionIndex)
+                }
+                for insertionIndex in insertions {
+                    self.galleryVC?.addPhoto(galleryMediaKeys[insertionIndex], atIndex: insertionIndex)
+                }
+                for modificationIndex in modifications {
+                    self.galleryVC?.updatePhotoKey(galleryMediaKeys[modificationIndex], atIndex: modificationIndex)
+                }
+                if !modifications.isEmpty {
                     self.uploadUpdatedHandler()
                 }
-            }
-            notificationTokens.append(uploadNotificationToken)
-
-            if let author = upload.author {
-                let authorNotificationToken = author.observe { [weak self] _ in
-                    self?.uploadUpdatedHandler()
+                if !insertions.isEmpty {
+                    // scroll to last one if anything inserted
+                    self.galleryVC?.setCurrentPage(correlatedUploads.count - 1)
                 }
-                notificationTokens.append(authorNotificationToken)
+            case .error: break
             }
         }
     }

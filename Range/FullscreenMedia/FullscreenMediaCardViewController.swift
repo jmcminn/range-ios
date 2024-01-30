@@ -31,9 +31,11 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private weak var presentingView: UIView?
 
     private let projectModel: ProjectModel
+    unowned let localFiles: LocalFiles
     private let mediaCache: MediaCache
     private let showCollaborationButton: Bool
     private var scrollToCommentsInitially: Bool
+    unowned let canvasContainer: CanvasContainerViewController
 
     /// The view containing the slider
     private let headerView = UIView()
@@ -53,24 +55,37 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     private var updatePhotoButton: RoundShadowButton?
 
-    let upload: Upload
+    /// Fullscreen media view displays a number of correlated uploads
+    private var correlatedUploads: Results<Upload>
+    private var uploadsNotificationToken: NotificationToken?
+    private let initialUploadIndex: Int
 
     private var previewItem: UploadPreviewItem?
     private var lastWidth: CGFloat = 0.0
 
+    /// When adding photo version
+    var updatePhotoFlow: AddPhotoFlowController?
+
     /// Initializer
     init(projectModel: ProjectModel,
+         localFiles: LocalFiles,
          mediaCache: MediaCache,
          upload: Upload,
          showCollaborationButton: Bool,
-         scrollToCommentsInitially: Bool = false)
+         scrollToCommentsInitially: Bool = false,
+         canvasContainer: CanvasContainerViewController)
     {
         self.projectModel = projectModel
+        self.localFiles = localFiles
         self.mediaCache = mediaCache
-        self.upload = upload
+        correlatedUploads = projectModel.correlatedUploads(upload)
+        initialUploadIndex = correlatedUploads.firstIndex(of: upload) ?? 0
         self.showCollaborationButton = showCollaborationButton
         self.scrollToCommentsInitially = scrollToCommentsInitially
+        self.canvasContainer = canvasContainer
         super.init(nibName: nil, bundle: nil)
+
+        observeUploads()
     }
 
     var roundedShadowView: RoundShadowView {
@@ -88,6 +103,10 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
 
     override func loadView() {
         view = RoundShadowView(cornerRadius: 24)
+    }
+
+    deinit {
+        uploadsNotificationToken?.invalidate()
     }
 
     override func viewDidLoad() {
@@ -152,7 +171,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         super.viewDidAppear(animated)
         setupAddCommentCard()
 
-        if upload.isImage, updatePhotoButton == nil {
+        if let upload = correlatedUploads.last, upload.isImage, updatePhotoButton == nil {
             updatePhotoButton = RoundShadowButton(
                 image: UIImage(systemName: "camera.viewfinder") ?? UIImage(),
                 imageTintColor: .white,
@@ -309,9 +328,22 @@ extension FullscreenMediaCardViewController {
     }
 }
 
-// MARK: - current upload updated
+// MARK: - content updates
 
 extension FullscreenMediaCardViewController {
+    private func observeUploads() {
+        uploadsNotificationToken = correlatedUploads
+            .observe { [weak self] _ in
+                guard let self = self else { return }
+                if self.correlatedUploads.isEmpty {
+                    if let cardDragging = self.cardDragging, cardDragging.isCardHidden == false {
+                        ToastWindow.shared.showWarning(text: "Upload removed")
+                    }
+                    self.dismissCard()
+                }
+            }
+    }
+
     private func onCurrentUploadSwitched() {
         if let currentUpload = detailsVC.currentUpload {
             commentsVC.setComments(currentUpload.comments.filter(NSPredicate(value: true)))
@@ -396,7 +428,8 @@ extension FullscreenMediaCardViewController {
         detailsVC = FullscreenMediaDetailsViewController(
             projectModel: projectModel,
             mediaCache: mediaCache,
-            upload: upload,
+            correlatedUploads: correlatedUploads,
+            initialUploadIndex: initialUploadIndex,
             showCollaborationButton: showCollaborationButton
         )
         detailsVC.onHeightChanged = { [weak self] in
@@ -418,15 +451,6 @@ extension FullscreenMediaCardViewController {
         detailsVC.onAnnotationsSelected = { [weak self] selectedUpload in
             // if annotations are selected we show the same editor as in the photo flow
             self?.showAnnotationsEditor(forUpload: selectedUpload)
-        }
-        detailsVC.onCorrelatedUploadsUpdated = { [weak self] in
-            guard let self else { return }
-            if self.detailsVC.correlatedUploads.isEmpty {
-                if let cardDragging = self.cardDragging, cardDragging.isCardHidden == false {
-                    ToastWindow.shared.showWarning(text: "Upload removed")
-                }
-                self.dismissCard()
-            }
         }
         detailsVC.onUpdatePhotoAction = { [weak self] in self?.updatePhotoAction() }
         let header =
@@ -464,9 +488,10 @@ extension FullscreenMediaCardViewController {
         }
         addCommentVC.onDone = { [weak self] in
             guard let self = self else { return }
+            guard let upload = self.detailsVC.currentUpload else { return }
             // save the comment and cleanup the text view (the same as in onCancel)
             self.projectModel.run(
-                self.projectModel.addComment(commentText: addCommentVC.commentText, toUpload: self.upload.id)
+                self.projectModel.addComment(commentText: addCommentVC.commentText, toUpload: upload.id)
             ) { error in
                 if error != nil { ToastWindow.shared.showError(text: "Failed to add the comment") }
             }
@@ -529,7 +554,7 @@ extension FullscreenMediaCardViewController {
         commentsVC = FeedViewController(
             mediaCache: mediaCache,
             projectModel: projectModel,
-            comments: upload.comments.filter(NSPredicate(value: true))
+            comments: (correlatedUploads.first?.comments ?? MutableSet()).filter(NSPredicate(value: true))
         )
         commentsVC.onFeedUpdated = { [weak self] in
             self?.updateAddCommentCardVisibility()
@@ -554,6 +579,7 @@ extension FullscreenMediaCardViewController: QLPreviewControllerDataSource, QLPr
     private func showPreview() {
         Task {
             do {
+                guard let upload = correlatedUploads.first else { throw "Upload not found" }
                 guard let mediaKey = MediaKey.autoAnnotatedMediaKey(projectId: projectModel.projectId, upload: upload)
                 else {
                     throw "Failed to load the file"

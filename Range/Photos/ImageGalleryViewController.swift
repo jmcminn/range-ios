@@ -98,6 +98,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         let removedPage = pages.remove(at: index)
         (removedPage as? ImageGalleryPageView)?.imageView.image = nil
         removedPage.removeFromSuperview()
+        updatePageVersions()
         // force the view layout
         previousSize = .zero
         view.setNeedsLayout()
@@ -111,10 +112,35 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
             setCurrentPage(currentPage - 1)
         }
         // last was deleted, then scroll to previous
-        if currentPage >= photoKeys.count {
+        if currentPage >= photoKeys.count, photoKeys.count > 0 {
             setCurrentPage(photoKeys.count - 1)
         }
         loadImages(currentPage: currentPage, force: true)
+    }
+
+    func addPhoto(_ photoKey: PhotoKey?, atIndex index: Int) {
+        photoKeys.insert(photoKey, at: index)
+        let page = setupPage()
+        page.imageHeight2Width = pageHeight2Width
+        page.onMoreAction = onMoreAction
+        pages.insert(page, at: index)
+        scrollView.addSubview(page)
+        updatePageVersions()
+        // force the view layout
+        previousSize = .zero
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        loadImage(atIndex: index)
+        loadImages(currentPage: currentPage, force: true)
+    }
+
+    private func updatePageVersions() {
+        guard showVersions else { return }
+        for (index, page) in pages.enumerated() {
+            if let page = page as? ImageGalleryPageView {
+                page.showVersion(index + 1)
+            }
+        }
     }
 
     /// Sets the current page by updating the offset
@@ -152,16 +178,14 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         pages.forEach(scrollView.addSubview)
         // set some initial height to width ratio but finally it's set when the image is loaded
         pages.compactMap { $0 as? ImageGalleryPageView }
-            .forEach { $0.imageHeight2Width = pageHeight2Width }
+            .forEach {
+                $0.imageHeight2Width = pageHeight2Width
+                $0.onMoreAction = onMoreAction
+            }
 
         loadImages(currentPage: currentPage)
 
-        for (index, page) in pages.enumerated() {
-            if let page = page as? ImageGalleryPageView {
-                if showVersions { page.showVersion(index + 1) }
-                page.onMoreAction = onMoreAction
-            }
-        }
+        updatePageVersions()
     }
 
     override func viewDidLayoutSubviews() {
