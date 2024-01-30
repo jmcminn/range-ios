@@ -841,6 +841,7 @@ extension AddPhotoFlowController: CanvasViewControllerDelegate {
     }
 
     func canvasTapRecognized(at _: CGPoint) {}
+    func canvasLongPressRecognized(at _: CGPoint) {}
 }
 
 /// Camera permissions

@@ -264,6 +264,8 @@ extension GeometriesViewAnnotationPinsDisplay: CanvasViewControllerDelegate, Pin
         }
     }
 
+    func canvasLongPressRecognized(at _: CGPoint) {}
+
     /// select tapped pin
     func pinViewTapped(_ pinView: PinView) {
         guard selectionEnabled else { return }
@@ -272,6 +274,13 @@ extension GeometriesViewAnnotationPinsDisplay: CanvasViewControllerDelegate, Pin
         canvasVC.animatePanAndZoom(
             cameraCenter: pinView.point.coordinates,
             mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
+        )
+    }
+
+    func pinViewLongPressed(_ pinView: PinView) {
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowController.moveCollaborationAction), to: nil, from: canvasVC,
+            for: FlowEvent(pinView.collaboration)
         )
     }
 }

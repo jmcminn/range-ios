@@ -73,6 +73,8 @@ final class FlowEvent: UIEvent {
     func toggleFollowMeModeAction()
     /// Toggle location simulation on/off. When on the taps on canvas are interpreted as setting the user (blue dot) location
     func toggleLocationSimulationAction()
+    /// Move collaboration action
+    func moveCollaborationAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -666,22 +668,43 @@ extension ProjectFlowController {
         }
     }
 
+    func moveCollaborationAction(sender _: Any?, event: FlowEvent) {
+        guard let collaboration = event.object as? Collaboration else { return }
+        moveCollaboration(collaboration)
+    }
+
     /// Update the location of the collaboration
     func moveCollaboration(_ collaboration: Collaboration) {
         guard !collaboration.isInvalidated else { return }
-        pinsDisplay?.setSelectedPin(nil)
-        movePinFlow = MovePinFlowController(
-            model: model,
-            collaboration: collaboration,
-            canvasContainer: canvasContainer
-        )
-        movePinFlow?.onStop = { [weak self] _ in
-            guard let self = self else { return }
-            self.setUIState(.default, animated: true)
-            self.movePinFlow = nil
+        // not allow if already moving
+        guard movePinFlow == nil else { return }
+        guard let geometryId = collaboration.feature.first?.geometry.first?.id,
+              let pin = pinsDisplay?.pinForGeometryId(geometryId) else { return }
+        let canvasVC = canvasContainer.canvasViewController
+        // center map view on the pin (for long press case, when started from collaboration window is already centered)
+        canvasVC.animatePanAndZoom(
+            cameraCenter: pin.point.coordinates,
+            mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
+        ) { [weak self] in
+            // after the view is centered on the pin to move, then enter the movePin state,
+            // if done before the animation it doesn't look good as when moving pin we actually
+            // hide the pin on canvas and display a new position pin marker in the screen center,
+            // so the UX is much better if the canvas is already centered on the pin
+            guard let self else { return }
+            self.pinsDisplay?.setSelectedPin(nil)
+            self.setUIState(.movePin, animated: true)
+            self.movePinFlow = MovePinFlowController(
+                model: self.model,
+                collaboration: collaboration,
+                canvasContainer: self.canvasContainer
+            )
+            self.movePinFlow?.onStop = { [weak self] _ in
+                guard let self = self else { return }
+                self.setUIState(.default, animated: true)
+                self.movePinFlow = nil
+            }
+            self.movePinFlow?.start()
         }
-        setUIState(.movePin, animated: true)
-        movePinFlow?.start()
     }
 }
 

@@ -279,4 +279,5 @@ extension AddPhotoPinsDisplay: CanvasViewControllerDelegate {
     }
 
     func canvasTapRecognized(at _: CGPoint) {}
+    func canvasLongPressRecognized(at _: CGPoint) {}
 }

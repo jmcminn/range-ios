@@ -586,6 +586,8 @@ extension ProjectFlowController: CanvasViewControllerDelegate {
         let mapLocation = canvasContainer.annotationsMapView.mapboxMap.coordinate(for: point)
         locationProvider.setSimulatedLocation(mapLocation)
     }
+
+    func canvasLongPressRecognized(at _: CGPoint) {}
 }
 
 // MARK: - canvas filters {

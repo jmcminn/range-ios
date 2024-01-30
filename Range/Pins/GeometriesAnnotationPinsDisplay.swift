@@ -357,4 +357,18 @@ extension GeometriesAnnotationPinsDisplay: CanvasViewControllerDelegate {
             }
         }
     }
+
+    func canvasLongPressRecognized(at point: CGPoint) {
+        findPin(at: point) { [weak self] pin in
+            if let self, let pin, let pointAnnotation = self.pointAnnotationsById[pin.id],
+               let collaborationId = pointAnnotation.userInfo?["collaborationId"] as? String,
+               let collaboration = self.collaborations[collaborationId]
+            {
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowController.moveCollaborationAction), to: nil, from: self.canvasVC,
+                    for: FlowEvent(collaboration)
+                )
+            }
+        }
+    }
 }

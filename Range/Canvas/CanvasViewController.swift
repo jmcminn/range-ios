@@ -38,6 +38,8 @@ protocol CanvasViewControllerDelegate {
     func canvasCameraChanged(reason: CanvasCameraChangeReason)
     /// User has tapped at given point (given in the annotations map view coordinates)
     func canvasTapRecognized(at: CGPoint)
+    /// User has long pressed at given point
+    func canvasLongPressRecognized(at: CGPoint)
 }
 
 /// Displays a mapbox map view for canvas.
@@ -419,8 +421,11 @@ class CanvasViewController: UIViewController {
         mapView.isUserInteractionEnabled = true
         view.addSubview(mapView)
 
-        canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView(_:)))
+        canvasTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCanvasView))
         mapView.addGestureRecognizer(canvasTapGestureRecognizer!)
+        mapView.addGestureRecognizer(
+            UILongPressGestureRecognizer(target: self, action: #selector(didLongPressCanvasView))
+        )
         mapView.gestures.delegate = self
         mapView.mapboxMap.onCameraChanged.observe { [weak self] _ in
             guard let self = self, let currentCameraChangeReason = self.currentCameraChangeReason else { return }
@@ -631,7 +636,7 @@ class CanvasViewController: UIViewController {
 //    }
 
     /// Animate to given cameraCenter and mapboxZoom.
-    func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double) {
+    func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double, completion: (() -> Void)? = nil) {
         setFollowMeMode(enabled: false)
         // HACK: dispatch async on main queue is a hack, otherwise the mapbox was not reacting
         // when invoking this method on callback from gesture manager delegate
@@ -645,6 +650,7 @@ class CanvasViewController: UIViewController {
                 guard let self = self else { return }
                 self.delegates.values.forEach { $0.canvasCameraChanged(reason: .programmatic) }
                 self.programmaticAnimationInProgress = false
+                completion?()
             }
             animator.startAnimation()
         }
@@ -737,6 +743,15 @@ extension CanvasViewController {
         guard let pointInMapView = sender.view?.convert(point, to: mapView) else { return }
         delegates.values.forEach {
             $0.canvasTapRecognized(at: pointInMapView)
+        }
+    }
+
+    @objc func didLongPressCanvasView(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        let point = gesture.location(in: gesture.view)
+        guard let pointInMapView = gesture.view?.convert(point, to: mapView) else { return }
+        delegates.values.forEach {
+            $0.canvasLongPressRecognized(at: pointInMapView)
         }
     }
 }

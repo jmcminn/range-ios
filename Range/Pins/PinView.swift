@@ -6,6 +6,7 @@ import UIKit
 /// Delegate for `PinView` to notify about taps
 protocol PinViewDelegate: AnyObject {
     func pinViewTapped(_ pinView: PinView)
+    func pinViewLongPressed(_ pinView: PinView)
 }
 
 /// PinView used for mapbox view annotations
@@ -40,6 +41,7 @@ class PinView: UIImageView {
         super.init(frame: .zero)
         isUserInteractionEnabled = true
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+        addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(longPressed)))
     }
 
     /// Update geometry. Fails if geometry has different id than `self.id` or geometry is not a point
@@ -71,5 +73,10 @@ class PinView: UIImageView {
 
     @objc private func tapped() {
         delegate?.pinViewTapped(self)
+    }
+
+    @objc private func longPressed(gesture: UILongPressGestureRecognizer!) {
+        guard gesture.state == .began else { return }
+        delegate?.pinViewLongPressed(self)
     }
 }
