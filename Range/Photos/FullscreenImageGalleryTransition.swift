@@ -5,7 +5,9 @@ import UIKit
 // although this was still more based on: https://github.com/zvonicek/ImageSlideshow/blob/master/ImageSlideshow/Classes/Core/ZoomAnimatedTransitioning.swift
 
 /// Support transitioning from a view controller with photo to FullscreenImageGalleryViewController
-class FullscreenImageGalleryTransitioningDelegate<PhotoKey>: NSObject, UIViewControllerTransitioningDelegate {
+class FullscreenImageGalleryTransitioningDelegate<PhotoKey: Equatable>: NSObject,
+    UIViewControllerTransitioningDelegate
+{
     weak var galleryVC: ImageGalleryViewController<PhotoKey>?
     weak var fullscreenGalleryVC: FullscreenImageGalleryViewController<PhotoKey>?
     weak var interactivePresentation: UIViewControllerInteractiveTransitioning?
@@ -116,7 +118,7 @@ class FullscreenImageGalleryTransitioningDelegate<PhotoKey>: NSObject, UIViewCon
 }
 
 /// Zooming in to FullscreenImageGalleryViewController
-class FullscreenImageGalleryPresentationAnimatedTransitioning<PhotoKey>: NSObject,
+class FullscreenImageGalleryPresentationAnimatedTransitioning<PhotoKey: Equatable>: NSObject,
     UIViewControllerAnimatedTransitioning
 {
     private let referenceImageView: UIImageView
@@ -202,7 +204,9 @@ class FullscreenImageGalleryPresentationAnimatedTransitioning<PhotoKey>: NSObjec
 }
 
 /// Zoom out from the FullscreenImageGalleryViewController
-class FullscreenImageGalleryDismissalAnimatedTransitioning<PhotoKey>: NSObject, UIViewControllerAnimatedTransitioning {
+class FullscreenImageGalleryDismissalAnimatedTransitioning<PhotoKey: Equatable>: NSObject,
+    UIViewControllerAnimatedTransitioning
+{
     private let referenceImageView: UIImageView
     private let targetFrame: CGRect
     private let targetView: UIView

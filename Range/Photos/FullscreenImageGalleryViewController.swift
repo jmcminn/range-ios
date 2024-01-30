@@ -28,7 +28,7 @@ import UIKit
 /// that the pages are changing width (see the iPhone Photos app for how it works). In fact the pages are layed out next to each other
 /// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
 /// just like in the Photos app)
-class FullscreenImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelegate {
+class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrollViewDelegate {
     let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
     private var photoKeys: [PhotoKey?]
 

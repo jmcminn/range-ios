@@ -8,7 +8,7 @@ import UIKit
 /// It doesn't support zooming in on the photos.
 /// The class is generic over PhotoKey, it just requires imageDataProviderFactory that accepts the PhotoKey and returns
 /// Kingfisher ImageDataProvider which is used to display images from cache (which cache is also internal detail of imageDataProviderFactory).
-class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelegate {
+class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrollViewDelegate {
     let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
     private var photoKeys: [PhotoKey?]
 
@@ -65,8 +65,11 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
 
     /// Update photo key at given index and reload the image
     func updatePhotoKey(_ photoKey: PhotoKey?, atIndex index: Int) {
-        photoKeys[index] = photoKey
-        loadImage(atIndex: index)
+        if photoKey != photoKeys[index] {
+            photoKeys[index] = photoKey
+            // photo key has changed, force reload
+            loadImage(atIndex: index, force: true)
+        }
     }
 
     private func setupPage() -> ImageGalleryPageView {
@@ -286,7 +289,7 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     /// Load images so we always have 2 images loaded before the current and 2 after, so 5 in total
     /// - Parameters
     ///   - current page
-    ///   - force - if true then the check for not loading again if given page was already loaded is bypassed, needed for removing pages as their indices change
+    ///   - force - if true then the check for not loading again if given page was already loaded is bypassed, needed for adding/removing pages as their indices change
     private func loadImages(currentPage: Int, force: Bool = false) {
         if currentPage != imagesLastLoadedForPage || force == true {
             pages.enumerated().forEach { index, page in
@@ -302,10 +305,18 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         imagesLastLoadedForPage = currentPage
     }
 
-    private func loadImage(atIndex index: Int) {
+    ///
+    /// - Parameters:
+    ///    - index
+    ///    - force when `true` load even if the page already has an image loaded, otherwise load only if no image set
+    private func loadImage(atIndex index: Int, force: Bool = false) {
         guard let photoKey = photoKeys[index] else { return }
         let rangeImageDataProvider = imageDataProviderFactory(photoKey)
         guard let page = pages[index] as? ImageGalleryPageView else { return }
+        if !force, page.imageView.image != nil {
+            // not forced, image already there => nothing to do
+            return
+        }
         page.imageView.kf.setImage(
             with: rangeImageDataProvider,
             placeholder: nil, options: rangeImageDataProvider.options, progressBlock: nil,
