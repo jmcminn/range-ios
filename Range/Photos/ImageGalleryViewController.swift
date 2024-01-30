@@ -15,8 +15,8 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
     /// Photo selected, the index available in the `currentPage`
     var onPhotoSelected: (() -> Void)?
     var onAnnotationsSelected: (() -> Void)?
-    /// When set each card will display a "..." button and call this action when tapped
-    var onMoreAction: (() -> Void)?
+    /// When set each card will display a "..." button and call this action when tapped (sourceView will be passed)
+    var onMoreAction: ((UIView) -> Void)?
     /// if set there'll be a special last page added to the gallery for updating the photo (this is for the versioned/correlated photos case)
     var onUpdatePhotoAction: (() -> Void)?
 
@@ -122,7 +122,9 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         photoKeys.insert(photoKey, at: index)
         let page = setupPage()
         page.imageHeight2Width = pageHeight2Width
-        page.onMoreAction = onMoreAction
+        page.onMoreAction = { [weak self] in
+            self?.onMoreAction?(page.moreButton ?? page)
+        }
         pages.insert(page, at: index)
         scrollView.addSubview(page)
         updatePageVersions()
@@ -178,9 +180,11 @@ class ImageGalleryViewController<PhotoKey>: UIViewController, UIScrollViewDelega
         pages.forEach(scrollView.addSubview)
         // set some initial height to width ratio but finally it's set when the image is loaded
         pages.compactMap { $0 as? ImageGalleryPageView }
-            .forEach {
-                $0.imageHeight2Width = pageHeight2Width
-                $0.onMoreAction = onMoreAction
+            .forEach { pageView in
+                pageView.imageHeight2Width = pageHeight2Width
+                pageView.onMoreAction = { [weak self] in
+                    self?.onMoreAction?(pageView.moreButton ?? pageView)
+                }
             }
 
         loadImages(currentPage: currentPage)

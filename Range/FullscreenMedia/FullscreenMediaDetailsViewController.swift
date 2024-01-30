@@ -314,13 +314,8 @@ class FullscreenMediaDetailsViewController: UIViewController {
             guard let self, let galleryVC = self.galleryVC else { return }
             onAnnotationsSelected?(correlatedUploads[galleryVC.currentPage])
         }
-        galleryVC.onMoreAction = { [weak self] in
-            guard let self, let galleryVC = self.galleryVC else { return }
-            let upload = correlatedUploads[galleryVC.currentPage]
-            UIApplication.shared.sendAction(
-                #selector(ProjectFlowController.moreAction), to: nil, from: self,
-                for: FlowEvent(upload, sourceView: galleryVC.viewForCurrentPage)
-            )
+        galleryVC.onMoreAction = { [weak self] sourceView in
+            self?.moreAction(sourceView: sourceView)
         }
         galleryVC.onUpdatePhotoAction = { [weak self] in self?.onUpdatePhotoAction?() }
         galleryVC.setCurrentPage(initialUploadIndex)
@@ -352,7 +347,6 @@ class FullscreenMediaDetailsViewController: UIViewController {
         previewBox.backgroundColor = .dynamic(.Neutral_10)
         previewBox.clipsToBounds = true
         self.previewBox = previewBox
-        previewBox.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(previewTapped)))
 
         let previewVC = UploadPreviewViewController(
             projectModel: projectModel,
@@ -399,14 +393,24 @@ class FullscreenMediaDetailsViewController: UIViewController {
         }
         self.fileNameLabel = fileNameLabel
 
-        // put the view in a wrapper view to have a different background color on the sides
-        let wrapperView = UIView()
-        wrapperView.backgroundColor = .dynamic(.Neutral_10)
-        wrapperView.addSubview(previewBox)
-        previewBox.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
+        let moreButton = RoundShadowButton(
+            image: UIImage(systemName: "ellipsis") ?? UIImage(),
+            size: 32,
+            imageTintColor: .white,
+            variant: .darkBlurred,
+            withBorder: false
+        ).withTapAreaInsets(UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -8))
+        previewBox.addSubview(moreButton)
+        moreButton.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview().inset(8)
         }
+
+        let previewTappedRecognizer = UITapGestureRecognizer(target: self, action: #selector(previewTapped))
+        /// disable recognizing when more button is tapped
+        previewTappedRecognizer.delegate = self
+        previewBox.addGestureRecognizer(previewTappedRecognizer)
+        moreButton.addTarget(self, action: #selector(moreAction), for: .touchUpInside)
+
         headerView.addSubview(previewBox)
         previewBox.snp.makeConstraints { make in
             if let collaborationButton {
@@ -583,6 +587,14 @@ class FullscreenMediaDetailsViewController: UIViewController {
             for: FlowEvent(currentUpload)
         )
     }
+
+    @objc private func moreAction(sourceView: UIView) {
+        let upload = if let galleryVC { correlatedUploads[galleryVC.currentPage] } else { correlatedUploads[0] }
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowController.moreAction), to: nil, from: self,
+            for: FlowEvent(upload, sourceView: sourceView)
+        )
+    }
 }
 
 // MARK: - uploads observation / updating UI
@@ -696,5 +708,16 @@ extension FullscreenMediaDetailsViewController {
                 make.leading.trailing.equalToSuperview().inset(16)
             }
         }
+    }
+}
+
+extension FullscreenMediaDetailsViewController: UIGestureRecognizerDelegate {
+    /// Registering tap gesture recognizer on the preview view will steal 'touchUpInside' events from UIControls so we need to make sure
+    /// that the view ignores touchs on UIControls
+    func gestureRecognizer(_: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UIControl {
+            return false
+        }
+        return true
     }
 }

@@ -172,7 +172,7 @@ class ImageGalleryPageView: UIView {
 }
 
 extension ImageGalleryPageView: UIGestureRecognizerDelegate {
-    /// Registering tap gesture recognizer on the view will still 'touchUpInside' events from UIControls so we need to make sure
+    /// Registering tap gesture recognizer on the view will steal 'touchUpInside' events from UIControls so we need to make sure
     /// that the view ignores touchs on UIControls
     func gestureRecognizer(_: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.view is UIControl {
