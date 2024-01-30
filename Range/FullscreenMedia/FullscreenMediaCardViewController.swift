@@ -570,7 +570,33 @@ extension FullscreenMediaCardViewController {
 
 extension FullscreenMediaCardViewController {
     @objc private func updatePhotoAction() {
-        print("TODO: 2358 update photo action")
+        guard let upload = correlatedUploads.last else { return }
+        guard let geometryId = upload.collaboration.first?.feature.first?.geometry.first?.id else {
+            // upload collaboration should have a geometry... (this shouldn't really happen)
+            return
+        }
+        updatePhotoFlow = AddPhotoFlowController(
+            model: projectModel,
+            localFiles: localFiles,
+            mediaCache: mediaCache,
+            canvasContainer: canvasContainer
+        )
+        // preselect the geometryId as the update photo flow will not include pin placement
+        // (we are adding to this upload collaboratin)
+        updatePhotoFlow?.geometryId = geometryId
+        // make the new photo version of this upload
+        updatePhotoFlow?.correlationId = upload.correlationId
+        updatePhotoFlow?.skipPhotoLocationSelection = true
+        // multiple photos make no sense for update photo...
+        updatePhotoFlow?.allowMultiPhotoSelection = false
+        updatePhotoFlow?.onStop = { [weak self] _, _, _ in
+            self?.updatePhotoFlow = nil
+        }
+        updatePhotoFlow?.start { [weak self] started in
+            if !started {
+                self?.updatePhotoFlow = nil
+            }
+        }
     }
 }
 

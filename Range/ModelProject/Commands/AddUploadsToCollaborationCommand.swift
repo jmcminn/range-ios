@@ -19,6 +19,7 @@ struct AddUploadsToCollaborationCommand: Command, Codable, Equatable {
     var tags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
+    var correlationId: String?
 }
 
 /// Creates/updates the tags, creates the Uploads and links with Collaboration
@@ -48,7 +49,7 @@ extension AddUploadsToCollaborationCommand: LocalCommand {
                 timestamp: Date.now,
                 name: $0.name,
                 description: uploadDescription,
-                correlationId: $0.mediaKey.uploadId,
+                correlationId: correlationId ?? $0.mediaKey.uploadId,
                 fileType: $0.mediaKey.fileType,
                 imageHeightToWidth: $0.imageHeightToWidth,
                 fileSize: $0.fileSize,
@@ -115,7 +116,7 @@ extension AddUploadsToCollaborationCommand: FirestoreCommand {
                 timestamp: Timestamp(), // doesn't matter, updated to server timestamp after encoding
                 name: $0.name,
                 uploadDescription: uploadDescription,
-                correlationId: $0.mediaKey.uploadId,
+                correlationId: correlationId ?? $0.mediaKey.uploadId,
                 tagIds: tagIds,
                 fileTypeString: $0.mediaKey.fileType.rawValue,
                 imageHeightToWidth: $0.imageHeightToWidth,

@@ -143,9 +143,9 @@ class PhotosToAddViewModel: NSObject {
     /// Uses `PhotoToAdd.assetIdentifier` to match current photos to picker results and add new ones + remove the ones
     /// that were unselected in this session.
     /// In case of errors returns the first of them but still updates the photos (if 1 of n photos fails to convert then the rest is still added)
-    func update(withPickerResults results: [PHPickerResult]) async -> Error? {
+    func update(withPickerResults results: [PHPickerResult], multiPhotoSelection: Bool) async -> Error? {
         // clear the photos for single-session, we're replacing not adding
-        if !UserDefaults.multiPhotoSessionEnabled {
+        if !multiPhotoSelection {
             clear(removeFromCache: true)
         }
 

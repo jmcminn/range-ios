@@ -331,7 +331,9 @@ struct CameraView: View {
         ZStack {
             HStack(spacing: 19) {
                 toggleAnnotationsButton.rotationEffect(model.uiAngle)
-                toggleMultiPhotoButton.rotationEffect(model.uiAngle)
+                if model.multiPhotoAllowed {
+                    toggleMultiPhotoButton.rotationEffect(model.uiAngle)
+                }
                 Spacer()
                 if model.multiPhotoEnabled {
                     nextButton.rotationEffect(model.uiAngle)

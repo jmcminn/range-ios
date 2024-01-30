@@ -72,12 +72,14 @@ extension ProjectModel {
     ///     - tags: array of tags, existing or new ones
     ///     - description: upload description
     ///     - geometryId: 'photoMarker' to add the upload to (to it's first feature/first collaboration)
+    ///     - correlationId: set if the uploads are new versions of some other upload
     @MainActor
     func addPhotos(
         _ photosToAdd: [PhotoToAdd],
         tags: [TagViewModel],
         description: String,
-        toCollaborationForGeometryId geometryId: String
+        toCollaborationForGeometryId geometryId: String,
+        correlationId: String? = nil
     ) async throws -> Command {
         guard let geometry = mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
             throw ModelError.geometryNotFound
@@ -100,7 +102,8 @@ extension ProjectModel {
             collaborationId: collaboration.id,
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: description,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
+            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
+            correlationId: correlationId
         )
     }
 

@@ -40,6 +40,10 @@ class AddPhotoFlowController {
     var photoDescription: String = ""
     /// location for the photo, optional as nil means that a new photoMarker should be added at the center of the current canvas
     var geometryId: String?
+    /// if the photo(s) added by this flow are versions of previous photo, they're linked using this id.
+    /// Only used when adding photos to collaboration. Not used when creating a new collaboration (as photo versioning scope is collaboration and
+    /// initial photos for collaboration cannot be versioned)
+    var correlationId: String?
     /// pin to copy data from when in .copyPin mode
     var pinToCopy: Collaboration?
     /// whether to create photo or task collaboration
@@ -59,6 +63,9 @@ class AddPhotoFlowController {
 
     /// When set to `true` the photo flow will exclude photo placement on the canvas and will use the provided geometryId
     var skipPhotoLocationSelection: Bool = false
+
+    /// Whether user can select multiple photos
+    var allowMultiPhotoSelection: Bool = true
 
     ///
     /// - Parameters:
@@ -145,12 +152,16 @@ class AddPhotoFlowController {
             self?.nextStepAfterCamera()
         }
         vc.onCameraRollSelect = { [weak self, weak vc] in
-            guard let self = self, let vc = vc else { return }
-            self.selectPhotosFromCameraRoll(fromVC: vc)
+            guard let self, let vc, let cameraVC = self.cameraVC else { return }
+            self.selectPhotosFromCameraRoll(
+                fromVC: vc,
+                multiPhotoSelection: cameraVC.cameraViewModel.multiPhotoEnabled
+            )
         }
         vc.onPhotoThumbnail = { [weak self] in
             self?.showPhotosReviewFromCameraScreen()
         }
+        vc.cameraViewModel.multiPhotoAllowed = allowMultiPhotoSelection
         cameraVC = vc
         return vc
     }
@@ -180,7 +191,7 @@ class AddPhotoFlowController {
         // store the image in local cache
         Task { @MainActor in
             do {
-                if !UserDefaults.multiPhotoSessionEnabled {
+                if !(cameraVC?.cameraViewModel.multiPhotoEnabled ?? false) {
                     // clear when not multi-photo session
                     self.photosToAddViewModel.clear(removeFromCache: true)
                 }
@@ -190,7 +201,7 @@ class AddPhotoFlowController {
 
                 self.photosToAddViewModel.add(photoToAdd)
 
-                if !UserDefaults.multiPhotoSessionEnabled {
+                if !(cameraVC?.cameraViewModel.multiPhotoEnabled ?? false) {
                     self.nextStepAfterCamera()
                 }
                 completion(.success(()))
@@ -202,13 +213,13 @@ class AddPhotoFlowController {
         }
     }
 
-    private func selectPhotosFromCameraRoll(fromVC vc: UIViewController) {
+    private func selectPhotosFromCameraRoll(fromVC vc: UIViewController, multiPhotoSelection: Bool) {
         var pickerConfiguration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
-        // in multi-photo session preselect the photos that were already picked (in this session)
-        pickerConfiguration.preselectedAssetIdentifiers = UserDefaults.multiPhotoSessionEnabled
+        // in multi-photo selection preselect the photos that were already picked (in this session)
+        pickerConfiguration.preselectedAssetIdentifiers = multiPhotoSelection
             ? photosToAddViewModel.photos.compactMap(\.assetIdentifier)
             : []
-        pickerConfiguration.selectionLimit = UserDefaults.multiPhotoSessionEnabled ? 0 : 1
+        pickerConfiguration.selectionLimit = multiPhotoSelection ? 0 : 1
         pickerConfiguration.filter = .images
         let picker = PHPickerViewController(configuration: pickerConfiguration)
         picker.overrideUserInterfaceStyle = .dark
@@ -566,7 +577,8 @@ class AddPhotoFlowController {
                 photosToAddViewModel.photos,
                 tags: tagsViewModel.selectedTags,
                 description: photoDescription,
-                toCollaborationForGeometryId: geometryId
+                toCollaborationForGeometryId: geometryId,
+                correlationId: correlationId
             ))
             resultGeometryId = geometryId
             newCollaborationCreated = false
@@ -889,11 +901,14 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
         activityView.startAnimating()
 
         Task {
-            let updatePhotosError = await photosToAddViewModel.update(withPickerResults: results)
+            let updatePhotosError = await photosToAddViewModel.update(
+                withPickerResults: results,
+                multiPhotoSelection: cameraVC?.cameraViewModel.multiPhotoEnabled ?? false
+            )
             DispatchQueue.main.async {
                 activityView.removeFromSuperview()
                 picker.dismiss(animated: true)
-                if let updatePhotosError = updatePhotosError, let cameraVC = self.cameraVC {
+                if let updatePhotosError, let cameraVC = self.cameraVC {
                     let errorMessage: String
                     if results.count == 1 {
                         errorMessage = "The photo couldn't be added. " + updatePhotosError.localizedDescription
@@ -902,7 +917,7 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
                     }
                     self.showError(withMessage: errorMessage, in: cameraVC)
                 }
-                if updatePhotosError == nil, !UserDefaults.multiPhotoSessionEnabled,
+                if updatePhotosError == nil, !(self.cameraVC?.cameraViewModel.multiPhotoEnabled ?? false),
                    !self.photosToAddViewModel.photos.isEmpty
                 {
                     self.nextStepAfterCamera()

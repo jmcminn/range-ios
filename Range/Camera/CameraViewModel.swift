@@ -14,6 +14,10 @@ class CameraViewModel: ObservableObject {
     @Published var photoThumbnail: UIImage?
     /// Whether to show the tags/description screen after taking photo(s)
     @Published var annotationsEnabled = UserDefaults.annotationEnabled
+    /// Whether the option to take multiple photos is available to user
+    @Published var multiPhotoAllowed = true { didSet {
+        if !multiPhotoAllowed { multiPhotoEnabled = false }
+    }}
     /// Whether to take multiple photos or 1 photo and annotate and place on the canvas
     @Published var multiPhotoEnabled = UserDefaults.multiPhotoSessionEnabled
     /// The text to display temporarily over camera screen
