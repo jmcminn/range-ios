@@ -12,22 +12,21 @@ class ImageGalleryUpdatePhotoPageView: UIView {
             make.bottom.equalToSuperview().inset(pageInset.bottom)
         }
     }}
-    private let pageView = UIView()
-    private let contentView = UIView()
+    private let pageView = UpdatePhotoPageControl()
+    private let contentView = PassthroughView()
 
     init() {
         super.init(frame: .zero)
         backgroundColor = .clear
 
         setupViews()
-        updateColors()
     }
 
     private func setupViews() {
         pageView.backgroundColor = .dynamic(.Neutral_09)
         pageView.layer.borderWidth = 1
         pageView.layer.cornerRadius = 13
-        pageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(updatePhotoAction)))
+        pageView.addTarget(self, action: #selector(updatePhotoAction), for: .touchUpInside)
 
         addSubview(pageView)
         pageView.snp.makeConstraints { make in
@@ -53,6 +52,7 @@ class ImageGalleryUpdatePhotoPageView: UIView {
         updatePhotoLabel.textColor = .dynamic(.Neutral_04)
         updatePhotoLabel.textAlignment = .center
         updatePhotoLabel.adjustsFontForContentSizeCategory = true
+        updatePhotoLabel.isUserInteractionEnabled = false
 
         let updatePhotoDescription = UILabel()
         updatePhotoDescription.text = "Add an updated version of this photo to show progress."
@@ -61,6 +61,7 @@ class ImageGalleryUpdatePhotoPageView: UIView {
         updatePhotoDescription.textAlignment = .center
         updatePhotoDescription.numberOfLines = 0
         updatePhotoDescription.adjustsFontForContentSizeCategory = true
+        updatePhotoDescription.isUserInteractionEnabled = false
 
         [updatePhotoButton, updatePhotoLabel, updatePhotoDescription].forEach(contentView.addSubview)
         updatePhotoButton.snp.makeConstraints { make in
@@ -82,16 +83,41 @@ class ImageGalleryUpdatePhotoPageView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    @objc private func updatePhotoAction() {
+        onUpdatePhotoAction?()
+    }
+}
+
+private class UpdatePhotoPageControl: UIControl {
+    init() {
+        super.init(frame: .zero)
+        updateColors()
+        updateHighlightedColor()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     /// update colors
     override func traitCollectionDidChange(_: UITraitCollection?) {
         updateColors()
     }
 
     private func updateColors() {
-        pageView.layer.borderColor = chooseColor(.Neutral_07).cgColor
+        layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 
-    @objc private func updatePhotoAction() {
-        onUpdatePhotoAction?()
+    override open var isHighlighted: Bool {
+        didSet {
+            updateHighlightedColor()
+        }
+    }
+
+    private func updateHighlightedColor() {
+        backgroundColor = isHighlighted
+            ? .dynamic(.Neutral_09._highlightColor)
+            : .dynamic(.Neutral_09)
     }
 }

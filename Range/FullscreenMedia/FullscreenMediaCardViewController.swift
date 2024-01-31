@@ -592,10 +592,24 @@ extension FullscreenMediaCardViewController {
         updatePhotoFlow?.onStop = { [weak self] _, _, _ in
             self?.updatePhotoFlow = nil
         }
+
+        // show activity view (a spinner) that covers the screen disabling any user interactions
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .black.withAlphaComponent(0.3)
+        activityView.color = .Pink_03
+        view.addSubview(activityView)
+        activityView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        activityView.startAnimating()
+
         updatePhotoFlow?.start { [weak self] started in
             if !started {
                 self?.updatePhotoFlow = nil
             }
+        }
+        updatePhotoFlow?.onStop = { _, _, _ in
+            activityView.removeFromSuperview()
         }
     }
 }
