@@ -670,6 +670,10 @@ extension ProjectFlowController {
 
     func moveCollaborationAction(sender _: Any?, event: FlowEvent) {
         guard let collaboration = event.object as? Collaboration else { return }
+        guard !collaboration.isInvalidated else { return }
+        guard movePinFlow == nil else { return }
+        let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+        feedbackGenerator.impactOccurred()
         moveCollaboration(collaboration)
     }
 
