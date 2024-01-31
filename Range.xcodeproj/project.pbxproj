@@ -902,6 +902,7 @@
 		0AB8558028FFF8F100491E20 /* CompletedStatusUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedStatusUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0AB855822900040700491E20 /* AssigneeUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssigneeUpdateFeedItemCell.swift; sourceTree = "<group>"; };
 		0AB85584290009C600491E20 /* DueDateUpdateFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DueDateUpdateFeedItemCell.swift; sourceTree = "<group>"; };
+		0ABBBCE12B6AA0DB00654D10 /* ci_post_xcodebuild.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_xcodebuild.sh; sourceTree = "<group>"; };
 		0ABFD8A728ECB168008CDA74 /* SearchAndSelectTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchAndSelectTagsViewController.swift; sourceTree = "<group>"; };
 		0ABFD8AD28EDB962008CDA74 /* UserDefaultsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTest.swift; sourceTree = "<group>"; };
 		0ABFD8AF28EEB826008CDA74 /* TagsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSearchView.swift; sourceTree = "<group>"; };
@@ -1273,6 +1274,7 @@
 			isa = PBXGroup;
 			children = (
 				0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */,
+				0ABBBCE12B6AA0DB00654D10 /* ci_post_xcodebuild.sh */,
 			);
 			path = ci_scripts;
 			sourceTree = "<group>";
