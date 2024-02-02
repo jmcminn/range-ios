@@ -303,7 +303,7 @@ class PendingActionsModelImpl: PendingActionsModel {
             // nothing... Also this doesn't rollback the local action, but since the action
             // is removed from local actions the next sync will overwrite it's results (unless it was creating something)
             // So we need something better than that...
-            ToastWindow.shared.showError(text: "You don't have permission for \(actionName), aborting!")
+            ToastWindow.shared.showWarning(text: "You don't have permission for \(actionName), aborting!")
             // this probably shouldn't happen unless user was removed from project/org, report as warning
             // and let's see if it ever happens
             return (true, .warning)
@@ -311,20 +311,24 @@ class PendingActionsModelImpl: PendingActionsModel {
                   let code = FunctionsErrorCode(rawValue: error.code)
         {
             // --- FunctionsErrorDomain ------------------------------------------------------------
-            if code == .alreadyExists || code == .notFound || code == .failedPrecondition || code ==
-                .invalidArgument
-            {
-                // cannot be recovered, either wrong arguments or the function is expecting some documents to exist/not exist
-                // and this expectation is not met
+            if code == .notFound || code == .failedPrecondition || code == .invalidArgument {
+                // invalid arguments and failed preconditions probably require a fix (most
+                // likely a mismatch between client side and server side validation)
+                let message = error.localizedDescription
+                Logger.pendingActions.error(
+                    "Dropping action, callable function: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+                )
+                ToastWindow.shared.showError(text: "\(actionName) failed: \(message), aborting!")
+                return (true, .error)
+            } else if code == .alreadyExists {
+                // this is most probably a double invocation of a function, so it's ok to drop it
                 let message = error.localizedDescription
                 Logger.pendingActions.warning(
                     "Dropping action, callable function: \(actionName, privacy: .private) error: \(error, privacy: .public)"
                 )
-                ToastWindow.shared.showError(text: "\(actionName) failed: \(message), aborting!")
-                // this may or may not indicate some bug, let's make it a warning
                 return (true, .warning)
             } else if code == .permissionDenied || code == .unauthenticated {
-                ToastWindow.shared.showError(text: "You don't have permission for \(actionName), aborting!")
+                ToastWindow.shared.showWarning(text: "You don't have permission for \(actionName), aborting!")
                 Logger.pendingActions.warning("Dropping action, permission denied: \(actionName, privacy: .private)")
                 // this probably shouldn't happen unless user was removed from project/org, report as warning
                 // and let's see if it ever happens
