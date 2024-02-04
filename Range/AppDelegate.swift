@@ -66,6 +66,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //            options.debug = true // Enabled debug when first installing is always helpful
 //            options.diagnosticLevel = .warning
             options.environment = sentryEnv
+            // increase the app hang timeout, with the default of 2 seconds we're getting errors
+            // from starting the Firebase remote config at the app startup
+            options.appHangTimeoutInterval = 3
         }
     }
 
