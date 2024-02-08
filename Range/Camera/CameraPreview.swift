@@ -1,4 +1,5 @@
 import AVFoundation
+import Combine
 import SwiftUI
 
 /// Wrapper to show VideoPreviewView in SwiftUI
@@ -20,21 +21,14 @@ struct CameraPreview: UIViewRepresentable {
     }
 
     let view = VideoPreviewView()
-    let session: AVCaptureSession
+    let cameraService: CameraService
+
     /// callback reporting taps. The first parameter is the point in the CameraPreview coordinates and the 2nd is converted to capture device point
     let tappedCallback: (CGPoint, CGPoint) -> Void
 
-    func makeUIView(context: UIViewRepresentableContext<CameraPreview>) -> VideoPreviewView {
-        view.videoPreviewLayer.session = session
+    func makeUIView(context _: UIViewRepresentableContext<CameraPreview>) -> VideoPreviewView {
         view.videoPreviewLayer.cornerRadius = 32
         view.videoPreviewLayer.connection?.videoOrientation = .portrait
-
-        // gesture recognizer requires the action to be @objc function but UIViewRepresentable can
-        // only be a struct (so no objc support). So we need to add a custom coordinator that will
-        // called on tap
-        view.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator,
-                                                         action: #selector(Coordinator.tapped)))
-
         return view
     }
 
@@ -42,7 +36,7 @@ struct CameraPreview: UIViewRepresentable {
         // create coordinator with a tap callback that uses the wrapped view.videoPreviewLayer to
         // translate the gesture recognizer tap point to capture device point and report both
         // coordinates to tappedCallback registered for CameraPreview
-        Coordinator { point in
+        Coordinator(cameraService: cameraService, videoPreviewView: view) { point in
             tappedCallback(point, view.videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: point))
         }
     }
@@ -50,9 +44,32 @@ struct CameraPreview: UIViewRepresentable {
     // based on: https://stackoverflow.com/a/56518293
     /// Coordinator added to CameraPreview to add tap callback
     class Coordinator: NSObject {
+        let cameraService: CameraService
+        let videoPreviewView: VideoPreviewView
         var tappedCallback: (CGPoint) -> Void
-        init(tappedCallback: @escaping ((CGPoint) -> Void)) {
+        /// combine observers
+        private var subscriptions = Set<AnyCancellable>()
+        init(
+            cameraService: CameraService,
+            videoPreviewView: VideoPreviewView,
+            tappedCallback: @escaping ((CGPoint) -> Void)
+        ) {
+            self.cameraService = cameraService
+            self.videoPreviewView = videoPreviewView
             self.tappedCallback = tappedCallback
+            super.init()
+            // gesture recognizer requires the action to be @objc function but UIViewRepresentable can
+            // only be a struct (so no objc support). So we need to add a custom coordinator that will
+            // called on tap
+            videoPreviewView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+            cameraService.$isSessionRunning
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    guard let self else { return }
+                    if self.cameraService.isSessionRunning, self.videoPreviewView.videoPreviewLayer.session == nil {
+                        self.videoPreviewView.videoPreviewLayer.session = cameraService.session
+                    }
+                }.store(in: &subscriptions)
         }
 
         @objc func tapped(gesture: UITapGestureRecognizer) {
@@ -66,7 +83,7 @@ struct CameraPreview: UIViewRepresentable {
 
 struct CameraPreview_Previews: PreviewProvider {
     static var previews: some View {
-        CameraPreview(session: AVCaptureSession(), tappedCallback: { _, _ in })
+        CameraPreview(cameraService: CameraService(), tappedCallback: { _, _ in })
             .frame(height: 300)
     }
 }

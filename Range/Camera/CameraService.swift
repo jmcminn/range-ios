@@ -51,7 +51,7 @@ class CameraService: ObservableObject {
     var maxZoomFactor = 10.0
     /// zoom factors to be presented in UI so user can tap to zoom to given level. This are device values (not UI, so not multiplied by zoomFactorUIMultiplier)
     var zoomFactors: [Double] = [1.0]
-    var isSessionRunning = false
+    @Published var isSessionRunning = false
     private var setupResult: SessionSetupResult = .notConfigured
     // Communicate with the session and other session objects on this queue.
     private let sessionQueue = DispatchQueue(label: "session queue")
@@ -178,9 +178,9 @@ class CameraService: ObservableObject {
             }
 
             self.session.startRunning()
-            self.isSessionRunning = self.session.isRunning
 
             DispatchQueue.main.async {
+                self.isSessionRunning = self.session.isRunning
                 self.canCapturePhoto = true
             }
         }
@@ -193,9 +193,9 @@ class CameraService: ObservableObject {
             guard self.setupResult == .success else { return }
 
             self.session.stopRunning()
-            self.isSessionRunning = self.session.isRunning
 
             DispatchQueue.main.async {
+                self.isSessionRunning = self.session.isRunning
                 self.canCapturePhoto = false
             }
         }

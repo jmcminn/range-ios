@@ -247,7 +247,7 @@ struct CameraView: View {
 
     // Photo preview from the CameraService
     private func cameraView(reader: GeometryProxy) -> some View {
-        CameraPreview(session: camera.session, tappedCallback: { _, captureDevicePoint in
+        CameraPreview(cameraService: camera, tappedCallback: { _, captureDevicePoint in
             // focus camera when tapping the CameraPreview view
             camera.focus(onCaptureDevicePoint: captureDevicePoint)
         })
