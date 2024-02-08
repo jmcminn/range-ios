@@ -322,7 +322,6 @@ class PendingActionsModelImpl: PendingActionsModel {
                 return (true, .error)
             } else if code == .alreadyExists {
                 // this is most probably a double invocation of a function, so it's ok to drop it
-                let message = error.localizedDescription
                 Logger.pendingActions.warning(
                     "Dropping action, callable function: \(actionName, privacy: .private) error: \(error, privacy: .public)"
                 )

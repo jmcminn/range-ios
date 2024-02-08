@@ -69,6 +69,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // increase the app hang timeout, with the default of 2 seconds we're getting errors
             // from starting the Firebase remote config at the app startup
             options.appHangTimeoutInterval = 3
+            // disable http client errors tracking (https://docs.sentry.io/platforms/apple/guides/ios/configuration/http-client-errors/)
+            // we only saw errors from drone deploy https://range-hq.sentry.io/issues/4404307928/?environment=development&project=4504475534032896&query=is%3Aunresolved&referrer=issue-stream&statsPeriod=7d&stream_index=2
+            options.enableCaptureFailedRequests = false
         }
     }
 
