@@ -185,6 +185,9 @@ extension ProjectFlowController: ProjectFlowActions {
             // media view already shows the overlay so don't show in this case
             showOverlay: !fromMedia
         )
+        analytics?._trackProjectEvent(name: "media viewed", model, [
+            "mediaType": upload.fileType.rawValue,
+        ])
     }
 
     func showCollaborationAction(sender _: Any?, event: FlowEvent) {

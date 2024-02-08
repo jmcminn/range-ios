@@ -95,6 +95,12 @@ extension ProjectModel {
             analytics?._trackProjectEvent(name: "media uploaded", self, [
                 "mediaType": photoToAdd.mediaKey.fileType.rawValue,
             ])
+            if photoToAdd.annotatedMediaKey != nil {
+                analytics?._trackProjectEvent(name: "photo annotated", self, [:])
+            }
+            tags.forEach { _ in
+                analytics?._trackProjectEvent(name: "tag added", self, [:])
+            }
         }
 
         return AddUploadsToCollaborationCommand(
@@ -178,6 +184,16 @@ extension ProjectModel {
             analytics?._trackProjectEvent(name: "media uploaded", self, [
                 "mediaType": photoToAdd.mediaKey.fileType.rawValue,
             ])
+            // report tag added for each photo
+            uploadTags.forEach { _ in
+                analytics?._trackProjectEvent(name: "tag added", self, [:])
+            }
+            if photoToAdd.annotatedMediaKey != nil {
+                analytics?._trackProjectEvent(name: "photo annotated", self, [:])
+            }
+        }
+        tags.forEach { _ in
+            analytics?._trackProjectEvent(name: "tag added", self, [:])
         }
 
         var status: Status?
@@ -223,6 +239,12 @@ extension ProjectModel {
         let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
         guard tagIdsSet != existingTagIdsSet else { return nil }
 
+        // only report tag added for newly attached tags
+        tags.filter { !existingTagIdsSet.contains($0.id) }
+            .forEach { _ in
+                analytics?._trackProjectEvent(name: "tag added", self, [:])
+            }
+
         return UpdateUploadsTagsCommand(
             uploadIds: [upload.id],
             tags: tags.map(CommandTag.init(fromViewModel:))
@@ -233,7 +255,16 @@ extension ProjectModel {
     /// If adding (add is `true`) then append the tags to current upload tags for each upload.
     /// If add is `false` then replace the current tags with the newly provided ones
     func update(tags: [TagViewModel], forUploads uploads: [String], add: Bool) -> Command {
-        UpdateUploadsTagsCommand(uploadIds: uploads, tags: tags.map(CommandTag.init(fromViewModel:)), add: add)
+        uploads.forEach { uploadId in
+            guard let upload = mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
+            let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
+            // only report tag added for newly attached tags
+            tags.filter { !existingTagIdsSet.contains($0.id) }
+                .forEach { _ in
+                    analytics?._trackProjectEvent(name: "tag added", self, [:])
+                }
+        }
+        return UpdateUploadsTagsCommand(uploadIds: uploads, tags: tags.map(CommandTag.init(fromViewModel:)), add: add)
     }
 
     /// Create command for updating given Collaboration tags (only if tags are different than existing ones).
@@ -242,6 +273,12 @@ extension ProjectModel {
         let tagIdsSet = Set(tags.map(\.id))
         let existingTagIdsSet: Set<String> = Set(collaboration.tags.map(\.id))
         guard tagIdsSet != existingTagIdsSet else { return nil }
+
+        // only report tag added for newly attached tags
+        tags.filter { !existingTagIdsSet.contains($0.id) }
+            .forEach { _ in
+                analytics?._trackProjectEvent(name: "tag added", self, [:])
+            }
 
         return UpdateCollaborationsTagsCommand(
             collaborationIds: [collaboration.id],
@@ -253,7 +290,17 @@ extension ProjectModel {
     /// If adding (add is `true`) then append the tags to current collaboration tags for each collaboration.
     /// If add is `false` then replace the current tags with the newly provided ones
     func update(tags: [TagViewModel], forCollaborations collaborations: [String], add: Bool) -> Command {
-        UpdateCollaborationsTagsCommand(
+        collaborations.forEach { collaborationId in
+            guard let collaboration = mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)
+            else { return }
+            let existingTagIdsSet: Set<String> = Set(collaboration.tags.map(\.id))
+            // only report tag added for newly attached tags
+            tags.filter { !existingTagIdsSet.contains($0.id) }
+                .forEach { _ in
+                    analytics?._trackProjectEvent(name: "tag added", self, [:])
+                }
+        }
+        return UpdateCollaborationsTagsCommand(
             collaborationIds: collaborations,
             tags: tags.map(CommandTag.init(fromViewModel:)),
             add: add
@@ -510,6 +557,8 @@ extension ProjectModel {
             annotatedImageData = imageData
         }
         let mediaKey = try await storeAnnotatedImageData(annotatedImageData)
+
+        analytics?._trackProjectEvent(name: "photo annotated", self, [:])
 
         return UpdateUploadAnnotationsCommand(uploadId: uploadId, annotations: annotations, mediaKey: mediaKey)
     }
