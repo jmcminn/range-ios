@@ -7,6 +7,7 @@ class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinatin
     var cardDragging: NonModalCardDragging?
     weak var confirmationVC: AddPhotoConfirmationViewController?
     private let availableTypes: [PinTypeOption]
+    private let initialType: PinTypeOption
     var onPinTypeChange: ((PinTypeOption) -> Void)?
 
     private var headerView: UIView!
@@ -21,8 +22,13 @@ class SwitchPinTypeCardViewController: UIViewController, NonModalCardCoordinatin
     }
 
     /// Initializer
-    init(availableTypes: [PinTypeOption], confirmationVC: AddPhotoConfirmationViewController) {
+    init(
+        availableTypes: [PinTypeOption],
+        initialType: PinTypeOption,
+        confirmationVC: AddPhotoConfirmationViewController
+    ) {
         self.availableTypes = availableTypes
+        self.initialType = initialType
         self.confirmationVC = confirmationVC
         super.init(nibName: nil, bundle: nil)
     }
@@ -138,9 +144,7 @@ extension SwitchPinTypeCardViewController {
             }
         }
         pinTypeToggle = SegmentedControl(items: actionItems)
-        if let initialOption = UserDefaults.lastPinTypeOption,
-           let index = availableTypes.firstIndex(of: initialOption)
-        {
+        if let index = availableTypes.firstIndex(of: initialType) {
             pinTypeToggle.setSelectedSegmentIndex(index, animated: false)
         }
         pinTypeToggle.backgroundColor = .dynamic(.Neutral_10)

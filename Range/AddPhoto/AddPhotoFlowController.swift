@@ -47,7 +47,7 @@ class AddPhotoFlowController {
     /// pin to copy data from when in .copyPin mode
     var pinToCopy: Collaboration?
     /// whether to create photo or task collaboration
-    var pinTypeOption: PinTypeOption = .createPhoto {
+    var pinTypeOption: PinTypeOption = .createTask {
         didSet {
             pinsDisplay?.photoPinView?.pinType = pinTypeOption.pinType
             confirmationCardVC?.showNextButton = pinTypeOption == .copyPin
@@ -87,7 +87,7 @@ class AddPhotoFlowController {
         tagsViewModel = TagsViewModel(model: model)
         photosToAddViewModel.addDelegate(self)
 
-        pinTypeOption = UserDefaults.lastPinTypeOption ?? .createPhoto
+        pinTypeOption = UserDefaults.lastPinTypeOption ?? .createTask
     }
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
@@ -729,6 +729,7 @@ extension AddPhotoFlowController {
         if switchPinTypeCardVC == nil {
             let pinTypeVC = SwitchPinTypeCardViewController(
                 availableTypes: [.createPhoto, .createTask, .copyPin],
+                initialType: pinTypeOption,
                 confirmationVC: confirmationCardVC
             )
             pinTypeVC.onPinTypeChange = { [weak self] pinTypeOption in
