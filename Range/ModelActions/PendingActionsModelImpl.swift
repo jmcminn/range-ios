@@ -1,3 +1,4 @@
+import FirebaseAuth
 import FirebaseFirestore
 import FirebaseFunctions
 import Foundation
@@ -293,6 +294,14 @@ class PendingActionsModelImpl: PendingActionsModel {
             // no need to log it in Sentry, it's an obsolete action, meaning the correct business
             // logic is not to apply it
             return (true, nil)
+        } else if (error as NSError).domain == AuthErrorDomain,
+                  (error as NSError).code == AuthErrorCode.networkError.rawValue
+        {
+            // network error, we need to retry
+            Logger.pendingActions.debug(
+                "Will retry action because user is offline: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+            )
+            return (false, nil)
         } else if (error as NSError).domain == FirestoreErrorDomain,
                   (error as NSError).code == FirestoreErrorCode.permissionDenied.rawValue
         {
@@ -335,10 +344,11 @@ class PendingActionsModelImpl: PendingActionsModel {
             }
         } else if let error = error as NSError?, error.domain == NSURLErrorDomain {
             // --- NSURLErrorDomain ----------------------------------------------------------------
+            // error codes reference: https://gist.github.com/samirahmed/ee52a076dd19966c4c9d
             if [
-                NSURLErrorCannotConnectToHost,
-                NSURLErrorNetworkConnectionLost,
-                NSURLErrorNotConnectedToInternet,
+                NSURLErrorCannotConnectToHost, // -1004
+                NSURLErrorNetworkConnectionLost, // -1005
+                NSURLErrorNotConnectedToInternet, // -1009
             ].contains(error.code) {
                 // this means we're offline and it's ok to retry
                 Logger.pendingActions.debug(
