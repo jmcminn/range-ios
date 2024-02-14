@@ -299,7 +299,7 @@ class UserModel: NSObject, RealmModel {
     /// Firestore (so the server side doesn't send push notifications to invalid tokens)
     @MainActor
     func updateFCMToken(_ token: String?) async {
-        guard let user = currentUser else { return }
+        guard let user = currentUser, !user.isInvalidated else { return }
 
         let previousFCMToken = UserDefaults.lastFCMToken
         guard previousFCMToken != token else { return }
