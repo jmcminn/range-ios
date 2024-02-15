@@ -275,7 +275,7 @@ class AddPhotoFlowController {
                     self.photosToAddViewModel.remove(photoAtIndex: index)
                 }
 
-                if let detailsVC = self.detailsVC {
+                if let detailsVC = self.detailsVC, vc.currentPage > 0 {
                     // when hiding the photos review make sure that image gallery in details screen
                     // shows the same page as the last viewed on photos review
                     detailsVC.headerVC.galleryVC.setCurrentPage(vc.currentPage)
@@ -934,23 +934,14 @@ extension AddPhotoFlowController: PhotosToAddViewModelDelegate {
     /// When the last photo is removed automatically hide the photos review screen and get back to camera screen (if in details)
     func photoRemoved(atIndex _: Int) {
         if photosToAddViewModel.photos.isEmpty, let cameraVC = cameraVC {
-            if let detailsVC = detailsVC {
+            if detailsVC != nil {
                 /// Hack: animated presentation of photos review leaves the presenting vc with alpha = 0, restore here manually
                 /// as there won't be custom animated transitioning running for this case because there are no images to
                 /// transition between
                 cameraVC.navigationController?.view.alpha = 1.0
-                if detailsVC.presentedViewController != nil {
-                    // if a controller is presented by detailsVC (should be photos review controller) the dismiss it and navigate back to camera
-                    detailsVC.dismiss(animated: true) {
-                        cameraVC.navigationController?.popToViewController(cameraVC, animated: true)
-                    }
-                } else {
-                    // if nothing is presented then just navigate back
-                    cameraVC.navigationController?.popToViewController(cameraVC, animated: true)
-                }
-                self.detailsVC = nil
-            } else {
-                cameraVC.dismiss(animated: true)
+                // all photos removed while in detailsVC => navigate back to camera
+                cameraVC.navigationController?.popToViewController(cameraVC, animated: true)
+                detailsVC = nil
             }
         }
     }

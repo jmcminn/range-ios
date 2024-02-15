@@ -266,6 +266,11 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
         confirmButton.setNeedsUpdateConfiguration()
     }
 
+    @objc private func updateDeleteButtonHidden() {
+        guard let deleteButton else { return }
+        deleteButton.isHidden = photoKeys.isEmpty
+    }
+
     static var cancelDoneButtonConfig: UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
@@ -445,6 +450,7 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
             removedPage.removeFromSuperview()
         }
         updateDoneButtonEnabled()
+        updateDeleteButtonHidden()
     }
 
     func scrollViewDidScroll(_: UIScrollView) {
