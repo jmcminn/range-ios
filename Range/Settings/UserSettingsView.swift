@@ -8,7 +8,7 @@ struct UserSettingsView: View {
         Form {
             Section(
                 header: Text("Signed in as"),
-                footer: Text(currentUser.email)
+                footer: Text(currentUser.isInvalidated ? "N/A" : currentUser.email)
                     .foregroundColor(.dynamic(.Neutral_04))
                     .font(.body)
             ) {}
