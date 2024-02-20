@@ -201,6 +201,11 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
         scrollView.delegate = self
     }
 
+    private func notifyOnDone() {
+        let resultAnnotations = annotationsEditorPerPage.map { $0.getAnnotations() }
+        onDone?(removedPhotosIndices, resultAnnotations)
+    }
+
     private func setupButtons() {
         cancelButton = UIButton(
             configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
@@ -211,9 +216,7 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
         confirmButton = UIButton(
             configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
             primaryAction: UIAction(title: String(localized: "Done")) { [weak self] _ in
-                guard let self = self else { return }
-                let resultAnnotations = self.annotationsEditorPerPage.map { $0.getAnnotations() }
-                self.onDone?(removedPhotosIndices, resultAnnotations)
+                self?.notifyOnDone()
             }
         )
         // add configuration handler to change the text color when disabled
@@ -255,7 +258,7 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
                 strokeColor: .Neutral_07, imagePointSize: 14
             ),
             primaryAction: UIAction(image: UIImage(systemName: "trash")) { [weak self] _ in
-                self?.removePhoto()
+                self?.maybeRemovePhoto()
             }
         ).withCustomRangeHighlightColor()
     }
@@ -424,6 +427,27 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
             }
         }
         imagesLastLoadedForPage = currentPage
+    }
+
+    /// Checks if this is the last photo, if so ask user to confirm and invoke "done" action when confirmed - we want to avoid a situation
+    /// where the gallery presents the empty screen.
+    /// If this is not the last photo then just proceed with `removePhoto`
+    private func maybeRemovePhoto() {
+        if photoKeys.count <= 1 {
+            let alertController = UIAlertController(
+                title: "Delete photo",
+                message: "Are you sure you want to delete your last photo?",
+                preferredStyle: .alert
+            )
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alertController.addAction(UIAlertAction(title: "Confirm", style: .destructive) { [weak self] _ in
+                self?.removePhoto()
+                self?.notifyOnDone()
+            })
+            present(alertController, animated: true)
+        } else {
+            removePhoto()
+        }
     }
 
     /// Removes the currently showing photo from view model and adjusts the layout
