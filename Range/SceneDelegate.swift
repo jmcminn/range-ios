@@ -1,5 +1,6 @@
 import Firebase
 import FirebaseAuth
+import FirebaseFirestore
 import FirebaseMessaging
 import OSLog
 import Sentry
@@ -32,6 +33,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var authenticatedUserListenerHandle: AuthStateDidChangeListenerHandle?
 
+    let versions = Versions()
+    /// Listen for Firestore document containing the requiredMinimumVersion
+    var requiredMinimumVersionListener: ListenerRegistration?
+
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions)
     {
@@ -42,6 +47,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         setupWindow(windowScene: windowScene)
 
         Task { @MainActor in
+
+            handleAppVersionExpiration()
 
             // check whether user is authenticated
             if let user = Auth.auth().currentUser {
@@ -79,6 +86,43 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         Task { @MainActor in
             await handleAuthAction(activity)
         }
+    }
+
+    private func handleAppVersionExpiration() {
+        // Observe the Firestore document for required minimum version and store in Versions
+        requiredMinimumVersionListener = Firestore.firestore().document("RangeStatus/RequiredMinimumVersion")
+            .addSnapshotListener { [weak self] snapshot, _ in
+                if let self, let data = snapshot?.data(), let requiredMinimumVersion = data["iOS"] as? String {
+                    self.versions.requiredMinimumVersion = requiredMinimumVersion
+                    if self.versions.isAppVersionExpired {
+                        self.presentAppExpiredAlert()
+                    }
+                }
+            }
+
+        // maybe it's already expired when starting even before the sync
+        if versions.isAppVersionExpired {
+            presentAppExpiredAlert()
+        }
+    }
+
+    private func presentAppExpiredAlert() {
+        window!.rootViewController = LaunchScreenViewController()
+        window!.makeKeyAndVisible()
+
+        let alertController = UIAlertController(
+            title: "Version expired",
+            message: "Version \(versions.appVersion) has expired and is not supported anymore. Please install the latest version from the App Store.",
+            preferredStyle: .alert
+        )
+        if let url = URL(string: "itms-apps://itunes.apple.com/app/id1664176768") {
+            alertController.addAction(UIAlertAction(title: "Open App Store", style: .default) { [weak self] _ in
+                UIApplication.shared.open(url)
+                // make sure it's permanent
+                self?.presentAppExpiredAlert()
+            })
+        }
+        window!.rootViewController!.present(alertController, animated: true)
     }
 
     /// Handles the auth actions confirmations (resetPassword, recoverEmail, verifyEmail) by parsing the link tapped by user,
@@ -152,6 +196,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Start the auth flow for authenticating the user
     private func showAuth() {
+        guard !versions.isAppVersionExpired else { return }
         let authFlowController = createAuthFlowController()
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
@@ -193,6 +238,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     @MainActor
     private func showProjects(forUserId userId: String, newlySignedIn: Bool) async {
+        guard !versions.isAppVersionExpired else { return }
         do {
             let projectsFlowController = try ProjectsFlowController(userId: userId, newlySignedIn: newlySignedIn)
             projectsFlowController.showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId

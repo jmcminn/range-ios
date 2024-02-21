@@ -45,7 +45,7 @@ struct UserSettingsView: View {
                     }.buttonStyle(.plain)
                 }
             }
-            Section(footer: Text(userSettings.appVersion)) {
+            Section(footer: Text(Versions().fullAppVersionDisplayName)) {
                 Button(action: userSettings.signOutAction ?? {}) {
                     Text("Sign out")
                         .frame(maxWidth: .infinity, alignment: .center)
