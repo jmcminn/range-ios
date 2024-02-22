@@ -24,6 +24,8 @@ extension Logger {
     static let firestore = Logger(subsystem: subsystem, category: "firestore")
     /// Firebase functions related logs
     static let functions = Logger(subsystem: subsystem, category: "functions")
+    /// knock logs
+    static let knock = Logger(subsystem: subsystem, category: "knock")
     /// Everything mapbox
     static let mapbox = Logger(subsystem: subsystem, category: "mapbox")
     /// Internal model (Realm based) logs

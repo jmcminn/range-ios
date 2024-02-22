@@ -448,10 +448,16 @@
 		0AD9B777286B5013005ACFD7 /* Optional+Throws.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */; };
 		0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */; };
 		0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */; };
+		0ADA15372B9CEE6B0065AFDB /* KnockFeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADA15362B9CEE6B0065AFDB /* KnockFeedModel.swift */; };
 		0ADC169E2B8622FC001DF998 /* Versions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC169D2B8622FC001DF998 /* Versions.swift */; };
+		0ADC16A12B864125001DF998 /* Knock in Frameworks */ = {isa = PBXBuildFile; productRef = 0ADC16A02B864125001DF998 /* Knock */; };
 		0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */; };
 		0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183C29633E70007A59CA /* TopViewController.swift */; };
 		0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */; };
+		0ADF10462B9E0F92004E4579 /* KnockClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10452B9E0F92004E4579 /* KnockClient.swift */; };
+		0ADF10482B9E1846004E4579 /* KnockPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10472B9E1846004E4579 /* KnockPreferences.swift */; };
+		0ADF104A2B9F4769004E4579 /* InAppFeedCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */; };
+		0ADF104C2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */; };
 		0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AE883AB2AEFBEDC004992BA /* XCTestCase+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */; };
@@ -950,10 +956,15 @@
 		0AD9B776286B5013005ACFD7 /* Optional+Throws.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Throws.swift"; sourceTree = "<group>"; };
 		0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelFirestoreSync.swift; sourceTree = "<group>"; };
 		0AD9B77F286EFA69005ACFD7 /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
+		0ADA15362B9CEE6B0065AFDB /* KnockFeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnockFeedModel.swift; sourceTree = "<group>"; };
 		0ADC169D2B8622FC001DF998 /* Versions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Versions.swift; sourceTree = "<group>"; };
 		0ADC183A29631C9D007A59CA /* AddPinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinFlowController.swift; sourceTree = "<group>"; };
 		0ADC183C29633E70007A59CA /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
+		0ADF10452B9E0F92004E4579 /* KnockClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnockClient.swift; sourceTree = "<group>"; };
+		0ADF10472B9E1846004E4579 /* KnockPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnockPreferences.swift; sourceTree = "<group>"; };
+		0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedCardViewController.swift; sourceTree = "<group>"; };
+		0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedItemTableViewCell.swift; sourceTree = "<group>"; };
 		0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyTest.swift; sourceTree = "<group>"; };
 		0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Factory.swift"; sourceTree = "<group>"; };
 		0AE8AC552B6664F200885F13 /* ImageGalleryUpdatePhotoPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryUpdatePhotoPageView.swift; sourceTree = "<group>"; };
@@ -999,6 +1010,7 @@
 				0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */,
 				0AAF04BB2A334CEA00E8C39D /* Lottie in Frameworks */,
 				0A45BB062AAB3F7000B86B85 /* GoogleSignInSwift in Frameworks */,
+				0ADC16A12B864125001DF998 /* Knock in Frameworks */,
 				0A06241D29534AA0004B6512 /* FirebaseStorage in Frameworks */,
 				0A06241B29534AA0004B6512 /* FirebaseFirestoreSwift in Frameworks */,
 				0A06241729534AA0004B6512 /* FirebaseAuth in Frameworks */,
@@ -1654,6 +1666,7 @@
 				0A5957182B0527F30047E669 /* Filters */,
 				0AFA1A47294A09F100491492 /* FullscreenMedia */,
 				0AD0254B284D1A1500106CA5 /* HeaderExpand */,
+				0ADF10442B9E0E37004E4579 /* InAppFeed */,
 				0AAC46C12B51816B00D87549 /* ItemPicker */,
 				0AC12BE52B14DA6B009C63FA /* Location */,
 				0AF812B72840D52A00F7BD09 /* Logging */,
@@ -2172,6 +2185,18 @@
 			path = AddPin;
 			sourceTree = "<group>";
 		};
+		0ADF10442B9E0E37004E4579 /* InAppFeed */ = {
+			isa = PBXGroup;
+			children = (
+				0ADF10452B9E0F92004E4579 /* KnockClient.swift */,
+				0ADA15362B9CEE6B0065AFDB /* KnockFeedModel.swift */,
+				0ADF10472B9E1846004E4579 /* KnockPreferences.swift */,
+				0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */,
+				0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */,
+			);
+			path = InAppFeed;
+			sourceTree = "<group>";
+		};
 		0AE007A02A6DA11900EA3232 /* MediaStore */ = {
 			isa = PBXGroup;
 			children = (
@@ -2268,6 +2293,7 @@
 				0ACF0F292ACC3E0A001AE5B0 /* FirebaseRemoteConfig */,
 				0ACF0F2B2ACC3E0A001AE5B0 /* FirebaseRemoteConfigSwift */,
 				0AEC91A92B2B0D9500AE2329 /* Segment */,
+				0ADC16A02B864125001DF998 /* Knock */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -2353,6 +2379,7 @@
 				0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				0A45BB042AAB3F6F00B86B85 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				0AEC91A82B2B0D9500AE2329 /* XCRemoteSwiftPackageReference "analytics-swift" */,
+				0ADC169F2B864125001DF998 /* XCRemoteSwiftPackageReference "knock-swift" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -2481,10 +2508,12 @@
 				0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */,
 				0A9341C229A7D4B9006166C1 /* CopyPinCardViewController.swift in Sources */,
 				0A4DC78D27F4D1EE00712518 /* CardPresentable.swift in Sources */,
+				0ADF104C2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift in Sources */,
 				0ADC169E2B8622FC001DF998 /* Versions.swift in Sources */,
 				0A07D75628101B3400B6F9A2 /* Geometry.swift in Sources */,
 				0A36CDFD299C11B50004758E /* RangeMediaCacheImageDataProvider.swift in Sources */,
 				0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */,
+				0ADF10462B9E0F92004E4579 /* KnockClient.swift in Sources */,
 				0A83D90C2AB0B0B6003A8DCE /* ForgotPasswordConfirmationView.swift in Sources */,
 				0A44751F2AB88549000EC667 /* FirestoreInvitation.swift in Sources */,
 				0A671F9128E98DD000F78B34 /* GeometriesViewAnnotationPinsDisplay.swift in Sources */,
@@ -2657,7 +2686,9 @@
 				0A8CC5D22B31E83300D26716 /* CreateProjectStep2View.swift in Sources */,
 				0A7BD5572B1A3F28001694A7 /* MapboxViewportStatus+FollowMeMode.swift in Sources */,
 				0A985B1B2A9E358300442617 /* FirestoreUser.swift in Sources */,
+				0ADF10482B9E1846004E4579 /* KnockPreferences.swift in Sources */,
 				0A2B3F5D2AF516ED00D3D0D2 /* TextAnnotationView.swift in Sources */,
+				0ADF104A2B9F4769004E4579 /* InAppFeedCardViewController.swift in Sources */,
 				0AAC46CF2B53F72400D87549 /* ItemPicker+Identifier.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A98E45A298AEC7E004F0112 /* MediaCache.swift in Sources */,
@@ -2801,6 +2832,7 @@
 				0A7A537D293FB3690093D913 /* ProjectsViewController.swift in Sources */,
 				0A130EB228DB1AB000FF1368 /* TagsView.swift in Sources */,
 				0A2F3301283B737C00D04A1C /* CustomPersistable.swift in Sources */,
+				0ADA15372B9CEE6B0065AFDB /* KnockFeedModel.swift in Sources */,
 				0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */,
 				0A5957202B06502E0047E669 /* DateOptions.swift in Sources */,
 				0AB855832900040700491E20 /* AssigneeUpdateFeedItemCell.swift in Sources */,
@@ -2998,7 +3030,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = pk_HGwn9P9j_Iykb1aCN0cT97Abu2GOgHbIrgU7L5vYqM0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3140,7 +3173,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = pk_HGwn9P9j_Iykb1aCN0cT97Abu2GOgHbIrgU7L5vYqM0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3345,7 +3379,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = "pk_fy0Ll3w-pODg05EhBkQZcK9eEfVxkwlLBhjXh2_i5Xs";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3392,7 +3427,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = "pk_fy0Ll3w-pODg05EhBkQZcK9eEfVxkwlLBhjXh2_i5Xs";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3579,7 +3615,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = pk_test_CXGOR6sWciWHrWKvF7Bwjqj8y1k59RyiMttM0lwi4L0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3727,7 +3764,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3869,7 +3907,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = pk_test_CXGOR6sWciWHrWKvF7Bwjqj8y1k59RyiMttM0lwi4L0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4018,7 +4057,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = pk_test_CXGOR6sWciWHrWKvF7Bwjqj8y1k59RyiMttM0lwi4L0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4166,7 +4206,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = pk_VJ0aL1bkvqi9_aUPTfRtJE1HkqNzBKB2lVTJ8RXIBRU;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4309,7 +4350,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				KNOCK_KEY = pk_VJ0aL1bkvqi9_aUPTfRtJE1HkqNzBKB2lVTJ8RXIBRU;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4523,6 +4565,14 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		0ADC169F2B864125001DF998 /* XCRemoteSwiftPackageReference "knock-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/knocklabs/knock-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 		0AEC91A82B2B0D9500AE2329 /* XCRemoteSwiftPackageReference "analytics-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:segmentio/analytics-swift.git";
@@ -4633,6 +4683,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseRemoteConfigSwift;
+		};
+		0ADC16A02B864125001DF998 /* Knock */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0ADC169F2B864125001DF998 /* XCRemoteSwiftPackageReference "knock-swift" */;
+			productName = Knock;
 		};
 		0AEC91A92B2B0D9500AE2329 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;

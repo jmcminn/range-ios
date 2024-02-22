@@ -75,6 +75,8 @@ final class FlowEvent: UIEvent {
     func toggleLocationSimulationAction()
     /// Move collaboration action
     func moveCollaborationAction(sender: Any?, event: FlowEvent)
+    /// Show the in-app feed for current project
+    func showProjectInAppFeed()
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -816,5 +818,14 @@ extension ProjectFlowController: ViewportStatusObserver, LocationObserver {
         } else {
             setUIState(.default, animated: true)
         }
+    }
+}
+
+// MARK: - in-app feed
+
+extension ProjectFlowController {
+    func showProjectInAppFeed() {
+        let inAppFeedVC = InAppFeedCardViewController(model: knockFeedModel)
+        inAppFeedVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 }

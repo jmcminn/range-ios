@@ -284,7 +284,7 @@ class ProjectsFlowController: UINavigationController {
                                             initialRoute: ProjectRoute?) async throws -> ProjectFlowController
     {
         let projectFC = try await ProjectFlowController(
-            userId: userId,
+            userModel: userModel,
             projectId: projectId,
             canvasId: UserDefaults.lastOpenCanvasId(forProjectId: projectId),
             localFiles: localFiles,

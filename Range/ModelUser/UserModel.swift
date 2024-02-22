@@ -3,11 +3,12 @@ import FirebaseFirestoreSwift
 import FirebaseFunctions
 import FirebaseMessaging
 import Foundation
+import Knock
 import OSLog
 import RealmSwift
 import UIKit
 
-/// Responsible for configuring the Realm for given user and all his organizations, invitations and push notifications
+/// Responsible for configuring the Realm for given user and all his organizations, invitations and notifications
 class UserModel: NSObject, RealmModel {
     /// The Range id of the current logged in user
     let userId: String
@@ -44,6 +45,9 @@ class UserModel: NSObject, RealmModel {
     @objc private(set) dynamic var currentOrganizationModel: OrganizationModel?
     private var organizationsNotificationToken: NotificationToken?
 
+    /// Knock client for this user
+    let knockClient: KnockClient
+
     init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
         self.newlySignedIn = newlySignedIn
@@ -60,6 +64,7 @@ class UserModel: NSObject, RealmModel {
         config.objectTypes = [User.self, Invitation.self, Organization.self]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
+        knockClient = KnockClient(userId: userId)
     }
 
     /// Initiates the writeRealm

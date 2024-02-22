@@ -9,15 +9,22 @@ class TopViewController: UIViewController {
     private let imageAndTitle = UIStackView()
     private var imageView: UIImageView?
     private let titleLabel = UILabel()
+    private let rightAction: UIAction?
+    // the button for the rightAction
+    private(set) var rightButton: UIButton?
 
     private var font: UIFont {
         ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
     }
 
-    init(iconName: String? = nil, title: String, onBack: (() -> Void)? = nil) {
+    ///
+    /// - Parameters:
+    ///   - rightAction - the button displayed in the right of the bar
+    init(iconName: String? = nil, title: String, onBack: (() -> Void)? = nil, rightAction: UIAction? = nil) {
         self.iconName = iconName
         titleLabel.text = title
         self.onBack = onBack
+        self.rightAction = rightAction
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -61,11 +68,21 @@ class TopViewController: UIViewController {
         }
 
         setupBackButton()
-        if let backButton = backButton {
+        if let backButton {
             view.addSubview(backButton)
             backButton.snp.makeConstraints { make in
                 make.width.height.equalTo(40)
                 make.leading.equalToSuperview()
+                make.centerY.equalTo(imageAndTitle.snp.centerY)
+            }
+        }
+
+        setupRightButton()
+        if let rightButton {
+            view.addSubview(rightButton)
+            rightButton.snp.makeConstraints { make in
+                make.width.height.equalTo(40)
+                make.trailing.equalToSuperview().inset(8)
                 make.centerY.equalTo(imageAndTitle.snp.centerY)
             }
         }
@@ -136,6 +153,15 @@ class TopViewController: UIViewController {
                 self?.onBack?()
             }
         )
+    }
+
+    private func setupRightButton() {
+        guard let rightAction else { return }
+        let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
+        var config = UIButton.Configuration.plain()
+        config.baseForegroundColor = .dynamic(.Neutral_04)
+        config.preferredSymbolConfigurationForImage = imageConfig
+        rightButton = RangeButton(configuration: config, primaryAction: rightAction)
     }
 
     private func setupImageView() {

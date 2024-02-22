@@ -38,6 +38,7 @@ extension Color {
     static let Red_04 = Color("Red_04")
     static let Secondary_02 = Color("Secondary_02")
     static let Secondary_03 = Color("Secondary_03")
+    static let Special_01 = Color("Special_01")
     static let Special_02 = Color("Special_02")
 }
 
@@ -74,6 +75,7 @@ extension UIColor {
     static let Red_04 = UIColor(named: "Red_04")!
     static let Secondary_02 = UIColor(named: "Secondary_02")!
     static let Secondary_03 = UIColor(named: "Secondary_03")!
+    static let Special_01 = UIColor(named: "Special_01")!
     static let Special_02 = UIColor(named: "Special_02")!
 }
 

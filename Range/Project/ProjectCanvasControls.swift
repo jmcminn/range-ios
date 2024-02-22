@@ -17,6 +17,7 @@ class ProjectCanvasControls: PassthroughView {
         case cardOnboardingView = 1008
         case locationSimulationButton = 1009
         case followMeModeButton = 1010
+        case inAppUnseenItemsBadge = 1011
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -41,23 +42,46 @@ class ProjectCanvasControls: PassthroughView {
 
 extension ProjectCanvasControls {
     /// Access to currently showing top VC, or nil if not showing
-    var topViewController: UIViewController? {
-        canvasContainer.children.first { $0.view.tag == ViewTag.topView.rawValue && $0.view.superview == self }
+    var topViewController: TopViewController? {
+        canvasContainer.children.first {
+            $0.view.tag == ViewTag.topView.rawValue && $0.view.superview == self
+        } as? TopViewController
     }
 
     /// Creates a `TopViewController` and shows it in an `animated` way
-    func showTopViewController(iconName: String? = nil, title: String, onBack: (() -> Void)? = nil, animated: Bool) {
-        guard topViewController == nil else { return }
-        let topViewController = TopViewController(iconName: iconName, title: title, onBack: onBack)
-        canvasContainer.add(childController: topViewController, toView: self)
-        topViewController.view.tag = ViewTag.topView.rawValue
+    func showTopViewController(
+        iconName: String? = nil,
+        title: String,
+        onBack: (() -> Void)? = nil,
+        showInAppFeedButton: Bool = false,
+        animated: Bool
+    ) {
+        if topViewController == nil {
+            let topViewController = TopViewController(
+                iconName: iconName,
+                title: title,
+                onBack: onBack,
+                rightAction: showInAppFeedButton
+                    ? UIAction(image: UIImage(systemName: "bell"), handler: { _ in
+                        UIApplication.shared.sendAction(#selector(ProjectFlowActions.showProjectInAppFeed),
+                                                        to: nil, from: self, for: nil)
+                    })
+                    : nil
+            )
+            canvasContainer.add(childController: topViewController, toView: self)
+            topViewController.view.tag = ViewTag.topView.rawValue
+
+            if animated {
+                topViewController.view.snp.makeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.snp.top)
+                }
+                layoutIfNeeded()
+            }
+        }
+        guard let topViewController else { return }
 
         if animated {
-            topViewController.view.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.bottom.equalTo(self.snp.top)
-            }
-            layoutIfNeeded()
             UIView.animate(withDuration: 0.2) {
                 topViewController.view.snp.remakeConstraints { make in
                     make.leading.trailing.equalToSuperview()
@@ -66,7 +90,7 @@ extension ProjectCanvasControls {
                 self.layoutIfNeeded()
             }
         } else {
-            topViewController.view.snp.makeConstraints { make in
+            topViewController.view.snp.remakeConstraints { make in
                 make.leading.trailing.equalToSuperview()
                 make.top.equalToSuperview()
             }
@@ -76,20 +100,62 @@ extension ProjectCanvasControls {
 
     /// Hides the `TopViewController` in an animated way
     func hideTopViewController(animated: Bool) {
-        guard let viewController = topViewController else { return }
+        guard let topViewController else { return }
         if animated {
             UIView.animate(withDuration: 0.2, animations: {
-                viewController.view.snp.remakeConstraints { make in
+                topViewController.view.snp.remakeConstraints { make in
                     make.leading.trailing.equalToSuperview()
                     make.bottom.equalTo(self.snp.top)
                 }
                 self.layoutIfNeeded()
-            }, completion: { [weak self] _ in
-                self?.canvasContainer.remove(childController: viewController)
             })
         } else {
-            canvasContainer.remove(childController: viewController)
+            topViewController.view.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.bottom.equalTo(self.snp.top)
+            }
         }
+    }
+
+    /// Access to currently showing in-ap unseen items badge view
+    var inAppUnseenItemsBadge: BadgeView? {
+        guard let topViewController else { return nil }
+        return topViewController.view.subviews.first {
+            $0.tag == ViewTag.inAppUnseenItemsBadge.rawValue
+        } as? BadgeView
+    }
+
+    func updateInAppUnseenItemsBadge(_ knockFeedModel: KnockFeedModel) {
+        let unseenCount = knockFeedModel.feed.meta.unseen_count
+        // hide the badge if there's 0 unseen items
+        guard unseenCount > 0 else {
+            if let inAppUnseenItemsBadge {
+                inAppUnseenItemsBadge.alpha = 0.0
+            }
+            return
+        }
+
+        guard let topViewController, let inAppButton = topViewController.rightButton else { return }
+        if inAppUnseenItemsBadge == nil {
+            let badge = BadgeView()
+            badge.backgroundColor = .Special_01
+            badge.contentInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+            badge.textColor = .white
+            badge.font = .systemFont(ofSize: 8)
+            badge.isUserInteractionEnabled = false
+            badge.tag = ViewTag.inAppUnseenItemsBadge.rawValue
+            // add to topViewController.view and not inAppButton, as it causes rendering issues with inappbutton
+            // the badge is ultimately rendered below the button image view ... (?)
+            topViewController.view.addSubview(badge)
+            badge.snp.makeConstraints { make in
+                make.centerX.equalTo(inAppButton.snp.centerX).offset(-8)
+                make.centerY.equalTo(inAppButton.snp.centerY).offset(-8)
+            }
+        }
+
+        guard let inAppUnseenItemsBadge else { return }
+        inAppUnseenItemsBadge.alpha = 1.0
+        inAppUnseenItemsBadge.text = unseenCount > 9 ? "9⁺" : String(unseenCount)
     }
 }
 

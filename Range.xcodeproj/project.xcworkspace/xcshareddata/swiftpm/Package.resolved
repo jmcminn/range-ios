@@ -127,6 +127,15 @@
       }
     },
     {
+      "identity" : "knock-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/knocklabs/knock-swift.git",
+      "state" : {
+        "revision" : "b403ffe477e143d2bf261c89cbf678d7ec7d3646",
+        "version" : "0.2.1"
+      }
+    },
+    {
       "identity" : "leveldb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/leveldb.git",
@@ -268,6 +277,15 @@
       "state" : {
         "revision" : "3c54ab05249f59f2c6641dd2920b8358ea9ed127",
         "version" : "1.24.0"
+      }
+    },
+    {
+      "identity" : "swiftphoenixclient",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/davidstump/SwiftPhoenixClient.git",
+      "state" : {
+        "revision" : "588bf6baab5d049752748e19a4bff32421ea40ec",
+        "version" : "5.3.2"
       }
     },
     {

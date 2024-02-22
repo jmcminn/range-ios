@@ -31,6 +31,9 @@ final class ProjectFlowController: UIViewController {
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
 
+    /// Project level in app feed
+    let knockFeedModel: KnockFeedModel
+
     let canvasContainer: CanvasContainerViewController
     let collaborationFlow: CollaborationFlowController
 
@@ -99,6 +102,9 @@ final class ProjectFlowController: UIViewController {
 
     private let initialRoute: ProjectRoute?
 
+    /// combine observers
+    private var subscriptions = Set<AnyCancellable>()
+
     /// Initialize ProjectFlowController
     /// This can throw if project model cannot be loaded or started
     ///
@@ -107,7 +113,7 @@ final class ProjectFlowController: UIViewController {
     ///     - projectId: id of the project
     ///     - canvasId: id of the canvas, if not provided then load the 1st canvas in a project
     init(
-        userId: String,
+        userModel: UserModel,
         projectId: String,
         canvasId: String?,
         localFiles: LocalFiles,
@@ -123,7 +129,7 @@ final class ProjectFlowController: UIViewController {
         self.canvasFileLoader = canvasFileLoader
         self.initialRoute = initialRoute
         model = try ProjectModel(
-            userId: userId,
+            userId: userModel.userId,
             projectId: projectId,
             localFiles: localFiles,
             mediaCache: mediaCache,
@@ -166,12 +172,22 @@ final class ProjectFlowController: UIViewController {
         self.userSettings = userSettings
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
 
+        knockFeedModel = KnockFeedModel(knockClient: userModel.knockClient, projectId: projectId)
+
         super.init(nibName: nil, bundle: nil)
 
         collaborationFlow.onCollaborationClose = { [weak self] in
             // unselect pin, this will result also in hiding the collaboration window
             self?.pinsDisplay?.setSelectedPin(nil)
         }
+
+        knockFeedModel.$feed
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.controls.updateInAppUnseenItemsBadge(self.knockFeedModel)
+            }
+            .store(in: &subscriptions)
     }
 
     @available(*, unavailable)
@@ -270,6 +286,8 @@ final class ProjectFlowController: UIViewController {
         }
         // visibility of location related controls depends on the user proximity to canvas center
         locationProvider.addLocationObserver(for: self)
+
+        knockFeedModel.start()
 
         handleInitialRoute()
     }
@@ -423,6 +441,7 @@ final class ProjectFlowController: UIViewController {
         canvasSourcesNotificationToken = nil
         UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
         NotificationCenter.default.removeObserver(self)
+        knockFeedModel.stop()
     }
 
     /// Show/hide the controls depending on the state
@@ -430,9 +449,14 @@ final class ProjectFlowController: UIViewController {
         uiState = state
 
         if state == .fullScreenCanvas {
-            controls.hideTopViewController(animated: true)
+            controls.hideTopViewController(animated: animated)
         } else {
-            controls.showTopViewController(title: model.projectSummary.name, onBack: onBack, animated: false)
+            controls.showTopViewController(
+                title: model.projectSummary.name,
+                onBack: onBack,
+                showInAppFeedButton: true,
+                animated: animated
+            )
         }
         updateTopIndicatorView()
 
