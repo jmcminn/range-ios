@@ -34,6 +34,7 @@ class UITextViewWithPlaceholder: UITextView {
             placeholderLabel.snp.remakeConstraints { make in
                 // 5 is derived experimentally
                 make.leading.equalToSuperview().inset(textContainerInset.left + 5)
+                make.width.equalToSuperview().offset(-(textContainerInset.left + textContainerInset.right + 10))
                 make.top.equalToSuperview().offset(textContainerInset.top + placeholderTopMargin)
             }
         }
@@ -72,11 +73,14 @@ class UITextViewWithPlaceholder: UITextView {
         placeholderLabel.backgroundColor = .clear
         placeholderLabel.adjustsFontForContentSizeCategory = true
         placeholderLabel.text = placeholderText
+        placeholderLabel.numberOfLines = 0
+        placeholderLabel.lineBreakMode = .byWordWrapping
         placeholderLabel.sizeToFit()
         addSubview(placeholderLabel)
         placeholderLabel.snp.makeConstraints { make in
             // 5 and 0.5 is derived experimentally
             make.leading.equalToSuperview().inset(textContainerInset.left + 5)
+            make.width.equalToSuperview().offset(-(textContainerInset.left + textContainerInset.right + 10))
             make.top.equalToSuperview().offset(textContainerInset.top + 0.5)
         }
         placeholderLabel.isUserInteractionEnabled = false

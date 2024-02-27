@@ -580,6 +580,7 @@ extension CollaborationFlowController {
         TextCardViewController(
             title: "Description",
             initialText: collaboration.collaborationDescription,
+            placeholderText: "Add a description...",
             onTextSaved: { [weak self] newDescription in
                 self?.updateDescription(newDescription)
             }

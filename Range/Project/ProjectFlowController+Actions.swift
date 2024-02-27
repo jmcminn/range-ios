@@ -222,6 +222,7 @@ extension ProjectFlowController: ProjectFlowActions {
         TextCardViewController(
             title: "Description",
             initialText: upload.uploadDescription,
+            placeholderText: "Add a description...\nPro Tip: Any text added here will appear on PDF reports",
             onTextSaved: { [weak self] newDescription in
                 self?.updateDescription(newDescription, forUpload: upload)
             }

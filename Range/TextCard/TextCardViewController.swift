@@ -7,6 +7,7 @@ import UIKit
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class TextCardViewController: SheetCardViewController {
     private let initialText: String?
+    private let placeholderText: String
 
     var onTextSaved: ((String) -> Void)?
     private var textView: TextView!
@@ -18,8 +19,9 @@ class TextCardViewController: SheetCardViewController {
     ///     - title:                         title of the card
     ///     - initialText:                initial text
     ///     - onTextSaved:          callback for saving the text
-    init(title: String, initialText: String?, onTextSaved: ((String) -> Void)? = nil) {
+    init(title: String, initialText: String?, placeholderText: String, onTextSaved: ((String) -> Void)? = nil) {
         self.initialText = initialText
+        self.placeholderText = placeholderText
         super.init(icon: UIImage(systemName: "text.quote"), title: title)
         self.onTextSaved = onTextSaved
     }
@@ -49,7 +51,7 @@ class TextCardViewController: SheetCardViewController {
 
     private func buildTextView() {
         textView = TextView(
-            placeholderText: "Add a description...",
+            placeholderText: placeholderText,
             doneText: String(localized: "Save"),
             showCancelButton: true
         )

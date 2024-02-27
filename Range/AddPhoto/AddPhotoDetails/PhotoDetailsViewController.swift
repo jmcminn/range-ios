@@ -482,7 +482,8 @@ extension PhotoDetailsViewController {
     }
 
     private func buildDescriptionTextView() {
-        descriptionView = TextView(placeholderText: "Add a description")
+        descriptionView = TextView(placeholderText:
+            "Add a description...\nPro Tip: Any text added here will appear on PDF reports")
         descriptionView.textView.delegate = self
         descriptionView.onDone = { [weak self] in
             self?.view.endEditing(true)
