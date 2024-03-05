@@ -154,6 +154,14 @@ extension ProjectFlowController: ProjectFlowActions {
         ])
     }
 
+    func showHowToAddPDFFloorPlansCard() {
+        SheetCardViewController(
+            icon: nil,
+            title: "👋 How to add PDF Floor Plans",
+            description: "To add PDF floor plans you will need to go to the web desktop app and edit the project PDF canvas sources."
+        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
     func showFullscreenMediaAction(sender _: Any?, event: FlowEvent) {
         showFullscreenMedia(forEvent: event)
     }

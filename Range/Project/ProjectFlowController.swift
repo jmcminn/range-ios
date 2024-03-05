@@ -72,10 +72,6 @@ final class ProjectFlowController: UIViewController {
     var movePinFlow: MovePinFlowController?
 
     var started = false
-    /// A Future that gets resolved when the ProjectFlowController is started. Before it's started it makes no sense to call any of it's actions.
-    private(set) var startedFuture: Future<Void, Never>?
-    /// The promise used internally for resolving the `startedFuture`
-    private var startedFuturePromise: Future<Void, Never>.Promise?
     var onBack: (() -> Void)?
 
     // Canvas pin filters for this project
@@ -101,6 +97,8 @@ final class ProjectFlowController: UIViewController {
     /// Location provider for tracking user on map canvases
     private let locationProvider = RangeLocationProvider()
 
+    private let initialRoute: ProjectRoute?
+
     /// Initialize ProjectFlowController
     /// This can throw if project model cannot be loaded or started
     ///
@@ -117,11 +115,13 @@ final class ProjectFlowController: UIViewController {
         canvasFileLoader: CanvasFileLoader,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
-        userSettings: UserSettings
+        userSettings: UserSettings,
+        initialRoute: ProjectRoute?
     ) async throws {
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.canvasFileLoader = canvasFileLoader
+        self.initialRoute = initialRoute
         model = try ProjectModel(
             userId: userId,
             projectId: projectId,
@@ -168,9 +168,6 @@ final class ProjectFlowController: UIViewController {
 
         super.init(nibName: nil, bundle: nil)
 
-        startedFuture = Future { [weak self] promise in
-            self?.startedFuturePromise = promise
-        }
         collaborationFlow.onCollaborationClose = { [weak self] in
             // unselect pin, this will result also in hiding the collaboration window
             self?.pinsDisplay?.setSelectedPin(nil)
@@ -255,8 +252,6 @@ final class ProjectFlowController: UIViewController {
 
         canvasDelegateId = canvasContainer.canvasViewController.addDelegate(self)
 
-        startedFuturePromise?(.success(()))
-
         // after the project is started, and on each canvas source change, download all the pdfs for all pdf canvas sources
         canvasSourcesNotificationToken = model.mainRealm.objects(CanvasSource.self).observe { [weak self] _ in
             self?.possiblyDownloadPdfsForCanvasSources()
@@ -275,6 +270,27 @@ final class ProjectFlowController: UIViewController {
         }
         // visibility of location related controls depends on the user proximity to canvas center
         locationProvider.addLocationObserver(for: self)
+
+        if let initialRoute {
+            switch initialRoute.route {
+            case .canvas:
+                // TODO: 2589
+                break
+            case .welcome:
+                showHowToAddPDFFloorPlansCard()
+            case .tasks:
+                showTaskListAction()
+            case .task:
+                // TODO: 2589
+                break
+            case .media:
+                // TODO: 2589
+                break
+            case .fullscreenMedia:
+                // TODO: 2589
+                break
+            }
+        }
     }
 
     /// Observe when canvas source is switched to different canvas source

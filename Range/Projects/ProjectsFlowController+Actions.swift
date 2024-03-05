@@ -18,23 +18,13 @@ extension ProjectsFlowController: ProjectsFlowActions {
         createProjectFC.onProjectCreated = { [weak createProjectFC, weak self] projectId in
             createProjectFC?.dismiss(animated: true)
             // redirect to the newly created project
-            self?.loadAndPushProjectFlowController(projectId: projectId, animated: true) { [weak self] in
-                // show the card about the PDFs after the new project flow controller has started
-                self?.projectFCStarted = self?.projectFC?.startedFuture?.sink { _ in
-                    self?.showHowToAddPDFFloorPlansCard()
-                }
-            }
+            self?.loadAndPushProjectFlowController(
+                projectId: projectId,
+                initialRoute: ProjectRoute(projectId, .welcome),
+                animated: true
+            )
         }
         createProjectFC.modalPresentationStyle = .fullScreen
         present(createProjectFC, animated: true)
-    }
-
-    private func showHowToAddPDFFloorPlansCard() {
-        guard let projectFC else { return }
-        SheetCardViewController(
-            icon: nil,
-            title: "👋 How to add PDF Floor Plans",
-            description: "To add PDF floor plans you will need to go to the web desktop app and edit the project PDF canvas sources."
-        ).installAndShowCard(in: projectFC.canvasContainer, inView: projectFC.canvasContainer.controls)
     }
 }

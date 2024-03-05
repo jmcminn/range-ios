@@ -140,15 +140,15 @@ class UserModel: NSObject, RealmModel {
     }
 
     @MainActor
-    func setCurrentOrganization(_ organization: Organization) async throws {
-        if organization != currentOrganizationModel?.organization {
+    func setCurrentOrganization(_ organizationId: String) async throws {
+        if organizationId != currentOrganizationModel?.organization.id {
             if let currentOrganizationModel = currentOrganizationModel {
                 currentOrganizationModel.stop()
             }
-            let organizationModel = try OrganizationModel(user: currentUser, organizationId: organization.id)
+            let organizationModel = try OrganizationModel(user: currentUser, organizationId: organizationId)
             try await organizationModel.start()
             currentOrganizationModel = organizationModel
-            UserDefaults.lastOpenOrganizationId = organization.id
+            UserDefaults.lastOpenOrganizationId = organizationId
         }
     }
 
@@ -183,8 +183,8 @@ class UserModel: NSObject, RealmModel {
                 organization = mainRealm.objects(Organization.self).sorted(by: \.name).first
             }
 
-            if let organization = organization {
-                try await setCurrentOrganization(organization)
+            if let organizationId = organization?.id {
+                try await setCurrentOrganization(organizationId)
             }
         }
     }

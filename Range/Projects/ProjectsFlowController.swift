@@ -25,8 +25,6 @@ class ProjectsFlowController: UINavigationController {
 
     var currentUserNotificationToken: NotificationToken?
     var projectFC: ProjectFlowController?
-    /// to observe the state of project flow controller `started`
-    var projectFCStarted: AnyCancellable?
     private var currentOrganizationObservation: NSKeyValueObservation?
     var currentProjectNotificationToken: NotificationToken?
     private var organizationsNotificationToken: NotificationToken?
@@ -73,9 +71,12 @@ class ProjectsFlowController: UINavigationController {
         let tabBarVC = setupTabBarViewController()
         updateProjectsViewController()
 
-        let tryLoadProject: (String) async -> Void = { projectId in
+        let tryLoadProject: (String, ProjectRoute?) async -> Void = { projectId, initialRoute in
             do {
-                self.projectFC = try await self.buildProjectFlowController(projectId: projectId)
+                self.projectFC = try await self.buildProjectFlowController(
+                    projectId: projectId,
+                    initialRoute: initialRoute
+                )
                 self.setViewControllers([tabBarVC, self.projectFC!], animated: false)
                 self.updateLastOpenProjectAndCanvas()
                 self.observeCurrentProject()
@@ -89,14 +90,13 @@ class ProjectsFlowController: UINavigationController {
         // open some project on start?
         if let showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId {
             // open project from push notification and open it's task list
-            await tryLoadProject(showTaskListOnLoginForProjectId)
-            showTaskListAfterProjectFlowStarted()
+            await tryLoadProject(showTaskListOnLoginForProjectId, ProjectRoute(showTaskListOnLoginForProjectId, .tasks))
         } else if _debugSettings.openLastProjectOnStart,
                   let organizationId = UserDefaults.lastOpenOrganizationId,
                   let lastOpenProjectId = UserDefaults.recentProjectIds(forOrganizationId: organizationId).first
         {
             // reopen last project
-            await tryLoadProject(lastOpenProjectId)
+            await tryLoadProject(lastOpenProjectId, nil)
         } else {
             setViewControllers([tabBarVC], animated: false)
         }
@@ -189,7 +189,7 @@ class ProjectsFlowController: UINavigationController {
                 self?.selectOrganizationAction()
             }
             projectsVC.onProjectSelected = { [weak self] project in
-                self?.loadAndPushProjectFlowController(projectId: project.id, animated: true)
+                self?.loadAndPushProjectFlowController(projectId: project.id, initialRoute: nil, animated: true)
             }
             projectsVC.onViewWillAppear = { [weak self] in
                 guard let self else { return }
@@ -206,7 +206,12 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed
-    func loadAndPushProjectFlowController(projectId: String, animated: Bool, completion: (() -> Void)? = nil) {
+    func loadAndPushProjectFlowController(
+        projectId: String,
+        initialRoute: ProjectRoute?,
+        animated: Bool,
+        completion: (() -> Void)? = nil
+    ) {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .black.withAlphaComponent(0.3)
         activityView.color = .Pink_03
@@ -224,7 +229,7 @@ class ProjectsFlowController: UINavigationController {
                     }
                 }
                 let previousProjectFC = self.projectFC
-                self.projectFC = try await buildProjectFlowController(projectId: projectId)
+                self.projectFC = try await buildProjectFlowController(projectId: projectId, initialRoute: initialRoute)
                 DispatchQueue.main.async {
                     if let previousProjectFC = previousProjectFC {
                         // replace if some project flow controller is already showing
@@ -265,7 +270,9 @@ class ProjectsFlowController: UINavigationController {
     }
 
     /// Build and configure project flow controller
-    private func buildProjectFlowController(projectId: String) async throws -> ProjectFlowController {
+    private func buildProjectFlowController(projectId: String,
+                                            initialRoute: ProjectRoute?) async throws -> ProjectFlowController
+    {
         let projectFC = try await ProjectFlowController(
             userId: userId,
             projectId: projectId,
@@ -275,7 +282,8 @@ class ProjectsFlowController: UINavigationController {
             canvasFileLoader: canvasFileLoader,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
-            userSettings: userSettings
+            userSettings: userSettings,
+            initialRoute: initialRoute
         )
         projectFC.onBack = { [weak self] in
             self?.closeCurrentProject()
@@ -367,24 +375,32 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func showProjectTaskList(projectId: String, projectName: String) {
-        let showProjectTaskListAnimated: ((Bool) -> Void) = { [weak self] animated in
-            self?.loadAndPushProjectFlowController(projectId: projectId, animated: animated) {
-                self?.projectFCStarted = self?.projectFC?.startedFuture?.sink { _ in
-                    self?.showTaskListAfterProjectFlowStarted()
-                }
-            }
-        }
-
+        // TODO: 2589 reset filters when coming from push , either here or in normal start
+        // Reset the task list filters when coming from the push notification... This should be
+        // mostly fine as they default to "only mine"...
+//        UserDefaults.setTaskListFilters(
+//            CollaborationFilters(model: projectFC.model, variant: .taskList),
+//            forProjectId: projectFC.model.projectId
+//        )
+        let initialRoute = ProjectRoute(projectId, .tasks)
         if let projectFC = projectFC {
-            let reloadProject = {
+            let reloadProject = { [weak self] in
                 if projectId == projectFC.model.projectId {
                     // this project is already open, reload the project flow controller with no animations
                     // We reload instead of reusing the current projectFC to avoid cleaning up its UI
                     // state (open views, etc.)
-                    showProjectTaskListAnimated(false)
+                    self?.loadAndPushProjectFlowController(
+                        projectId: projectId,
+                        initialRoute: initialRoute,
+                        animated: false
+                    )
                 } else {
                     // a different project is open, replace animated
-                    showProjectTaskListAnimated(true)
+                    self?.loadAndPushProjectFlowController(
+                        projectId: projectId,
+                        initialRoute: initialRoute,
+                        animated: true
+                    )
                 }
             }
             if projectFC.isUserEditingProject {
@@ -403,22 +419,7 @@ class ProjectsFlowController: UINavigationController {
             }
         } else {
             // no project is currently shown, navigate to a project
-            showProjectTaskListAnimated(true)
-        }
-    }
-
-    private func showTaskListAfterProjectFlowStarted() {
-        projectFCStarted = projectFC?.startedFuture?.sink { [weak self] _ in
-            guard let self = self, let projectFC = self.projectFC else { return }
-            // Reset the task list filters when coming from the push notification... This should be
-            // mostly fine as they default to "only mine"...
-            UserDefaults.setTaskListFilters(
-                CollaborationFilters(model: projectFC.model, variant: .taskList),
-                forProjectId: projectFC.model.projectId
-            )
-            projectFC.showTaskListAction()
-            self.projectFCStarted?.cancel()
-            self.projectFCStarted = nil
+            loadAndPushProjectFlowController(projectId: projectId, initialRoute: initialRoute, animated: true)
         }
     }
 
@@ -430,7 +431,7 @@ class ProjectsFlowController: UINavigationController {
             onOrganizationSelected: { [weak self] org in
                 Task { @MainActor in
                     do {
-                        try await self?.userModel.setCurrentOrganization(org)
+                        try await self?.userModel.setCurrentOrganization(org.id)
                     } catch {
                         ToastWindow.shared.showError(text: "failed to select the organization")
                     }
