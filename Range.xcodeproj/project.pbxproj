@@ -35,6 +35,8 @@
 		0A07D7632810562700B6F9A2 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 0A07D7622810562600B6F9A2 /* fonts */; };
 		0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7652812960500B6F9A2 /* EmailAuthView.swift */; };
 		0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */; };
+		0A0A858E2B9631A50093055F /* Routing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A858D2B9631A50093055F /* Routing.swift */; };
+		0A0A85902B9672C20093055F /* RoutingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0A858F2B9672C20093055F /* RoutingTest.swift */; };
 		0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CC28A3E735007A8D49 /* Realm.swift */; };
 		0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */; };
 		0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D31D228A3F21E007A8D49 /* Resources.swift */; };
@@ -520,6 +522,8 @@
 		0A07D7622810562600B6F9A2 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		0A07D7652812960500B6F9A2 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
 		0A07D7692812C25200B6F9A2 /* AuthFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFlowController.swift; sourceTree = "<group>"; };
+		0A0A858D2B9631A50093055F /* Routing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Routing.swift; sourceTree = "<group>"; };
+		0A0A858F2B9672C20093055F /* RoutingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutingTest.swift; sourceTree = "<group>"; };
 		0A0D31CC28A3E735007A8D49 /* Realm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Realm.swift; sourceTree = "<group>"; };
 		0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapbox.swift; sourceTree = "<group>"; };
 		0A0D31D228A3F21E007A8D49 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
@@ -1688,6 +1692,7 @@
 				0A632EAB27E49636001A019B /* AppDelegate.swift */,
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
 				0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */,
+				0A0A858D2B9631A50093055F /* Routing.swift */,
 			);
 			path = Range;
 			sourceTree = "<group>";
@@ -1710,6 +1715,7 @@
 				0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */,
 				0A881980291C25630050FC41 /* TestPendingActionsModel.swift */,
 				0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */,
+				0A0A858F2B9672C20093055F /* RoutingTest.swift */,
 			);
 			path = RangeTests;
 			sourceTree = "<group>";
@@ -2538,6 +2544,7 @@
 				0A2B3F5F2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift in Sources */,
 				0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */,
 				0A374DDC292424100036C184 /* UIViewController+TopViewController.swift in Sources */,
+				0A0A858E2B9631A50093055F /* Routing.swift in Sources */,
 				0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */,
 				0A2B3F552AF3CFF000D3D0D2 /* TextAnnotation.swift in Sources */,
 				0A3714E12950A402004ED1B0 /* UpdateUploadDescriptionCommand.swift in Sources */,
@@ -2855,6 +2862,7 @@
 				0A73937B2A6005AE0079A7FB /* AnnotationsTest.swift in Sources */,
 				0AABC34D28A1766C006A50AF /* TestPendingUploadsModel.swift in Sources */,
 				0A4995C32859D8C900E571FB /* FirestoreTagNameTest.swift in Sources */,
+				0A0A85902B9672C20093055F /* RoutingTest.swift in Sources */,
 				0A3680DC29ED9AA600CD1D98 /* CollaborationFiltersTest.swift in Sources */,
 				0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */,
 				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
