@@ -28,6 +28,8 @@ class DebugWindow: UIWindow {
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    /// if present show this route when user signs in
+    var showRouteOnLogin: OrgRoute?
     /// if present show this project and it's task list when user signs in
     var showTaskListOnLoginForProjectId: String?
 
@@ -78,6 +80,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                activity.activityType == NSUserActivityTypeBrowsingWeb
             {
                 await handleAuthAction(activity)
+                await handleUniversalLinks(activity)
             }
         }
     }
@@ -85,6 +88,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_: UIScene, continue activity: NSUserActivity) {
         Task { @MainActor in
             await handleAuthAction(activity)
+            await handleUniversalLinks(activity)
         }
     }
 
@@ -123,6 +127,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             })
         }
         window!.rootViewController!.present(alertController, animated: true)
+    }
+
+    @MainActor
+    func handleUniversalLinks(_ activity: NSUserActivity) async {
+        guard activity.activityType == NSUserActivityTypeBrowsingWeb,
+              let incomingURL = activity.webpageURL,
+              let orgRoute = routeForURL(incomingURL)
+        else { return }
+
+        if let projectsFlowController = window?.rootViewController as? ProjectsFlowController {
+            await projectsFlowController.showRoute(orgRoute)
+        } else {
+            // open when the user logs in, or when the projects flow is there (the app can be just starting)
+            showRouteOnLogin = orgRoute
+        }
     }
 
     /// Handles the auth actions confirmations (resetPassword, recoverEmail, verifyEmail) by parsing the link tapped by user,
@@ -241,7 +260,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard !versions.isAppVersionExpired else { return }
         do {
             let projectsFlowController = try ProjectsFlowController(userId: userId, newlySignedIn: newlySignedIn)
-            projectsFlowController.showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId
+            if let showRouteOnLogin {
+                projectsFlowController.showRouteOnLogin = showRouteOnLogin
+            } else {
+                projectsFlowController.showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId
+            }
+            showRouteOnLogin = nil
             showTaskListOnLoginForProjectId = nil
             projectsFlowController.onSignedOut = { [weak self] in
                 self?.onSignedOut()

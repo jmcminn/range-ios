@@ -271,24 +271,44 @@ final class ProjectFlowController: UIViewController {
         // visibility of location related controls depends on the user proximity to canvas center
         locationProvider.addLocationObserver(for: self)
 
+        handleInitialRoute()
+    }
+
+    /// Show initial view for given route if provided
+    private func handleInitialRoute() {
         if let initialRoute {
             switch initialRoute.route {
-            case .canvas:
-                // TODO: 2589
-                break
-            case .welcome:
-                showHowToAddPDFFloorPlansCard()
-            case .tasks:
-                showTaskListAction()
-            case .task:
-                // TODO: 2589
-                break
-            case .media:
-                // TODO: 2589
-                break
-            case .fullscreenMedia:
-                // TODO: 2589
-                break
+            case let .canvas(_: canvasId, collaborationId: collaborationId):
+                // show canvas
+                if model.currentCanvas.id != canvasId,
+                   let canvas = model.sortedCanvases.first(where: { $0.id == canvasId })
+                {
+                    do {
+                        try model.setCurrentCanvas(canvas)
+                    } catch {
+                        ToastWindow.shared.showError(text: "Canvas failed to load")
+                    }
+                }
+                // and optionally open collaboration window if collaborationId provided
+                if let collaborationId, let collaboration = model.mainRealm.object(
+                    ofType: Collaboration.self,
+                    forPrimaryKey: collaborationId
+                ) {
+                    showCollaborationAction(sender: self, event: FlowEvent(collaboration))
+                }
+            case .welcome: showHowToAddPDFFloorPlansCard()
+            case .tasks: showTaskListAction()
+            case let .task(_: taskId):
+                // show given collaboration, it'll switch the canvas if needed
+                if let collaboration = model.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: taskId) {
+                    showCollaborationAction(sender: self, event: FlowEvent(collaboration))
+                }
+            case .media: showMediaAction()
+            case let .fullscreenMedia(_: uploadId):
+                showMediaAction()
+                if let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
+                    showFullscreenMediaAction(sender: self, event: FlowEvent(upload, source: .media))
+                }
             }
         }
     }

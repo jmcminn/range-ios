@@ -29,6 +29,8 @@ class ProjectsFlowController: UINavigationController {
     var currentProjectNotificationToken: NotificationToken?
     private var organizationsNotificationToken: NotificationToken?
 
+    /// if present show this route when user signs in
+    var showRouteOnLogin: OrgRoute?
     /// if present show this project and it's task list when user signs in
     var showTaskListOnLoginForProjectId: String?
 
@@ -88,7 +90,15 @@ class ProjectsFlowController: UINavigationController {
         }
 
         // open some project on start?
-        if let showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId {
+        if let showRouteOnLogin {
+            switch showRouteOnLogin.route {
+            case .projects:
+                // nothing, projects view is the default
+                break
+            case let .project(projectRoute):
+                await tryLoadProject(projectRoute.projectId, projectRoute)
+            }
+        } else if let showTaskListOnLoginForProjectId {
             // open project from push notification and open it's task list
             await tryLoadProject(showTaskListOnLoginForProjectId, ProjectRoute(showTaskListOnLoginForProjectId, .tasks))
         } else if _debugSettings.openLastProjectOnStart,
@@ -374,8 +384,26 @@ class ProjectsFlowController: UINavigationController {
         onSignedOut?()
     }
 
+    func showRoute(_ orgRoute: OrgRoute) async {
+        do {
+            try await userModel.setCurrentOrganization(orgRoute.organizationId)
+            if case let .project(projectRoute) = orgRoute.route {
+                loadAndPushProjectFlowController(
+                    projectId: projectRoute.projectId,
+                    initialRoute: projectRoute,
+                    animated: true
+                )
+            } else {
+                // go back to projects if in project but receiving .projects route
+                if projectFC != nil { closeCurrentProject() }
+            }
+        } catch {
+            ToastWindow.shared.showError(text: "failed to select the organization")
+        }
+    }
+
     func showProjectTaskList(projectId: String, projectName: String) {
-        // TODO: 2589 reset filters when coming from push , either here or in normal start
+        // TODO: 2630 reset filters is not needed anymore when implementing Knock?
         // Reset the task list filters when coming from the push notification... This should be
         // mostly fine as they default to "only mine"...
 //        UserDefaults.setTaskListFilters(
