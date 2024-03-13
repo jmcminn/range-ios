@@ -458,6 +458,7 @@
 		0ADF10482B9E1846004E4579 /* KnockPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10472B9E1846004E4579 /* KnockPreferences.swift */; };
 		0ADF104A2B9F4769004E4579 /* InAppFeedCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */; };
 		0ADF104C2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */; };
+		0ADF104E2BA23C1C004E4579 /* Knock+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF104D2BA23C1C004E4579 /* Knock+Extensions.swift */; };
 		0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */; };
 		0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D428E44404001AF38A /* StringOrDate.swift */; };
 		0AE883AB2AEFBEDC004992BA /* XCTestCase+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */; };
@@ -965,6 +966,7 @@
 		0ADF10472B9E1846004E4579 /* KnockPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnockPreferences.swift; sourceTree = "<group>"; };
 		0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedCardViewController.swift; sourceTree = "<group>"; };
 		0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedItemTableViewCell.swift; sourceTree = "<group>"; };
+		0ADF104D2BA23C1C004E4579 /* Knock+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Knock+Extensions.swift"; sourceTree = "<group>"; };
 		0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyTest.swift; sourceTree = "<group>"; };
 		0AE883AA2AEFBEDC004992BA /* XCTestCase+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Factory.swift"; sourceTree = "<group>"; };
 		0AE8AC552B6664F200885F13 /* ImageGalleryUpdatePhotoPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryUpdatePhotoPageView.swift; sourceTree = "<group>"; };
@@ -2188,6 +2190,7 @@
 		0ADF10442B9E0E37004E4579 /* InAppFeed */ = {
 			isa = PBXGroup;
 			children = (
+				0ADF104D2BA23C1C004E4579 /* Knock+Extensions.swift */,
 				0ADF10452B9E0F92004E4579 /* KnockClient.swift */,
 				0ADA15362B9CEE6B0065AFDB /* KnockFeedModel.swift */,
 				0ADF10472B9E1846004E4579 /* KnockPreferences.swift */,
@@ -2596,6 +2599,7 @@
 				0A97232727FC782B00D744F4 /* CameraView.swift in Sources */,
 				0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */,
 				0A4995CA285A26BB00E571FB /* SelectedTagCollectionViewCell.swift in Sources */,
+				0ADF104E2BA23C1C004E4579 /* Knock+Extensions.swift in Sources */,
 				0A34072C29C4AD8B007299A7 /* CanvasSourceTableViewCell.swift in Sources */,
 				0A374DEC2927DA550036C184 /* DeleteUploadsCommand.swift in Sources */,
 				0A5957172B04F1A30047E669 /* ArrowDrawing.swift in Sources */,

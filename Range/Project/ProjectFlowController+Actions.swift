@@ -14,12 +14,12 @@ final class FlowEvent: UIEvent {
         case media // the event is originating from the media collection view
     }
 
-    let object: Object?
-    let objects: [Object]
+    let object: NSObject?
+    let objects: [NSObject]
     let source: Source?
     let sourceView: UIView?
     /// this will initiate the object, but also objects with an array of 1 item (for convenience)
-    init(_ object: Object, source: Source? = nil, sourceView: UIView? = nil) {
+    init(_ object: NSObject, source: Source? = nil, sourceView: UIView? = nil) {
         self.object = object
         objects = [object]
         self.source = source
@@ -27,7 +27,7 @@ final class FlowEvent: UIEvent {
     }
 
     /// this will set the objects property, but not object (so it's not run accidentally for 1 item only)
-    init(_ objects: [Object], source: Source? = nil, sourceView: UIView? = nil) {
+    init(_ objects: [NSObject], source: Source? = nil, sourceView: UIView? = nil) {
         object = nil
         self.objects = objects
         self.source = source
@@ -271,7 +271,7 @@ extension ProjectFlowController: ProjectFlowActions {
     /// If updating failed give user a choice to retry or abort (close the editTagsVC and not save changes)
     private func updateTagsIfChanged(
         fromViewController editTagsVC: SearchAndSelectTagsViewController,
-        forObject object: Object?
+        forObject object: NSObject?
     ) {
         let selectedTags = editTagsVC.tagsViewModel.selectedTags
 

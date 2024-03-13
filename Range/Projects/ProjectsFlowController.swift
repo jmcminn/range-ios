@@ -238,23 +238,41 @@ class ProjectsFlowController: UINavigationController {
                         activityView.removeFromSuperview()
                     }
                 }
-                let previousProjectFC = self.projectFC
-                self.projectFC = try await buildProjectFlowController(projectId: projectId, initialRoute: initialRoute)
-                DispatchQueue.main.async {
-                    if let previousProjectFC = previousProjectFC {
-                        // replace if some project flow controller is already showing
-                        previousProjectFC.stop()
-                        guard let tabBarVC = self.viewControllers.first else {
-                            fatalError("no view controller in ProjectFlowController navigation stack")
-                        }
 
-                        self.setViewControllers([tabBarVC, self.projectFC!], animated: animated)
-                    } else {
-                        self.pushViewController(self.projectFC!, animated: animated)
+                if let currentProjectFC = self.projectFC, currentProjectFC.model.projectId == projectId,
+                   currentProjectFC.uiState == .default || currentProjectFC.uiState == .collaboration
+                {
+                    // if we're already showing the project flow controller for given projectId just show the route
+                    // but only in some selected states as the showRoute doesn't support getting the
+                    // project flow controller to its initial state if user is in the middle of photo flow, etc
+                    if let initialRoute {
+                        currentProjectFC.showRoute(initialRoute)
                     }
-                    self.updateLastOpenProjectAndCanvas()
-                    self.observeCurrentProject()
-                    completion?()
+                } else {
+                    // if there's no current project flow controller or there is one for a different
+                    // project then we build the new project flow controller and show it instead of
+                    // the current one
+                    let previousProjectFC = self.projectFC
+                    self.projectFC = try await buildProjectFlowController(
+                        projectId: projectId,
+                        initialRoute: initialRoute
+                    )
+                    DispatchQueue.main.async {
+                        if let previousProjectFC = previousProjectFC {
+                            // replace if some project flow controller is already showing
+                            previousProjectFC.stop()
+                            guard let tabBarVC = self.viewControllers.first else {
+                                fatalError("no view controller in ProjectFlowController navigation stack")
+                            }
+
+                            self.setViewControllers([tabBarVC, self.projectFC!], animated: animated)
+                        } else {
+                            self.pushViewController(self.projectFC!, animated: animated)
+                        }
+                        self.updateLastOpenProjectAndCanvas()
+                        self.observeCurrentProject()
+                        completion?()
+                    }
                 }
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
@@ -391,7 +409,7 @@ class ProjectsFlowController: UINavigationController {
                 loadAndPushProjectFlowController(
                     projectId: projectRoute.projectId,
                     initialRoute: projectRoute,
-                    animated: true
+                    animated: false
                 )
             } else {
                 // go back to projects if in project but receiving .projects route

@@ -253,6 +253,13 @@ extension InAppFeedCardViewController: UITableViewDelegate, UITableViewDataSourc
                     )
                 }
             }
+            // we need NSURL so we can send it using the responder chain (it's an objC level mechanism)
+            if let url = feedItem.actionUrl as? NSURL {
+                dismissCard()
+                UIApplication.shared.sendAction(
+                    #selector(ProjectsFlowController.showRoute), to: nil, from: self, for: FlowEvent(url)
+                )
+            }
         }
     }
 }

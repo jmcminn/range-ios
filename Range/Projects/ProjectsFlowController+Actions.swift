@@ -6,6 +6,8 @@ import Foundation
 @objc protocol ProjectsFlowActions: AnyObject {
     /// start the flow for creating the project
     func createProjectAction()
+    /// show route
+    func showRoute(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectsFlowController: ProjectsFlowActions {
@@ -26,5 +28,13 @@ extension ProjectsFlowController: ProjectsFlowActions {
         }
         createProjectFC.modalPresentationStyle = .fullScreen
         present(createProjectFC, animated: true)
+    }
+
+    func showRoute(sender _: Any?, event: FlowEvent) {
+        guard let url = event.object as? URL else { return }
+        guard let route = routeForURL(url) else { return }
+        Task {
+            await showRoute(route)
+        }
     }
 }

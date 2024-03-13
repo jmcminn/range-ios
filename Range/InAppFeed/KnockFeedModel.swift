@@ -104,11 +104,9 @@ class KnockFeedModel {
                         // store the last cursor in the page_info, so next time we load the next page after this cursor
                         self.feed.page_info.after = feed.entries.last?.__cursor
                     }
-                    print("XXX loadNextPage meta: ", feed.meta)
-                    print("XXX loadNextPage page_info: ", self.feed.page_info)
                 case let .failure(error):
                     // TODO: 2519 reset KnockClient
-                    print("XXX1", error)
+                    Logger.knock.error("Load page failed: \(error, privacy: .public)")
                 }
             }
         }

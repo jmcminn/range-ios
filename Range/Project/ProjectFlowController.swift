@@ -23,7 +23,7 @@ final class ProjectFlowController: UIViewController {
     }
 
     // the initial state is set in `start` method
-    private var uiState: UIState?
+    private(set) var uiState: UIState?
 
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
@@ -289,44 +289,45 @@ final class ProjectFlowController: UIViewController {
 
         knockFeedModel.start()
 
-        handleInitialRoute()
+        if let initialRoute {
+            showRoute(initialRoute)
+        }
     }
 
-    /// Show initial view for given route if provided
-    private func handleInitialRoute() {
-        if let initialRoute {
-            switch initialRoute.route {
-            case let .canvas(_: canvasId, collaborationId: collaborationId):
-                // show canvas
-                if model.currentCanvas.id != canvasId,
-                   let canvas = model.sortedCanvases.first(where: { $0.id == canvasId })
-                {
-                    do {
-                        try model.setCurrentCanvas(canvas)
-                    } catch {
-                        ToastWindow.shared.showError(text: "Canvas failed to load")
-                    }
+    /// Adjust the project flow controller state for given ProjectRoute
+    func showRoute(_ route: ProjectRoute) {
+        setUIState(.default, animated: true)
+        switch route.route {
+        case let .canvas(_: canvasId, collaborationId: collaborationId):
+            // show canvas
+            if model.currentCanvas.id != canvasId,
+               let canvas = model.sortedCanvases.first(where: { $0.id == canvasId })
+            {
+                do {
+                    try model.setCurrentCanvas(canvas)
+                } catch {
+                    ToastWindow.shared.showError(text: "Canvas failed to load")
                 }
-                // and optionally open collaboration window if collaborationId provided
-                if let collaborationId, let collaboration = model.mainRealm.object(
-                    ofType: Collaboration.self,
-                    forPrimaryKey: collaborationId
-                ) {
-                    showCollaborationAction(sender: self, event: FlowEvent(collaboration))
-                }
-            case .welcome: showHowToAddPDFFloorPlansCard()
-            case .tasks: showTaskListAction()
-            case let .task(_: taskId):
-                // show given collaboration, it'll switch the canvas if needed
-                if let collaboration = model.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: taskId) {
-                    showCollaborationAction(sender: self, event: FlowEvent(collaboration))
-                }
-            case .media: showMediaAction()
-            case let .fullscreenMedia(_: uploadId):
-                showMediaAction()
-                if let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
-                    showFullscreenMediaAction(sender: self, event: FlowEvent(upload, source: .media))
-                }
+            }
+            // and optionally open collaboration window if collaborationId provided
+            if let collaborationId, let collaboration = model.mainRealm.object(
+                ofType: Collaboration.self,
+                forPrimaryKey: collaborationId
+            ) {
+                showCollaborationAction(sender: self, event: FlowEvent(collaboration))
+            }
+        case .welcome: showHowToAddPDFFloorPlansCard()
+        case .tasks: showTaskListAction()
+        case let .task(_: taskId):
+            // show given collaboration, it'll switch the canvas if needed
+            if let collaboration = model.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: taskId) {
+                showCollaborationAction(sender: self, event: FlowEvent(collaboration))
+            }
+        case .media: showMediaAction()
+        case let .fullscreenMedia(_: uploadId):
+            showMediaAction()
+            if let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) {
+                showFullscreenMediaAction(sender: self, event: FlowEvent(upload, source: .media))
             }
         }
     }
