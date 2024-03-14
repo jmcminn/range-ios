@@ -16,6 +16,7 @@ class InAppFeedCardViewController: SheetCardViewController {
     private var viewModeToggle: SegmentedControl!
 
     private let model: KnockFeedModel
+    private let variant: InAppFeedItemTableViewCell.Variant
 
     private var markAllAsReadButton: RangeButton!
     private let tableView = UITableView(frame: .zero, style: .plain)
@@ -24,8 +25,9 @@ class InAppFeedCardViewController: SheetCardViewController {
     /// combine observers
     private var subscriptions = Set<AnyCancellable>()
 
-    init(model: KnockFeedModel) {
+    init(model: KnockFeedModel, variant: InAppFeedItemTableViewCell.Variant) {
         self.model = model
+        self.variant = variant
         super.init(
             icon: UIImage(systemName: "bell"),
             title: String(localized: "Notifications")
@@ -167,7 +169,7 @@ class InAppFeedCardViewController: SheetCardViewController {
         tableView.dataSource = self
         tableView.prefetchDataSource = self
         tableView.separatorStyle = .none
-        tableView.register(InAppFeedItemTableViewCell.self, forCellReuseIdentifier: "FeedItem")
+        tableView.register(InAppFeedItemTableViewCell.self, forCellReuseIdentifier: variant.rawValue)
         tableView.keyboardDismissMode = .onDrag
     }
 
@@ -233,7 +235,7 @@ extension InAppFeedCardViewController: UITableViewDelegate, UITableViewDataSourc
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: "FeedItem",
+            withIdentifier: variant.rawValue,
             for: indexPath
         ) as! InAppFeedItemTableViewCell
         if indexPath.row < itemsForCurrentMode().count {

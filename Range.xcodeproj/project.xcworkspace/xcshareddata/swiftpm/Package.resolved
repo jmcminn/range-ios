@@ -1,4 +1,5 @@
 {
+  "originHash" : "da25cd2dbf5131bad535c0797f25c9ddb5404fccf7b920d7fa73e5cffc309d26",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -289,6 +290,15 @@
       }
     },
     {
+      "identity" : "swxmlhash",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/drmohundro/SWXMLHash.git",
+      "state" : {
+        "revision" : "a853604c9e9a83ad9954c7e3d2a565273982471f",
+        "version" : "7.0.2"
+      }
+    },
+    {
       "identity" : "turf-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/turf-swift.git",
@@ -298,5 +308,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

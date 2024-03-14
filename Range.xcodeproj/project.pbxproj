@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A010C9F29913AFD0066D35A /* ProjectModel+RealmMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A010C9E29913AFD0066D35A /* ProjectModel+RealmMigration.swift */; };
+		0A01DE502BA324BD00CCC680 /* SWXMLHash in Frameworks */ = {isa = PBXBuildFile; productRef = 0A01DE4F2BA324BD00CCC680 /* SWXMLHash */; };
 		0A0505742A1BC696001AF644 /* ScribbleAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505732A1BC696001AF644 /* ScribbleAnnotationView.swift */; };
 		0A0505792A1D349C001AF644 /* Point2DRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0505782A1D349C001AF644 /* Point2DRepresentable.swift */; };
 		0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A05057A2A1D34BE001AF644 /* PolylineSimplify.swift */; };
@@ -1003,6 +1004,7 @@
 			files = (
 				0A1CBCE62A813ED9003EBE74 /* FirebaseFunctions in Frameworks */,
 				0ACE1968296C7AD500D223EB /* Sentry in Frameworks */,
+				0A01DE502BA324BD00CCC680 /* SWXMLHash in Frameworks */,
 				0A4995D5286099D800E571FB /* Algorithms in Frameworks */,
 				0ACF0F2C2ACC3E0A001AE5B0 /* FirebaseRemoteConfigSwift in Frameworks */,
 				0A2F32F82837BF2F00D04A1C /* RealmSwift in Frameworks */,
@@ -2297,6 +2299,7 @@
 				0ACF0F2B2ACC3E0A001AE5B0 /* FirebaseRemoteConfigSwift */,
 				0AEC91A92B2B0D9500AE2329 /* Segment */,
 				0ADC16A02B864125001DF998 /* Knock */,
+				0A01DE4F2BA324BD00CCC680 /* SWXMLHash */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -2383,6 +2386,7 @@
 				0A45BB042AAB3F6F00B86B85 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				0AEC91A82B2B0D9500AE2329 /* XCRemoteSwiftPackageReference "analytics-swift" */,
 				0ADC169F2B864125001DF998 /* XCRemoteSwiftPackageReference "knock-swift" */,
+				0A01DE4E2BA324BD00CCC680 /* XCRemoteSwiftPackageReference "SWXMLHash" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -4489,6 +4493,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0A01DE4E2BA324BD00CCC680 /* XCRemoteSwiftPackageReference "SWXMLHash" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/drmohundro/SWXMLHash.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.2;
+			};
+		};
 		0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -4588,6 +4600,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0A01DE4F2BA324BD00CCC680 /* SWXMLHash */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A01DE4E2BA324BD00CCC680 /* XCRemoteSwiftPackageReference "SWXMLHash" */;
+			productName = SWXMLHash;
+		};
 		0A06241429534AA0004B6512 /* FirebaseAnalyticsWithoutAdIdSupport */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

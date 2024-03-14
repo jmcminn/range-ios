@@ -4,18 +4,25 @@ import UIKit
 
 class InAppFeedItemTableViewCell: UITableViewCell {
     /// The cell has 2 variants based on the reuseIdentifier
-    enum Variant: String {
-        case organization = "Organization"
-        case project = "Project"
+    enum Variant: String, CaseIterable {
+        case organization = "OrganizationInAppFeedItemCell"
+        case project = "ProjectInAppFeedItemCell"
+
+        static func variant(forString: String) -> Variant? {
+            Variant.allCases.first { $0.rawValue == forString }
+        }
     }
+
+    private let variant: Variant
 
     private let unreadMarker = UIView()
     private let avatarView = UIView()
-    private let label = UILabel()
+    private let stackView = UIStackView()
     private let insertedAtLabel = UILabel()
     private let bottomStroke = UIView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        variant = if let reuseIdentifier { Variant.variant(forString: reuseIdentifier) ?? .project } else { .project }
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .dynamic(.Neutral_09)
         selectedBackgroundView = UIView()
@@ -23,7 +30,7 @@ class InAppFeedItemTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [unreadMarker, avatarView, label, insertedAtLabel, bottomStroke].forEach(contentView.addSubview)
+        [unreadMarker, avatarView, stackView, insertedAtLabel, bottomStroke].forEach(contentView.addSubview)
 
         unreadMarker.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(12)
@@ -37,13 +44,13 @@ class InAppFeedItemTableViewCell: UITableViewCell {
             make.width.height.equalTo(32)
         }
 
-        label.snp.makeConstraints { make in
+        stackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(58)
             make.top.trailing.equalToSuperview().inset(12)
         }
 
         insertedAtLabel.snp.makeConstraints { make in
-            make.top.equalTo(label.snp.bottom).offset(4)
+            make.top.equalTo(stackView.snp.bottom).offset(4)
             make.leading.equalToSuperview().inset(58)
             make.bottom.trailing.equalToSuperview().inset(12)
         }
@@ -68,10 +75,8 @@ class InAppFeedItemTableViewCell: UITableViewCell {
         avatarView.layer.cornerRadius = 16
         avatarView.isHidden = true
 
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.textColor = .dynamic(.Neutral_04)
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
+        stackView.axis = .vertical
+        stackView.spacing = 4
 
         insertedAtLabel.font = .preferredFont(forTextStyle: .footnote)
         insertedAtLabel.textColor = .dynamic(.Neutral_05)
@@ -83,14 +88,83 @@ class InAppFeedItemTableViewCell: UITableViewCell {
     func setFeedItem(_ item: Knock.FeedItem) {
         unreadMarker.isHidden = item.read_at != nil
         avatarView.isHidden = false
-        label.text = item.blocks.first?.rendered
+        if let parsedBody = item.data?["parsedBody"]?.value as? [(Knock.FeedItem.ParsedBodyClass, String)] {
+            parsedBody.forEach { bodyElem in
+                if variant == .project, bodyElem.0 == .project {
+                    // don't show project info when viewing project in app feed
+                    return
+                }
+                stackView.addArrangedSubview(getView(forParsedBodyClass: bodyElem.0, text: bodyElem.1))
+            }
+        }
         insertedAtLabel.text = if let inserted_at = item.inserted_at { Date.format1Ago(inserted_at) } else { "" }
+    }
+
+    private func getView(forParsedBodyClass bodyClass: Knock.FeedItem.ParsedBodyClass, text: String) -> UIView {
+        switch bodyClass {
+        case .project, .subject:
+            return createViewForProjectClass(text)
+        case .label:
+            return createViewForLabelClass(text)
+        case .message:
+            return createViewForMessageClass(text)
+        }
+    }
+
+    private func createViewForProjectClass(_ text: String) -> UIView {
+        let label = UILabel()
+        label.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+        label.textColor = .dynamic(.Neutral_05)
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        label.text = text
+        return label
+    }
+
+    private func createViewForLabelClass(_ text: String) -> UIView {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = .dynamic(.Neutral_04)
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        label.text = text
+        return label
+    }
+
+    private func createViewForMessageClass(_ text: String) -> UIView {
+        // we need a view with a line on the left and text next to it
+        let wrapper = UIView()
+
+        let blockquote = UIView()
+        blockquote.backgroundColor = .dynamic(.Neutral_06)
+        blockquote.layer.cornerRadius = 1.5
+        wrapper.addSubview(blockquote)
+        blockquote.snp.makeConstraints { make in
+            make.top.leading.bottom.equalToSuperview()
+            make.width.equalTo(3)
+        }
+
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = .dynamic(.Neutral_04)
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        label.text = text
+        wrapper.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.top.bottom.trailing.equalToSuperview()
+            make.leading.equalToSuperview().inset(8)
+        }
+        return wrapper
     }
 
     override func prepareForReuse() {
         unreadMarker.isHidden = true
         avatarView.isHidden = true
-        label.text = nil
+        stackView.arrangedSubviews.forEach {
+            stackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
         insertedAtLabel.text = ""
     }
 }

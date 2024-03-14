@@ -825,7 +825,7 @@ extension ProjectFlowController: ViewportStatusObserver, LocationObserver {
 
 extension ProjectFlowController {
     func showProjectInAppFeed() {
-        let inAppFeedVC = InAppFeedCardViewController(model: knockFeedModel)
+        let inAppFeedVC = InAppFeedCardViewController(model: knockFeedModel, variant: .project)
         inAppFeedVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 }

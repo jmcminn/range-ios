@@ -88,21 +88,22 @@ class KnockFeedModel {
                 switch result {
                 case let .success(feed):
                     self.feed.meta = feed.meta
+                    let entries = feed.entries.map { $0._withParsedBody() }
 
                     switch pageToLoad {
                     case .before:
-                        self.feed.entries.insert(contentsOf: feed.entries, at: 0)
+                        self.feed.entries.insert(contentsOf: entries, at: 0)
                         // store the first cursor in the page_info, so next time we load the first page before this cursor
-                        self.feed.page_info.before = feed.entries.first?.__cursor
+                        self.feed.page_info.before = entries.first?.__cursor
                     case .initial:
-                        self.feed.entries.append(contentsOf: feed.entries)
+                        self.feed.entries.append(contentsOf: entries)
                         // for initial page set both cursors for page loading
-                        self.feed.page_info.before = feed.entries.first?.__cursor
-                        self.feed.page_info.after = feed.entries.last?.__cursor
+                        self.feed.page_info.before = entries.first?.__cursor
+                        self.feed.page_info.after = entries.last?.__cursor
                     case .after:
-                        self.feed.entries.append(contentsOf: feed.entries)
+                        self.feed.entries.append(contentsOf: entries)
                         // store the last cursor in the page_info, so next time we load the next page after this cursor
-                        self.feed.page_info.after = feed.entries.last?.__cursor
+                        self.feed.page_info.after = entries.last?.__cursor
                     }
                 case let .failure(error):
                     // TODO: 2519 reset KnockClient
