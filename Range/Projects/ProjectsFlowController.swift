@@ -31,8 +31,8 @@ class ProjectsFlowController: UINavigationController {
 
     /// if present show this route when user signs in
     var showRouteOnLogin: OrgRoute?
-    /// if present show this project and it's task list when user signs in
-    var showTaskListOnLoginForProjectId: String?
+    /// if present show this project route when user signs in
+    var showProjectRouteOnLogin: ProjectRoute?
 
     init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
@@ -98,9 +98,9 @@ class ProjectsFlowController: UINavigationController {
             case let .project(projectRoute):
                 await tryLoadProject(projectRoute.projectId, projectRoute)
             }
-        } else if let showTaskListOnLoginForProjectId {
-            // open project from push notification and open it's task list
-            await tryLoadProject(showTaskListOnLoginForProjectId, ProjectRoute(showTaskListOnLoginForProjectId, .tasks))
+        } else if let projectRoute = showProjectRouteOnLogin {
+            // open project from push notification and open the route
+            await tryLoadProject(projectRoute.projectId, projectRoute)
         } else if _debugSettings.openLastProjectOnStart,
                   let organizationId = UserDefaults.lastOpenOrganizationId,
                   let lastOpenProjectId = UserDefaults.recentProjectIds(forOrganizationId: organizationId).first
@@ -420,39 +420,35 @@ class ProjectsFlowController: UINavigationController {
         }
     }
 
-    func showProjectTaskList(projectId: String, projectName: String) {
-        // TODO: 2630 reset filters is not needed anymore when implementing Knock?
-        // Reset the task list filters when coming from the push notification... This should be
-        // mostly fine as they default to "only mine"...
-//        UserDefaults.setTaskListFilters(
-//            CollaborationFilters(model: projectFC.model, variant: .taskList),
-//            forProjectId: projectFC.model.projectId
-//        )
-        let initialRoute = ProjectRoute(projectId, .tasks)
+    /// Push notifications come with no orgId so we go directly to given project.
+    /// This doesn't change the current org selection.
+    /// When user is doing some editing this function will ask for permission to change the view (unlike the universal links handling).
+    /// The projectName is needed for this interruption permission message.
+    func showProjectRouteFromPushNotification(_ route: ProjectRoute, projectName: String) {
         if let projectFC = projectFC {
             let reloadProject = { [weak self] in
-                if projectId == projectFC.model.projectId {
+                if route.projectId == projectFC.model.projectId {
                     // this project is already open, reload the project flow controller with no animations
                     // We reload instead of reusing the current projectFC to avoid cleaning up its UI
                     // state (open views, etc.)
                     self?.loadAndPushProjectFlowController(
-                        projectId: projectId,
-                        initialRoute: initialRoute,
+                        projectId: route.projectId,
+                        initialRoute: route,
                         animated: false
                     )
                 } else {
                     // a different project is open, replace animated
                     self?.loadAndPushProjectFlowController(
-                        projectId: projectId,
-                        initialRoute: initialRoute,
+                        projectId: route.projectId,
+                        initialRoute: route,
                         animated: true
                     )
                 }
             }
             if projectFC.isUserEditingProject {
                 let alert = UIAlertController(
-                    title: "View Task List",
-                    message: "It looks like you're in the middle of something. Are you sure you want to view your task list for \(projectName)?",
+                    title: "View Collaboration",
+                    message: "It looks like you're in the middle of something. Are you sure you want to view the collaboration for \(projectName)?",
                     preferredStyle: .alert
                 )
                 alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -465,7 +461,7 @@ class ProjectsFlowController: UINavigationController {
             }
         } else {
             // no project is currently shown, navigate to a project
-            loadAndPushProjectFlowController(projectId: projectId, initialRoute: initialRoute, animated: true)
+            loadAndPushProjectFlowController(projectId: route.projectId, initialRoute: route, animated: true)
         }
     }
 

@@ -30,8 +30,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     /// if present show this route when user signs in
     var showRouteOnLogin: OrgRoute?
-    /// if present show this project and it's task list when user signs in
-    var showTaskListOnLoginForProjectId: String?
+    /// if present show this project route when user signs in
+    var showProjectRouteOnLogin: ProjectRoute?
 
     var authenticatedUserListenerHandle: AuthStateDidChangeListenerHandle?
 
@@ -263,10 +263,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if let showRouteOnLogin {
                 projectsFlowController.showRouteOnLogin = showRouteOnLogin
             } else {
-                projectsFlowController.showTaskListOnLoginForProjectId = showTaskListOnLoginForProjectId
+                projectsFlowController.showProjectRouteOnLogin = showProjectRouteOnLogin
             }
             showRouteOnLogin = nil
-            showTaskListOnLoginForProjectId = nil
+            showProjectRouteOnLogin = nil
             projectsFlowController.onSignedOut = { [weak self] in
                 self?.onSignedOut()
             }
@@ -320,14 +320,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     /// Used when responding to push notifications.
-    /// Opens given project (if not open yet) and shows the task list (closes other views / cancels flows when tapped)
+    /// Opens given project (if not open yet) and shows given route (closes other views / cancels flows when tapped)
     /// When signed out, it does it after the user signs in
-    func showProjectTaskList(projectId: String, projectName: String) {
+    func showProjectRouteFromPushNotification(_ route: ProjectRoute, projectName: String) {
         if let projectsFlowController = window?.rootViewController as? ProjectsFlowController {
-            projectsFlowController.showProjectTaskList(projectId: projectId, projectName: projectName)
+            projectsFlowController.showProjectRouteFromPushNotification(route, projectName: projectName)
         } else {
             // open when the user logs in, or when the projects flow is there (the app can be just starting)
-            showTaskListOnLoginForProjectId = projectId
+            showProjectRouteOnLogin = route
         }
     }
 }

@@ -22,7 +22,16 @@ struct OrgRoute: Equatable {
 struct ProjectRoute: Equatable {
     enum Route: Equatable {
         // project is showing a canvas with a possibly selected collaboration (if collaborationId != nil)
-        case canvas(_ canvasId: String, collaborationId: String?)
+        // canvasId is optional so this route can be used with collaborationId only (the canvas will
+        // be selected based on the collaborationId)
+        // In case canvasId and collaborationId are both nil the project shows the default view.
+        // In case canvasId and collaborationId are both not nil, the collaborationId is used.
+        // Warning: instead of using the nil canvasId, the collaborationId-only route could be supported
+        // by the .task route, but we wanted to keep the difference between canvas and task routes
+        // in case we ever want to produce a web-app compatible urls from these routes (then task
+        // is different than collaboration, and we don't want to rename the task route to "collaboration"
+        // as then it doesn't fit the case of showing a task from task list)
+        case canvas(_ canvasId: String?, collaborationId: String?)
         // a route for newly created project - may present some welcome card, etc.
         case welcome
         // "Task List" screen for a project (the default/last canvas is used)

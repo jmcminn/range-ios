@@ -160,6 +160,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             Logger.pushNotifications.warning("no projectId (p) in notification")
             return
         }
+        guard let collaborationId = userInfo["c"] as? String else {
+            Logger.pushNotifications.warning("no collaborationId (c) in notification")
+            return
+        }
 
         Logger.pushNotifications.debug("open project \(projectId) from notification")
 
@@ -168,6 +172,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             return
         }
         let projectName = userInfo["pName"] as? String ?? "project from notification"
-        sceneDelegate.showProjectTaskList(projectId: projectId, projectName: projectName)
+        let projectRoute = ProjectRoute(projectId, .canvas(nil, collaborationId: collaborationId))
+        sceneDelegate.showProjectRouteFromPushNotification(projectRoute, projectName: projectName)
     }
 }
