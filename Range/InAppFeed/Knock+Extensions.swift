@@ -69,3 +69,57 @@ extension Knock.FeedItem {
         )
     }
 }
+
+/// Async functions
+public extension Knock {
+    func _updateMessageStatus(messageId: String, status: KnockMessageStatusUpdateType) async throws {
+        // Knock API calls the handler 2 times in case of some errors!
+        var resumed = false
+        try await withCheckedThrowingContinuation { continuation in
+            self.updateMessageStatus(messageId: messageId, status: status) { result in
+                if resumed == false {
+                    resumed = true
+                    switch result {
+                    case .success: continuation.resume()
+                    case let .failure(error): continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Async functions
+public extension Knock.FeedManager {
+    func _getUserFeedContent(options: FeedClientOptions? = nil) async throws -> Knock.Feed {
+        // Knock API calls the handler 2 times in case of some errors!
+        var resumed = false
+        return try await withCheckedThrowingContinuation { continuation in
+            self.getUserFeedContent(options: options) { result in
+                if resumed == false {
+                    resumed = true
+                    switch result {
+                    case let .success(feed): continuation.resume(returning: feed)
+                    case let .failure(error): continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+    }
+
+    func _makeBulkStatusUpdate(type: BulkChannelMessageStatusUpdateType, options: FeedClientOptions) async throws {
+        // Knock API calls the handler 2 times in case of some errors!
+        var resumed = false
+        try await withCheckedThrowingContinuation { continuation in
+            self.makeBulkStatusUpdate(type: type, options: options) { result in
+                if resumed == false {
+                    resumed = true
+                    switch result {
+                    case .success: continuation.resume()
+                    case let .failure(error): continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+    }
+}

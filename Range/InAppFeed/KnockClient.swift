@@ -11,6 +11,13 @@ class KnockClient {
         self.userId = userId
     }
 
+    /// Reset the Knock API client. The next call to `get` till fetch new user token and reinitiate the Knock
+    func reset() {
+        internalClient = nil
+    }
+
+    /// Get the current Knock client.
+    /// If not initialized yet it'll initialize it.
     func get() async throws -> Knock {
         if let internalClient {
             return internalClient

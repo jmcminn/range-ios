@@ -115,11 +115,7 @@ class InAppFeedCardViewController: SheetCardViewController {
                 title: String(localized: "Mark all as read"),
                 image: UIImage(systemName: "checkmark.circle")
             ) { [weak self] _ in
-                self?.model.markAllRead { error in
-                    if let error {
-                        Logger.knock.error("Failed to mark all in-app items as read: \(error, privacy: .public)")
-                    }
-                }
+                self?.markAllRead()
             }
         )
         .withCustomRangeHighlightColor()
@@ -212,9 +208,33 @@ class InAppFeedCardViewController: SheetCardViewController {
     }
 
     private func markAllSeen() {
-        model.markAllSeen { error in
-            if let error {
+        Task {
+            do {
+                try await model.markAllSeen()
+            } catch {
                 Logger.knock.error("Failed to mark all in-app items as seen: \(error, privacy: .public)")
+            }
+        }
+    }
+
+    private func markAllRead() {
+        Task {
+            do {
+                try await model.markAllRead()
+            } catch {
+                Logger.knock.error("Failed to mark all in-app items as read: \(error, privacy: .public)")
+            }
+        }
+    }
+
+    private func markRead(_ feedItem: Knock.FeedItem) {
+        Task {
+            do {
+                try await model.markRead(feedItem)
+            } catch {
+                Logger.knock.error(
+                    "Failed to mark feed item \(feedItem.id) as read: \(error.localizedDescription, privacy: .public)"
+                )
             }
         }
     }
@@ -248,13 +268,8 @@ extension InAppFeedCardViewController: UITableViewDelegate, UITableViewDataSourc
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.row < itemsForCurrentMode().count {
             let feedItem = itemsForCurrentMode()[indexPath.row]
-            model.markRead(feedItem) { error in
-                if let error {
-                    Logger.knock.error(
-                        "Failed to mark feed item \(feedItem.id) as read: \(error.localizedDescription, privacy: .public)"
-                    )
-                }
-            }
+            markRead(feedItem)
+
             // we need NSURL so we can send it using the responder chain (it's an objC level mechanism)
             if let url = feedItem.actionUrl as? NSURL {
                 dismissCard()
