@@ -172,7 +172,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             return
         }
         let projectName = userInfo["pName"] as? String ?? "project from notification"
-        let projectRoute = ProjectRoute(projectId, .canvas(nil, collaborationId: collaborationId))
+        let projectRoute = ProjectRoute(projectId, .collaboration(collaborationId))
         sceneDelegate.showProjectRouteFromPushNotification(projectRoute, projectName: projectName)
     }
 }

@@ -21,24 +21,15 @@ struct OrgRoute: Equatable {
 /// Subroute for organization project
 struct ProjectRoute: Equatable {
     enum Route: Equatable {
-        // project is showing a canvas with a possibly selected collaboration (if collaborationId != nil)
-        // canvasId is optional so this route can be used with collaborationId only (the canvas will
-        // be selected based on the collaborationId)
-        // In case canvasId and collaborationId are both nil the project shows the default view.
-        // In case canvasId and collaborationId are both not nil, the collaborationId is used.
-        // Warning: instead of using the nil canvasId, the collaborationId-only route could be supported
-        // by the .task route, but we wanted to keep the difference between canvas and task routes
-        // in case we ever want to produce a web-app compatible urls from these routes (then task
-        // is different than collaboration, and we don't want to rename the task route to "collaboration"
-        // as then it doesn't fit the case of showing a task from task list)
-        case canvas(_ canvasId: String?, collaborationId: String?)
+        // project main screen with given canvas
+        case canvas(_ canvasId: String)
         // a route for newly created project - may present some welcome card, etc.
         case welcome
         // "Task List" screen for a project (the default/last canvas is used)
         case tasks
-        // project task is shown - this is similar to canvas case, but no canvas is given as in web
-        // this comes from tasks (list) view. In iOS app selecting task from task list opens it in the canvas view
-        case task(_ collaborationId: String)
+        // The collaboration is selected and the collaboration window is shown. The canvas is selected
+        // based on the collaboration.
+        case collaboration(_ collaborationId: String)
         // "All Media" screen for a project
         case media
         // fullscreen media view displayed on top of "All Media"
@@ -79,12 +70,15 @@ func routeForURL(_ url: URL) -> OrgRoute? {
         if validUUIDString(path[2]) {
             // it's a canvas id, so a project canvas route
             let canvasId = path[2]
-            return OrgRoute(orgId, .project(
-                ProjectRoute(projectId, .canvas(canvasId, collaborationId: collaborationId))
-            ))
+            if let collaborationId {
+                // if collaborationId is given then it's a collaboration route and canvas is selected automatically
+                return OrgRoute(orgId, .project(ProjectRoute(projectId, .collaboration(collaborationId))))
+            } else {
+                return OrgRoute(orgId, .project(ProjectRoute(projectId, .canvas(canvasId))))
+            }
         } else if path[2] == "list" {
             if let collaborationId {
-                return OrgRoute(orgId, .project(ProjectRoute(projectId, .task(collaborationId))))
+                return OrgRoute(orgId, .project(ProjectRoute(projectId, .collaboration(collaborationId))))
             } else {
                 return OrgRoute(orgId, .project(ProjectRoute(projectId, .tasks)))
             }

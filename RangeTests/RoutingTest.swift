@@ -30,7 +30,7 @@ final class RoutingTest: XCTestCase {
             ),
             OrgRoute("c39f1e8b-cabb-44c9-822e-e0d7ee92a90d",
                      .project(ProjectRoute("474503d1-1adc-4268-88fe-2a797148f16d",
-                                           .canvas("f6e9f346-d51a-48ca-b372-84870444b7c8", collaborationId: nil))))
+                                           .canvas("f6e9f346-d51a-48ca-b372-84870444b7c8"))))
         )
         XCTAssertEqual(
             route(
@@ -38,10 +38,7 @@ final class RoutingTest: XCTestCase {
             ),
             OrgRoute("c39f1e8b-cabb-44c9-822e-e0d7ee92a90d",
                      .project(ProjectRoute("474503d1-1adc-4268-88fe-2a797148f16d",
-                                           .canvas(
-                                               "f6e9f346-d51a-48ca-b372-84870444b7c8",
-                                               collaborationId: "56a66de1-8c46-4ac0-9ce2-1ce2ca565cf1"
-                                           ))))
+                                           .collaboration("56a66de1-8c46-4ac0-9ce2-1ce2ca565cf1"))))
         )
 
         // project tasks
@@ -58,7 +55,7 @@ final class RoutingTest: XCTestCase {
             ),
             OrgRoute("c39f1e8b-cabb-44c9-822e-e0d7ee92a90d",
                      .project(ProjectRoute("474503d1-1adc-4268-88fe-2a797148f16d",
-                                           .task("03cc4ea0-9f77-4eb3-b47d-cacfe6ea8ada"))))
+                                           .collaboration("03cc4ea0-9f77-4eb3-b47d-cacfe6ea8ada"))))
         )
 
         // project media

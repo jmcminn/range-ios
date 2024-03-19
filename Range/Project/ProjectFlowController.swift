@@ -298,16 +298,9 @@ final class ProjectFlowController: UIViewController {
     func showRoute(_ route: ProjectRoute) {
         setUIState(.default, animated: true)
         switch route.route {
-        case let .canvas(_: canvasId, collaborationId: collaborationId):
-            if let collaborationId, let collaboration = model.mainRealm.object(
-                ofType: Collaboration.self,
-                forPrimaryKey: collaborationId
-            ) {
-                // if collaborationId is given, open the collaboration window, it'll also switch the canvas
-                // to given collaboration
-                showCollaborationAction(sender: self, event: FlowEvent(collaboration))
-            } else if let canvasId, model.currentCanvas.id != canvasId,
-                      let canvas = model.sortedCanvases.first(where: { $0.id == canvasId })
+        case let .canvas(_: canvasId):
+            if model.currentCanvas.id != canvasId,
+               let canvas = model.sortedCanvases.first(where: { $0.id == canvasId })
             {
                 // show canvas
                 do {
@@ -319,9 +312,9 @@ final class ProjectFlowController: UIViewController {
 
         case .welcome: showHowToAddPDFFloorPlansCard()
         case .tasks: showTaskListAction()
-        case let .task(_: taskId):
+        case let .collaboration(_: collaborationId):
             // show given collaboration, it'll switch the canvas if needed
-            if let collaboration = model.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: taskId) {
+            if let collaboration = model.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId) {
                 showCollaborationAction(sender: self, event: FlowEvent(collaboration))
             }
         case .media: showMediaAction()
