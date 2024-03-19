@@ -1,5 +1,5 @@
 {
-  "originHash" : "da25cd2dbf5131bad535c0797f25c9ddb5404fccf7b920d7fa73e5cffc309d26",
+  "originHash" : "2dbec2f77839fba561c3f75b3b82f6f2afd9fa1a6a14f117c3374e150bd9b762",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -13,7 +13,7 @@
     {
       "identity" : "analytics-swift",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:segmentio/analytics-swift.git",
+      "location" : "https://github.com/segmentio/analytics-swift.git",
       "state" : {
         "revision" : "a59b6fe4b4b89e859a1ee02fee6872a4ae6032f7",
         "version" : "1.5.6"
