@@ -167,6 +167,7 @@ final class ProjectFlowController: UIViewController {
             model: model,
             localFiles: localFiles,
             mediaCache: mediaCache,
+            userSettings: userSettings,
             canvasContainer: canvasContainer
         )
         self.userSettings = userSettings
@@ -679,6 +680,7 @@ extension ProjectFlowController {
             model: model,
             localFiles: localFiles,
             mediaCache: mediaCache,
+            userSettings: userSettings,
             canvasContainer: canvasContainer
         )
         addPhotoFlow?.onStop = { [weak self] geometryId, newlyCreated, shouldEdit in

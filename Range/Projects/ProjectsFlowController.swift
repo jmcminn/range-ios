@@ -14,7 +14,7 @@ class ProjectsFlowController: UINavigationController {
     let localFiles: LocalFiles
     let mediaCache: MediaCache
     let canvasFileLoader: CanvasFileLoader
-    let userSettings = UserSettings()
+    let userSettings: UserSettings
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel = PendingActionsModelImpl()
 
@@ -40,6 +40,7 @@ class ProjectsFlowController: UINavigationController {
         localFiles = try LocalFiles()
         mediaCache = MediaCache(localFiles: localFiles)
         canvasFileLoader = try CanvasFileLoader()
+        userSettings = UserSettings(knockClient: userModel.knockClient)
         pendingUploadsModel = try FirebasePendingUploadsModel(
             userId: userId,
             localFiles: localFiles,

@@ -34,6 +34,21 @@ struct UserSettingsView: View {
                         .padding(.bottom, 6)
                 }
             }
+            Section(header: Text("Email Notifications")) {
+                Toggle(isOn: $userSettings.emailNotifications) {
+                    Text("Email Notifications")
+                        .padding(.top, 6)
+                        .foregroundColor(.dynamic(.Neutral_04))
+                    Text("Opt in or out of email notifications sent to you about activity in a Range project")
+                        .font(.caption2)
+                        .foregroundColor(.dynamic(.Neutral_05))
+                        .padding(.bottom, 6)
+                }.overlay {
+                    if userSettings.updatingEmailNotifications {
+                        ProgressView()
+                    }
+                }.disabled(userSettings.updatingEmailNotifications)
+            }
             if AppConfiguration.showDebugOptions {
                 Section {
                     Button(action: UserDefaults.resetOnboarding) {
@@ -55,7 +70,10 @@ struct UserSettingsView: View {
                 }.buttonStyle(.plain)
             }
         }
-        .onAppear(perform: { analytics?.screen(title: "account settings") })
+        .onAppear(perform: {
+            analytics?.screen(title: "account settings")
+            userSettings.refreshEmailNotifications()
+        })
     }
 }
 

@@ -87,6 +87,28 @@ public extension Knock {
             }
         }
     }
+
+    func _getUserPreferences(preferenceId: String) async throws -> PreferenceSet {
+        try await withCheckedThrowingContinuation { continuation in
+            self.getUserPreferences(preferenceId: preferenceId) { result in
+                switch result {
+                case let .success(preferenceSet): continuation.resume(returning: preferenceSet)
+                case let .failure(error): continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func _setUserPreferences(preferenceId: String, preferenceSet: PreferenceSet) async throws -> PreferenceSet {
+        try await withCheckedThrowingContinuation { continuation in
+            self.setUserPreferences(preferenceId: preferenceId, preferenceSet: preferenceSet) { result in
+                switch result {
+                case let .success(preferenceSet): continuation.resume(returning: preferenceSet)
+                case let .failure(error): continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
 }
 
 /// Async functions

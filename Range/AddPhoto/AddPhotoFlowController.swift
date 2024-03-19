@@ -12,6 +12,7 @@ class AddPhotoFlowController {
     unowned let model: ProjectModel
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
+    unowned let userSettings: UserSettings
     unowned let canvasContainer: CanvasContainerViewController
 
     private let controls: ProjectCanvasControls
@@ -76,11 +77,13 @@ class AddPhotoFlowController {
         model: ProjectModel,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
+        userSettings: UserSettings,
         canvasContainer: CanvasContainerViewController
     ) {
         self.model = model
         self.localFiles = localFiles
         self.mediaCache = mediaCache
+        self.userSettings = userSettings
         self.canvasContainer = canvasContainer
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
         photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, localFiles: localFiles)
@@ -561,7 +564,7 @@ class AddPhotoFlowController {
     /// Async function to store the new photo(s) data in the realm DB
     @MainActor
     private func _storeData() async throws {
-        if UserSettings().saveImagesToDevice {
+        if userSettings.saveImagesToDevice {
             let mediaKeysToSave = photosToAddViewModel.photos
                 .filter { $0.assetIdentifier == nil } // save only photos that are not from camera roll already
                 .map(\.mediaKey)

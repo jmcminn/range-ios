@@ -182,6 +182,7 @@ extension ProjectFlowController: ProjectFlowActions {
             projectModel: model,
             localFiles: localFiles,
             mediaCache: mediaCache,
+            userSettings: userSettings,
             upload: upload,
             // show button only from media, otherwise it's from collaboration so user can just close
             // the fullscreen media and be back in collaboration
