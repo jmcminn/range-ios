@@ -228,6 +228,8 @@
 		0A51A44A2AB9F049008C5B84 /* OrganizationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */; };
 		0A5394272A251482008583F0 /* ScribbleAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394262A251482008583F0 /* ScribbleAnnotationViewModel.swift */; };
 		0A5394292A264685008583F0 /* AnnotationsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394282A264685008583F0 /* AnnotationsEditor.swift */; };
+		0A540F172BD1663800992082 /* InAppFeedTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A540F162BD1663800992082 /* InAppFeedTableViewController.swift */; };
+		0A540F192BD169CA00992082 /* OrganizationInAppFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A540F182BD169CA00992082 /* OrganizationInAppFeedViewController.swift */; };
 		0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A566EF529BA29480094BD60 /* CanvasSource.swift */; };
 		0A58DDB7299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		0A58DDB9299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */; };
@@ -741,6 +743,8 @@
 		0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationModel.swift; sourceTree = "<group>"; };
 		0A5394262A251482008583F0 /* ScribbleAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotationViewModel.swift; sourceTree = "<group>"; };
 		0A5394282A264685008583F0 /* AnnotationsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsEditor.swift; sourceTree = "<group>"; };
+		0A540F162BD1663800992082 /* InAppFeedTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedTableViewController.swift; sourceTree = "<group>"; };
+		0A540F182BD169CA00992082 /* OrganizationInAppFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationInAppFeedViewController.swift; sourceTree = "<group>"; };
 		0A566EF529BA29480094BD60 /* CanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSource.swift; sourceTree = "<group>"; };
 		0A58DDB6299E4220001AD7B4 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		0A58DDB8299E43A7001AD7B4 /* DocumentMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentMediaCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -2250,7 +2254,9 @@
 				0ADF10452B9E0F92004E4579 /* KnockClient.swift */,
 				0ADA15362B9CEE6B0065AFDB /* KnockFeedModel.swift */,
 				0ADF10472B9E1846004E4579 /* KnockPreferences.swift */,
+				0A540F182BD169CA00992082 /* OrganizationInAppFeedViewController.swift */,
 				0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */,
+				0A540F162BD1663800992082 /* InAppFeedTableViewController.swift */,
 				0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */,
 			);
 			path = InAppFeed;
@@ -2516,6 +2522,7 @@
 				0A720C6D280469A3003D6B13 /* NonModalCardDisplay.swift in Sources */,
 				0A724F6F2890168D00708C6B /* Kingfisher+Async.swift in Sources */,
 				0A1F8E8828D098900066F08F /* CollaborationHeaderCoverViewController.swift in Sources */,
+				0A540F192BD169CA00992082 /* OrganizationInAppFeedViewController.swift in Sources */,
 				0AB8557828FD94E200491E20 /* CollaborationDetailsViewController.swift in Sources */,
 				0A0505872A1FAEFB001AF644 /* RangeBezierPath.swift in Sources */,
 				0AAB2DE32AFC006B0017A12D /* ArrowAnnotation.swift in Sources */,
@@ -2757,6 +2764,7 @@
 				0A82A8EA29226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift in Sources */,
 				0ADC183D29633E70007A59CA /* TopViewController.swift in Sources */,
 				0A7A537F293FB8F70093D913 /* ProjectTableViewCell.swift in Sources */,
+				0A540F172BD1663800992082 /* InAppFeedTableViewController.swift in Sources */,
 				0A8CC5D22B31E83300D26716 /* CreateProjectStep2View.swift in Sources */,
 				0A7BD5572B1A3F28001694A7 /* MapboxViewportStatus+FollowMeMode.swift in Sources */,
 				0A985B1B2A9E358300442617 /* FirestoreUser.swift in Sources */,

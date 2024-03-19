@@ -23,6 +23,7 @@ class ProjectsViewController: UIViewController {
 
     var onProjectSelected: ((ProjectSummary) -> Void)?
     var onOrganizationButtonTap: (() -> Void)?
+    var onSettingsButtonTap: (() -> Void)?
     var onViewWillAppear: (() -> Void)?
 
     /// Token for observing changes in projects
@@ -81,6 +82,7 @@ class ProjectsViewController: UIViewController {
         }
 
         setupOrganizationSelectorButton()
+        setupSettingsButton()
         setupTitleView()
         updateTitleLabel()
         setupCreateProjectButton()
@@ -254,6 +256,27 @@ class ProjectsViewController: UIViewController {
         button.tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+    }
+
+    private func setupSettingsButton() {
+        var config = UIButton.Configuration.plain()
+        config.baseForegroundColor = .dynamic(.Neutral_04)
+        let button = RangeButton(
+            configuration: config,
+            primaryAction: UIAction(image: UIImage(
+                systemName: "gearshape",
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
+            )) { [weak self] _ in
+                self?.onSettingsButtonTap?()
+            }
+        )
+
+        button.snp.makeConstraints { make in
+            make.width.height.equalTo(32)
+        }
+        button.tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
 }
 

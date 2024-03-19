@@ -20,8 +20,12 @@ class ProjectsFlowController: UINavigationController {
 
     var onSignedOut: (() -> Void)?
 
+    var tabBarVC: UITabBarController!
+
     /// The navigation controller presenting the ProjectsViewController (or empty state view if no org is selected)
     var projectsNavigationController: UINavigationController?
+    /// The navigation controller for presenting InAppFeed VC for the current organization
+    var feedNavigationController: UINavigationController?
 
     var currentUserNotificationToken: NotificationToken?
     var projectFC: ProjectFlowController?
@@ -33,6 +37,9 @@ class ProjectsFlowController: UINavigationController {
     var showRouteOnLogin: OrgRoute?
     /// if present show this project route when user signs in
     var showProjectRouteOnLogin: ProjectRoute?
+
+    /// combine observers for given organization
+    private var organizationSubscriptions = Set<AnyCancellable>()
 
     init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
@@ -71,22 +78,23 @@ class ProjectsFlowController: UINavigationController {
             collectUserData()
         }
 
-        let tabBarVC = setupTabBarViewController()
+        tabBarVC = setupTabBarViewController()
         updateProjectsViewController()
 
-        let tryLoadProject: (String, ProjectRoute?) async -> Void = { projectId, initialRoute in
+        let tryLoadProject: (String, ProjectRoute?) async -> Void = { [weak self] projectId, initialRoute in
+            guard let self else { return }
             do {
                 self.projectFC = try await self.buildProjectFlowController(
                     projectId: projectId,
                     initialRoute: initialRoute
                 )
-                self.setViewControllers([tabBarVC, self.projectFC!], animated: false)
+                self.setViewControllers([self.tabBarVC, self.projectFC!], animated: false)
                 self.updateLastOpenProjectAndCanvas()
                 self.observeCurrentProject()
             } catch {
                 Logger.model.error("loading project failed: \(error.localizedDescription, privacy: .public)")
                 // fallback to projects list only
-                self.setViewControllers([tabBarVC], animated: false)
+                self.setViewControllers([self.tabBarVC], animated: false)
             }
         }
 
@@ -166,17 +174,15 @@ class ProjectsFlowController: UINavigationController {
         )
         projectsNavigationController = projectsNavC
 
-        let settingsVC = setupSettingsViewController()
-        settingsVC.title = String(localized: "Settings")
-        let settingsNavC = UINavigationController(rootViewController: settingsVC)
-        settingsNavC.tabBarItem = UITabBarItem(
-            title: String(localized: "Settings"),
-            image: UIImage(systemName: "gearshape", withConfiguration: UIImage.SymbolConfiguration(pointSize: 13)),
+        feedNavigationController = UINavigationController(rootViewController: LaunchScreenViewController())
+        feedNavigationController!.tabBarItem = UITabBarItem(
+            title: String(localized: "Notifications"),
+            image: UIImage(systemName: "bell", withConfiguration: UIImage.SymbolConfiguration(pointSize: 13)),
             tag: 1
         )
 
         let tabBarVC = UITabBarController()
-        tabBarVC.setViewControllers([projectsNavC, settingsNavC], animated: false)
+        tabBarVC.setViewControllers([projectsNavC, feedNavigationController!], animated: false)
 
         // HACK - add separator to tab bar (maybe not even a hack??)
         let separator = UIView()
@@ -192,12 +198,20 @@ class ProjectsFlowController: UINavigationController {
 
     /// Based on current organizationModel show its projects or show the empty view
     private func updateProjectsViewController() {
-        guard let projectsNavC = projectsNavigationController else { return }
+        guard let projectsNavigationController, let feedNavigationController else { return }
+        organizationSubscriptions.removeAll()
         if let organizationModel = userModel.currentOrganizationModel {
             let projectsVC = ProjectsViewController(model: organizationModel)
             projectsVC.title = String(localized: "My Projects")
             projectsVC.onOrganizationButtonTap = { [weak self] in
                 self?.selectOrganizationAction()
+            }
+            projectsVC.onSettingsButtonTap = { [weak self] in
+                guard let self else { return }
+                let settingsVC = setupSettingsViewController()
+                let settingsNavC = UINavigationController(rootViewController: settingsVC)
+                settingsVC.title = String(localized: "Settings")
+                self.present(settingsNavC, animated: true)
             }
             projectsVC.onProjectSelected = { [weak self] project in
                 self?.loadAndPushProjectFlowController(projectId: project.id, initialRoute: nil, animated: true)
@@ -207,12 +221,29 @@ class ProjectsFlowController: UINavigationController {
                 self.userModel.currentOrganizationModel?.updateStatusCounts()
                 self.autoShowOrganizationSelectorIfNeeded()
             }
-            projectsNavC.setViewControllers([projectsVC], animated: false)
+            projectsNavigationController.setViewControllers([projectsVC], animated: false)
+
+            let feedVC = OrganizationInAppFeedViewController(model: organizationModel)
+            feedVC.onOrganizationButtonTap = { [weak self] in
+                self?.selectOrganizationAction()
+            }
+            feedNavigationController.setViewControllers([feedVC], animated: false)
+            organizationModel.knockFeedModel.$feed
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.updateInAppUnseenItemsBadge()
+                }
+                .store(in: &organizationSubscriptions)
+
         } else {
             let emptyStateView = ProjectsEmptyStateView(state: .noOrganization, createProjectAction: { [weak self] in
                 self?.createProjectAction()
             })
-            projectsNavC.setViewControllers([UIHostingController(rootView: emptyStateView)], animated: false)
+            projectsNavigationController.setViewControllers(
+                [UIHostingController(rootView: emptyStateView)],
+                animated: false
+            )
+            feedNavigationController.setViewControllers([LaunchScreenViewController()], animated: false)
         }
     }
 
@@ -326,6 +357,10 @@ class ProjectsFlowController: UINavigationController {
         projectFC = nil
         currentProjectNotificationToken?.invalidate()
         currentProjectNotificationToken = nil
+        // reset the current organization in-app feed as the changes in project level
+        // feed are not reflected live in the organization level feed, so we need to refetch
+        // to get any updates
+        userModel.currentOrganizationModel?.knockFeedModel.reset()
     }
 
     private func observeCurrentUser() {
@@ -482,6 +517,19 @@ class ProjectsFlowController: UINavigationController {
             }
         ).installAndShowCard(in: self)
         UserDefaults.lastPresentedOrganizationIds = organizations.map(\.id)
+    }
+
+    func updateInAppUnseenItemsBadge() {
+        guard let tabItems = tabBarVC.tabBar.items,
+              let unseenCount = userModel.currentOrganizationModel?.knockFeedModel.feed.meta.unseen_count
+        else { return }
+        let tabItem = tabItems[1]
+        if unseenCount == 0 {
+            tabItem.badgeValue = nil
+        } else {
+            tabItem.badgeColor = .Special_01
+            tabItem.badgeValue = unseenCount > 9 ? "9⁺" : String(unseenCount)
+        }
     }
 }
 

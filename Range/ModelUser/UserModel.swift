@@ -150,7 +150,7 @@ class UserModel: NSObject, RealmModel {
             if let currentOrganizationModel = currentOrganizationModel {
                 currentOrganizationModel.stop()
             }
-            let organizationModel = try OrganizationModel(user: currentUser, organizationId: organizationId)
+            let organizationModel = try OrganizationModel(userModel: self, organizationId: organizationId)
             try await organizationModel.start()
             currentOrganizationModel = organizationModel
             UserDefaults.lastOpenOrganizationId = organizationId

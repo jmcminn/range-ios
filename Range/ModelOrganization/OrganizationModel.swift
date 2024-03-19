@@ -48,8 +48,11 @@ class OrganizationModel: NSObject, RealmModel {
     /// throttle fetching the task counts per status for all projects for current organization, report no more frequently than every 10 seconds
     private var updateStatusCountsThrottler: Throttler?
 
-    init(user: User, organizationId: String) throws {
-        self.user = user
+    /// Organization level in-app feed
+    let knockFeedModel: KnockFeedModel
+
+    init(userModel: UserModel, organizationId: String) throws {
+        user = userModel.currentUser
         self.organizationId = organizationId
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
@@ -73,6 +76,7 @@ class OrganizationModel: NSObject, RealmModel {
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
         projects = mainRealm.objects(ProjectSummary.self).where { $0.placeholder == false }
+        knockFeedModel = KnockFeedModel(knockClient: userModel.knockClient, organizationId: organizationId)
     }
 
     /// Initiates the writeRealm and all objects required for the model
@@ -139,6 +143,8 @@ class OrganizationModel: NSObject, RealmModel {
             "size": "10-50",
             "organizationRole": currentUser.organizationRole.rawValue,
         ])
+
+        knockFeedModel.start()
     }
 
     /// The list of projects to sync depends on the user permissions, so based on user changes this function maintains the listeners
@@ -183,6 +189,7 @@ class OrganizationModel: NSObject, RealmModel {
 
     /// Deregisters all observers.
     func stop() {
+        knockFeedModel.stop()
         listeners.values.forEach { $0.remove() }
         listeners.removeAll()
         userNotificationToken?.invalidate()

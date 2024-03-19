@@ -70,6 +70,12 @@ class KnockFeedModel {
         feedManager?.disconnectFromFeed()
     }
 
+    /// Cleanup loaded data and reload the first page, so the state is as if it was just started
+    func reset() {
+        feed = .init()
+        start()
+    }
+
     func loadNextPage() {
         loadPage(.after)
     }
