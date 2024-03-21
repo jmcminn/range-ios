@@ -62,7 +62,7 @@ extension ProjectCanvasControls {
                 title: title,
                 onBack: onBack,
                 rightAction: showInAppFeedButton
-                    ? UIAction(image: UIImage(systemName: "bell"), handler: { _ in
+                    ? UIAction(image: UIImage(systemName: "bell"), handler: { [weak self] _ in
                         UIApplication.shared.sendAction(#selector(ProjectFlowActions.showProjectInAppFeed),
                                                         to: nil, from: self, for: nil)
                     })

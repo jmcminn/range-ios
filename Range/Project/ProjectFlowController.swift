@@ -420,6 +420,7 @@ final class ProjectFlowController: UIViewController {
         if let canvasDelegateId = canvasDelegateId {
             canvasContainer.canvasViewController.removeDelegate(id: canvasDelegateId)
         }
+        canvasContainer.annotationsMapView.viewport.removeStatusObserver(self)
         actionCardVC.cardDragging?.removeDelegate(actionCardDraggingDelegateId)
         canvasContainer.removeCard(cardViewController: actionCardVC)
         // dismiss any presented modally VCs
