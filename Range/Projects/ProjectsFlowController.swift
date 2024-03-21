@@ -95,7 +95,7 @@ class ProjectsFlowController: UINavigationController {
             switch showRouteOnLogin.route {
             case .projects:
                 // nothing, projects view is the default
-                break
+                setViewControllers([tabBarVC], animated: false)
             case let .project(projectRoute):
                 await tryLoadProject(projectRoute.projectId, projectRoute)
             }
