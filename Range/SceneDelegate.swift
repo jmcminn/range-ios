@@ -40,6 +40,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// Listen for Firestore document containing the requiredMinimumVersion
     var requiredMinimumVersionListener: ListenerRegistration?
 
+    var rangeIsClosedViewController: UIViewController?
+
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions)
     {
@@ -51,30 +53,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         Task { @MainActor in
 
-            handleAppVersionExpiration()
+            await selectInitialFlow()
 
-            // check whether user is authenticated
-            if let user = Auth.auth().currentUser {
-                do {
-                    // reload the user to update the email verification
-                    try await user.reload()
-                } catch {
-                    // don't sign out on error while reloading the user, this might just mean that we're offline
-                    Logger.auth.warning("Error while reloading the user: \(error)")
-                }
-                do {
-                    let userId = try await user._getUserId()
-                    if user.isEmailVerified {
-                        await self.startMainFlow(forUser: userId, newlySignedIn: false)
-                    } else {
-                        showAuth()
-                    }
-                } catch {
-                    self.showAuth()
-                }
-            } else {
-                showAuth()
-            }
+            observeRangeIsClosed()
+            observeAppVersionExpiration()
 
             // do the auth action
             if let activity = connectionOptions.userActivities.first,
@@ -91,6 +73,61 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
+    /// Either show the auth flow or start the main flow for logged in user.
+    /// If rangeIsClosed then show the rangeIsClosedViewController.
+    @MainActor
+    private func selectInitialFlow() async {
+        guard rangeIsClosed == false else {
+            showRangeIsClosed()
+            return
+        }
+
+        // check whether user is authenticated
+        if let user = Auth.auth().currentUser {
+            do {
+                // reload the user to update the email verification
+                try await user.reload()
+            } catch {
+                // don't sign out on error while reloading the user, this might just mean that we're offline
+                Logger.auth.warning("Error while reloading the user: \(error)")
+            }
+            do {
+                let userId = try await user._getUserId()
+                if user.isEmailVerified {
+                    await startMainFlow(forUser: userId, newlySignedIn: false)
+                } else {
+                    showAuth()
+                }
+            } catch {
+                showAuth()
+            }
+        } else {
+            showAuth()
+        }
+    }
+
+    private func showRangeIsClosed() {
+        // if the range was not closed let's store the route to which we want to redirect
+        // user after range is up
+        if let projectsFlowController = window?.rootViewController as? ProjectsFlowController,
+           let organizationId = projectsFlowController.userModel.currentOrganizationModel?.organization.id
+        {
+            if let projectFlowController = projectsFlowController.projectFC {
+                let projectId = projectFlowController.model.projectId
+                let canvasId = projectFlowController.model.currentCanvas.id
+                showRouteOnLogin = OrgRoute(organizationId, .project(.init(projectId, .canvas(canvasId))))
+                projectFlowController.stop()
+            } else {
+                showRouteOnLogin = OrgRoute(organizationId, .projects)
+            }
+            Task {
+                await projectsFlowController.stop()
+            }
+        }
+        window!.rootViewController = UIHostingController(rootView: RangeIsClosedView())
+        window!.makeKeyAndVisible()
+    }
+
     func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         // Handle Appcues deep links.
         if let appcues = AppcuesDestination.shared.appcues {
@@ -105,7 +142,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    private func handleAppVersionExpiration() {
+    private func observeRangeIsClosed() {
+        // Observe the Firestore document for recognizing if range is closed
+        requiredMinimumVersionListener = Firestore.firestore().document("RangeStatus/RangeIsClosed")
+            .addSnapshotListener { [weak self] snapshot, _ in
+                if let self, let data = snapshot?.data(), let isClosed = data["isClosed"] as? Bool {
+                    if rangeIsClosed != isClosed {
+                        rangeIsClosed = isClosed
+                        Task { @MainActor in
+                            await self.selectInitialFlow()
+                        }
+                    }
+                }
+            }
+    }
+
+    private func observeAppVersionExpiration() {
         // Observe the Firestore document for required minimum version and store in Versions
         requiredMinimumVersionListener = Firestore.firestore().document("RangeStatus/RequiredMinimumVersion")
             .addSnapshotListener { [weak self] snapshot, _ in
@@ -228,7 +280,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Start the auth flow for authenticating the user
     private func showAuth() {
-        guard !versions.isAppVersionExpired else { return }
+        guard !versions.isAppVersionExpired, !rangeIsClosed else { return }
         let authFlowController = createAuthFlowController()
         window!.rootViewController = authFlowController
         window!.makeKeyAndVisible()
@@ -270,7 +322,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     @MainActor
     private func showProjects(forUserId userId: String, newlySignedIn: Bool) async {
-        guard !versions.isAppVersionExpired else { return }
+        guard !versions.isAppVersionExpired, !rangeIsClosed else { return }
         do {
             let projectsFlowController = try ProjectsFlowController(userId: userId, newlySignedIn: newlySignedIn)
             if let showRouteOnLogin {

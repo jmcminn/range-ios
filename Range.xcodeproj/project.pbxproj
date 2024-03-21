@@ -353,6 +353,8 @@
 		0A9382A92935FF0000FD032C /* CanvasTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */; };
 		0A94E8D528CE24CF00A09616 /* CollaborationBadgeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D428CE24CF00A09616 /* CollaborationBadgeButton.swift */; };
 		0A94E8D728CF0E6000A09616 /* RangeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A94E8D628CF0E6000A09616 /* RangeButton.swift */; };
+		0A956FB22BAB447D008E5803 /* RangeStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A956FB12BAB447D008E5803 /* RangeStatus.swift */; };
+		0A956FB42BAB4625008E5803 /* RangeIsClosedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A956FB32BAB4625008E5803 /* RangeIsClosedView.swift */; };
 		0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */; };
 		0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9928DDE5BD00E50284 /* Array+Utils.swift */; };
 		0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */; };
@@ -864,6 +866,8 @@
 		0A9382A82935FF0000FD032C /* CanvasTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableViewCell.swift; sourceTree = "<group>"; };
 		0A94E8D428CE24CF00A09616 /* CollaborationBadgeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBadgeButton.swift; sourceTree = "<group>"; };
 		0A94E8D628CF0E6000A09616 /* RangeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeButton.swift; sourceTree = "<group>"; };
+		0A956FB12BAB447D008E5803 /* RangeStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeStatus.swift; sourceTree = "<group>"; };
+		0A956FB32BAB4625008E5803 /* RangeIsClosedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeIsClosedView.swift; sourceTree = "<group>"; };
 		0A966F9728DD919D00E50284 /* ImageLoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoadingIndicator.swift; sourceTree = "<group>"; };
 		0A966F9928DDE5BD00E50284 /* Array+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Utils.swift"; sourceTree = "<group>"; };
 		0A966F9B28DDE70C00E50284 /* ArrayUtilsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayUtilsTest.swift; sourceTree = "<group>"; };
@@ -1712,6 +1716,8 @@
 				0A632EAD27E49636001A019B /* SceneDelegate.swift */,
 				0A376BC32980317F004C9B6F /* AppAttestAppCheckProviderFactory.swift */,
 				0A0A858D2B9631A50093055F /* Routing.swift */,
+				0A956FB12BAB447D008E5803 /* RangeStatus.swift */,
+				0A956FB32BAB4625008E5803 /* RangeIsClosedView.swift */,
 			);
 			path = Range;
 			sourceTree = "<group>";
@@ -2486,6 +2492,7 @@
 				0AB8557428F9533900491E20 /* AssigneeButton.swift in Sources */,
 				0A7393852A606CBB0079A7FB /* ScribbleAnnotation.swift in Sources */,
 				0A3831D128E42CC4001AF38A /* FirestoreUpdate.swift in Sources */,
+				0A956FB22BAB447D008E5803 /* RangeStatus.swift in Sources */,
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A7A537B293E4E540093D913 /* UserModel.swift in Sources */,
 				0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */,
@@ -2640,6 +2647,7 @@
 				0A5394272A251482008583F0 /* ScribbleAnnotationViewModel.swift in Sources */,
 				0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */,
 				0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */,
+				0A956FB42BAB4625008E5803 /* RangeIsClosedView.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */,
 				0AAC46CD2B53EE5A00D87549 /* ItemPicker+Canvas.swift in Sources */,
