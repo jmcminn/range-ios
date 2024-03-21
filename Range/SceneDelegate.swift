@@ -265,17 +265,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Initiate the main app window
     private func setupWindow(windowScene: UIWindowScene) {
-        #if DEBUG
-            // use DebugWindow in DEBUG mode (= running from Xcode) and only for environments for
-            // which ShowDebugOptions is true (excluding staging and production)
-            if AppConfiguration.showDebugOptions {
-                window = DebugWindow(windowScene: windowScene)
-            } else {
-                window = UIWindow(windowScene: windowScene)
-            }
-        #else
+        // use DebugWindow only for environments for which ShowDebugOptions is true
+        if AppConfiguration.showDebugOptions {
+            window = DebugWindow(windowScene: windowScene)
+        } else {
             window = UIWindow(windowScene: windowScene)
-        #endif
+        }
     }
 
     /// Start the auth flow for authenticating the user
