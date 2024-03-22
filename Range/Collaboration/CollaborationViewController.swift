@@ -28,6 +28,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var statusButton: CollaborationStatusButton!
     /// shown for archived collaboration (for tasks it replaces the status button)
     var archivedLabel: LabelWithTextInsets!
+    var takeScreenshotButton: UIButton!
     var moreButton: UIButton!
     var closeButton: UIButton!
     var idLabel: UILabel?
@@ -154,6 +155,13 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         moreButton.snp.makeConstraints { make in
             make.width.height.top.equalTo(closeButton)
             make.trailing.equalTo(closeButton.snp.leading).offset(-8)
+        }
+
+        setupTakeScreenshotButton()
+        containerView.addSubview(takeScreenshotButton)
+        takeScreenshotButton.snp.makeConstraints { make in
+            make.width.height.top.equalTo(closeButton)
+            make.trailing.equalTo(moreButton.snp.leading).offset(-8)
         }
 
         if let idLabel {
@@ -302,6 +310,21 @@ extension CollaborationViewController {
 // MARK: Views
 
 extension CollaborationViewController {
+    private func setupTakeScreenshotButton() {
+        takeScreenshotButton = RangeButton(
+            configuration: UIButton.Configuration.closeButton(),
+            primaryAction: UIAction(image: UIImage(systemName: "camera.viewfinder")) { [weak self] _ in
+                guard let self = self else { return }
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowController.takeScreenshotAction), to: nil, from: self,
+                    for: FlowEvent(self.collaboration)
+                )
+            }
+        )
+        .withCustomRangeHighlightColor()
+        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
+    }
+
     private func setupMoreButton() {
         moreButton = RangeButton(
             configuration: UIButton.Configuration.closeButton(),

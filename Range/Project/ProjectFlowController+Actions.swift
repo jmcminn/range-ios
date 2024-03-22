@@ -77,6 +77,8 @@ final class FlowEvent: UIEvent {
     func moveCollaborationAction(sender: Any?, event: FlowEvent)
     /// Show the in-app feed for current project
     func showProjectInAppFeed()
+    /// Take screenshot of canvas and attach as an Upload to given collaboration
+    func takeScreenshotAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -445,6 +447,12 @@ extension ProjectFlowController {
                 })]
                 : []
             actions.append(contentsOf: [
+                ActionItem(
+                    title: String(localized: "Take Canvas Screenshot Location"), imageName: "camera.viewfinder",
+                    handler: { [weak self] in
+                        self?.takeScreenshotAction(sender: self, event: event)
+                    }
+                ),
                 ActionItem(
                     title: String(localized: "Update Location"), imageName: "mappin.and.ellipse",
                     handler: { [weak self] in self?.moveCollaboration(collaboration) }
@@ -828,5 +836,15 @@ extension ProjectFlowController {
     func showProjectInAppFeed() {
         let inAppFeedVC = InAppFeedCardViewController(model: knockFeedModel, variant: .project)
         inAppFeedVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+}
+
+// MARK: - screenshot
+
+extension ProjectFlowController {
+    func takeScreenshotAction(sender _: Any?, event: FlowEvent) {
+        guard let collaboration = event.object as? Collaboration else { return }
+        guard !collaboration.isInvalidated else { return }
+        print("XXX TODO: 2560")
     }
 }
