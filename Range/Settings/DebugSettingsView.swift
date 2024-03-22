@@ -22,49 +22,49 @@ struct DebugSettingsView: View {
                     AppcuesDestination.shared.appcues?.debug()
                 })
             }
-            #if DEBUG
-                Section(header: Text("Callable functions")) {
-                    Group { // Group needed because of 10 subviews limit
-                        actionButton(title: "create organization", action: DebugSettings.createOrganizationTest)
-                    }
-                    Group {
-                        actionButton(title: "change role", action: DebugSettings.changeOrganizationRoleTest)
-                        actionButton(
-                            title: "add organization participant",
-                            action: DebugSettings.addOrganizationParticipantTest
-                        )
-                        actionButton(
-                            title: "remove organization participant",
-                            action: DebugSettings.removeOrganizationParticipantTest
-                        )
-                        actionButton(
-                            title: "add project participant",
-                            action: DebugSettings.addProjectParticipantTest
-                        )
-                        actionButton(
-                            title: "remove project participant",
-                            action: DebugSettings.removeProjectParticipantTest
-                        )
-                        actionButton(title: "invite to organization", action: DebugSettings.inviteToOrganizationTest)
-                        actionButton(
-                            title: "invite existing user to organization",
-                            action: DebugSettings.inviteExistingUserToOrganizationTest
-                        )
-                        actionButton(
-                            title: "invite member to organization",
-                            action: DebugSettings.inviteMemberToOrganizationTest
-                        )
-                        actionButton(
-                            title: "resend invitation",
-                            action: DebugSettings.resendInvitationTest
-                        )
-                        actionButton(
-                            title: "accept invitation",
-                            action: DebugSettings.acceptInvitationTest
-                        )
-                    }
-                }
-            #endif
+//            #if DEBUG
+//                Section(header: Text("Callable functions")) {
+//                    Group { // Group needed because of 10 subviews limit
+//                        actionButton(title: "create organization", action: DebugSettings.createOrganizationTest)
+//                    }
+//                    Group {
+//                        actionButton(title: "change role", action: DebugSettings.changeOrganizationRoleTest)
+//                        actionButton(
+//                            title: "add organization participant",
+//                            action: DebugSettings.addOrganizationParticipantTest
+//                        )
+//                        actionButton(
+//                            title: "remove organization participant",
+//                            action: DebugSettings.removeOrganizationParticipantTest
+//                        )
+//                        actionButton(
+//                            title: "add project participant",
+//                            action: DebugSettings.addProjectParticipantTest
+//                        )
+//                        actionButton(
+//                            title: "remove project participant",
+//                            action: DebugSettings.removeProjectParticipantTest
+//                        )
+//                        actionButton(title: "invite to organization", action: DebugSettings.inviteToOrganizationTest)
+//                        actionButton(
+//                            title: "invite existing user to organization",
+//                            action: DebugSettings.inviteExistingUserToOrganizationTest
+//                        )
+//                        actionButton(
+//                            title: "invite member to organization",
+//                            action: DebugSettings.inviteMemberToOrganizationTest
+//                        )
+//                        actionButton(
+//                            title: "resend invitation",
+//                            action: DebugSettings.resendInvitationTest
+//                        )
+//                        actionButton(
+//                            title: "accept invitation",
+//                            action: DebugSettings.acceptInvitationTest
+//                        )
+//                    }
+//                }
+//            #endif
             Section(header: Text("App Start")) {
                 Toggle(isOn: $debugSettings.openLastProjectOnStart) {
                     Text("Open last project on start")
@@ -90,6 +90,17 @@ struct DebugSettingsView: View {
                 Toggle(isOn: $debugSettings.hapticFeedbackOnPinTapSelection) {
                     Text("Haptic feedback on tap pin selection:")
                 }
+            }
+            Section(header: Text("Canvas snapshot")) {
+                Stepper(
+                    "Mapbox zoom in: \(debugSettings.mapboxCanvasSnapshotZoomInFactor)",
+                    value: $debugSettings.mapboxCanvasSnapshotZoomInFactor,
+                    in: 1 ... 10, step: 1
+                )
+                Text("If > 1 the map snapshot will be zoomed in by given factor")
+                    .font(.caption2)
+                    .foregroundColor(.dynamic(.Neutral_05))
+                    .padding(.bottom, 6)
             }
         }
     }

@@ -843,8 +843,23 @@ extension ProjectFlowController {
 
 extension ProjectFlowController {
     func takeScreenshotAction(sender _: Any?, event: FlowEvent) {
-        guard let collaboration = event.object as? Collaboration else { return }
-        guard !collaboration.isInvalidated else { return }
-        print("XXX TODO: 2560")
+        guard let collaboration = event.object as? Collaboration,
+              let geometryId = collaboration.feature.first?.geometry.first?.id else { return }
+
+        canvasScreenshotFlow = CanvasScreenshotFlowController(
+            collaboration: collaboration,
+            model: model,
+            localFiles: localFiles,
+            canvasContainer: canvasContainer
+        )
+        canvasScreenshotFlow?.onStop = { [weak self] in
+            guard let self = self else { return }
+            self.setUIState(.default, animated: true)
+            self.selectCollaboration(forGeometryId: geometryId, andEditName: false)
+            self.canvasScreenshotFlow = nil
+        }
+        pinsDisplay?.setSelectedPin(nil)
+        setUIState(.canvasScreenshot, animated: true)
+        canvasScreenshotFlow?.start()
     }
 }

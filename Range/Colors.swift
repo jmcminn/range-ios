@@ -115,6 +115,7 @@ extension UIColor {
         // Can't compare the UIColor directly, need to compare the components, so we can as well compare the hex representation
         switch hexString {
         case UIColor.Green_01.hexString: return .Green_02
+        case UIColor.Green_03.hexString: return .Green_04
         case UIColor.Orange_03.hexString: return .Orange_04
         case UIColor.Primary_Blue_03.hexString: return .Primary_Blue_04
         case UIColor.Primary_Blue_04.hexString: return .Primary_Blue_06
@@ -123,6 +124,7 @@ extension UIColor {
         case UIColor.Neutral_02.hexString: return .Neutral_03
         case UIColor.Neutral_01.hexString: return .Neutral_02
         case UIColor.Secondary_02.hexString: return .Secondary_03
+        case UIColor.Red_03.hexString: return .Red_04
         default:
             fatalError("highlight color not defined for \(hexString)")
         }
