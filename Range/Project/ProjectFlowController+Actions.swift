@@ -448,7 +448,7 @@ extension ProjectFlowController {
                 : []
             actions.append(contentsOf: [
                 ActionItem(
-                    title: String(localized: "Take Canvas Screenshot Location"), imageName: "camera.viewfinder",
+                    title: String(localized: "Take Canvas Screenshot"), imageName: "camera.viewfinder",
                     handler: { [weak self] in
                         self?.takeScreenshotAction(sender: self, event: event)
                     }

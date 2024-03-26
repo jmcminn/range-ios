@@ -175,23 +175,6 @@ class AddPhotoFlowController {
         image: UIImage,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        let uploadId = generateRealmId()
-        let mediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(
-            projectId: model.projectId,
-            uploadId: uploadId,
-            fileType: .jpeg,
-            annotated: false
-        )
-
-        let photoToAdd = PhotoToAdd(
-            timestamp: Date.now,
-            mediaKey: mediaKey,
-            thumbnail: image.imageResized(toFill: 100),
-            height2Width: image.size.height / image.size.width,
-            fileSize: Int64(data.count)
-        )
-
-        // store the image in local cache
         Task { @MainActor in
             do {
                 if !(cameraVC?.cameraViewModel.multiPhotoEnabled ?? false) {
@@ -199,10 +182,10 @@ class AddPhotoFlowController {
                     self.photosToAddViewModel.clear(removeFromCache: true)
                 }
 
-                try await localFiles.store(data, forKey: mediaKey)
-                try await localFiles.generateAndStoreThumbnails(data, forKey: mediaKey)
-
-                self.photosToAddViewModel.add(photoToAdd)
+                // store the image in local cache and add to photosToAddViewModel
+                self.photosToAddViewModel.add(
+                    try await self.photosToAddViewModel.getPhotoToAdd(forJPEGData: data, image: image)
+                )
 
                 if !(cameraVC?.cameraViewModel.multiPhotoEnabled ?? false) {
                     self.nextStepAfterCamera()

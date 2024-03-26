@@ -21,8 +21,6 @@ final class DebugSettings: ObservableObject {
         static let dynamicImageHeightInCollabFeed = "dynamicImageHeightInCollabFeed"
         /// whether the feed should be sorted ascending by timestamp (so newest items at the bottom) or descending (most recent items at the top)
         static let feedSortedAscendingByTimestamp = "feedSortedAscendingByTimestamp"
-        /// mapboxCanvasSnapshotZoomInFactor - If > 1 the map snapshot will be zoomed in by given factor
-        static let mapboxCanvasSnapshotZoomInFactor = "mapboxCanvasSnapshotZoomInFactor"
     }
 
     private let defaults: UserDefaults
@@ -63,12 +61,6 @@ final class DebugSettings: ObservableObject {
         }
     }
 
-    @Published var mapboxCanvasSnapshotZoomInFactor: Int {
-        didSet {
-            defaults.set(mapboxCanvasSnapshotZoomInFactor, forKey: Keys.mapboxCanvasSnapshotZoomInFactor)
-        }
-    }
-
     let appVersion: String
 
     init(defaults: UserDefaults = .standard) {
@@ -81,7 +73,6 @@ final class DebugSettings: ObservableObject {
             Keys.hapticFeedbackOnPinTapSelection: true,
             Keys.dynamicImageHeightInCollabFeed: true,
             Keys.feedSortedAscendingByTimestamp: true,
-            Keys.mapboxCanvasSnapshotZoomInFactor: 1,
         ])
 
         let releaseVersionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
@@ -96,10 +87,6 @@ final class DebugSettings: ObservableObject {
             .bool(forKey: Keys.dynamicImageHeightInCollabFeed))
         _feedSortedAscendingByTimestamp = .init(initialValue: defaults
             .bool(forKey: Keys.feedSortedAscendingByTimestamp))
-        _mapboxCanvasSnapshotZoomInFactor = .init(initialValue:
-            defaults.object(forKey: Keys.mapboxCanvasSnapshotZoomInFactor) != nil
-                ? defaults.integer(forKey: Keys.mapboxCanvasSnapshotZoomInFactor)
-                : 1)
     }
 
     static func createOrganizationTest() {

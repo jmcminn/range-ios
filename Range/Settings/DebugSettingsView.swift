@@ -91,17 +91,6 @@ struct DebugSettingsView: View {
                     Text("Haptic feedback on tap pin selection:")
                 }
             }
-            Section(header: Text("Canvas snapshot")) {
-                Stepper(
-                    "Mapbox zoom in: \(debugSettings.mapboxCanvasSnapshotZoomInFactor)",
-                    value: $debugSettings.mapboxCanvasSnapshotZoomInFactor,
-                    in: 1 ... 10, step: 1
-                )
-                Text("If > 1 the map snapshot will be zoomed in by given factor")
-                    .font(.caption2)
-                    .foregroundColor(.dynamic(.Neutral_05))
-                    .padding(.bottom, 6)
-            }
         }
     }
 }

@@ -103,6 +103,30 @@ class PhotosToAddViewModel: NSObject {
         photos = []
     }
 
+    /// Get the PhotoToAdd for given image
+    /// It stores the image in the localFiles
+    func getPhotoToAdd(forJPEGData data: Data, image: UIImage) async throws -> PhotoToAdd {
+        let uploadId = generateRealmId()
+        let mediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(
+            projectId: projectId,
+            uploadId: uploadId,
+            fileType: .jpeg,
+            annotated: false
+        )
+
+        // store the image in local cache
+        try await localFiles.store(data, forKey: mediaKey)
+        try await localFiles.generateAndStoreThumbnails(data, forKey: mediaKey)
+
+        return PhotoToAdd(
+            timestamp: Date.now,
+            mediaKey: mediaKey,
+            thumbnail: image.imageResized(toFill: 100),
+            height2Width: image.size.height / image.size.width,
+            fileSize: Int64(data.count)
+        )
+    }
+
     /// Get image data for given photo picker result and return PhotoToAdd
     /// Implementation based on: https://itnext.io/the-right-way-to-use-phpicker-and-retrieve-exif-data-without-requesting-library-permissions-in-336c13f87e3f
     private func getPhotoToAdd(forPickerResult result: PHPickerResult) async throws -> PhotoToAdd {

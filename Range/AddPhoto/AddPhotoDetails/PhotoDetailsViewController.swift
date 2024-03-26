@@ -19,6 +19,10 @@ class PhotoDetailsViewController: UIViewController {
     private let tagsViewModel: TagsViewModel
     private let initialDescription: String
 
+    ///  exposed for customising by the canvas screenshot flow controller
+    var backButton: UIButton!
+    var backButtonLabel: String = .init(localized: "Back")
+    var backButtonImage: UIImage? = UIImage(systemName: "arrow.backward")
     ///  exposed for customising by the add photo flow controller
     var nextButton: UIButton!
     var nextButtonLabel: String = .init(localized: "Next")
@@ -443,19 +447,17 @@ extension PhotoDetailsViewController {
             make.height.equalTo(1)
         }
 
-        let backButton = RangeButton(
+        backButton = RangeButton(
             configuration: UIButton.Configuration.grayButton(),
-            primaryAction: UIAction(
-                title: String(localized: "Back"),
-                image: UIImage(systemName: "arrow.backward")
-            ) { [weak self] _ in self?.onBack?() }
+            primaryAction: UIAction(title: backButtonLabel, image: backButtonImage) {
+                [weak self] _ in self?.onBack?()
+            }
         ).withCustomRangeHighlightColor()
         nextButton = RangeButton(
             configuration: UIButton.Configuration.blueButton(),
-            primaryAction: UIAction(
-                title: nextButtonLabel,
-                image: nextButtonImage
-            ) { [weak self] _ in self?.onNext?() }
+            primaryAction: UIAction(title: nextButtonLabel, image: nextButtonImage) {
+                [weak self] _ in self?.onNext?()
+            }
         ).withCustomRangeHighlightColor()
         bottomBar.addSubview(backButton)
         bottomBar.addSubview(nextButton)

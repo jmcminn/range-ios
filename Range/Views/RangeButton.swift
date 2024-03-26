@@ -23,6 +23,27 @@ class RangeButton: UIButton {
         return self
     }
 
+    /// Color overrides for selection state
+    private(set) var selectionBackgroundColor: UIColor?
+    private(set) var selectionForegroundColor: UIColor?
+    private(set) var selectionStrokeColor: UIColor?
+    /// Storing original values of colors for selection state overrides (these colors will be overriden in the configuration)
+    private(set) var defaultForegroundColor: UIColor?
+    private(set) var defaultStrokeColor: UIColor?
+
+    /// When called it overrides given colors when the control is in the selected state
+    func withSelectionConfig(backgroundColor: UIColor? = nil,
+                             foregroundColor: UIColor? = nil,
+                             strokeColor: UIColor? = nil) -> Self
+    {
+        selectionBackgroundColor = backgroundColor
+        selectionForegroundColor = foregroundColor
+        selectionStrokeColor = strokeColor
+        defaultForegroundColor = configuration?.baseForegroundColor
+        defaultStrokeColor = configuration?.background.strokeColor
+        return self
+    }
+
     override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
         let newArea = CGRect(
             x: bounds.origin.x + tapAreaInsets.left,
@@ -49,27 +70,46 @@ class RangeButton: UIButton {
         guard let configuration = configuration else {
             return
         }
-        var updatedConfiguration = configuration
+        var updatedConfig = configuration
 
-        if _withCustomRangeHighlightColor {
+        if _withCustomRangeHighlightColor || selectionBackgroundColor != nil {
             guard let baseBackgroundColor = configuration.baseBackgroundColor else {
                 fatalError("baseBackgroundColor not defined for a button")
             }
-            var background = configuration.background
-            background.backgroundColorTransformer = UIConfigurationColorTransformer { incomingColor in
-                switch self.state {
-                case .normal:
-                    // use the color as provided, with no adjustments
-                    return baseBackgroundColor
-                case [.highlighted]:
-                    return baseBackgroundColor._highlightColor
-                default:
-                    return incomingColor
+            switch state {
+            case .normal:
+                // use the color as provided, with no adjustments
+                updatedConfig.background.backgroundColor = baseBackgroundColor
+            case [.highlighted]:
+                if _withCustomRangeHighlightColor {
+                    updatedConfig.background.backgroundColor = baseBackgroundColor._highlightColor
                 }
+            case .selected:
+                if let selectionBackgroundColor {
+                    updatedConfig.background.backgroundColor = selectionBackgroundColor
+                }
+            default:
+                // no update to color
+                break
             }
-            updatedConfiguration.background = background
+        }
+        if let selectionForegroundColor {
+            switch state {
+            case .selected:
+                updatedConfig.baseForegroundColor = selectionForegroundColor
+            default:
+                updatedConfig.baseForegroundColor = defaultForegroundColor
+            }
+        }
+        if let selectionStrokeColor {
+            switch state {
+            case .selected:
+                updatedConfig.background.strokeColor = selectionStrokeColor
+            default:
+                updatedConfig.background.strokeColor = defaultStrokeColor
+            }
         }
 
-        self.configuration = updatedConfiguration
+        self.configuration = updatedConfig
     }
 }

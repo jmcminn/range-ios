@@ -112,6 +112,12 @@ extension UIColor {
 /// Highlight colors
 extension UIColor {
     var _highlightColor: UIColor {
+        // if the color is a clear color then return a clear color for highlight too
+        var a: CGFloat = 0
+        getRed(nil, green: nil, blue: nil, alpha: &a)
+        if a <= 0 {
+            return .clear
+        }
         // Can't compare the UIColor directly, need to compare the components, so we can as well compare the hex representation
         switch hexString {
         case UIColor.Green_01.hexString: return .Green_02

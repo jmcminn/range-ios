@@ -2,24 +2,39 @@ import Foundation
 import UIKit
 
 enum CanvasScreenshotSelectionShape {
-    case horizontal // 4 x 3 (width x height proportions)
+    case portrait // 4 x 3 (width x height proportions)
     case square // 1 x 1
-    case vertical // 3 x 4
+    case landscape // 3 x 4
 }
 
 /// Showing the overlay and buttons for canvas screenshot selection.
 /// We cannot use SwiftUI here because this needs to be a passthrough view and it's not supported to have user interaction passthrough
 /// views implemented using swiftUI and added to UIView using UIHostingController...
 class CanvasScreenshotSelectionViewController: UIViewController {
-    var selectionShape: CanvasScreenshotSelectionShape = .horizontal
+    private let canvasViewController: CanvasViewController
+    var selectionShape: CanvasScreenshotSelectionShape = .landscape
     private let backgroundView = SelectionBackgroundView()
     private let selectionBorderView = UIView()
+    private let titleView = UIStackView()
+    private let panAndZoomIndicatorView = ToastView(
+        iconName: "hand.point.up.left",
+        text: "Pan and zoom to get your desired viewport.",
+        backgroundColor: .Neutral_10, blurBackground: false
+    )
     private var cancelButton: RangeButton!
+    private let shapeButtonsView = UIView()
+    private var shapeButtons: [CanvasScreenshotSelectionShape: RangeButton] = [:]
     private var doneButton: RangeButton!
     var onCancel: (() -> Void)?
-    var onDone: (() -> Void)?
+    /// Called when user selected the screenshot area and confirmed. The first parameter is the screenshot area frame
+    /// in the canvasViewController coordinates
+    var onDone: ((CGRect) -> Void)?
 
-    init() {
+    /// id of registered delegate
+    private var canvasDelegateId: UUID?
+
+    init(canvasViewController: CanvasViewController) {
+        self.canvasViewController = canvasViewController
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -29,8 +44,6 @@ class CanvasScreenshotSelectionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setupButtons()
 
         view.addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
@@ -44,6 +57,14 @@ class CanvasScreenshotSelectionViewController: UIViewController {
         selectionBorderView.layer.borderColor = UIColor.Pink_03.cgColor
         selectionBorderView.layer.cornerRadius = 8
 
+        setupTitleView()
+        view.addSubview(titleView)
+        titleView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(12)
+        }
+
+        setupButtons()
         view.addSubview(cancelButton)
         cancelButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(28)
@@ -55,6 +76,24 @@ class CanvasScreenshotSelectionViewController: UIViewController {
             make.trailing.equalToSuperview().inset(28)
             make.width.height.bottom.equalTo(cancelButton)
         }
+
+        setupShapeButtons()
+        view.addSubview(shapeButtonsView)
+        shapeButtonsView.snp.makeConstraints { make in
+            make.centerY.equalTo(doneButton)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(155)
+            make.height.equalTo(48)
+        }
+
+        view.addSubview(panAndZoomIndicatorView)
+        panAndZoomIndicatorView.snp.remakeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(doneButton.snp.top).offset(-16)
+        }
+
+        canvasDelegateId = canvasViewController.addDelegate(self)
+        setSelectionShape(.landscape)
     }
 
     @available(*, unavailable)
@@ -65,10 +104,13 @@ class CanvasScreenshotSelectionViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        // TODO: 2560
-        // hardcoded for .horizontal with no bounds check
         let selectionFrameWidth = view.bounds.width
-        let selectionFrameHeight = selectionFrameWidth * 0.75
+        let selectionFrameHeight: CGFloat
+        switch selectionShape {
+        case .portrait: selectionFrameHeight = selectionFrameWidth * 4.0 / 3.0
+        case .square: selectionFrameHeight = selectionFrameWidth
+        case .landscape: selectionFrameHeight = selectionFrameWidth * 0.75
+        }
         let selectionFrame = CGRect(
             x: 0, y: view.bounds.midY - selectionFrameHeight / 2, width: selectionFrameWidth,
             height: selectionFrameHeight
@@ -95,10 +137,110 @@ class CanvasScreenshotSelectionViewController: UIViewController {
                 strokeColor: .Green_04, imagePointSize: 14
             ),
             primaryAction: UIAction(image: UIImage(systemName: "checkmark")) { [weak self] _ in
-                self?.onDone?()
+                guard let self else { return }
+                self.onDone?(self.selectionBorderView.frame)
             }
         ).withCustomRangeHighlightColor()
     }
+
+    private func setupShapeButtons() {
+        shapeButtonsView.layer.cornerRadius = 24
+        // always a dark color, but select from the proper theme (light or dark)
+        shapeButtonsView.backgroundColor = .Neutral_09
+
+        let buttonConfig = UIButton.Configuration.iconButton(
+            backgroundColor: .clear, foregroundColor: .Neutral_01,
+            strokeColor: .clear, imagePointSize: 11, imageFontWeight: .bold
+        )
+
+        let buttonsImages: [CanvasScreenshotSelectionShape: String] = [
+            .portrait: "rectangle.portrait.slash",
+            .square: "square.slash",
+            .landscape: "rectangle.slash",
+        ]
+        for (shape, imageName) in buttonsImages {
+            let button = RangeButton(
+                configuration: buttonConfig,
+                primaryAction: UIAction(image: UIImage(systemName: imageName)) { [weak self] _ in
+                    self?.setSelectionShape(shape)
+                }
+            )
+            .withCustomRangeHighlightColor()
+            .withSelectionConfig(backgroundColor: .Neutral_10, foregroundColor: .Pink_03, strokeColor: .Pink_03)
+
+            shapeButtonsView.addSubview(button)
+            shapeButtons[shape] = button
+        }
+
+        shapeButtons[.portrait]?.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview()
+            make.width.height.equalTo(48)
+        }
+        shapeButtons[.square]?.snp.makeConstraints { make in
+            make.top.centerX.equalToSuperview()
+            make.width.height.equalTo(48)
+        }
+        shapeButtons[.landscape]?.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview()
+            make.width.height.equalTo(48)
+        }
+    }
+
+    private func setSelectionShape(_ shape: CanvasScreenshotSelectionShape) {
+        selectionShape = shape
+        for (key, button) in shapeButtons {
+            button.isSelected = key == shape
+        }
+        view.setNeedsLayout()
+        UIView.animate(withDuration: 0.1) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    private func setupTitleView() {
+        titleView.axis = .horizontal
+        titleView.distribution = .equalSpacing
+        titleView.spacing = 8
+        titleView.alignment = .trailing
+
+        let font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
+        let color = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_04)
+        let imageView = UIImageView(image: UIImage(
+            systemName: "camera.viewfinder",
+            withConfiguration: UIImage.SymbolConfiguration(font: font)
+        ))
+        imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        imageView.tintColor = color
+        titleView.addArrangedSubview(imageView)
+
+        let titleLabel = UILabel()
+        titleLabel.text = "Take Canvas Screenshot"
+        titleLabel.textColor = color
+        titleLabel.font = font
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleView.addArrangedSubview(titleLabel)
+    }
+
+    private func hidePanAndZoomIndicatorView() {
+        UIView.animate(withDuration: 0.2,
+                       animations: {
+                           self.panAndZoomIndicatorView.alpha = 0
+                       }, completion: { _ in
+                           self.panAndZoomIndicatorView.removeFromSuperview()
+                       })
+    }
+}
+
+/// CanvasViewControllerDelegate
+extension CanvasScreenshotSelectionViewController: CanvasViewControllerDelegate {
+    func canvasCameraChanged(reason: CanvasCameraChangeReason) {
+        if reason == .pan || reason == .zoom {
+            hidePanAndZoomIndicatorView()
+        }
+    }
+
+    func canvasTapRecognized(at _: CGPoint) {}
+    func canvasLongPressRecognized(at _: CGPoint) {}
 }
 
 class SelectionBackgroundView: UIVisualEffectView {

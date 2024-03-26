@@ -49,7 +49,7 @@ protocol CanvasViewControllerDelegate {
 ///
 /// - For mapbox and drone deploy sources it just displays the style defined in the source.
 class CanvasViewController: UIViewController {
-    let maxMapboxZoom = 25.5
+    static let maxMapboxZoom = 25.5
 
     let zoomConverter: MapboxZoomConverter
 
@@ -73,9 +73,9 @@ class CanvasViewController: UIViewController {
 
     unowned let model: ProjectModel
     unowned let canvasFileLoader: CanvasFileLoader
-    private var canvas: Canvas
+    private(set) var canvas: Canvas
     // only when displaying pdf source
-    private var pdfPage: PDFPage?
+    private(set) var pdfPage: PDFPage?
 
     /// Mapbox for rendering the background mapview for .mapbox and .dronedeploy sources and for rendering the pins for all sources
     /// Achtung: reloading mapView instance when switching sources is not supported now. So when switching sources the initial
@@ -132,174 +132,31 @@ class CanvasViewController: UIViewController {
         }
     }
 
-    private let screenshotAreaView = UIView()
-    private var mapSnapshotter: Snapshotter?
-
-    // TODO: 2560 move to Canvas Screenshotter
-    // TODO: 2560 viewport parameter?
-    func takeScreenshot() async throws -> UIImage {
-        // TODO: 2560 this should be handled by CanvasScreenshotSelectionVC
-        if screenshotAreaView.superview == nil {
-            screenshotAreaView.isUserInteractionEnabled = false
-            screenshotAreaView.layer.cornerRadius = 8
-            view.addSubview(screenshotAreaView)
-            screenshotAreaView.snp.makeConstraints { make in
-                make.center.width.equalToSuperview()
-                make.height.equalTo(screenshotAreaView.snp.width).multipliedBy(0.75)
-            }
-            view.layoutIfNeeded()
+    /// Convert given frame from this view coordinates into PDF page coordinates for currently displayed PDF page
+    /// (so based on the current display of pdf - zoom, pan, get which part of the pdf page is inside given viewFrame)
+    /// The result is in PDFPage .mediaBox coordinates (not view coordinates)
+    func getPDFPageFrameForViewFrame(_ viewFrame: CGRect) -> CGRect {
+        guard let page = pdfPage, let pdfView = pdfScrollView?.pdfView else {
+            fatalError("pdf page or view missing foc pdf canvas source")
         }
 
-        if canvas.currentCanvasSource.type == .pdf {
-            guard let page = pdfPage, let pdfView = pdfScrollView?.pdfView else {
-                throw "pdf page or view missing foc pdf canvas source"
-            }
-
-            // this gives the part of the pdf view visible inside the screenshotArea
-            // it's all in pdfView units (not in the pdf page coordinates)
-            let screenshotViewBoundsInPdfViewCoordinates = screenshotAreaView.convert(
-                screenshotAreaView.bounds,
-                to: pdfView
-            )
-            // the size reported by the PDF page (unrelated to view rendering)
-            let pageBounds = page.bounds(for: .mediaBox)
-            // pdf page size to the rendered view ratio
-            let pageBoundsToViewFrameRatio = pageBounds.width / pdfView.frame.width
-            // selection bounds in the coordinates of the page bounds (in PDF units, unrelated to view rendering)
-            let selectionBounds = CGRect(
-                x: screenshotViewBoundsInPdfViewCoordinates.origin.x * pageBoundsToViewFrameRatio,
-                y: screenshotViewBoundsInPdfViewCoordinates.origin.y * pageBoundsToViewFrameRatio,
-                width: screenshotViewBoundsInPdfViewCoordinates.width * pageBoundsToViewFrameRatio,
-                height: screenshotViewBoundsInPdfViewCoordinates.height * pageBoundsToViewFrameRatio
-            )
-            // Scale from the pdf selection bounds size to the expected image size
-            // If pdf selection is 400x300 but we want a 4096px wide image then scale is 10.24 (4096/400)
-            // This is needed to render images in constant resolution and not depending on the
-            // size (in PDF units) of selected PDF are
-            let scale = 4096.0 / max(selectionBounds.width, selectionBounds.height)
-            let imageSize = CGSize(
-                width: selectionBounds.size.width * scale,
-                height: selectionBounds.size.height * scale
-            )
-            let renderer = UIGraphicsImageRenderer(
-                size: imageSize,
-                // keep the original scale (changing the scale here would change the image resolution):
-                format: UIGraphicsImageRendererFormat(for: UITraitCollection(displayScale: 1))
-            )
-            let img = renderer.image { ctx in
-                UIColor.white.set()
-                // fill the background
-                ctx.fill(CGRect(origin: .zero, size: imageSize))
-
-                // PDF has (0,0) in the bottom left
-                ctx.cgContext.translateBy(
-                    x: scale * -selectionBounds.origin.x, // offset according to selection offset
-                    y: scale * (-selectionBounds.origin.y + pageBounds.height) // offset
-                )
-                // -1 for y and a special offset above (pageBounds.height) are to mirror the PDF
-                ctx.cgContext.scaleBy(x: 1.0, y: -1.0)
-                // match the img scale
-                ctx.cgContext.scaleBy(x: scale, y: scale)
-
-                page.draw(with: .mediaBox, to: ctx.cgContext)
-            }
-            return img
-        } else {
-            // the size for mapbox snapshot must match the area to be snapshotted size
-            // If the size is bigger it just snapshots a wider area
-            // We can make it better quality by specifying the pixelRatio
-
-            // -------------------------------------------------------------------------------------
-            // Snapshot size vs pixelRatio.
-            // screenshotAreaView is quite small in points.
-            // If we want the screenshot with given size (4096x3072), we have 2 options:
-            // 1. use the screenshotAreaView with current camera zoom level and adjust the
-            //    pixelRatio to make the final image resolution higher
-            //    - this works but takes the screenshot at a zoom level where the details
-            //      are suited for screenshotAreaView size, so making it more dense doesn't help much,
-            //      it only makes the roads, names higher res
-            // 2. Adjust the size to be 4096x3072, at the same time adjust the camera zoom (zoom in),
-            //    so it still shows the same real world bounds. So we just pretend we're on a bigger
-            //    screen.
-            //    - this will render a different zoom level tiles, but the end image will be really
-            //      in higher "real map" resolution
-            //    - the drawback is that it's not actually rendering the tiles user sees when taking
-            //      screenshot, but potentially switches to a higher-res tiles level
-            //    - when doing this procedure, we need to limit this procedure to the max mapbox zoom
-            //      level, so in fact it'll be a mix of (2) and (1) if max level is reached
-
-            let snapshotSize: CGSize
-            let snapshotZoom: CGFloat
-
-            let useOption1 = false
-            // option 1
-            if useOption1 {
-                snapshotSize = screenshotAreaView.frame.size
-                snapshotZoom = mapView.mapboxMap.cameraState.zoom
-            } else {
-                let expectedZoomIn = min(
-                    // TODO: 2560 limit the zoom in??
-                    CGFloat(_debugSettings.mapboxCanvasSnapshotZoomInFactor),
-                    4096 / max(
-                        screenshotAreaView.frame.width,
-                        screenshotAreaView.frame.height
-                    )
-                )
-
-                // current zoom observed by user when taking the screenshot
-                let initialZoom = mapView.mapboxMap.cameraState.zoom
-                // adjust the current zoom to make it * expectedZoomIn. We cannot just
-                // mulitply as mapbox zoom is exponential, so we convert to a linear
-                // value, multiply and convert back
-                let initialMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: initialZoom)
-                // we want to zoom in * expectedZoomIn, so we want less metersPerPoint
-                let expectedMetersPerPoint = initialMetersPerPoint / expectedZoomIn
-                let expectedZoom = zoomConverter.getZoom(forMetersPerPoint: expectedMetersPerPoint)
-
-                snapshotZoom = min(expectedZoom, maxMapboxZoom)
-                print(
-                    "XXX camera zoom \(initialZoom) '*' \(expectedZoomIn) = \(expectedZoom), allowed = \(snapshotZoom)"
-                )
-
-                // if we applied the maxMapboxZoom we need to go back to calculate the snapshotSize
-                // we get from zooming in (if not we can still do it)
-                let allowedMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: snapshotZoom)
-                let allowedZoomIn = initialMetersPerPoint / allowedMetersPerPoint
-
-                snapshotSize = CGSize(
-                    width: screenshotAreaView.frame.size.width * allowedZoomIn,
-                    height: screenshotAreaView.frame.size.height * allowedZoomIn
-                )
-            }
-            let snapshotPixelRatio = 4096 / max(
-                snapshotSize.width,
-                snapshotSize.height
-            )
-            let snapshotOptions = MapSnapshotOptions(
-                size: snapshotSize, pixelRatio: snapshotPixelRatio,
-                showsLogo: false, showsAttribution: false
-            )
-            print("XXX ", snapshotOptions, snapshotZoom)
-            var cameraOptions = CameraOptions(cameraState: mapView.mapboxMap.cameraState)
-            cameraOptions.zoom = snapshotZoom
-            mapSnapshotter = Snapshotter(options: snapshotOptions)
-
-            return try await withCheckedThrowingContinuation { continuation in
-                mapSnapshotter?._loadMapboxStyle(forCanvasSourceData: canvas.currentCanvasSource.data) { error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else {
-                        self.mapSnapshotter?.setCamera(to: cameraOptions)
-                        self.mapSnapshotter?.start(overlayHandler: nil) { result in
-                            switch result {
-                            case let .success(image): continuation.resume(returning: image)
-                            case let .failure(error): continuation.resume(throwing: error)
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // this gives the part of the pdf view visible inside the viewFrame
+        // it's all in pdfView units (not in the pdf page coordinates)
+        let viewFrameInPdfViewCoordinates = view.convert(
+            viewFrame,
+            to: pdfView
+        )
+        // the size reported by the PDF page (unrelated to view rendering)
+        let pageBounds = page.bounds(for: .mediaBox)
+        // pdf page size to the rendered view ratio
+        let pageBoundsToViewFrameRatio = pageBounds.width / pdfView.frame.width
+        // viewFrame in the coordinates of the page bounds (in PDF units, unrelated to view rendering)
+        return CGRect(
+            x: viewFrameInPdfViewCoordinates.origin.x * pageBoundsToViewFrameRatio,
+            y: viewFrameInPdfViewCoordinates.origin.y * pageBoundsToViewFrameRatio,
+            width: viewFrameInPdfViewCoordinates.width * pageBoundsToViewFrameRatio,
+            height: viewFrameInPdfViewCoordinates.height * pageBoundsToViewFrameRatio
+        )
     }
 
     override func viewDidLoad() {
@@ -563,7 +420,8 @@ class CanvasViewController: UIViewController {
         )
 
         do {
-            try mapView.mapboxMap.setCameraBounds(with: CameraBoundsOptions(maxZoom: maxMapboxZoom))
+            try mapView.mapboxMap
+                .setCameraBounds(with: CameraBoundsOptions(maxZoom: CanvasViewController.maxMapboxZoom))
         } catch {
             Logger.mapbox.error("set initial camera bounds failed: \(error.localizedDescription, privacy: .public)")
         }

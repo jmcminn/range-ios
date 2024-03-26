@@ -110,14 +110,20 @@ extension UIButton.Configuration {
         foregroundColor: UIColor = .Neutral_01,
         strokeColor: UIColor,
         cornerRadius: CGFloat = 24,
-        imagePointSize: CGFloat? = nil
+        imagePointSize: CGFloat? = nil,
+        imageFontWeight: UIFont.Weight? = nil
     ) -> UIButton
         .Configuration
     {
         // size 18 here corresponds to 22 in the design. I don't know where does the difference come from
         let imageConfig: UIImage.SymbolConfiguration
         if let imagePointSize = imagePointSize {
-            imageConfig = UIImage.SymbolConfiguration(pointSize: imagePointSize)
+            if let imageFontWeight {
+                imageConfig = UIImage
+                    .SymbolConfiguration(font: UIFont.systemFont(ofSize: imagePointSize, weight: imageFontWeight))
+            } else {
+                imageConfig = UIImage.SymbolConfiguration(pointSize: imagePointSize)
+            }
         } else {
             imageConfig = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 18, weight: .bold))
         }
