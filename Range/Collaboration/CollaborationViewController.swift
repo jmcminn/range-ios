@@ -418,14 +418,12 @@ extension CollaborationViewController {
 
     /// update the feed header height based on the detailsVC height and animate the card height
     private func updateFeedHeaderHeight() {
+        feedVC.tableView.tableHeaderView?.frame.size.height = detailsVC.height()
+
         // update the height
         if let cardDragging = cardDragging {
             cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: true)
         }
-
-        feedVC.tableView.beginUpdates()
-        feedVC.tableView.tableHeaderView?.frame.size.height = detailsVC.height()
-        feedVC.tableView.endUpdates()
     }
 }
 
