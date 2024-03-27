@@ -3,9 +3,6 @@ import UIKit
 
 /// Definition of a scribble drawing
 class ScribbleAnnotation: NSObject, Codable {
-    /// The name for the notification posted in NotificationCenter when the annotation changes
-    static let UpdateNotificationName = Notification.Name("io.range.App.ScribbleAnnotationChanged")
-
     /// The unique id of the annotation
     let id: String
     /// Type, it's not `let` so it's encoded/decoded
@@ -58,7 +55,7 @@ class ScribbleAnnotation: NSObject, Codable {
 
     /// Use notification center to post the notification about update in filters
     private func postUpdate() {
-        NotificationCenter.default.post(name: ScribbleAnnotation.UpdateNotificationName, object: id)
+        NotificationCenter.default.post(name: AnnotationUpdateNotificationName, object: id)
     }
 }
 

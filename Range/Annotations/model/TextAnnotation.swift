@@ -3,9 +3,6 @@ import UIKit
 
 /// Definition of a text box annotation
 class TextAnnotation: NSObject, Codable {
-    /// The name for the notification posted in NotificationCenter when the annotation changes
-    static let UpdateNotificationName = Notification.Name("io.range.App.TextAnnotationChanged")
-
     /// The unique id of the annotation
     let id: String
     /// Type, it's not `let` so it's encoded/decoded
@@ -73,7 +70,7 @@ class TextAnnotation: NSObject, Codable {
 
     /// Use notification center to post the notification about update in filters
     private func postUpdate() {
-        NotificationCenter.default.post(name: TextAnnotation.UpdateNotificationName, object: id)
+        NotificationCenter.default.post(name: AnnotationUpdateNotificationName, object: id)
     }
 }
 

@@ -5,6 +5,9 @@ enum AnnotationType: String, Codable {
     case scribble, text, arrow
 }
 
+/// The name for the notification posted in NotificationCenter when the annotation changes
+let AnnotationUpdateNotificationName = Notification.Name("io.range.App.AnnotationChanged")
+
 /// Defines annotations representations as enum (so we can have Annotation "superclass" kind of approach)
 enum Annotation: Equatable, Hashable {
     case arrow(_ data: ArrowAnnotation)

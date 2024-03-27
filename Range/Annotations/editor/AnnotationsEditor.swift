@@ -85,15 +85,7 @@ class AnnotationsEditor: NSObject {
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(checkAnnotationsUpdated),
-            name: ScribbleAnnotation.UpdateNotificationName, object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(checkAnnotationsUpdated),
-            name: TextAnnotation.UpdateNotificationName, object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(checkAnnotationsUpdated),
-            name: ArrowAnnotation.UpdateNotificationName, object: nil
+            name: AnnotationUpdateNotificationName, object: nil
         )
 
         textAnnotationInputAccessoryView = setupTextAnnotationInputAccessoryView()
