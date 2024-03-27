@@ -2,11 +2,7 @@ import Foundation
 import UIKit
 
 /// Definition of a scribble drawing
-class ScribbleAnnotation: NSObject, Codable {
-    /// The unique id of the annotation
-    let id: String
-    /// Type, it's not `let` so it's encoded/decoded
-    private(set) var type: AnnotationType = .scribble
+class ScribbleAnnotation: Annotation {
     /// Path in the image coordinates space
     var path: RangeBezierPath { didSet { postUpdate() }}
     /// scribble thickness
@@ -22,19 +18,39 @@ class ScribbleAnnotation: NSObject, Codable {
         }
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case path, lineWidth, hexColor
+    }
+
     init(
         id: String = UUID().uuidString.lowercased(),
         path: RangeBezierPath,
         lineWidth: Double,
         color: UIColor
     ) {
-        self.id = id
         self.path = path
         self.lineWidth = lineWidth
         hexColor = color.hexString
+        super.init(id: id, type: .scribble)
     }
 
-    func duplicate(withOffset offset: CGPoint) -> ScribbleAnnotation {
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        path = try container.decode(RangeBezierPath.self, forKey: .path)
+        lineWidth = try container.decode(Double.self, forKey: .lineWidth)
+        hexColor = try container.decode(String.self, forKey: .hexColor)
+        try super.init(from: decoder)
+    }
+
+    override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(path, forKey: .path)
+        try container.encode(lineWidth, forKey: .lineWidth)
+        try container.encode(hexColor, forKey: .hexColor)
+        try super.encode(to: encoder)
+    }
+
+    override func duplicate(withOffset offset: CGPoint) -> ScribbleAnnotation {
         .init(path: path.getTranslatedPath(x: offset.x, y: offset.y), lineWidth: lineWidth, color: color)
     }
 
@@ -47,25 +63,8 @@ class ScribbleAnnotation: NSObject, Codable {
         return true
     }
 
-    override public var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(id)
-        return hasher.finalize()
-    }
-
-    /// Use notification center to post the notification about update in filters
-    private func postUpdate() {
-        NotificationCenter.default.post(name: AnnotationUpdateNotificationName, object: id)
-    }
-}
-
-extension ScribbleAnnotation: NSCopying {
     /// Deep copy of the annotation
-    func copy(with _: NSZone? = nil) -> Any {
+    override func copy(with _: NSZone? = nil) -> Any {
         ScribbleAnnotation(id: id, path: path.copy() as! RangeBezierPath, lineWidth: lineWidth, color: color)
     }
-}
-
-extension ScribbleAnnotation: AnnotationConvertible {
-    public var annotation: Annotation { .scribble(self) }
 }

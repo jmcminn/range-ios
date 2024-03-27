@@ -2,11 +2,7 @@ import Foundation
 import UIKit
 
 /// Definition of a text box annotation
-class TextAnnotation: NSObject, Codable {
-    /// The unique id of the annotation
-    let id: String
-    /// Type, it's not `let` so it's encoded/decoded
-    private(set) var type: AnnotationType = .text
+class TextAnnotation: Annotation {
     /// text
     var text: String { didSet { postUpdate() }}
     /// position of the top left corner of the text box (including the white background)
@@ -34,6 +30,10 @@ class TextAnnotation: NSObject, Codable {
         }
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case text, position, fontSize, hexColor
+    }
+
     init(
         id: String = UUID().uuidString.lowercased(),
         text: String,
@@ -41,14 +41,32 @@ class TextAnnotation: NSObject, Codable {
         fontSize: Double,
         color: UIColor
     ) {
-        self.id = id
         self.text = text
         self.position = position.roundCoordinates()
         self.fontSize = fontSize
         hexColor = color.hexString
+        super.init(id: id, type: .text)
     }
 
-    func duplicate(withOffset offset: CGPoint) -> TextAnnotation {
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        text = try container.decode(String.self, forKey: .text)
+        position = try container.decode(CGPoint.self, forKey: .position)
+        fontSize = try container.decode(Double.self, forKey: .fontSize)
+        hexColor = try container.decode(String.self, forKey: .hexColor)
+        try super.init(from: decoder)
+    }
+
+    override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(text, forKey: .text)
+        try container.encode(position, forKey: .position)
+        try container.encode(fontSize, forKey: .fontSize)
+        try container.encode(hexColor, forKey: .hexColor)
+        try super.encode(to: encoder)
+    }
+
+    override func duplicate(withOffset offset: CGPoint) -> TextAnnotation {
         .init(text: text, position: position.addTo(offset), fontSize: fontSize, color: color)
     }
 
@@ -62,21 +80,8 @@ class TextAnnotation: NSObject, Codable {
         return true
     }
 
-    override public var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(id)
-        return hasher.finalize()
-    }
-
-    /// Use notification center to post the notification about update in filters
-    private func postUpdate() {
-        NotificationCenter.default.post(name: AnnotationUpdateNotificationName, object: id)
-    }
-}
-
-extension TextAnnotation: NSCopying {
     /// Deep copy of the annotation
-    func copy(with _: NSZone? = nil) -> Any {
+    override func copy(with _: NSZone? = nil) -> Any {
         TextAnnotation(
             id: id,
             text: text,
@@ -85,8 +90,4 @@ extension TextAnnotation: NSCopying {
             color: color
         )
     }
-}
-
-extension TextAnnotation: AnnotationConvertible {
-    public var annotation: Annotation { .text(self) }
 }

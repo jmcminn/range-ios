@@ -2,9 +2,13 @@ import Foundation
 
 /// "Abstract"  parent for all annotation view models.
 /// Swift doesn't support abstract classes so it's just a normal class with some functions not implemented (to be implemented by subclasses)
-class AnnotationViewModel: NSObject, AnnotationConvertible {
-    /// The unique id of the annotation
-    let id: String
+// TODO: 2638
+class AnnotationViewModel: NSObject { // , AnnotationConvertible {
+    // TODO: 2638 a generic class?
+    let annotation: Annotation
+
+    var id: String { annotation.id }
+    var type: AnnotationType { annotation.type }
 
     /// annotationsGeometry is required for annotation to render and calculate it's size. All annotationes requried the scale, some annotations
     /// additinally need to know the image size (to calculate text wrapping, etc.)
@@ -30,18 +34,8 @@ class AnnotationViewModel: NSObject, AnnotationConvertible {
     /// The reference (and initial) value is based on the scale value
     @objc dynamic var zoomScale: Double = 0
 
-    /// Get the current annotation with all the changes applied in the view model
-    var annotation: Annotation {
-        fatalError("annotation to be provided by subclasses")
-    }
-
-    /// The AnnotationType of this annotation
-    var type: AnnotationType {
-        fatalError("type to be provided by subclasses")
-    }
-
-    init(id: String, annotationsGeometry: AnnotationsGeometry) {
-        self.id = id
+    init(annotation: Annotation, annotationsGeometry: AnnotationsGeometry) {
+        self.annotation = annotation
         self.annotationsGeometry = annotationsGeometry
     }
 

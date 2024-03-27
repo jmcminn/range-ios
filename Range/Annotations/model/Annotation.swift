@@ -8,49 +8,37 @@ enum AnnotationType: String, Codable {
 /// The name for the notification posted in NotificationCenter when the annotation changes
 let AnnotationUpdateNotificationName = Notification.Name("io.range.App.AnnotationChanged")
 
-/// Defines annotations representations as enum (so we can have Annotation "superclass" kind of approach)
-enum Annotation: Equatable, Hashable {
-    case arrow(_ data: ArrowAnnotation)
-    case scribble(_ data: ScribbleAnnotation)
-    case text(_ data: TextAnnotation)
+/// "Abstract"  parent for all annotation models.
+/// Swift doesn't support abstract classes so it's just a normal class with some functions not implemented (to be implemented by subclasses)
+class Annotation: NSObject, NSCopying, Codable {
+    /// The unique id of the annotation
+    let id: String
+    /// Type, it's not `let` so it's encoded/decoded
+    let type: AnnotationType
 
-    func hash(into hasher: inout Hasher) {
-        switch self {
-        case let .arrow(data): hasher.combine(data.id)
-        case let .scribble(data): hasher.combine(data.id)
-        case let .text(data): hasher.combine(data.id)
-        }
-    }
-}
-
-/// A type that can be represented as a `Annotation` instance.
-protocol AnnotationConvertible {
-    /// The instance wrapped in a `Annotation` instance.
-    var annotation: Annotation { get }
-}
-
-/// Custom Codable so it's encoded as { type: , ... } and not the default encoding for swift enums which adds 2 levels of hierarchy in the json
-extension Annotation: Codable {
-    private enum CodingKeys: String, CodingKey {
-        case type
+    init(id: String = UUID().uuidString.lowercased(), type: AnnotationType) {
+        self.id = id
+        self.type = type
     }
 
-    public init(from decoder: Decoder) throws {
-        let typeContainer = try decoder.container(keyedBy: CodingKeys.self)
-        let container = try decoder.singleValueContainer()
-        switch try typeContainer.decode(AnnotationType.self, forKey: .type) {
-        case .arrow: self = .arrow(try container.decode(ArrowAnnotation.self))
-        case .scribble: self = .scribble(try container.decode(ScribbleAnnotation.self))
-        case .text: self = .text(try container.decode(TextAnnotation.self))
-        }
+    /// Exact copy of the annotation (including the id)
+    func copy(with _: NSZone? = nil) -> Any {
+        fatalError("copy to be provided by subclasses")
     }
 
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case let .arrow(data): try container.encode(data)
-        case let .scribble(data): try container.encode(data)
-        case let .text(data): try container.encode(data)
-        }
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(id)
+        return hasher.finalize()
+    }
+
+    /// A duplicate is a copy that has a different id and is offset by given (x,y)
+    func duplicate(withOffset _: CGPoint) -> Annotation {
+        fatalError("duplicate to be provided by subclasses")
+    }
+
+    /// Use notification center to post the notification about update in filters
+    func postUpdate() {
+        NotificationCenter.default.post(name: AnnotationUpdateNotificationName, object: id)
     }
 }

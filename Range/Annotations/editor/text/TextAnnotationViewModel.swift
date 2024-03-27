@@ -15,9 +15,6 @@ class TextAnnotationViewModel: AnnotationViewModel {
         }
     }}
 
-    override var annotation: Annotation { text.annotation }
-    override var type: AnnotationType { text.type }
-
     /// Every time the text annotation enters the editing mode (`textEditing` set to `true`) the text value is stored in this property.
     /// At the end of editing it can be used to check if there's any changes.
     private(set) var textOnEditingStarted: String
@@ -26,7 +23,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     init(text: TextAnnotation, annotationsGeometry: AnnotationsGeometry) {
         self.text = text
         textOnEditingStarted = text.text
-        super.init(id: text.id, annotationsGeometry: annotationsGeometry)
+        super.init(annotation: text, annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1
         updateViewFrame()

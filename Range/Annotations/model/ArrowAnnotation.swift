@@ -2,11 +2,7 @@ import Foundation
 import UIKit
 
 /// Definition of an arrow annotation
-class ArrowAnnotation: NSObject, Codable {
-    /// The unique id of the annotation
-    let id: String
-    /// Type, it's not `let` so it's encoded/decoded
-    private(set) var type: AnnotationType = .arrow
+class ArrowAnnotation: Annotation {
     /// position of the start point of the arrow (the one with no arrow tip)
     var startPoint: CGPoint { didSet {
         startPoint = startPoint.roundCoordinates()
@@ -30,6 +26,10 @@ class ArrowAnnotation: NSObject, Codable {
         }
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case startPoint, endPoint, lineWidth, hexColor
+    }
+
     init(
         id: String = UUID().uuidString.lowercased(),
         startPoint: CGPoint,
@@ -37,14 +37,32 @@ class ArrowAnnotation: NSObject, Codable {
         lineWidth: Double,
         color: UIColor
     ) {
-        self.id = id
         self.startPoint = startPoint
         self.endPoint = endPoint
         self.lineWidth = lineWidth
         hexColor = color.hexString
+        super.init(id: id, type: .arrow)
     }
 
-    func duplicate(withOffset offset: CGPoint) -> ArrowAnnotation {
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        startPoint = try container.decode(CGPoint.self, forKey: .startPoint)
+        endPoint = try container.decode(CGPoint.self, forKey: .endPoint)
+        lineWidth = try container.decode(Double.self, forKey: .lineWidth)
+        hexColor = try container.decode(String.self, forKey: .hexColor)
+        try super.init(from: decoder)
+    }
+
+    override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(startPoint, forKey: .startPoint)
+        try container.encode(endPoint, forKey: .endPoint)
+        try container.encode(lineWidth, forKey: .lineWidth)
+        try container.encode(hexColor, forKey: .hexColor)
+        try super.encode(to: encoder)
+    }
+
+    override func duplicate(withOffset offset: CGPoint) -> ArrowAnnotation {
         .init(
             startPoint: startPoint.addTo(offset),
             endPoint: endPoint.addTo(offset),
@@ -63,21 +81,8 @@ class ArrowAnnotation: NSObject, Codable {
         return true
     }
 
-    override public var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(id)
-        return hasher.finalize()
-    }
-
-    /// Use notification center to post the notification about update in filters
-    private func postUpdate() {
-        NotificationCenter.default.post(name: AnnotationUpdateNotificationName, object: id)
-    }
-}
-
-extension ArrowAnnotation: NSCopying {
     /// Deep copy of the annotation
-    func copy(with _: NSZone? = nil) -> Any {
+    override func copy(with _: NSZone? = nil) -> Any {
         ArrowAnnotation(
             id: id,
             startPoint: startPoint,
@@ -86,8 +91,4 @@ extension ArrowAnnotation: NSCopying {
             color: color
         )
     }
-}
-
-extension ArrowAnnotation: AnnotationConvertible {
-    public var annotation: Annotation { .arrow(self) }
 }

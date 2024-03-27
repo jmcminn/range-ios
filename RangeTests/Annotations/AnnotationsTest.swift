@@ -4,7 +4,7 @@ import XCTest
 final class AnnotationsTest: XCTestCase {
     func testPersisting() throws {
         let annotations = Annotations(width: 2048, height: 1536, scale: 2.0, [
-            .scribble(ScribbleAnnotation(
+            ScribbleAnnotation(
                 id: "annotation1",
                 path: RangeBezierPath(elements: [
                     .move(to: CGPoint(x: 10, y: 10)),
@@ -12,7 +12,7 @@ final class AnnotationsTest: XCTestCase {
                 ]),
                 lineWidth: 6,
                 color: .black
-            )),
+            ),
         ])
 
         // 1 convert to persisted value

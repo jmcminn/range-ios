@@ -16,13 +16,55 @@ final class Annotations: NSObject, Codable {
     /// added with ".medium" thickness will have a lineWidth of 2 * medium.lineWidth = 2 * 6 = 12 pixels (when rendered on the photo)
     /// Calculated as: min(imageWidth, imageHeight) / Annotations.referenceViewSize
     private(set) var scale: Double
+
     var annotations: [Annotation]
+
+    private enum CodingKeys: String, CodingKey {
+        case format, width, height, scale, annotations
+    }
+
+    // to decide which annotation to decode Annotations need to partially decode it to get the
+    // type and then use the proper class to decode the annotation data
+    private enum AnnotationCodingKeys: String, CodingKey {
+        case type
+    }
 
     init(width: Int, height: Int, scale: Double, _ annotations: [Annotation]) {
         self.width = width
         self.height = height
         self.scale = scale
         self.annotations = annotations
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        format = try container.decode(String.self, forKey: .format)
+        width = try container.decode(Int.self, forKey: .width)
+        height = try container.decode(Int.self, forKey: .height)
+        scale = try container.decode(Double.self, forKey: .scale)
+
+        // decode annotations. We need to select the proper Annotation subclass based on the type:
+        annotations = []
+
+        // as we have only 1 decode call per annotations array decoding, we need to do 2 passes
+        // The first pass stores the annotation types
+        var annotationTypes: [AnnotationType] = []
+        var annotationsTypesContainer = try container.nestedUnkeyedContainer(forKey: .annotations)
+        while !annotationsTypesContainer.isAtEnd {
+            let annotationTypeContainer = try annotationsTypesContainer
+                .nestedContainer(keyedBy: AnnotationCodingKeys.self)
+            annotationTypes.append(try annotationTypeContainer.decode(AnnotationType.self, forKey: .type))
+        }
+        // The 2nd pass uses the annotation types from the first pass to decode given Annotation subclass
+        var annotationsContainer = try container.nestedUnkeyedContainer(forKey: .annotations)
+        while !annotationsContainer.isAtEnd {
+            let annotation = switch annotationTypes[annotationsContainer.currentIndex] {
+            case .scribble: try annotationsContainer.decode(ScribbleAnnotation.self)
+            case .text: try annotationsContainer.decode(TextAnnotation.self)
+            case .arrow: try annotationsContainer.decode(ArrowAnnotation.self)
+            }
+            annotations.append(annotation)
+        }
     }
 
     override func isEqual(_ object: Any?) -> Bool {
@@ -33,16 +75,6 @@ final class Annotations: NSObject, Codable {
         if scale != rhs.scale { return false }
         if annotations != rhs.annotations { return false }
         return true
-    }
-
-    /// A convenience function to extract all text annotations
-    func getTextAnnotations() -> [TextAnnotation] {
-        annotations.compactMap {
-            if case let .text(textAnnotation) = $0 {
-                return textAnnotation
-            }
-            return nil
-        }
     }
 }
 

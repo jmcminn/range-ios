@@ -5,9 +5,6 @@ import UIKit
 class ArrowAnnotationViewModel: AnnotationViewModel {
     @objc private(set) dynamic var arrow: ArrowAnnotation
 
-    override var annotation: Annotation { arrow.annotation }
-    override var type: AnnotationType { arrow.type }
-
     /// The internal representation of path with points in image coordinates
     private var arrowPath: RangeBezierPath!
     /// The representation for annotation view with points in local viewFrame coordinates
@@ -27,7 +24,7 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
     /// Initiates the view model with given annotation and annotationsGeometry
     init(arrow: ArrowAnnotation, annotationsGeometry: AnnotationsGeometry) {
         self.arrow = arrow
-        super.init(id: arrow.id, annotationsGeometry: annotationsGeometry)
+        super.init(annotation: arrow, annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1
         updateViewFrame()

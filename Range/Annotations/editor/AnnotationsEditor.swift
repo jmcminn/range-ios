@@ -144,10 +144,14 @@ class AnnotationsEditor: NSObject {
                 // copy so we don't change the initial annotations (the initial values should not be
                 // changed as we need them to compare new state vs initial, changing them would also
                 // break the "cancel" functionality of the annotations editor)
-                switch annotation {
-                case let .arrow(arrow): addArrow(arrow.copy() as! ArrowAnnotation)
-                case let .scribble(scribble): addScribble(scribble.copy() as! ScribbleAnnotation)
-                case let .text(text): addText(text.copy() as! TextAnnotation)
+                if let arrow = annotation as? ArrowAnnotation {
+                    addArrow(arrow.copy() as! ArrowAnnotation)
+                } else if let scribble = annotation as? ScribbleAnnotation {
+                    addScribble(scribble.copy() as! ScribbleAnnotation)
+                } else if let text = annotation as? TextAnnotation {
+                    addText(text.copy() as! TextAnnotation)
+                } else {
+                    fatalError("Cannot add the annotation type \(annotation)")
                 }
             }
         }
@@ -330,15 +334,18 @@ class AnnotationsEditor: NSObject {
         let offsetSize = Annotations.duplicateAnnotationOffset * annotationsGeometry.scale
         let offset = CGPoint(x: offsetSize, y: offsetSize)
 
-        let duplicatedVM = switch annotationVM.annotation {
-        case let .arrow(arrow): addArrow(arrow.duplicate(withOffset: offset))
-        case let .scribble(scribble): addScribble(scribble.duplicate(withOffset: offset))
-        case let .text(text): { // this syntax is a hack for non expression branch of switch expression
-                let duplicate = text.duplicate(withOffset: offset)
-                UserDefaults.addRecentTextAnnotation(duplicate, annotationsGeometry)
-                return addText(duplicate)
-            }()
+        let duplicate = annotationVM.annotation.duplicate(withOffset: offset)
+
+        let duplicatedVM = if let arrow = duplicate as? ArrowAnnotation {
+            addArrow(arrow)
+        } else if let scribble = duplicate as? ScribbleAnnotation {
+            addScribble(scribble)
+        } else if let text = duplicate as? TextAnnotation {
+            addText(text)
+        } else {
+            fatalError("duplicateAnnotation of annotation type \(duplicate) is not supported")
         }
+
         setSelected(duplicatedVM)
     }
 

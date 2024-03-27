@@ -21,10 +21,14 @@ enum AnnotationsRenderer {
                 scale: annotations.scale
             )
             annotations.annotations.forEach { annotation in
-                switch annotation {
-                case let .arrow(arrow): ArrowAnnotationRenderer.render(arrow, annotationsGeometry: annotationsGeometry)
-                case let .scribble(scribble): ScribbleAnnotationRenderer.render(scribble)
-                case let .text(text): TextAnnotationRenderer.render(text, annotationsGeometry: annotationsGeometry)
+                if let arrow = annotation as? ArrowAnnotation {
+                    ArrowAnnotationRenderer.render(arrow, annotationsGeometry: annotationsGeometry)
+                } else if let scribble = annotation as? ScribbleAnnotation {
+                    ScribbleAnnotationRenderer.render(scribble)
+                } else if let text = annotation as? TextAnnotation {
+                    TextAnnotationRenderer.render(text, annotationsGeometry: annotationsGeometry)
+                } else {
+                    fatalError("Rendering of annotation type \(annotation) is not supported")
                 }
             }
         }
