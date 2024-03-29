@@ -9,7 +9,8 @@ import UIKit
 /// in the annotations editor on iOS.
 /// For example when scale is 2, the view will have half the size but will be upscaled x2, so each pixel of scribble will "cover" 2 pixels of image (in 1 dimension)
 class ScribbleAnnotationViewModel: AnnotationViewModel {
-    @objc private(set) dynamic var scribble: ScribbleAnnotation
+    let scribble: ScribbleAnnotation
+    override var annotation: Annotation { scribble }
 
     /// translated and scaled so it can be drawn in the UI
     private(set) var uiPath: UIBezierPath = .init()
@@ -23,7 +24,7 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     /// Initiates the view model with annotation and annotationsScale
     init(scribble: ScribbleAnnotation, annotationsGeometry: AnnotationsGeometry) {
         self.scribble = scribble
-        super.init(annotation: scribble, annotationsGeometry: annotationsGeometry)
+        super.init(annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1 / annotationsGeometry.scale
         updateFromScribble()

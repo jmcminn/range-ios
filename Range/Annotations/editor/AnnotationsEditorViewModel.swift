@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import OSLog
 import UIKit
@@ -51,9 +52,8 @@ class AnnotationsEditorViewModel: ObservableObject {
     @Published private(set) var lastPickedTextFontSize: Annotations.FontSize
 
     @Published private(set) var selectedAnnotation: AnnotationViewModel? = nil
-    private var selectedAnnotationObservation: NSKeyValueObservation?
-    private var editingAnnotationObservation: NSKeyValueObservation?
-    private var currentAnnotationsEditorInstalledObservation: NSKeyValueObservation?
+
+    private var currentEditorSubscriptions = Set<AnyCancellable>()
 
     init() {
         currentLineThickness = UserDefaults.lastPickedAnnotationLineThickness
@@ -191,25 +191,20 @@ class AnnotationsEditorViewModel: ObservableObject {
         guard previousAnnotationsEditor != annotationsEditor else { return }
 
         previousAnnotationsEditor?.isActive = false
-        selectedAnnotationObservation?.invalidate()
-        editingAnnotationObservation?.invalidate()
-        currentAnnotationsEditorInstalledObservation?.invalidate()
+        currentEditorSubscriptions.removeAll()
         onAnnotationSelected(annotationsEditor?.selectedAnnotation)
         editingAnnotationChanged(annotationsEditor?.editingAnnotation)
         editingEnabled = annotationsEditor?.installed ?? false
         if let annotationsEditor = annotationsEditor {
-            selectedAnnotationObservation = annotationsEditor.observe(\.selectedAnnotation) { [weak self] _, _ in
-                self?.onAnnotationSelected(annotationsEditor.selectedAnnotation)
-            }
-            editingAnnotationObservation = annotationsEditor.observe(\.editingAnnotation) { [weak self] _, _ in
-                self?.editingAnnotationChanged(annotationsEditor.editingAnnotation)
-            }
-            currentAnnotationsEditorInstalledObservation = annotationsEditor.observe(
-                \.installed,
-                changeHandler: { [weak self] _, _ in
-                    self?.editingEnabled = annotationsEditor.installed
-                }
-            )
+            annotationsEditor.$selectedAnnotation.sink { [weak self] selectedAnnotation in
+                self?.onAnnotationSelected(selectedAnnotation)
+            }.store(in: &currentEditorSubscriptions)
+            annotationsEditor.$editingAnnotation.sink { [weak self] editingAnnotation in
+                self?.editingAnnotationChanged(editingAnnotation)
+            }.store(in: &currentEditorSubscriptions)
+            annotationsEditor.$installed.sink { [weak self] installed in
+                self?.editingEnabled = installed
+            }.store(in: &currentEditorSubscriptions)
             annotationsEditor.isActive = true
         }
     }

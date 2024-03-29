@@ -22,10 +22,9 @@ class TextAnnotation: Annotation {
     /// the storage for color, String so it can be encoded/decoded
     private(set) var hexColor: String
     /// inner color (the outline is always white) - UIColor wrapping the hexColor
-    @objc dynamic var color: UIColor {
-        get { UIColor(hexString: hexColor) ?? .black }
-        set {
-            hexColor = newValue.hexString
+    @Published var color: UIColor {
+        didSet {
+            hexColor = color.hexString
             postUpdate()
         }
     }
@@ -44,6 +43,7 @@ class TextAnnotation: Annotation {
         self.text = text
         self.position = position.roundCoordinates()
         self.fontSize = fontSize
+        self.color = color
         hexColor = color.hexString
         super.init(id: id, type: .text)
     }
@@ -54,6 +54,7 @@ class TextAnnotation: Annotation {
         position = try container.decode(CGPoint.self, forKey: .position)
         fontSize = try container.decode(Double.self, forKey: .fontSize)
         hexColor = try container.decode(String.self, forKey: .hexColor)
+        color = UIColor(hexString: hexColor) ?? .black
         try super.init(from: decoder)
     }
 

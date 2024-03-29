@@ -3,13 +3,14 @@ import UIKit
 
 /// Holds the text annotation data and properties requried for view rendering, selection, etc.
 class TextAnnotationViewModel: AnnotationViewModel {
-    @objc private(set) dynamic var text: TextAnnotation
+    let text: TextAnnotation
+    override var annotation: Annotation { text }
 
     /// based on the text.fontSize, optional as the font size may potentially not match any predefined font sizes
     var fontSize: Annotations.FontSize? { text.fontSizeEnum(annotationsGeometry.scale) }
 
     /// whether the text of the annotation is currently being edited
-    @objc dynamic var textEditing: Bool = false { didSet {
+    @Published var textEditing: Bool = false { didSet {
         if textEditing {
             textOnEditingStarted = text.text
         }
@@ -23,7 +24,7 @@ class TextAnnotationViewModel: AnnotationViewModel {
     init(text: TextAnnotation, annotationsGeometry: AnnotationsGeometry) {
         self.text = text
         textOnEditingStarted = text.text
-        super.init(annotation: text, annotationsGeometry: annotationsGeometry)
+        super.init(annotationsGeometry: annotationsGeometry)
 
         zoomScale = 1
         updateViewFrame()

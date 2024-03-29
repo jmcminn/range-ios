@@ -1,17 +1,17 @@
+import Combine
 import Foundation
 import UIKit
 
 class ArrowAnnotationView: UIView {
     let viewModel: ArrowAnnotationViewModel
-    private var colorObservation: NSKeyValueObservation?
-    private var viewFrameObservation: NSKeyValueObservation?
-    private var zoomScaleObservation: NSKeyValueObservation?
-    private var selectedObservation: NSKeyValueObservation?
     let arrowLayer = CAShapeLayer() // colored arrow shape
     let outlineLayer = CAShapeLayer() // the white outline for arrow (or black if arrow is white)
     let selectionLayer = CAShapeLayer() // the blue selection outer outline
     // the circular views denoting start and end points when the annotation is selected
     let controlPointViews = [UIView(), UIView()]
+
+    /// combine observers
+    private var subscriptions = Set<AnyCancellable>()
 
     init(viewModel: ArrowAnnotationViewModel) {
         self.viewModel = viewModel
@@ -21,24 +21,25 @@ class ArrowAnnotationView: UIView {
 
         setupControlPoints()
         updateControlPoints()
+        setSelected(viewModel.selected)
 
-        onSelectedUpdate()
+        viewModel.arrow.$color.sink { [weak self] _ in
+            self?.setNeedsLayout()
+        }.store(in: &subscriptions)
 
-        colorObservation = viewModel.arrow.observe(\.color, changeHandler: { [weak self] _, _ in
-            self?.updateLayers()
-        })
-        viewFrameObservation = viewModel.observe(\.viewFrame) { [weak self] _, _ in
-            self?.frame = viewModel.viewFrame
-            self?.updateLayers()
-            self?.updateControlPoints()
-        }
-        zoomScaleObservation = viewModel.observe(\.zoomScale) { [weak self] _, _ in
-            self?.updateLayers()
-            self?.updateControlPoints()
-        }
-        selectedObservation = viewModel.observe(\.selected) { [weak self] _, _ in
-            self?.onSelectedUpdate()
-        }
+        viewModel.$viewFrame.sink { [weak self] frame in
+            self?.frame = frame
+            self?.setNeedsLayout()
+        }.store(in: &subscriptions)
+
+        viewModel.$zoomScale.sink { [weak self] _ in
+            self?.setNeedsLayout()
+        }.store(in: &subscriptions)
+
+        viewModel.$selected.sink { [weak self] selected in
+            self?.setSelected(selected)
+            self?.setNeedsLayout()
+        }.store(in: &subscriptions)
 
         backgroundColor = .clear
     }
@@ -46,14 +47,6 @@ class ArrowAnnotationView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    private func onSelectedUpdate() {
-        isUserInteractionEnabled = viewModel.selected
-        for view in controlPointViews {
-            view.isHidden = !viewModel.selected
-        }
-        updateLayers()
     }
 
     private func setupLayers() {
@@ -64,6 +57,27 @@ class ArrowAnnotationView: UIView {
             self.layer.addSublayer(layer)
         }
         selectionLayer.strokeColor = UIColor.Primary_Blue_03.cgColor
+    }
+
+    private func setupControlPoints() {
+        for view in controlPointViews {
+            view.backgroundColor = .white
+            view.layer.borderColor = UIColor.Primary_Blue_04.cgColor
+            addSubview(view)
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateLayers()
+        updateControlPoints()
+    }
+
+    private func setSelected(_ selected: Bool) {
+        isUserInteractionEnabled = selected
+        for view in controlPointViews {
+            view.isHidden = !selected
+        }
     }
 
     private func updateLayers() {
@@ -84,36 +98,24 @@ class ArrowAnnotationView: UIView {
             layer.frame = bounds
             layer.path = path
         }
-
-        setNeedsLayout()
-        setNeedsDisplay()
-    }
-
-    private func setupControlPoints() {
-        for view in controlPointViews {
-            view.backgroundColor = .white
-            view.layer.borderColor = UIColor.Primary_Blue_04.cgColor
-            addSubview(view)
-        }
     }
 
     private func updateControlPoints() {
         let size = viewModel.controlPointSize
-        controlPointViews[0].snp.remakeConstraints { make in
-            make.center.equalTo(viewModel.arrow.startPoint.deltaTo(viewModel.viewFrame.origin))
-            make.width.height.equalTo(size)
-        }
-        controlPointViews[1].snp.remakeConstraints { make in
-            make.center.equalTo(viewModel.arrow.endPoint.deltaTo(viewModel.viewFrame.origin))
-            make.width.height.equalTo(size)
-        }
+        controlPointViews[0].frame = CGRect(
+            origin: viewModel.arrow.startPoint.deltaTo(viewModel.viewFrame.origin)
+                .deltaTo(CGPoint(x: size / 2, y: size / 2)),
+            size: CGSize(width: size, height: size)
+        )
+        controlPointViews[1].frame = CGRect(
+            origin: viewModel.arrow.endPoint.deltaTo(viewModel.viewFrame.origin)
+                .deltaTo(CGPoint(x: size / 2, y: size / 2)),
+            size: CGSize(width: size, height: size)
+        )
 
         for view in controlPointViews {
             view.layer.cornerRadius = size / 2
             view.layer.borderWidth = size / 4
         }
-
-        setNeedsLayout()
-        setNeedsDisplay()
     }
 }

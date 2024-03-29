@@ -10,7 +10,7 @@ let AnnotationUpdateNotificationName = Notification.Name("io.range.App.Annotatio
 
 /// "Abstract"  parent for all annotation models.
 /// Swift doesn't support abstract classes so it's just a normal class with some functions not implemented (to be implemented by subclasses)
-class Annotation: NSObject, NSCopying, Codable {
+class Annotation: NSObject, NSCopying, Codable, ObservableObject {
     /// The unique id of the annotation
     let id: String
     /// Type, it's not `let` so it's encoded/decoded

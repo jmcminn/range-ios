@@ -10,10 +10,9 @@ class ScribbleAnnotation: Annotation {
     /// the storage for color, String so it can be encoded/decoded
     private var hexColor: String
     /// inner color (the outline is always white) - UIColor wrapping the hexColor
-    @objc dynamic var color: UIColor {
-        get { UIColor(hexString: hexColor) ?? .black }
-        set {
-            hexColor = newValue.hexString
+    @Published var color: UIColor {
+        didSet {
+            hexColor = color.hexString
             postUpdate()
         }
     }
@@ -30,6 +29,7 @@ class ScribbleAnnotation: Annotation {
     ) {
         self.path = path
         self.lineWidth = lineWidth
+        self.color = color
         hexColor = color.hexString
         super.init(id: id, type: .scribble)
     }
@@ -39,6 +39,7 @@ class ScribbleAnnotation: Annotation {
         path = try container.decode(RangeBezierPath.self, forKey: .path)
         lineWidth = try container.decode(Double.self, forKey: .lineWidth)
         hexColor = try container.decode(String.self, forKey: .hexColor)
+        color = UIColor(hexString: hexColor) ?? .black
         try super.init(from: decoder)
     }
 

@@ -1,12 +1,12 @@
+import Combine
 import Foundation
 import UIKit
 
 class ScribbleAnnotationView: UIView {
     let viewModel: ScribbleAnnotationViewModel
-    private var scribbleObservation: NSKeyValueObservation?
-    private var viewFrameObservation: NSKeyValueObservation?
-    private var zoomScaleObservation: NSKeyValueObservation?
-    private var selectedObservation: NSKeyValueObservation?
+
+    /// combine observers
+    private var subscriptions = Set<AnyCancellable>()
 
     init(viewModel: ScribbleAnnotationViewModel) {
         self.viewModel = viewModel
@@ -18,22 +18,28 @@ class ScribbleAnnotationView: UIView {
             scaleX: viewModel.annotationsGeometry.scale,
             y: viewModel.annotationsGeometry.scale
         )
-        scribbleObservation = viewModel.scribble.observe(\.color, changeHandler: { [weak self] _, _ in
+        setSelected(viewModel.selected)
+
+        viewModel.scribble.$color.sink { [weak self] _ in
             self?.setNeedsDisplay()
-        })
-        viewFrameObservation = viewModel.observe(\.viewFrame) { [weak self] _, _ in
-            self?.frame = viewModel.viewFrame
+        }.store(in: &subscriptions)
+
+        viewModel.$viewFrame.sink { [weak self] frame in
+            self?.frame = frame
             self?.setNeedsLayout()
             self?.setNeedsDisplay()
-        }
-        zoomScaleObservation = viewModel.observe(\.zoomScale) { [weak self] _, _ in
-            self?.updateBorderWidth()
-        }
-        selectedObservation = viewModel.observe(\.selected) { [weak self] _, _ in
-            self?.onSelectedUpdate()
-        }
+        }.store(in: &subscriptions)
 
-        onSelectedUpdate()
+        viewModel.$zoomScale.sink { [weak self] _ in
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }.store(in: &subscriptions)
+
+        viewModel.$selected.sink { [weak self] selected in
+            self?.setSelected(selected)
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }.store(in: &subscriptions)
     }
 
     @available(*, unavailable)
@@ -41,8 +47,13 @@ class ScribbleAnnotationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func onSelectedUpdate() {
-        isUserInteractionEnabled = viewModel.selected
+    private func setSelected(_ selected: Bool) {
+        isUserInteractionEnabled = selected
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
         updateBorderWidth()
     }
 
@@ -54,7 +65,6 @@ class ScribbleAnnotationView: UIView {
         } else {
             layer.borderWidth = 0
         }
-        setNeedsDisplay()
     }
 
     override func draw(_: CGRect) {

@@ -18,10 +18,9 @@ class ArrowAnnotation: Annotation {
     /// the storage for color, String so it can be encoded/decoded
     private var hexColor: String
     /// inner color (the outline is always white) - UIColor wrapping the hexColor
-    @objc dynamic var color: UIColor {
-        get { UIColor(hexString: hexColor) ?? .black }
-        set {
-            hexColor = newValue.hexString
+    @Published var color: UIColor {
+        didSet {
+            hexColor = color.hexString
             postUpdate()
         }
     }
@@ -40,6 +39,7 @@ class ArrowAnnotation: Annotation {
         self.startPoint = startPoint
         self.endPoint = endPoint
         self.lineWidth = lineWidth
+        self.color = color
         hexColor = color.hexString
         super.init(id: id, type: .arrow)
     }
@@ -50,6 +50,7 @@ class ArrowAnnotation: Annotation {
         endPoint = try container.decode(CGPoint.self, forKey: .endPoint)
         lineWidth = try container.decode(Double.self, forKey: .lineWidth)
         hexColor = try container.decode(String.self, forKey: .hexColor)
+        color = UIColor(hexString: hexColor) ?? .black
         try super.init(from: decoder)
     }
 

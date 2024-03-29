@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import UIKit
 
@@ -6,15 +7,13 @@ import UIKit
 /// Please note that unlike ScribblingView this view is not transformed, so it is displayed as is, without downscaling using annotationsScale
 class TextAnnotationView: UIView {
     let viewModel: TextAnnotationViewModel
-    private var annotationObservation: NSKeyValueObservation?
-    private var viewFrameObservation: NSKeyValueObservation?
-    private var zoomScaleObservation: NSKeyValueObservation?
-    private var selectedObservation: NSKeyValueObservation?
-    private var textEditingObservation: NSKeyValueObservation?
     let selectedLayer = CAShapeLayer()
     var textEditingView: UITextView?
 
     let textViewInputAccessoryView: UIView
+
+    /// combine observers
+    private var subscriptions = Set<AnyCancellable>()
 
     init(viewModel: TextAnnotationViewModel, inputAccessoryView: UIView) {
         self.viewModel = viewModel
@@ -23,31 +22,34 @@ class TextAnnotationView: UIView {
         backgroundColor = .clear
         setupSelectedLayer()
         updateSelectedLayer()
-        annotationObservation = viewModel.text.observe(\.color, changeHandler: { [weak self] _, _ in
-            self?.setNeedsDisplay()
-        })
-        viewFrameObservation = viewModel.observe(\.viewFrame) { [weak self] _, _ in
-            self?.frame = viewModel.viewFrame
-            self?.updateTextEditingView()
-            self?.updateSelectedLayer()
-            self?.setNeedsLayout()
-            self?.setNeedsDisplay()
-        }
-        zoomScaleObservation = viewModel.observe(\.zoomScale) { [weak self] _, _ in
-            self?.updateSelectedLayer()
-            self?.setNeedsLayout()
-            self?.setNeedsDisplay()
-        }
-        selectedObservation = viewModel.observe(\.selected) { [weak self] _, _ in
-            self?.onSelectedUpdate()
-            self?.setNeedsLayout()
-            self?.setNeedsDisplay()
-        }
-        textEditingObservation = viewModel.observe(\.textEditing) { [weak self] _, _ in
-            self?.onTextEditingUpdate()
-        }
+        setSelected(viewModel.selected)
 
-        onSelectedUpdate()
+        viewModel.text.$color.sink { [weak self] _ in
+            self?.setNeedsDisplay()
+        }.store(in: &subscriptions)
+
+        viewModel.$viewFrame.sink { [weak self] frame in
+            self?.frame = frame
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }.store(in: &subscriptions)
+
+        viewModel.$zoomScale.sink { [weak self] _ in
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }.store(in: &subscriptions)
+
+        viewModel.$selected.sink { [weak self] selected in
+            self?.setSelected(selected)
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }.store(in: &subscriptions)
+
+        viewModel.$textEditing.sink { [weak self] textEditing in
+            self?.setTextEditing(textEditing)
+            self?.setNeedsLayout()
+            self?.setNeedsDisplay()
+        }.store(in: &subscriptions)
     }
 
     @available(*, unavailable)
@@ -55,9 +57,20 @@ class TextAnnotationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func onSelectedUpdate() {
-        isUserInteractionEnabled = viewModel.selected
+    private func setupSelectedLayer() {
+        selectedLayer.strokeColor = UIColor.Primary_Blue_04.cgColor
+        selectedLayer.fillColor = nil
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
         updateSelectedLayer()
+        updateTextEditingView()
+    }
+
+    private func setSelected(_ selected: Bool) {
+        isUserInteractionEnabled = selected
     }
 
     // Insert text at cursor or replace the current selection
@@ -70,9 +83,8 @@ class TextAnnotationView: UIView {
         }
     }
 
-    private func onTextEditingUpdate() {
-        updateSelectedLayer()
-        if viewModel.textEditing {
+    private func setTextEditing(_ textEditing: Bool) {
+        if textEditing {
             // when editing we show the text view for user to enter the annotation text
             setupTextEditingView()
             textEditingView?.isHidden = false
@@ -111,11 +123,6 @@ class TextAnnotationView: UIView {
             make.width.equalTo(viewModel.viewFrame.width - 2 * textHorizontalPadding)
             make.height.equalTo(viewModel.viewFrame.height - 2 * textVerticalPadding)
         }
-    }
-
-    private func setupSelectedLayer() {
-        selectedLayer.strokeColor = UIColor.Primary_Blue_04.cgColor
-        selectedLayer.fillColor = nil
     }
 
     private func updateSelectedLayer() {

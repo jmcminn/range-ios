@@ -2,10 +2,10 @@ import Foundation
 
 /// "Abstract"  parent for all annotation view models.
 /// Swift doesn't support abstract classes so it's just a normal class with some functions not implemented (to be implemented by subclasses)
-// TODO: 2638
-class AnnotationViewModel: NSObject { // , AnnotationConvertible {
-    // TODO: 2638 a generic class?
-    let annotation: Annotation
+class AnnotationViewModel: NSObject, ObservableObject {
+    var annotation: Annotation {
+        fatalError("annotation to be provided by subclasses")
+    }
 
     var id: String { annotation.id }
     var type: AnnotationType { annotation.type }
@@ -23,19 +23,18 @@ class AnnotationViewModel: NSObject { // , AnnotationConvertible {
     let annotationsGeometry: AnnotationsGeometry
 
     /// whether this annotation is currently selected
-    @objc dynamic var selected: Bool = false
+    @Published var selected: Bool = false
 
     /// The frame for annotation view, scaled = in image coordinates.
-    @objc dynamic var viewFrame: CGRect = .zero
+    @Published var viewFrame: CGRect = .zero
 
     /// the current zoom level of the displayed view.
     /// We need it as not all parts of the annotation view should be zoomed when the annotations editor zoom changes (the border should
     /// keep the visible 2 pixels width)
     /// The reference (and initial) value is based on the scale value
-    @objc dynamic var zoomScale: Double = 0
+    @Published var zoomScale: Double = 0
 
-    init(annotation: Annotation, annotationsGeometry: AnnotationsGeometry) {
-        self.annotation = annotation
+    init(annotationsGeometry: AnnotationsGeometry) {
         self.annotationsGeometry = annotationsGeometry
     }
 
