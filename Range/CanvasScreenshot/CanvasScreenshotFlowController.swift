@@ -115,7 +115,7 @@ class CanvasScreenshotFlowController {
                 detailsVC?.modalPresentationStyle = .fullScreen
                 canvasContainer.present(detailsVC!, animated: true)
             } catch {
-                ToastWindow.shared.showError(text: "Failed to take a screenshot")
+                ToastWindow.shared.showError(text: "Failed to add a snippet")
             }
         }
     }
@@ -196,7 +196,7 @@ class CanvasScreenshotFlowController {
             } catch {
                 Logger.model.error("finalize error: \(error.localizedDescription, privacy: .public)")
                 DispatchQueue.main.async {
-                    ToastWindow.shared.showError(text: "Failed to add the screenshot")
+                    ToastWindow.shared.showError(text: "Failed to add the snippet")
                 }
             }
         }

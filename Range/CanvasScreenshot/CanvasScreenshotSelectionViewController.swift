@@ -206,7 +206,7 @@ class CanvasScreenshotSelectionViewController: UIViewController {
         let font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
         let color = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_04)
         let imageView = UIImageView(image: UIImage(
-            systemName: "camera.viewfinder",
+            systemName: "scissors",
             withConfiguration: UIImage.SymbolConfiguration(font: font)
         ))
         imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -214,7 +214,7 @@ class CanvasScreenshotSelectionViewController: UIViewController {
         titleView.addArrangedSubview(imageView)
 
         let titleLabel = UILabel()
-        titleLabel.text = "Take Canvas Screenshot"
+        titleLabel.text = "Add Snippet"
         titleLabel.textColor = color
         titleLabel.font = font
         titleLabel.adjustsFontForContentSizeCategory = true
