@@ -125,8 +125,10 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
         photoKeys.insert(photoKey, at: index)
         let page = setupPage()
         page.imageHeight2Width = pageHeight2Width
-        page.onMoreAction = { [weak self] in
-            self?.onMoreAction?(page.moreButton ?? page)
+        if onMoreAction != nil {
+            page.onMoreAction = { [weak self] in
+                self?.onMoreAction?(page.moreButton ?? page)
+            }
         }
         pages.insert(page, at: index)
         scrollView.addSubview(page)
@@ -185,8 +187,10 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
         pages.compactMap { $0 as? ImageGalleryPageView }
             .forEach { pageView in
                 pageView.imageHeight2Width = pageHeight2Width
-                pageView.onMoreAction = { [weak self] in
-                    self?.onMoreAction?(pageView.moreButton ?? pageView)
+                if onMoreAction != nil {
+                    pageView.onMoreAction = { [weak self] in
+                        self?.onMoreAction?(pageView.moreButton ?? pageView)
+                    }
                 }
             }
 
