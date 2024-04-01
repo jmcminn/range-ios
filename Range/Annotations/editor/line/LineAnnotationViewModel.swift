@@ -1,0 +1,129 @@
+import Foundation
+import UIKit
+
+/// Holds the line annotation data and properties requried for view rendering, selection, etc.
+class LineAnnotationViewModel: AnnotationViewModel {
+    let line: LineAnnotation
+    override var annotation: Annotation { line }
+
+    /// The internal representation of path with points in image coordinates
+    private var linePath: RangeBezierPath!
+    /// The representation for annotation view with points in local viewFrame coordinates
+    var lineUIPath: UIBezierPath {
+        linePath
+            // translate so it's relative to view origin:
+            .getTranslatedPath(x: -viewFrame.origin.x, y: -viewFrame.origin.y)
+            .getUIBezierPath()
+    }
+
+    /// based on the line.lineWidth, optional as the line width may potentially not match any predefined thickness
+    var thickness: Annotations.LineThickness? {
+        let lineWidthBasedThickness = line.lineWidth / annotationsGeometry.scale
+        return Annotations.LineThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
+    }
+
+    /// Initiates the view model with given annotation and annotationsGeometry
+    init(line: LineAnnotation, annotationsGeometry: AnnotationsGeometry) {
+        self.line = line
+        super.init(annotationsGeometry: annotationsGeometry)
+
+        zoomScale = 1
+        updateViewFrame()
+    }
+
+    /// The size of the frame containing the control point circle (scaled)
+    /// The control point size is independent of selected line width and uses the biggest defined line width
+    var controlPointSize: CGFloat {
+        Annotations.LineThickness.heavy.lineWidth * annotationsGeometry.scale * 4 / 3
+    }
+
+    /// Overridden to allow dragging by start/end point
+    override func shouldHandleDrag(startGestureLocation: CGPoint) -> (String, CGPoint)? {
+        // The distance between control point and gesture start should be <= 40 (visible points).
+        // If the current control point is very big (because of the zoomScale) then we should also accept
+        // the drag gesture on this control point (the control point may have a visible radius bigger than 40pts)
+        //
+        // `points_distance * zoomScale <= max(40, controlPointSize/2*zoomScale)` // * zoom scale to get us in the screen resolution and out of scrollView zoom dependent values
+        // => `points_distance <= max(40/zoomScale, controlPointSize/2)`
+        // => `squared_points_distance <= max(40/zoomScale, controlPointSize/2)^2 = maxSquaredDistance
+        let maxSquaredDistance = pow(max(40.0 / zoomScale, controlPointSize / 2), 2)
+
+        // recognize control points drag first
+        if CGPointDistanceSquared(from: startGestureLocation, to: line.startPoint) <= maxSquaredDistance {
+            return ("startPoint", line.startPoint)
+        } else if CGPointDistanceSquared(from: startGestureLocation, to: line.endPoint) <= maxSquaredDistance {
+            return ("endPoint", line.endPoint)
+        }
+        // fallback to the view drag
+        return super.shouldHandleDrag(startGestureLocation: startGestureLocation)
+    }
+
+    /// Moves the annotation to new origin. It updates the `viewFrame`.
+    override func handleDrag(_ dragHandle: String, updatedDragOriginPoint origin: CGPoint) {
+        if dragHandle == "startPoint" {
+            line.startPoint = origin
+        } else if dragHandle == "endPoint" {
+            line.endPoint = origin
+        } else {
+            // move the whole annotation
+            let originDelta = origin.deltaTo(viewFrame.origin)
+            line.startPoint = line.startPoint.addTo(originDelta)
+            line.endPoint = line.endPoint.addTo(originDelta)
+        }
+        updateViewFrame()
+    }
+
+    func setEndPoint(_ endPoint: CGPoint) {
+        line.endPoint = endPoint
+        updateViewFrame()
+    }
+
+    func setColor(_ color: UIColor) {
+        line.color = color
+    }
+
+    /// Thickness impacts the `viewFrame`, so it also impacts the `uiPath`
+    func setThickness(_ thickness: Annotations.LineThickness) {
+        line.lineWidth = thickness.lineWidth * annotationsGeometry.scale
+        updateViewFrame()
+    }
+
+    /// Update view frame from annotation data
+    /// For line the view frame is the smallest rectangle to contain start and end points
+    func updateViewFrame() {
+        linePath = RangeBezierPath.linePath(startPoint: line.startPoint, endPoint: line.endPoint)
+
+        // Take the bounds.integral (so the enclosing rectangle with integer coordinates/width/height)
+        let scribbleBoundsNoThickness = linePath.getUIBezierPath().bounds.integral
+
+        // view bounds need to be extended to cover the whole width of the line
+        let lineWidth = line.lineWidth
+
+        viewFrame = scribbleBoundsNoThickness.insetBy(dx: -lineWidth, dy: -lineWidth)
+    }
+
+    override var debugDescription: String { "Line[\(id)]" }
+    override var description: String { "Line[\(id)]" }
+
+    /// Whether this annotation contains tap location and should be considered as tapped.
+    /// If multiple annotations are tapped then the `distanceToTapLocation` will be checked and the annotation with smallest distance
+    /// will be selected. If multiple annotations report the same distance (most likely 0 for overlapping annotations) then the selection will
+    /// be based on the current order and selection state of annotations.
+    override func containsTapLocation(_ location: CGPoint) -> Bool {
+        // Implemented as in ScribbleAnnotationViewModel - see there for description
+        let strokePath = linePath.getUIBezierPath().cgPath
+            .copy(strokingWithWidth: 40 * annotationsGeometry.scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
+        return strokePath.contains(location)
+    }
+
+    /// Called when no annotations are returned on tap for `containsTapLocation`.
+    /// This may be rough in a sence that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
+    override func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
+        viewFrame.contains(location)
+    }
+
+    /// See description for `containsTapLocation`
+    override func distanceToTapLocation(_ point: CGPoint) -> Float {
+        linePath.getSimpleDistanceToPoint(point)
+    }
+}

@@ -26,6 +26,11 @@
 		0A06241F2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06241E2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift */; };
 		0A06D7EA29CB55FB00CE3B91 /* MovePinFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06D7E929CB55FB00CE3B91 /* MovePinFlowController.swift */; };
 		0A06D7EC29CC5A1400CE3B91 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06D7EB29CC5A1400CE3B91 /* GridView.swift */; };
+		0A078E0F2BBAB86E00857DE5 /* LineAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A078E0E2BBAB86E00857DE5 /* LineAnnotation.swift */; };
+		0A078E122BBAB90600857DE5 /* LineAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A078E112BBAB90600857DE5 /* LineAnnotationViewModel.swift */; };
+		0A078E142BBAC66800857DE5 /* LineAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A078E132BBAC66800857DE5 /* LineAnnotationView.swift */; };
+		0A078E162BBAD55C00857DE5 /* LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A078E152BBAD55C00857DE5 /* LineDrawing.swift */; };
+		0A078E182BBADBA300857DE5 /* LineAnnotationRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A078E172BBADBA300857DE5 /* LineAnnotationRenderer.swift */; };
 		0A07D5112807147500B6F9A2 /* NonModalCardDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */; };
 		0A07D51528071AB000B6F9A2 /* UIView+Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */; };
 		0A07D518280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */; };
@@ -528,6 +533,11 @@
 		0A06241E2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertedToTaskFeedItemCell.swift; sourceTree = "<group>"; };
 		0A06D7E929CB55FB00CE3B91 /* MovePinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovePinFlowController.swift; sourceTree = "<group>"; };
 		0A06D7EB29CC5A1400CE3B91 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
+		0A078E0E2BBAB86E00857DE5 /* LineAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineAnnotation.swift; sourceTree = "<group>"; };
+		0A078E112BBAB90600857DE5 /* LineAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineAnnotationViewModel.swift; sourceTree = "<group>"; };
+		0A078E132BBAC66800857DE5 /* LineAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineAnnotationView.swift; sourceTree = "<group>"; };
+		0A078E152BBAD55C00857DE5 /* LineDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineDrawing.swift; sourceTree = "<group>"; };
+		0A078E172BBADBA300857DE5 /* LineAnnotationRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineAnnotationRenderer.swift; sourceTree = "<group>"; };
 		0A07D5102807147500B6F9A2 /* NonModalCardDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonModalCardDragging.swift; sourceTree = "<group>"; };
 		0A07D51428071AB000B6F9A2 /* UIView+Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Slider.swift"; sourceTree = "<group>"; };
 		0A07D517280730CC00B6F9A2 /* AddPhotoConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoConfirmationViewController.swift; sourceTree = "<group>"; };
@@ -1115,6 +1125,16 @@
 				0A06D7E929CB55FB00CE3B91 /* MovePinFlowController.swift */,
 			);
 			path = MovePin;
+			sourceTree = "<group>";
+		};
+		0A078E102BBAB8EC00857DE5 /* line */ = {
+			isa = PBXGroup;
+			children = (
+				0A078E112BBAB90600857DE5 /* LineAnnotationViewModel.swift */,
+				0A078E132BBAC66800857DE5 /* LineAnnotationView.swift */,
+				0A078E152BBAD55C00857DE5 /* LineDrawing.swift */,
+			);
+			path = line;
 			sourceTree = "<group>";
 		};
 		0A07D50D2807095400B6F9A2 /* Modal */ = {
@@ -1874,6 +1894,7 @@
 				0A7393872A61415F0079A7FB /* Annotations.swift */,
 				0A7393822A606C360079A7FB /* Annotation.swift */,
 				0AAB2DE22AFC006B0017A12D /* ArrowAnnotation.swift */,
+				0A078E0E2BBAB86E00857DE5 /* LineAnnotation.swift */,
 				0A7393842A606CBB0079A7FB /* ScribbleAnnotation.swift */,
 				0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */,
 				0A7393802A606BF60079A7FB /* Annotations+Dictionaries.swift */,
@@ -1885,6 +1906,7 @@
 			isa = PBXGroup;
 			children = (
 				0AAB2DE72AFC03BD0017A12D /* arrow */,
+				0A078E102BBAB8EC00857DE5 /* line */,
 				0A2B3F5A2AF516C600D3D0D2 /* scribble */,
 				0A2B3F5B2AF516DA00D3D0D2 /* text */,
 				0A5394282A264685008583F0 /* AnnotationsEditor.swift */,
@@ -1922,6 +1944,7 @@
 				0AAB2DE82AFCCCD70017A12D /* AnnotationsGeometry.swift */,
 				0A73938C2A6428630079A7FB /* AnnotationsRenderer.swift */,
 				0AAB2DE42AFC02310017A12D /* ArrowAnnotationRenderer.swift */,
+				0A078E172BBADBA300857DE5 /* LineAnnotationRenderer.swift */,
 				0A73938A2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift */,
 				0A2B3F5E2AF51A0100D3D0D2 /* TextAnnotationRenderer.swift */,
 			);
@@ -2530,6 +2553,7 @@
 				0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
+				0A078E162BBAD55C00857DE5 /* LineDrawing.swift in Sources */,
 				0A8CC5CD2B30920D00D26716 /* RepresentedSearchView.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
@@ -2685,6 +2709,7 @@
 				0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */,
 				0A797F7A292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift in Sources */,
 				0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */,
+				0A078E142BBAC66800857DE5 /* LineAnnotationView.swift in Sources */,
 				0AC3C0232A03F7EF001E3199 /* Sequence+AsyncMap.swift in Sources */,
 				0A4995B72857449B00E571FB /* HeaderExpanding.swift in Sources */,
 				0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */,
@@ -2757,6 +2782,7 @@
 				0A4DC79627F572CF00712518 /* ActionSelectorViewController.swift in Sources */,
 				0A05057B2A1D34BE001AF644 /* PolylineSimplify.swift in Sources */,
 				0A632EE127E4E3C1001A019B /* PDFPageViewController.swift in Sources */,
+				0A078E182BBADBA300857DE5 /* LineAnnotationRenderer.swift in Sources */,
 				0A5957152B02830D0047E669 /* OptionSelectorCollectionView.swift in Sources */,
 				0A0D31CD28A3E735007A8D49 /* Realm.swift in Sources */,
 				0A4995C8285A0A8000E571FB /* SelectedTagsView.swift in Sources */,
@@ -2792,6 +2818,7 @@
 				0A881983291D018B0050FC41 /* FirestoreDocument.swift in Sources */,
 				0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */,
 				0A34C1892845FE9C00BEDC7C /* FirestoreComment.swift in Sources */,
+				0A078E0F2BBAB86E00857DE5 /* LineAnnotation.swift in Sources */,
 				0A0D31D728A41AC6007A8D49 /* ThumbnailsViewController.swift in Sources */,
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
 				0A73938B2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift in Sources */,
@@ -2804,6 +2831,7 @@
 				0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */,
 				0A99BF1F28C1DC3700DB3F96 /* FullscreenImageGalleryPageView.swift in Sources */,
 				0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */,
+				0A078E122BBAB90600857DE5 /* LineAnnotationViewModel.swift in Sources */,
 				0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */,
 				0A0E2062296309FB001782A5 /* SelectPinTypeCardViewController.swift in Sources */,
 				0A0505852A1F838A001AF644 /* ScribblingView.swift in Sources */,

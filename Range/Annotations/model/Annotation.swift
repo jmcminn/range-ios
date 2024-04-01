@@ -2,7 +2,7 @@ import Foundation
 
 /// Defines annotation types supported by Range iOS app
 enum AnnotationType: String, Codable {
-    case scribble, text, arrow
+    case scribble, text, arrow, line
 }
 
 /// The name for the notification posted in NotificationCenter when the annotation changes

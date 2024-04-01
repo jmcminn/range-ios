@@ -23,6 +23,8 @@ enum AnnotationsRenderer {
             annotations.annotations.forEach { annotation in
                 if let arrow = annotation as? ArrowAnnotation {
                     ArrowAnnotationRenderer.render(arrow, annotationsGeometry: annotationsGeometry)
+                } else if let line = annotation as? LineAnnotation {
+                    LineAnnotationRenderer.render(line, annotationsGeometry: annotationsGeometry)
                 } else if let scribble = annotation as? ScribbleAnnotation {
                     ScribbleAnnotationRenderer.render(scribble)
                 } else if let text = annotation as? TextAnnotation {

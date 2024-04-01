@@ -2,6 +2,14 @@ import Foundation
 
 /// Extension for creating preconfigured bazier paths
 extension RangeBezierPath {
+    /// Create a line from startPoint to endPoint
+    static func linePath(startPoint: CGPoint, endPoint: CGPoint) -> RangeBezierPath {
+        RangeBezierPath(elements: [
+            .move(to: startPoint),
+            .addLine(to: endPoint),
+        ])
+    }
+
     /// Create an arrow from startPoint to endPoint with a tip that have 2 lines, both of tipLength and 45 degrees to arrow: -->
     static func arrowPath(startPoint: CGPoint, endPoint: CGPoint, tipLength: CGFloat) -> RangeBezierPath {
         let angleFromStartToEnd = endPoint.angle(from: startPoint)

@@ -74,6 +74,23 @@ struct AnnotationsToolbarView: View {
         }.buttonStyle(.plain)
     }
 
+    private var lineToolButton: some View {
+        Button(action: {
+            model.setGesturesMode(model.gesturesMode.drawingAnnotation == .line ? .normal : .drawing(.line))
+        }) {
+            Circle()
+                .strokeBorder(
+                    model.gesturesMode.drawingAnnotation == .line ? Color.Special_02 : Color.Neutral_07,
+                    lineWidth: 1
+                )
+                .background(Circle().fill(Color.Neutral_09))
+                .frame(width: 48, height: 48)
+                .overlay(Image(systemName: "line.diagonal")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(model.gesturesMode.drawingAnnotation == .line ? .Special_02 : .Neutral_01))
+        }.buttonStyle(.plain)
+    }
+
     private var recentAnnotationToolButton: some View {
         Button(action: { model.recentAnnotationsSelectorVisible.toggle() }) {
             Circle()
@@ -252,6 +269,7 @@ struct AnnotationsToolbarView: View {
                 let normalMode = model.gesturesMode == .normal
                 let drawingScribbleMode = model.gesturesMode.drawingAnnotation == .scribble
                 let drawingArrowMode = model.gesturesMode.drawingAnnotation == .arrow
+                let drawingLineMode = model.gesturesMode.drawingAnnotation == .line
 
                 let selectingRecentAnnotation = model.recentAnnotationsSelectorVisible
 
@@ -259,6 +277,7 @@ struct AnnotationsToolbarView: View {
                 let scribbleSelected = model.selectedAnnotation?.type == .scribble
                 let textSelected = model.selectedAnnotation?.type == .text
                 let arrowSelected = model.selectedAnnotation?.type == .arrow
+                let lineSelected = model.selectedAnnotation?.type == .line
 
                 let showRecentAnnotationToolButton = (!annotationSelected && normalMode) || selectingRecentAnnotation
                 let showTextToolButton = textSelected || (!annotationSelected && normalMode) ||
@@ -268,6 +287,7 @@ struct AnnotationsToolbarView: View {
                     selectingRecentAnnotation
                 let showArrowToolButton = drawingArrowMode || arrowSelected || (!annotationSelected && normalMode) ||
                     selectingRecentAnnotation
+                let showLineToolButton = drawingLineMode || lineSelected || (!annotationSelected && normalMode) ||
                     selectingRecentAnnotation
 
                 HStack(spacing: 24) {
@@ -275,11 +295,14 @@ struct AnnotationsToolbarView: View {
                     if showTextToolButton { textToolButton }
                     if showScribbleToolButton { scribbleToolButton }
                     if showArrowToolButton { arrowToolButton }
+                    if showLineToolButton { lineToolButton }
                 }
 
-                if drawingScribbleMode || drawingArrowMode || annotationSelected {
+                if drawingScribbleMode || drawingArrowMode || drawingLineMode || annotationSelected {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
-                    if drawingScribbleMode || scribbleSelected || drawingArrowMode || arrowSelected {
+                    if drawingScribbleMode || scribbleSelected || drawingArrowMode || arrowSelected ||
+                        drawingLineMode || lineSelected
+                    {
                         lineThicknessButton.pickerPopup(isPresented: $pickingLineThickness) {
                             lineThicknessPicker
                         }

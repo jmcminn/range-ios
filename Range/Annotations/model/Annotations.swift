@@ -62,6 +62,7 @@ final class Annotations: NSObject, Codable {
             case .scribble: try annotationsContainer.decode(ScribbleAnnotation.self)
             case .text: try annotationsContainer.decode(TextAnnotation.self)
             case .arrow: try annotationsContainer.decode(ArrowAnnotation.self)
+            case .line: try annotationsContainer.decode(LineAnnotation.self)
             }
             annotations.append(annotation)
         }

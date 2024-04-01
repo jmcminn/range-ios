@@ -7,9 +7,9 @@ class ArrowDrawing {
     private(set) var gestureRecognizer: UIGestureRecognizer?
 
     /// The annotation being currently drawn
-    var arrowAnnotationViewModel: ArrowAnnotationViewModel?
+    var annotationViewModel: ArrowAnnotationViewModel?
 
-    var arrowStartPoint: CGPoint?
+    var startPoint: CGPoint?
 
     var onDrawingBegan: (() -> Void)?
     var onAnnotationCreated: ((CGPoint, CGPoint) -> ArrowAnnotationViewModel?)?
@@ -26,26 +26,26 @@ class ArrowDrawing {
         if gesture.state == .began {
             // do not create the annotation yet, we just have 1 point so it doesn't make sense to
             // draw the arrow with startPoint = endPoint
-            arrowStartPoint = location
+            startPoint = location
             onDrawingBegan?()
         }
 
         if gesture.state == .changed {
-            if let arrowAnnotation = arrowAnnotationViewModel {
+            if let annotationViewModel {
                 // update the endpoint
-                arrowAnnotation.setEndPoint(location)
+                annotationViewModel.setEndPoint(location)
             } else {
                 // create the arrow with the new position being the end point and the start point defined
                 // when the gesture began
-                guard let startPoint = arrowStartPoint else { return }
-                arrowAnnotationViewModel = onAnnotationCreated?(startPoint, location)
+                guard let startPoint = startPoint else { return }
+                annotationViewModel = onAnnotationCreated?(startPoint, location)
             }
         }
 
         if gesture.state == .ended {
-            // reset the internal state, so it can handle the next arrow drawing
-            arrowStartPoint = nil
-            arrowAnnotationViewModel = nil
+            // reset the internal state, so it can handle the next annotation drawing
+            startPoint = nil
+            annotationViewModel = nil
             onDrawingEnded?()
         }
     }

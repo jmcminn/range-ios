@@ -96,6 +96,9 @@ class AnnotationsEditorViewModel: ObservableObject {
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
             currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
             currentColor = selectedAnnotation.arrow.color
+        } else if let selectedAnnotation = selectedAnnotation as? LineAnnotationViewModel {
+            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
+            currentColor = selectedAnnotation.line.color
         }
 
         // If there's no selected annotation and user is in drawing mode we want the current ui color
@@ -115,6 +118,8 @@ class AnnotationsEditorViewModel: ObservableObject {
             selectedAnnotation.setThickness(thickness)
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
             selectedAnnotation.setThickness(thickness)
+        } else if let selectedAnnotation = selectedAnnotation as? LineAnnotationViewModel {
+            selectedAnnotation.setThickness(thickness)
         }
     }
 
@@ -129,6 +134,8 @@ class AnnotationsEditorViewModel: ObservableObject {
             selectedAnnotation.setColor(color)
             UserDefaults.addRecentTextAnnotation(selectedAnnotation.text, annotationsEditor.annotationsGeometry)
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
+            selectedAnnotation.setColor(color)
+        } else if let selectedAnnotation = selectedAnnotation as? LineAnnotationViewModel {
             selectedAnnotation.setColor(color)
         }
     }

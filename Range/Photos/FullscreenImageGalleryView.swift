@@ -29,7 +29,7 @@ struct FullscreenImageGalleryView: View {
                     }
                     Spacer()
                     AnnotationsToolbarView(model: annotationsEditorViewModel)
-                        .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))
+                        .padding(EdgeInsets(top: 0, leading: 8, bottom: 16, trailing: 8))
                         .animation(.default, value: annotationsEditorViewModel.toolbarVisible)
                 }
             }

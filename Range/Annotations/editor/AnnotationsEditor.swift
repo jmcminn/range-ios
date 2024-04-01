@@ -50,8 +50,11 @@ class AnnotationsEditor: NSObject {
     /// The view for drawing (on top of annotationsView)
     var currentScribblingView: ScribblingView?
 
-    /// handles the arrow drawing when in .arrowDrawing GesturesMode
+    /// handles the drawing when in .drawing(.arrow) GesturesMode
     var arrowDrawing: ArrowDrawing?
+
+    /// handles the drawing when in .drawing(.line) GesturesMode
+    var lineDrawing: LineDrawing?
 
     /// order in this dictionary is the order of annotations rendering, so last is on top
     private var annotationViewModels = OrderedDictionary<String, AnnotationViewModel>()
@@ -146,6 +149,8 @@ class AnnotationsEditor: NSObject {
                 // break the "cancel" functionality of the annotations editor)
                 if let arrow = annotation as? ArrowAnnotation {
                     addArrow(arrow.copy() as! ArrowAnnotation)
+                } else if let line = annotation as? LineAnnotation {
+                    addLine(line.copy() as! LineAnnotation)
                 } else if let scribble = annotation as? ScribbleAnnotation {
                     addScribble(scribble.copy() as! ScribbleAnnotation)
                 } else if let text = annotation as? TextAnnotation {
@@ -232,6 +237,16 @@ class AnnotationsEditor: NSObject {
         let arrowAnnotationView = ArrowAnnotationView(viewModel: arrowVM)
         addAnnotation(arrowVM, view: arrowAnnotationView)
         return arrowVM
+    }
+
+    @discardableResult private func addLine(_ line: LineAnnotation) -> LineAnnotationViewModel {
+        let viewModel = LineAnnotationViewModel(line: line, annotationsGeometry: annotationsGeometry)
+        if let hostView = hostView {
+            viewModel.zoomScale = hostView.scrollView.zoomScale
+        }
+        let view = LineAnnotationView(viewModel: viewModel)
+        addAnnotation(viewModel, view: view)
+        return viewModel
     }
 
     /// insert a duplicate of given annotation centered in the current viewport
@@ -336,8 +351,12 @@ class AnnotationsEditor: NSObject {
 
         let duplicate = annotationVM.annotation.duplicate(withOffset: offset)
 
-        let duplicatedVM = if let arrow = duplicate as? ArrowAnnotation {
+        let duplicatedVM =
+            if let arrow = duplicate as? ArrowAnnotation
+        {
             addArrow(arrow)
+        } else if let line = duplicate as? LineAnnotation {
+            addLine(line)
         } else if let scribble = duplicate as? ScribbleAnnotation {
             addScribble(scribble)
         } else if let text = duplicate as? TextAnnotation {
@@ -403,6 +422,7 @@ extension AnnotationsEditor {
 
         setScribbling(enabled: mode.drawingAnnotation == .scribble)
         setArrowDrawing(enabled: mode.drawingAnnotation == .arrow)
+        setLineDrawing(enabled: mode.drawingAnnotation == .line)
     }
 
     private func setScribbling(enabled: Bool) {
@@ -436,6 +456,40 @@ extension AnnotationsEditor {
             }
             currentScribblingView?.removeFromSuperview()
             currentScribblingView = nil
+        }
+    }
+}
+
+// MARK: - line drawing
+
+extension AnnotationsEditor {
+    private func setLineDrawing(enabled: Bool) {
+        guard let hostView = hostView else { return }
+        if enabled {
+            let drawing = LineDrawing()
+            drawing.onDrawingBegan = { [weak self] in
+                // unselect annotation on drawing started
+                self?.setSelected(nil)
+            }
+            drawing.onAnnotationCreated = { [weak self] startPoint, endPoint in
+                guard let self = self else { return nil }
+                let annotation = LineAnnotation(
+                    startPoint: startPoint,
+                    endPoint: endPoint,
+                    lineWidth: self.viewModel.lastPickedLineThickness.lineWidth * self.annotationsGeometry.scale,
+                    color: self.viewModel.lastPickedColor
+                )
+                return addLine(annotation)
+            }
+            if let gestureRecognizer = drawing.gestureRecognizer {
+                hostView.imageView.addGestureRecognizer(gestureRecognizer)
+            }
+            lineDrawing = drawing
+        } else {
+            guard let lineDrawing else { return }
+            if let gestureRecognizer = lineDrawing.gestureRecognizer {
+                hostView.imageView.removeGestureRecognizer(gestureRecognizer)
+            }
         }
     }
 }
