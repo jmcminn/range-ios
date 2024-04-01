@@ -47,6 +47,7 @@ class CollaborationButton: UIControl {
         let stackView = UIStackView(arrangedSubviews: [collaborationNameLabel, canvasNameLabel])
         stackView.axis = .vertical
         stackView.spacing = 2
+        stackView.isUserInteractionEnabled = false
         if collaborationIdLabel.text != nil {
             stackView.insertArrangedSubview(collaborationIdLabel, at: 0)
         }
