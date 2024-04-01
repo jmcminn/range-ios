@@ -28,27 +28,37 @@ struct AnnotationsToolbarView: View {
     }
 
     private var scribbleToolButton: some View {
-        Button(action: { model.setGesturesMode(model.gesturesMode == .scribbling ? .normal : .scribbling) }) {
+        Button(action: {
+            model.setGesturesMode(model.gesturesMode.drawingAnnotation == .scribble ? .normal : .drawing(.scribble))
+        }) {
             Circle()
-                .strokeBorder(model.gesturesMode == .scribbling ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
+                .strokeBorder(
+                    model.gesturesMode.drawingAnnotation == .scribble ? Color.Special_02 : Color.Neutral_07,
+                    lineWidth: 1
+                )
                 .background(Circle().fill(Color.Neutral_09))
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "scribble")
                     .font(.system(size: 22, weight: .semibold))
                     .offset(x: -1, y: -1)
-                    .foregroundColor(model.gesturesMode == .scribbling ? .Special_02 : .Neutral_01))
+                    .foregroundColor(model.gesturesMode.drawingAnnotation == .scribble ? .Special_02 : .Neutral_01))
         }.buttonStyle(.plain)
     }
 
     private var arrowToolButton: some View {
-        Button(action: { model.setGesturesMode(model.gesturesMode == .arrowDrawing ? .normal : .arrowDrawing) }) {
+        Button(action: {
+            model.setGesturesMode(model.gesturesMode.drawingAnnotation == .arrow ? .normal : .drawing(.arrow))
+        }) {
             Circle()
-                .strokeBorder(model.gesturesMode == .arrowDrawing ? Color.Special_02 : Color.Neutral_07, lineWidth: 1)
+                .strokeBorder(
+                    model.gesturesMode.drawingAnnotation == .arrow ? Color.Special_02 : Color.Neutral_07,
+                    lineWidth: 1
+                )
                 .background(Circle().fill(Color.Neutral_09))
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "arrow.up.left")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(model.gesturesMode == .arrowDrawing ? .Special_02 : .Neutral_01))
+                    .foregroundColor(model.gesturesMode.drawingAnnotation == .arrow ? .Special_02 : .Neutral_01))
         }.buttonStyle(.plain)
     }
 
@@ -240,8 +250,8 @@ struct AnnotationsToolbarView: View {
             HStack(spacing: 0) {
                 // helper variables to make the conditions below easier to read
                 let normalMode = model.gesturesMode == .normal
-                let scribbleMode = model.gesturesMode == .scribbling
-                let arrowDrawMode = model.gesturesMode == .arrowDrawing
+                let drawingScribbleMode = model.gesturesMode.drawingAnnotation == .scribble
+                let drawingArrowMode = model.gesturesMode.drawingAnnotation == .arrow
 
                 let selectingRecentAnnotation = model.recentAnnotationsSelectorVisible
 
@@ -250,24 +260,26 @@ struct AnnotationsToolbarView: View {
                 let textSelected = model.selectedAnnotation?.type == .text
                 let arrowSelected = model.selectedAnnotation?.type == .arrow
 
-                let showScribbleToolButton = scribbleMode || scribbleSelected || (!annotationSelected && normalMode) ||
-                    selectingRecentAnnotation
+                let showRecentAnnotationToolButton = (!annotationSelected && normalMode) || selectingRecentAnnotation
                 let showTextToolButton = textSelected || (!annotationSelected && normalMode) ||
                     selectingRecentAnnotation
-                let showArrowToolButton = arrowDrawMode || arrowSelected || (!annotationSelected && normalMode) ||
+                let showScribbleToolButton = drawingScribbleMode || scribbleSelected ||
+                    (!annotationSelected && normalMode) ||
                     selectingRecentAnnotation
-                let showRecentAnnotationToolButton = (!annotationSelected && normalMode) || selectingRecentAnnotation
+                let showArrowToolButton = drawingArrowMode || arrowSelected || (!annotationSelected && normalMode) ||
+                    selectingRecentAnnotation
+                    selectingRecentAnnotation
 
-                HStack(spacing: 32) {
+                HStack(spacing: 24) {
                     if showRecentAnnotationToolButton { recentAnnotationToolButton }
                     if showTextToolButton { textToolButton }
                     if showScribbleToolButton { scribbleToolButton }
                     if showArrowToolButton { arrowToolButton }
                 }
 
-                if scribbleMode || arrowDrawMode || annotationSelected {
+                if drawingScribbleMode || drawingArrowMode || annotationSelected {
                     Spacer().frame(minWidth: 8, idealWidth: 40, maxWidth: 40)
-                    if scribbleMode || scribbleSelected || arrowDrawMode || arrowSelected {
+                    if drawingScribbleMode || scribbleSelected || drawingArrowMode || arrowSelected {
                         lineThicknessButton.pickerPopup(isPresented: $pickingLineThickness) {
                             lineThicknessPicker
                         }

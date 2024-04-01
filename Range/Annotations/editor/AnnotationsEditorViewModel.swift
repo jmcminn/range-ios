@@ -15,10 +15,17 @@ class AnnotationsEditorViewModel: ObservableObject {
     }}
 
     /// The enum for different modes of recognizing user gestures
-    enum GesturesMode {
+    enum GesturesMode: Equatable {
         case normal // the user can select and drag annotations
-        case scribbling // the user gestures are recognized as drawing a scribble
-        case arrowDrawing // the user gestures are recognized as drawing an arrow
+        case drawing(_: AnnotationType) // the user gestures are recognized as drawing annotation of given type
+
+        /// Returns the annotation currently being drawn (or nil if nothing is being drawn)
+        var drawingAnnotation: AnnotationType? {
+            switch self {
+            case .normal: return nil
+            case let .drawing(annotationType): return annotationType
+            }
+        }
     }
 
     /// Is the AnnotationsToolbarView visible or not (hidden when keyboard is shown)

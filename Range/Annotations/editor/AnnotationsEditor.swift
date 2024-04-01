@@ -401,8 +401,8 @@ extension AnnotationsEditor {
         // or arrow we want the scroll disabled
         hostView.scrollView.isScrollEnabled = mode == .normal
 
-        setScribbling(enabled: mode == .scribbling)
-        setArrowDrawing(enabled: mode == .arrowDrawing)
+        setScribbling(enabled: mode.drawingAnnotation == .scribble)
+        setArrowDrawing(enabled: mode.drawingAnnotation == .arrow)
     }
 
     private func setScribbling(enabled: Bool) {
