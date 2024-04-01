@@ -219,18 +219,6 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
                 self?.notifyOnDone()
             }
         )
-        // add configuration handler to change the text color when disabled
-        confirmButton.configurationUpdateHandler = { button in
-            var config = button.configuration
-            config?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-                var container = incoming
-                container.foregroundColor = button.state == .disabled
-                    ? .Neutral_04.withAlphaComponent(0.4)
-                    : .Neutral_04
-                return container
-            }
-            button.configuration = config
-        }
 
         NotificationCenter.default.addObserver(
             self,
@@ -266,7 +254,6 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
     @objc private func updateDoneButtonEnabled() {
         confirmButton.isEnabled = !removedPhotosIndices.isEmpty || annotationsEditorPerPage
             .contains(where: \.annotationsUpdated)
-        confirmButton.setNeedsUpdateConfiguration()
     }
 
     @objc private func updateDeleteButtonHidden() {

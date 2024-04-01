@@ -2,6 +2,7 @@ import UIKit
 
 /// Extension of UIButton that allows to set tapInset to allow tapping outside of a button (for small buttons for which
 /// we need bigger tap area than the button frame size).
+/// It adds the custom disabled state - making the button opacity = 50%
 /// It also customizes the highlight color (when enabled by calling `withCustomRangeHighlightColor`)
 class RangeButton: UIButton {
     /// insets for tap area, to make the tap area larger provide negative values
@@ -67,36 +68,34 @@ class RangeButton: UIButton {
     override func updateConfiguration() {
         super.updateConfiguration()
 
-        guard let configuration = configuration else {
-            return
-        }
+        guard let configuration else { return }
         var updatedConfig = configuration
 
-        if _withCustomRangeHighlightColor || selectionBackgroundColor != nil {
-            guard let baseBackgroundColor = configuration.baseBackgroundColor else {
-                fatalError("baseBackgroundColor not defined for a button")
+        let baseBackgroundColor = configuration.baseBackgroundColor
+        if let baseBackgroundColor {
+            updatedConfig.background.backgroundColor = baseBackgroundColor
+        }
+        switch state {
+        case [.highlighted]:
+            if _withCustomRangeHighlightColor {
+                updatedConfig.background.backgroundColor = baseBackgroundColor?._highlightColor
             }
-            switch state {
-            case .normal:
-                // use the color as provided, with no adjustments
-                updatedConfig.background.backgroundColor = baseBackgroundColor
-            case [.highlighted]:
-                if _withCustomRangeHighlightColor {
-                    updatedConfig.background.backgroundColor = baseBackgroundColor._highlightColor
-                }
-            case .selected:
-                if let selectionBackgroundColor {
-                    updatedConfig.background.backgroundColor = selectionBackgroundColor
-                }
-            default:
-                // no update to color
-                break
+        case .selected:
+            if let selectionBackgroundColor {
+                updatedConfig.background.backgroundColor = selectionBackgroundColor
             }
+        case .disabled:
+            updatedConfig.background.backgroundColor = baseBackgroundColor?.withAlphaComponent(0.5)
+        default:
+            // do nothing, the default is applied before the switch
+            break
         }
         if let selectionForegroundColor {
             switch state {
             case .selected:
                 updatedConfig.baseForegroundColor = selectionForegroundColor
+            case .disabled:
+                updatedConfig.baseForegroundColor = defaultForegroundColor?.withAlphaComponent(0.5)
             default:
                 updatedConfig.baseForegroundColor = defaultForegroundColor
             }
@@ -105,6 +104,8 @@ class RangeButton: UIButton {
             switch state {
             case .selected:
                 updatedConfig.background.strokeColor = selectionStrokeColor
+            case .disabled:
+                updatedConfig.background.strokeColor = defaultStrokeColor?.withAlphaComponent(0.5)
             default:
                 updatedConfig.background.strokeColor = defaultStrokeColor
             }

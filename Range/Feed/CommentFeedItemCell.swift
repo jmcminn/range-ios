@@ -108,19 +108,6 @@ class CommentFeedItemCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(10)
             make.centerY.equalToSuperview()
         }
-        completeButton.configurationUpdateHandler = { [weak self] button in
-            guard let self = self else { return }
-            var config = button.configuration
-            if self.isCompleted {
-                config?.baseBackgroundColor = .Green_04
-                config?.background.strokeColor = .Green_04
-            } else {
-                config?.baseBackgroundColor = .dynamic(.Neutral_10)
-                config?.background.strokeColor = .dynamic(.Neutral_07)
-            }
-
-            button.configuration = config
-        }
 
         completedLabel.numberOfLines = 0
         completedLabel.lineBreakMode = .byWordWrapping
@@ -192,12 +179,15 @@ class CommentFeedItemCell: UITableViewCell {
 
     /// update complete button for the note completed state
     private func updateCompleteButton() {
+        completeButton.configuration?.baseBackgroundColor = isCompleted ? .Green_04 : .dynamic(.Neutral_10)
+        completeButton.configuration?.background.strokeColor = isCompleted ? .Green_04 : .dynamic(.Neutral_07)
         completeButton.setImage(
             UIImage(named: "tick.small")?.withTintColor(isCompleted
                 ? .Neutral_01
                 : .dynamic(.Neutral_05)),
             for: .normal
         )
+
         completeButton.setNeedsUpdateConfiguration()
     }
 

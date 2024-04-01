@@ -51,18 +51,6 @@ class CollaborationBadgeButton: RangeButton {
         config.cornerStyle = .fixed
         config.background.cornerRadius = 16
         config.background.strokeColor = .init(white: 0, alpha: 0.2)
-
-        configurationUpdateHandler = { [weak self] button in
-            guard let self = self else { return }
-            guard !self.collaboration.isInvalidated else { return }
-            var config = button.configuration
-            if let status = collaboration.status {
-                config?.baseBackgroundColor = collaboration.isArchived ? .Archived : status.color
-            } else {
-                config?.baseBackgroundColor = collaboration.isArchived ? .Archived : .Pink_03
-            }
-            button.configuration = config
-        }
         configuration = config
     }
 
@@ -103,6 +91,13 @@ class CollaborationBadgeButton: RangeButton {
         } else {
             markerView?.isHidden = true
         }
+
+        if let status = collaboration.status {
+            configuration?.baseBackgroundColor = collaboration.isArchived ? .Archived : status.color
+        } else {
+            configuration?.baseBackgroundColor = collaboration.isArchived ? .Archived : .Pink_03
+        }
+
         setNeedsUpdateConfiguration()
     }
 

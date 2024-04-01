@@ -26,7 +26,9 @@ class CollaborationStatusButton: RangeButton {
 
     private func updateButton() {
         guard !collaboration.isInvalidated else { return }
+        if let status = collaboration.status, status.isInvalidated { return }
         setTitle(collaboration.status?.name ?? "", for: .normal)
+        configuration?.baseBackgroundColor = collaboration.status?.color ?? .Primary_Blue_04
         setNeedsUpdateConfiguration()
     }
 
@@ -46,15 +48,6 @@ class CollaborationStatusButton: RangeButton {
         config.imagePlacement = .trailing
         config.imagePadding = 6
 
-        // more vertical tap area as button is only 32 points high
-        configurationUpdateHandler = { [weak self] button in
-            guard let self = self else { return }
-            guard !self.collaboration.isInvalidated else { return }
-            if let status = collaboration.status, status.isInvalidated { return }
-            var config = button.configuration
-            config?.baseBackgroundColor = self.collaboration.status?.color ?? .Primary_Blue_04
-            button.configuration = config
-        }
         configuration = config
         setImage(UIImage(systemName: "chevron.down"), for: .normal)
     }

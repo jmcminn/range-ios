@@ -177,12 +177,12 @@ class CommentViewController: UIViewController, NonModalCardCoordinating, CardPre
             } else {
                 flagButton.setImage(UIImage(systemName: "flag"), for: .normal)
             }
-            flagButton.setNeedsUpdateConfiguration()
         }
         if commentButton == nil {
             setupCommentButton()
         }
-        commentButton.setNeedsUpdateConfiguration()
+        updateFlagButtonColor()
+        updateCommentButtonColor()
         textView.placeholderText = placeholderText
     }
 
@@ -246,14 +246,12 @@ extension CommentViewController {
                 self.isNote = !self.isNote
             }
         )
-        flagButton.configurationUpdateHandler = { [weak self] button in
-            guard let self = self else { return }
-            var config = button.configuration
-            config?.baseForegroundColor = self.isNote
-                ? .Orange_03
-                : .dynamic(.Neutral_05)
-            button.configuration = config
-        }
+        updateFlagButtonColor()
+    }
+
+    private func updateFlagButtonColor() {
+        guard flagButton != nil else { return }
+        flagButton.configuration?.baseForegroundColor = isNote ? .Orange_03 : .dynamic(.Neutral_05)
         flagButton.setNeedsUpdateConfiguration()
     }
 
@@ -286,6 +284,7 @@ extension CommentViewController {
         guard commentButton == nil else { return }
         var commentConfig = UIButton.Configuration.filled()
         commentConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        commentConfig.baseBackgroundColor = .Primary_Blue_04
         commentConfig.baseForegroundColor = .Neutral_01
         commentConfig.background.cornerRadius = 8
         commentConfig.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
@@ -302,14 +301,14 @@ extension CommentViewController {
         )
         // more vertical tap area as button is only 32 points high
         commentButton.tapAreaInsets = UIEdgeInsets(top: -16, left: 0, bottom: -16, right: 0)
-        commentButton.configurationUpdateHandler = { [weak self] button in
-            guard let self = self else { return }
-            var config = button.configuration
-            config?.baseBackgroundColor = self.isNote ? .Orange_03 : .Primary_Blue_04
-            button.configuration = config
-        }
-        commentButton.setNeedsUpdateConfiguration()
+        updateFlagButtonColor()
+        updateCommentButtonColor()
         updateCommentButtonEnabled()
+    }
+
+    private func updateCommentButtonColor() {
+        commentButton.configuration?.baseBackgroundColor = isNote ? .Orange_03 : .Primary_Blue_04
+        commentButton.setNeedsUpdateConfiguration()
     }
 }
 
