@@ -44,7 +44,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         description: String? = nil,
         showSearchView: Bool = false,
         onClose: (() -> Void)? = nil,
-        cardConfig: CardConfiguration = CardConfiguration(initialCardPosition: .max, showOverlay: true),
+        cardConfig: CardConfiguration = CardConfiguration(initialCardPosition: .max, showOverlay: .always),
         autoDismiss: Bool = true
     ) {
         self.cardConfig = cardConfig

@@ -18,11 +18,17 @@ struct CardConfiguration {
     /// - Warning: only for non-modal card presentation
     var allowsFullScreen: Bool = false
 
+    enum ShowOverlay: Equatable {
+        case never // the overlay is not shown
+        case inPosition(_: CardPosition) // the overlay is shown if card is in given position only
+        case always // the overlay is always shown (no matter what position the card is in)
+    }
+
     /// Whether the overlay is shown over the presenting view.
     /// If overlay is shown it makes the presenting view not interactive.
     ///
     /// - Warning: only for non-modal card presentation
-    var showOverlay: Bool = false
+    var showOverlay: ShowOverlay = .never
 
     /// If any view is provided here it'll `layoutIfNeeded` when animating the card height.
     /// This might be needed for views that are layed out in relation to the card and need to animate the position when the card is being

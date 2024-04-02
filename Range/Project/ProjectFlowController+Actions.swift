@@ -554,7 +554,7 @@ extension ProjectFlowController {
         }
         installCard(
             cardViewController: commentVC,
-            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: .always)
         )
         commentVC.showCard(animated: true)
     }

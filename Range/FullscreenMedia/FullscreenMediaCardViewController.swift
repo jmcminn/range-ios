@@ -258,7 +258,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         presentingVC.installCard(
             cardViewController: self,
             inView: inView,
-            cardConfig: CardConfiguration(initialCardPosition: .max, showOverlay: showOverlay)
+            cardConfig: CardConfiguration(initialCardPosition: .max, showOverlay: showOverlay ? .always : .never)
         )
         cardDraggingDelegateId = cardDragging?.addDelegate(self)
         showCard(animated: true)
@@ -510,7 +510,7 @@ extension FullscreenMediaCardViewController {
 
         installCard(
             cardViewController: addCommentVC,
-            cardConfig: CardConfiguration(initialCardPosition: .medium, interactive: false, showOverlay: false)
+            cardConfig: CardConfiguration(initialCardPosition: .medium, interactive: false)
         )
         self.addCommentVC = addCommentVC
 

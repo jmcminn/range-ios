@@ -57,7 +57,7 @@ class SearchAndSelectTagsViewController: SheetCardViewController {
         super.init(
             icon: UIImage(systemName: "tag"),
             title: String(localized: "Tags"),
-            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true),
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: .always),
             autoDismiss: autoDismissCard
         )
 

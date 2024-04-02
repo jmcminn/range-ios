@@ -92,6 +92,27 @@ class CardDragging: NSObject {
         guard let id = id else { return }
         delegates.removeValue(forKey: id)
     }
+
+    func setPosition(
+        _ position: CardPosition,
+        withVelocity velocity: CGFloat,
+        animated: Bool = false,
+        completion: (() -> Void)? = nil
+    ) {
+        self.position = position
+        var height = cardHeight(forPosition: position)
+        if position == .medium, height < 0 {
+            // ignore medium, set to max
+            self.position = .max
+            height = cardHeight(forPosition: self.position)
+        }
+        delegates.values.forEach { $0.cardWillChangePosition(self.position) }
+        setCardHeight(height, animated: animated, withVelocity: velocity) { [weak self] in
+            guard let self = self else { return }
+            self.delegates.values.forEach { $0.cardDidChangePosition(self.position) }
+            completion?()
+        }
+    }
 }
 
 /// Card height related properties
@@ -164,27 +185,6 @@ extension CardDragging {
             animator.startAnimation()
         } else {
             cardHeight = height
-            completion?()
-        }
-    }
-
-    func setPosition(
-        _ position: CardPosition,
-        withVelocity velocity: CGFloat,
-        animated: Bool = false,
-        completion: (() -> Void)? = nil
-    ) {
-        self.position = position
-        var height = cardHeight(forPosition: position)
-        if position == .medium, height < 0 {
-            // ignore medium, set to max
-            self.position = .max
-            height = cardHeight(forPosition: self.position)
-        }
-        delegates.values.forEach { $0.cardWillChangePosition(self.position) }
-        setCardHeight(height, animated: animated, withVelocity: velocity) { [weak self] in
-            guard let self = self else { return }
-            self.delegates.values.forEach { $0.cardDidChangePosition(self.position) }
             completion?()
         }
     }
