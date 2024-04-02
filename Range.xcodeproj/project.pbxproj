@@ -91,7 +91,6 @@
 		0A25D2B92AB8C02F00A331E1 /* DBScorer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B12AB8C02F00A331E1 /* DBScorer.m */; };
 		0A25D2BA2AB8C02F00A331E1 /* DBMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */; };
 		0A26CC3B2A6971DE004C6DFC /* ProjectModelTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */; };
-		0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */; };
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */; };
 		0A2B3F552AF3CFF000D3D0D2 /* TextAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */; };
 		0A2B3F572AF3E53C00D3D0D2 /* AnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */; };
@@ -604,7 +603,6 @@
 		0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBMatcher.m; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTestCase.swift; sourceTree = "<group>"; };
-		0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationBottomViewController.swift; sourceTree = "<group>"; };
 		0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsTagsCommand.swift; sourceTree = "<group>"; };
 		0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotation.swift; sourceTree = "<group>"; };
 		0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationViewModel.swift; sourceTree = "<group>"; };
@@ -1457,7 +1455,6 @@
 				0A4782FF28A516AA0063040F /* CollaborationViewController.swift */,
 				0AB8557728FD94E200491E20 /* CollaborationDetailsViewController.swift */,
 				0A1F8E8728D098900066F08F /* CollaborationHeaderCoverViewController.swift */,
-				0A28A1BD290A84A000465A84 /* CollaborationBottomViewController.swift */,
 				0A94E8D428CE24CF00A09616 /* CollaborationBadgeButton.swift */,
 				0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */,
 				0AB8557328F9533900491E20 /* AssigneeButton.swift */,
@@ -2855,7 +2852,6 @@
 				0AF812B92840D53700F7BD09 /* Logging.swift in Sources */,
 				0A2C7EE22A09682A008F1FB9 /* MediaFilters.swift in Sources */,
 				0A374DE0292786530036C184 /* DeleteCommentCommand.swift in Sources */,
-				0A28A1BE290A84A000465A84 /* CollaborationBottomViewController.swift in Sources */,
 				0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */,
 				0A07D7662812960600B6F9A2 /* EmailAuthView.swift in Sources */,
 				0ABFD8B728F00A98008CDA74 /* CommentViewController.swift in Sources */,

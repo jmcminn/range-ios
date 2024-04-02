@@ -28,7 +28,6 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var statusButton: CollaborationStatusButton!
     /// shown for archived collaboration (for tasks it replaces the status button)
     var archivedLabel: LabelWithTextInsets!
-    var takeScreenshotButton: UIButton!
     var moreButton: UIButton!
     var closeButton: UIButton!
     var idLabel: UILabel?
@@ -55,6 +54,19 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     /// callbacks for actions triggered from collaboration window
     var onClose: (() -> Void)?
     var onNameUpdated: ((String) -> Void)?
+
+    /// If there's a card overlaping the bottom of collaboration window it's height is reported here (excluding the bottom safe area as it's not
+    /// included in the collaboration window content). When this is non zero the content inset of the feed should be updated and also
+    /// the .medium height of this card should be adjusted
+    var bottomOverlap: CGFloat = 0.0 { didSet {
+        if let feedVC {
+            feedVC.tableView.contentInset.bottom = bottomOverlap
+            feedVC.tableView.verticalScrollIndicatorInsets.bottom = bottomOverlap
+        }
+        if let cardDragging, cardDragging.position == .medium {
+            cardDragging.setPosition(cardDragging.position, withVelocity: 0, animated: false)
+        }
+    }}
 
     private enum Constants {
         // distance between views
@@ -155,13 +167,6 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         moreButton.snp.makeConstraints { make in
             make.width.height.top.equalTo(closeButton)
             make.trailing.equalTo(closeButton.snp.leading).offset(-8)
-        }
-
-        setupTakeScreenshotButton()
-        containerView.addSubview(takeScreenshotButton)
-        takeScreenshotButton.snp.makeConstraints { make in
-            make.width.height.top.equalTo(closeButton)
-            make.trailing.equalTo(moreButton.snp.leading).offset(-8)
         }
 
         if let idLabel {
@@ -310,21 +315,6 @@ extension CollaborationViewController {
 // MARK: Views
 
 extension CollaborationViewController {
-    private func setupTakeScreenshotButton() {
-        takeScreenshotButton = RangeButton(
-            configuration: UIButton.Configuration.closeButton(),
-            primaryAction: UIAction(image: UIImage(systemName: "camera.viewfinder")) { [weak self] _ in
-                guard let self = self else { return }
-                UIApplication.shared.sendAction(
-                    #selector(ProjectFlowController.takeScreenshotAction), to: nil, from: self,
-                    for: FlowEvent(self.collaboration)
-                )
-            }
-        )
-        .withCustomRangeHighlightColor()
-        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
-    }
-
     private func setupMoreButton() {
         moreButton = RangeButton(
             configuration: UIButton.Configuration.closeButton(),
@@ -467,7 +457,7 @@ extension CollaborationViewController: CardPresentable {
 
             // what's visible in the .medium card position but not when showing keyboard
             let additionalContentHeight = detailsVC.height(showingHalfOfUpdatesToggle: true)
-                - detailsTopSpace + cardContainerView.safeAreaInsets
+                - detailsTopSpace + bottomOverlap + cardContainerView.safeAreaInsets
                 .bottom // add bottom safe area as this card is in full screen mode
 
             let extraSpaceForKeyboard = max(keyboardHeightInWindow, 0)

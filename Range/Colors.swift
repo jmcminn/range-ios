@@ -26,6 +26,8 @@ extension Color {
     static let Neutral_10 = Color("Neutral_10")
     static let Orange_03 = Color("Orange_03")
     static let Orange_04 = Color("Orange_04")
+    static let Pink_01 = Color("Pink_01")
+    static let Pink_02 = Color("Pink_02")
     static let Pink_03 = Color("Pink_03")
     static let Pink_04 = Color("Pink_04")
     static let Primary_Blue_01 = Color("Primary_Blue_01")
@@ -63,6 +65,8 @@ extension UIColor {
     static let Neutral_10 = UIColor(named: "Neutral_10")!
     static let Orange_03 = UIColor(named: "Orange_03")!
     static let Orange_04 = UIColor(named: "Orange_04")!
+    static let Pink_01 = UIColor(named: "Pink_01")!
+    static let Pink_02 = UIColor(named: "Pink_02")!
     static let Pink_03 = UIColor(named: "Pink_03")!
     static let Pink_04 = UIColor(named: "Pink_04")!
     static let Primary_Blue_01 = UIColor(named: "Primary_Blue_01")!
@@ -129,6 +133,7 @@ extension UIColor {
         case UIColor.Neutral_09.hexString: return .Neutral_08
         case UIColor.Neutral_02.hexString: return .Neutral_03
         case UIColor.Neutral_01.hexString: return .Neutral_02
+        case UIColor.Pink_01.hexString: return .Pink_02
         case UIColor.Secondary_02.hexString: return .Secondary_03
         case UIColor.Red_03.hexString: return .Red_04
         default:

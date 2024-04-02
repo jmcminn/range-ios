@@ -50,11 +50,10 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     var collaborationVC: CollaborationViewController?
     /// the view covering the collaboration window in full screen mode (when the collaboration window card is in max position)
     var collaborationHeaderCoverVC: CollaborationHeaderCoverViewController?
-    /// Bottom view with CTAs showing when user scrolls the collaboration view so it's CTAs hide behind the header cover
-    var collaborationBottomVC: CollaborationBottomViewController?
-    private var collaborationCardDraggingDelegateId: UUID?
+    /// Add comment bottom card - always visible on top of collaboration view
+    private var addCommentVC: CommentViewController?
 
-    private var collaborationScrollViewObserver: NSKeyValueObservation?
+    private var collaborationCardDraggingDelegateId: UUID?
 
     /// When adding photos from collaboration window
     var addPhotosFlow: AddPhotoFlowController?
@@ -114,7 +113,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         collaboration = nil
         geometryNotificationToken?.invalidate()
         geometryNotificationToken = nil
-        removeBottomCard()
+        removeAddCommentCard()
         canvasContainer.remove(childController: self)
     }
 
@@ -132,12 +131,6 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         }
         collaborationVC.onNameUpdated = { [weak self] newName in
             self?.updateName(newName)
-        }
-        if let scrollView = collaborationVC.drivingScrollView() {
-            scrollView.forwardDelegateInvocations(to: self)
-            collaborationScrollViewObserver = scrollView.observe(\.contentSize) { [weak self] _, _ in
-                self?.collaborationScrollViewContentSizeChanged()
-            }
         }
         return collaborationVC
     }
@@ -175,8 +168,8 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             cardConfig: CardConfiguration(initialCardPosition: .medium, allowsFullScreen: true)
         )
         // move collaboration window behind bottom card
-        if let collaborationBottomVC = collaborationBottomVC {
-            view.insertSubview(collaborationVC.view, belowSubview: collaborationBottomVC.view)
+        if let addCommentVC {
+            view.insertSubview(collaborationVC.view, belowSubview: addCommentVC.view)
         }
 
         // check if already showing, if so then ignore animated and replace instantly
@@ -185,7 +178,6 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             let previousCardHeight = self.collaborationVC?.cardDragging?.cardHeight
             hideCollaborationWindow(animated: false)
             setCollaborationHeaderCoverHidden(true, animated: false)
-            setBottomCardHidden(true, animated: false)
             // switch to new collaboration after hiding the previous view.
             // We may still want to save some data when closing the collaboration view
             self.collaboration = collaboration
@@ -202,7 +194,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             collaborationVC.showCard(animated: animated)
         }
         addCollaborationHeaderCover()
-        setupBottomCard()
+        setupAddCommentCard()
         self.collaborationVC = collaborationVC
 
         analytics?._trackProjectEvent(name: "collaboration viewed", model, [
@@ -220,11 +212,6 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
                 self.removeCard(cardViewController: collaborationVC)
                 completion?()
             }
-            if let scrollView = collaborationVC.drivingScrollView() {
-                scrollView.cancelForwardingDelegateInvocations(to: self)
-            }
-            collaborationScrollViewObserver?.invalidate()
-            collaborationScrollViewObserver = nil
             self.collaborationVC = nil
         } else {
             completion?()
@@ -233,8 +220,8 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         // data when closing the collaboration view
         collaboration = nil
         setCollaborationHeaderCoverHidden(true, animated: animated)
-        setBottomCardHidden(true, animated: animated)
         removeCollaborationHeaderCover()
+        removeAddCommentCard()
         lastCancelledCommentText = ""
     }
 
@@ -288,81 +275,6 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     }
 }
 
-// MARK: - bottom card
-
-extension CollaborationFlowController {
-    private func setupBottomCard() {
-        guard collaborationBottomVC == nil else { return }
-        collaborationBottomVC = CollaborationBottomViewController()
-        installCard(
-            cardViewController: collaborationBottomVC!,
-            cardConfig: CardConfiguration(initialCardPosition: .min,
-                                          interactive: false)
-        )
-        collaborationBottomVC!.showCard(animated: false)
-    }
-
-    private func removeBottomCard() {
-        guard let collaborationBottomVC = collaborationBottomVC else { return }
-        removeCard(cardViewController: collaborationBottomVC)
-        self.collaborationBottomVC = nil
-    }
-
-    private func setBottomCardHidden(_ hidden: Bool, animated: Bool) {
-        guard let cardDragging = collaborationBottomVC?.cardDragging else { return }
-        let newPosition: CardPosition = hidden ? .min : .medium
-        guard cardDragging.position != newPosition else { return }
-
-        cardDragging.setPosition(newPosition, withVelocity: 0, animated: animated) { [weak self] in
-            guard let self = self else { return }
-            // adjust the feed bottom content inset so user can still scroll to the bottom of the feed
-            // when the bottom card is overlapping the table view
-            // - safeAreaInsets.bottom = the feed is not covering the bottom safe area while the card height includes it
-            guard let scrollView = self.collaborationVC?.feedVC.tableView else { return }
-            scrollView.contentInset = UIEdgeInsets(
-                top: 0,
-                left: 0,
-                bottom: max(0, cardDragging.cardHeight - self.view.safeAreaInsets.bottom),
-                right: 0
-            )
-            scrollView.scrollIndicatorInsets = scrollView.contentInset
-        }
-    }
-}
-
-// MARK: - listen to position of collaboration view CTAs
-
-extension CollaborationFlowController: UIScrollViewDelegate {
-    /// When the collaboration view content is scrolled we show/hide the FABs based on the current collaboration CTAs position against the header cover
-    func scrollViewDidScroll(_: UIScrollView) {
-        updateBottomCardVisibility()
-    }
-
-    /// Observing contentSize to update the bottom card visibility (switching to show "less updates" in the feed may result in short
-    /// content, so the CTAs in the collaboration view can be revealed, so we bottom card should be hidden)
-    private func collaborationScrollViewContentSizeChanged() {
-        updateBottomCardVisibility()
-    }
-
-    /// show/hide bottom card when the corresponding collaboration view CTAs hide behind the header cover/show again
-    private func updateBottomCardVisibility() {
-        guard let collaborationVC = collaborationVC,
-              let headerCoverVC = collaborationHeaderCoverVC else { return }
-
-        let ctas: UIView = collaborationVC.detailsVC.ctas
-
-        let headerCoverBottom = headerCoverVC.view.frame.maxY
-        let ctasTop = round(headerCoverVC.view.convert(ctas.frame, from: collaborationVC.detailsVC.view).minY)
-
-        // once the collaboration view CTAs get behind the cover let's show the bottom card
-        if headerCoverBottom - ctasTop >= ctas.frame.height {
-            setBottomCardHidden(false, animated: true)
-        } else {
-            setBottomCardHidden(true, animated: true)
-        }
-    }
-}
-
 // MARK: Card dragging delegate
 
 extension CollaborationFlowController: CardDraggingDelegate {
@@ -393,8 +305,85 @@ extension CollaborationFlowController: CardDraggingDelegate {
         let headerCoverAlpha = max(0, min(1, (headerCoverBottom - 30 - collaborationViewTop) / 20))
         collaborationHeaderCoverVC.view.isHidden = false
         collaborationHeaderCoverVC.view.alpha = headerCoverAlpha
+    }
+}
 
-        updateBottomCardVisibility()
+// MARK: Bottom add comment card
+
+extension CollaborationFlowController {
+    /// Add a sticky CommentViewController card.
+    /// User can start adding new comment by tapping on the text view and making it first responder (then the card will animate to full height)
+    private func setupAddCommentCard() {
+        guard addCommentVC == nil else { return }
+        let addCommentVC = CommentViewController(
+            mode: .add,
+            startEditingWhenShown: false
+        )
+        addCommentVC.onHeightUpdated = { [weak self] _ in
+            self?.updateCollaborationWindowOverlapWithAddCommentCard()
+        }
+        addCommentVC.onCancel = { [weak self] in
+            guard let addCommentVC = self?.addCommentVC else { return }
+            // clear the text, close keyboard and reset to medium height (so buttons are not visible)
+            addCommentVC.commentText = ""
+            addCommentVC.view.endEditing(true)
+            addCommentVC.cardDragging?.setPosition(.medium, withVelocity: 0, animated: true)
+        }
+        addCommentVC.onDone = { [weak self] in
+            guard let self, let collaboration = self.collaboration else { return }
+            // save the comment and cleanup the text view (the same as in onCancel)
+            self.model.run(
+                self.model.addComment(
+                    commentText: addCommentVC.commentText,
+                    isNote: addCommentVC.isNote,
+                    toCollaboration: collaboration.id
+                )
+            ) { error in
+                if error != nil { ToastWindow.shared.showError(text: "Failed to add the comment") }
+            }
+            addCommentVC.onCancel?()
+            // a little later so the comment is already added - scroll to the bottom of the feed to show it
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let feedVC = self.collaborationVC?.feedVC {
+                    feedVC.tableView.setContentOffset(
+                        CGPoint(x: 0, y: feedVC.tableView.verticalOffsetForBottom),
+                        animated: true
+                    )
+                }
+            }
+        }
+
+        installCard(
+            cardViewController: addCommentVC,
+            cardConfig: CardConfiguration(
+                initialCardPosition: .medium,
+                interactive: false,
+                showOverlay: .inPosition(.max) // show overlay in max position
+            )
+        )
+        self.addCommentVC = addCommentVC
+
+        addCommentVC.showCard(animated: false)
+        DispatchQueue.main.async {
+            // small hack, run it in the next main event loop, so it's all layed out already
+            self.updateCollaborationWindowOverlapWithAddCommentCard()
+        }
+    }
+
+    private func removeAddCommentCard() {
+        guard let addCommentVC else { return }
+        removeCard(cardViewController: addCommentVC)
+        self.addCommentVC = nil
+    }
+
+    /// Add comment bottom card covers partially the collaboration window - update the feed content inset, so user can actually scroll
+    /// to the bottom of it.
+    private func updateCollaborationWindowOverlapWithAddCommentCard() {
+        guard let addCommentVC, let cardDragging = addCommentVC.cardDragging, cardDragging.position == .medium,
+              let collaborationVC else { return }
+        // adjust the collaboration window bottom overlap
+        // - safeAreaInsets.bottom = the feed is not covering the bottom safe area while the card height includes it
+        collaborationVC.bottomOverlap = max(0, cardDragging.cardHeight - view.safeAreaInsets.bottom)
     }
 }
 
@@ -447,7 +436,7 @@ extension CollaborationFlowController {
         }
         installCard(
             cardViewController: addCommentVC,
-            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: true)
+            cardConfig: CardConfiguration(initialCardPosition: .max, interactive: false, showOverlay: .always)
         )
         addCommentVC.showCard(animated: true)
     }

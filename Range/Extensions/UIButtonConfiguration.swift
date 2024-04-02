@@ -77,6 +77,31 @@ extension UIButton.Configuration {
         return config
     }
 
+    static func pinkButton(
+        imageTextStyle: UIFont.TextStyle = .footnote,
+        imagePlacement: NSDirectionalRectEdge = .trailing,
+        cornerRadius: CGFloat = 12
+    ) -> UIButton.Configuration {
+        let imageConfig = UIImage.SymbolConfiguration(textStyle: imageTextStyle)
+            .applying(UIImage.SymbolConfiguration(weight: .semibold))
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = NSDirectionalEdgeInsets(
+            top: 14,
+            leading: 0,
+            bottom: 14,
+            trailing: 0
+        )
+        config.baseBackgroundColor = .Pink_01
+        config.baseForegroundColor = .Pink_03
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = cornerRadius
+        config.background.strokeColor = .Pink_03
+        config.preferredSymbolConfigurationForImage = imageConfig
+        config.imagePlacement = imagePlacement
+        config.imagePadding = 5
+        return config
+    }
+
     /// Configuration used for the "next" button in the bottom navigation
     static func blueButton(
         imageTextStyle: UIFont.TextStyle = .footnote,

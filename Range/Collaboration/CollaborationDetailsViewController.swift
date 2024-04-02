@@ -348,27 +348,35 @@ extension CollaborationDetailsViewController {
     }
 }
 
-extension UIViewController {
+extension CollaborationDetailsViewController {
     /// Creates a view containing CTA buttons, to be reused for the bottom collaboration card
     func _createCollaborationCTAs() -> UIView {
         let ctas = UIView()
 
         var titleAttributes = AttributeContainer()
-        titleAttributes.font = UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold)
+        titleAttributes.font = UIFont.preferredFont(forTextStyle: .subheadline)
 
-        let blackButtonConfig = UIButton.Configuration.blackButton(
+        var pinkButtonConfig = UIButton.Configuration.pinkButton(
             imageTextStyle: .caption1,
             imagePlacement: .leading,
             cornerRadius: 8
         )
-        let addCommentButton = RangeButton(
-            configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "bubble.right")) { [weak self] _ in
-                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addCommentAction),
-                                                to: nil, from: self, for: nil)
+        pinkButtonConfig.attributedTitle = AttributedString("Add Snippet", attributes: titleAttributes)
+        let addSnippetButton = RangeButton(
+            configuration: pinkButtonConfig,
+            primaryAction: UIAction(image: UIImage(systemName: "scissors")) { [weak self] _ in
+                guard let self else { return }
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowController.takeScreenshotAction), to: nil, from: self,
+                    for: FlowEvent(self.collaboration)
+                )
             }
         ).withCustomRangeHighlightColor()
-        ctas.addSubview(addCommentButton)
+        ctas.addSubview(addSnippetButton)
+        addSnippetButton.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
+        }
 
         var blueButtonConfig = UIButton.Configuration.blueButton(
             imageTextStyle: .caption1,
@@ -388,28 +396,6 @@ extension UIViewController {
             make.trailing.top.bottom.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
         }
-
-        let addAttachmentButton = RangeButton(
-            configuration: blackButtonConfig,
-            primaryAction: UIAction(image: UIImage(systemName: "paperclip")) { [weak self] _ in
-                UIApplication.shared.sendAction(#selector(CollaborationFlowActions.addAttachmentAction),
-                                                to: nil, from: self, for: nil)
-            }
-        ).withCustomRangeHighlightColor()
-        ctas.addSubview(addAttachmentButton)
-        // layout buttons so addComment and addAttachment buttons take 25% and addPhotos take 50% space
-        // (+ there's 16 points space between each button, the leading and trailing spacing is already
-        // include as the whole ctas view has margins)
-        addCommentButton.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
-            make.width.equalTo(addPhotosButton.snp.width).multipliedBy(0.5).offset(-8)
-        }
-        addAttachmentButton.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.equalTo(addCommentButton.snp.trailing).offset(16)
-            make.width.equalTo(addCommentButton.snp.width)
-        }
-
         return ctas
     }
 }

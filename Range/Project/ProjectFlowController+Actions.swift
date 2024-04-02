@@ -454,6 +454,17 @@ extension ProjectFlowController {
                     }
                 ),
                 ActionItem(
+                    title: String(localized: "Attach File"), imageName: "paperclip",
+                    handler: { [weak self] in
+                        UIApplication.shared.sendAction(
+                            #selector(CollaborationFlowActions.addAttachmentAction),
+                            to: self?.collaborationFlow,
+                            from: self,
+                            for: nil
+                        )
+                    }
+                ),
+                ActionItem(
                     title: String(localized: "Update Location"), imageName: "mappin.and.ellipse",
                     handler: { [weak self] in self?.moveCollaboration(collaboration) }
                 ),
