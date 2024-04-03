@@ -367,7 +367,7 @@ extension CollaborationDetailsViewController {
             primaryAction: UIAction(image: UIImage(systemName: "scissors")) { [weak self] _ in
                 guard let self else { return }
                 UIApplication.shared.sendAction(
-                    #selector(ProjectFlowController.takeScreenshotAction), to: nil, from: self,
+                    #selector(ProjectFlowController.takeSnapshotAction(sender:event:)), to: nil, from: self,
                     for: FlowEvent(self.collaboration)
                 )
             }

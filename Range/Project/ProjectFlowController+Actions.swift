@@ -78,7 +78,7 @@ final class FlowEvent: UIEvent {
     /// Show the in-app feed for current project
     func showProjectInAppFeed()
     /// Take screenshot of canvas and attach as an Upload to given collaboration
-    func takeScreenshotAction(sender: Any?, event: FlowEvent)
+    func takeSnapshotAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -450,7 +450,7 @@ extension ProjectFlowController {
                 ActionItem(
                     title: String(localized: "Add Snippet"), imageName: "scissors",
                     handler: { [weak self] in
-                        self?.takeScreenshotAction(sender: self, event: event)
+                        self?.takeSnapshotAction(sender: self, event: event)
                     }
                 ),
                 ActionItem(
@@ -853,24 +853,24 @@ extension ProjectFlowController {
 // MARK: - screenshot
 
 extension ProjectFlowController {
-    func takeScreenshotAction(sender _: Any?, event: FlowEvent) {
+    func takeSnapshotAction(sender _: Any?, event: FlowEvent) {
         guard let collaboration = event.object as? Collaboration,
               let geometryId = collaboration.feature.first?.geometry.first?.id else { return }
 
-        canvasScreenshotFlow = CanvasScreenshotFlowController(
+        canvasSnapshotFlow = CanvasSnapshotFlowController(
             collaboration: collaboration,
             model: model,
             localFiles: localFiles,
             canvasContainer: canvasContainer
         )
-        canvasScreenshotFlow?.onStop = { [weak self] in
+        canvasSnapshotFlow?.onStop = { [weak self] in
             guard let self = self else { return }
             self.setUIState(.default, animated: true)
             self.selectCollaboration(forGeometryId: geometryId, andEditName: false)
-            self.canvasScreenshotFlow = nil
+            self.canvasSnapshotFlow = nil
         }
         pinsDisplay?.setSelectedPin(nil)
-        setUIState(.canvasScreenshot, animated: true)
-        canvasScreenshotFlow?.start()
+        setUIState(.canvasSnapshot, animated: true)
+        canvasSnapshotFlow?.start()
     }
 }

@@ -1,18 +1,18 @@
 import Foundation
 import UIKit
 
-enum CanvasScreenshotSelectionShape {
+enum CanvasSnapshotSelectionShape {
     case portrait // 4 x 3 (width x height proportions)
     case square // 1 x 1
     case landscape // 3 x 4
 }
 
-/// Showing the overlay and buttons for canvas screenshot selection.
+/// Showing the overlay and buttons for canvas snapshot selection.
 /// We cannot use SwiftUI here because this needs to be a passthrough view and it's not supported to have user interaction passthrough
 /// views implemented using swiftUI and added to UIView using UIHostingController...
-class CanvasScreenshotSelectionViewController: UIViewController {
+class CanvasSnapshotSelectionViewController: UIViewController {
     private let canvasViewController: CanvasViewController
-    var selectionShape: CanvasScreenshotSelectionShape = .landscape
+    var selectionShape: CanvasSnapshotSelectionShape = .landscape
     private let backgroundView = SelectionBackgroundView()
     private let selectionBorderView = UIView()
     private let titleView = UIStackView()
@@ -23,10 +23,10 @@ class CanvasScreenshotSelectionViewController: UIViewController {
     )
     private var cancelButton: RangeButton!
     private let shapeButtonsView = UIView()
-    private var shapeButtons: [CanvasScreenshotSelectionShape: RangeButton] = [:]
+    private var shapeButtons: [CanvasSnapshotSelectionShape: RangeButton] = [:]
     private var doneButton: RangeButton!
     var onCancel: (() -> Void)?
-    /// Called when user selected the screenshot area and confirmed. The first parameter is the screenshot area frame
+    /// Called when user selected the snapshot area and confirmed. The first parameter is the snapshot area frame
     /// in the canvasViewController coordinates
     var onDone: ((CGRect) -> Void)?
 
@@ -153,7 +153,7 @@ class CanvasScreenshotSelectionViewController: UIViewController {
             strokeColor: .clear, imagePointSize: 11, imageFontWeight: .bold
         )
 
-        let buttonsImages: [CanvasScreenshotSelectionShape: String] = [
+        let buttonsImages: [CanvasSnapshotSelectionShape: String] = [
             .portrait: "rectangle.portrait.slash",
             .square: "square.slash",
             .landscape: "rectangle.slash",
@@ -186,7 +186,7 @@ class CanvasScreenshotSelectionViewController: UIViewController {
         }
     }
 
-    private func setSelectionShape(_ shape: CanvasScreenshotSelectionShape) {
+    private func setSelectionShape(_ shape: CanvasSnapshotSelectionShape) {
         selectionShape = shape
         for (key, button) in shapeButtons {
             button.isSelected = key == shape
@@ -232,7 +232,7 @@ class CanvasScreenshotSelectionViewController: UIViewController {
 }
 
 /// CanvasViewControllerDelegate
-extension CanvasScreenshotSelectionViewController: CanvasViewControllerDelegate {
+extension CanvasSnapshotSelectionViewController: CanvasViewControllerDelegate {
     func canvasCameraChanged(reason: CanvasCameraChangeReason) {
         if reason == .pan || reason == .zoom {
             hidePanAndZoomIndicatorView()

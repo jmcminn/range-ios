@@ -3,12 +3,12 @@ import PDFKit
 import UIKit
 
 /// Converts PDFPage selected area to JPG
-class PDFScreenshotter {
+class PDFSnapshotter {
     /// Converts the selected frame from given page to JPEG.
     /// - Parameters:
     ///   - page - the PDF page to convert
     ///   - selectedFrame - a frame to screenshot in PDF .mediaBox unit. The frame may be outside of the .mediaBox bounds - white background will be added
-    func takeScreenshot(page: PDFPage, selectedFrame: CGRect) -> UIImage {
+    func takeSnapshot(page: PDFPage, selectedFrame: CGRect) -> UIImage {
         // the size reported by the PDF page (unrelated to view rendering)
         let pageBounds = page.bounds(for: .mediaBox)
         // Scale from the selected frame size to the expected image size

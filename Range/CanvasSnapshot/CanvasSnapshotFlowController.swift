@@ -3,23 +3,23 @@ import OSLog
 import SwiftUI
 import UIKit
 
-/// Manages the flow of taking a screenshot of current canvas and adding it to given collaboration
+/// Manages the flow of taking a snapshot of current canvas and adding it to given collaboration
 /// This flow resembles (has copy paste from) the AddPhotoFlowController as it reuses the PhotoDetailsViewController
 /// and has the same code for presenting the PhotosReviewViewController and updating the annotations...
 /// Maybe the common logic should be somehow refactored... (when we have another flow controller that's similar?)
-class CanvasScreenshotFlowController {
+class CanvasSnapshotFlowController {
     let geometryId: String
     let model: ProjectModel
     let localFiles: LocalFiles
     let canvasContainer: CanvasContainerViewController
 
-    private var selectionVC: CanvasScreenshotSelectionViewController?
+    private var selectionVC: CanvasSnapshotSelectionViewController?
 
     /// called when the flow finishes
     var onStop: (() -> Void)?
 
-    /// MapboxScreenshotter is stateful, we need to keep the reference for the time of screenshot taking
-    private var mapboxScreenshotter = MapboxScreenshotter()
+    /// MapboxSnapshotter is stateful, we need to keep the reference for the time of screenshot taking
+    private var mapboxSnapshotter = MapboxSnapshotter()
 
     private let photosToAddViewModel: PhotosToAddViewModel
     private let tagsViewModel: TagsViewModel
@@ -44,7 +44,7 @@ class CanvasScreenshotFlowController {
 
     /// Show the UI for canvas screenshot
     func start() {
-        selectionVC = CanvasScreenshotSelectionViewController(
+        selectionVC = CanvasSnapshotSelectionViewController(
             canvasViewController: canvasContainer.canvasViewController
         )
         selectionVC?.onCancel = { [weak self] in
@@ -88,11 +88,11 @@ class CanvasScreenshotFlowController {
                 fatalError("pdf page missing for pdf canvas source")
             }
             let selectedPDFFrame = canvasContainer.canvasViewController.getPDFPageFrameForViewFrame(screenshotFrame)
-            return PDFScreenshotter().takeScreenshot(page: pdfPage, selectedFrame: selectedPDFFrame)
+            return PDFSnapshotter().takeSnapshot(page: pdfPage, selectedFrame: selectedPDFFrame)
 
         } else {
             return try await withCheckedThrowingContinuation { continuation in
-                mapboxScreenshotter.takeScreenshot(
+                mapboxSnapshotter.takeSnapshot(
                     canvasSourceData: canvas.currentCanvasSource.data,
                     areaSize: screenshotFrame.size,
                     cameraState: canvasContainer.canvasViewController.mapView.mapboxMap.cameraState,
@@ -311,7 +311,7 @@ class CanvasScreenshotFlowController {
 }
 
 /// PhotosToAddViewModel delegate
-extension CanvasScreenshotFlowController: PhotosToAddViewModelDelegate {
+extension CanvasSnapshotFlowController: PhotosToAddViewModelDelegate {
     /// When the last photo is removed automatically hide the photos review screen and stop the flow
     func photoRemoved(atIndex _: Int) {
         if photosToAddViewModel.photos.isEmpty {

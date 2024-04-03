@@ -20,7 +20,7 @@ final class ProjectFlowController: UIViewController {
         case movePin // move pin flow is started
         case fullScreenCanvas // the projects controls are hidden, showing the canvas in full screen (still showing the pins)
         case locationSimulation // taps are interpreted as setting new simulated user (blue dot) location
-        case canvasScreenshot // the flow to take canvas screenshot is started
+        case canvasSnapshot // the flow to take canvas snapshot is started
     }
 
     // the initial state is set in `start` method
@@ -74,7 +74,7 @@ final class ProjectFlowController: UIViewController {
     var addPhotoFlow: AddPhotoFlowController?
     var addPinFlow: AddPinFlowController?
     var movePinFlow: MovePinFlowController?
-    var canvasScreenshotFlow: CanvasScreenshotFlowController?
+    var canvasSnapshotFlow: CanvasSnapshotFlowController?
 
     var started = false
     var onBack: (() -> Void)?
@@ -447,7 +447,7 @@ final class ProjectFlowController: UIViewController {
     func setUIState(_ state: UIState, animated: Bool) {
         uiState = state
 
-        if state == .fullScreenCanvas || state == .canvasScreenshot {
+        if state == .fullScreenCanvas || state == .canvasSnapshot {
             controls.hideTopViewController(animated: animated)
         } else {
             controls.showTopViewController(

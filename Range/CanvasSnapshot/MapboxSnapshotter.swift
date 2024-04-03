@@ -4,7 +4,7 @@ import UIKit
 
 /// Converts selected area of Mapbox map to JPG.
 /// It uses the Mapbox Snapshotter for snapshots taking. (Doesn't take snapshot of a map displayed on screen)
-class MapboxScreenshotter {
+class MapboxSnapshotter {
     private var mapSnapshotter: Snapshotter?
 
     /// Converts the area pointed to by given cameraState with given areaSize (in view coordinates, in pixels)
@@ -14,7 +14,7 @@ class MapboxScreenshotter {
     ///   - areaSize - size of the area to screenshot, in pixels, the middle point of this area is the camera center point
     ///   - cameraState - to decide which part of the map we want to screenshot (zoom, center, rotation)
     ///   - zoomConverter - required for adjusting the camera zoom to maximize the image resolution (and get a screenshot at a higher zoom level)
-    func takeScreenshot(
+    func takeSnapshot(
         canvasSourceData: CanvasSourceData,
         areaSize: CGSize,
         cameraState: CameraState,

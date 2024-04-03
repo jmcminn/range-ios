@@ -426,10 +426,10 @@
 		0AC89D7E290980DD00D3CCA1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7D290980DD00D3CCA1 /* GradientView.swift */; };
 		0AC89D802909AC6100D3CCA1 /* FeedVerticalLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */; };
 		0AC8D1282BAF48B200D37202 /* StyleManager+LoadCanvasSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8D1272BAF48B200D37202 /* StyleManager+LoadCanvasSource.swift */; };
-		0AC8D12C2BAF656800D37202 /* CanvasScreenshotFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8D12B2BAF656800D37202 /* CanvasScreenshotFlowController.swift */; };
+		0AC8D12C2BAF656800D37202 /* CanvasSnapshotFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8D12B2BAF656800D37202 /* CanvasSnapshotFlowController.swift */; };
 		0AC8D1302BB1CEBE00D37202 /* CanvasScreenshotSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8D12F2BB1CEBE00D37202 /* CanvasScreenshotSelectionViewController.swift */; };
 		0AC8D1322BB302BC00D37202 /* PDFScreenshotter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8D1312BB302BC00D37202 /* PDFScreenshotter.swift */; };
-		0AC8D1342BB3044400D37202 /* MapboxScreenshotter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8D1332BB3044400D37202 /* MapboxScreenshotter.swift */; };
+		0AC8D1342BB3044400D37202 /* MapboxSnapshotter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC8D1332BB3044400D37202 /* MapboxSnapshotter.swift */; };
 		0AC9E18628F48F6800C7185D /* ActionSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */; };
 		0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */; };
 		0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */; };
@@ -947,10 +947,10 @@
 		0AC89D7D290980DD00D3CCA1 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		0AC89D7F2909AC6100D3CCA1 /* FeedVerticalLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVerticalLine.swift; sourceTree = "<group>"; };
 		0AC8D1272BAF48B200D37202 /* StyleManager+LoadCanvasSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StyleManager+LoadCanvasSource.swift"; sourceTree = "<group>"; };
-		0AC8D12B2BAF656800D37202 /* CanvasScreenshotFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasScreenshotFlowController.swift; sourceTree = "<group>"; };
+		0AC8D12B2BAF656800D37202 /* CanvasSnapshotFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSnapshotFlowController.swift; sourceTree = "<group>"; };
 		0AC8D12F2BB1CEBE00D37202 /* CanvasScreenshotSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasScreenshotSelectionViewController.swift; sourceTree = "<group>"; };
 		0AC8D1312BB302BC00D37202 /* PDFScreenshotter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFScreenshotter.swift; sourceTree = "<group>"; };
-		0AC8D1332BB3044400D37202 /* MapboxScreenshotter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxScreenshotter.swift; sourceTree = "<group>"; };
+		0AC8D1332BB3044400D37202 /* MapboxSnapshotter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxSnapshotter.swift; sourceTree = "<group>"; };
 		0AC9E18528F48F6800C7185D /* ActionSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0AC9E18C28F57AC100C7185D /* ProjectsFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsFlowController.swift; sourceTree = "<group>"; };
 		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
@@ -1692,7 +1692,7 @@
 				0A1935302938C1D6000E8BF8 /* Avatar */,
 				0A97232327FC507200D744F4 /* Camera */,
 				0A22CF1A2930CD310084332B /* Canvas */,
-				0AC8D12A2BAF655000D37202 /* CanvasScreenshot */,
+				0AC8D12A2BAF655000D37202 /* CanvasSnapshot */,
 				0A4DC78627F4953600712518 /* Card */,
 				0A4782FE28A5169A0063040F /* Collaboration */,
 				0AAC46D02B547A5200D87549 /* CollaborationFilters */,
@@ -2134,15 +2134,15 @@
 			path = Location;
 			sourceTree = "<group>";
 		};
-		0AC8D12A2BAF655000D37202 /* CanvasScreenshot */ = {
+		0AC8D12A2BAF655000D37202 /* CanvasSnapshot */ = {
 			isa = PBXGroup;
 			children = (
-				0AC8D12B2BAF656800D37202 /* CanvasScreenshotFlowController.swift */,
+				0AC8D12B2BAF656800D37202 /* CanvasSnapshotFlowController.swift */,
 				0AC8D12F2BB1CEBE00D37202 /* CanvasScreenshotSelectionViewController.swift */,
-				0AC8D1332BB3044400D37202 /* MapboxScreenshotter.swift */,
+				0AC8D1332BB3044400D37202 /* MapboxSnapshotter.swift */,
 				0AC8D1312BB302BC00D37202 /* PDFScreenshotter.swift */,
 			);
-			path = CanvasScreenshot;
+			path = CanvasSnapshot;
 			sourceTree = "<group>";
 		};
 		0AC9E18928F56C1600C7185D /* Projects */ = {
@@ -2695,7 +2695,7 @@
 				0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */,
 				0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */,
 				0A956FB42BAB4625008E5803 /* RangeIsClosedView.swift in Sources */,
-				0AC8D1342BB3044400D37202 /* MapboxScreenshotter.swift in Sources */,
+				0AC8D1342BB3044400D37202 /* MapboxSnapshotter.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
 				0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */,
 				0AAC46CD2B53EE5A00D87549 /* ItemPicker+Canvas.swift in Sources */,
@@ -2717,7 +2717,7 @@
 				0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */,
 				0A88730D2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift in Sources */,
 				0AB8557D28FF2A0500491E20 /* StatusView.swift in Sources */,
-				0AC8D12C2BAF656800D37202 /* CanvasScreenshotFlowController.swift in Sources */,
+				0AC8D12C2BAF656800D37202 /* CanvasSnapshotFlowController.swift in Sources */,
 				0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */,
 				0A99BF1728BBCD0B00DB3F96 /* RangeImageDataProvider.swift in Sources */,
 				0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */,
