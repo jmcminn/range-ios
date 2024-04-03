@@ -390,6 +390,10 @@ extension CollaborationViewController {
         }
         detailsVC.onToggleMoreUpdates = { [weak self] showMore in
             self?.feedVC.showMoreUpdates = showMore
+            // maximize the card on toggle more updates
+            if let cardDragging = self?.cardDragging, cardDragging.position != .max {
+                cardDragging.setPosition(.max, withVelocity: 0, animated: true)
+            }
         }
         detailsVC.onThumbnailSelected = { [weak self] upload in
             self?.onThumbnailSelected(forUpload: upload)
