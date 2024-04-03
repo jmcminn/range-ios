@@ -62,8 +62,24 @@ class AddPhotoFlowController {
     /// should edit collaboration
     private var shouldEditCollaboration: Bool?
 
+    /// When set to `true` the photo flow will start with the photo details screen (or whatever is the first screen after the camera screen)
+    /// Setting this to `true` requires that there are some preconfigured photos to add
+    var skipCameraScreen: Bool = false
+
+    /// When set to `true` the photo details screen (annotation, tags, description) will not be shown.
+    /// When set to `false` the photo details screen will always be shown
+    /// When set to `nil` it will be shown if `UserDefaults.annotationEnabled` is `true`
+    var skipDetailsScreen: Bool?
+    private var showDetailsScreen: Bool {
+        if let skipDetailsScreen { return !skipDetailsScreen }
+        return UserDefaults.annotationEnabled
+    }
+
     /// When set to `true` the photo flow will exclude photo placement on the canvas and will use the provided geometryId
     var skipPhotoLocationSelection: Bool = false
+
+    /// Whether the initial location should be automatically selected based on user location / last selected location
+    var autoSelectInitialLocation: Bool = true
 
     /// Whether user can select multiple photos
     var allowMultiPhotoSelection: Bool = true
@@ -95,10 +111,15 @@ class AddPhotoFlowController {
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
     func start(onStarted: @escaping (Bool) -> Void) {
-        Task {
-            let started = await checkPermissionsAndShowCamera()
-            DispatchQueue.main.async {
-                onStarted(started)
+        if skipCameraScreen {
+            nextStepAfterCamera()
+            onStarted(true)
+        } else {
+            Task {
+                let started = await checkPermissionsAndShowCamera()
+                DispatchQueue.main.async {
+                    onStarted(started)
+                }
             }
         }
     }
@@ -351,7 +372,7 @@ class AddPhotoFlowController {
     }
 
     private func nextStepAfterCamera() {
-        if UserDefaults.annotationEnabled {
+        if showDetailsScreen {
             selectPhotoDetails()
         } else if skipPhotoLocationSelection {
             // if we skip photo location and annotations then finalize the flow now
@@ -366,8 +387,15 @@ class AddPhotoFlowController {
 
     /// push photo details view controller onto the navigation controller for the camera screen
     private func selectPhotoDetails() {
-        (canvasContainer.presentedViewController as? UINavigationController)?
-            .pushViewController(createPhotoDetailsViewController(), animated: true)
+        if let navC = canvasContainer.presentedViewController as? UINavigationController {
+            navC.pushViewController(createPhotoDetailsViewController(), animated: true)
+        } else {
+            // if skipCameraScreen then this is the first step and we need to show the navigation controller
+
+            let navC = UINavigationController(rootViewController: createPhotoDetailsViewController())
+            navC.modalPresentationStyle = .fullScreen
+            canvasContainer.present(navC, animated: true)
+        }
     }
 
     /// Creates the `PhotoDetailsViewController` and installs the flow callbacks
@@ -378,6 +406,10 @@ class AddPhotoFlowController {
             tagsViewModel: tagsViewModel,
             initialDescription: photoDescription
         )
+        if skipCameraScreen {
+            vc.backButtonLabel = String(localized: "Cancel")
+            vc.backButtonImage = nil
+        }
         if skipPhotoLocationSelection {
             vc.nextButtonLabel = String(localized: "Done")
             vc.nextButtonImage = nil
@@ -389,7 +421,12 @@ class AddPhotoFlowController {
         vc.onBack = { [weak self] in
             guard let self = self, let detailsVC = self.detailsVC else { return }
             self.photoDescription = detailsVC.photoDescription
-            detailsVC.navigationController?.popViewController(animated: true)
+            if self.skipCameraScreen {
+                self.canvasContainer.dismiss(animated: true)
+                self.stop(removeCurrentPhotosToAddFromCache: true)
+            } else {
+                detailsVC.navigationController?.popViewController(animated: true)
+            }
             self.detailsVC = nil
         }
         vc.onNext = { [weak self] in
@@ -428,10 +465,11 @@ class AddPhotoFlowController {
         // setup a navigation controller with camera and photo details, so user can go back
         // from the details to camera screen
         let navC = UINavigationController()
-        if UserDefaults.annotationEnabled {
-            navC.viewControllers = [createCameraViewController(), createPhotoDetailsViewController()]
-        } else {
-            navC.viewControllers = [createCameraViewController()]
+        if !skipCameraScreen {
+            navC.viewControllers.append(createCameraViewController())
+        }
+        if showDetailsScreen {
+            navC.viewControllers.append(createPhotoDetailsViewController())
         }
         navC.modalPresentationStyle = .fullScreen
         canvasContainer.present(navC, animated: true)
@@ -642,6 +680,7 @@ extension AddPhotoFlowController {
             model: model,
             image: photosToAddViewModel.photos.first!.thumbnail
         )
+        pinsDisplay?.autoSelectInitialLocation = autoSelectInitialLocation
         pinsDisplay?.onSelectedPinChange = { [weak self] pinPoint in
             if let geometryId = pinPoint?.id {
                 self?.hidePinTypeSelector()
@@ -918,9 +957,13 @@ extension AddPhotoFlowController: PHPickerViewControllerDelegate {
 /// PhotosToAddViewModel delegate
 extension AddPhotoFlowController: PhotosToAddViewModelDelegate {
     /// When the last photo is removed automatically hide the photos review screen and get back to camera screen (if in details)
+    /// In case it's configured to `skipCameraScreen` then after last photo is removed the flow is aborted
     func photoRemoved(atIndex _: Int) {
-        if photosToAddViewModel.photos.isEmpty, let cameraVC = cameraVC {
-            if detailsVC != nil {
+        if photosToAddViewModel.photos.isEmpty {
+            if skipCameraScreen {
+                canvasContainer.dismiss(animated: true)
+                stop(removeCurrentPhotosToAddFromCache: true)
+            } else if let cameraVC, detailsVC != nil {
                 /// Hack: animated presentation of photos review leaves the presenting vc with alpha = 0, restore here manually
                 /// as there won't be custom animated transitioning running for this case because there are no images to
                 /// transition between

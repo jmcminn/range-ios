@@ -78,7 +78,7 @@ final class FlowEvent: UIEvent {
     /// Show the in-app feed for current project
     func showProjectInAppFeed()
     /// Take screenshot of canvas and attach as an Upload to given collaboration
-    func takeSnapshotAction(sender: Any?, event: FlowEvent)
+    func takeSnapshotAction(sender: Any?, event: FlowEvent?)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -853,20 +853,20 @@ extension ProjectFlowController {
 // MARK: - screenshot
 
 extension ProjectFlowController {
-    func takeSnapshotAction(sender _: Any?, event: FlowEvent) {
-        guard let collaboration = event.object as? Collaboration,
-              let geometryId = collaboration.feature.first?.geometry.first?.id else { return }
+    func takeSnapshotAction(sender _: Any?, event: FlowEvent?) {
+        let collaboration = event?.object as? Collaboration
 
         canvasSnapshotFlow = CanvasSnapshotFlowController(
-            collaboration: collaboration,
-            model: model,
-            localFiles: localFiles,
+            collaboration: collaboration, model: model,
+            localFiles: localFiles, mediaCache: mediaCache, userSettings: userSettings,
             canvasContainer: canvasContainer
         )
-        canvasSnapshotFlow?.onStop = { [weak self] in
-            guard let self = self else { return }
+        canvasSnapshotFlow?.onStop = { [weak self] geometryId, _, shouldEdit in
+            guard let self else { return }
             self.setUIState(.default, animated: true)
-            self.selectCollaboration(forGeometryId: geometryId, andEditName: false)
+            if let geometryId {
+                self.selectCollaboration(forGeometryId: geometryId, andEditName: shouldEdit ?? false)
+            }
             self.canvasSnapshotFlow = nil
         }
         pinsDisplay?.setSelectedPin(nil)

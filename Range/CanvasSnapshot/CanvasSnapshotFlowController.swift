@@ -4,54 +4,62 @@ import SwiftUI
 import UIKit
 
 /// Manages the flow of taking a snapshot of current canvas and adding it to given collaboration
-/// This flow resembles (has copy paste from) the AddPhotoFlowController as it reuses the PhotoDetailsViewController
-/// and has the same code for presenting the PhotosReviewViewController and updating the annotations...
-/// Maybe the common logic should be somehow refactored... (when we have another flow controller that's similar?)
+/// It can also be run with no collaboration - in this case it'll add a new pin.
+/// It uses the AddPhotoFlowController for photo details and pin placement screen (it just hides the first step - camera screen, and
+/// instead provides the AddPhotoFlowController with a canvas snippet photo)
 class CanvasSnapshotFlowController {
-    let geometryId: String
+    let geometryId: String?
     let model: ProjectModel
     let localFiles: LocalFiles
+    let mediaCache: MediaCache
+    let userSettings: UserSettings
     let canvasContainer: CanvasContainerViewController
 
     private var selectionVC: CanvasSnapshotSelectionViewController?
 
-    /// called when the flow finishes
-    var onStop: (() -> Void)?
+    /// on Stop it returns the id of the geometry to which the photo(s) was added to (if not cancelled) and whether the
+    /// collaboration was created (`true`) or existing one was used (`false`) and whether the collaboration should be edited after creation
+    var onStop: ((String?, Bool?, Bool?) -> Void)?
 
-    /// MapboxSnapshotter is stateful, we need to keep the reference for the time of screenshot taking
+    /// MapboxSnapshotter is stateful, we need to keep the reference for the time of snapshot taking
     private var mapboxSnapshotter = MapboxSnapshotter()
 
-    private let photosToAddViewModel: PhotosToAddViewModel
-    private let tagsViewModel: TagsViewModel
-    private var detailsVC: PhotoDetailsViewController?
+    /// Using AddPhotoFlowController after the initial snapshot taking step, to reuse the photo details screen and pin placement
+    private var addPhotoFlow: AddPhotoFlowController?
 
     init?(
-        collaboration: Collaboration,
+        collaboration: Collaboration?,
         model: ProjectModel,
         localFiles: LocalFiles,
+        mediaCache: MediaCache,
+        userSettings: UserSettings,
         canvasContainer: CanvasContainerViewController
     ) {
-        guard !collaboration.isInvalidated,
-              let geometryId = collaboration.feature.first?.geometry.first?.id else { return nil }
-        self.geometryId = geometryId
+        if let collaboration, !collaboration.isInvalidated {
+            geometryId = collaboration.feature.first?.geometry.first?.id
+        } else {
+            geometryId = nil
+        }
         self.model = model
         self.localFiles = localFiles
+        self.mediaCache = mediaCache
+        self.userSettings = userSettings
         self.canvasContainer = canvasContainer
-        photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, localFiles: localFiles)
-        tagsViewModel = TagsViewModel(model: model)
-        photosToAddViewModel.addDelegate(self)
     }
 
-    /// Show the UI for canvas screenshot
+    /// Show the UI for canvas snapshot
     func start() {
         selectionVC = CanvasSnapshotSelectionViewController(
             canvasViewController: canvasContainer.canvasViewController
         )
         selectionVC?.onCancel = { [weak self] in
-            self?.stop(removeCurrentPhotosToAddFromCache: true)
+            guard let self else { return }
+            self.selectionVC?.view.removeFromSuperview()
+            self.selectionVC = nil
+            self.onStop?(self.geometryId, nil, nil)
         }
-        selectionVC?.onDone = { [weak self] screenshotFrame in
-            self?.takeScreenshotAndShowPhotoDetails(screenshotFrame)
+        selectionVC?.onDone = { [weak self] snapshotFrame in
+            self?.takeSnapshotAndStartAddPhotoFlow(snapshotFrame)
         }
         canvasContainer.controls.addSubview(selectionVC!.view)
         selectionVC!.view.snp.makeConstraints { make in
@@ -59,17 +67,8 @@ class CanvasSnapshotFlowController {
         }
     }
 
-    private func stop(removeCurrentPhotosToAddFromCache: Bool) {
-        photosToAddViewModel.clear(removeFromCache: removeCurrentPhotosToAddFromCache)
-        detailsVC?.dismiss(animated: true)
-        detailsVC = nil
-        selectionVC?.view.removeFromSuperview()
-        selectionVC = nil
-        onStop?()
-    }
-
     @MainActor
-    private func takeScreenshot(_ screenshotFrame: CGRect) async throws -> UIImage {
+    private func takeSnapshot(_ snapshotFrame: CGRect) async throws -> UIImage {
         guard let selectionVC else {
             fatalError("No selection view")
         }
@@ -87,14 +86,14 @@ class CanvasSnapshotFlowController {
             guard let pdfPage = canvasContainer.canvasViewController.pdfPage else {
                 fatalError("pdf page missing for pdf canvas source")
             }
-            let selectedPDFFrame = canvasContainer.canvasViewController.getPDFPageFrameForViewFrame(screenshotFrame)
+            let selectedPDFFrame = canvasContainer.canvasViewController.getPDFPageFrameForViewFrame(snapshotFrame)
             return PDFSnapshotter().takeSnapshot(page: pdfPage, selectedFrame: selectedPDFFrame)
 
         } else {
             return try await withCheckedThrowingContinuation { continuation in
                 mapboxSnapshotter.takeSnapshot(
                     canvasSourceData: canvas.currentCanvasSource.data,
-                    areaSize: screenshotFrame.size,
+                    areaSize: snapshotFrame.size,
                     cameraState: canvasContainer.canvasViewController.mapView.mapboxMap.cameraState,
                     zoomConverter: canvasContainer.canvasViewController.zoomConverter
                 ) { result in
@@ -107,50 +106,77 @@ class CanvasSnapshotFlowController {
         }
     }
 
-    private func takeScreenshotAndShowPhotoDetails(_ screenshotFrame: CGRect) {
+    private func takeSnapshotAndStartAddPhotoFlow(_ snapshotFrame: CGRect) {
         Task { @MainActor in
             do {
-                let image = try await takeScreenshot(screenshotFrame)
-                detailsVC = try await createPhotoDetailsViewController(image: image)
-                detailsVC?.modalPresentationStyle = .fullScreen
-                canvasContainer.present(detailsVC!, animated: true)
+                let image = try await takeSnapshot(snapshotFrame)
+
+                guard let data = image.jpegData(compressionQuality: 0.75) else {
+                    throw "Cannot use image"
+                }
+
+                let addPhotoFlow = AddPhotoFlowController(
+                    model: model,
+                    localFiles: localFiles,
+                    mediaCache: mediaCache,
+                    userSettings: userSettings,
+                    canvasContainer: canvasContainer
+                )
+
+                if let existingSnippetTag = addPhotoFlow.tagsViewModel.allTags
+                    .first(where: { $0.name == "snippet" })
+                {
+                    addPhotoFlow.tagsViewModel.set(tagWithId: existingSnippetTag.id, selected: true)
+                } else {
+                    let snippetTag = TagViewModel(newTagWithName: "snippet")
+                    addPhotoFlow.tagsViewModel.add(tag: snippetTag)
+                    addPhotoFlow.tagsViewModel.set(tagWithId: snippetTag.id, selected: true)
+                }
+
+                addPhotoFlow.photosToAddViewModel.add(
+                    try await addPhotoFlow.photosToAddViewModel.getPhotoToAdd(forJPEGData: data, image: image)
+                )
+
+                addPhotoFlow.skipCameraScreen = true
+                // always show the details screen, even if it was deactivated in the "normal" photo flow
+                addPhotoFlow.skipDetailsScreen = false
+
+                // TODO: 2747 auto open annotation view
+
+                if let geometryId {
+                    // adding snapshot to given collaboration
+                    addPhotoFlow.geometryId = geometryId
+                    addPhotoFlow.skipPhotoLocationSelection = true
+                } else {
+                    // adding snapshot with no collaboration - allow user to select or create a new one
+                    // Don't autoselect the initial location - we want it to default to whatever center
+                    // point is currently selected (as it's the center of the snapshot)
+                    addPhotoFlow.autoSelectInitialLocation = false
+                }
+
+                addPhotoFlow.onStop = { [weak self] geometryId, newlyCreated, shouldEdit in
+                    guard let self else { return }
+                    self.addPhotoFlow = nil
+                    self.onStop?(geometryId, newlyCreated, shouldEdit)
+                }
+
+                self.addPhotoFlow = addPhotoFlow
+
+                addPhotoFlow.start { [weak self] started in
+                    guard let self else { return }
+                    if started {
+                        // remove the selection view when switching to photo flow, there's no going
+                        // back, if user cancels the photo flow we're aborting canvas snapshot flow
+                        self.selectionVC?.view.removeFromSuperview()
+                        self.selectionVC = nil
+                    } else {
+                        self.addPhotoFlow = nil
+                    }
+                }
             } catch {
                 ToastWindow.shared.showError(text: "Failed to add a snippet")
             }
         }
-    }
-
-    /// Creates the `PhotoDetailsViewController` and installs the flow callbacks
-    @MainActor
-    private func createPhotoDetailsViewController(image: UIImage) async throws -> PhotoDetailsViewController {
-        guard let data = image.jpegData(compressionQuality: 0.75) else {
-            throw "Cannot use image"
-        }
-
-        photosToAddViewModel.add(
-            try await photosToAddViewModel.getPhotoToAdd(forJPEGData: data, image: image)
-        )
-
-        let vc = PhotoDetailsViewController(
-            localFiles: localFiles,
-            photosViewModel: photosToAddViewModel,
-            tagsViewModel: tagsViewModel,
-            initialDescription: ""
-        )
-        vc.backButtonLabel = String(localized: "Cancel")
-        vc.backButtonImage = nil
-        vc.nextButtonLabel = String(localized: "Done")
-        vc.nextButtonImage = nil
-        vc.onPhotoSelected = { [weak self] interactivePresentation in
-            self?.showPhotosReviewFromDetailsScreen(interactivePresentation: interactivePresentation)
-        }
-        vc.onBack = { [weak self] in
-            self?.stop(removeCurrentPhotosToAddFromCache: true)
-        }
-        vc.onNext = { [weak self] in
-            self?.finalize()
-        }
-        return vc
     }
 
     /// show activity view (a spinner) that covers the screen disabling any user interactions
@@ -164,158 +190,5 @@ class CanvasSnapshotFlowController {
         }
         activityView.startAnimating()
         return activityView
-    }
-
-    /// Store the data and stop the flow controller
-    private func finalize() {
-        guard let detailsVC else {
-            fatalError("No details view")
-        }
-        detailsVC.nextButton.configuration?.showsActivityIndicator = true
-        let activityView = showActivityView(host: detailsVC.view)
-
-        Task { @MainActor in
-            do {
-                // hide the spinner when data store call is finished
-                defer {
-                    DispatchQueue.main.async {
-                        activityView.removeFromSuperview()
-                        detailsVC.nextButton.configuration?.showsActivityIndicator = false
-                    }
-                }
-                let command = try await model.addPhotos(
-                    photosToAddViewModel.photos,
-                    tags: tagsViewModel.selectedTags,
-                    description: detailsVC.photoDescription,
-                    toCollaborationForGeometryId: geometryId
-                )
-                try await model.run(command)
-                DispatchQueue.main.async {
-                    self.stop(removeCurrentPhotosToAddFromCache: false)
-                }
-            } catch {
-                Logger.model.error("finalize error: \(error.localizedDescription, privacy: .public)")
-                DispatchQueue.main.async {
-                    ToastWindow.shared.showError(text: "Failed to add the snippet")
-                }
-            }
-        }
-    }
-
-    private func showPhotosReviewFromDetailsScreen(interactivePresentation: UIPercentDrivenInteractiveTransition?) {
-        guard let detailsVC = detailsVC else { return }
-        let vc = createPhotosReviewViewController()
-
-        // hides photos review controller and possibly updates the annotations
-        let hideReviewController: ([Int], Bool, [Annotations?])
-            -> Void = { [weak self, weak vc] removedPhotosIndices, updateAnnotations, annotations in
-                guard let self = self, let vc = vc else { return }
-
-                // remove any photos removed in photos preview, please note that indices are stored
-                // in order they were removed, so the removals should be replayed in this order
-                for index in removedPhotosIndices {
-                    guard index < self.photosToAddViewModel.photos.count else {
-                        fatalError("Tried to remove photo with out of bounds index \(index)")
-                    }
-                    self.photosToAddViewModel.remove(photoAtIndex: index)
-                }
-
-                if let detailsVC = self.detailsVC, vc.currentPage > 0 {
-                    // when hiding the photos review make sure that image gallery in details screen
-                    // shows the same page as the last viewed on photos review
-                    detailsVC.headerVC.galleryVC.setCurrentPage(vc.currentPage)
-                }
-                vc.dismiss(animated: true)
-                if updateAnnotations {
-                    Task { @MainActor in
-                        do {
-                            try await self.updateAnnotations(annotations)
-                        } catch {
-                            ToastWindow.shared.showError(text: "Failed to update the annotations")
-                        }
-                    }
-                }
-            }
-
-        vc.onCancel = {
-            hideReviewController([], false, [])
-        }
-        vc.onDone = { removedPhotosIndices, annotations in
-            hideReviewController(removedPhotosIndices, true, annotations)
-        }
-
-        let galleryVC = detailsVC.headerVC.galleryVC!
-        vc.currentPage = galleryVC.currentPage
-        let transitioningDelegate = FullscreenImageGalleryTransitioningDelegate(
-            fromGallery: galleryVC,
-            toFullscreenGallery: vc,
-            interactivePresentation: interactivePresentation
-        )
-        vc.fullscreenTransitioningDelegate = transitioningDelegate
-        vc.transitioningDelegate = transitioningDelegate
-        vc.modalPresentationStyle = .custom
-        detailsVC.present(vc, animated: true)
-    }
-
-    private func createPhotosReviewViewController() -> FullscreenImageGalleryViewController<MediaKey> {
-        FullscreenImageGalleryViewController(
-            imageDataProviderFactory: { [localFiles] in
-                localFiles.imageProvider(forKey: $0)
-            },
-            photoKeys: photosToAddViewModel.photos.map(\.mediaKey),
-            annotations: photosToAddViewModel.photos.map(\.annotations),
-            removePhotosEnabled: true
-        )
-    }
-
-    /// Update annotations for photos, generate new annotated images (if annotations changed) and store in LocalFiles
-    @MainActor
-    private func updateAnnotations(_ photosAnnotations: [Annotations?]) async throws {
-        for index in photosAnnotations.indices {
-            let photoAnnotations = photosAnnotations[index]
-            let previousPhotoAnnotations = photosToAddViewModel.photos[index].annotations
-            if previousPhotoAnnotations != photoAnnotations {
-                let mediaKey = photosToAddViewModel.photos[index].mediaKey
-                let localFileURL = localFiles.fileURL(forKey: mediaKey)
-                let imageData = try Data(contentsOf: localFileURL)
-                let annotatedImageData: Data
-                if let annotations = photoAnnotations {
-                    guard let image = UIImage(data: imageData) else {
-                        throw "Failed to load the image"
-                    }
-                    // create annotated image
-                    annotatedImageData = AnnotationsRenderer.render(annotations: annotations, onImage: image)
-                } else {
-                    // Annotated photo should be removed, but this requires support from server side,
-                    // so just upload non annotated as annotated for now
-                    annotatedImageData = imageData
-                }
-                // store annotated image locally and add to pending uploads
-                let annotatedMediaKey = MediaKey.localFilesKeyWithAutoStorageVersion(
-                    projectId: mediaKey.projectId,
-                    uploadId: mediaKey.uploadId,
-                    fileType: mediaKey.fileType,
-                    annotated: true,
-                    thumbnailNumber: mediaKey.thumbnailNumber
-                )
-                try await localFiles.store(annotatedImageData, forKey: annotatedMediaKey)
-                try await localFiles.generateAndStoreThumbnails(annotatedImageData, forKey: annotatedMediaKey)
-                photosToAddViewModel.setAnnotations(
-                    photoAnnotations,
-                    annotatedMediaKey: annotatedMediaKey,
-                    atIndex: index
-                )
-            }
-        }
-    }
-}
-
-/// PhotosToAddViewModel delegate
-extension CanvasSnapshotFlowController: PhotosToAddViewModelDelegate {
-    /// When the last photo is removed automatically hide the photos review screen and stop the flow
-    func photoRemoved(atIndex _: Int) {
-        if photosToAddViewModel.photos.isEmpty {
-            stop(removeCurrentPhotosToAddFromCache: true)
-        }
     }
 }

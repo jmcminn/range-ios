@@ -40,6 +40,9 @@ class AddPhotoPinsDisplay {
     /// id of registered delegate
     private var canvasDelegateId: UUID?
 
+    /// Whether the initial location should be automatically selected based on user location / last selected location
+    var autoSelectInitialLocation: Bool = true
+
     /// - Parameters:
     ///   - canvasContainer:    handler will add pins to this canvas view
     ///   - model:              will display pins for currentCanvas
@@ -67,8 +70,9 @@ class AddPhotoPinsDisplay {
     func start() {
         installPhotoPinView()
         geometriesPinsDisplay.start(onInitialLoad: { [weak self] in
+            guard let self else { return }
             // on first load we need to see if there's an initial location for the new pin to preselect
-            self?.selectInitialLocation()
+            self.selectInitialLocation()
         })
         canvasDelegateId = canvasVC.addDelegate(self)
     }
@@ -88,7 +92,8 @@ class AddPhotoPinsDisplay {
     /// used (check if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.)
     /// 3. Otherwise show photo pin in the center of the screen
     private func selectInitialLocation() {
-        if model.currentCanvas.currentCanvasSource.type != .pdf,
+        if autoSelectInitialLocation,
+           model.currentCanvas.currentCanvasSource.type != .pdf,
            let userLocation = canvasVC.mapView.location.latestLocation,
            model.isLocationInCurrentCanvasSourceRange(userLocation.coordinate)
         {
@@ -98,7 +103,8 @@ class AddPhotoPinsDisplay {
             )
             updatePhotoPinVisibility()
             showCurrentLocationPhotoPinTooltip()
-        } else if let lastPhotoPinId = UserDefaults.lastPhotoPinId,
+        } else if autoSelectInitialLocation,
+                  let lastPhotoPinId = UserDefaults.lastPhotoPinId,
                   let lastPhotoPin = geometriesPinsDisplay.pinForGeometryId(lastPhotoPinId)
         {
             geometriesPinsDisplay.setSelectedPin(lastPhotoPin)

@@ -4,11 +4,7 @@ import UIKit
 class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
     let actions: [ActionItem]
 
-    var cardDragging: NonModalCardDragging? {
-        didSet { cardDraggingDelegateId = cardDragging?.addDelegate(self) }
-    }
-
-    private var cardDraggingDelegateId: UUID?
+    var cardDragging: NonModalCardDragging?
 
     var onCamera: (() -> Void)?
     var onAddPin: (() -> Void)?
@@ -17,7 +13,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     static let headerToActionsPadding = 16.0
 
     var addPinButton: UIButton!
-    var expandButton: UIButton!
+    var addSnippetButton: UIButton!
     var photoButton: UIButton!
     var actionSelectorVC: ActionSelectorViewController!
 
@@ -42,10 +38,6 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         fatalError("init(coder:) has not been implemented")
     }
 
-    deinit {
-        cardDragging?.removeDelegate(cardDraggingDelegateId)
-    }
-
     override func loadView() {
         view = RoundShadowView(cornerRadius: 24)
     }
@@ -59,18 +51,18 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         setupAddPinButton()
 
         setupAddPinButton()
-        setupExpandButton()
+        setupAddSnippetButton()
         setupPhotoButton()
 
-        [addPinButton, expandButton, photoButton].forEach(containerView.addSubview)
+        [addPinButton, addSnippetButton, photoButton].forEach(containerView.addSubview)
 
         addPinButton.snp.makeConstraints { make in
             make.top.equalTo(photoButton)
             make.height.equalTo(photoButton)
             make.leading.equalToSuperview().inset(16)
-            make.trailing.equalTo(expandButton.snp.leading).offset(-16)
+            make.trailing.equalTo(addSnippetButton.snp.leading).offset(-16)
         }
-        expandButton.snp.makeConstraints { make in
+        addSnippetButton.snp.makeConstraints { make in
             make.top.equalTo(photoButton)
             make.height.equalTo(photoButton)
             make.width.greaterThanOrEqualTo(52)
@@ -78,7 +70,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         }
         photoButton.snp.makeConstraints { make in
             make.top.equalTo(ProjectActionCardViewController.topPadding)
-            make.leading.equalTo(expandButton.snp.trailing).offset(16)
+            make.leading.equalTo(addSnippetButton.snp.trailing).offset(16)
             make.trailing.equalTo(-16)
         }
 
@@ -146,18 +138,20 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         .withCustomRangeHighlightColor()
     }
 
-    private func setupExpandButton() {
-        var config = UIButton.Configuration.blackButton()
+    private func setupAddSnippetButton() {
+        var config = UIButton.Configuration.pinkButton()
         config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)
-        expandButton = RangeButton(
+        addSnippetButton = RangeButton(
             configuration: config,
-            primaryAction: UIAction(image: UIImage(systemName: "chevron.up")) { [weak self] _ in
-                self?.toggleCardExpanded()
+            primaryAction: UIAction(image: UIImage(systemName: "scissors")) { [weak self] _ in
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowActions.takeSnapshotAction), to: nil, from: self, for: nil
+                )
             }
         )
         .withCustomRangeHighlightColor()
 
-        expandButton.setContentHuggingPriority(.required, for: .horizontal)
+        addSnippetButton.setContentHuggingPriority(.required, for: .horizontal)
     }
 
     private func setupPhotoButton() {
@@ -169,19 +163,6 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             }
         )
         .withCustomRangeHighlightColor()
-    }
-
-    private func toggleCardExpanded() {
-        guard let cardDragging = cardDragging else { return }
-        let expand = cardDragging.position == .min
-        cardDragging.setPosition(expand ? .max : .min, withVelocity: 0, animated: true)
-    }
-}
-
-extension ProjectActionCardViewController: CardDraggingDelegate {
-    func cardWillChangePosition(_ position: CardPosition) {
-        expandButton.setImage(UIImage(systemName: position == .max ? "chevron.down" : "chevron.up"),
-                              for: .normal)
     }
 }
 
