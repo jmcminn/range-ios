@@ -204,7 +204,7 @@ class CanvasScreenshotSelectionViewController: UIViewController {
         titleView.alignment = .trailing
 
         let font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
-        let color = UIColor.dynamicColor(light: .Neutral_03, dark: .Neutral_04)
+        let color = UIColor.Neutral_04
         let imageView = UIImageView(image: UIImage(
             systemName: "scissors",
             withConfiguration: UIImage.SymbolConfiguration(font: font)
@@ -249,7 +249,7 @@ class SelectionBackgroundView: UIVisualEffectView {
     }}
 
     init() {
-        super.init(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+        super.init(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
 
         isUserInteractionEnabled = false
     }
