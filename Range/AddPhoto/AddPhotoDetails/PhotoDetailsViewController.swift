@@ -56,6 +56,7 @@ class PhotoDetailsViewController: UIViewController {
     /// Callbacks exposed for the flow control
     var onBack: (() -> Void)?
     var onNext: (() -> Void)?
+    var onViewsBuilt: (() -> Void)?
 
     /// vertical space between the views
     private let spaceBetweenViews = 16.0
@@ -148,6 +149,8 @@ class PhotoDetailsViewController: UIViewController {
             // run the mode change related code initially
             newModeWillSet(.tags)
             newModeDidSet()
+
+            onViewsBuilt?()
         }
         viewsBuilt = true
 

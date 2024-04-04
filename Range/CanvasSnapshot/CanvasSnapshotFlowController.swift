@@ -140,8 +140,8 @@ class CanvasSnapshotFlowController {
                 addPhotoFlow.skipCameraScreen = true
                 // always show the details screen, even if it was deactivated in the "normal" photo flow
                 addPhotoFlow.skipDetailsScreen = false
-
-                // TODO: 2747 auto open annotation view
+                // for canvas snapshot we want user to see the annotations editor initially
+                addPhotoFlow.autoShowPhotosReviewFromDetailsScreen = true
 
                 if let geometryId {
                     // adding snapshot to given collaboration

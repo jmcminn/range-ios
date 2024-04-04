@@ -75,6 +75,10 @@ class AddPhotoFlowController {
         return UserDefaults.annotationEnabled
     }
 
+    /// Show the photos review when the details screen is shown initially (used by canvas snapshot flow to direct user to
+    /// annotations initially)
+    var autoShowPhotosReviewFromDetailsScreen: Bool = false
+
     /// When set to `true` the photo flow will exclude photo placement on the canvas and will use the provided geometryId
     var skipPhotoLocationSelection: Bool = false
 
@@ -391,7 +395,6 @@ class AddPhotoFlowController {
             navC.pushViewController(createPhotoDetailsViewController(), animated: true)
         } else {
             // if skipCameraScreen then this is the first step and we need to show the navigation controller
-
             let navC = UINavigationController(rootViewController: createPhotoDetailsViewController())
             navC.modalPresentationStyle = .fullScreen
             canvasContainer.present(navC, animated: true)
@@ -438,6 +441,11 @@ class AddPhotoFlowController {
                 self.canvasContainer.dismiss(animated: true)
                 self.selectPhotoLocation()
             }
+        }
+        vc.onViewsBuilt = { [weak self] in
+            guard let self, self.autoShowPhotosReviewFromDetailsScreen else { return }
+            self.autoShowPhotosReviewFromDetailsScreen = false
+            self.showPhotosReviewFromDetailsScreen(interactivePresentation: nil)
         }
         detailsVC = vc
         return vc
