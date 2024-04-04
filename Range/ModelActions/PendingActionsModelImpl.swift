@@ -316,6 +316,15 @@ class PendingActionsModelImpl: PendingActionsModel {
             // this probably shouldn't happen unless user was removed from project/org, report as warning
             // and let's see if it ever happens
             return (true, .warning)
+        } else if (error as NSError).domain == FirestoreErrorDomain,
+                  (error as NSError).code == FirestoreErrorCode.unavailable.rawValue
+        {
+            // --- FirestoreErrorDomain ------------------------------------------------------------
+            // Error codes to be retried
+            Logger.pendingActions.debug(
+                "Will retry action: \(actionName, privacy: .private) because of Firestore error: \(error, privacy: .public)"
+            )
+            return (false, nil)
         } else if let error = error as NSError?, error.domain == FunctionsErrorDomain,
                   let code = FunctionsErrorCode(rawValue: error.code)
         {
