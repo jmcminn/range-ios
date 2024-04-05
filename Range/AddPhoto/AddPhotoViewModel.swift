@@ -23,6 +23,8 @@ struct PhotoToAdd {
     var annotations: Annotations?
     /// key for LocalFiles to store the annotated version of the image
     var annotatedMediaKey: MediaKey?
+    /// A flag indicating if the image is a snippet of the canvas. Used for analytics only
+    var isCanvasSnippet: Bool = false
 }
 
 /// View model for list of `PhotoToAdd`s

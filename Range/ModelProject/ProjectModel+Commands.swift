@@ -98,6 +98,9 @@ extension ProjectModel {
             if photoToAdd.annotatedMediaKey != nil {
                 analytics?._trackProjectEvent(name: "photo annotated", self, [:])
             }
+            if photoToAdd.isCanvasSnippet {
+                analytics?._trackProjectEvent(name: "snippet created", self, [:])
+            }
             tags.forEach { _ in
                 analytics?._trackProjectEvent(name: "tag added", self, [:])
             }
@@ -190,6 +193,9 @@ extension ProjectModel {
             }
             if photoToAdd.annotatedMediaKey != nil {
                 analytics?._trackProjectEvent(name: "photo annotated", self, [:])
+            }
+            if photoToAdd.isCanvasSnippet {
+                analytics?._trackProjectEvent(name: "snippet created", self, [:])
             }
         }
         tags.forEach { _ in

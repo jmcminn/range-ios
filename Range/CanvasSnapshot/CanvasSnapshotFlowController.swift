@@ -133,9 +133,12 @@ class CanvasSnapshotFlowController {
                     addPhotoFlow.tagsViewModel.set(tagWithId: snippetTag.id, selected: true)
                 }
 
-                addPhotoFlow.photosToAddViewModel.add(
-                    try await addPhotoFlow.photosToAddViewModel.getPhotoToAdd(forJPEGData: data, image: image)
+                var photoToAdd = try await addPhotoFlow.photosToAddViewModel.getPhotoToAdd(
+                    forJPEGData: data,
+                    image: image
                 )
+                photoToAdd.isCanvasSnippet = true
+                addPhotoFlow.photosToAddViewModel.add(photoToAdd)
 
                 addPhotoFlow.skipCameraScreen = true
                 // always show the details screen, even if it was deactivated in the "normal" photo flow
