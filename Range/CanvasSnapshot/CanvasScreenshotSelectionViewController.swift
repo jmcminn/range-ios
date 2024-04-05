@@ -204,7 +204,7 @@ class CanvasSnapshotSelectionViewController: UIViewController {
         titleView.alignment = .trailing
 
         let font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
-        let color = UIColor.Neutral_04
+        let color = UIColor.Neutral_01
         let imageView = UIImageView(image: UIImage(
             systemName: "scissors",
             withConfiguration: UIImage.SymbolConfiguration(font: font)
