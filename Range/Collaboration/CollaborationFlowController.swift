@@ -320,7 +320,18 @@ extension CollaborationFlowController {
             startEditingWhenShown: false
         )
         addCommentVC.onHeightUpdated = { [weak self] _ in
-            self?.updateCollaborationWindowOverlapWithAddCommentCard()
+            guard let self else { return }
+            self.updateCollaborationWindowOverlapWithAddCommentCard()
+            // make the collaboration fullscreen when comment card is expanded
+            if let commentCardDragging = addCommentVC.cardDragging, commentCardDragging.position == .max,
+               let collaborationVC = self.collaborationVC, let cardDragging = collaborationVC.cardDragging
+            {
+                if cardDragging.position != .max {
+                    cardDragging.setPosition(.max, withVelocity: 0, animated: true)
+                }
+                let feedScroll = collaborationVC.feedVC.tableView
+                feedScroll.setContentOffset(CGPoint(x: 0, y: feedScroll.verticalOffsetForBottom), animated: false)
+            }
         }
         addCommentVC.onCancel = { [weak self] in
             guard let addCommentVC = self?.addCommentVC else { return }
@@ -344,12 +355,8 @@ extension CollaborationFlowController {
             addCommentVC.onCancel?()
             // a little later so the comment is already added - scroll to the bottom of the feed to show it
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if let feedVC = self.collaborationVC?.feedVC {
-                    feedVC.tableView.setContentOffset(
-                        CGPoint(x: 0, y: feedVC.tableView.verticalOffsetForBottom),
-                        animated: true
-                    )
-                }
+                guard let feedScroll = self.collaborationVC?.feedVC.tableView else { return }
+                feedScroll.setContentOffset(CGPoint(x: 0, y: feedScroll.verticalOffsetForBottom), animated: false)
             }
         }
 
@@ -379,8 +386,7 @@ extension CollaborationFlowController {
     /// Add comment bottom card covers partially the collaboration window - update the feed content inset, so user can actually scroll
     /// to the bottom of it.
     private func updateCollaborationWindowOverlapWithAddCommentCard() {
-        guard let addCommentVC, let cardDragging = addCommentVC.cardDragging, cardDragging.position == .medium,
-              let collaborationVC else { return }
+        guard let addCommentVC, let cardDragging = addCommentVC.cardDragging, let collaborationVC else { return }
         // adjust the collaboration window bottom overlap
         // - safeAreaInsets.bottom = the feed is not covering the bottom safe area while the card height includes it
         collaborationVC.bottomOverlap = max(0, cardDragging.cardHeight - view.safeAreaInsets.bottom)
