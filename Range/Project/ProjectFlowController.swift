@@ -23,6 +23,10 @@ final class ProjectFlowController: UIViewController {
         case canvasSnapshot // the flow to take canvas snapshot is started
     }
 
+    /// In each app session we want to expand the action card initially so the user knows it can be expanded.
+    /// It the automatically closes (as it usually does when user is interacting with the map)
+    static var actionCardInitiallyExpanded = true
+
     // the initial state is set in `start` method
     private(set) var uiState: UIState?
 
@@ -465,6 +469,15 @@ final class ProjectFlowController: UIViewController {
         }
 
         if state == .default {
+            if ProjectFlowController.actionCardInitiallyExpanded {
+                // when showing the project flow controller initially we want the card maximized
+                actionCardVC.cardDragging?.setPosition(.max, withVelocity: 0)
+                ProjectFlowController.actionCardInitiallyExpanded = false
+            } else {
+                // if coming back from other states we want the card minimized (as it should
+                // minimize on any user interaction)
+                actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: animated)
+            }
             actionCardVC.showCard(animated: animated)
             controls.canvasSelectorButton?.isHidden = false
             controls.canvasSourceSelectorButton?.isHidden = canvasSourceSelectorHidden
@@ -704,9 +717,6 @@ extension ProjectFlowController {
     }
 
     private func startAddPinFlow() {
-        // minimize the action card
-        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
-
         addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer)
         addPinFlow?.onStop = { [weak self] geometryId, pinTypeOption in
             guard let self = self else { return }

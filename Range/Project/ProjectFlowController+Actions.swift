@@ -83,6 +83,9 @@ final class FlowEvent: UIEvent {
 
 extension ProjectFlowController: ProjectFlowActions {
     func selectCanvasAction() {
+        // minimize the action card
+        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
+
         CanvasSelectorCardViewController(
             title: String(localized: "Canvas Selector"),
             canvases: model.sortedCanvases,
@@ -100,6 +103,9 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func selectCanvasSourceAction() {
+        // minimize the action card
+        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
+
         let canvasSources = [CanvasSource](model.currentCanvas.canvasSources).sorted(by: CanvasSource.sortingOrder)
         CanvasSourceSelectorCardViewController(
             title: String(localized: "Map Layers"),
@@ -114,6 +120,9 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func selectCanvasFiltersAction() {
+        // minimize the action card
+        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
+
         let canvasFiltersCardVC = CollaborationFiltersCardViewController(model: model, filters: canvasFilters)
         canvasFiltersCardVC.onClose = { [weak self] in
             guard let self = self else { return }
@@ -845,6 +854,9 @@ extension ProjectFlowController: ViewportStatusObserver, LocationObserver {
 
 extension ProjectFlowController {
     func showProjectInAppFeed() {
+        // minimize the action card
+        actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
+
         let inAppFeedVC = InAppFeedCardViewController(model: knockFeedModel, variant: .project)
         inAppFeedVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
