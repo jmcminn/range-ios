@@ -651,6 +651,11 @@ extension ProjectFlowController: CanvasViewControllerDelegate {
                 self?.reportPresence()
             }
         }
+
+        // minimize the bottom card on any interaction
+        if let cardDragging = actionCardVC.cardDragging, !cardDragging.isCardHidden, cardDragging.position == .max {
+            cardDragging.setPosition(.min, withVelocity: 0, animated: true)
+        }
     }
 
     func canvasTapRecognized(at point: CGPoint) {
