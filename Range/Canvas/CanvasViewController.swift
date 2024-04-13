@@ -282,7 +282,7 @@ class CanvasViewController: UIViewController {
     /// We keep the zoom/offset, so there's no recalculation of initial zoom.
     @MainActor
     private func reloadPDFScrollView() async {
-        guard !canvas.isInvalidated else { return }
+        guard !canvas.isInvalidated, !canvas.currentCanvasSource.isInvalidated else { return }
         // first hide the previous pdf view
         gridView?.removeFromSuperview()
         gridView = nil

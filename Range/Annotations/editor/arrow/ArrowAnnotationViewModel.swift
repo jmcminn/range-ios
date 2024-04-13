@@ -31,22 +31,14 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
         updateViewFrame()
     }
 
-    /// The size of the frame containing the control point circle (scaled)
-    /// The control point size is independent of selected line width and uses the biggest defined line width
-    var controlPointSize: CGFloat {
-        Annotations.LineThickness.heavy.lineWidth * annotationsGeometry.scale * 4 / 3
-    }
-
     /// Overridden to allow dragging by start/end point
     override func shouldHandleDrag(startGestureLocation: CGPoint) -> (String, CGPoint)? {
         // The distance between control point and gesture start should be <= 40 (visible points).
-        // If the current control point is very big (because of the zoomScale) then we should also accept
-        // the drag gesture on this control point (the control point may have a visible radius bigger than 40pts)
         //
-        // `points_distance * zoomScale <= max(40, controlPointSize/2*zoomScale)` // * zoom scale to get us in the screen resolution and out of scrollView zoom dependent values
-        // => `points_distance <= max(40/zoomScale, controlPointSize/2)`
-        // => `squared_points_distance <= max(40/zoomScale, controlPointSize/2)^2 = maxSquaredDistance
-        let maxSquaredDistance = pow(max(40.0 / zoomScale, controlPointSize / 2), 2)
+        // `points_distance * zoomScale <= 40` // * zoom scale to get us in the screen resolution and out of scrollView zoom dependent values
+        // => `points_distance <= 40/zoomScale`
+        // => `squared_points_distance <= (40/zoomScale)^2 = maxSquaredDistance
+        let maxSquaredDistance = pow(40.0 / zoomScale, 2)
 
         // recognize control points drag first
         if CGPointDistanceSquared(from: startGestureLocation, to: arrow.startPoint) <= maxSquaredDistance {

@@ -3,6 +3,8 @@ import Foundation
 import UIKit
 
 class LineAnnotationView: UIView {
+    private var controlPointSize = 17.0 // size of the control point in screen points
+
     let viewModel: LineAnnotationViewModel
     let lineLayer = CAShapeLayer() // colored shape
     let outlineLayer = CAShapeLayer() // the white outline (or black if annotation is white)
@@ -61,8 +63,9 @@ class LineAnnotationView: UIView {
 
     private func setupControlPoints() {
         for view in controlPointViews {
-            view.backgroundColor = .white
-            view.layer.borderColor = UIColor.Primary_Blue_04.cgColor
+            view.backgroundColor = UIColor.Primary_Blue_04
+            view.layer.borderColor = UIColor.white.cgColor
+            view.setShadowWithFigmaValues(x: 0, y: 0, blur: 4, opacity: 0.25)
             addSubview(view)
         }
     }
@@ -101,7 +104,8 @@ class LineAnnotationView: UIView {
     }
 
     private func updateControlPoints() {
-        let size = viewModel.controlPointSize
+        guard viewModel.zoomScale > 0 else { return }
+        let size = controlPointSize / viewModel.zoomScale
         controlPointViews[0].frame = CGRect(
             origin: viewModel.line.startPoint.deltaTo(viewModel.viewFrame.origin)
                 .deltaTo(CGPoint(x: size / 2, y: size / 2)),
@@ -115,7 +119,7 @@ class LineAnnotationView: UIView {
 
         for view in controlPointViews {
             view.layer.cornerRadius = size / 2
-            view.layer.borderWidth = size / 4
+            view.layer.borderWidth = 3.0 / viewModel.zoomScale
         }
     }
 }
