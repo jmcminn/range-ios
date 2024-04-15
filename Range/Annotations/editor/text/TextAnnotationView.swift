@@ -7,7 +7,12 @@ import UIKit
 /// Please note that unlike ScribblingView this view is not transformed, so it is displayed as is, without downscaling using annotationsScale
 class TextAnnotationView: UIView {
     let viewModel: TextAnnotationViewModel
+    // A separate view with shadow is needed because of custom draw function
+    // A) draw cannot draw outside of view bounds, so cannot draw shadow
+    // B) this view cannot have rounded corners because of draw, so its shadow cannot have rounded corners...
+    let backgroundShadowView = UIView()
     let selectedLayer = CAShapeLayer()
+
     var textEditingView: UITextView?
 
     let textViewInputAccessoryView: UIView
@@ -20,6 +25,8 @@ class TextAnnotationView: UIView {
         textViewInputAccessoryView = inputAccessoryView
         super.init(frame: .zero)
         backgroundColor = .clear
+        clipsToBounds = false
+        setupBackgroundShadowView()
         setupSelectedLayer()
         updateSelectedLayer()
         setSelected(viewModel.selected)
@@ -57,6 +64,14 @@ class TextAnnotationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private func setupBackgroundShadowView() {
+        setShadowWithFigmaValues(x: 2, y: 2, blur: 4, opacity: 0.25)
+        addSubview(backgroundShadowView)
+        backgroundShadowView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+
     private func setupSelectedLayer() {
         selectedLayer.strokeColor = UIColor.Primary_Blue_04.cgColor
         selectedLayer.fillColor = nil
@@ -65,6 +80,8 @@ class TextAnnotationView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        backgroundShadowView.layer.cornerRadius = Annotations.textBoxCornerRadius * viewModel.annotationsGeometry.scale
+        layer.cornerRadius = Annotations.textBoxCornerRadius * viewModel.annotationsGeometry.scale
         updateSelectedLayer()
         updateTextEditingView()
     }
@@ -163,6 +180,8 @@ class TextAnnotationView: UIView {
             color: viewModel.text.color,
             annotationScale: viewModel.annotationsGeometry.scale,
             backgroundOnly: viewModel.textEditing, // when editing the text is rendered with UITextView (to edit)
+            renderShadow: false,
+            // the shadow is added using backgroundShadowView (otherwise would be clipped to bounds)
             renderingOffset: viewModel.text.position.multiplyBy(-1) // rendering in view coordinates
         )
     }

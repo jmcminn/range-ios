@@ -52,7 +52,8 @@ class AnnotationReadonlyView: UIView {
             fontSize: fontSize,
             color: annotation.color,
             annotationScale: 1,
-            backgroundOnly: false
+            backgroundOnly: false,
+            renderShadow: false
         )
     }
 }

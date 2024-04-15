@@ -17,7 +17,8 @@ enum TextAnnotationRenderer {
             fontSize: text.fontSize,
             color: text.color,
             annotationScale: annotationsGeometry.scale,
-            backgroundOnly: false
+            backgroundOnly: false,
+            renderShadow: true
         )
     }
 
@@ -26,6 +27,7 @@ enum TextAnnotationRenderer {
     ///   - fontSize a SCALED font size, the scale is only applied to constants
     ///   - annotationScale required to render the unscaled constants
     ///   - backgroundOnly when editing the text we only want the renderer to show the background as the text is displayed in a UITextView
+    ///   - renderShadow whether the background should have the shadow, when rendering in a UIView the shadow is not rendered here as the UIView draw cannot draw outside of bounds so it needs to add shadow itself
     ///   - renderingOffset - When rendering in TextAnnotationView the rendering must be done in view local coordinates. We still need the real position to calculate the text wrapping but then the renderer should offset all the operations by renderingOffset (which is just -position)
     static func render(
         text: String,
@@ -34,6 +36,7 @@ enum TextAnnotationRenderer {
         color: UIColor,
         annotationScale: Double,
         backgroundOnly: Bool,
+        renderShadow: Bool,
         renderingOffset: CGPoint = .zero
     ) {
         // background
@@ -54,7 +57,13 @@ enum TextAnnotationRenderer {
             byRoundingCorners: .allCorners,
             cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)
         )
+        if renderShadow {
+            UIGraphicsGetCurrentContext()?
+                .setShadow(offset: .init(width: 2, height: 2), blur: 4,
+                           color: UIColor.Neutral_10.withAlphaComponent(0.25).cgColor)
+        }
         backgroundRect.fill()
+        UIGraphicsGetCurrentContext()?.setShadow(offset: .zero, blur: 0, color: nil)
 
         // text
         if !backgroundOnly {
