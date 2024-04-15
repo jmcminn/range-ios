@@ -30,9 +30,9 @@ final class ProjectFlowController: UIViewController {
     // the initial state is set in `start` method
     private(set) var uiState: UIState?
 
-    unowned let localFiles: LocalFiles
-    unowned let mediaCache: MediaCache
-    unowned let canvasFileLoader: CanvasFileLoader
+    let localFiles: LocalFiles
+    let mediaCache: MediaCache
+    let canvasFileLoader: CanvasFileLoader
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
 
