@@ -12,12 +12,6 @@ class TextAnnotation: Annotation {
     }}
     /// font size in in pixels (this value is stored when saving the annotation)
     var fontSize: Double { didSet { postUpdate() }}
-    /// One of the FontSize values if fontSize matches any of them.
-    /// Requires annotationsScale to be calculated as it's an unscaled value and fontSize is scaled
-    func fontSizeEnum(_ annotationScale: Double) -> Annotations.FontSize? {
-        let unscaledFontSize = fontSize / annotationScale
-        return Annotations.FontSize.allCases.first { $0.size == unscaledFontSize }
-    }
 
     /// the storage for color, String so it can be encoded/decoded
     private(set) var hexColor: String

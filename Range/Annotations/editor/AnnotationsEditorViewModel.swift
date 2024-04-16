@@ -60,9 +60,15 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     /// Current text font size used for new annotations (last user choice)
     /// If a text annotation is selected it's the given annotation text font size
-    @Published private(set) var currentTextFontSize: Annotations.FontSize
+    @Published private(set) var currentTextFontSize: Double
     /// This is last user choice, unaffected by the current selected annotation, it is used for new annotations
-    @Published private(set) var lastPickedTextFontSize: Annotations.FontSize
+    @Published private(set) var lastPickedTextFontSize: Double
+    /// The index in Annotations.fontSizeOptions (it's a double as this is accepted by the Slider)
+    @Published var currentFontSizeOptionIndex: Double {
+        didSet {
+            updateCurrentFontSize()
+        }
+    }
 
     @Published private(set) var selectedAnnotation: AnnotationViewModel? = nil
 
@@ -75,8 +81,10 @@ class AnnotationsEditorViewModel: ObservableObject {
         currentLineThicknessOptionIndex = Double(Annotations.lineThicknessOptionIndex(forValue: thickness))
         currentColor = UserDefaults.lastPickedAnnotationColor
         lastPickedColor = UserDefaults.lastPickedAnnotationColor
-        currentTextFontSize = UserDefaults.lastPickedAnnotationFontSize
-        lastPickedTextFontSize = UserDefaults.lastPickedAnnotationFontSize
+        let fontSize = UserDefaults.lastPickedAnnotationFontSize
+        currentTextFontSize = fontSize
+        lastPickedTextFontSize = fontSize
+        currentFontSizeOptionIndex = Double(Annotations.fontSizeOptionIndex(forValue: fontSize))
     }
 
     func setGesturesMode(_ mode: GesturesMode) {
@@ -99,7 +107,7 @@ class AnnotationsEditorViewModel: ObservableObject {
             currentLineThickness = selectedAnnotation.thickness
             currentColor = selectedAnnotation.scribble.color
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
-            currentTextFontSize = selectedAnnotation.fontSize ?? lastPickedTextFontSize
+            currentTextFontSize = selectedAnnotation.fontSize
             currentColor = selectedAnnotation.text.color
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
             currentLineThickness = selectedAnnotation.thickness
@@ -118,6 +126,7 @@ class AnnotationsEditorViewModel: ObservableObject {
         }
 
         currentLineThicknessOptionIndex = Double(Annotations.lineThicknessOptionIndex(forValue: currentLineThickness))
+        currentFontSizeOptionIndex = Double(Annotations.fontSizeOptionIndex(forValue: currentTextFontSize))
     }
 
     func updateCurrentLineThickness() {
@@ -153,7 +162,10 @@ class AnnotationsEditorViewModel: ObservableObject {
         }
     }
 
-    func setCurrentFontSize(_ fontSize: Annotations.FontSize) {
+    func updateCurrentFontSize() {
+        let fontSizeIndex = Int(currentFontSizeOptionIndex)
+        guard fontSizeIndex >= 0, fontSizeIndex < Annotations.fontSizeOptions.count else { return }
+        let fontSize = Annotations.fontSizeOptions[fontSizeIndex]
         currentTextFontSize = fontSize
         lastPickedTextFontSize = fontSize
         UserDefaults.lastPickedAnnotationFontSize = fontSize

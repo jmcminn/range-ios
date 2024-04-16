@@ -9,7 +9,7 @@ extension Annotations {
     /// Scribble/arrow thickness, independent of the image size
     /// The exact thickness in pixels depends on the scale used for annotations (which is dependent on the image size)
     static var lineThicknessOptions: [Double] = [0.5, 1, 1.5, 2, 2.5, 3, 4.5, 6, 9, 12]
-    static var defaultLineThickness: Double = 6.0
+    static var defaultLineThickness: Double = 6
 
     /// Given the value find the nearest index in the lineThicknessOptions (the value may be not an exact value from the options array)
     static func lineThicknessOptionIndex(forValue value: Double) -> Int {
@@ -33,30 +33,16 @@ extension Annotations {
 
     /// text font size, independent of the image size
     /// The exact font size in pixels depends on the scale used for annotations (which is dependent on the image size)
-    enum FontSize: String, CaseIterable, Codable {
-        case extraSmall, small, medium, large, extraLarge
+    static var fontSizeOptions: [Double] = [4, 5.5, 7, 8.5, 10, 12, 16, 20, 26, 32]
+    static var defaultFontSize: Double = 20
 
-        /// This are reference values that don't include annotations scaling factor
-        var size: CGFloat {
-            switch self {
-            case .extraSmall: return 12.0
-            case .small: return 16.0
-            case .medium: return 20.0 // reference 100% value
-            case .large: return 26.0
-            case .extraLarge: return 32.0
-            }
+    /// Given the value find the nearest index in the fontSizeOptions (the value may be not an exact value from the options array)
+    static func fontSizeOptionIndex(forValue value: Double) -> Int {
+        let distances = fontSizeOptions.map { abs($0 - value) }
+        if let minDistance = distances.min(), let index = distances.firstIndex(of: minDistance) {
+            return index
         }
-
-        /// size of the font selector image in the annotations toolbar
-        var toolbarSize: CGFloat {
-            switch self {
-            case .extraSmall: return 12.0
-            case .small: return 16.0
-            case .medium: return 20.0 // reference 100% value
-            case .large: return 26.0
-            case .extraLarge: return 28.0
-            }
-        }
+        return fontSizeOptions.firstIndex(of: defaultFontSize) ?? 0
     }
 
     /// Default text padding for text annotations.

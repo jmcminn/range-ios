@@ -290,7 +290,7 @@ class AnnotationsEditor: NSObject {
         }
 
         let text = ""
-        let fontSize = viewModel.lastPickedTextFontSize.size * annotationsGeometry.scale
+        let fontSize = viewModel.lastPickedTextFontSize * annotationsGeometry.scale
 
         // insert new annotation in the visible center of the screen (to be precise to the left and up,
         // so it's center is in the center)

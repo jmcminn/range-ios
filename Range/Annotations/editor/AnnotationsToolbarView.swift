@@ -224,32 +224,22 @@ struct AnnotationsToolbarView: View {
                 .fill(Color.clear)
                 .frame(width: 48, height: 48)
                 .overlay(Image(systemName: "textformat")
-                    .font(.system(size: model.currentTextFontSize.toolbarSize, weight: .bold))
-                    .frame(width: 30, height: 10)
+                    .font(.system(size: 22, weight: .semibold))
                     .foregroundColor(.Neutral_01))
         }
     }
 
     private var textFontSizePicker: some View {
-        VStack(spacing: 8) {
-            ForEach(Annotations.FontSize.allCases, id: \.rawValue) { fontSize in
-                Button(action: {
-                    model.setCurrentFontSize(fontSize)
-                    pickingTextFontSize = false
-                }) {
-                    Circle()
-                        .fill(fontSize == model.currentTextFontSize
-                            ? Color.Neutral_01.opacity(0.2) : Color.clear)
-                        .frame(width: 48, height: 48)
-                        .overlay {
-                            Image(systemName: "textformat")
-                                .font(.system(size: fontSize.toolbarSize, weight: .bold))
-                                .foregroundColor(.Neutral_01)
-                        }
-                }
+        RangeSlider(
+            value: $model.currentFontSizeOptionIndex,
+            in: 0 ... Double(Annotations.fontSizeOptions.count - 1),
+            step: 1
+        ) { editing in
+            if !editing {
+                pickingTextFontSize = false
             }
         }
-        .padding(8)
+        .padding(16)
         .background(blurredPanelBackground)
     }
 

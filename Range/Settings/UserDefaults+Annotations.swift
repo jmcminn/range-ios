@@ -38,18 +38,18 @@ extension UserDefaults {
         }
     }
 
-    static var lastPickedAnnotationFontSize: Annotations.FontSize {
+    static var lastPickedAnnotationFontSize: Double {
         get {
-            if let rawValue = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue) as? String
+            if let value = UserDefaults.standard
+                .object(forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue) as? Double
             {
-                return Annotations.FontSize(rawValue: rawValue) ?? .medium
+                return value
             }
-            return .medium
+            return Annotations.defaultFontSize
         }
         set {
             UserDefaults.standard.setValue(
-                newValue.rawValue,
+                newValue,
                 forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue
             )
         }
@@ -101,31 +101,18 @@ extension UserDefaults {
 
     /// The default list of text annotations shown in the RecenAnnotationsSelectorView.
     static func defaultRecentTextAnnotations() -> [TextAnnotation] {
-        [
+        let fontSize = Annotations.fontSizeOptions.last ?? 32.0
+        return [
             TextAnnotation(
-                text: "Fix this", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .Red_03
+                text: "Fix this", position: .zero, fontSize: fontSize, color: .Red_03
             ),
-            TextAnnotation(
-                text: "Before", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .Pink_03
-            ),
-            TextAnnotation(
-                text: "After", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .Green_03
-            ),
-            TextAnnotation(
-                text: "🔨", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
-            ),
-            TextAnnotation(
-                text: "👍", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
-            ),
-            TextAnnotation(
-                text: "👎", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
-            ),
-            TextAnnotation(
-                text: "❌", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
-            ),
-            TextAnnotation(
-                text: "✅", position: .zero, fontSize: Annotations.FontSize.extraLarge.size, color: .black
-            ),
+            TextAnnotation(text: "Before", position: .zero, fontSize: fontSize, color: .Pink_03),
+            TextAnnotation(text: "After", position: .zero, fontSize: fontSize, color: .Green_03),
+            TextAnnotation(text: "🔨", position: .zero, fontSize: fontSize, color: .black),
+            TextAnnotation(text: "👍", position: .zero, fontSize: fontSize, color: .black),
+            TextAnnotation(text: "👎", position: .zero, fontSize: fontSize, color: .black),
+            TextAnnotation(text: "❌", position: .zero, fontSize: fontSize, color: .black),
+            TextAnnotation(text: "✅", position: .zero, fontSize: fontSize, color: .black),
         ]
     }
 

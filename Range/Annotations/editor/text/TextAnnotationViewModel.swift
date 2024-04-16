@@ -6,8 +6,8 @@ class TextAnnotationViewModel: AnnotationViewModel {
     let text: TextAnnotation
     override var annotation: Annotation { text }
 
-    /// based on the text.fontSize, optional as the font size may potentially not match any predefined font sizes
-    var fontSize: Annotations.FontSize? { text.fontSizeEnum(annotationsGeometry.scale) }
+    /// Unscaled text.fontSize
+    var fontSize: Double { text.fontSize / annotationsGeometry.scale }
 
     /// whether the text of the annotation is currently being edited
     @Published var textEditing: Bool = false { didSet {
@@ -37,8 +37,8 @@ class TextAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Font size impacts the `viewFrame`
-    func setFontSize(_ fontSize: Annotations.FontSize) {
-        text.fontSize = fontSize.size * annotationsGeometry.scale
+    func setFontSize(_ fontSize: Double) {
+        text.fontSize = fontSize * annotationsGeometry.scale
         updateViewFrame()
     }
 

@@ -26,8 +26,7 @@ class AnnotationReadonlyView: UIView {
     override var intrinsicContentSize: CGSize { annotationSize }
 
     init(textAnnotation: TextAnnotation) {
-        fontSize = if let fontSize = textAnnotation.fontSizeEnum(1) { fontSize.toolbarSize }
-        else { textAnnotation.fontSize }
+        fontSize = textAnnotation.fontSize
 
         annotationSize = TextAnnotationRenderer.annotationSize(
             text: textAnnotation.text,
