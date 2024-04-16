@@ -46,12 +46,6 @@ class AnnotationViewModel: NSObject, ObservableObject {
         fatalError("containsTapLocation to be provided by subclasses")
     }
 
-    /// Called when no annotations are returned on tap for `containsTapLocation`.
-    /// This may be rough in a sense that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
-    func roughlyContainsTapLocation(_: CGPoint) -> Bool {
-        fatalError("roughlyContainsTapLocation to be provided by subclasses")
-    }
-
     /// See description for `containsTapLocation`
     func distanceToTapLocation(_: CGPoint) -> Float {
         fatalError("distanceToTapLocation to be provided by subclasses")
@@ -60,11 +54,11 @@ class AnnotationViewModel: NSObject, ObservableObject {
     /// If this selected annotation wants to be dragged given the gesture start point it should return a non nil String handle and the origin
     /// point for dragging.
     /// This handle will be later passed on drag finished.
-    /// By default the implementation checks for gesture point being in viewFrame and returns "main" as a result.
+    /// By default the implementation checks for gesture point being recognized as a tap location and returns "main" as a result.
     /// Some annotations may have some other dragging requirements - they may have some control points that control annotation
     /// size, direction, etc. So they can return different handles based on the drag location.
     func shouldHandleDrag(startGestureLocation: CGPoint) -> (String, CGPoint)? {
-        if viewFrame.contains(startGestureLocation) {
+        if containsTapLocation(startGestureLocation) {
             return ("main", viewFrame.origin)
         } else {
             return nil

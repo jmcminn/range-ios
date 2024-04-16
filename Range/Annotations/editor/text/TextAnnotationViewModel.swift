@@ -74,12 +74,6 @@ class TextAnnotationViewModel: AnnotationViewModel {
         viewFrame.contains(location)
     }
 
-    /// Called when no annotations are returned on tap for `containsTapLocation`.
-    /// This may be rough in a sence that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
-    override func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
-        viewFrame.contains(location)
-    }
-
     /// See description for `containsTapLocation`
     override func distanceToTapLocation(_: CGPoint) -> Float {
         // text annotation tap location checks are exact - if the tap is inside the view bounds.

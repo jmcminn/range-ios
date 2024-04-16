@@ -100,15 +100,13 @@ class LineAnnotationViewModel: AnnotationViewModel {
     /// be based on the current order and selection state of annotations.
     override func containsTapLocation(_ location: CGPoint) -> Bool {
         // Implemented as in ScribbleAnnotationViewModel - see there for description
+        let tappableAreaWidth = max(
+            40 / zoomScale, // 40 user visible points (40 is recommended minimal size for tappable things on iOS)
+            2 * line.lineWidth
+        )
         let strokePath = linePath.getUIBezierPath().cgPath
-            .copy(strokingWithWidth: 40 * annotationsGeometry.scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
+            .copy(strokingWithWidth: tappableAreaWidth, lineCap: .round, lineJoin: .round, miterLimit: 1)
         return strokePath.contains(location)
-    }
-
-    /// Called when no annotations are returned on tap for `containsTapLocation`.
-    /// This may be rough in a sence that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
-    override func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
-        viewFrame.contains(location)
     }
 
     /// See description for `containsTapLocation`

@@ -545,18 +545,11 @@ extension AnnotationsEditor {
 
     /// Discover annotation when tapping at given location
     private func tappedAnnotation(atLocation location: CGPoint) -> AnnotationViewModel? {
-        // strictly contains the tap location
-        var tappedAnnotations = annotationViewModels.values.filter { $0.containsTapLocation(location) }
-        if tappedAnnotations.isEmpty {
-            // fallback to "rough containment"
-            tappedAnnotations = annotationViewModels.values.filter { $0.roughlyContainsTapLocation(location) }
-        }
+        let tappedAnnotations = annotationViewModels.values.filter { $0.containsTapLocation(location) }
 
-        if tappedAnnotations.count == 0 {
-            return nil
-        } else if tappedAnnotations.count == 1 {
+        if tappedAnnotations.count <= 1 {
             // select if only one annotation matches
-            return tappedAnnotations[0]
+            return tappedAnnotations.first
         } else {
             // decide which annotation to select by doing some more exact tap recognition
             // and select the annotation closest to tap location

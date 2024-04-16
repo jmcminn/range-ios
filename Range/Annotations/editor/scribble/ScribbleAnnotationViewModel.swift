@@ -69,28 +69,16 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     /// will be selected. If multiple annotations report the same distance (most likely 0 for overlapping annotations) then the selection will
     /// be based on the current order and selection state of annotations.
     override func containsTapLocation(_ location: CGPoint) -> Bool {
-        // ACHTUNG: this approach makes more sense if we want to use convexHull for "roughlyContainsTapLocation"
-        // otherwise the viewFrame kind of cover it anyway and multiple matches will still be
-        // decided by "distanceToTapLocation".
-        // The only advantage of path.copy(strokingWithWidth) is that
-        // it creates a little bigger "tap area" in case of horizontal or vertical lines, which would
-        // have a very small viewFrame.
-        // Switching to convextHull in "roughlyContainsTapLocation" would be better as we would actually
-        // see less shapes reporting as tapped, for example if there's a diagonal line and user taps
-        // in the free corner, the bounds approach will report as tapped, while the convexHull would not.
-
         // check if the path actually contains the tap location
         // Do it by creating a stroking path (see it's documentation for details) that is 40 points
         // wide (divided by scale so it doesn't depend on the image resolution) but is 40 screen points.
+        let tappableAreaWidth = max(
+            40 / zoomScale, // 40 user visible points (40 is recommended minimal size for tappable things on iOS)
+            2 * scribble.lineWidth
+        )
         let strokePath = scribble.path.getUIBezierPath().cgPath
-            .copy(strokingWithWidth: 40 * annotationsGeometry.scale, lineCap: .round, lineJoin: .round, miterLimit: 1)
+            .copy(strokingWithWidth: tappableAreaWidth, lineCap: .round, lineJoin: .round, miterLimit: 1)
         return strokePath.contains(location)
-    }
-
-    /// Called when no annotations are returned on tap for `containsTapLocation`.
-    /// This may be rough in a sence that the shape is not tapped (for scribble) but user tapped in the rectange containing the shape.
-    override func roughlyContainsTapLocation(_ location: CGPoint) -> Bool {
-        viewFrame.contains(location)
     }
 
     /// See description for `containsTapLocation`
