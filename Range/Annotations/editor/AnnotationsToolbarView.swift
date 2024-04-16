@@ -148,32 +148,23 @@ struct AnnotationsToolbarView: View {
             Rectangle()
                 .fill(Color.clear)
                 .frame(width: 48, height: 48)
-                .overlay(RoundedRectangle(cornerRadius: 1000)
-                    .frame(width: 30, height: model.currentLineThickness.toolbarWidth)
+                .overlay(Image(systemName: "lineweight")
+                    .font(.system(size: 22, weight: .semibold))
                     .foregroundColor(.Neutral_01))
         }
     }
 
     private var lineThicknessPicker: some View {
-        VStack(spacing: 8) {
-            ForEach(Annotations.LineThickness.allCases, id: \.rawValue) { thickness in
-                Button(action: {
-                    model.setCurrentLineThickness(thickness)
-                    pickingLineThickness = false
-                }) {
-                    Circle()
-                        .fill(thickness == model.currentLineThickness
-                            ? Color.Neutral_01.opacity(0.2) : Color.clear)
-                        .frame(width: 48, height: 48)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 1000)
-                                .frame(width: 30, height: thickness.toolbarWidth)
-                                .foregroundColor(.Neutral_01)
-                        }
-                }
+        RangeSlider(
+            value: $model.currentLineThicknessOptionIndex,
+            in: 0 ... Double(Annotations.lineThicknessOptions.count - 1),
+            step: 1
+        ) { editing in
+            if !editing {
+                pickingLineThickness = false
             }
         }
-        .padding(8)
+        .padding(16)
         .background(blurredPanelBackground)
     }
 

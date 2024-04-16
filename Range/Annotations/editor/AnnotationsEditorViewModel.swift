@@ -42,9 +42,15 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     /// Current line thickness used for new scribbles and arrows (last user choice)
     /// If an annotation is selected it's the given annotation thickness
-    @Published private(set) var currentLineThickness: Annotations.LineThickness
+    @Published private(set) var currentLineThickness: Double
     /// This is last user choice, unaffected by the current selected annotation, it is used for drawing
-    @Published private(set) var lastPickedLineThickness: Annotations.LineThickness
+    @Published private(set) var lastPickedLineThickness: Double
+    /// The index in Annotations.lineThicknessOptions (it's a double as this is accepted by the Slider)
+    @Published var currentLineThicknessOptionIndex: Double {
+        didSet {
+            updateCurrentLineThickness()
+        }
+    }
 
     /// Current main color used for annotations (last user choice)
     /// If an annotation is selected it's the given annotation color
@@ -63,8 +69,10 @@ class AnnotationsEditorViewModel: ObservableObject {
     private var currentEditorSubscriptions = Set<AnyCancellable>()
 
     init() {
-        currentLineThickness = UserDefaults.lastPickedAnnotationLineThickness
-        lastPickedLineThickness = UserDefaults.lastPickedAnnotationLineThickness
+        let thickness = UserDefaults.lastPickedAnnotationLineThickness
+        currentLineThickness = thickness
+        lastPickedLineThickness = thickness
+        currentLineThicknessOptionIndex = Double(Annotations.lineThicknessOptionIndex(forValue: thickness))
         currentColor = UserDefaults.lastPickedAnnotationColor
         lastPickedColor = UserDefaults.lastPickedAnnotationColor
         currentTextFontSize = UserDefaults.lastPickedAnnotationFontSize
@@ -88,16 +96,16 @@ class AnnotationsEditorViewModel: ObservableObject {
         // if there's a selected annotation the attributes of this view model reflect the annotation
         // state, no matter if user is currently scribbling, etc (using potentially a different color...)
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
-            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
+            currentLineThickness = selectedAnnotation.thickness
             currentColor = selectedAnnotation.scribble.color
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             currentTextFontSize = selectedAnnotation.fontSize ?? lastPickedTextFontSize
             currentColor = selectedAnnotation.text.color
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
-            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
+            currentLineThickness = selectedAnnotation.thickness
             currentColor = selectedAnnotation.arrow.color
         } else if let selectedAnnotation = selectedAnnotation as? LineAnnotationViewModel {
-            currentLineThickness = selectedAnnotation.thickness ?? lastPickedLineThickness
+            currentLineThickness = selectedAnnotation.thickness
             currentColor = selectedAnnotation.line.color
         }
 
@@ -108,9 +116,14 @@ class AnnotationsEditorViewModel: ObservableObject {
             currentTextFontSize = lastPickedTextFontSize
             currentColor = lastPickedColor
         }
+
+        currentLineThicknessOptionIndex = Double(Annotations.lineThicknessOptionIndex(forValue: currentLineThickness))
     }
 
-    func setCurrentLineThickness(_ thickness: Annotations.LineThickness) {
+    func updateCurrentLineThickness() {
+        let lineThicknessIndex = Int(currentLineThicknessOptionIndex)
+        guard lineThicknessIndex >= 0, lineThicknessIndex < Annotations.lineThicknessOptions.count else { return }
+        let thickness = Annotations.lineThicknessOptions[lineThicknessIndex]
         currentLineThickness = thickness
         lastPickedLineThickness = thickness
         UserDefaults.lastPickedAnnotationLineThickness = thickness

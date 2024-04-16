@@ -92,8 +92,7 @@ class ArrowAnnotationView: UIView {
             ? UIColor.black.cgColor
             : UIColor.white.cgColor
 
-        selectionLayer.lineWidth = 2 * viewModel.arrow.lineWidth
-            + Annotations.LineThickness.medium.lineWidth / viewModel.zoomScale
+        selectionLayer.lineWidth = 2 * viewModel.arrow.lineWidth + 6.0 / viewModel.zoomScale
         selectionLayer.isHidden = !viewModel.selected
 
         let path = viewModel.arrowUIPath.cgPath

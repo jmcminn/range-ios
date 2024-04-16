@@ -92,8 +92,7 @@ class LineAnnotationView: UIView {
             ? UIColor.black.cgColor
             : UIColor.white.cgColor
 
-        selectionLayer.lineWidth = 2 * viewModel.line.lineWidth
-            + Annotations.LineThickness.medium.lineWidth / viewModel.zoomScale
+        selectionLayer.lineWidth = 2 * viewModel.line.lineWidth + 6.0 / viewModel.zoomScale
         selectionLayer.isHidden = !viewModel.selected
 
         let path = viewModel.lineUIPath.cgPath

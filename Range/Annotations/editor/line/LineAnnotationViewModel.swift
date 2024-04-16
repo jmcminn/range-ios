@@ -16,11 +16,8 @@ class LineAnnotationViewModel: AnnotationViewModel {
             .getUIBezierPath()
     }
 
-    /// based on the line.lineWidth, optional as the line width may potentially not match any predefined thickness
-    var thickness: Annotations.LineThickness? {
-        let lineWidthBasedThickness = line.lineWidth / annotationsGeometry.scale
-        return Annotations.LineThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
-    }
+    /// Unscaled line.lineWidth
+    var thickness: Double { line.lineWidth / annotationsGeometry.scale }
 
     /// Initiates the view model with given annotation and annotationsGeometry
     init(line: LineAnnotation, annotationsGeometry: AnnotationsGeometry) {
@@ -75,8 +72,8 @@ class LineAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Thickness impacts the `viewFrame`, so it also impacts the `uiPath`
-    func setThickness(_ thickness: Annotations.LineThickness) {
-        line.lineWidth = thickness.lineWidth * annotationsGeometry.scale
+    func setThickness(_ thickness: Double) {
+        line.lineWidth = thickness * annotationsGeometry.scale
         updateViewFrame()
     }
 

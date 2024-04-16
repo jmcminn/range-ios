@@ -213,7 +213,7 @@ class AnnotationsEditor: NSObject {
     func add(scribbleWithPath path: RangeBezierPath) {
         let scribble = ScribbleAnnotation(
             path: path,
-            lineWidth: viewModel.lastPickedLineThickness.lineWidth * annotationsGeometry.scale,
+            lineWidth: viewModel.lastPickedLineThickness * annotationsGeometry.scale,
             color: viewModel.lastPickedColor
         )
         addScribble(scribble)
@@ -476,7 +476,7 @@ extension AnnotationsEditor {
                 let annotation = LineAnnotation(
                     startPoint: startPoint,
                     endPoint: endPoint,
-                    lineWidth: self.viewModel.lastPickedLineThickness.lineWidth * self.annotationsGeometry.scale,
+                    lineWidth: self.viewModel.lastPickedLineThickness * self.annotationsGeometry.scale,
                     color: self.viewModel.lastPickedColor
                 )
                 return addLine(annotation)
@@ -510,7 +510,7 @@ extension AnnotationsEditor {
                 let annotation = ArrowAnnotation(
                     startPoint: startPoint,
                     endPoint: endPoint,
-                    lineWidth: self.viewModel.lastPickedLineThickness.lineWidth * self.annotationsGeometry.scale,
+                    lineWidth: self.viewModel.lastPickedLineThickness * self.annotationsGeometry.scale,
                     color: self.viewModel.lastPickedColor
                 )
                 return addArrow(annotation)

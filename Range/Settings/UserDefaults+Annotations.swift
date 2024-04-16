@@ -21,18 +21,18 @@ extension UserDefaults {
         }
     }
 
-    static var lastPickedAnnotationLineThickness: Annotations.LineThickness {
+    static var lastPickedAnnotationLineThickness: Double {
         get {
-            if let rawValue = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue) as? String
+            if let value = UserDefaults.standard
+                .object(forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue) as? Double
             {
-                return Annotations.LineThickness(rawValue: rawValue) ?? .medium
+                return value
             }
-            return .medium
+            return Annotations.defaultLineThickness
         }
         set {
             UserDefaults.standard.setValue(
-                newValue.rawValue,
+                newValue,
                 forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue
             )
         }

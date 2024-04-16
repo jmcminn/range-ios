@@ -15,11 +15,8 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     /// translated and scaled so it can be drawn in the UI
     private(set) var uiPath: UIBezierPath = .init()
 
-    /// based on the scribble.lineWidth, optional as the line width may potentially not match any predefined thickness
-    var thickness: Annotations.LineThickness? {
-        let lineWidthBasedThickness = scribble.lineWidth / annotationsGeometry.scale
-        return Annotations.LineThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
-    }
+    /// Unscaled scribble.lineWidth
+    var thickness: Double { scribble.lineWidth / annotationsGeometry.scale }
 
     /// Initiates the view model with annotation and annotationsScale
     init(scribble: ScribbleAnnotation, annotationsGeometry: AnnotationsGeometry) {
@@ -55,8 +52,8 @@ class ScribbleAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Thickness impacts the `viewFrame`, so it also impacts the `uiPath`
-    func setThickness(_ thickness: Annotations.LineThickness) {
-        scribble.lineWidth = thickness.lineWidth * annotationsGeometry.scale
+    func setThickness(_ thickness: Double) {
+        scribble.lineWidth = thickness * annotationsGeometry.scale
         updateFromScribble()
     }
 

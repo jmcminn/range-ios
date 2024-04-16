@@ -381,6 +381,7 @@
 		0A99BF2128C50BFB00DB3F96 /* AddPhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */; };
 		0A99BF2B28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2A28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift */; };
 		0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */; };
+		0A9C04982BCD9C0600410760 /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9C04972BCD9C0500410760 /* RangeSlider.swift */; };
 		0A9E861E297E96CC0099F22F /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E861D297E96CC0099F22F /* UserSettings.swift */; };
 		0A9E8620297E97F10099F22F /* UserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E861F297E97F10099F22F /* UserSettingsView.swift */; };
 		0A9F41992BAA30ED00CE7E4C /* SegmentAppcues in Frameworks */ = {isa = PBXBuildFile; productRef = 0A9F41982BAA30ED00CE7E4C /* SegmentAppcues */; };
@@ -903,6 +904,7 @@
 		0A99BF2028C50BFB00DB3F96 /* AddPhotoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoViewModel.swift; sourceTree = "<group>"; };
 		0A99BF2A28C62BC400DB3F96 /* FullscreenImageGalleryTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryTransition.swift; sourceTree = "<group>"; };
 		0A99BF2C28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanDirectionGestureRecognizer.swift; sourceTree = "<group>"; };
+		0A9C04972BCD9C0500410760 /* RangeSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeSlider.swift; sourceTree = "<group>"; };
 		0A9E5EFB29D5FFC000E7737D /* GoogleService-Info.custom.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.custom.plist"; sourceTree = "<group>"; };
 		0A9E861D297E96CC0099F22F /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		0A9E861F297E97F10099F22F /* UserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsView.swift; sourceTree = "<group>"; };
@@ -1262,6 +1264,7 @@
 				0A83D9112AB33A54003A8DCE /* DropdownButton.swift */,
 				0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */,
 				0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */,
+				0A9C04972BCD9C0500410760 /* RangeSlider.swift */,
 			);
 			path = ViewsSwiftUI;
 			sourceTree = "<group>";
@@ -2520,6 +2523,7 @@
 				0A8322332A419D6F0076D032 /* CollaborationFilters.swift in Sources */,
 				0A58DDBB299E84F3001AD7B4 /* UploadPreviewViewController.swift in Sources */,
 				0AEC91B52B2CABCB00AE2329 /* CreateProjectStep1View.swift in Sources */,
+				0A9C04982BCD9C0600410760 /* RangeSlider.swift in Sources */,
 				0AC8D1302BB1CEBE00D37202 /* CanvasScreenshotSelectionViewController.swift in Sources */,
 				0A2F330B283CE64600D04A1C /* DebugSettingsView.swift in Sources */,
 				0AD955222A3B605700B35325 /* AnnotationsToolbarView.swift in Sources */,

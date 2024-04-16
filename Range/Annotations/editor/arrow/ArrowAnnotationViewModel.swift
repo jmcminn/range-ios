@@ -16,11 +16,8 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
             .getUIBezierPath()
     }
 
-    /// based on the arrow.lineWidth, optional as the line width may potentially not match any predefined thickness
-    var thickness: Annotations.LineThickness? {
-        let lineWidthBasedThickness = arrow.lineWidth / annotationsGeometry.scale
-        return Annotations.LineThickness.allCases.first { $0.lineWidth == lineWidthBasedThickness }
-    }
+    /// Unscaled arrow.lineWidth
+    var thickness: Double { arrow.lineWidth / annotationsGeometry.scale }
 
     /// Initiates the view model with given annotation and annotationsGeometry
     init(arrow: ArrowAnnotation, annotationsGeometry: AnnotationsGeometry) {
@@ -75,8 +72,8 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
     }
 
     /// Thickness impacts the `viewFrame`, so it also impacts the `uiPath`
-    func setThickness(_ thickness: Annotations.LineThickness) {
-        arrow.lineWidth = thickness.lineWidth * annotationsGeometry.scale
+    func setThickness(_ thickness: Double) {
+        arrow.lineWidth = thickness * annotationsGeometry.scale
         updateViewFrame()
     }
 
