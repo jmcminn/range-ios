@@ -667,9 +667,10 @@ extension ProjectFlowController {
 
     func deleteUpload(_ upload: Upload) {
         guard !upload.isInvalidated else { return }
-        model.run(model.delete(uploads: [upload.id])) { error in
-            if error !=
-                nil { ToastWindow.shared.showError(text: "Failed to delete the \(upload.isImage ? "photo" : "file")") }
+        model.run(model.delete(upload: upload.id)) { error in
+            if error != nil {
+                ToastWindow.shared.showError(text: "Failed to delete the \(upload.isImage ? "photo" : "file")")
+            }
         }
     }
 

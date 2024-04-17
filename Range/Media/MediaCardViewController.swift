@@ -738,7 +738,8 @@ extension MediaCardViewController {
     }
 
     private func deleteMedia(_ uploads: [String]) {
-        projectModel.run(projectModel.delete(uploads: uploads)) { [weak self] error in
+        let commands = uploads.map { projectModel.delete(upload: $0) }
+        projectModel.run(commands) { [weak self] error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to delete media")
             } else {

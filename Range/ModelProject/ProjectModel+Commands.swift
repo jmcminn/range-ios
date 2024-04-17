@@ -39,11 +39,14 @@ extension ProjectModel {
     }
 
     /// A convenience wrapper for the `run` function that does the async call and catches and logs the error.
+    /// It accepts multiple commands and runs them sequentially.
     /// It also accepts an optional callback which is invoked with the optional Error
-    func run(_ command: Command?, callback: ((Error?) -> Void)?) {
+    func run(_ commands: [Command?], callback: ((Error?) -> Void)?) {
         Task {
             do {
-                try await run(command)
+                for command in commands {
+                    try await run(command)
+                }
                 DispatchQueue.main.async {
                     callback?(nil)
                 }
@@ -54,6 +57,12 @@ extension ProjectModel {
                 }
             }
         }
+    }
+
+    /// A convenience wrapper for the `run` function that does the async call and catches and logs the error.
+    /// It also accepts an optional callback which is invoked with the optional Error
+    func run(_ command: Command?, callback: ((Error?) -> Void)?) {
+        run([command], callback: callback)
     }
 }
 
@@ -406,9 +415,9 @@ extension ProjectModel {
         return DeleteCollaborationsCommand(geometryIds: geometryIds, collaborationIds: collaborationIds)
     }
 
-    /// Delete uploads with given ids
-    func delete(uploads: [String]) -> Command {
-        DeleteUploadsCommand(uploadIds: uploads)
+    /// Delete upload with given id
+    func delete(upload uploadId: String) -> Command {
+        DeleteUploadCommand(uploadId: uploadId)
     }
 
     /// Updates the archivedTimestamp for geometry of given collaboration
