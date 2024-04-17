@@ -158,7 +158,10 @@ class AddPhotoFlowController {
     /// Present camera view in a new navigation controller presented modally on top of the canvas container
     private func showCamera() {
         let navC = UINavigationController(rootViewController: createCameraViewController())
-        navC.modalPresentationStyle = .fullScreen
+        // currentContext makes it present over the ProjectFlowController to correctly handle the
+        // responder chain (so the ProjectFC is included in handling any events sent using sendAction
+        // from the presented VCs)
+        navC.modalPresentationStyle = .currentContext
         canvasContainer.present(navC, animated: true)
         ToastWindow.shared.updateStatusBarAppearance()
     }
@@ -396,7 +399,7 @@ class AddPhotoFlowController {
         } else {
             // if skipCameraScreen then this is the first step and we need to show the navigation controller
             let navC = UINavigationController(rootViewController: createPhotoDetailsViewController())
-            navC.modalPresentationStyle = .fullScreen
+            navC.modalPresentationStyle = .currentContext
             canvasContainer.present(navC, animated: true)
         }
     }
@@ -479,7 +482,7 @@ class AddPhotoFlowController {
         if showDetailsScreen {
             navC.viewControllers.append(createPhotoDetailsViewController())
         }
-        navC.modalPresentationStyle = .fullScreen
+        navC.modalPresentationStyle = .currentContext
         canvasContainer.present(navC, animated: true)
         ToastWindow.shared.updateStatusBarAppearance()
     }

@@ -17,6 +17,8 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
     var onAnnotationsSelected: (() -> Void)?
     /// When set each card will display a "..." button and call this action when tapped (sourceView will be passed)
     var onMoreAction: ((UIView) -> Void)?
+    /// When set each card will display a share button and call this action when tapped (sourceView will be passed)
+    var onShareAction: ((UIView) -> Void)?
     /// if set there'll be a special last page added to the gallery for updating the photo (this is for the versioned/correlated photos case)
     var onUpdatePhotoAction: (() -> Void)?
 
@@ -130,6 +132,11 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
                 self?.onMoreAction?(page.moreButton ?? page)
             }
         }
+        if onShareAction != nil {
+            page.onShareAction = { [weak self] in
+                self?.onShareAction?(page.shareButton ?? page)
+            }
+        }
         pages.insert(page, at: index)
         scrollView.addSubview(page)
         updatePageVersions()
@@ -190,6 +197,11 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
                 if onMoreAction != nil {
                     pageView.onMoreAction = { [weak self] in
                         self?.onMoreAction?(pageView.moreButton ?? pageView)
+                    }
+                }
+                if onShareAction != nil {
+                    pageView.onShareAction = { [weak self] in
+                        self?.onShareAction?(pageView.shareButton ?? pageView)
                     }
                 }
             }

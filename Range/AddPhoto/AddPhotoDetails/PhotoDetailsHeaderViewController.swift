@@ -84,6 +84,21 @@ class PhotoDetailsHeaderViewController: UIViewController {
         galleryVC.onAnnotationsSelected = { [weak self] in
             self?.onAnnotationsSelected?()
         }
+        galleryVC.onShareAction = { [weak self] sourceView in
+            self?.shareAction(sourceView: sourceView)
+        }
+    }
+
+    private func shareAction(sourceView: UIView) {
+        let photo = photosViewModel.photos[galleryVC.currentPage]
+        let mediaKey = photo.annotatedMediaKey ?? photo.mediaKey
+        // Hack: actions only support objC and MediaKey is a struct (Swift only) so let's
+        // encode it as NSData and send in this form (to be decoded in the shareMediaAction)
+        let mediaKeyData = try! JSONEncoder().encode(mediaKey) as NSData
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowController.shareMediaAction), to: nil, from: self,
+            for: FlowEvent(mediaKeyData, sourceView: sourceView)
+        )
     }
 
     private func buildTagsDescriptionSegmentedControl() {

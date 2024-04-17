@@ -183,6 +183,12 @@ final class ProjectFlowController: UIViewController {
 
         super.init(nibName: nil, bundle: nil)
 
+        // Make this view controller part of the responder chain for view controllers presented modally
+        // on top of it. If not set the responder chain for VCs presented modally would skip it and
+        // go to the root view controller of the window. We need it to pass events from photo flow
+        // controller (which unlike the rest of the vcs presents the content modally)
+        definesPresentationContext = true
+
         collaborationFlow.onCollaborationClose = { [weak self] in
             // unselect pin, this will result also in hiding the collaboration window
             self?.pinsDisplay?.setSelectedPin(nil)

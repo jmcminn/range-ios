@@ -759,17 +759,27 @@ extension ProjectFlowController {
 
 extension ProjectFlowController {
     func shareMediaAction(sender _: Any?, event: FlowEvent) {
-        guard let uploads = event.objects as? [Upload] else { return }
-        let mediaKeysToShare = [MediaKey](uploads
-            .compactMap { .autoAnnotatedMediaKey(projectId: self.model.projectId, upload: $0) })
+        let mediaKeysToShare: [MediaKey]
+        if let uploads = event.objects as? [Upload] {
+            mediaKeysToShare =
+                uploads.compactMap { .autoAnnotatedMediaKey(projectId: self.model.projectId, upload: $0) }
+        } else if let data = event.object as? NSData,
+                  let mediaKey = try? JSONDecoder().decode(MediaKey.self, from: data as Data)
+        {
+            // ^ when we want to pass MediaKey directly, we need to pass it serialized as JSON,
+            // as MediaKey is a struct and thus not supported by the responder chain mechanism
+            mediaKeysToShare = [mediaKey]
+        } else {
+            return
+        }
 
-        let uploadsCount = mediaKeysToShare.count
+        let mediaCount = mediaKeysToShare.count
         var cancelled = false
         // show alert that prevents any user interaction while downloading items to share
         // User can still cancel, which won't really cancel the download but will cancel the sharing action
         let progressAlertController = UIAlertController(
             title: String(localized: "Hold tight, this may take a few seconds..."),
-            message: uploadsCount == 1
+            message: mediaCount == 1
                 ? String(localized: "We’re currently preparing your media item for sharing.")
                 : String(localized: "We’re currently preparing your media items for sharing."),
             preferredStyle: .alert
@@ -781,7 +791,7 @@ extension ProjectFlowController {
 
         Task { @MainActor in
             do {
-                // fetch (if not fetched yet) all the uploads to share
+                // fetch (if not fetched yet) all the media to share
                 let itemsToShare: [URL] = try await mediaKeysToShare.concurrentMap {
                     try await self.mediaCache.getCachedFileURL(forKey: $0)
                 }
@@ -793,7 +803,7 @@ extension ProjectFlowController {
                             if completed {
                                 ToastWindow.shared.showSuccess(
                                     iconName: "checkmark.circle.fill",
-                                    text: uploadsCount == 1
+                                    text: mediaCount == 1
                                         ? String(localized: "Media item successfully shared")
                                         : String(localized: "Media items successfully shared")
                                 )

@@ -7,6 +7,7 @@ class ImageGalleryPageView: UIView {
     let onPhotoRemove: (() -> Void)?
     let onAnnotationsTap: (() -> Void)?
     var onMoreAction: (() -> Void)? { didSet { onMoreActionSet() } }
+    var onShareAction: (() -> Void)? { didSet { onShareActionSet() } }
     let imageView = UIImageView()
     /// top/bottom insets for image view, so the side pages in the gallery are lower than the center one.
     /// left/right inset values doesn't matter, but if any is non zero, the image view will be pushed towards the other edge, for example
@@ -26,6 +27,7 @@ class ImageGalleryPageView: UIView {
     var removeButton: RoundShadowButton?
     var annotationsButton: RoundShadowButton?
     var moreButton: RoundShadowButton?
+    var shareButton: RoundShadowButton?
 
     var versionPill: PillView?
 
@@ -168,6 +170,21 @@ class ImageGalleryPageView: UIView {
 
     @objc private func moreButtonTapped() {
         onMoreAction?()
+    }
+
+    func onShareActionSet() {
+        guard onShareAction != nil else { return }
+        let shareButton = RoundShadowButton(image: .init(systemName: "square.and.arrow.up") ?? .init())
+        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+        imageView.addSubview(shareButton)
+        shareButton.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview().inset(12)
+        }
+        self.shareButton = shareButton
+    }
+
+    @objc private func shareButtonTapped() {
+        onShareAction?()
     }
 }
 
