@@ -5,10 +5,10 @@ import RealmSwift
 import Turf
 import XCTest
 
-/// Tests applying `DeleteCollaborationsCommand` in local Realm db
-final class DeleteCollaborationsCommandRealmTest: ProjectModelTestCase {
+/// Tests applying `DeleteCollaborationCommand` in local Realm db
+final class DeleteCollaborationCommandRealmTest: ProjectModelTestCase {
     func testApply_noCollaboration() throws {
-        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
+        let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -22,7 +22,7 @@ final class DeleteCollaborationsCommandRealmTest: ProjectModelTestCase {
             realm.add(collaboration)
         }
 
-        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
+        let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -38,7 +38,7 @@ final class DeleteCollaborationsCommandRealmTest: ProjectModelTestCase {
             feature.collaborations.insert(collaboration)
         }
 
-        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
+        let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -80,7 +80,7 @@ final class DeleteCollaborationsCommandRealmTest: ProjectModelTestCase {
             collaboration.tags.append(tag)
             upload.tags.append(tag)
         }
-        let command = DeleteCollaborationsCommand(geometryIds: ["geometry"], collaborationIds: ["collaboration1"])
+        let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
         try realm.write {
             try command.apply(inRealm: realm)
         }
@@ -102,29 +102,19 @@ final class DeleteCollaborationsCommandRealmTest: ProjectModelTestCase {
     }
 }
 
-/// Tests applying `DeleteCollaborationCommand` to Firestore
-final class DeleteCollaborationCommandFirestoreTest: XCTestCase {
-    func testApply_noOp_noCollaboration() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
-
-        let command = DeleteCollaborationsCommand(geometryIds: ["geometry1"], collaborationIds: ["collaboration1"])
-        try command.apply(inFirestore: context)
-        XCTAssertEqual(context.operations.count, 0)
+/// Tests getting the parameters for `DeleteCollaborationCommand`Firebase function call
+final class DeleteCollaborationCommandFirebaseFunctionTest: XCTestCase {
+    func test_functionName() throws {
+        let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
+        XCTAssertEqual(command.functionName, "deleteCollaboration")
     }
 
-    func testApply_successful() throws {
-        let context = TestFirestoreCommandContext(docs: [.geometry("geometry1"), .geometry("geometry2")])
-
-        let command = DeleteCollaborationsCommand(
-            geometryIds: ["geometry1", "geometry2", "geometry3"],
-            collaborationIds: ["collaboration1", "collaboration2", "collaboration3"]
-        )
-
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 2)
-        AssertOperationsEqual(context.operations[0], .delete(.geometry("geometry1")))
-        AssertOperationsEqual(context.operations[1], .delete(.geometry("geometry2")))
+    func test_functionData() throws {
+        let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = ["projectId": "project1", "collaborationId": "collaboration1"]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }

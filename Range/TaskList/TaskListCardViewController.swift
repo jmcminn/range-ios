@@ -835,9 +835,8 @@ extension TaskListCardViewController {
     }
 
     private func bulkDelete(_ tasks: [String]) {
-        projectModel.run(
-            projectModel.delete(collaborations: tasks)
-        ) { error in
+        let commands = tasks.map { projectModel.delete(collaborationId: $0) }
+        projectModel.run(commands) { error in
             if error == nil {
                 ToastWindow.shared.showSuccess(text:
                     "\(tasks.count) \(tasks.count == 1 ? "task" : "tasks") deleted successfully")

@@ -400,19 +400,13 @@ extension ProjectModel {
         DeleteCommentCommand(commentId: comment.id)
     }
 
-    /// Deletes given comment
-    func delete(collaboration: Collaboration) throws -> Command {
-        guard let geometry = collaboration.feature.first?.geometry.first else {
-            throw ModelError.geometryNotFound
-        }
-        return DeleteCollaborationsCommand(geometryIds: [geometry.id], collaborationIds: [collaboration.id])
+    /// Deletes given collaboration
+    func delete(collaboration: Collaboration) -> Command {
+        DeleteCollaborationCommand(collaborationId: collaboration.id)
     }
 
-    func delete(collaborations collaborationIds: [String]) -> Command {
-        let geometryIds = [Collaboration](mainRealm.objects(Collaboration.self))
-            .filter { collaborationIds.contains($0.id) }
-            .compactMap { $0.feature.first?.geometry.first?.id }
-        return DeleteCollaborationsCommand(geometryIds: geometryIds, collaborationIds: collaborationIds)
+    func delete(collaborationId: String) -> Command {
+        DeleteCollaborationCommand(collaborationId: collaborationId)
     }
 
     /// Delete upload with given id
