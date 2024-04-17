@@ -25,6 +25,11 @@ class ArrowAnnotation: Annotation {
         }
     }
 
+    /// The length of a single arrow tip line (the angle between tip line and arrow line is 45deg)
+    /// Arrow tip length depends on the line width
+    /// This is scaled value
+    var tipLength: Double { 4 * lineWidth }
+
     private enum CodingKeys: String, CodingKey {
         case startPoint, endPoint, lineWidth, hexColor
     }

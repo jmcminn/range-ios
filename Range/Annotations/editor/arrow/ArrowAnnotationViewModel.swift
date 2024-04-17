@@ -83,7 +83,7 @@ class ArrowAnnotationViewModel: AnnotationViewModel {
         arrowPath = RangeBezierPath.arrowPath(
             startPoint: arrow.startPoint,
             endPoint: arrow.endPoint,
-            tipLength: Annotations.arrowTipLength * annotationsGeometry.scale
+            tipLength: arrow.tipLength
         )
 
         // Take the bounds.integral (so the enclosing rectangle with integer coordinates/width/height)
