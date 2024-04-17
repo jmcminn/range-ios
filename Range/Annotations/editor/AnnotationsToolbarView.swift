@@ -155,13 +155,18 @@ struct AnnotationsToolbarView: View {
     }
 
     private var lineThicknessPicker: some View {
-        RangeSlider(
-            value: $model.currentLineThicknessOptionIndex,
-            in: 0 ... Double(Annotations.lineThicknessOptions.count - 1),
-            step: 1
-        ) { editing in
-            if !editing {
-                pickingLineThickness = false
+        VStack {
+            Text("\(Int(model.currentLineThicknessOptionIndex) + 1)")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(Color.Neutral_04)
+            RangeSlider(
+                value: $model.currentLineThicknessOptionIndex,
+                in: 0 ... Double(Annotations.lineThicknessOptions.count - 1),
+                step: 1
+            ) { editing in
+                if !editing {
+                    pickingLineThickness = false
+                }
             }
         }
         .padding(16)
@@ -230,13 +235,18 @@ struct AnnotationsToolbarView: View {
     }
 
     private var textFontSizePicker: some View {
-        RangeSlider(
-            value: $model.currentFontSizeOptionIndex,
-            in: 0 ... Double(Annotations.fontSizeOptions.count - 1),
-            step: 1
-        ) { editing in
-            if !editing {
-                pickingTextFontSize = false
+        VStack {
+            Text("\(Int(model.currentFontSizeOptionIndex) + 1)")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(Color.Neutral_04)
+            RangeSlider(
+                value: $model.currentFontSizeOptionIndex,
+                in: 0 ... Double(Annotations.fontSizeOptions.count - 1),
+                step: 1
+            ) { editing in
+                if !editing {
+                    pickingTextFontSize = false
+                }
             }
         }
         .padding(16)
