@@ -100,8 +100,13 @@ extension RangeSlider {
 
                 if self.step != nil {
                     let step = V.zero.advanced(by: self.step!)
-                    self.value.wrappedValue = round((clampedValue - self.range.lowerBound) / step) * step + self.range
+                    let newValue = round((clampedValue - self.range.lowerBound) / step) * step + self.range
                         .lowerBound
+                    if self.value.wrappedValue != newValue {
+                        self.value.wrappedValue = newValue
+                        let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+                        feedbackGenerator.impactOccurred()
+                    }
                 } else {
                     self.value.wrappedValue = clampedValue
                 }
