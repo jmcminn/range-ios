@@ -45,15 +45,13 @@ extension Annotations {
         return fontSizeOptions.firstIndex(of: defaultFontSize) ?? 0
     }
 
-    /// Default text padding for text annotations.
-    /// Unscaled
+    /// Text padding based on fontSize.
     /// The size of the white background = text size + textPadding on each side.
-    static var textHorizontalPadding: Double = 6.0
-    static var textVerticalPadding: Double = 3.0
+    static func textHorizontalPadding(forFontSize fontSize: Double) -> Double { fontSize / 5.0 }
+    static func textVerticalPadding(forFontSize fontSize: Double) -> Double { fontSize / 30.0 }
 
     /// The corner radius of the white text annotation box.
-    /// Unscaled
-    static var textBoxCornerRadius: Double = 6.0
+    static func textBoxCornerRadius(forFontSize fontSize: Double) -> Double { fontSize / 5.0 }
 
     /// Unscaled offset to add to x/y position of annotation when duplicating it
     static var duplicateAnnotationOffset: Double = 20.0

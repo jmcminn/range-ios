@@ -51,7 +51,7 @@ enum TextAnnotationRenderer {
             fontSize: fontSize,
             annotationScale: annotationScale
         )
-        let cornerRadius = Annotations.textBoxCornerRadius * annotationScale
+        let cornerRadius = Annotations.textBoxCornerRadius(forFontSize: fontSize)
         let backgroundRect = UIBezierPath(
             roundedRect: CGRect(origin: position.addTo(renderingOffset), size: annotationSize),
             byRoundingCorners: .allCorners,
@@ -73,8 +73,8 @@ enum TextAnnotationRenderer {
                 NSAttributedString.Key.foregroundColor: color,
             ] as [NSAttributedString.Key: Any]
 
-            let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationScale)
-            let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationScale)
+            let textHorizontalPadding = ceil(Annotations.textHorizontalPadding(forFontSize: fontSize))
+            let textVerticalPadding = ceil(Annotations.textVerticalPadding(forFontSize: fontSize))
             let textRect = CGRect(
                 origin: position.translate(x: textHorizontalPadding, y: textVerticalPadding).addTo(renderingOffset),
                 size: CGSize(
@@ -111,8 +111,8 @@ extension TextAnnotationRenderer {
             textSize.width = max(textSize.width, ceil(emptyTextBoxWidth * annotationScale))
         }
 
-        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * annotationScale)
-        let textVerticalPadding = ceil(Annotations.textVerticalPadding * annotationScale)
+        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding(forFontSize: fontSize))
+        let textVerticalPadding = ceil(Annotations.textVerticalPadding(forFontSize: fontSize))
 
         let boxSize = CGSize(
             width: textSize.width + 2 * textHorizontalPadding,

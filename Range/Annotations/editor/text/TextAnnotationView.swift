@@ -80,8 +80,9 @@ class TextAnnotationView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        backgroundShadowView.layer.cornerRadius = Annotations.textBoxCornerRadius * viewModel.annotationsGeometry.scale
-        layer.cornerRadius = Annotations.textBoxCornerRadius * viewModel.annotationsGeometry.scale
+        let cornerRadius = Annotations.textBoxCornerRadius(forFontSize: viewModel.text.fontSize)
+        backgroundShadowView.layer.cornerRadius = cornerRadius
+        layer.cornerRadius = cornerRadius
         updateSelectedLayer()
         updateTextEditingView()
     }
@@ -132,8 +133,8 @@ class TextAnnotationView: UIView {
         textEditingView.font = TextAnnotationRenderer.annotationFont(ofSize: viewModel.text.fontSize)
         textEditingView.tintColor = viewModel.text.color
         textEditingView.textColor = viewModel.text.color
-        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding * viewModel.annotationsGeometry.scale)
-        let textVerticalPadding = ceil(Annotations.textVerticalPadding * viewModel.annotationsGeometry.scale)
+        let textHorizontalPadding = ceil(Annotations.textHorizontalPadding(forFontSize: viewModel.text.fontSize))
+        let textVerticalPadding = ceil(Annotations.textVerticalPadding(forFontSize: viewModel.text.fontSize))
         textEditingView.snp.remakeConstraints { make in
             make.top.equalToSuperview().inset(textVerticalPadding)
             make.leading.equalToSuperview().inset(textHorizontalPadding)
@@ -163,7 +164,7 @@ class TextAnnotationView: UIView {
             selectedLayer.lineWidth = 2 / viewModel.zoomScale
             selectedLayer.path = UIBezierPath(
                 roundedRect: selectedLayer.bounds,
-                cornerRadius: Annotations.textBoxCornerRadius * viewModel.annotationsGeometry.scale
+                cornerRadius: Annotations.textBoxCornerRadius(forFontSize: viewModel.text.fontSize)
             ).cgPath
             layer.addSublayer(selectedLayer)
         } else {
