@@ -245,7 +245,6 @@ class AddPinFlowController {
                     }
                 }
                 try await runCommand(geometryId: geometryId)
-                UserDefaults.lastPhotoPinId = geometryId
             } catch {
                 DispatchQueue.main.async {
                     ToastWindow.shared.showError(text: "Failed to create the collaboration")

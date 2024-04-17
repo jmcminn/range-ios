@@ -16,8 +16,6 @@ extension UserDefaults {
         case lastOpenCanvasIdPrefix = "lastOpenCanvasId_"
         /// the prefix to be used for storing last open canvas source for a canvas, will be followed by a canvas id
         case lastOpenCanvasSourceIdPrefix = "lastOpenCanvasSourceId_"
-        /// last select geometry id for a photo to use it as a default for the next photo
-        case lastPhotoPinId
         /// last user's choice if annotation (tags/description) is enabled in the photo flow, `true` by default
         case annotationEnabled
         /// last user's choice if multi photo session is enabled in the photo flow, `true` by default
@@ -145,20 +143,6 @@ extension UserDefaults {
 
     static func setLastOpenCanvasSourceId(_ canvasSourceId: String, forCanvasId canvasId: String) {
         UserDefaults.standard.set(canvasSourceId, forKey: lastOpenCanvasSourceIdKey(forCanvasId: canvasId))
-    }
-
-    /// stores the last select geometry id for a photo to use it as a default for the next photo
-    static var lastPhotoPinId: String? {
-        get {
-            UserDefaults.standard.string(forKey: UserDefaultsConstants.lastPhotoPinId.rawValue)
-        }
-        set {
-            if let id = newValue {
-                UserDefaults.standard.set(id, forKey: UserDefaultsConstants.lastPhotoPinId.rawValue)
-            } else {
-                UserDefaults.standard.removeObject(forKey: UserDefaultsConstants.lastPhotoPinId.rawValue)
-            }
-        }
     }
 
     /// construct key used for storing recent tags for given project, exposed for tests

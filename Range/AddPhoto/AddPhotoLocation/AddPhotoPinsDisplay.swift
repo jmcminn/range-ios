@@ -88,9 +88,7 @@ class AddPhotoPinsDisplay {
 
     /// Initial location for pin placement in photo flow:
     /// 1. When placing a pin on the map, the default location is the user location (if withing the range of the project)
-    /// 2. When placing on the PDF or user location is not known (or not within the project range) then try to add photos to the pin that was last
-    /// used (check if one of initially loaded pins matches ``lastPhotoPinId``, if so selects and animates to it.)
-    /// 3. Otherwise show photo pin in the center of the screen
+    /// 2. Otherwise show photo pin in the center of the screen
     private func selectInitialLocation() {
         if autoSelectInitialLocation,
            model.currentCanvas.currentCanvasSource.type != .pdf,
@@ -103,16 +101,6 @@ class AddPhotoPinsDisplay {
             )
             updatePhotoPinVisibility()
             showCurrentLocationPhotoPinTooltip()
-        } else if autoSelectInitialLocation,
-                  let lastPhotoPinId = UserDefaults.lastPhotoPinId,
-                  let lastPhotoPin = geometriesPinsDisplay.pinForGeometryId(lastPhotoPinId)
-        {
-            geometriesPinsDisplay.setSelectedPin(lastPhotoPin)
-            canvasVC.animatePanAndZoom(
-                cameraCenter: lastPhotoPin.point.coordinates,
-                mapboxZoom: canvasVC.mapView.mapboxMap.cameraState.zoom
-            )
-            showSelectedPinTooltip()
         } else {
             updatePhotoPinVisibility()
             showNewLocationPhotoPinTooltip()
@@ -158,10 +146,7 @@ extension AddPhotoPinsDisplay {
         hideTooltip()
         guard let pin = selectedPin else { return }
 
-        let tooltip = MapTooltipView(
-            text: pin.id == UserDefaults.lastPhotoPinId ? "Use last location" : "Use this location",
-            boxColor: .Secondary_02
-        )
+        let tooltip = MapTooltipView(text: "Use this location", boxColor: .Secondary_02)
         let fittingSize = CGSize(
             width: canvasVC.mapView.frame.size.width,
             height: UIView.layoutFittingExpandedSize.height

@@ -615,7 +615,6 @@ class AddPhotoFlowController {
             resultGeometryId = geometryId
             newCollaborationCreated = false
             shouldEditCollaboration = false
-            UserDefaults.lastPhotoPinId = geometryId
         } else {
             let geometryId = generateRealmId()
             let isTask = (pinTypeOption.pinType == .task) || (pinTypeOption == .copyPin && pinToCopy?.status != nil)
@@ -636,7 +635,6 @@ class AddPhotoFlowController {
             resultGeometryId = geometryId
             newCollaborationCreated = true
             shouldEditCollaboration = pinTypeOption != .copyPin
-            UserDefaults.lastPhotoPinId = geometryId
             UserDefaults.lastPinTypeOption = pinTypeOption
             if let pinToCopy = pinToCopy {
                 UserDefaults.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
