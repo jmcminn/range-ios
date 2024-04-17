@@ -20,13 +20,14 @@ extension DeleteCommentCommand: LocalCommand {
     }
 }
 
-extension DeleteCommentCommand: FirestoreCommand {
-    func apply(inFirestore ctx: FirestoreCommandContext) throws {
-        // ------------- READS -----------------
-        // check that target exists, otherwise it's already removed
-        guard try ctx.exists(.comment(commentId)) else { return }
+/// Provide data for 'deleteComment' firebase function call
+extension DeleteCommentCommand: FirebaseFunctionCommand {
+    var functionName: String { "deleteComment" }
 
-        // ------------- WRITES ----------------
-        ctx.deleteDocument(.comment(commentId))
+    func functionData(_ projectId: String) -> Any? {
+        [
+            "projectId": projectId,
+            "commentId": commentId,
+        ]
     }
 }

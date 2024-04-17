@@ -103,7 +103,6 @@ enum ActionCommand: Codable {
         case let .createCollaborationComment(c): return c
         case let .createUploadComment(c): return c
         case let .deleteCollaborations(c): return c
-        case let .deleteComment(c): return c
         case let .deleteUploads(c): return c
         case let .updateCollaborationDescription(c): return c
         case let .updateCollaborationName(c): return c
@@ -126,6 +125,7 @@ enum ActionCommand: Codable {
     var firebaseFunctionCommand: FirebaseFunctionCommand? {
         switch self {
         case let .createCollaboration(c): return c
+        case let .deleteComment(c): return c
         default: return nil
         }
     }

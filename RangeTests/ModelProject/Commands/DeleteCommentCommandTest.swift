@@ -32,28 +32,19 @@ final class DeleteCommentCommandRealmTest: ProjectModelTestCase {
     }
 }
 
-/// Tests applying `DeleteCommentCommand` to Firestore
-final class DeleteCommentCommandFirestoreTest: XCTestCase {
-    func testApply_noOp_noComment() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
-
+/// Tests getting the parameters for `DeleteCommentCommand`Firebase function call
+final class DeleteCommentCommandFirebaseFunctionTest: XCTestCase {
+    func test_functionName() throws {
         let command = DeleteCommentCommand(commentId: "comment1")
-        try command.apply(inFirestore: context)
-        XCTAssertEqual(context.operations.count, 0)
+        XCTAssertEqual(command.functionName, "deleteComment")
     }
 
-    func testApply_successful() throws {
-        let context = TestFirestoreCommandContext(docs: [.comment("comment1")])
-
+    func test_functionData() throws {
         let command = DeleteCommentCommand(commentId: "comment1")
-
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 1)
-        AssertOperationsEqual(
-            context.operations[0],
-            .delete(.comment("comment1"))
-        )
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = ["projectId": "project1", "commentId": "comment1"]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }
