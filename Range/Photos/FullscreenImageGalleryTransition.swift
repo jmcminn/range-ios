@@ -12,6 +12,8 @@ class FullscreenImageGalleryTransitioningDelegate<PhotoKey: Equatable>: NSObject
     weak var fullscreenGalleryVC: FullscreenImageGalleryViewController<PhotoKey>?
     weak var interactivePresentation: UIViewControllerInteractiveTransitioning?
     fileprivate var interactiveDismissal: UIPercentDrivenInteractiveTransition?
+    /// notify on successful (not cancelled) interactive dismissal
+    var onDismissedInteractively: (() -> Void)?
 
     /// Init the transitioning delegate to transition from ImageGalleryViewController
     /// - parameter galleryVC: gallery from which to transition
@@ -64,10 +66,9 @@ class FullscreenImageGalleryTransitioningDelegate<PhotoKey: Equatable>: NSObject
         } else if gesture.state == .ended || gesture.state == .cancelled || gesture.state == .failed {
             let velocity = gesture.velocity(in: view)
             // up only
-            if velocity.y < -500 {
+            if velocity.y < -500 || percent > 0.5 {
                 interactiveDismissal?.finish()
-            } else if percent > 0.5 {
-                interactiveDismissal?.finish()
+                onDismissedInteractively?()
             } else {
                 interactiveDismissal?.cancel()
             }

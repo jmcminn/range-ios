@@ -276,8 +276,8 @@ class AddPhotoFlowController {
         let vc = createPhotosReviewViewController()
 
         // hides photos review controller and possibly updates the annotations
-        let hideReviewController: ([Int], Bool, [Annotations?])
-            -> Void = { [weak self, weak vc] removedPhotosIndices, updateAnnotations, annotations in
+        let hideReviewController: ([Int], Bool, [Annotations?], Bool)
+            -> Void = { [weak self, weak vc] removedPhotosIndices, updateAnnotations, annotations, dismissVC in
                 guard let self = self, let vc = vc else { return }
 
                 // remove any photos removed in photos preview, please note that indices are stored
@@ -294,7 +294,9 @@ class AddPhotoFlowController {
                     // shows the same page as the last viewed on photos review
                     detailsVC.headerVC.galleryVC.setCurrentPage(vc.currentPage)
                 }
-                vc.dismiss(animated: true)
+                if dismissVC {
+                    vc.dismiss(animated: true)
+                }
                 if updateAnnotations {
                     Task { @MainActor in
                         do {
@@ -307,10 +309,10 @@ class AddPhotoFlowController {
             }
 
         vc.onCancel = {
-            hideReviewController([], false, [])
+            hideReviewController([], false, [], true)
         }
         vc.onDone = { removedPhotosIndices, annotations in
-            hideReviewController(removedPhotosIndices, true, annotations)
+            hideReviewController(removedPhotosIndices, true, annotations, true)
         }
 
         let galleryVC = detailsVC.headerVC.galleryVC!
@@ -320,6 +322,11 @@ class AddPhotoFlowController {
             toFullscreenGallery: vc,
             interactivePresentation: interactivePresentation
         )
+        transitioningDelegate.onDismissedInteractively = {
+            // when dismissed interactively, we want to treat it as if user tapped "done" - so
+            // save all changes.
+            hideReviewController(vc.removedPhotosIndices, true, vc.resultAnnotations, false)
+        }
         vc.fullscreenTransitioningDelegate = transitioningDelegate
         vc.transitioningDelegate = transitioningDelegate
         vc.modalPresentationStyle = .custom

@@ -42,6 +42,7 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
     /// The indices of removed photos (the indices are added as user is removing the photos.
     /// ACHTUNG: The index at position N+1 is the index in the array of photos with removals 0..N already applied)
     var removedPhotosIndices: [Int] = []
+    var resultAnnotations: [Annotations?] { annotationsEditorPerPage.map { $0.getAnnotations() } }
 
     /// views representing pages for images
     private var pages: [FullscreenImageGalleryPageView]
@@ -207,7 +208,6 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
     }
 
     private func notifyOnDone() {
-        let resultAnnotations = annotationsEditorPerPage.map { $0.getAnnotations() }
         onDone?(removedPhotosIndices, resultAnnotations)
     }
 
