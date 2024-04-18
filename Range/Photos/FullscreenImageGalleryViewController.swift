@@ -207,18 +207,19 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
     }
 
     private func setupButtons() {
-        cancelButton = UIButton(
+        cancelButton = RangeButton(
             configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
             primaryAction: UIAction(title: String(localized: "Cancel")) { [weak self] _ in
                 self?.onCancel?()
             }
-        )
-        confirmButton = UIButton(
+        ).withCustomRangeHighlightColor()
+
+        confirmButton = RangeButton(
             configuration: FullscreenImageGalleryViewController.cancelDoneButtonConfig,
             primaryAction: UIAction(title: String(localized: "Done")) { [weak self] _ in
                 self?.notifyOnDone()
             }
-        )
+        ).withCustomRangeHighlightColor()
 
         NotificationCenter.default.addObserver(
             self,
@@ -264,11 +265,11 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
     static var cancelDoneButtonConfig: UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        config.baseBackgroundColor = .Neutral_10
         config.baseForegroundColor = .Neutral_04
         config.cornerStyle = .fixed
         config.background.cornerRadius = 20
         config.background.strokeColor = .Neutral_07
-        config.background.backgroundColor = .Neutral_10
         return config
     }
 

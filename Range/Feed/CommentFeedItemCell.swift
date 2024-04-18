@@ -95,12 +95,16 @@ class CommentFeedItemCell: UITableViewCell {
 
         completeButton = RangeButton(
             configuration: UIButton.Configuration.iconButton(
-                backgroundColor: .Green_04, strokeColor: .Green_04, cornerRadius: 16
+                backgroundColor: .dynamic(.Neutral_10), foregroundColor: .dynamic(.Neutral_05),
+                strokeColor: .dynamic(.Neutral_07), cornerRadius: 16
             ),
             primaryAction: UIAction(image: UIImage(named: "tick.small")) { [weak self] _ in
                 self?.toggleCompleteAction()
             }
         )
+        .withCustomRangeHighlightColor()
+        .withSelectionConfig(backgroundColor: .Green_04, foregroundColor: .Neutral_01, strokeColor: .Green_04)
+
         completeButton.tapAreaInsets = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
         noteBackground.addSubview(completeButton)
         completeButton.snp.makeConstraints { make in
@@ -179,16 +183,13 @@ class CommentFeedItemCell: UITableViewCell {
 
     /// update complete button for the note completed state
     private func updateCompleteButton() {
-        completeButton.configuration?.baseBackgroundColor = isCompleted ? .Green_04 : .dynamic(.Neutral_10)
-        completeButton.configuration?.background.strokeColor = isCompleted ? .Green_04 : .dynamic(.Neutral_07)
+        completeButton.isSelected = isCompleted
         completeButton.setImage(
             UIImage(named: "tick.small")?.withTintColor(isCompleted
                 ? .Neutral_01
                 : .dynamic(.Neutral_05)),
             for: .normal
         )
-
-        completeButton.setNeedsUpdateConfiguration()
     }
 
     /// update the text and insets for completed label
