@@ -52,7 +52,11 @@ class FullscreenImageGalleryTransitioningDelegate<PhotoKey: Equatable>: NSObject
         if gesture.state == .began {
             // before triggering dismissal let's first update the galleryVC page so it matches
             // the fullscreen one (otherwise we would possibly animate a photo onto a different photo)
-            galleryVC.setCurrentPage(fullscreenGalleryVC.currentPage)
+            // Instead of matching the indices (which may be out of sync because of a photo removal),
+            // match the photo keys.
+            if let currentPhotoKeyInFullscreen = fullscreenGalleryVC.photoKeyForCurrentPage {
+                galleryVC.setCurrentPage(forPhotoKey: currentPhotoKeyInFullscreen)
+            }
             interactiveDismissal = UIPercentDrivenInteractiveTransition()
             fullscreenGalleryVC.dismiss(animated: true)
         } else if gesture.state == .changed {

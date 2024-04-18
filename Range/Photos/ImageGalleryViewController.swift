@@ -163,6 +163,11 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
         currentPage = page
     }
 
+    func setCurrentPage(forPhotoKey photoKey: PhotoKey, animated: Bool = false) {
+        guard let pageIndex = photoKeys.firstIndex(of: photoKey) else { return }
+        setCurrentPage(pageIndex, animated: animated)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

@@ -82,6 +82,11 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
         return pages[currentPage].imageView
     }
 
+    var photoKeyForCurrentPage: PhotoKey? {
+        guard currentPage >= 0, currentPage < pages.count else { return nil }
+        return photoKeys[currentPage]
+    }
+
     /// last page for which `loadImages` was called
     private var imagesLastLoadedForPage: Int?
 
