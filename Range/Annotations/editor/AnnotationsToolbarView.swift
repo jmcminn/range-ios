@@ -157,7 +157,7 @@ struct AnnotationsToolbarView: View {
     private var lineThicknessPicker: some View {
         VStack {
             Text("\(Int(model.currentLineThicknessOptionIndex) + 1)")
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(.title3, weight: .bold))
                 .foregroundStyle(Color.Neutral_04)
             RangeSlider(
                 value: $model.currentLineThicknessOptionIndex,
@@ -237,7 +237,7 @@ struct AnnotationsToolbarView: View {
     private var textFontSizePicker: some View {
         VStack {
             Text("\(Int(model.currentFontSizeOptionIndex) + 1)")
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(.title3, weight: .bold))
                 .foregroundStyle(Color.Neutral_04)
             RangeSlider(
                 value: $model.currentFontSizeOptionIndex,
