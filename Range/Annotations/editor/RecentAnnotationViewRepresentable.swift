@@ -20,28 +20,35 @@ struct RecentAnnotationViewRepresentable: UIViewRepresentable {
 /// UIView that renders given annotation using its Renderer. The annotation is not rendered in the image context, so it's unscaled
 class AnnotationReadonlyView: UIView {
     // unscaled annotation font size as we're rendering in UIView that is not scaled
-    let fontSize: Double
-    let annotationSize: CGSize
+    private var fontSize: Double { UIFont.preferredFont(forTextStyle: .body).lineHeight }
+    private var annotationSize: CGSize = .zero
     let annotation: TextAnnotation
     override var intrinsicContentSize: CGSize { annotationSize }
 
     init(textAnnotation: TextAnnotation) {
-        fontSize = textAnnotation.fontSize
-
-        annotationSize = TextAnnotationRenderer.annotationSize(
-            text: textAnnotation.text,
-            fontSize: fontSize,
-            annotationScale: 1
-        )
         annotation = textAnnotation
         super.init(frame: .zero)
 
+        updateAnnotationSize()
         backgroundColor = .clear
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func traitCollectionDidChange(_: UITraitCollection?) {
+        updateAnnotationSize()
+    }
+
+    private func updateAnnotationSize() {
+        annotationSize = TextAnnotationRenderer.annotationSize(
+            text: annotation.text,
+            fontSize: fontSize,
+            annotationScale: 1
+        )
+        invalidateIntrinsicContentSize()
     }
 
     override func draw(_: CGRect) {
