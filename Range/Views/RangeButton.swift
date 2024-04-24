@@ -86,14 +86,24 @@ class RangeButton: UIButton {
 
         switch state {
         case .disabled:
-            updatedConfig.background.backgroundColor = baseBackgroundColor?.withAlphaComponent(0.5)
+            if let baseBackgroundColor, baseBackgroundColor.hexString == UIColor.clear.hexString {
+                // don't adjust the clear color opacity when disabled
+                updatedConfig.background.backgroundColor = .clear
+            } else {
+                updatedConfig.background.backgroundColor = baseBackgroundColor?.withAlphaComponent(0.5)
+            }
+
             updatedConfig.baseForegroundColor = defaultForegroundColor?.withAlphaComponent(0.5)
             // HACK: in the disabled state the baseForegroundColor is ignored... we need to apply
             // directly to the title string
             updatedConfig.attributedTitle = updatedConfig.attributedTitle?.settingAttributes(
                 AttributeContainer([.foregroundColor: defaultForegroundColor?.withAlphaComponent(0.5) ?? .red])
             )
-            updatedConfig.background.strokeColor = defaultStrokeColor?.withAlphaComponent(0.5)
+            if let defaultStrokeColor, defaultStrokeColor.hexString == UIColor.clear.hexString {
+                updatedConfig.background.strokeColor = .clear
+            } else {
+                updatedConfig.background.strokeColor = defaultStrokeColor?.withAlphaComponent(0.5)
+            }
 
         case [.highlighted, .selected]:
             if _withCustomRangeHighlightColor, let selectionBackgroundColor {
