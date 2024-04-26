@@ -83,8 +83,6 @@ class CanvasViewController: UIViewController {
     /// if the canvas changes. If we wanted to reload map view on canvas/canvasSource change we would need to "notify" pins to reload
     /// **after** the new mapView instance is created.
     private(set) var mapView: MapView!
-    /// view shown behind the pdf view
-    var gridView: GridView?
     var pdfScrollView: PDFPageScrollView?
     var initialPdfScale: Double!
 
@@ -163,6 +161,9 @@ class CanvasViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
 
+        let gridView = GridView(frame: view.bounds)
+        view.insertSubview(gridView, at: 0)
+
         // initiate mapview
         setupMapView()
 
@@ -172,12 +173,18 @@ class CanvasViewController: UIViewController {
         // update the style, etc. for current canvas/source
         updateMapViewForCanvasSource()
 
-        // setup scroll view with given pdf page (if it's a pdf source)
-        setupPDFScrollView()
+        // mixing aync MainActor invocation of setupPDFScrollView and
+        // the one from the main thread is not working properly, If this
+        // code was not dispatched on the main it would run in parallel
+        // with setupPDFScrollView triggered by canvas switch.
+        DispatchQueue.main.async {
+            // setup scroll view with given pdf page (if it's a pdf source)
+            self.setupPDFScrollView()
 
-        // this needs to be done after pdf view was set up as the zoom logic for pdfs is based on
-        // pdf frame size
-        updateCameraForCanvasSource()
+            // this needs to be done after pdf view was set up as the zoom logic for pdfs is based on
+            // pdf frame size
+            self.updateCameraForCanvasSource()
+        }
 
 //        setupDebugViews()
     }
@@ -212,12 +219,12 @@ class CanvasViewController: UIViewController {
                 )
                 ToastWindow.shared.showError(text: "Canvas failed to load")
             }
-            setupPDFScrollView()
-            updateCameraForCanvasSource()
+            DispatchQueue.main.async {
+                self.setupPDFScrollView()
+                self.updateCameraForCanvasSource()
+            }
         } else {
             updateCameraForCanvasSource()
-            gridView?.removeFromSuperview()
-            gridView = nil
             pdfScrollView?.removeFromSuperview()
             pdfScrollView = nil
         }
@@ -284,8 +291,6 @@ class CanvasViewController: UIViewController {
     private func reloadPDFScrollView() async {
         guard !canvas.isInvalidated, !canvas.currentCanvasSource.isInvalidated else { return }
         // first hide the previous pdf view
-        gridView?.removeFromSuperview()
-        gridView = nil
         pdfScrollView?.removeFromSuperview()
         pdfScrollView = nil
 
@@ -295,9 +300,11 @@ class CanvasViewController: UIViewController {
             // load the page
             try await reloadPdfPage()
             // build new view
-            setupPDFScrollView()
-            // sync with current zoom/offset from mapbox
-            syncPDFViewWithAnnotationViews()
+            DispatchQueue.main.async {
+                self.setupPDFScrollView()
+                // sync with current zoom/offset from mapbox
+                self.syncPDFViewWithAnnotationViews()
+            }
         } catch {
             Logger.model.error("load canvas error: \(error.localizedDescription, privacy: .public)")
             ToastWindow.shared.showError(text: "Failed to load the canvas")
@@ -314,8 +321,6 @@ class CanvasViewController: UIViewController {
 
     /// Setup the PDF scroll view appropriately for current canvas source. (if not needed then removes the current one)
     private func setupPDFScrollView() {
-        gridView?.removeFromSuperview()
-        gridView = nil
         pdfScrollView?.removeFromSuperview()
         pdfScrollView = nil
 
@@ -324,9 +329,6 @@ class CanvasViewController: UIViewController {
         guard let pdfPage = pdfPage else {
             fatalError("setupPDFScrollView called when pdfPage is nil")
         }
-
-        gridView = GridView(frame: view.bounds)
-        view.insertSubview(gridView!, at: 0)
 
         let pdfScrollView = PDFPageScrollView(frame: view.bounds, pdfPage: pdfPage)
         view.insertSubview(pdfScrollView, at: 1)
