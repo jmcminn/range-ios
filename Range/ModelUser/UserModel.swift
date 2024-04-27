@@ -53,7 +53,7 @@ class UserModel: NSObject, RealmModel {
         self.newlySignedIn = newlySignedIn
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        config.schemaVersion = 7
+        config.schemaVersion = 8
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(userId)")
         config.fileURL!.appendPathExtension("realm")

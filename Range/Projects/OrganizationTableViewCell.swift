@@ -3,6 +3,7 @@ import UIKit
 
 class OrganizationTableViewCell: UITableViewCell {
     let badgeLabel = UILabel()
+    let iconView = UIImageView()
     let nameLabel = UILabel()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -10,7 +11,7 @@ class OrganizationTableViewCell: UITableViewCell {
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in the view controller
 
         setupViews()
-        [badgeLabel, nameLabel].forEach(contentView.addSubview)
+        [badgeLabel, iconView, nameLabel].forEach(contentView.addSubview)
 
         badgeLabel.snp.makeConstraints { make in
             make.width.height.equalTo(32)
@@ -18,6 +19,10 @@ class OrganizationTableViewCell: UITableViewCell {
             make.bottom.lessThanOrEqualToSuperview().offset(-13)
             make.centerY.equalToSuperview()
             make.leading.equalTo(contentView.snp.leadingMargin).inset(16)
+        }
+
+        iconView.snp.makeConstraints { make in
+            make.edges.equalTo(badgeLabel)
         }
 
         nameLabel.snp.makeConstraints { make in
@@ -46,19 +51,36 @@ class OrganizationTableViewCell: UITableViewCell {
         badgeLabel.layer.cornerRadius = 16
         badgeLabel.clipsToBounds = true
         badgeLabel.textAlignment = .center
+
+        iconView.layer.borderWidth = 1
+        iconView.layer.borderColor = chooseColor(.Neutral_07).cgColor
+        iconView.backgroundColor = .dynamic(.Neutral_10)
+        iconView.layer.cornerRadius = 16
+        iconView.clipsToBounds = true
+        iconView.contentMode = .scaleAspectFit
     }
 
     func setOrganization(_ organization: Organization, selected _: Bool) {
-        badgeLabel.text = organization.name.prefix(1).uppercased()
+        if let iconImage = organization.iconImage {
+            iconView.image = iconImage
+            iconView.isHidden = false
+            badgeLabel.isHidden = true
+        } else {
+            badgeLabel.text = organization.name.prefix(1).uppercased()
+            iconView.isHidden = true
+            badgeLabel.isHidden = false
+        }
         nameLabel.text = organization.name
     }
 
     override func prepareForReuse() {
         badgeLabel.text = nil
         nameLabel.text = nil
+        iconView.image = nil
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
         badgeLabel.layer.borderColor = chooseColor(.Neutral_07).cgColor
+        iconView.layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
 }

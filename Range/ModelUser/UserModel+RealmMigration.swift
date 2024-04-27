@@ -14,6 +14,7 @@ extension UserModel {
         }
 
         // v7 introduces User.jobTitle, User.language and Organization.industry
+        // v8 introduces Organization.icon
     }
 
     /// v5 replaces Participant with User

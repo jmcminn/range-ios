@@ -233,20 +233,9 @@ class ProjectsViewController: UIViewController {
     }
 
     private func setupOrganizationSelectorButton() {
-        var config = UIButton.Configuration.filled()
-        config.contentInsets = .zero
-        config.cornerStyle = .fixed
-        config.background.cornerRadius = 16
-
-        config.baseForegroundColor = .white
-        config.baseBackgroundColor = .Primary_Blue_03
-        config.background.strokeColor = .dynamicColor(light: .Primary_Blue_03, dark: .Primary_Blue_06)
-
         let button = RangeButton(
-            configuration: config,
-            primaryAction: UIAction(title: String(model.organization.name.prefix(1).uppercased())) { [weak self] _ in
-                self?.onOrganizationButtonTap?()
-            }
+            configuration: .organizationSelector(model.organization),
+            primaryAction: UIAction { [weak self] _ in self?.onOrganizationButtonTap?() }
         )
         .withCustomRangeHighlightColor()
 

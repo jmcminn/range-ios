@@ -179,4 +179,25 @@ extension UIButton.Configuration {
         config.preferredSymbolConfigurationForImage = imageConfig
         return config
     }
+
+    static func organizationSelector(_ organization: Organization) -> UIButton.Configuration {
+        var config = UIButton.Configuration.filled()
+        config.contentInsets = .zero
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 16
+
+        config.baseForegroundColor = .white
+        config.background.strokeColor = .dynamicColor(light: .Primary_Blue_03, dark: .Primary_Blue_06)
+
+        if let iconImage = organization.iconImage {
+            config.background.image = iconImage
+            config.background.imageContentMode = .scaleAspectFit
+            config.baseBackgroundColor = .dynamic(.Neutral_10)
+        } else {
+            config.title = String(organization.name.prefix(1).uppercased())
+            config.baseBackgroundColor = .Primary_Blue_03
+        }
+
+        return config
+    }
 }

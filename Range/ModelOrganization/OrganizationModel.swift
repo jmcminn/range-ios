@@ -61,7 +61,8 @@ class OrganizationModel: NSObject, RealmModel {
         // v5 introduces ProjectSummary.organizationId
         // v6 introduces ProjectSummary.identifier and Collaboration.identifier
         // v7 introduces ProjectSummary.statusTaskCounts
-        config.schemaVersion = 7
+        // v8 introduces Organization.icon
+        config.schemaVersion = 8
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")

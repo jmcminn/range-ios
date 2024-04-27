@@ -1,5 +1,6 @@
 import Foundation
 import RealmSwift
+import UIKit
 
 /// Realm object for `organizations`.
 class Organization: Object, WithId {
@@ -9,8 +10,15 @@ class Organization: Object, WithId {
     @Persisted var name: String
     /// Organization industry
     @Persisted var industry: String
+    /// base64 encoded icon
+    @Persisted var icon: String?
     /// array of all projects ids of this organization (user may not have access to all of them)
     @Persisted var projectIds: List<String>
+
+    lazy var iconImage: UIImage? = icon
+        .flatMap { URL(string: $0) }
+        .flatMap { try? Data(contentsOf: $0) }
+        .flatMap { UIImage(data: $0) }
 
     /// Default initializer required by Realm.
     override init() {
@@ -18,11 +26,12 @@ class Organization: Object, WithId {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, industry: String, projectIds: [String] = []) {
+    init(id: String, name: String, industry: String, icon: String? = nil, projectIds: [String] = []) {
         super.init()
         self.id = id
         self.name = name
         self.industry = industry
+        self.icon = icon
         self.projectIds.append(objectsIn: projectIds)
     }
 
