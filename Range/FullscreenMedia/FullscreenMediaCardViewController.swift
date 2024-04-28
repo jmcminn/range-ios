@@ -445,7 +445,10 @@ extension FullscreenMediaCardViewController {
             guard let self = self else { return }
             if selectedUpload.isImage {
                 // when it's an image then open annotations
-                self.showAnnotationsEditor(forUpload: selectedUpload)
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowActions.editAnnotationsAction), to: nil, from: self,
+                    for: FlowEvent(selectedUpload)
+                )
             } else {
                 // otherwise use the Quick Look Preview
                 self.showPreview()
@@ -453,7 +456,10 @@ extension FullscreenMediaCardViewController {
         }
         detailsVC.onAnnotationsSelected = { [weak self] selectedUpload in
             // if annotations are selected we show the same editor as in the photo flow
-            self?.showAnnotationsEditor(forUpload: selectedUpload)
+            UIApplication.shared.sendAction(
+                #selector(ProjectFlowActions.editAnnotationsAction), to: nil, from: self,
+                for: FlowEvent(selectedUpload)
+            )
         }
         detailsVC.onUpdatePhotoAction = { [weak self] in self?.updatePhotoAction() }
         let header =
@@ -516,41 +522,6 @@ extension FullscreenMediaCardViewController {
 
         updateContentScrollInsets()
         updateAddCommentCardVisibility()
-    }
-
-    /// Show annotations editor for given upload. This is not necessarily the main upload of fullscreen media controller. It might be
-    /// one of the correlated uploads (it's the one currently selected in the gallery view)
-    private func showAnnotationsEditor(forUpload selectedUpload: Upload) {
-        let mediaKey = MediaKey.mediaKey(projectId: projectModel.projectId, upload: selectedUpload, annotated: false)
-        let vc = FullscreenImageGalleryViewController(
-            imageDataProviderFactory: { [mediaCache] in
-                mediaCache.imageProvider(forKey: $0)
-            },
-            photoKeys: [mediaKey],
-            annotations: [selectedUpload.annotations],
-            removePhotosEnabled: false
-        )
-        vc.onCancel = { [weak vc] in
-            vc?.dismiss(animated: true)
-        }
-        vc.onDone = { [weak self, weak vc] _, annotations in
-            if let self = self, let annotations = annotations.first {
-                self.update(annotations: annotations, forUpload: selectedUpload)
-            }
-            vc?.dismiss(animated: true)
-        }
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
-    }
-
-    private func update(annotations: Annotations?, forUpload selectedUpload: Upload) {
-        Task { @MainActor in
-            do {
-                try await projectModel.run(projectModel.update(annotations: annotations, forUpload: selectedUpload))
-            } catch {
-                ToastWindow.shared.showError(text: "Failed to update the annotations")
-            }
-        }
     }
 
     private func setupCommentsVC() {

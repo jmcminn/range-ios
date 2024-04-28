@@ -16,6 +16,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
         iconName: "photo.on.rectangle.angled", text: "Version", verticalPadding: 0,
         backgroundColor: .Secondary_02, style: .flat
     )
+    let annotationsButton = RoundShadowButton(image: .init(systemName: "scribble") ?? .init())
     let descriptionLabel = LabelWithTextInsets()
     let descriptionBackground = UIView()
     let descriptionSeparator = UIView()
@@ -42,8 +43,11 @@ class ImageUploadFeedItemCell: UITableViewCell {
         [avatarView, authorLabel, timestampLabel, moreButton, imageAndDescriptionView, tagsView]
             .forEach(contentView.addSubview)
 
-        [uploadImageView, descriptionBackground, descriptionSeparator, descriptionLabel, commentsLabel, versionPill]
-            .forEach(imageAndDescriptionView.addSubview)
+        [
+            uploadImageView, descriptionBackground, descriptionSeparator,
+            descriptionLabel, commentsLabel, versionPill, annotationsButton,
+        ]
+        .forEach(imageAndDescriptionView.addSubview)
 
         avatarView.snp.makeConstraints { make in
             make.top.equalToSuperview().priority(.high)
@@ -74,6 +78,9 @@ class ImageUploadFeedItemCell: UITableViewCell {
         }
         versionPill.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(12)
+        }
+        annotationsButton.snp.makeConstraints { make in
+            make.trailing.bottom.equalToSuperview().inset(12)
         }
         updateUploadImageViewConstraints(imageHeight2Width: 0.75)
         descriptionBackground.snp.makeConstraints { make in
@@ -133,6 +140,9 @@ class ImageUploadFeedItemCell: UITableViewCell {
         moreButton = FeedItemCells.createMoreButton(handler: { [weak self] _ in
             self?.moreAction()
         })
+
+        annotationsButton.tapAreaInsets = UIEdgeInsets(top: -12, left: -12, bottom: -12, right: -12)
+        annotationsButton.addTarget(self, action: #selector(annotationsButtonTapped), for: .touchUpInside)
 
         imageAndDescriptionView.backgroundColor = .dynamic(.Neutral_10)
         imageAndDescriptionView.layer.borderWidth = 1
@@ -315,6 +325,16 @@ class ImageUploadFeedItemCell: UITableViewCell {
         UIApplication.shared.sendAction(
             #selector(ProjectFlowController.moreAction), to: nil, from: self,
             for: FlowEvent(upload, sourceView: moreButton)
+        )
+    }
+
+    @objc private func annotationsButtonTapped() {
+        guard let model = model,
+              let uploadId = uploadId,
+              let upload = model.mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowActions.editAnnotationsAction), to: nil, from: self,
+            for: FlowEvent(upload)
         )
     }
 }

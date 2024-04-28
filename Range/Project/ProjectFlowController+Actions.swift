@@ -79,6 +79,8 @@ final class FlowEvent: UIEvent {
     func showProjectInAppFeed()
     /// Take screenshot of canvas and attach as an Upload to given collaboration
     func takeSnapshotAction(sender: Any?, event: FlowEvent?)
+    /// Edit annotations for given Upload
+    func editAnnotationsAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -895,5 +897,44 @@ extension ProjectFlowController {
         pinsDisplay?.setSelectedPin(nil)
         setUIState(.canvasSnapshot, animated: true)
         canvasSnapshotFlow?.start()
+    }
+}
+
+// MARK: - annotations
+
+extension ProjectFlowController {
+    func editAnnotationsAction(sender _: Any?, event: FlowEvent) {
+        guard let upload = event.object as? Upload, !upload.isInvalidated else { return }
+
+        let mediaKey = MediaKey.mediaKey(projectId: model.projectId, upload: upload, annotated: false)
+        let vc = FullscreenImageGalleryViewController(
+            imageDataProviderFactory: { [mediaCache] in
+                mediaCache.imageProvider(forKey: $0)
+            },
+            photoKeys: [mediaKey],
+            annotations: [upload.annotations],
+            removePhotosEnabled: false
+        )
+        vc.onCancel = { [weak vc] in
+            vc?.dismiss(animated: true)
+        }
+        vc.onDone = { [weak self, weak vc] _, annotations in
+            if let self = self, let annotations = annotations.first {
+                self.update(annotations: annotations, forUpload: upload)
+            }
+            vc?.dismiss(animated: true)
+        }
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
+    }
+
+    private func update(annotations: Annotations?, forUpload upload: Upload) {
+        Task { @MainActor in
+            do {
+                try await model.run(model.update(annotations: annotations, forUpload: upload))
+            } catch {
+                ToastWindow.shared.showError(text: "Failed to update the annotations")
+            }
+        }
     }
 }
