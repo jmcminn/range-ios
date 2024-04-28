@@ -114,24 +114,32 @@ class AssigneeButton: UIButton {
 
     /// Updates the image, whenever assignee changes or we have color style change)
     private func updateImage() {
-        // TODO: add assignee image
-//        if assignee != nil {
-//        } else {
-        let image = UIImage(
-            systemName: "person",
-            withConfiguration: UIImage
-                .SymbolConfiguration(font: UIFont
-                    ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold))
-        )?
-            .withTintColor(chooseColor(.Neutral_04),
-                           renderingMode: .alwaysTemplate)
-        let imageWithBackground = image?.addCircleBackground(
-            bgSize: CGSize(width: 32, height: 32),
-            bgColor: chooseColor(.Neutral_10),
-            strokeColor: chooseColor(.Neutral_07)
-        )
-        setImage(imageWithBackground, for: .normal)
-        setImage(imageWithBackground, for: .highlighted)
-//        }
+        if let assignee, let avatarImage = assignee.avatarImage {
+            let imageWithBackground = avatarImage
+                .imageResized(toFill: 32)
+                .addCircleBackground(
+                    bgSize: CGSize(width: 32, height: 32),
+                    bgColor: chooseColor(.Neutral_10),
+                    strokeColor: chooseColor(.Neutral_07)
+                )
+            setImage(imageWithBackground, for: .normal)
+            setImage(imageWithBackground, for: .highlighted)
+        } else {
+            let image = UIImage(
+                systemName: "person",
+                withConfiguration: UIImage
+                    .SymbolConfiguration(font: UIFont
+                        ._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold))
+            )?
+                .withTintColor(chooseColor(.Neutral_04),
+                               renderingMode: .alwaysTemplate)
+            let imageWithBackground = image?.addCircleBackground(
+                bgSize: CGSize(width: 32, height: 32),
+                bgColor: chooseColor(.Neutral_10),
+                strokeColor: chooseColor(.Neutral_07)
+            )
+            setImage(imageWithBackground, for: .normal)
+            setImage(imageWithBackground, for: .highlighted)
+        }
     }
 }

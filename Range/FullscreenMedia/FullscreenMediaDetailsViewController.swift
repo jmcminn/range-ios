@@ -37,7 +37,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
     private(set) var previewVC: UploadPreviewViewController?
 
     private let authorView = UIView()
-    private let avatarView = UIView()
+    private let avatarView = UIImageView()
     private let authorLabel = UILabel()
     private let timestampLabel = UILabel()
 
@@ -441,6 +441,8 @@ class FullscreenMediaDetailsViewController: UIViewController {
     private func setupAuthorView() {
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamic(.Neutral_07)
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.clipsToBounds = true
 
         authorLabel.textColor = .dynamic(.Neutral_04)
         authorLabel.font = ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -652,6 +654,7 @@ extension FullscreenMediaDetailsViewController {
     /// Called when the current upload's data was updated
     private func uploadUpdatedHandler() {
         guard let currentUpload else { return }
+        avatarView.image = currentUpload.author?.avatarImage
         authorLabel.attributedText = NSAttributedString(
             string: currentUpload.author?.displayName ?? "",
             attributes: [.strikethroughStyle: currentUpload.author?.strikethroughStyle ?? 0]

@@ -6,7 +6,7 @@ import UIKit
 
 /// The table view cell to show image upload feed item
 class ImageUploadFeedItemCell: UITableViewCell {
-    let avatarView = UIView()
+    let avatarView = UIImageView()
     let authorLabel = UILabel()
     let timestampLabel = UILabel()
     var moreButton: UIButton!
@@ -121,6 +121,8 @@ class ImageUploadFeedItemCell: UITableViewCell {
     private func setupViews() {
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamic(.Neutral_07)
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.clipsToBounds = true
 
         authorLabel.textColor = .dynamic(.Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -213,6 +215,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
 
         versionPill.isHidden = true
         if let upload = upload {
+            avatarView.image = upload.author?.avatarImage
             if let correlatedUploads = model?.correlatedUploads(upload), correlatedUploads.count > 1,
                let uploadIndex = correlatedUploads.firstIndex(of: upload)
             {
@@ -254,6 +257,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
                 commentsLabel.textInsets = .zero
             }
         } else {
+            avatarView.image = nil
             timestampLabel.text = nil
             uploadImageView.image = nil
             descriptionLabel.text = nil

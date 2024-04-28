@@ -3,7 +3,7 @@ import UIKit
 
 /// The table view cell to show "collaboration created" feed item
 class CollaborationCreatedFeedItemCell: UITableViewCell {
-    let avatarView = UIView()
+    let avatarView = UIImageView()
     let messageLabel = UILabel()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -14,6 +14,8 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
 
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamic(.Neutral_07)
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.clipsToBounds = true
         contentView.addSubview(avatarView)
         avatarView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview()
@@ -41,6 +43,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
     }
 
     func set(collaboration: Collaboration) {
+        avatarView.image = collaboration.author?.avatarImage
         let messageString = NSMutableAttributedString(
             string: collaboration.author?.displayName ?? "",
             attributes: [
@@ -58,6 +61,7 @@ class CollaborationCreatedFeedItemCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        avatarView.image = nil
         messageLabel.attributedText = nil
     }
 }

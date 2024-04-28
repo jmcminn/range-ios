@@ -28,6 +28,8 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(avatarView)
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamic(.Neutral_07)
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.clipsToBounds = true
         avatarView.snp.makeConstraints { make in
             make.centerY.leading.equalToSuperview()
             make.width.height.equalTo(32)
@@ -64,27 +66,19 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    unowned var userViewModel: UserViewModel? {
-        didSet {
-            if let userViewModel = userViewModel {
-                label.attributedText = NSAttributedString(
-                    string: userViewModel.name,
-                    attributes: [.strikethroughStyle: userViewModel.strikethroughStyle]
-                )
-            } else {
-                label.attributedText = nil
-            }
-            updateAvatarImage()
-        }
+    private var showUnassignedAvatar: Bool = false
+
+    func setUser(_ user: UserViewModel, avatarImage: UIImage?) {
+        label.attributedText = NSAttributedString(
+            string: user.name,
+            attributes: [.strikethroughStyle: user.strikethroughStyle]
+        )
+        showUnassignedAvatar = user.id == UserViewModel.unassignedUserId
+        avatarView.image = avatarImage
     }
 
     private func updateAvatarImage() {
-        if let userViewModel = userViewModel, userViewModel.id != UserViewModel.unassignedUserId {
-            // avatars not supported yet
-            avatarView.image = nil
-            avatarView.layer.borderColor = UIColor.Primary_Blue_04.cgColor
-            avatarView.layer.borderWidth = 1
-        } else {
+        if showUnassignedAvatar {
             // SF symbol is not used here as we need the one that is properly centered (and sf symbol
             // for person.crop.circle.fill.badge.xmark is not centered at the person center horizontally)
             avatarView.image = UIImage(named: "no_assignee")?
@@ -95,11 +89,15 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
                     bgColor: chooseColor(.Neutral_10),
                     strokeColor: .Primary_Blue_04
                 )
+        } else {
+            avatarView.layer.borderColor = UIColor.Primary_Blue_04.cgColor
+            avatarView.layer.borderWidth = 1
         }
     }
 
     override func prepareForReuse() {
-        userViewModel = nil
+        avatarView.image = nil
+        label.text = nil
     }
 
     @available(*, unavailable)

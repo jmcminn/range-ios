@@ -41,6 +41,10 @@ class Participant: Object, WithPlaceholder, WithId {
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
+    lazy var avatarImage: UIImage? = avatarUrl
+        .flatMap { try? Data(contentsOf: $0) }
+        .flatMap { UIImage(data: $0) }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

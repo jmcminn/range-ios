@@ -151,7 +151,9 @@ extension SelectedUsersView: UICollectionViewDataSource, UICollectionViewDelegat
                 for: indexPath
             ) as! SelectedUserCollectionViewCell
             let user = user(forIndexPath: indexPath)
-            cell.userViewModel = user
+            let avatarImage = viewModel.model.mainRealm.object(ofType: Participant.self, forPrimaryKey: user.id)?
+                .avatarImage
+            cell.setUser(user, avatarImage: avatarImage)
             cell.onDeselect = { [weak self, weak user] in
                 guard let user = user else { return }
                 self?.viewModel.set(userWithId: user.id, selected: false)

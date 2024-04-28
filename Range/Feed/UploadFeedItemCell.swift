@@ -6,7 +6,7 @@ import UIKit
 
 /// The table view cell to show non-image upload feed item
 class UploadFeedItemCell: UITableViewCell {
-    let avatarView = UIView()
+    let avatarView = UIImageView()
     let authorLabel = UILabel()
     let timestampLabel = UILabel()
     var moreButton: UIButton!
@@ -124,6 +124,8 @@ class UploadFeedItemCell: UITableViewCell {
     private func setupViews() {
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamic(.Neutral_07)
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.clipsToBounds = true
 
         authorLabel.textColor = .dynamic(.Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -229,6 +231,7 @@ class UploadFeedItemCell: UITableViewCell {
         )
 
         if let upload = upload {
+            avatarView.image = upload.author?.avatarImage
             timestampLabel.text = Date.format1(upload.timestamp)
             if let imageHeightToWidth = upload.imageHeightToWidth {
                 updateUploadPreviewConstraints(imageHeight2Width: imageHeightToWidth)
@@ -271,6 +274,7 @@ class UploadFeedItemCell: UITableViewCell {
                 commentsLabel.textInsets = .zero
             }
         } else {
+            avatarView.image = nil
             timestampLabel.text = nil
             uploadPreviewVC?.upload = nil
             fileNameLabel.text = nil

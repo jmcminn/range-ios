@@ -265,7 +265,9 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
             for: indexPath
         ) as! UserTableViewCell
         let user = viewModel.filteredUsers[indexPath.row]
-        cell.setUser(user)
+        let avatarImage = viewModel.model.mainRealm.object(ofType: Participant.self, forPrimaryKey: user.id)?
+            .avatarImage
+        cell.setUser(user, avatarImage: avatarImage)
         return cell
     }
 

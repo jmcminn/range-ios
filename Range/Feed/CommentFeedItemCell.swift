@@ -7,7 +7,7 @@ import UIKit
 /// It also supports showing the details for a Note by adding a noteBackground to the commentTextLabel and making the commentTextLabel
 /// text insets bigger for note case.
 class CommentFeedItemCell: UITableViewCell {
-    let avatarView = UIView()
+    let avatarView = UIImageView()
     let authorLabel = UILabel()
     let timestampLabel = UILabel()
     var moreButton: UIButton!
@@ -80,6 +80,8 @@ class CommentFeedItemCell: UITableViewCell {
     private func setupViews() {
         avatarView.layer.cornerRadius = 16
         avatarView.backgroundColor = .dynamic(.Neutral_07)
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.clipsToBounds = true
 
         authorLabel.textColor = .dynamic(.Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -123,6 +125,7 @@ class CommentFeedItemCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        avatarView.image = nil
         authorLabel.attributedText = nil
         commentTextLabel.attributedText = nil
         completedLabel.attributedText = nil
@@ -138,6 +141,7 @@ class CommentFeedItemCell: UITableViewCell {
     /// Don't store the Comment as the object might be invalidated while the cell is displayed.
     /// Store the comment id and model so the comment can be fetched if needed.
     func set(comment: Comment, model: ProjectModel) {
+        avatarView.image = comment.author?.avatarImage
         commentId = comment.id
         isCompleted = comment.completed
         self.model = model
