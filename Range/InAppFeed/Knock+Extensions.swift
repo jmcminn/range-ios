@@ -4,7 +4,7 @@ import SWXMLHash
 
 extension Knock.FeedItem {
     var actionUrl: URL? {
-        guard let path = blocks.first(where: { $0.name == "action_url" })?.rendered
+        guard let path = (blocks.first(where: { $0.name == "action_url" }) as? Knock.TextContentBlock)?.rendered
             .trimmingCharacters(in: .whitespacesAndNewlines) else { return nil }
         return URL(string: "https://range.io\(path)")
     }
@@ -39,7 +39,8 @@ extension Knock.FeedItem {
     ///     (.message, "Jeff Goldberg updated the due date from 2024-03-05 to 2024-03-15")
     /// ]
     func _withParsedBody() -> Knock.FeedItem {
-        guard let body = blocks.first(where: { $0.name == "body" })?.rendered else { return self }
+        guard let body = (blocks.first(where: { $0.name == "body" }) as? Knock.MarkdownContentBlock)?.rendered
+        else { return self }
         let bodyXML = XMLHash.parse("<root>\(body)</root>")
 
         var parsedBody: [(ParsedBodyClass, String)] = bodyXML["root"].children.compactMap { p in
@@ -63,8 +64,10 @@ extension Knock.FeedItem {
         var dataCopy = data
         dataCopy?["parsedBody"] = AnyCodable(parsedBody)
         return Knock.FeedItem(
-            __cursor: __cursor, blocks: blocks, data: dataCopy, id: id, inserted_at: inserted_at,
-            read_at: read_at, seen_at: seen_at, tenant: tenant, total_activities: total_activities,
+            __cursor: __cursor, actors: actors, activities: activities, blocks: blocks,
+            data: dataCopy, id: id, inserted_at: inserted_at, interacted_at: interacted_at,
+            clicked_at: clicked_at, link_clicked_at: link_clicked_at, read_at: read_at,
+            seen_at: seen_at, tenant: tenant, total_activities: total_activities,
             total_actors: total_actors, updated_at: updated_at
         )
     }
@@ -123,7 +126,7 @@ public extension Knock {
 
 /// Async functions
 public extension Knock.FeedManager {
-    func _getUserFeedContent(options: FeedClientOptions? = nil) async throws -> Knock.Feed {
+    func _getUserFeedContent(options: Knock.FeedClientOptions? = nil) async throws -> Knock.Feed {
         // Knock API calls the handler 2 times in case of some errors!
         var resumed = false
         return try await withCheckedThrowingContinuation { continuation in
@@ -139,7 +142,10 @@ public extension Knock.FeedManager {
         }
     }
 
-    func _makeBulkStatusUpdate(type: BulkChannelMessageStatusUpdateType, options: FeedClientOptions) async throws {
+    func _makeBulkStatusUpdate(
+        type: Knock.BulkChannelMessageStatusUpdateType,
+        options: Knock.FeedClientOptions
+    ) async throws {
         // Knock API calls the handler 2 times in case of some errors!
         var resumed = false
         try await withCheckedThrowingContinuation { continuation in

@@ -9,7 +9,7 @@ class KnockFeedModel {
     private static var inAppFeedId = "58be23cc-2ccd-48a5-87b5-7e9fcc175027"
 
     let client: KnockClient
-    let feedOptions: Knock.FeedManager.FeedClientOptions
+    let feedOptions: Knock.FeedClientOptions
     var feedManager: Knock.FeedManager?
 
     // current feed
@@ -54,9 +54,7 @@ class KnockFeedModel {
         if let feedManager {
             feedManager.disconnectFromFeed()
         }
-        let knockClient = try await client.get()
-        feedManager = Knock.FeedManager(
-            client: knockClient,
+        feedManager = try await Knock.FeedManager(
             feedId: KnockFeedModel.inAppFeedId,
             options: feedOptions
         )

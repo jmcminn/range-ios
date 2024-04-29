@@ -5,6 +5,8 @@ import Knock
 /// Class holding the current Knock client. The client is refreshed when the user token expires
 class KnockClient {
     let userId: String
+
+    // it holds the Knock.shared after the setup and signin
     private var internalClient: Knock?
 
     init(userId: String) {
@@ -13,6 +15,7 @@ class KnockClient {
 
     /// Reset the Knock API client. The next call to `get` till fetch new user token and reinitiate the Knock
     func reset() {
+        Knock.shared.resetInstanceCompletely()
         internalClient = nil
     }
 
@@ -33,7 +36,11 @@ class KnockClient {
                 throw "Cannot connect to in app notifications"
             }
 
-            internalClient = try Knock(publishableKey: knockKey, userId: userId, userToken: userToken)
+            try await Knock.shared.setup(publishableKey: knockKey, pushChannelId: nil)
+            await Knock.shared.signIn(userId: userId, userToken: userToken)
+
+            internalClient = Knock.shared
+
             return internalClient!
         }
     }
