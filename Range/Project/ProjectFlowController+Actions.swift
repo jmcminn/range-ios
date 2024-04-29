@@ -870,7 +870,7 @@ extension ProjectFlowController {
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
-        let inAppFeedVC = InAppFeedCardViewController(model: knockFeedModel, variant: .project)
+        let inAppFeedVC = ProjectInAppFeedCardViewController(model: model, feedModel: knockFeedModel)
         inAppFeedVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 }

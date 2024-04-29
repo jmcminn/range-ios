@@ -472,7 +472,7 @@
 		0ADC183F29635480007A59CA /* AddPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */; };
 		0ADF10462B9E0F92004E4579 /* KnockClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10452B9E0F92004E4579 /* KnockClient.swift */; };
 		0ADF10482B9E1846004E4579 /* KnockPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10472B9E1846004E4579 /* KnockPreferences.swift */; };
-		0ADF104A2B9F4769004E4579 /* InAppFeedCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */; };
+		0ADF104A2B9F4769004E4579 /* ProjectInAppFeedCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF10492B9F4769004E4579 /* ProjectInAppFeedCardViewController.swift */; };
 		0ADF104C2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */; };
 		0ADF104E2BA23C1C004E4579 /* Knock+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADF104D2BA23C1C004E4579 /* Knock+Extensions.swift */; };
 		0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */; };
@@ -994,7 +994,7 @@
 		0ADC183E29635480007A59CA /* AddPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPinConfirmationViewController.swift; sourceTree = "<group>"; };
 		0ADF10452B9E0F92004E4579 /* KnockClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnockClient.swift; sourceTree = "<group>"; };
 		0ADF10472B9E1846004E4579 /* KnockPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnockPreferences.swift; sourceTree = "<group>"; };
-		0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedCardViewController.swift; sourceTree = "<group>"; };
+		0ADF10492B9F4769004E4579 /* ProjectInAppFeedCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectInAppFeedCardViewController.swift; sourceTree = "<group>"; };
 		0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedItemTableViewCell.swift; sourceTree = "<group>"; };
 		0ADF104D2BA23C1C004E4579 /* Knock+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Knock+Extensions.swift"; sourceTree = "<group>"; };
 		0AE007A12A6DA12900EA3232 /* MediaKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaKeyTest.swift; sourceTree = "<group>"; };
@@ -2255,7 +2255,7 @@
 				0ADA15362B9CEE6B0065AFDB /* KnockFeedModel.swift */,
 				0ADF10472B9E1846004E4579 /* KnockPreferences.swift */,
 				0A540F182BD169CA00992082 /* OrganizationInAppFeedViewController.swift */,
-				0ADF10492B9F4769004E4579 /* InAppFeedCardViewController.swift */,
+				0ADF10492B9F4769004E4579 /* ProjectInAppFeedCardViewController.swift */,
 				0A540F162BD1663800992082 /* InAppFeedTableViewController.swift */,
 				0ADF104B2B9F67B2004E4579 /* InAppFeedItemTableViewCell.swift */,
 			);
@@ -2770,7 +2770,7 @@
 				0A985B1B2A9E358300442617 /* FirestoreUser.swift in Sources */,
 				0ADF10482B9E1846004E4579 /* KnockPreferences.swift in Sources */,
 				0A2B3F5D2AF516ED00D3D0D2 /* TextAnnotationView.swift in Sources */,
-				0ADF104A2B9F4769004E4579 /* InAppFeedCardViewController.swift in Sources */,
+				0ADF104A2B9F4769004E4579 /* ProjectInAppFeedCardViewController.swift in Sources */,
 				0AAC46CF2B53F72400D87549 /* ItemPicker+Identifier.swift in Sources */,
 				0A2F32F32836D72C00D04A1C /* ProjectSummary.swift in Sources */,
 				0A98E45A298AEC7E004F0112 /* MediaCache.swift in Sources */,

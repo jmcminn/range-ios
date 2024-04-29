@@ -4,16 +4,26 @@ import Knock
 import OSLog
 import UIKit
 
-/// For presenting InAppFeedTableViewController in a card
-class InAppFeedCardViewController: SheetCardViewController {
+/// For presenting InAppFeedTableViewController for a project in a card
+class ProjectInAppFeedCardViewController: SheetCardViewController {
     private let feedTableVC: InAppFeedTableViewController
 
     private var markAllAsReadButton: RangeButton!
 
     private var subscriptions = Set<AnyCancellable>()
 
-    init(model: KnockFeedModel, variant: InAppFeedItemTableViewCell.Variant) {
-        feedTableVC = InAppFeedTableViewController(model: model, variant: variant)
+    init(model: ProjectModel, feedModel: KnockFeedModel) {
+        feedTableVC = InAppFeedTableViewController(
+            model: feedModel,
+            variant: .project,
+            avatarImageProvider: { userId in
+                model.mainRealm.object(
+                    ofType: Participant.self,
+                    forPrimaryKey: userId
+                )?.avatarImage
+            }
+        )
+
         super.init(
             icon: UIImage(systemName: "bell"),
             title: String(localized: "Notifications")
@@ -23,7 +33,7 @@ class InAppFeedCardViewController: SheetCardViewController {
             self?.dismissCard()
         }
 
-        model.$feed
+        feedModel.$feed
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self else { return }

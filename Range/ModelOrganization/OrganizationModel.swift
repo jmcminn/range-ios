@@ -137,6 +137,16 @@ class OrganizationModel: NSObject, RealmModel {
             self?.syncCurrentUserProjects()
         }
 
+        // sync organization participants and suspended participants
+        listeners["participants"] = sync(
+            orgDoc.collection(FirestoreDocumentType.participant.rawValue),
+            as: FirestoreParticipant.self
+        )
+        listeners["suspendedParticipants"] = sync(
+            orgDoc.collection(FirestoreDocumentType.suspendedParticipant.rawValue),
+            as: FirestoreSuspendedParticipant.self
+        )
+
         // associate user with given organization (which is called a group) in analytics
         analytics?.group(groupId: organizationId, traits: [
             "name": organization.name,
