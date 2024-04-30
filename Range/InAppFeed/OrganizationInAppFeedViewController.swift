@@ -24,9 +24,7 @@ class OrganizationInAppFeedViewController: UIViewController {
         feedTableVC = InAppFeedTableViewController(
             model: model.knockFeedModel,
             variant: .organization,
-            avatarImageProvider: { userId in
-                model.mainRealm.object(ofType: Participant.self, forPrimaryKey: userId)?.avatarImage
-            }
+            participantProvider: { userId in model.mainRealm.object(ofType: Participant.self, forPrimaryKey: userId) }
         )
         super.init(nibName: nil, bundle: nil)
 

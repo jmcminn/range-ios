@@ -1,21 +1,28 @@
 import Foundation
 import UIKit
 
-/// For now this view shows user initials in a gray circle.
-/// Later it'll support showing user avatar.
+/// This view shows either user avatar or user initials if avatar image not available.
 class AvatarView: UIView {
     let label = UILabel()
-    private var height: Double = 0
+    let imageView = UIImageView()
 
     init() {
         super.init(frame: .zero)
 
-        backgroundColor = .Neutral_07
+        backgroundColor = .dynamic(.Neutral_07)
+        clipsToBounds = true
 
-        label.textColor = .Neutral_01
+        label.textColor = .dynamic(.Neutral_01)
+        label.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+        imageView.contentMode = .scaleAspectFill
+
         addSubview(label)
         label.snp.makeConstraints { make in
             make.center.equalToSuperview()
+        }
+        addSubview(imageView)
+        imageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 
@@ -24,27 +31,24 @@ class AvatarView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: height, height: height)
-    }
-
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = frame.height / 2
     }
 
-    func setUser(_ user: Participant?) {
-        // need to reset the font to use dynamic font
-        label.font = ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
-        if let user = user {
-            label.text = user.initials
+    func setAvatar(forParticipant participant: Participant?) {
+        setAvatar(participant?.avatarImage, initials: participant?.initials)
+    }
+
+    func setAvatar(_ image: UIImage?, initials: String?) {
+        if let image {
+            imageView.isHidden = false
+            label.isHidden = true
+            imageView.image = image
         } else {
-            label.text = " "
+            imageView.isHidden = true
+            label.isHidden = false
+            label.text = initials
         }
-        label.sizeToFit()
-        height = label.frame.height + 8 // make the circle bigger than the label
-        invalidateIntrinsicContentSize()
-        setNeedsLayout()
-        layoutIfNeeded()
     }
 }

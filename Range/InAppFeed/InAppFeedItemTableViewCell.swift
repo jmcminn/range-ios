@@ -16,7 +16,7 @@ class InAppFeedItemTableViewCell: UITableViewCell {
     private let variant: Variant
 
     private let unreadMarker = UIView()
-    private let avatarView = UIImageView()
+    private let avatarView = AvatarView()
     private let stackView = UIStackView()
     private let insertedAtLabel = UILabel()
     private let bottomStroke = UIView()
@@ -71,10 +71,6 @@ class InAppFeedItemTableViewCell: UITableViewCell {
         unreadMarker.layer.cornerRadius = 4
         unreadMarker.isHidden = true
 
-        avatarView.backgroundColor = .dynamic(.Neutral_08)
-        avatarView.layer.cornerRadius = 16
-        avatarView.contentMode = .scaleAspectFill
-        avatarView.clipsToBounds = true
         avatarView.isHidden = true
 
         stackView.axis = .vertical
@@ -87,9 +83,9 @@ class InAppFeedItemTableViewCell: UITableViewCell {
         bottomStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
-    func setFeedItem(_ item: Knock.FeedItem, avatarImage: UIImage?) {
+    func setFeedItem(_ item: Knock.FeedItem, author: Participant?) {
         unreadMarker.isHidden = item.read_at != nil
-        avatarView.image = avatarImage
+        avatarView.setAvatar(forParticipant: author)
         avatarView.isHidden = false
         if let parsedBody = item.data?["parsedBody"]?.value as? [(Knock.FeedItem.ParsedBodyClass, String)] {
             parsedBody.forEach { bodyElem in

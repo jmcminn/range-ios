@@ -12,7 +12,7 @@ class UserTableViewCell: UITableViewCell {
         }
     }
 
-    let avatarView = UIImageView()
+    let avatarView = AvatarView()
     let nameLabel = UILabel()
     let emailLabel = UILabel()
     let selectedIconView = UIImageView(image: UIImage(named: "checkmark_checked"))
@@ -61,11 +61,6 @@ class UserTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
-        avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamic(.Neutral_07)
-        avatarView.contentMode = .scaleAspectFill
-        avatarView.clipsToBounds = true
-
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)
 
@@ -74,7 +69,7 @@ class UserTableViewCell: UITableViewCell {
     }
 
     func setUser(_ user: UserViewModel, avatarImage: UIImage?) {
-        avatarView.image = avatarImage
+        avatarView.setAvatar(avatarImage, initials: user.initials)
         nameLabel.attributedText = NSAttributedString(
             string: user.name,
             attributes: [.strikethroughStyle: user.strikethroughStyle]
@@ -111,7 +106,7 @@ class UserTableViewCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
-        avatarView.image = nil
+        avatarView.setAvatar(nil, initials: nil)
         nameLabel.attributedText = nil
         emailLabel.text = nil
         selectedIconView.isHidden = true

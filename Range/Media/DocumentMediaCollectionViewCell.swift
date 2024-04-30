@@ -4,7 +4,7 @@ import UIKit
 
 /// collection cell for document (non-image) media
 class DocumentMediaCollectionViewCell: UICollectionViewCell {
-    let avatarView = AvatarView()
+    let avatarView = UserInitialView()
     let fileTypeBox = UIView()
     let fileTypeLabel = UILabel()
     let fileNameLabel = UILabel()

@@ -5,7 +5,7 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
     static let leadingLabelInset = 40.0
     static let trailingLabelInset = 30.0
 
-    let avatarView = UIImageView()
+    let avatarView = AvatarView()
     let label = UILabel()
 
     var onDeselect: (() -> Void)?
@@ -26,10 +26,6 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
         }
 
         contentView.addSubview(avatarView)
-        avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamic(.Neutral_07)
-        avatarView.contentMode = .scaleAspectFill
-        avatarView.clipsToBounds = true
         avatarView.snp.makeConstraints { make in
             make.centerY.leading.equalToSuperview()
             make.width.height.equalTo(32)
@@ -74,14 +70,17 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
             attributes: [.strikethroughStyle: user.strikethroughStyle]
         )
         showUnassignedAvatar = user.id == UserViewModel.unassignedUserId
-        avatarView.image = avatarImage
+        if !showUnassignedAvatar {
+            avatarView.setAvatar(avatarImage, initials: user.initials)
+        }
+        updateAvatarImage()
     }
 
     private func updateAvatarImage() {
         if showUnassignedAvatar {
             // SF symbol is not used here as we need the one that is properly centered (and sf symbol
             // for person.crop.circle.fill.badge.xmark is not centered at the person center horizontally)
-            avatarView.image = UIImage(named: "no_assignee")?
+            let image = UIImage(named: "no_assignee")?
                 .withTintColor(chooseColor(.Neutral_05),
                                renderingMode: .alwaysTemplate)
                 .addCircleBackground(
@@ -89,6 +88,8 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
                     bgColor: chooseColor(.Neutral_10),
                     strokeColor: .Primary_Blue_04
                 )
+            avatarView.setAvatar(image, initials: nil)
+            avatarView.layer.borderWidth = 0
         } else {
             avatarView.layer.borderColor = UIColor.Primary_Blue_04.cgColor
             avatarView.layer.borderWidth = 1
@@ -96,7 +97,7 @@ class SelectedUserCollectionViewCell: UICollectionViewCell {
     }
 
     override func prepareForReuse() {
-        avatarView.image = nil
+        avatarView.setAvatar(nil, initials: nil)
         label.text = nil
     }
 

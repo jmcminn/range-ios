@@ -19,7 +19,7 @@ class InAppFeedTableViewController: UIViewController {
 
     let model: KnockFeedModel
     private let variant: InAppFeedItemTableViewCell.Variant
-    let avatarImageProvider: (String) -> UIImage?
+    let participantProvider: (String) -> Participant?
 
     let tableView = UITableView(frame: .zero, style: .plain)
     private let emptyView = UIView()
@@ -32,11 +32,11 @@ class InAppFeedTableViewController: UIViewController {
     init(
         model: KnockFeedModel,
         variant: InAppFeedItemTableViewCell.Variant,
-        avatarImageProvider: @escaping (String) -> UIImage?
+        participantProvider: @escaping (String) -> Participant?
     ) {
         self.model = model
         self.variant = variant
-        self.avatarImageProvider = avatarImageProvider
+        self.participantProvider = participantProvider
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -208,8 +208,8 @@ extension InAppFeedTableViewController: UITableViewDelegate, UITableViewDataSour
         ) as! InAppFeedItemTableViewCell
         if indexPath.row < itemsForCurrentMode().count {
             let item = itemsForCurrentMode()[indexPath.row]
-            let firstAvatarImage = item.actors?.map(\.id).compactMap { self.avatarImageProvider($0) }.first
-            cell.setFeedItem(item, avatarImage: firstAvatarImage)
+            let firstAuthor: Participant? = if let id = item.actors?.first?.id { participantProvider(id) } else { nil }
+            cell.setFeedItem(item, author: firstAuthor)
         }
         return cell
     }

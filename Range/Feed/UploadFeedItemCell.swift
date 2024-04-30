@@ -6,7 +6,7 @@ import UIKit
 
 /// The table view cell to show non-image upload feed item
 class UploadFeedItemCell: UITableViewCell {
-    let avatarView = UIImageView()
+    let avatarView = AvatarView()
     let authorLabel = UILabel()
     let timestampLabel = UILabel()
     var moreButton: UIButton!
@@ -122,11 +122,6 @@ class UploadFeedItemCell: UITableViewCell {
     }
 
     private func setupViews() {
-        avatarView.layer.cornerRadius = 16
-        avatarView.backgroundColor = .dynamic(.Neutral_07)
-        avatarView.contentMode = .scaleAspectFill
-        avatarView.clipsToBounds = true
-
         authorLabel.textColor = .dynamic(.Neutral_04)
         authorLabel.font = UIFont._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
 
@@ -225,13 +220,13 @@ class UploadFeedItemCell: UITableViewCell {
     /// Called whenever an upload is set for the cell or updated
     /// Updates all the fields, loads the image and depending on the settings adjusts the uploadImageView constraints
     private func updateContent(upload: Upload?) {
+        avatarView.setAvatar(forParticipant: upload?.author)
         authorLabel.attributedText = NSAttributedString(
             string: upload?.author?.displayName ?? "",
             attributes: [.strikethroughStyle: upload?.author?.strikethroughStyle ?? 0]
         )
 
         if let upload = upload {
-            avatarView.image = upload.author?.avatarImage
             timestampLabel.text = Date.format1(upload.timestamp)
             if let imageHeightToWidth = upload.imageHeightToWidth {
                 updateUploadPreviewConstraints(imageHeight2Width: imageHeightToWidth)
@@ -274,7 +269,6 @@ class UploadFeedItemCell: UITableViewCell {
                 commentsLabel.textInsets = .zero
             }
         } else {
-            avatarView.image = nil
             timestampLabel.text = nil
             uploadPreviewVC?.upload = nil
             fileNameLabel.text = nil

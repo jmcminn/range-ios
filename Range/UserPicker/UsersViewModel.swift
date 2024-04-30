@@ -195,6 +195,11 @@ class UserViewModel: NSObject, Codable {
         suspended ? NSUnderlineStyle.single.rawValue : NSUnderlineStyle([]).rawValue
     }
 
+    var initials: String {
+        if let firstLetter = name.first { return String(firstLetter) }
+        return ""
+    }
+
     /// Initializer for existing users
     /// - Parameters:
     ///   - id: id

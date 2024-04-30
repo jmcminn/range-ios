@@ -16,11 +16,8 @@ class ProjectInAppFeedCardViewController: SheetCardViewController {
         feedTableVC = InAppFeedTableViewController(
             model: feedModel,
             variant: .project,
-            avatarImageProvider: { userId in
-                model.mainRealm.object(
-                    ofType: Participant.self,
-                    forPrimaryKey: userId
-                )?.avatarImage
+            participantProvider: { userId in
+                model.mainRealm.object(ofType: Participant.self, forPrimaryKey: userId)
             }
         )
 

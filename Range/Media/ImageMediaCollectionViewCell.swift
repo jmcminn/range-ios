@@ -11,7 +11,7 @@ class ImageMediaCollectionViewCell: UICollectionViewCell {
             font: UIFont.systemFont(ofSize: 9, weight: .semibold)
         )
     ))
-    let avatarView = AvatarView()
+    let avatarView = UserInitialView()
     private var selectedOverlay: UIView?
 
     override init(frame _: CGRect) {
