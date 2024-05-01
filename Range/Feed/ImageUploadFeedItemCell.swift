@@ -79,10 +79,10 @@ class ImageUploadFeedItemCell: UITableViewCell {
         versionPill.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(12)
         }
-        annotationsButton.snp.makeConstraints { make in
-            make.trailing.bottom.equalToSuperview().inset(12)
-        }
         updateUploadImageViewConstraints(imageHeight2Width: 0.75)
+        annotationsButton.snp.makeConstraints { make in
+            make.trailing.bottom.equalTo(uploadImageView).inset(12)
+        }
         descriptionBackground.snp.makeConstraints { make in
             make.left.bottom.right.equalToSuperview()
             make.top.equalTo(uploadImageView.snp.bottom)
