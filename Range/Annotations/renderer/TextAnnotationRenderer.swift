@@ -59,7 +59,7 @@ enum TextAnnotationRenderer {
         )
         if renderShadow {
             UIGraphicsGetCurrentContext()?
-                .setShadow(offset: .init(width: 2, height: 2), blur: 4,
+                .setShadow(offset: .init(width: 0, height: 2), blur: 8,
                            color: UIColor.Neutral_10.withAlphaComponent(0.25).cgColor)
         }
         backgroundRect.fill()

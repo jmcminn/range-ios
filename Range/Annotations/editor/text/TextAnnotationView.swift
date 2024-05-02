@@ -65,7 +65,7 @@ class TextAnnotationView: UIView {
     }
 
     private func setupBackgroundShadowView() {
-        setShadowWithFigmaValues(x: 2, y: 2, blur: 4, opacity: 0.25)
+        setShadowWithFigmaValues(x: 0, y: 2, blur: 8, opacity: 0.25)
         addSubview(backgroundShadowView)
         backgroundShadowView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
