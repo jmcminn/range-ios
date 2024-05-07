@@ -85,8 +85,13 @@ class InAppFeedItemTableViewCell: UITableViewCell {
 
     func setFeedItem(_ item: Knock.FeedItem, author: Participant?) {
         unreadMarker.isHidden = item.read_at != nil
-        avatarView.setAvatar(forParticipant: author)
-        avatarView.isHidden = author == nil
+        avatarView.isHidden = false
+        if let author {
+            avatarView.setAvatar(forParticipant: author)
+        } else {
+            // if not author then assume it's a message from Range
+            avatarView.setAvatar(UIImage(named: "AppIcon"), initials: nil)
+        }
         if let parsedBody = item.data?["parsedBody"]?.value as? [(Knock.FeedItem.ParsedBodyClass, String)] {
             parsedBody.forEach { bodyElem in
                 if variant == .project, bodyElem.0 == .project {

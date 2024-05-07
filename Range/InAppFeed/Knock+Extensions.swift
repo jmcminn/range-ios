@@ -6,7 +6,11 @@ extension Knock.FeedItem {
     var actionUrl: URL? {
         guard let path = (blocks.first(where: { $0.name == "action_url" }) as? Knock.TextContentBlock)?.rendered
             .trimmingCharacters(in: .whitespacesAndNewlines) else { return nil }
-        return URL(string: "https://range.io\(path)")
+        if path.starts(with: "http") {
+            return URL(string: path)
+        } else {
+            return URL(string: "https://range.io\(path)")
+        }
     }
 
     enum ParsedBodyClass: String, CaseIterable {

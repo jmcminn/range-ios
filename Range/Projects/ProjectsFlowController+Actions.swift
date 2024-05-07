@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 /// Protocol defining actions that projects flow can perform.
 /// Required by the views sending actions, so they can use selectors for these functions.
@@ -32,9 +33,13 @@ extension ProjectsFlowController: ProjectsFlowActions {
 
     func showRoute(sender _: Any?, event: FlowEvent) {
         guard let url = event.object as? URL else { return }
-        guard let route = routeForURL(url) else { return }
-        Task {
-            await showRoute(route)
+        if let route = routeForURL(url) {
+            Task {
+                await showRoute(route)
+            }
+        } else {
+            // url not recognized as app route, show in browser instead
+            UIApplication.shared.open(url)
         }
     }
 }
