@@ -74,7 +74,7 @@ class InAppFeedItemTableViewCell: UITableViewCell {
         avatarView.isHidden = true
 
         stackView.axis = .vertical
-        stackView.spacing = 4
+        stackView.spacing = 6
 
         insertedAtLabel.font = .preferredFont(forTextStyle: .footnote)
         insertedAtLabel.textColor = .dynamic(.Neutral_05)
@@ -86,7 +86,7 @@ class InAppFeedItemTableViewCell: UITableViewCell {
     func setFeedItem(_ item: Knock.FeedItem, author: Participant?) {
         unreadMarker.isHidden = item.read_at != nil
         avatarView.setAvatar(forParticipant: author)
-        avatarView.isHidden = false
+        avatarView.isHidden = author == nil
         if let parsedBody = item.data?["parsedBody"]?.value as? [(Knock.FeedItem.ParsedBodyClass, String)] {
             parsedBody.forEach { bodyElem in
                 if variant == .project, bodyElem.0 == .project {
