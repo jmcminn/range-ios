@@ -4,6 +4,9 @@ import UIKit
 /// The table view cell to show when the geometry was archived
 class GeometryArchivedFeedItemCell: UITableViewCell {
     private let messageLabel = UILabel()
+    private var messageFont: UIFont {
+        UIFont.preferredFont(forTextStyle: .footnote)
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -25,7 +28,7 @@ class GeometryArchivedFeedItemCell: UITableViewCell {
         contentView.addSubview(dotView)
         dotView.snp.makeConstraints { make in
             make.centerX.equalTo(contentView.snp.leading).offset(FeedItemCells.leadingVerticalLineMargin)
-            make.top.equalTo(messageLabel.snp.top).offset(4)
+            make.centerY.equalTo(messageLabel.snp.firstBaseline).offset(-messageFont.capHeight / 2.0)
         }
     }
 
@@ -41,7 +44,7 @@ class GeometryArchivedFeedItemCell: UITableViewCell {
                 string: "This pin was archived \(Date.format2(archivedTimestamp))",
                 attributes: [
                     .foregroundColor: chooseColor(.Neutral_05),
-                    .font: UIFont.preferredFont(forTextStyle: .footnote),
+                    .font: messageFont,
                 ]
             )
         }

@@ -17,6 +17,10 @@ class NameUpdateFeedItemCell: UITableViewCell {
         }
     }
 
+    private var userNameFont: UIFont {
+        UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+    }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
@@ -36,7 +40,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
         contentView.addSubview(dotView)
         dotView.snp.makeConstraints { make in
             make.centerX.equalTo(contentView.snp.leading).offset(FeedItemCells.leadingVerticalLineMargin)
-            make.top.equalTo(messageLabel.snp.top).offset(4)
+            make.centerY.equalTo(messageLabel.snp.firstBaseline).offset(-userNameFont.capHeight / 2.0)
         }
 
         previousValueLabel.textInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -74,7 +78,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
             string: update.user?.displayName ?? "",
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_05),
-                .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+                .font: userNameFont,
                 .strikethroughStyle: update.user?.strikethroughStyle ?? 0,
             ]
         )

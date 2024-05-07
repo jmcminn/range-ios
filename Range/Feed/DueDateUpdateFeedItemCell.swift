@@ -4,6 +4,9 @@ import UIKit
 /// The table view cell to show the due date update
 class DueDateUpdateFeedItemCell: UITableViewCell {
     private let messageLabel = UILabel()
+    private var userNameFont: UIFont {
+        UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -25,7 +28,7 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
         contentView.addSubview(dotView)
         dotView.snp.makeConstraints { make in
             make.centerX.equalTo(contentView.snp.leading).offset(FeedItemCells.leadingVerticalLineMargin)
-            make.top.equalTo(messageLabel.snp.top).offset(4)
+            make.centerY.equalTo(messageLabel.snp.firstBaseline).offset(-userNameFont.capHeight / 2.0)
         }
     }
 
@@ -40,7 +43,7 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
             string: update.user?.displayName ?? "",
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_05),
-                .font: UIFont._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold),
+                .font: userNameFont,
                 .strikethroughStyle: update.user?.strikethroughStyle ?? 0,
             ]
         )
