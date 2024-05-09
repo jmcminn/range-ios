@@ -188,7 +188,6 @@ extension ProjectModel {
             // (although it shouldn't happen if user is adding a pin)
             analytics?._trackProjectEvent(name: "collaboration created", self, [
                 "collaborationType": isTask ? "task" : "photo",
-                "collaborationTitle": name ?? "",
                 "canvasType": canvasSource.type.rawValue,
             ])
         }

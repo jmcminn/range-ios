@@ -58,6 +58,7 @@ class LineAnnotationView: UIView {
             layer.lineJoin = .round
             self.layer.addSublayer(layer)
         }
+        outlineLayer.setShadowWithFigmaValues(x: 0, y: 2, blur: 8, opacity: 0.25)
         selectionLayer.strokeColor = UIColor.Primary_Blue_03.cgColor
     }
 

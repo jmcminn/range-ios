@@ -20,7 +20,12 @@ enum ScribbleAnnotationRenderer {
         } else {
             UIColor.white.set()
         }
+        // shadow for the outline
+        UIGraphicsGetCurrentContext()?
+            .setShadow(offset: .init(width: 0, height: 2), blur: 8,
+                       color: UIColor.Neutral_10.withAlphaComponent(0.25).cgColor)
         path.stroke()
+        UIGraphicsGetCurrentContext()?.setShadow(offset: .zero, blur: 0, color: nil)
 
         // line
         path.lineWidth = lineWidth

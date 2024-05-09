@@ -7,13 +7,16 @@ class ScribblingView: UIView {
     /// The view is scaled (transformed) by this constant (multiplied)
     let scale: Double
     /// the thickness of the line
-    var thickness: Double
+    var thickness: Double { didSet { setNeedsLayout() } }
     /// the inner color of the line
-    var color: UIColor
+    var color: UIColor { didSet { setNeedsLayout() }}
     /// points recorded for annotation (not scaled)
     private var points: [CGPoint] = []
     /// Path to draw when user is drawing the line (scaled to ScribblingView scale)
     private var path = UIBezierPath()
+
+    let lineLayer = CAShapeLayer() // colored line shape
+    let outlineLayer = CAShapeLayer() // the white outline for line (or black if line is white)
 
     private(set) var gestureRecognizer: UIGestureRecognizer?
 
@@ -30,11 +33,38 @@ class ScribblingView: UIView {
         backgroundColor = .clear
         transform = CGAffineTransform(scaleX: scale, y: scale)
         gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGesture))
+
+        setupLayers()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupLayers() {
+        for layer in [outlineLayer, lineLayer] {
+            layer.fillColor = nil
+            layer.lineCap = .round
+            layer.lineJoin = .round
+            self.layer.addSublayer(layer)
+        }
+        outlineLayer.setShadowWithFigmaValues(x: 0, y: 2 / scale, blur: 8 / scale, opacity: 0.25)
+    }
+
+    private func updateLayers() {
+        lineLayer.lineWidth = thickness
+        lineLayer.strokeColor = color.cgColor
+
+        outlineLayer.lineWidth = 2 * thickness
+        outlineLayer.strokeColor = color.hexString == UIColor.white.hexString
+            ? UIColor.black.cgColor
+            : UIColor.white.cgColor
+
+        for layer in [lineLayer, outlineLayer] {
+            layer.frame = bounds
+            layer.path = path.cgPath
+        }
     }
 
     /// Scales the point to this view coordinates and adds to points
@@ -46,18 +76,19 @@ class ScribblingView: UIView {
             path.addLine(to: scaledPoint)
         }
         points.append(point)
-        setNeedsDisplay()
+        setNeedsLayout()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        updateLayers()
     }
 
     private func resetScribble() {
         points.removeAll()
         path = UIBezierPath()
-        setNeedsDisplay()
-    }
-
-    override func draw(_: CGRect) {
-        // lineWidth needs no scaling as the whole view is scaled
-        ScribbleAnnotationRenderer.render(path: path, lineWidth: thickness, color: color)
+        setNeedsLayout()
     }
 
     @objc private func panGesture(gesture: UIGestureRecognizer) {
