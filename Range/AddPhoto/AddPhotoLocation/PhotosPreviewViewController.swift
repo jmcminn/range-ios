@@ -12,6 +12,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     unowned let model: ProjectModel
     unowned let mediaCache: MediaCache
     unowned let confirmationVC: AddPhotoConfirmationViewController
+    let collaborationName: String?
     let imageUploads: Results<Upload>
     let nonImageUploads: Results<Upload>
     /// Token for observing changes in uploads
@@ -19,10 +20,15 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     private var nonImageUploadsNotificationToken: NotificationToken?
 
     var imageAndText: UIStackView!
-    var photoCountFont: UIFont {
-        ._preferredFont(forTextStyle: .caption2, symbolicTraits: .traitBold)
+    var collaborationNameFont: UIFont {
+        ._preferredFont(forTextStyle: .caption1, symbolicTraits: .traitBold)
     }
 
+    var photoCountFont: UIFont {
+        .preferredFont(forTextStyle: .caption1)
+    }
+
+    var collaborationNameLabel: UILabel?
     var photoCountLabel: UILabel!
     var thumbnailsVC: ThumbnailsViewController!
     var onClose: (() -> Void)?
@@ -58,6 +64,26 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
                 $0.collaboration.feature.geometry.id.equals(geometryId)
             }
             .where { $0.fileType != .jpeg && $0.fileType != .png }
+
+        let collaboration = model.mainRealm.objects(Collaboration.self)
+            .where { $0.placeholder == false &&
+                $0.feature.geometry.id.equals(geometryId)
+            }.first
+        var components: [String] = []
+        if let collaboration {
+            if let collaborationIdentifier = model.collaborationIdentifier(collaboration) {
+                components.append(collaborationIdentifier)
+            }
+            if !collaboration.name.isEmpty {
+                components.append(collaboration.name)
+            }
+        }
+        if components.isEmpty {
+            collaborationName = nil
+        } else {
+            collaborationName = components.joined(separator: " • ")
+        }
+
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -74,11 +100,24 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         super.viewDidLoad()
         containerView.backgroundColor = .dynamic(.Neutral_09)
 
+        setupCollaborationNameLabel()
+        if let collaborationNameLabel {
+            containerView.addSubview(collaborationNameLabel)
+            collaborationNameLabel.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(8)
+                make.top.equalToSuperview().offset(8)
+            }
+        }
+
         buildPhotoCountView()
         containerView.addSubview(imageAndText)
         imageAndText.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(8)
+            if let collaborationNameLabel {
+                make.top.equalTo(collaborationNameLabel.snp.bottom).offset(8)
+            } else {
+                make.top.equalToSuperview().offset(8)
+            }
         }
 
         buildThumbnailsView()
@@ -90,6 +129,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
             make.height.equalTo(ThumbnailsViewController.thumbnailHeight)
         }
 
+        updatePhotoCount()
         updateColors()
     }
 
@@ -126,17 +166,27 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         roundedShadowView.topStrokeColor = darkMode ? .Neutral_07 : .Neutral_04
     }
 
+    private func setupCollaborationNameLabel() {
+        guard let collaborationName else { return }
+        collaborationNameLabel = UILabel()
+        collaborationNameLabel!.textColor = .dynamic(.Neutral_04)
+        collaborationNameLabel!.font = collaborationNameFont
+        collaborationNameLabel!.text = collaborationName
+        collaborationNameLabel!.numberOfLines = 1
+        collaborationNameLabel!.textAlignment = .center
+        collaborationNameLabel!.lineBreakMode = .byTruncatingTail
+    }
+
     private func buildPhotoCountView() {
         let imageConfig = UIImage.SymbolConfiguration(font: photoCountFont)
         let image = UIImage(systemName: "photo.on.rectangle.angled", withConfiguration: imageConfig)
         let imageView = UIImageView(image: image)
-        imageView.tintColor = .dynamic(.Neutral_04)
+        imageView.tintColor = .dynamic(.Neutral_05)
 
         photoCountLabel = UILabel()
         photoCountLabel.textColor = imageView.tintColor
         photoCountLabel.font = photoCountFont
         photoCountLabel.adjustsFontForContentSizeCategory = true
-        updatePhotoCount()
 
         imageAndText = UIStackView(arrangedSubviews: [imageView, photoCountLabel])
         imageAndText.axis = .horizontal
@@ -150,7 +200,8 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         guard photoCountLabel != nil else { return }
         var components: [String] = []
 
-        if imageUploads.count > 0 {
+        // show at least the photos count if there's no docs (so show "0 Photos")
+        if imageUploads.count > 0 || nonImageUploads.count == 0 {
             components.append(String(imageUploads.count) + " " +
                 (imageUploads.count == 1 ? String(localized: "Photo") : String(localized: "Photos")))
         }
@@ -159,6 +210,33 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
                 (nonImageUploads.count == 1 ? String(localized: "Document") : String(localized: "Documents")))
         }
         photoCountLabel.text = components.joined(separator: " • ")
+
+        if imageUploads.count > 0 {
+            // show thumbnails, do not show count
+            imageAndText.isHidden = true
+            thumbnailsVC.view.isHidden = false
+            thumbnailsVC.view.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                if let collaborationNameLabel {
+                    make.top.equalTo(collaborationNameLabel.snp.bottom).offset(8)
+                } else {
+                    make.top.equalToSuperview().offset(12)
+                }
+                make.height.equalTo(ThumbnailsViewController.thumbnailHeight)
+            }
+        } else {
+            // no thumbnails, show the count
+            imageAndText.isHidden = false
+            thumbnailsVC.view.isHidden = true
+            imageAndText.snp.remakeConstraints { make in
+                make.centerX.equalToSuperview()
+                if let collaborationNameLabel {
+                    make.top.equalTo(collaborationNameLabel.snp.bottom).offset(8)
+                } else {
+                    make.top.equalToSuperview().offset(8)
+                }
+            }
+        }
     }
 
     private func buildThumbnailsView() {
@@ -174,13 +252,16 @@ extension PhotosPreviewViewController: CardPresentable {
 
         view.layoutIfNeeded()
         var thumbnailsHeight = 0.0
-        if !imageUploads.isEmpty || !nonImageUploads.isEmpty {
-            /// show the label
+        if collaborationName != nil {
+            thumbnailsHeight += 8 + collaborationNameFont.lineHeight
+        }
+        if !imageUploads.isEmpty {
+            // thumbnails visible
+            thumbnailsHeight += collaborationName == nil ? 12 : 8
+            thumbnailsHeight += ThumbnailsViewController.thumbnailHeight + 12
+        } else {
+            // image/docs count visible
             thumbnailsHeight += 8 + photoCountFont.lineHeight + 8
-            if !imageUploads.isEmpty {
-                /// also show thumbnails
-                thumbnailsHeight += ThumbnailsViewController.thumbnailHeight + 12
-            }
         }
         return confirmationVC.height(forContainer: containerView, cardPosition: cardPosition)
             + thumbnailsHeight

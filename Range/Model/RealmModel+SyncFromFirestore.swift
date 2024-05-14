@@ -160,7 +160,7 @@ extension RealmModel {
                 guard let self = self else { return }
                 guard let snapshot = querySnapshot else {
                     Logger.firestore.error(
-                        "\(collectionRef.collectionID) fetching snapshots failed: \(error!.localizedDescription)"
+                        "\(collectionRef.path) fetching snapshots failed: \(error!.localizedDescription)"
                     )
                     return
                 }
