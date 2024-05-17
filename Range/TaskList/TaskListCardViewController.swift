@@ -15,6 +15,7 @@ class TaskListCardViewController: SheetCardViewController {
     }
 
     private let projectModel: ProjectModel
+    private let userPreferences: UserPreferences
     unowned let canvasContainer: CanvasContainerViewController
 
     private let tableView = UITableView(frame: .zero, style: .plain)
@@ -60,10 +61,11 @@ class TaskListCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - projectModel:               model to read collaborations from
-    init(projectModel: ProjectModel, canvasContainer: CanvasContainerViewController) {
+    init(projectModel: ProjectModel, userPreferences: UserPreferences, canvasContainer: CanvasContainerViewController) {
         self.projectModel = projectModel
+        self.userPreferences = userPreferences
         self.canvasContainer = canvasContainer
-        filters = UserDefaults.taskListFilters(forModel: projectModel)
+        filters = userPreferences.taskListFilters(forModel: projectModel)
         defaultFilters = CollaborationFilters(model: projectModel, variant: .taskList)
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .where { (c: Query<Collaboration>) -> Query<Bool> in
@@ -383,10 +385,14 @@ extension TaskListCardViewController {
     }
 
     @objc func showFiltersCard() {
-        let filtersCardVC = CollaborationFiltersCardViewController(model: projectModel, filters: filters)
+        let filtersCardVC = CollaborationFiltersCardViewController(
+            model: projectModel,
+            userPreferences: userPreferences,
+            filters: filters
+        )
         filtersCardVC.onClose = { [weak self] in
             guard let self = self else { return }
-            UserDefaults.setTaskListFilters(self.filters, forProjectId: projectModel.projectId)
+            userPreferences.setTaskListFilters(self.filters, forProjectId: projectModel.projectId)
         }
         filtersCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
@@ -636,7 +642,7 @@ extension TaskListCardViewController {
     }
 
     private func presentBulkManageTagsCard() {
-        let tagsViewModel = TagsViewModel(model: projectModel)
+        let tagsViewModel = TagsViewModel(model: projectModel, userPreferences: userPreferences)
 
         let addTagsOptionText = String(localized: "Add additional, new tags to the selected tasks.")
         let replaceTagsOptionText = String(localized:

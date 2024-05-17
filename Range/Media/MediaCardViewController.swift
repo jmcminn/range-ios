@@ -17,6 +17,7 @@ class MediaCardViewController: SheetCardViewController {
 
     private let projectModel: ProjectModel
     private let mediaCache: MediaCache
+    private let userPreferences: UserPreferences
 
     /// uploads to show
     private let uploads: Results<Upload>
@@ -78,12 +79,14 @@ class MediaCardViewController: SheetCardViewController {
     init(
         projectModel: ProjectModel,
         mediaCache: MediaCache,
+        userPreferences: UserPreferences,
         title: String,
         uploads: Results<Upload>,
         canvasContainer: CanvasContainerViewController
     ) {
         self.projectModel = projectModel
         self.mediaCache = mediaCache
+        self.userPreferences = userPreferences
         self.uploads = uploads
         self.canvasContainer = canvasContainer
 
@@ -469,7 +472,11 @@ extension MediaCardViewController {
     }
 
     @objc func showMediaFiltersCard() {
-        let mediaFiltersCardVC = MediaFiltersCardViewController(model: projectModel, mediaFilters: mediaFilters)
+        let mediaFiltersCardVC = MediaFiltersCardViewController(
+            model: projectModel,
+            userPreferences: userPreferences,
+            mediaFilters: mediaFilters
+        )
         mediaFiltersCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
@@ -638,7 +645,7 @@ extension MediaCardViewController {
     }
 
     private func presentBulkManageTagsCard() {
-        let tagsViewModel = TagsViewModel(model: projectModel)
+        let tagsViewModel = TagsViewModel(model: projectModel, userPreferences: userPreferences)
 
         let addTagsOptionText = String(localized: "Add additional, new tags to the selected media items.")
         let replaceTagsOptionText = String(localized:

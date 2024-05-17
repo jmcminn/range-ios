@@ -10,6 +10,7 @@ import UIKit
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class CopyPinCardViewController: SheetCardViewController {
     private let projectModel: ProjectModel
+    let userPreferences: UserPreferences
 
     private var mostRecentUsedToggle: SegmentedControl!
 
@@ -42,8 +43,9 @@ class CopyPinCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - projectModel:               model to read collaborations from
-    init(projectModel: ProjectModel) {
+    init(projectModel: ProjectModel, userPreferences: UserPreferences) {
         self.projectModel = projectModel
+        self.userPreferences = userPreferences
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
             .sorted(by: \Collaboration.timestamp, ascending: false)
 
@@ -131,7 +133,7 @@ class CopyPinCardViewController: SheetCardViewController {
         // .uniqued, otherwise .uniqued may filter out the pin ids from lastCopiedTasks and prefer
         // the pin with same data but different id...
         lastCopiedPins =
-            UserDefaults.lastCopiedPins(forProjectId: projectModel.projectId).compactMap { pinId in
+            userPreferences.lastCopiedPins(forProjectId: projectModel.projectId).compactMap { pinId in
                 collaborations.first { $0.id == pinId }
             }
             .uniqued(on: uniqueProjection)

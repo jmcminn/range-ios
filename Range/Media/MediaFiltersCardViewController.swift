@@ -39,7 +39,7 @@ class MediaFiltersCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - mediaFilters:                         MediaFilters
-    init(model: ProjectModel, mediaFilters: MediaFilters) {
+    init(model: ProjectModel, userPreferences: UserPreferences, mediaFilters: MediaFilters) {
         self.model = model
         self.mediaFilters = mediaFilters
 
@@ -49,7 +49,11 @@ class MediaFiltersCardViewController: SheetCardViewController {
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)
         self.usersViewModel = usersViewModel
 
-        let tagsViewModel = TagsViewModel(model: model, untaggedTagName: String(localized: "Untagged Media"))
+        let tagsViewModel = TagsViewModel(
+            model: model,
+            userPreferences: userPreferences,
+            untaggedTagName: String(localized: "Untagged Media")
+        )
         // preselect tags from the filter
         mediaFilters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)

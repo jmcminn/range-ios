@@ -4,6 +4,7 @@ import UIKit
 /// Manages the flow of adding new pin or moving an existing collaboration
 class AddPinFlowController {
     unowned let model: ProjectModel
+    let userPreferences: UserPreferences
     unowned let canvasContainer: CanvasContainerViewController
     private let controls: ProjectCanvasControls
 
@@ -29,8 +30,9 @@ class AddPinFlowController {
     /// - Parameters:
     ///     - model: - the project model
     ///     - canvas: - the flow will operate on this canvas
-    init(model: ProjectModel, canvasContainer: CanvasContainerViewController) {
+    init(model: ProjectModel, userPreferences: UserPreferences, canvasContainer: CanvasContainerViewController) {
         self.model = model
+        self.userPreferences = userPreferences
         self.canvasContainer = canvasContainer
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
     }
@@ -65,7 +67,7 @@ class AddPinFlowController {
     }
 
     private func selectPinToCopy() {
-        let copyPinCardVC = CopyPinCardViewController(projectModel: model)
+        let copyPinCardVC = CopyPinCardViewController(projectModel: model, userPreferences: userPreferences)
         copyPinCardVC.onPinSelected = { [weak self] pin in
             guard let self = self else { return }
             self.pinToCopy = pin
@@ -291,7 +293,7 @@ class AddPinFlowController {
                 dueDate: pinToCopy.dueDateTimestamp,
                 tags: pinToCopy.tags.map(TagViewModel.init(fromTag:))
             )
-            UserDefaults.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
+            userPreferences.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
         }
         try await model.run(command)
     }

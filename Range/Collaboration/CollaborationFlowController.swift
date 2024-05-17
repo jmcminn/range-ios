@@ -37,6 +37,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
     unowned let userSettings: UserSettings
+    unowned let userPreferences: UserPreferences
     unowned let canvasContainer: CanvasContainerViewController
 
     /// callback to notify that collaboration window is closing
@@ -79,12 +80,14 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
+        userPreferences: UserPreferences,
         canvasContainer: CanvasContainerViewController
     ) {
         self.model = model
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
+        self.userPreferences = userPreferences
         self.canvasContainer = canvasContainer
         super.init(nibName: nil, bundle: nil)
     }
@@ -124,6 +127,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         let collaborationVC = CollaborationViewController(
             mediaCache: mediaCache,
             projectModel: model,
+            userPreferences: userPreferences,
             collaboration: collaboration
         )
         collaborationVC.onClose = { [weak self] in
@@ -407,6 +411,7 @@ extension CollaborationFlowController {
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
+            userPreferences: userPreferences,
             canvasContainer: canvasContainer
         )
         // preselect the geometryId as the add photos flow will not include pin placement

@@ -13,6 +13,7 @@ class CanvasSnapshotFlowController {
     let localFiles: LocalFiles
     let mediaCache: MediaCache
     let userSettings: UserSettings
+    let userPreferences: UserPreferences
     let canvasContainer: CanvasContainerViewController
 
     private var selectionVC: CanvasSnapshotSelectionViewController?
@@ -33,6 +34,7 @@ class CanvasSnapshotFlowController {
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
+        userPreferences: UserPreferences,
         canvasContainer: CanvasContainerViewController
     ) {
         if let collaboration, !collaboration.isInvalidated {
@@ -44,6 +46,7 @@ class CanvasSnapshotFlowController {
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
+        self.userPreferences = userPreferences
         self.canvasContainer = canvasContainer
     }
 
@@ -120,6 +123,7 @@ class CanvasSnapshotFlowController {
                     localFiles: localFiles,
                     mediaCache: mediaCache,
                     userSettings: userSettings,
+                    userPreferences: userPreferences,
                     canvasContainer: canvasContainer
                 )
 

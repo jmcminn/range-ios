@@ -4,6 +4,7 @@ import SwiftUI
 struct FullscreenImageGalleryView: View {
     @ObservedObject var annotationsEditorViewModel: AnnotationsEditorViewModel
     var imageGalleryView: FullscreenImageGalleryScrollViewRepresentable
+    var userPreferences: UserPreferences
 
     var body: some View {
         ZStack {
@@ -13,7 +14,7 @@ struct FullscreenImageGalleryView: View {
                 VStack {
                     Spacer()
                     HStack {
-                        RecentTextSelectorView(model: annotationsEditorViewModel)
+                        RecentTextSelectorView(model: annotationsEditorViewModel, userPreferences: userPreferences)
                             .padding(8)
                             .padding(.top, 40) // so it doesn't go over the top bar
                         Spacer()
@@ -23,9 +24,12 @@ struct FullscreenImageGalleryView: View {
             if annotationsEditorViewModel.toolbarVisible {
                 VStack {
                     if annotationsEditorViewModel.recentAnnotationsSelectorVisible {
-                        RecentAnnotationsSelectorView(model: annotationsEditorViewModel)
-                            .padding(16)
-                            .padding(.top, 40) // so it doesn't go over the top bar
+                        RecentAnnotationsSelectorView(
+                            model: annotationsEditorViewModel,
+                            userPreferences: userPreferences
+                        )
+                        .padding(16)
+                        .padding(.top, 40) // so it doesn't go over the top bar
                     }
                     Spacer()
                     AnnotationsToolbarView(model: annotationsEditorViewModel)
@@ -39,9 +43,12 @@ struct FullscreenImageGalleryView: View {
 
 struct FullscreenImageGalleryView_Previews: PreviewProvider {
     static var previews: some View {
-        FullscreenImageGalleryView(annotationsEditorViewModel: AnnotationsEditorViewModel(),
-                                   imageGalleryView: FullscreenImageGalleryScrollViewRepresentable(
-                                       view: UIScrollView()
-                                   ))
+        FullscreenImageGalleryView(
+            annotationsEditorViewModel: AnnotationsEditorViewModel(userPreferences: UserPreferences(userId: "preview")),
+            imageGalleryView: FullscreenImageGalleryScrollViewRepresentable(
+                view: UIScrollView()
+            ),
+            userPreferences: UserPreferences(userId: "preview")
+        )
     }
 }

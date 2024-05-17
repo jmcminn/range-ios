@@ -29,6 +29,7 @@ import UIKit
 /// but the separator, that has the same color as the view background, create distance between them (and make the photos look narrower.
 /// just like in the Photos app)
 class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrollViewDelegate {
+    let userPreferences: UserPreferences
     let imageDataProviderFactory: (PhotoKey) -> RangeImageDataProvider
     private var photoKeys: [PhotoKey?]
 
@@ -103,16 +104,23 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
     init(imageDataProviderFactory: @escaping (PhotoKey) -> RangeImageDataProvider,
          photoKeys: [PhotoKey?],
          annotations: [Annotations?],
-         removePhotosEnabled: Bool)
+         removePhotosEnabled: Bool,
+         userPreferences: UserPreferences)
     {
+        self.userPreferences = userPreferences
         self.imageDataProviderFactory = imageDataProviderFactory
         self.photoKeys = photoKeys
         self.removePhotosEnabled = removePhotosEnabled
         pages = photoKeys.map { _ in FullscreenImageGalleryPageView() }
-        let annotationsEditorViewModel = AnnotationsEditorViewModel()
+        let annotationsEditorViewModel = AnnotationsEditorViewModel(userPreferences: userPreferences)
         self.annotationsEditorViewModel = annotationsEditorViewModel
         annotationsEditorPerPage = zip(pages, annotations).map { page, annotations in
-            AnnotationsEditor(hostView: page, initialAnnotations: annotations, viewModel: annotationsEditorViewModel)
+            AnnotationsEditor(
+                hostView: page,
+                initialAnnotations: annotations,
+                viewModel: annotationsEditorViewModel,
+                userPreferences: userPreferences
+            )
         }
         super.init(nibName: nil, bundle: nil)
     }
@@ -144,7 +152,8 @@ class FullscreenImageGalleryViewController<PhotoKey: Equatable>: UIViewControlle
         let galleryViewScroll = FullscreenImageGalleryScrollViewRepresentable(view: scrollView)
         let galleryView = FullscreenImageGalleryView(
             annotationsEditorViewModel: annotationsEditorViewModel,
-            imageGalleryView: galleryViewScroll
+            imageGalleryView: galleryViewScroll,
+            userPreferences: userPreferences
         )
         let galleryViewController = UIHostingController(rootView: galleryView)
         add(childController: galleryViewController)

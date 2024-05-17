@@ -14,6 +14,7 @@ class UserModel: NSObject, RealmModel {
     let userId: String
 
     private let newlySignedIn: Bool
+    let userPreferences: UserPreferences
 
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
@@ -48,9 +49,10 @@ class UserModel: NSObject, RealmModel {
     /// Knock client for this user
     let knockClient: KnockClient
 
-    init(userId: String, newlySignedIn: Bool) throws {
+    init(userId: String, newlySignedIn: Bool, userPreferences: UserPreferences) throws {
         self.userId = userId
         self.newlySignedIn = newlySignedIn
+        self.userPreferences = userPreferences
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
         config.schemaVersion = 8
@@ -153,7 +155,7 @@ class UserModel: NSObject, RealmModel {
             let organizationModel = try OrganizationModel(userModel: self, organizationId: organizationId)
             try await organizationModel.start()
             currentOrganizationModel = organizationModel
-            UserDefaults.lastOpenOrganizationId = organizationId
+            userPreferences.lastOpenOrganizationId = organizationId
         }
     }
 
@@ -179,7 +181,7 @@ class UserModel: NSObject, RealmModel {
             var organization: Organization?
 
             // try the last open organization
-            if let organizationId = UserDefaults.lastOpenOrganizationId {
+            if let organizationId = userPreferences.lastOpenOrganizationId {
                 organization = mainRealm.object(ofType: Organization.self, forPrimaryKey: organizationId)
             }
 
@@ -306,7 +308,7 @@ class UserModel: NSObject, RealmModel {
     func updateFCMToken(_ token: String?) async {
         guard let user = currentUser, !user.isInvalidated else { return }
 
-        let previousFCMToken = UserDefaults.lastFCMToken
+        let previousFCMToken = userPreferences.lastFCMToken
         guard previousFCMToken != token else { return }
 
         let userRef = firestore.document("users/\(user.id)")
@@ -333,7 +335,7 @@ class UserModel: NSObject, RealmModel {
         } catch {
             Logger.firestore.debug("update FCM token failed: \(error.localizedDescription)")
         }
-        UserDefaults.lastFCMToken = token
+        userPreferences.lastFCMToken = token
     }
 }
 

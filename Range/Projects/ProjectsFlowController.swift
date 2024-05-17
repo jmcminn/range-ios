@@ -15,8 +15,9 @@ class ProjectsFlowController: UINavigationController {
     let mediaCache: MediaCache
     let canvasFileLoader: CanvasFileLoader
     let userSettings: UserSettings
+    let userPreferences: UserPreferences
     let pendingUploadsModel: FirebasePendingUploadsModel
-    let pendingActionsModel = PendingActionsModelImpl()
+    let pendingActionsModel: PendingActionsModelImpl
 
     var onSignedOut: (() -> Void)?
 
@@ -43,16 +44,19 @@ class ProjectsFlowController: UINavigationController {
 
     init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
-        userModel = try UserModel(userId: userId, newlySignedIn: newlySignedIn)
+        userPreferences = UserPreferences(userId: userId)
+        userModel = try UserModel(userId: userId, newlySignedIn: newlySignedIn, userPreferences: userPreferences)
         localFiles = try LocalFiles()
         mediaCache = MediaCache(localFiles: localFiles)
         canvasFileLoader = try CanvasFileLoader()
-        userSettings = UserSettings(knockClient: userModel.knockClient)
+        userSettings = UserSettings(userId: userId, knockClient: userModel.knockClient)
+        pendingActionsModel = PendingActionsModelImpl(userId: userId)
         pendingUploadsModel = try FirebasePendingUploadsModel(
             userId: userId,
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
+            userPreferences: userPreferences,
             pendingActionsModel: pendingActionsModel
         )
         super.init(rootViewController: LaunchScreenViewController())
@@ -111,8 +115,8 @@ class ProjectsFlowController: UINavigationController {
             // open project from push notification and open the route
             await tryLoadProject(projectRoute.projectId, projectRoute)
         } else if _debugSettings.openLastProjectOnStart,
-                  let organizationId = UserDefaults.lastOpenOrganizationId,
-                  let lastOpenProjectId = UserDefaults.recentProjectIds(forOrganizationId: organizationId).first
+                  let organizationId = userPreferences.lastOpenOrganizationId,
+                  let lastOpenProjectId = userPreferences.recentProjectIds(forOrganizationId: organizationId).first
         {
             // reopen last project
             await tryLoadProject(lastOpenProjectId, nil)
@@ -134,7 +138,7 @@ class ProjectsFlowController: UINavigationController {
     private func shouldAutoShowOrganizationSelector() -> Bool {
         let currentOrganizationIds = Set<String>(userModel.mainRealm.objects(Organization.self).map(\.id))
         guard currentOrganizationIds.count > 1 else { return false }
-        let lastPresentedOrganizationIds = Set<String>(UserDefaults.lastPresentedOrganizationIds ?? [])
+        let lastPresentedOrganizationIds = Set<String>(userPreferences.lastPresentedOrganizationIds ?? [])
 
         let newOrganizationIds = currentOrganizationIds.subtracting(lastPresentedOrganizationIds)
 
@@ -160,7 +164,9 @@ class ProjectsFlowController: UINavigationController {
             self?.signOut()
         }
         return UIHostingController(
-            rootView: UserSettingsView().environmentObject(userSettings).environmentObject(userModel.currentUser!)
+            rootView: UserSettingsView(userPreferences: userPreferences)
+                .environmentObject(userSettings)
+                .environmentObject(userModel.currentUser!)
         )
     }
 
@@ -201,7 +207,7 @@ class ProjectsFlowController: UINavigationController {
         guard let projectsNavigationController, let feedNavigationController else { return }
         organizationSubscriptions.removeAll()
         if let organizationModel = userModel.currentOrganizationModel {
-            let projectsVC = ProjectsViewController(model: organizationModel)
+            let projectsVC = ProjectsViewController(model: organizationModel, userPreferences: userPreferences)
             projectsVC.title = String(localized: "My Projects")
             projectsVC.onOrganizationButtonTap = { [weak self] in
                 self?.selectOrganizationAction()
@@ -318,12 +324,12 @@ class ProjectsFlowController: UINavigationController {
     private func updateLastOpenProjectAndCanvas() {
         guard let projectModel = projectFC?.model else { return }
         guard let organizationId = userModel.currentOrganizationModel?.organization.id else { return }
-        UserDefaults.addRecentProjectId(projectModel.projectId, forOrganizationId: organizationId)
-        UserDefaults.setLastOpenCanvasId(
+        userPreferences.addRecentProjectId(projectModel.projectId, forOrganizationId: organizationId)
+        userPreferences.setLastOpenCanvasId(
             projectModel.currentCanvas.id,
             forProjectId: projectModel.projectId
         )
-        UserDefaults.setLastOpenCanvasSourceId(
+        userPreferences.setLastOpenCanvasSourceId(
             projectModel.currentCanvas.currentCanvasSource.id,
             forCanvasId: projectModel.currentCanvas.id
         )
@@ -336,13 +342,14 @@ class ProjectsFlowController: UINavigationController {
         let projectFC = try await ProjectFlowController(
             userModel: userModel,
             projectId: projectId,
-            canvasId: UserDefaults.lastOpenCanvasId(forProjectId: projectId),
+            canvasId: userPreferences.lastOpenCanvasId(forProjectId: projectId),
             localFiles: localFiles,
             mediaCache: mediaCache,
             canvasFileLoader: canvasFileLoader,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
             userSettings: userSettings,
+            userPreferences: userPreferences,
             initialRoute: initialRoute
         )
         projectFC.onBack = { [weak self] in
@@ -516,7 +523,7 @@ class ProjectsFlowController: UINavigationController {
                 }
             }
         ).installAndShowCard(in: self)
-        UserDefaults.lastPresentedOrganizationIds = organizations.map(\.id)
+        userPreferences.lastPresentedOrganizationIds = organizations.map(\.id)
     }
 
     func updateInAppUnseenItemsBadge() {

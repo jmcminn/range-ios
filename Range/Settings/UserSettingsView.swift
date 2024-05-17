@@ -2,6 +2,7 @@ import SwiftUI
 
 struct UserSettingsView: View {
     @EnvironmentObject var userSettings: UserSettings
+    var userPreferences: UserPreferences
     @EnvironmentObject var currentUser: User
 
     var body: some View {
@@ -51,7 +52,7 @@ struct UserSettingsView: View {
             }
             if AppConfiguration.showDebugOptions {
                 Section {
-                    Button(action: UserDefaults.resetOnboarding) {
+                    Button(action: userPreferences.resetOnboarding) {
                         Text("Reset onboarding")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .foregroundColor(.dynamic(.Neutral_04))
@@ -79,6 +80,6 @@ struct UserSettingsView: View {
 
 struct UserSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        UserSettingsView()
+        UserSettingsView(userPreferences: UserPreferences(userId: "preview"))
     }
 }

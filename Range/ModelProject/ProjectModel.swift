@@ -16,6 +16,7 @@ class ProjectModel: NSObject, RealmModel {
     unowned let localFiles: LocalFiles
     /// Media cache
     unowned let mediaCache: MediaCache
+    let userPreferences: UserPreferences
     /// global pending uploads
     unowned let pendingUploadsModel: PendingUploadsModel
     /// global pending actions
@@ -53,6 +54,7 @@ class ProjectModel: NSObject, RealmModel {
         projectId: String,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
+        userPreferences: UserPreferences,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
         inMemory: Bool = false
@@ -61,6 +63,7 @@ class ProjectModel: NSObject, RealmModel {
         self.projectId = projectId.lowercased()
         self.localFiles = localFiles
         self.mediaCache = mediaCache
+        self.userPreferences = userPreferences
         self.pendingUploadsModel = pendingUploadsModel
         self.pendingActionsModel = pendingActionsModel
         var config = Realm.Configuration.defaultConfiguration
@@ -154,7 +157,7 @@ class ProjectModel: NSObject, RealmModel {
         guard !canvas.canvasSources.isEmpty else { throw ModelError.canvasSourceNotFound }
 
         // preselect the last canvas source for this canvas or use the first one otherwise
-        if let initialCanvasSourceId = UserDefaults.lastOpenCanvasSourceId(forCanvasId: canvas.id),
+        if let initialCanvasSourceId = userPreferences.lastOpenCanvasSourceId(forCanvasId: canvas.id),
            let initialCanvasSource = canvas.canvasSources.first(where: { $0.id == initialCanvasSourceId })
         {
             canvas.currentCanvasSource = initialCanvasSource
@@ -171,7 +174,7 @@ class ProjectModel: NSObject, RealmModel {
         // set currentCanvas after its currentCanvasSource is set, so we have fully set object before
         // notifying the listeners
         currentCanvas = canvas
-        UserDefaults.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
+        userPreferences.setLastOpenCanvasId(currentCanvas.id, forProjectId: projectId)
     }
 
     /// Loads the project summary for this project.

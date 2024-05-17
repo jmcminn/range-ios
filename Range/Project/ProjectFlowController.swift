@@ -45,6 +45,7 @@ final class ProjectFlowController: UIViewController {
     let userSettings: UserSettings
     /// for storing the debugSettings observer(s)
     private var debugSettingsNativeViewsForPinsSubscriber: AnyCancellable?
+    let userPreferences: UserPreferences
 
     lazy var actionCardVC = setupActionCardVC()
     var actionCardDraggingDelegateId: UUID?
@@ -128,6 +129,7 @@ final class ProjectFlowController: UIViewController {
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
         userSettings: UserSettings,
+        userPreferences: UserPreferences,
         initialRoute: ProjectRoute?
     ) async throws {
         self.localFiles = localFiles
@@ -139,6 +141,7 @@ final class ProjectFlowController: UIViewController {
             projectId: projectId,
             localFiles: localFiles,
             mediaCache: mediaCache,
+            userPreferences: userPreferences,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )
@@ -158,7 +161,8 @@ final class ProjectFlowController: UIViewController {
                 throw error
             }
         }
-        canvasFilters = UserDefaults.canvasFilters(forModel: model)
+        self.userPreferences = userPreferences
+        canvasFilters = userPreferences.canvasFilters(forModel: model)
         canvasFilters.model = model
         defaultCanvasFilters = CollaborationFilters(model: model, variant: .canvas)
         defaultCanvasFilters.model = model
@@ -174,6 +178,7 @@ final class ProjectFlowController: UIViewController {
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
+            userPreferences: userPreferences,
             canvasContainer: canvasContainer
         )
         self.userSettings = userSettings
@@ -231,7 +236,7 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
 
-        if !UserDefaults.cardOnboardingComplete {
+        if !userPreferences.cardOnboardingComplete {
             controls.showCardOnboardingView(aboveView: actionCardVC.view)
             actionCardDraggingDelegateId = actionCardVC.cardDragging?.addDelegate(self)
         }
@@ -448,7 +453,7 @@ final class ProjectFlowController: UIViewController {
         geometriesNotificationToken = nil
         canvasSourcesNotificationToken?.invalidate()
         canvasSourcesNotificationToken = nil
-        UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
+        userPreferences.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
         NotificationCenter.default.removeObserver(self)
         knockFeedModel.stop()
     }
@@ -629,7 +634,7 @@ extension ProjectFlowController: CardDraggingDelegate {
     func cardDidChangePosition(_ position: CardPosition) {
         if position == .max {
             // mark the card onboarding complete
-            UserDefaults.cardOnboardingComplete = true
+            userPreferences.cardOnboardingComplete = true
 
             // and hide the onboarding animation with 1s delay
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [weak self] in
@@ -708,6 +713,7 @@ extension ProjectFlowController {
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
+            userPreferences: userPreferences,
             canvasContainer: canvasContainer
         )
         addPhotoFlow?.onStop = { [weak self] geometryId, newlyCreated, shouldEdit in
@@ -728,7 +734,11 @@ extension ProjectFlowController {
     }
 
     private func startAddPinFlow() {
-        addPinFlow = AddPinFlowController(model: model, canvasContainer: canvasContainer)
+        addPinFlow = AddPinFlowController(
+            model: model,
+            userPreferences: userPreferences,
+            canvasContainer: canvasContainer
+        )
         addPinFlow?.onStop = { [weak self] geometryId, pinTypeOption in
             guard let self = self else { return }
             self.setUIState(.default, animated: true)

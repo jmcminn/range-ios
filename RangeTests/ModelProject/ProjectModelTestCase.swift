@@ -6,6 +6,7 @@ import XCTest
 class ProjectModelTestCase: XCTestCase {
     let pendingUploadsModel = TestPendingUploadsModel()
     let pendingActionsModel = TestPendingActionsModel()
+    let userPreferences = UserPreferences(userId: "user1")
     var model: ProjectModel!
     var realm: Realm!
 
@@ -18,6 +19,7 @@ class ProjectModelTestCase: XCTestCase {
             projectId: UUID().uuidString,
             localFiles: localFiles,
             mediaCache: MediaCache(localFiles: localFiles),
+            userPreferences: userPreferences,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
             inMemory: true

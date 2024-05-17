@@ -52,7 +52,7 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
     ///
     /// - Parameters:
     ///     - filters:                         CollaborationFilters
-    init(model: ProjectModel, filters: CollaborationFilters) {
+    init(model: ProjectModel, userPreferences: UserPreferences, filters: CollaborationFilters) {
         self.model = model
         self.filters = filters
 
@@ -88,7 +88,7 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         canvasesView = SelectedItemPickerItemsView(canvasesViewForModel: canvasesViewModel)
         self.canvasesViewModel = canvasesViewModel
 
-        let tagsViewModel = TagsViewModel(model: model)
+        let tagsViewModel = TagsViewModel(model: model, userPreferences: userPreferences)
         // preselect tags from the filter
         filters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)

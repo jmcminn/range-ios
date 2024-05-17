@@ -15,6 +15,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
 
     unowned let mediaCache: MediaCache
     unowned let projectModel: ProjectModel
+    let userPreferences: UserPreferences
     let collaboration: Collaboration
 
     private var geometryNotificationToken: NotificationToken?
@@ -84,9 +85,15 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     }
 
     /// - Parameters:
-    init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
+    init(
+        mediaCache: MediaCache,
+        projectModel: ProjectModel,
+        userPreferences: UserPreferences,
+        collaboration: Collaboration
+    ) {
         self.mediaCache = mediaCache
         self.projectModel = projectModel
+        self.userPreferences = userPreferences
         self.collaboration = collaboration
         isTaskWindow = collaboration.status != nil
         if let collaborationID = projectModel.collaborationIdentifier(collaboration) {
@@ -376,13 +383,14 @@ extension CollaborationViewController {
     }
 
     private func setupFeedVC() {
-        feedVC.showMoreUpdates = UserDefaults.moreUpdatesInTheFeed
+        feedVC.showMoreUpdates = userPreferences.moreUpdatesInTheFeed
     }
 
     private func setupDetailsVC() {
         detailsVC = CollaborationDetailsViewController(
             mediaCache: mediaCache,
             projectModel: projectModel,
+            userPreferences: userPreferences,
             collaboration: collaboration
         )
         detailsVC.onHeightChanged = { [weak self] in

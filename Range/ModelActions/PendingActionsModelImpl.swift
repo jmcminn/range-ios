@@ -11,6 +11,7 @@ import Sentry
 /// There's 1 global model (per user)  for pendings actions (not 1 per project), so each action keeps the projectId - we want to synchronize
 /// the actions with the server side even if user is currently working with a different project (or hasn't opened any project)
 class PendingActionsModelImpl: PendingActionsModel {
+    let defaults: UserDefaults
     /// Firestore reference
     let firestore = Firestore.firestore()
     /// Firebase functions
@@ -46,9 +47,10 @@ class PendingActionsModelImpl: PendingActionsModel {
         static let lastError = "actions.lastError"
     }
 
-    init() {
+    init(userId: String) {
+        defaults = UserDefaults.forUser(userId)
         // a default value for retry count when not set yet
-        UserDefaults.standard.register(defaults: [DefaultsKey.retryCount: 0])
+        defaults.register(defaults: [DefaultsKey.retryCount: 0])
     }
 
     /// Before adding the action to pending actions it needs to be transformed to Data first.
@@ -137,27 +139,27 @@ class PendingActionsModelImpl: PendingActionsModel {
 
     /// To be invoked on the `operationQueue`
     private func pendingActions() -> [Data] {
-        UserDefaults.standard.array(forKey: DefaultsKey.actions) as? [Data] ?? []
+        defaults.array(forKey: DefaultsKey.actions) as? [Data] ?? []
     }
 
     /// To be invoked on the `operationQueue`
     private func setPendingActions(_ actions: [Data]) {
-        UserDefaults.standard.set(actions, forKey: DefaultsKey.actions)
+        defaults.set(actions, forKey: DefaultsKey.actions)
     }
 
     /// Resets the retry count and other properties related to retrying the failed actions
     /// Called when moving to next action
     private func resetRetryInfo() {
-        UserDefaults.standard.set(0, forKey: DefaultsKey.retryCount)
-        UserDefaults.standard.removeObject(forKey: DefaultsKey.nextAttemptAt)
-        UserDefaults.standard.removeObject(forKey: DefaultsKey.lastError)
+        defaults.set(0, forKey: DefaultsKey.retryCount)
+        defaults.removeObject(forKey: DefaultsKey.nextAttemptAt)
+        defaults.removeObject(forKey: DefaultsKey.lastError)
     }
 
     /// For easy read access to defaults
-    var retryCount: Int { UserDefaults.standard.integer(forKey: DefaultsKey.retryCount) }
+    var retryCount: Int { defaults.integer(forKey: DefaultsKey.retryCount) }
     var nextAttemptAt: Double? {
         // instead of .double(forKey:) to get nil if not present
-        UserDefaults.standard.object(forKey: DefaultsKey.nextAttemptAt) as? Double
+        defaults.object(forKey: DefaultsKey.nextAttemptAt) as? Double
     }
 
     /// Based on the retryCount/nextAttemptAt decide if now is a good time to try applying pending action
@@ -189,10 +191,10 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// Increase the retry count and handle the exponential backoff
     /// Called when the action failed
     private func increaseRetryCount(error: Error) {
-        UserDefaults.standard.set(retryCount + 1, forKey: DefaultsKey.retryCount)
+        defaults.set(retryCount + 1, forKey: DefaultsKey.retryCount)
         let nextAttemptAt = Date.now.timeIntervalSince1970 + min(pow(2, Double(retryCount)), maxBackoff)
-        UserDefaults.standard.set(nextAttemptAt, forKey: DefaultsKey.nextAttemptAt)
-        UserDefaults.standard.set(error.localizedDescription, forKey: DefaultsKey.lastError)
+        defaults.set(nextAttemptAt, forKey: DefaultsKey.nextAttemptAt)
+        defaults.set(error.localizedDescription, forKey: DefaultsKey.lastError)
     }
 
     /// Checks if no action is performing currently, if there's a pending action, and if the retry conditions are met. It then performs the action

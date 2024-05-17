@@ -13,6 +13,7 @@ class AddPhotoFlowController {
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
     unowned let userSettings: UserSettings
+    let userPreferences: UserPreferences
     unowned let canvasContainer: CanvasContainerViewController
 
     private let controls: ProjectCanvasControls
@@ -72,7 +73,7 @@ class AddPhotoFlowController {
     var skipDetailsScreen: Bool?
     private var showDetailsScreen: Bool {
         if let skipDetailsScreen { return !skipDetailsScreen }
-        return UserDefaults.annotationEnabled
+        return userPreferences.annotationEnabled
     }
 
     /// Show the photos review when the details screen is shown initially (used by canvas snapshot flow to direct user to
@@ -98,19 +99,21 @@ class AddPhotoFlowController {
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
+        userPreferences: UserPreferences,
         canvasContainer: CanvasContainerViewController
     ) {
         self.model = model
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
+        self.userPreferences = userPreferences
         self.canvasContainer = canvasContainer
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
         photosToAddViewModel = PhotosToAddViewModel(projectId: model.projectId, localFiles: localFiles)
-        tagsViewModel = TagsViewModel(model: model)
+        tagsViewModel = TagsViewModel(model: model, userPreferences: userPreferences)
         photosToAddViewModel.addDelegate(self)
 
-        pinTypeOption = UserDefaults.lastPinTypeOption ?? .createTask
+        pinTypeOption = userPreferences.lastPinTypeOption ?? .createTask
     }
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
@@ -169,6 +172,7 @@ class AddPhotoFlowController {
     /// Creates the `CameraViewController` and installs the flow callbacks
     private func createCameraViewController() -> CameraViewController {
         let vc = CameraViewController(
+            userPreferences: userPreferences,
             photosViewModel: photosToAddViewModel,
             projectType: model.projectSummary.projectType
         )
@@ -381,7 +385,8 @@ class AddPhotoFlowController {
             },
             photoKeys: photosToAddViewModel.photos.map(\.mediaKey),
             annotations: photosToAddViewModel.photos.map(\.annotations),
-            removePhotosEnabled: true
+            removePhotosEnabled: true,
+            userPreferences: userPreferences
         )
     }
 
@@ -645,12 +650,12 @@ class AddPhotoFlowController {
             resultGeometryId = geometryId
             newCollaborationCreated = true
             shouldEditCollaboration = pinTypeOption != .copyPin
-            UserDefaults.lastPinTypeOption = pinTypeOption
+            userPreferences.lastPinTypeOption = pinTypeOption
             if let pinToCopy = pinToCopy {
-                UserDefaults.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
+                userPreferences.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
             }
         }
-        UserDefaults.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)
+        userPreferences.addRecentTagIds(tagsViewModel.selectedTags.map(\.id), forProjectId: model.projectId)
     }
 }
 
@@ -743,7 +748,10 @@ extension AddPhotoFlowController {
         confirmationCardVC!.onDone = { [weak self] in
             guard let self = self else { return }
             if self.pinTypeOption == .copyPin {
-                let copyPinCardVC = CopyPinCardViewController(projectModel: self.model)
+                let copyPinCardVC = CopyPinCardViewController(
+                    projectModel: self.model,
+                    userPreferences: userPreferences
+                )
                 copyPinCardVC.onPinSelected = { [weak self] pin in
                     guard let self = self else { return }
                     // handle copy pin

@@ -20,7 +20,8 @@ class Canvas: Object, WithPlaceholder, WithId {
     @objc dynamic var currentCanvasSource: CanvasSource! {
         didSet {
             guard currentCanvasSource != nil else { return }
-            UserDefaults.setLastOpenCanvasSourceId(currentCanvasSource.id, forCanvasId: id)
+            // TODO: 2
+//            UserDefaults.setLastOpenCanvasSourceId(currentCanvasSource.id, forCanvasId: id)
         }
     }
 

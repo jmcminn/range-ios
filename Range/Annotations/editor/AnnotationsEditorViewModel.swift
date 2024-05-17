@@ -9,6 +9,8 @@ import UIKit
 /// Achtung: Even if annotating multiple photos in a gallery, there's still 1 `AnnotationsEditorViewModel` but there's many `AnnotationsEditor`s
 ///
 class AnnotationsEditorViewModel: ObservableObject {
+    let userPreferences: UserPreferences
+
     /// currently annotated page in photos gallery
     var annotationsEditor: AnnotationsEditor? { didSet {
         currentAnnotationsEditorDidSet(previousAnnotationsEditor: oldValue)
@@ -74,14 +76,15 @@ class AnnotationsEditorViewModel: ObservableObject {
 
     private var currentEditorSubscriptions = Set<AnyCancellable>()
 
-    init() {
-        let thickness = UserDefaults.lastPickedAnnotationLineThickness
+    init(userPreferences: UserPreferences) {
+        self.userPreferences = userPreferences
+        let thickness = userPreferences.lastPickedAnnotationLineThickness
         currentLineThickness = thickness
         lastPickedLineThickness = thickness
         currentLineThicknessOptionIndex = Double(Annotations.lineThicknessOptionIndex(forValue: thickness))
-        currentColor = UserDefaults.lastPickedAnnotationColor
-        lastPickedColor = UserDefaults.lastPickedAnnotationColor
-        let fontSize = UserDefaults.lastPickedAnnotationFontSize
+        currentColor = userPreferences.lastPickedAnnotationColor
+        lastPickedColor = userPreferences.lastPickedAnnotationColor
+        let fontSize = userPreferences.lastPickedAnnotationFontSize
         currentTextFontSize = fontSize
         lastPickedTextFontSize = fontSize
         currentFontSizeOptionIndex = Double(Annotations.fontSizeOptionIndex(forValue: fontSize))
@@ -135,7 +138,7 @@ class AnnotationsEditorViewModel: ObservableObject {
         let thickness = Annotations.lineThicknessOptions[lineThicknessIndex]
         currentLineThickness = thickness
         lastPickedLineThickness = thickness
-        UserDefaults.lastPickedAnnotationLineThickness = thickness
+        userPreferences.lastPickedAnnotationLineThickness = thickness
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
             selectedAnnotation.setThickness(thickness)
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
@@ -149,12 +152,12 @@ class AnnotationsEditorViewModel: ObservableObject {
         guard let annotationsEditor = annotationsEditor else { return }
         currentColor = color
         lastPickedColor = color
-        UserDefaults.lastPickedAnnotationColor = color
+        userPreferences.lastPickedAnnotationColor = color
         if let selectedAnnotation = selectedAnnotation as? ScribbleAnnotationViewModel {
             selectedAnnotation.setColor(color)
         } else if let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel {
             selectedAnnotation.setColor(color)
-            UserDefaults.addRecentTextAnnotation(selectedAnnotation.text, annotationsEditor.annotationsGeometry)
+            userPreferences.addRecentTextAnnotation(selectedAnnotation.text, annotationsEditor.annotationsGeometry)
         } else if let selectedAnnotation = selectedAnnotation as? ArrowAnnotationViewModel {
             selectedAnnotation.setColor(color)
         } else if let selectedAnnotation = selectedAnnotation as? LineAnnotationViewModel {
@@ -168,12 +171,12 @@ class AnnotationsEditorViewModel: ObservableObject {
         let fontSize = Annotations.fontSizeOptions[fontSizeIndex]
         currentTextFontSize = fontSize
         lastPickedTextFontSize = fontSize
-        UserDefaults.lastPickedAnnotationFontSize = fontSize
+        userPreferences.lastPickedAnnotationFontSize = fontSize
         if let annotationsEditor = annotationsEditor,
            let selectedAnnotation = selectedAnnotation as? TextAnnotationViewModel
         {
             selectedAnnotation.setFontSize(fontSize)
-            UserDefaults.addRecentTextAnnotation(selectedAnnotation.text, annotationsEditor.annotationsGeometry)
+            userPreferences.addRecentTextAnnotation(selectedAnnotation.text, annotationsEditor.annotationsGeometry)
         }
     }
 

@@ -7,7 +7,7 @@ final class UserSettings: ObservableObject {
     /// callback for the controller using UserSettings
     var signOutAction: (() -> Void)?
 
-    private enum Keys {
+    enum Keys {
         /// whether to upload on cellular (true) or only on wifi (when false)
         static let uploadUsingCellular = "uploadUsingCellular"
         /// whether to save the images used for uploads to device (only for taken photos, not for the ones selected from camera roll)
@@ -38,9 +38,9 @@ final class UserSettings: ObservableObject {
         }
     }
 
-    init(knockClient: KnockClient, defaults: UserDefaults = .standard) {
+    init(userId: String, knockClient: KnockClient) {
         self.knockClient = knockClient
-        self.defaults = defaults
+        defaults = UserDefaults.forUser(userId)
 
         defaults.register(defaults: [
             Keys.uploadUsingCellular: true,

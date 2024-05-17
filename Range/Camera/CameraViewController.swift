@@ -39,10 +39,14 @@ class CameraViewController: UIHostingController<CameraView> {
         }
     }}
 
-    init(photosViewModel: PhotosToAddViewModel, projectType: ProjectSummary.ProjectType) {
+    init(
+        userPreferences: UserPreferences,
+        photosViewModel: PhotosToAddViewModel,
+        projectType: ProjectSummary.ProjectType
+    ) {
         self.photosViewModel = photosViewModel
         self.projectType = projectType
-        cameraViewModel = CameraViewModel(cameraService: cameraService)
+        cameraViewModel = CameraViewModel(cameraService: cameraService, userPreferences: userPreferences)
         super.init(rootView: CameraView(model: cameraViewModel))
 
         photosViewModel.addDelegate(self)

@@ -7,19 +7,20 @@ import SwiftUI
 class CameraViewModel: ObservableObject {
     /// Access to the camera properties
     let camera: CameraService
+    let userPreferences: UserPreferences
 
     /// How many photos taken in this session
     @Published var numberOfPhotos: Int = 0
     /// The thumbnail to present for this photo session
     @Published var photoThumbnail: UIImage?
     /// Whether to show the tags/description screen after taking photo(s)
-    @Published var annotationsEnabled = UserDefaults.annotationEnabled
+    @Published var annotationsEnabled: Bool
     /// Whether the option to take multiple photos is available to user
     @Published var multiPhotoAllowed = true { didSet {
         if !multiPhotoAllowed { multiPhotoEnabled = false }
     }}
     /// Whether to take multiple photos or 1 photo and annotate and place on the canvas
-    @Published var multiPhotoEnabled = UserDefaults.multiPhotoSessionEnabled
+    @Published var multiPhotoEnabled: Bool
     /// The text to display temporarily over camera screen
     @Published var bannerText: String? = nil
     /// The icon to display temporarily over camera screen
@@ -49,8 +50,12 @@ class CameraViewModel: ObservableObject {
 
     private var subscriptions = Set<AnyCancellable>()
 
-    init(cameraService: CameraService) {
+    init(cameraService: CameraService, userPreferences: UserPreferences) {
         camera = cameraService
+        self.userPreferences = userPreferences
+
+        annotationsEnabled = userPreferences.annotationEnabled
+        multiPhotoEnabled = userPreferences.multiPhotoSessionEnabled
 
         // update zoomString when the @Published CameraService.$currentZoomFactor changes
         let onCurrentZoomUpdated: (Double) -> Void = { [weak self] zoom in
@@ -102,7 +107,7 @@ class CameraViewModel: ObservableObject {
     /// Toggles the `annotationsEnabled` flag and sets the `bannerText`/`bannerIcon`
     func toggleAnnotations() {
         annotationsEnabled = !annotationsEnabled
-        UserDefaults.annotationEnabled = annotationsEnabled
+        userPreferences.annotationEnabled = annotationsEnabled
         setBanner(
             text: "Annotation " + (annotationsEnabled ? "enabled" : "disabled"),
             icon: "tag",
@@ -114,7 +119,7 @@ class CameraViewModel: ObservableObject {
     /// Toggles the `multiPhotoEnabled` flag and sets the `bannerText`/`bannerIcon`
     func toggleMultiPhoto() {
         multiPhotoEnabled = !multiPhotoEnabled
-        UserDefaults.multiPhotoSessionEnabled = multiPhotoEnabled
+        userPreferences.multiPhotoSessionEnabled = multiPhotoEnabled
         setBanner(
             text: "Multi-photo session " + (multiPhotoEnabled ? "enabled" : "disabled"),
             icon: "photo.on.rectangle",

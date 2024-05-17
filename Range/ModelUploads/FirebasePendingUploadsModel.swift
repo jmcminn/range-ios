@@ -37,6 +37,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     private let userSettings: UserSettings
     /// for storing the userSettings observer
     private var userSettingsUploadUsingCellularSubscriber: AnyCancellable?
+    let userPreferences: UserPreferences
 
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
@@ -67,6 +68,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
+        userPreferences: UserPreferences,
         pendingActionsModel: PendingActionsModel,
         inMemory: Bool = false
     ) throws {
@@ -91,6 +93,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
+        self.userPreferences = userPreferences
     }
 
     /// Defines the migration of old Realm schemas
@@ -308,6 +311,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 projectId: mediaKey.projectId,
                 localFiles: localFiles,
                 mediaCache: mediaCache,
+                userPreferences: userPreferences,
                 pendingUploadsModel: self,
                 pendingActionsModel: pendingActionsModel
             )

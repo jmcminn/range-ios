@@ -328,7 +328,7 @@ struct AnnotationsToolbarView: View {
 
 struct AnnotationsToolbarView_Previews: PreviewProvider {
     static var previews: some View {
-        AnnotationsToolbarView(model: AnnotationsEditorViewModel())
+        AnnotationsToolbarView(model: AnnotationsEditorViewModel(userPreferences: UserPreferences(userId: "preview")))
     }
 }
 

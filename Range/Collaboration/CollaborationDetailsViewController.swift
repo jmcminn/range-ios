@@ -31,6 +31,7 @@ class CollaborationDetailsViewController: UIViewController {
 
     unowned let mediaCache: MediaCache
     unowned let projectModel: ProjectModel
+    let userPreferences: UserPreferences
     let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
 
@@ -65,9 +66,15 @@ class CollaborationDetailsViewController: UIViewController {
     var updatesToggle: SegmentedControl!
 
     /// - Parameters:
-    init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
+    init(
+        mediaCache: MediaCache,
+        projectModel: ProjectModel,
+        userPreferences: UserPreferences,
+        collaboration: Collaboration
+    ) {
         self.mediaCache = mediaCache
         self.projectModel = projectModel
+        self.userPreferences = userPreferences
         self.collaboration = collaboration
         isTaskWindow = collaboration.status != nil
         super.init(nibName: nil, bundle: nil)
@@ -322,19 +329,19 @@ extension CollaborationDetailsViewController {
             ActionItem(
                 title: String(localized: "Less Updates"),
                 handler: { [weak self] in
-                    UserDefaults.moreUpdatesInTheFeed = false
+                    self?.userPreferences.moreUpdatesInTheFeed = false
                     self?.onToggleMoreUpdates?(false)
                 }
             ),
             ActionItem(
                 title: String(localized: "More Updates"),
                 handler: { [weak self] in
-                    UserDefaults.moreUpdatesInTheFeed = true
+                    self?.userPreferences.moreUpdatesInTheFeed = true
                     self?.onToggleMoreUpdates?(true)
                 }
             ),
         ])
-        if UserDefaults.moreUpdatesInTheFeed == true {
+        if userPreferences.moreUpdatesInTheFeed == true {
             updatesToggle.setSelectedSegmentIndex(1, animated: false)
         }
         updatesToggle.backgroundColor = view.backgroundColor

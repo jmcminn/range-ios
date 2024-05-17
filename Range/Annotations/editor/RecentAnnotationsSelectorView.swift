@@ -3,6 +3,7 @@ import SwiftUI
 /// View presenting a scrollable list of recent annotations
 struct RecentAnnotationsSelectorView: View {
     @ObservedObject var model: AnnotationsEditorViewModel
+    var userPreferences: UserPreferences
     @State private var contentSize: CGSize = .zero
 
     var body: some View {
@@ -11,7 +12,7 @@ struct RecentAnnotationsSelectorView: View {
                 .foregroundStyle(.white)
                 .font(.body.weight(.semibold))
                 .padding([.horizontal, .top], 16)
-            if UserDefaults.recentTextAnnotations().isEmpty {
+            if userPreferences.recentTextAnnotations().isEmpty {
                 Text("You have no recent text annotations. Get started with some suggestions below.")
                     .foregroundStyle(.white.opacity(0.75))
                     .font(.footnote.weight(.medium))
@@ -24,7 +25,7 @@ struct RecentAnnotationsSelectorView: View {
             ScrollView {
                 ScrollViewReader { proxy in
                     VStack(alignment: .leading, spacing: 0) {
-                        ForEach(UserDefaults.defaultAndRecentTextAnnotations(), id: \.id) { annotation in
+                        ForEach(userPreferences.defaultAndRecentTextAnnotations(), id: \.id) { annotation in
                             Button(action: { model.recentTextAnnotationSelected(annotation) }) {
                                 // scroll view for each annotation as annotation might be wider than the parent view
                                 ScrollView(.horizontal) {
@@ -52,5 +53,8 @@ struct RecentAnnotationsSelectorView: View {
 }
 
 #Preview {
-    RecentAnnotationsSelectorView(model: AnnotationsEditorViewModel())
+    RecentAnnotationsSelectorView(
+        model: AnnotationsEditorViewModel(userPreferences: UserPreferences(userId: "preview")),
+        userPreferences: UserPreferences(userId: "preview")
+    )
 }

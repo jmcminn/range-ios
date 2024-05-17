@@ -20,11 +20,11 @@ class TagsViewModelTest: ProjectModelTestCase {
             ])
         }
 
-        UserDefaults.addRecentTagIds(["t4", "t2", "t5"], forProjectId: model.projectId)
+        userPreferences.addRecentTagIds(["t4", "t2", "t5"], forProjectId: model.projectId)
     }
 
     func testInit_sortsAllTags() {
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
 
         XCTAssertEqual(
             viewModel.allTags.map(\.name),
@@ -33,7 +33,7 @@ class TagsViewModelTest: ProjectModelTestCase {
     }
 
     func testInit_recentTags() {
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
 
         XCTAssertEqual(
             viewModel.recentTags.map(\.id),
@@ -42,7 +42,7 @@ class TagsViewModelTest: ProjectModelTestCase {
     }
 
     func testInit_initialSelectedTags() throws {
-        let viewModel = TagsViewModel(model: model, initialSelectedTags: [
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences, initialSelectedTags: [
             TagViewModel(id: "t1", name: "A", usageCount: 0), // existing tag
             TagViewModel(id: "t100", name: "Abc", usageCount: 0, newTag: true), // new tag
         ])
@@ -52,7 +52,7 @@ class TagsViewModelTest: ProjectModelTestCase {
     }
 
     func testFilter_caseInsensitive() {
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
         viewModel.filter(by: "a")
         XCTAssertEqual(viewModel.filteredTags.map(\.name), ["a", "A"])
     }
@@ -63,7 +63,7 @@ class TagsViewModelTest: ProjectModelTestCase {
                 Tag(id: "t11", name: "ąx"),
             ])
         }
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
         viewModel.filter(by: "ą")
         XCTAssertEqual(viewModel.filteredTags.map(\.name), ["a", "A", "ąx"])
     }
@@ -75,13 +75,13 @@ class TagsViewModelTest: ProjectModelTestCase {
                 Tag(id: "t12", name: "tag other than a"),
             ])
         }
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
         viewModel.filter(by: "her tag")
         XCTAssertEqual(viewModel.filteredTags.map(\.name), ["another tag", "tag other than a"])
     }
 
     func testAddTag_keepsOrder() {
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
         viewModel.add(tag: TagViewModel(newTagWithName: "b"))
         XCTAssertEqual(viewModel.allTags.map(\.name), ["3", "4", "5", "6", "a", "A", "b", "x"])
 
@@ -93,7 +93,7 @@ class TagsViewModelTest: ProjectModelTestCase {
     }
 
     func testSetTagSelected() throws {
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
 
         viewModel.set(tagWithId: "t2", selected: true)
 
@@ -134,7 +134,7 @@ class TagsViewModelTest: ProjectModelTestCase {
             realm.object(ofType: Tag.self, forPrimaryKey: "t3")!.uploads.insert(upload2)
         }
 
-        let viewModel = TagsViewModel(model: model)
+        let viewModel = TagsViewModel(model: model, userPreferences: userPreferences)
         XCTAssertEqual(viewModel.mostUsedTags.map(\.id), ["t3", "t1", "t2"])
         XCTAssertEqual(viewModel.mostUsedTags.map(\.usageCount), [2, 1, 1])
     }

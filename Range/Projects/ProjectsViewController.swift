@@ -8,6 +8,7 @@ import UIKit
 class ProjectsViewController: UIViewController {
     /// Model to access the current organization and projects
     let model: OrganizationModel
+    let userPreferences: UserPreferences
 
     private var tableView: UITableView!
     private var emptyStateViewController: UIHostingController<ProjectsEmptyStateView>?
@@ -42,13 +43,14 @@ class ProjectsViewController: UIViewController {
 
     private var recentProjects: [ProjectSummary] = []
 
-    init(model: OrganizationModel) {
+    init(model: OrganizationModel, userPreferences: UserPreferences) {
         self.model = model
+        self.userPreferences = userPreferences
         projects = model.projects.sorted(by: \.name)
         super.init(nibName: nil, bundle: nil)
 
         filteredProjects = [ProjectSummary](projects)
-        recentProjects = UserDefaults.recentProjectIds(forOrganizationId: model.organizationId)
+        recentProjects = userPreferences.recentProjectIds(forOrganizationId: model.organizationId)
             .compactMap { projectId in projects.first { $0.id == projectId } }
     }
 
@@ -96,7 +98,7 @@ class ProjectsViewController: UIViewController {
         super.viewWillAppear(animated)
 
         // reload the recent projects (we may be back from a project so the recent list may have changed)
-        recentProjects = UserDefaults.recentProjectIds(forOrganizationId: model.organizationId)
+        recentProjects = userPreferences.recentProjectIds(forOrganizationId: model.organizationId)
             .compactMap { projectId in
                 model.projects.first { $0.id == projectId }
             }

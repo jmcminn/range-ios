@@ -391,7 +391,8 @@ struct CameraView: View {
 struct CameraView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            CameraView(model: CameraViewModel(cameraService: CameraService()))
+            CameraView(model: CameraViewModel(cameraService: CameraService(),
+                                              userPreferences: UserPreferences(userId: "preview")))
         }
     }
 }

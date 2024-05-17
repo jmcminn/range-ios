@@ -4,12 +4,13 @@ import SwiftUI
 struct RecentTextSelectorView: View {
     @ObservedObject var model: AnnotationsEditorViewModel
     @State private var contentSize: CGSize = .zero
+    var userPreferences: UserPreferences
 
     var body: some View {
         ScrollView {
             ScrollViewReader { proxy in
                 VStack(alignment: .leading) {
-                    ForEach(UserDefaults.recentAnnotationTexts(), id: \.self) { text in
+                    ForEach(userPreferences.recentAnnotationTexts(), id: \.self) { text in
                         Button(action: { model.recentAnnotationTextSelected(text) }) {
                             Text(text)
                                 .multilineTextAlignment(.leading)
@@ -32,7 +33,7 @@ struct RecentTextSelectorView: View {
                 )
                 .onAppear {
                     // scroll to the last item on show, as this is the most recent
-                    proxy.scrollTo(UserDefaults.recentAnnotationTexts().last, anchor: .bottom)
+                    proxy.scrollTo(userPreferences.recentAnnotationTexts().last, anchor: .bottom)
                 }
             }
         }
@@ -50,11 +51,15 @@ struct RecentTextSelectorView: View {
 }
 
 #Preview {
-    UserDefaults.addRecentAnnotationTexts([
+    let userPreferences = UserPreferences(userId: "preview")
+    userPreferences.addRecentAnnotationTexts([
         .init(text: "Busted water leak", position: .zero, fontSize: 0, color: .white),
         .init(text: "Fix that", position: .zero, fontSize: 0, color: .white),
         .init(text: "Fix this", position: .zero, fontSize: 0, color: .white),
         .init(text: "Paint defect", position: .zero, fontSize: 0, color: .white),
     ])
-    return RecentTextSelectorView(model: AnnotationsEditorViewModel())
+    return RecentTextSelectorView(
+        model: AnnotationsEditorViewModel(userPreferences: userPreferences),
+        userPreferences: userPreferences
+    )
 }

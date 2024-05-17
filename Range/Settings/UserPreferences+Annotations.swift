@@ -2,62 +2,47 @@ import Foundation
 import OSLog
 import UIKit
 
-/// Functions for handling Annotations related UserDefaults (see the UserDefaults.swift file for the definition of the UserDefaultsConstants)
-extension UserDefaults {
-    static var lastPickedAnnotationColor: UIColor {
+/// Functions for handling Annotations related UserPreferences (see the UserPreferences.swift file for the definition of the Keys)
+extension UserPreferences {
+    var lastPickedAnnotationColor: UIColor {
         get {
-            if let colorHex = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationColor.rawValue) as? String
-            {
+            if let colorHex = defaults.object(forKey: Keys.lastPickedAnnotationColor) as? String {
                 return UIColor(hexString: colorHex) ?? .Red_03
             }
             return .Red_03
         }
         set {
-            UserDefaults.standard.set(
-                newValue.hexString,
-                forKey: UserDefaultsConstants.lastPickedAnnotationColor.rawValue
-            )
+            defaults.set(newValue.hexString, forKey: Keys.lastPickedAnnotationColor)
         }
     }
 
-    static var lastPickedAnnotationLineThickness: Double {
+    var lastPickedAnnotationLineThickness: Double {
         get {
-            if let value = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue) as? Double
-            {
+            if let value = defaults.object(forKey: Keys.lastPickedAnnotationLineThickness) as? Double {
                 return value
             }
             return Annotations.defaultLineThickness
         }
         set {
-            UserDefaults.standard.setValue(
-                newValue,
-                forKey: UserDefaultsConstants.lastPickedAnnotationLineThickness.rawValue
-            )
+            defaults.setValue(newValue, forKey: Keys.lastPickedAnnotationLineThickness)
         }
     }
 
-    static var lastPickedAnnotationFontSize: Double {
+    var lastPickedAnnotationFontSize: Double {
         get {
-            if let value = UserDefaults.standard
-                .object(forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue) as? Double
-            {
+            if let value = defaults.object(forKey: Keys.lastPickedAnnotationFontSize) as? Double {
                 return value
             }
             return Annotations.defaultFontSize
         }
         set {
-            UserDefaults.standard.setValue(
-                newValue,
-                forKey: UserDefaultsConstants.lastPickedAnnotationFontSize.rawValue
-            )
+            defaults.setValue(newValue, forKey: Keys.lastPickedAnnotationFontSize)
         }
     }
 
     /// return at most last 10 recent annotation texts. The most recent text is at the end of the array
-    static func recentAnnotationTexts() -> [String] {
-        (UserDefaults.standard.array(forKey: UserDefaultsConstants.recentAnnotationTexts.rawValue) as? [[String]])?
+    func recentAnnotationTexts() -> [String] {
+        (defaults.array(forKey: Keys.recentAnnotationTexts) as? [[String]])?
             .compactMap { recentTextEntry in
                 recentTextEntry[1] // defaults store [id, text], we need the text only
             } ?? []
@@ -67,10 +52,8 @@ extension UserDefaults {
     /// indices are treated as more recent)
     /// If element with given id exist in recent annotation texts it will be reinserted at the end (so it's "more recent")
     /// only 10 most recent items are kept
-    static func addRecentAnnotationTexts(_ annotations: [TextAnnotation]) {
-        var entries: [[String]] = (UserDefaults.standard.array(
-            forKey: UserDefaultsConstants.recentAnnotationTexts.rawValue
-        ) as? [[String]]) ?? []
+    func addRecentAnnotationTexts(_ annotations: [TextAnnotation]) {
+        var entries: [[String]] = (defaults.array(forKey: Keys.recentAnnotationTexts) as? [[String]]) ?? []
         // Remove existing entries with ids matching the updated annotations
         entries.removeAll { existingEntry in
             let existingEntryId = existingEntry[0]
@@ -93,10 +76,7 @@ extension UserDefaults {
             entries.removeFirst(entries.count - 10)
         }
         // store in user defaults for given project key
-        UserDefaults.standard.set(
-            entries,
-            forKey: UserDefaultsConstants.recentAnnotationTexts.rawValue
-        )
+        defaults.set(entries, forKey: Keys.recentAnnotationTexts)
     }
 
     /// The default list of text annotations shown in the RecenAnnotationsSelectorView.
@@ -118,11 +98,9 @@ extension UserDefaults {
 
     /// return at most last 10 recent text annotations. The most recent annotation is at the end of the array
     /// The annotations stored here are not scaled!!
-    static func recentTextAnnotations() -> [TextAnnotation] {
+    func recentTextAnnotations() -> [TextAnnotation] {
         /// the annotations are stored as an array of annotations encoded as JSON strings
-        guard let textAnnotationStrings = (UserDefaults.standard
-            .array(forKey: UserDefaultsConstants.recentAnnotations.rawValue) as? [String])
-        else {
+        guard let textAnnotationStrings = (defaults.array(forKey: Keys.recentAnnotations) as? [String]) else {
             return []
         }
         let jsonDecoder = JSONDecoder()
@@ -139,8 +117,8 @@ extension UserDefaults {
 
     /// Returns the sum of `defaultRecentTextAnnotations` and `recentTextAnnotations`
     /// If they contain items with same text/fontSize/color, the item from `recentTextAnnotations` is returned
-    static func defaultAndRecentTextAnnotations() -> [TextAnnotation] {
-        var defaultAnnotations = defaultRecentTextAnnotations()
+    func defaultAndRecentTextAnnotations() -> [TextAnnotation] {
+        var defaultAnnotations = UserPreferences.defaultRecentTextAnnotations()
         let recentAnnotations = recentTextAnnotations()
         defaultAnnotations.removeAll { defaultAnnotation in
             recentAnnotations.contains { annotation in
@@ -159,7 +137,7 @@ extension UserDefaults {
     /// - Parameters:
     ///   - annotation: the annotation to save
     ///   - annotationsGeometry: we need the annotations scale to unscale the annotation font size
-    static func addRecentTextAnnotation(_ annotation: TextAnnotation, _ annotationsGeometry: AnnotationsGeometry) {
+    func addRecentTextAnnotation(_ annotation: TextAnnotation, _ annotationsGeometry: AnnotationsGeometry) {
         let fontSize = annotation.fontSize / annotationsGeometry.scale
 
         // we need to store a copy, so we don't change the original annotation
@@ -202,9 +180,6 @@ extension UserDefaults {
             return entryString
         }
         // store in user defaults for given project key
-        UserDefaults.standard.set(
-            entriesStrings,
-            forKey: UserDefaultsConstants.recentAnnotations.rawValue
-        )
+        defaults.set(entriesStrings, forKey: Keys.recentAnnotations)
     }
 }

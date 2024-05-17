@@ -125,10 +125,14 @@ extension ProjectFlowController: ProjectFlowActions {
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
-        let canvasFiltersCardVC = CollaborationFiltersCardViewController(model: model, filters: canvasFilters)
+        let canvasFiltersCardVC = CollaborationFiltersCardViewController(
+            model: model,
+            userPreferences: userPreferences,
+            filters: canvasFilters
+        )
         canvasFiltersCardVC.onClose = { [weak self] in
             guard let self = self else { return }
-            UserDefaults.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
+            userPreferences.setCanvasFilters(canvasFilters, forProjectId: model.projectId)
         }
         canvasFiltersCardVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
@@ -137,6 +141,7 @@ extension ProjectFlowController: ProjectFlowActions {
         let mediaVC = MediaCardViewController(
             projectModel: model,
             mediaCache: mediaCache,
+            userPreferences: userPreferences,
             title: String(localized: "All Media"),
             uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false },
             canvasContainer: canvasContainer
@@ -155,7 +160,11 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func showTaskListAction() {
-        let taskListVC = TaskListCardViewController(projectModel: model, canvasContainer: canvasContainer)
+        let taskListVC = TaskListCardViewController(
+            projectModel: model,
+            userPreferences: userPreferences,
+            canvasContainer: canvasContainer
+        )
         taskListVC.onClose = { [weak self] in
             guard let self = self else { return }
             analytics?.screen(title: "project canvas", properties: [
@@ -196,6 +205,7 @@ extension ProjectFlowController: ProjectFlowActions {
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
+            userPreferences: userPreferences,
             upload: upload,
             // show button only from media, otherwise it's from collaboration so user can just close
             // the fullscreen media and be back in collaboration
@@ -270,7 +280,11 @@ extension ProjectFlowController: ProjectFlowActions {
         } else {
             fatalError("tagsSelected action not implemented for \(String(describing: event.object))")
         }
-        let tagsViewModel = TagsViewModel(model: model, initialSelectedTags: initialTags)
+        let tagsViewModel = TagsViewModel(
+            model: model,
+            userPreferences: userPreferences,
+            initialSelectedTags: initialTags
+        )
         // no auto dismiss, the card will be closed after tags are saved
         let editTagsVC = SearchAndSelectTagsViewController(tagsViewModel: tagsViewModel, autoDismissCard: false)
         editTagsVC.onClose = { [weak self] in
@@ -307,7 +321,7 @@ extension ProjectFlowController: ProjectFlowActions {
             command: command,
             onSuccess: { [weak self] in
                 guard let self = self else { return }
-                UserDefaults.addRecentTagIds(selectedTags.map(\.id), forProjectId: self.model.projectId)
+                userPreferences.addRecentTagIds(selectedTags.map(\.id), forProjectId: self.model.projectId)
                 editTagsVC.dismissCard()
             },
             onFailure: { error in
@@ -884,7 +898,7 @@ extension ProjectFlowController {
         canvasSnapshotFlow = CanvasSnapshotFlowController(
             collaboration: collaboration, model: model,
             localFiles: localFiles, mediaCache: mediaCache, userSettings: userSettings,
-            canvasContainer: canvasContainer
+            userPreferences: userPreferences, canvasContainer: canvasContainer
         )
         canvasSnapshotFlow?.onStop = { [weak self] geometryId, _, shouldEdit in
             guard let self else { return }
@@ -913,7 +927,8 @@ extension ProjectFlowController {
             },
             photoKeys: [mediaKey],
             annotations: [upload.annotations],
-            removePhotosEnabled: false
+            removePhotosEnabled: false,
+            userPreferences: userPreferences
         )
         vc.onCancel = { [weak vc] in
             vc?.dismiss(animated: true)

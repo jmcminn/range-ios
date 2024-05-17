@@ -34,6 +34,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     unowned let localFiles: LocalFiles
     private let mediaCache: MediaCache
     private let userSettings: UserSettings
+    private let userPreferences: UserPreferences
     private let showCollaborationButton: Bool
     private var scrollToCommentsInitially: Bool
     unowned let canvasContainer: CanvasContainerViewController
@@ -72,6 +73,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
          localFiles: LocalFiles,
          mediaCache: MediaCache,
          userSettings: UserSettings,
+         userPreferences: UserPreferences,
          upload: Upload,
          showCollaborationButton: Bool,
          scrollToCommentsInitially: Bool = false,
@@ -81,6 +83,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
+        self.userPreferences = userPreferences
         correlatedUploads = projectModel.correlatedUploads(upload)
         initialUploadIndex = correlatedUploads.firstIndex(of: upload) ?? 0
         self.showCollaborationButton = showCollaborationButton
@@ -554,6 +557,7 @@ extension FullscreenMediaCardViewController {
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
+            userPreferences: userPreferences,
             canvasContainer: canvasContainer
         )
         // preselect the geometryId as the update photo flow will not include pin placement

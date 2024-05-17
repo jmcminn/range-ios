@@ -34,6 +34,7 @@ class TagsViewModel: NSObject {
 
     init(
         model: ProjectModel,
+        userPreferences: UserPreferences,
         initialSelectedTags: [TagViewModel] = [],
         untaggedTagName: String = String(localized: "Untagged Pins")
     ) {
@@ -50,7 +51,7 @@ class TagsViewModel: NSObject {
 
         let allTagsIndex = Dictionary(uniqueKeysWithValues: zip(allTags.map(\.id), allTags))
 
-        recentTags = UserDefaults.recentTagIds(forProjectId: model.projectId)
+        recentTags = userPreferences.recentTagIds(forProjectId: model.projectId)
             .compactMap { allTagsIndex[$0] }
             .reversed()
 

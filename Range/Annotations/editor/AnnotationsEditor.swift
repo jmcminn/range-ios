@@ -12,6 +12,7 @@ class AnnotationsEditor: NSObject {
     // It's not updated when user is editing annotations
     let initialAnnotations: Annotations?
     let viewModel: AnnotationsEditorViewModel
+    let userPreferences: UserPreferences
 
     /// whether this annotations editor is the current active editor (there might be multiple editors, one per gallery page, but only
     /// one is active at a time)
@@ -77,11 +78,12 @@ class AnnotationsEditor: NSObject {
     init(
         hostView: FullscreenImageGalleryPageView,
         initialAnnotations: Annotations?,
-        viewModel: AnnotationsEditorViewModel
+        viewModel: AnnotationsEditorViewModel, userPreferences: UserPreferences
     ) {
         self.hostView = hostView
         self.initialAnnotations = initialAnnotations
         self.viewModel = viewModel
+        self.userPreferences = userPreferences
         super.init()
         hostView.scrollView.forwardDelegateInvocations(to: self)
         subscribeToViewModel()
@@ -270,7 +272,7 @@ class AnnotationsEditor: NSObject {
             x: -annotationSize.width / 2,
             y: -annotationSize.height / 2
         )
-        UserDefaults.addRecentTextAnnotation(newAnnotation, annotationsGeometry)
+        userPreferences.addRecentTextAnnotation(newAnnotation, annotationsGeometry)
         addText(newAnnotation)
     }
 
@@ -605,8 +607,8 @@ extension AnnotationsEditor {
                 // store the text in recent texts when editing ended
                 // but only if it has changed during the editing session
                 if textBeforeEditing != textAnnotationVM.text.text {
-                    UserDefaults.addRecentAnnotationTexts([textAnnotationVM.text])
-                    UserDefaults.addRecentTextAnnotation(textAnnotationVM.text, annotationsGeometry)
+                    userPreferences.addRecentAnnotationTexts([textAnnotationVM.text])
+                    userPreferences.addRecentTextAnnotation(textAnnotationVM.text, annotationsGeometry)
                 }
             }
         }
