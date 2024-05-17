@@ -480,8 +480,9 @@ final class ProjectFlowController: UIViewController {
         }
 
         if state == .default {
-            if ProjectFlowController.actionCardInitiallyExpanded {
+            if ProjectFlowController.actionCardInitiallyExpanded, userPreferences.cardOnboardingComplete {
                 // when showing the project flow controller initially we want the card maximized
+                // But not if user hasn't completed the card onboarding
                 actionCardVC.cardDragging?.setPosition(.max, withVelocity: 0)
                 ProjectFlowController.actionCardInitiallyExpanded = false
             } else {
