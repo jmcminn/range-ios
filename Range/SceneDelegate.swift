@@ -300,6 +300,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ///    - newlySignedIn: true if main flow is starting after user went through authentication (and false if user was already authenticated when the app started)
     @MainActor
     private func startMainFlow(forUser userId: String, newlySignedIn: Bool) async {
+        // TODO: after 1.8.0 this can be removed in the release after 1.8.0 (in which it's being introduced)
+        // we give users one release cycle to update the defaults
+        UserDefaults.possiblyMigrateUserDefaults(userId: userId)
         observeAuthenticatedUser()
         Analytics.setUserID(userId)
         SentrySDK.setUser(Sentry.User(userId: userId))

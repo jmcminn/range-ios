@@ -258,7 +258,7 @@ class PendingActionsModelImpl: PendingActionsModel {
                 goToNext = dropAction
             } else {
                 // no error
-                Logger.pendingActions.debug("Action succeeded: \(action.debugDescription, privacy: .private)")
+                Logger.pendingActions.info("Action succeeded: \(action.debugDescription, privacy: .private)")
                 goToNext = true
             }
             self.operationQueue.sync {
