@@ -12,7 +12,7 @@ class ProjectModelTestCase: XCTestCase {
 
     @MainActor
     override func setUpWithError() throws {
-        let localFiles = try LocalFiles()
+        let localFiles = try LocalFiles(userId: "user1")
         // create a different Realm in each test by using a new UUID
         model = try ProjectModel(
             userId: "user1",

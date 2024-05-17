@@ -46,7 +46,7 @@ class ProjectsFlowController: UINavigationController {
         self.userId = userId
         userPreferences = UserPreferences(userId: userId)
         userModel = try UserModel(userId: userId, newlySignedIn: newlySignedIn, userPreferences: userPreferences)
-        localFiles = try LocalFiles()
+        localFiles = try LocalFiles(userId: userId)
         mediaCache = MediaCache(localFiles: localFiles)
         canvasFileLoader = try CanvasFileLoader()
         userSettings = UserSettings(userId: userId, knockClient: userModel.knockClient)

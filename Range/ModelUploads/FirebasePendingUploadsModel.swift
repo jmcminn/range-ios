@@ -324,7 +324,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
 
             if uploadExists {
                 let resultMetadata = try await uploadRef.putFileAsync(from: cacheFileURL, metadata: metadata)
-                Logger.storage.debug("Uploaded file: \(mediaKey, privacy: .public)")
+                Logger.storage.info("Uploaded file: \(mediaKey, privacy: .public)")
 
                 let storageVersion = String(resultMetadata.generation)
 
@@ -338,17 +338,16 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 // update the Upload in project model to store the storageVersion
                 try await projectModel.write { realm in
                     guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) else {
-                        Logger.storage
-                            .debug(
-                                "No Upload object in the database, not updating localStorageVersion for pending upload: \(mediaKey, privacy: .public)"
-                            )
+                        Logger.storage.warning(
+                            "No Upload object in the database, not updating localStorageVersion for pending upload: \(mediaKey, privacy: .public)"
+                        )
                         return
                     }
                     upload.localStorageVersion.setMain(annotated: mediaKey.annotated, value: storageVersion)
                 }
             } else {
                 // Upload in Firestore is gone, remove the pending upload and local files
-                Logger.storage.debug(
+                Logger.storage.warning(
                     "No Upload object in the database, ignoring (and removing) pending upload: \(mediaKey, privacy: .public)"
                 )
                 try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in

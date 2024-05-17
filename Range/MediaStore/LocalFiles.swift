@@ -1,9 +1,11 @@
 import Foundation
 import Kingfisher
+import OSLog
 
 /// Store for local files not uploaded to storage yet
 /// It uses Kingfisher ImageCache but is not really a cache because the files on disk never expire (we don't want to lose files that are not uploaded).
 /// We just want to reuse ImageCache file handling functionality
+/// Every user has their own LocalFiles storage
 class LocalFiles {
     private let cache: ImageCache
 
@@ -11,7 +13,7 @@ class LocalFiles {
     /// and to use 0.75 compression quality for JPEG (instead of the 1.0 default)
     let cacheSerializer: CacheSerializer
 
-    init() throws {
+    init(userId: String) throws {
         // make sure that the "cache" is not in Library/Caches as we want it to persist any cache cleanups
         let applicationDirectory = try FileManager.default.url(
             for: .applicationSupportDirectory,
@@ -19,7 +21,7 @@ class LocalFiles {
             appropriateFor: nil,
             create: true
         )
-        let localFiles = try ImageCache(name: "local", cacheDirectoryURL: applicationDirectory)
+        let localFiles = try ImageCache(name: "user_\(userId)_local", cacheDirectoryURL: applicationDirectory)
         localFiles.diskStorage.config.expiration = .never
         localFiles.diskStorage.config.autoExtAfterHashedFileName = true
         cache = localFiles
@@ -28,6 +30,42 @@ class LocalFiles {
         cacheSerializer.compressionQuality = 0.75
         cacheSerializer.preferCacheOriginalData = true
         self.cacheSerializer = cacheSerializer
+
+        // TODO: after 1.8.0 this can be removed in the release after 1.8.0 (in which it's being introduced)
+        do {
+            try possiblyMigrateLocalFiles()
+        } catch {
+            Logger.cache.error("Failed to migrate local files to user local files \(error.localizedDescription)")
+        }
+    }
+
+    /// Moves files from obsolete "local" directory to a cache per userId
+    private func possiblyMigrateLocalFiles() throws {
+        // old cache:
+        let applicationDirectory = try FileManager.default.url(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        )
+        let oldLocalFiles = try ImageCache(name: "local", cacheDirectoryURL: applicationDirectory)
+
+        let oldDirectoryURL = oldLocalFiles.diskStorage.directoryURL
+        let newDirectoryURL = cache.diskStorage.directoryURL
+
+        Logger.cache.info(
+            "Migrating local files \(oldDirectoryURL.path) to user level local files \(newDirectoryURL.path)"
+        )
+
+        let fileManager = FileManager.default
+        for filePath in try fileManager.contentsOfDirectory(atPath: oldDirectoryURL.path) {
+            let oldFileURL = oldDirectoryURL.appending(path: filePath)
+            let newFileURL = newDirectoryURL.appending(path: filePath)
+            Logger.cache.info("Moving \(oldFileURL.path) to \(newFileURL.path)")
+            try fileManager.moveItem(at: oldFileURL, to: newFileURL)
+        }
+
+        Logger.cache.info("Migrated local files to user level local files")
     }
 
     /// Return Kingfisher image provider to use for UIImageView. This image provider gets the data from local files.
