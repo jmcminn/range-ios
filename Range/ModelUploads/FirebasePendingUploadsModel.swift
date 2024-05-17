@@ -80,7 +80,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         } else {
             config.schemaVersion = 4
             config.fileURL!.deleteLastPathComponent()
-            config.fileURL!.appendPathComponent("pendingUploads")
+            config.fileURL!.appendPathComponent("user_\(userId)_pendingUploads")
             config.fileURL!.appendPathExtension("realm")
             config.migrationBlock = { migration, oldSchemaVersion in
                 FirebasePendingUploadsModel.migrate(migration, oldSchemaVersion)
@@ -88,12 +88,36 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             Logger.model.info("pending uploads realm file url: \(config.fileURL?.path ?? "")")
         }
         config.objectTypes = [PendingUpload.self]
+        // TODO: after 1.8.0 this can be removed in the release after 1.8.0 (in which it's being introduced)
+        do {
+            try FirebasePendingUploadsModel.possiblyMigrateGlobalPendingUploads(userRealmConfig: config)
+        } catch {
+            Logger.model.error(
+                "Failed to migrate global pending uploads to user local files \(error.localizedDescription)"
+            )
+        }
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
         self.userPreferences = userPreferences
+    }
+
+    /// Moves files for obsolete "pendingUploads" directory/files to a db per user
+    private static func possiblyMigrateGlobalPendingUploads(userRealmConfig: Realm.Configuration) throws {
+        guard let newFileURL = userRealmConfig.fileURL else { return }
+        var oldConfig = Realm.Configuration.defaultConfiguration
+        oldConfig.fileURL!.deleteLastPathComponent()
+        oldConfig.fileURL!.appendPathComponent("pendingUploads")
+        oldConfig.fileURL!.appendPathExtension("realm")
+        guard let oldFileURL = oldConfig.fileURL else { return }
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: oldFileURL.path) else { return }
+        Logger.model.info("Migrating pending uploads from: \(oldFileURL.path) to: \(newFileURL.path)")
+        try fileManager.copyItem(at: oldFileURL, to: newFileURL)
+        _ = try Realm.deleteFiles(for: oldConfig)
+        Logger.model.info("Migrated pending uploads from: \(oldFileURL.path) to: \(newFileURL.path)")
     }
 
     /// Defines the migration of old Realm schemas
