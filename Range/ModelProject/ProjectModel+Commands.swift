@@ -9,33 +9,44 @@ import UIKit
 // MARK: - run commands
 
 extension ProjectModel {
-    /// Run command locally and add an action for running in Firestore transaction.
-    /// The Firestore transaction is queued by `PendingActionsModel` and not awaited here.
+    /// Run command locally and add action for running backend action.
+    /// The backend action is queued by `PendingActionsModel` and not awaited here.
     func run(_ command: Command?) async throws {
         guard let command = command else { return }
+        try await run([command])
+    }
 
-        // Execute the command locally and store action for server side execution.
-        // They both can fail. So first prepare the command for storage,  if it doesn't fail
+    /// Run commands locally in one realm transaction and add actions for running backend actions.
+    /// The backend actions are queued by `PendingActionsModel` and not awaited here.
+    func run(_ commands: [Command]) async throws {
+        guard !commands.isEmpty else { return }
+
+        // Execute the commands locally and store actions for server side execution.
+        // They both can fail. So first prepare the commands for storage,  if it doesn't fail
         // then execute the local action and then store the action (this will not fail). So
         // local execution and storing for server side is "transactional".
 
         // 1. First prepare the action data (it might fail)
-        let actionData = try pendingActionsModel.prepareAction(Action(projectId: projectId, command: command))
+        let actionsData = try commands.map { command in
+            try pendingActionsModel.prepareAction(Action(projectId: projectId, command: command))
+        }
 
-        // 2. Then apply the command in Realm (it might fail)
+        // 2. Then apply the commands in Realm (it might fail)
         try await write { realm in
-            if let localCommand = command as? LocalCommand {
+            for localCommand in commands.compactMap({ $0 as? LocalCommand }) {
                 try localCommand.apply(inRealm: realm)
             }
         }
 
         // 3. Add pending uploads
-        if let pendingUploadCommand = command as? PendingUploadCommand {
+        for pendingUploadCommand in commands.compactMap({ $0 as? PendingUploadCommand }) {
             try await pendingUploadCommand.addPendingUploads(pendingUploadsModel)
         }
 
         // 4. Store the action for server side execution (will not fail).
-        pendingActionsModel.addAction(data: actionData)
+        for actionData in actionsData {
+            pendingActionsModel.addAction(data: actionData)
+        }
     }
 
     /// A convenience wrapper for the `run` function that does the async call and catches and logs the error.
@@ -44,9 +55,7 @@ extension ProjectModel {
     func run(_ commands: [Command?], callback: ((Error?) -> Void)?) {
         Task {
             do {
-                for command in commands {
-                    try await run(command)
-                }
+                try await run(commands.compactMap { $0 })
                 DispatchQueue.main.async {
                     callback?(nil)
                 }
@@ -295,28 +304,26 @@ extension ProjectModel {
                 analytics?._trackProjectEvent(name: "tag added", self, [:])
             }
 
-        return UpdateCollaborationsTagsCommand(
-            collaborationIds: [collaboration.id],
+        return UpdateCollaborationTagsCommand(
+            collaborationId: collaboration.id,
             tags: tags.map(CommandTag.init(fromViewModel:))
         )
     }
 
-    /// Update mulitple collaborations with given tags.
-    /// If adding (add is `true`) then append the tags to current collaboration tags for each collaboration.
+    /// Update collaboration with given tags.
+    /// If adding (add is `true`) then append the tags to collaboration tags
     /// If add is `false` then replace the current tags with the newly provided ones
-    func update(tags: [TagViewModel], forCollaborations collaborations: [String], add: Bool) -> Command {
-        collaborations.forEach { collaborationId in
-            guard let collaboration = mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)
-            else { return }
-            let existingTagIdsSet: Set<String> = Set(collaboration.tags.map(\.id))
-            // only report tag added for newly attached tags
-            tags.filter { !existingTagIdsSet.contains($0.id) }
-                .forEach { _ in
-                    analytics?._trackProjectEvent(name: "tag added", self, [:])
-                }
-        }
-        return UpdateCollaborationsTagsCommand(
-            collaborationIds: collaborations,
+    func update(tags: [TagViewModel], forCollaboration collaborationId: String, add: Bool) -> Command? {
+        guard let collaboration = mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)
+        else { return nil }
+        let existingTagIdsSet: Set<String> = Set(collaboration.tags.map(\.id))
+        // only report tag added for newly attached tags
+        tags.filter { !existingTagIdsSet.contains($0.id) }
+            .forEach { _ in
+                analytics?._trackProjectEvent(name: "tag added", self, [:])
+            }
+        return UpdateCollaborationTagsCommand(
+            collaborationId: collaborationId,
             tags: tags.map(CommandTag.init(fromViewModel:)),
             add: add
         )
@@ -346,11 +353,7 @@ extension ProjectModel {
     /// Updates the name for collaboration if it's different than the current name.
     func update(name: String, forCollaboration collaboration: Collaboration) -> Command? {
         guard name != collaboration.name else { return nil }
-        return UpdateCollaborationNameCommand(
-            authorId: userId,
-            collaborationId: collaboration.id,
-            name: name
-        )
+        return UpdateCollaborationNameCommand(collaborationId: collaboration.id, name: name)
     }
 
     /// Updates the completed state of note (comment)
@@ -369,30 +372,14 @@ extension ProjectModel {
     }
 
     /// Updates the due date for collaboration. If the provided due date is the same as the current one it returns no commands
-    func update(dueDate: Date?, forCollaboration collaboration: Collaboration) -> Command? {
+    func update(dueDate: Date?, forCollaboration collaborationId: String) -> Command? {
         // the date has the selected day in project timezone, the time needs to be updated
         // to 23:59:59 (in project timezone) - the time might be different because there was
         // no due date and the current time was used, or the time was different in Firestore (which shouldn't happen?)
         let endOfDayDueDate: Date? = dueDate?._endOfDay(in: projectSummary.timeZone)
-        guard endOfDayDueDate != collaboration.dueDateTimestamp else { return nil }
-        return UpdateCollaborationsDueDateCommand(
-            authorId: userId,
-            collaborationIds: [collaboration.id],
-            dueDateTimestamp: endOfDayDueDate
-        )
-    }
-
-    /// Updates the due date for collaborations.
-    func update(dueDate: Date?, forCollaborations collaborationIds: [String]) -> Command {
-        // the date has the selected day in project timezone, the time needs to be updated
-        // to 23:59:59 (in project timezone) - the time might be different because there was
-        // no due date and the current time was used, or the time was different in Firestore (which shouldn't happen?)
-        let endOfDayDueDate: Date? = dueDate?._endOfDay(in: projectSummary.timeZone)
-        return UpdateCollaborationsDueDateCommand(
-            authorId: userId,
-            collaborationIds: collaborationIds,
-            dueDateTimestamp: endOfDayDueDate
-        )
+        guard let collaboration = mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId),
+              endOfDayDueDate != collaboration.dueDateTimestamp else { return nil }
+        return UpdateCollaborationDueDateCommand(collaborationId: collaborationId, dueDateTimestamp: endOfDayDueDate)
     }
 
     /// Deletes given comment
@@ -433,46 +420,27 @@ extension ProjectModel {
     /// Updates the status for collaboration if it's different than the current one.
     func update(status: Status, forCollaboration collaboration: Collaboration) -> Command? {
         guard status != collaboration.status else { return nil }
-        return UpdateCollaborationsStatusCommand(
-            authorId: userId,
-            collaborationIds: [collaboration.id],
+        return UpdateCollaborationStatusCommand(
+            collaborationId: collaboration.id,
             statusId: status.id
         )
     }
 
-    func update(status: Status, forCollaborations collaborationIds: [String]) -> Command {
-        UpdateCollaborationsStatusCommand(authorId: userId, collaborationIds: collaborationIds, statusId: status.id)
-    }
-
-    /// Update status for given collaborations and mark given collaborations as archived (subset of collaborations to update the status)
-    func update(status: Status,
-                forCollaborations collaborationIds: [String],
-                andArchiveCollaborations collaborationIdsToArchive: [String]) -> Command
-    {
-        let geometryIds = [Collaboration](mainRealm.objects(Collaboration.self))
-            .filter { collaborationIdsToArchive.contains($0.id) }
-            .compactMap { $0.feature.first?.geometry.first?.id }
-        return UpdateCollaborationsStatusAndArchiveCommand(
-            authorId: userId,
-            geometryIds: geometryIds,
-            collaborationIds: collaborationIds,
-            statusId: status.id
-        )
+    func update(status: Status, forCollaboration collaborationId: String) -> Command {
+        UpdateCollaborationStatusCommand(collaborationId: collaborationId, statusId: status.id)
     }
 
     func update(assigneeId: String?, forCollaboration collaboration: Collaboration) -> Command? {
         guard assigneeId != collaboration.assignee?.id else { return nil }
-        return UpdateCollaborationsAssigneeCommand(
-            authorId: userId,
-            collaborationIds: [collaboration.id],
+        return UpdateCollaborationAssigneeCommand(
+            collaborationId: collaboration.id,
             assigneeId: assigneeId
         )
     }
 
-    func update(assigneeId: String?, forCollaborations collaborationIds: [String]) -> Command {
-        UpdateCollaborationsAssigneeCommand(
-            authorId: userId,
-            collaborationIds: collaborationIds,
+    func update(assigneeId: String?, forCollaboration collaborationId: String) -> Command {
+        UpdateCollaborationAssigneeCommand(
+            collaborationId: collaborationId,
             assigneeId: assigneeId
         )
     }
@@ -481,7 +449,6 @@ extension ProjectModel {
     func update(description: String?, forCollaboration collaboration: Collaboration) -> Command? {
         guard description != collaboration.collaborationDescription else { return nil }
         return UpdateCollaborationDescriptionCommand(
-            authorId: userId,
             collaborationId: collaboration.id,
             description: (description?.isEmpty ?? true) ? nil : description
         )

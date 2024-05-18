@@ -1,0 +1,41 @@
+import FirebaseFirestore
+import Foundation
+import RealmSwift
+
+/// Update dueDateTimestamp for given Collaboration
+struct UpdateCollaborationDueDateCommand: Command, Codable, Equatable {
+    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
+    var targetIds: [String] { .init([collaborationId]) }
+
+    let collaborationId: String
+    var dueDateTimestamp: Date?
+
+    init(collaborationId: String, dueDateTimestamp: Date?) {
+        self.collaborationId = collaborationId
+        self.dueDateTimestamp = dueDateTimestamp
+    }
+}
+
+/// Update in local Realm db
+extension UpdateCollaborationDueDateCommand: LocalCommand {
+    func apply(inRealm realm: Realm) throws {
+        guard let collaboration = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId) else {
+            throw ModelError.collaborationNotFound
+        }
+        collaboration.dueDateTimestamp = dueDateTimestamp
+    }
+}
+
+/// Provide data for firebase function call
+extension UpdateCollaborationDueDateCommand: FirebaseFunctionCommand {
+    var functionName: String { "updateCollaboration" }
+
+    func functionData(_ projectId: String) -> Any? {
+        [
+            "projectId": projectId,
+            "collaborationId": collaborationId,
+            FirestoreCollaboration.CodingKeys.dueDateTimestamp.rawValue: dueDateTimestamp
+                .map { Int($0.timeIntervalSince1970 * 1000) } as Any,
+        ]
+    }
+}

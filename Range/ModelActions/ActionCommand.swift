@@ -31,11 +31,10 @@ enum ActionCommand: Codable {
     case deleteUpload(DeleteUploadCommand)
     case updateCollaborationDescription(UpdateCollaborationDescriptionCommand)
     case updateCollaborationName(UpdateCollaborationNameCommand)
-    case updateCollaborationsAssignee(UpdateCollaborationsAssigneeCommand)
-    case updateCollaborationsDueDate(UpdateCollaborationsDueDateCommand)
-    case updateCollaborationsStatus(UpdateCollaborationsStatusCommand)
-    case updateCollaborationsStatusAndArchive(UpdateCollaborationsStatusAndArchiveCommand)
-    case updateCollaborationsTags(UpdateCollaborationsTagsCommand)
+    case updateCollaborationAssignee(UpdateCollaborationAssigneeCommand)
+    case updateCollaborationDueDate(UpdateCollaborationDueDateCommand)
+    case updateCollaborationStatus(UpdateCollaborationStatusCommand)
+    case updateCollaborationTags(UpdateCollaborationTagsCommand)
     case updateCommentText(UpdateCommentTextCommand)
     case updateGeometriesArchived(UpdateGeometriesArchivedCommand)
     case updateGeometryLocation(UpdateGeometryLocationCommand)
@@ -55,11 +54,10 @@ enum ActionCommand: Codable {
         case let c as DeleteUploadCommand: self = .deleteUpload(c)
         case let c as UpdateCollaborationDescriptionCommand: self = .updateCollaborationDescription(c)
         case let c as UpdateCollaborationNameCommand: self = .updateCollaborationName(c)
-        case let c as UpdateCollaborationsAssigneeCommand: self = .updateCollaborationsAssignee(c)
-        case let c as UpdateCollaborationsDueDateCommand: self = .updateCollaborationsDueDate(c)
-        case let c as UpdateCollaborationsStatusCommand: self = .updateCollaborationsStatus(c)
-        case let c as UpdateCollaborationsStatusAndArchiveCommand: self = .updateCollaborationsStatusAndArchive(c)
-        case let c as UpdateCollaborationsTagsCommand: self = .updateCollaborationsTags(c)
+        case let c as UpdateCollaborationAssigneeCommand: self = .updateCollaborationAssignee(c)
+        case let c as UpdateCollaborationDueDateCommand: self = .updateCollaborationDueDate(c)
+        case let c as UpdateCollaborationStatusCommand: self = .updateCollaborationStatus(c)
+        case let c as UpdateCollaborationTagsCommand: self = .updateCollaborationTags(c)
         case let c as UpdateCommentTextCommand: self = .updateCommentText(c)
         case let c as UpdateGeometriesArchivedCommand: self = .updateGeometriesArchived(c)
         case let c as UpdateGeometryLocationCommand: self = .updateGeometryLocation(c)
@@ -82,11 +80,10 @@ enum ActionCommand: Codable {
         case let .deleteUpload(c): return c
         case let .updateCollaborationDescription(c): return c
         case let .updateCollaborationName(c): return c
-        case let .updateCollaborationsAssignee(c): return c
-        case let .updateCollaborationsDueDate(c): return c
-        case let .updateCollaborationsStatus(c): return c
-        case let .updateCollaborationsStatusAndArchive(c): return c
-        case let .updateCollaborationsTags(c): return c
+        case let .updateCollaborationAssignee(c): return c
+        case let .updateCollaborationDueDate(c): return c
+        case let .updateCollaborationStatus(c): return c
+        case let .updateCollaborationTags(c): return c
         case let .updateCommentText(c): return c
         case let .updateGeometriesArchived(c): return c
         case let .updateGeometryLocation(c): return c
@@ -102,13 +99,6 @@ enum ActionCommand: Codable {
         case let .addUploadsToCollaboration(c): return c
         case let .createCollaborationComment(c): return c
         case let .createUploadComment(c): return c
-        case let .updateCollaborationDescription(c): return c
-        case let .updateCollaborationName(c): return c
-        case let .updateCollaborationsAssignee(c): return c
-        case let .updateCollaborationsDueDate(c): return c
-        case let .updateCollaborationsStatus(c): return c
-        case let .updateCollaborationsStatusAndArchive(c): return c
-        case let .updateCollaborationsTags(c): return c
         case let .updateCommentText(c): return c
         case let .updateGeometriesArchived(c): return c
         case let .updateGeometryLocation(c): return c
@@ -126,6 +116,12 @@ enum ActionCommand: Codable {
         case let .deleteCollaboration(c): return c
         case let .deleteComment(c): return c
         case let .deleteUpload(c): return c
+        case let .updateCollaborationAssignee(c): return c
+        case let .updateCollaborationDescription(c): return c
+        case let .updateCollaborationDueDate(c): return c
+        case let .updateCollaborationName(c): return c
+        case let .updateCollaborationStatus(c): return c
+        case let .updateCollaborationTags(c): return c
         default: return nil
         }
     }

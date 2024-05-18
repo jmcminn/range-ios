@@ -7,7 +7,6 @@ import XCTest
 final class UpdateCollaborationDescriptionCommandRealmTest: ProjectModelTestCase {
     func testApply_noCollaboration() throws {
         let command = UpdateCollaborationDescriptionCommand(
-            authorId: "user1",
             collaborationId: "collaboration1",
             description: "new description"
         )
@@ -30,7 +29,6 @@ final class UpdateCollaborationDescriptionCommandRealmTest: ProjectModelTestCase
             realm.add(collaboration1)
         }
         let command = UpdateCollaborationDescriptionCommand(
-            authorId: "user1",
             collaborationId: "collaboration1",
             description: "new description"
         )
@@ -38,114 +36,30 @@ final class UpdateCollaborationDescriptionCommandRealmTest: ProjectModelTestCase
             try command.apply(inRealm: realm)
         }
 
-        XCTAssertNil(
-            realm.object(ofType: Update.self, forPrimaryKey: command.updateId),
-            "Update is not created when running command in Realm"
-        )
         XCTAssertEqual(collaboration1.collaborationDescription, "new description")
     }
 }
 
-/// Tests applying `UpdateCollaborationDescriptionCommand` to Firestore
-final class UpdateCollaborationDescriptionCommandFirestoreTest: XCTestCase {
-    func testApply_noUpload() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
+/// Tests getting the parameters for `UpdateCollaborationDescriptionCommand`Firebase function call
+final class UpdateCollaborationCommandDescriptionFirebaseFunctionTest: XCTestCase {
+    let command = UpdateCollaborationDescriptionCommand(
+        collaborationId: "collaboration1",
+        description: "new description"
+    )
 
-        let command = UpdateCollaborationDescriptionCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            description: "new description"
-        )
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("collaboration doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
+    func test_functionName() throws {
+        XCTAssertEqual(command.functionName, "updateCollaboration")
     }
 
-    func testApply_successful() throws {
-        // collaboration exists
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .collaboration("collaboration1"): FirestoreCollaboration(
-                featureId: "feature1",
-                timestamp: Timestamp(),
-                statusId: nil,
-                name: "name",
-                collaborationDescription: "description",
-                tagIds: []
-            ),
-        ])
-
-        let command = UpdateCollaborationDescriptionCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            description: "new description"
-        )
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 2)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.collaboration("collaboration1"), ["description": "new description"])
-        )
-        AssertOperationsEqual(
-            context.operations[1],
-            .set(.update(command.updateId), [
-                "parent": "collaboration1",
-                "parentType": "Collaboration",
-                "timestamp": FieldValue.serverTimestamp(),
-                "user": "user1",
-                "field": Update.Field.description.rawValue,
-                "oldValue": "description",
-                "newValue": "new description",
-            ])
-        )
-    }
-
-    /// Test for idempotency
-    /// The Update is already added, so skip the command
-    func testApply_noOp_updateExists() throws {
-        let command = UpdateCollaborationDescriptionCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            description: "new description"
-        )
-        // update exists
-        let context = TestFirestoreCommandContext(docs: [
-            .update(command.updateId),
-        ])
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 0)
-    }
-
-    /// Test for idempotency
-    /// The name is the same as in Firestore... ignore
-    func testApply_noOp_nameUnchanged() throws {
-        // collaboration exists
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .collaboration("collaboration1"): FirestoreCollaboration(
-                featureId: "feature1",
-                timestamp: Timestamp(),
-                statusId: nil,
-                name: "name",
-                collaborationDescription: "description",
-                tagIds: []
-            ),
-        ])
-        // same description
-        let command = UpdateCollaborationDescriptionCommand(
-            authorId: "user1",
-            collaborationId: "collaboration1",
-            description: "description"
-        )
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 0)
+    func test_functionData() throws {
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1",
+            "collaborationId": "collaboration1",
+            "description": "new description",
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }

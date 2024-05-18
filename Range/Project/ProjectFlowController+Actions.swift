@@ -399,13 +399,10 @@ extension ProjectFlowController: ProjectFlowActions {
                 }
             }
         } else {
-            model.run(
-                model.update(
-                    status: completedStatus,
-                    forCollaborations: [collaboration.id],
-                    andArchiveCollaborations: [collaboration.id]
-                )
-            ) { [weak self] error in
+            model.run([
+                model.update(status: completedStatus, forCollaboration: collaboration.id),
+                model.update(archived: true, forCollaborations: [collaboration.id]),
+            ]) { [weak self] error in
                 if error != nil { ToastWindow.shared.showError(text: "Failed to complete and archive the task") }
                 else {
                     ToastWindow.shared.showSuccess(iconName: "checkmark", text: "Task Completed & Archived")

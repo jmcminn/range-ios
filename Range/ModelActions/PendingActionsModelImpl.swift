@@ -255,6 +255,7 @@ class PendingActionsModelImpl: PendingActionsModel {
             guard let self else { return }
             let goToNext: Bool // is processing of this action done?
             if let error = error {
+                Logger.pendingActions.error("Error for action: \(action.debugDescription, privacy: .private)")
                 let (dropAction, sentryLevel) = self.handleActionError(action, error)
                 if let sentryLevel {
                     SentrySDK.capture(error: error) { scope in

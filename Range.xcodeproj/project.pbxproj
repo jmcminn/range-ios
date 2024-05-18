@@ -91,7 +91,7 @@
 		0A25D2B92AB8C02F00A331E1 /* DBScorer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B12AB8C02F00A331E1 /* DBScorer.m */; };
 		0A25D2BA2AB8C02F00A331E1 /* DBMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */; };
 		0A26CC3B2A6971DE004C6DFC /* ProjectModelTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */; };
-		0A28A1C0290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */; };
+		0A28A1C0290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */; };
 		0A2B3F552AF3CFF000D3D0D2 /* TextAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */; };
 		0A2B3F572AF3E53C00D3D0D2 /* AnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */; };
 		0A2B3F592AF513DB00D3D0D2 /* TextAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F582AF513DB00D3D0D2 /* TextAnnotationViewModel.swift */; };
@@ -272,7 +272,7 @@
 		0A7121B2290BB8A10013E2F8 /* DatePickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */; };
 		0A7121B5290BFDE40013E2F8 /* SheetCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */; };
 		0A7121B8290EE2DC0013E2F8 /* Date+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */; };
-		0A7121BA290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */; };
+		0A7121BA290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */; };
 		0A720C6128006AC8003D6B13 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */; };
 		0A720C6328007011003D6B13 /* Image+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6228007011003D6B13 /* Image+Resize.swift */; };
 		0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A720C6928044BDB003D6B13 /* PhotoPin.swift */; };
@@ -300,14 +300,14 @@
 		0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0A76BF0129CE1175009DF0E1 /* FirebaseMessaging */; };
 		0A797F69292BA3FC00D63567 /* StatusPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */; };
 		0A797F6B292BABF000D63567 /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */; };
-		0A797F6D292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */; };
+		0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */; };
 		0A797F6F292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */; };
 		0A797F72292BDA8900D63567 /* UserPickerCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */; };
 		0A797F74292BDEF700D63567 /* ViewWithTapAreaInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */; };
 		0A797F76292CC60800D63567 /* UserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F75292CC60800D63567 /* UserTableViewCell.swift */; };
 		0A797F78292D183B00D63567 /* ClearUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */; };
-		0A797F7A292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */; };
-		0A797F7C292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F7B292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift */; };
+		0A797F7A292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */; };
+		0A797F7C292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */; };
 		0A7A5372293E3D130093D913 /* RealmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5371293E3D130093D913 /* RealmModel.swift */; };
 		0A7A5374293E3F030093D913 /* RealmModel+SyncFromFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */; };
 		0A7A5377293E49800093D913 /* ModelError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A5376293E49800093D913 /* ModelError.swift */; };
@@ -343,16 +343,15 @@
 		0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */; };
 		0A881987291D17060050FC41 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881986291D17060050FC41 /* CommandTypes.swift */; };
 		0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */; };
-		0A88198B291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */; };
+		0A88198B291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */; };
 		0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */; };
-		0A88198F291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */; };
+		0A88198F291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */; };
 		0A88730B2B299B24006DF885 /* RecentAnnotationsSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88730A2B299B24006DF885 /* RecentAnnotationsSelectorView.swift */; };
 		0A88730D2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88730C2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift */; };
 		0A8924A32907D02F008C0A42 /* FeedItemCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8924A22907D02F008C0A42 /* FeedItemCells.swift */; };
 		0A8CC5CD2B30920D00D26716 /* RepresentedSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */; };
 		0A8CC5CF2B30A34A00D26716 /* CreateProjectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CC5CE2B30A34A00D26716 /* CreateProjectViewModel.swift */; };
 		0A8CC5D22B31E83300D26716 /* CreateProjectStep2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8CC5D12B31E83300D26716 /* CreateProjectStep2View.swift */; };
-		0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */; };
 		0A9341C229A7D4B9006166C1 /* CopyPinCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */; };
 		0A9341C429A8A464006166C1 /* CopyPinTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C329A8A464006166C1 /* CopyPinTableViewCell.swift */; };
 		0A9341C629A8A50D006166C1 /* PillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9341C529A8A50D006166C1 /* PillView.swift */; };
@@ -440,7 +439,6 @@
 		0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */; };
 		0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19028F8057B00C7185D /* PinImage.swift */; };
 		0AC9E19328F80D2600C7185D /* UIImage+Merge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */; };
-		0ACACBCA2A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACACBC92A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift */; };
 		0ACE1968296C7AD500D223EB /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 0ACE1967296C7AD500D223EB /* Sentry */; };
 		0ACE1972296D68DD00D223EB /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1971296D68DD00D223EB /* AppConfiguration.swift */; };
 		0ACF0F282ACC3CF1001AE5B0 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACF0F272ACC3CF1001AE5B0 /* FeatureFlags.swift */; };
@@ -608,7 +606,7 @@
 		0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBMatcher.m; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTestCase.swift; sourceTree = "<group>"; };
-		0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsTagsCommand.swift; sourceTree = "<group>"; };
+		0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationTagsCommand.swift; sourceTree = "<group>"; };
 		0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotation.swift; sourceTree = "<group>"; };
 		0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationViewModel.swift; sourceTree = "<group>"; };
 		0A2B3F582AF513DB00D3D0D2 /* TextAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotationViewModel.swift; sourceTree = "<group>"; };
@@ -793,7 +791,7 @@
 		0A7121B1290BB8A10013E2F8 /* DatePickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerCardViewController.swift; sourceTree = "<group>"; };
 		0A7121B4290BFDE40013E2F8 /* SheetCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCardViewController.swift; sourceTree = "<group>"; };
 		0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Utils.swift"; sourceTree = "<group>"; };
-		0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsDueDateCommand.swift; sourceTree = "<group>"; };
+		0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDueDateCommand.swift; sourceTree = "<group>"; };
 		0A720C6028006AC8003D6B13 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		0A720C6228007011003D6B13 /* Image+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Resize.swift"; sourceTree = "<group>"; };
 		0A720C6928044BDB003D6B13 /* PhotoPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPin.swift; sourceTree = "<group>"; };
@@ -820,14 +818,14 @@
 		0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		0A797F68292BA3FC00D63567 /* StatusPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F6A292BABF000D63567 /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
-		0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsStatusCommand.swift; sourceTree = "<group>"; };
+		0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommand.swift; sourceTree = "<group>"; };
 		0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationStatusCommandTest.swift; sourceTree = "<group>"; };
 		0A797F71292BDA8900D63567 /* UserPickerCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerCardViewController.swift; sourceTree = "<group>"; };
 		0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithTapAreaInsets.swift; sourceTree = "<group>"; };
 		0A797F75292CC60800D63567 /* UserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTableViewCell.swift; sourceTree = "<group>"; };
 		0A797F77292D183B00D63567 /* ClearUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearUserTableViewCell.swift; sourceTree = "<group>"; };
-		0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsAssigneeCommand.swift; sourceTree = "<group>"; };
-		0A797F7B292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsAssigneeCommandTest.swift; sourceTree = "<group>"; };
+		0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationAssigneeCommand.swift; sourceTree = "<group>"; };
+		0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationAssigneeCommandTest.swift; sourceTree = "<group>"; };
 		0A7A5371293E3D130093D913 /* RealmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmModel.swift; sourceTree = "<group>"; };
 		0A7A5373293E3F030093D913 /* RealmModel+SyncFromFirestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RealmModel+SyncFromFirestore.swift"; sourceTree = "<group>"; };
 		0A7A5375293E48C70093D913 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -870,16 +868,15 @@
 		0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A881986291D17060050FC41 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
 		0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadsTagsCommandTest.swift; sourceTree = "<group>"; };
-		0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsTagsCommandTest.swift; sourceTree = "<group>"; };
+		0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationTagsCommandTest.swift; sourceTree = "<group>"; };
 		0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationNameCommandTest.swift; sourceTree = "<group>"; };
-		0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsDueDateCommandTest.swift; sourceTree = "<group>"; };
+		0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationDueDateCommandTest.swift; sourceTree = "<group>"; };
 		0A88730A2B299B24006DF885 /* RecentAnnotationsSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentAnnotationsSelectorView.swift; sourceTree = "<group>"; };
 		0A88730C2B29D60E006DF885 /* RecentAnnotationViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentAnnotationViewRepresentable.swift; sourceTree = "<group>"; };
 		0A8924A22907D02F008C0A42 /* FeedItemCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemCells.swift; sourceTree = "<group>"; };
 		0A8CC5CC2B30920D00D26716 /* RepresentedSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepresentedSearchView.swift; sourceTree = "<group>"; };
 		0A8CC5CE2B30A34A00D26716 /* CreateProjectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectViewModel.swift; sourceTree = "<group>"; };
 		0A8CC5D12B31E83300D26716 /* CreateProjectStep2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateProjectStep2View.swift; sourceTree = "<group>"; };
-		0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateCommand.swift; sourceTree = "<group>"; };
 		0A9341C129A7D4B9006166C1 /* CopyPinCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPinCardViewController.swift; sourceTree = "<group>"; };
 		0A9341C329A8A464006166C1 /* CopyPinTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPinTableViewCell.swift; sourceTree = "<group>"; };
 		0A9341C529A8A50D006166C1 /* PillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillView.swift; sourceTree = "<group>"; };
@@ -966,7 +963,6 @@
 		0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationStatusButton.swift; sourceTree = "<group>"; };
 		0AC9E19028F8057B00C7185D /* PinImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinImage.swift; sourceTree = "<group>"; };
 		0AC9E19228F80D2600C7185D /* UIImage+Merge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Merge.swift"; sourceTree = "<group>"; };
-		0ACACBC92A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationsStatusAndArchiveCommand.swift; sourceTree = "<group>"; };
 		0ACE1971296D68DD00D223EB /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		0ACE1973296D71AE00D223EB /* GoogleService-Info.staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.staging.plist"; sourceTree = "<group>"; };
 		0ACE1974296D738800D223EB /* GoogleService-Info.production.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.production.plist"; sourceTree = "<group>"; };
@@ -1856,12 +1852,12 @@
 				0A374DE52927BA730036C184 /* DeleteCollaborationCommandTest.swift */,
 				0A374DE1292788BC0036C184 /* DeleteCommentCommandTest.swift */,
 				0A374DED2927DAC50036C184 /* DeleteUploadCommandTest.swift */,
+				0A797F7B292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift */,
 				0A6DB6A6292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift */,
+				0A88198E291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift */,
 				0A88198C291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift */,
-				0A797F7B292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift */,
-				0A88198E291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift */,
-				0A88198A291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift */,
 				0A797F6E292BCD1400D63567 /* UpdateCollaborationStatusCommandTest.swift */,
+				0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */,
 				0A82A8EF2922857E00A4BBCE /* UpdateCommentTextCommandTest.swift */,
 				0A374DE92927D59E0036C184 /* UpdateGeometryArchivedCommandTest.swift */,
 				0AA5A122296597A500E19ECA /* UpdateGeometryLocationCommandTest.swift */,
@@ -2218,18 +2214,16 @@
 				0A881986291D17060050FC41 /* CommandTypes.swift */,
 				0A82A8E5292178E000A4BBCE /* CreateCollaborationCommand.swift */,
 				0A82A8E929226F0E00A4BBCE /* CreateCollaborationCommentCommand.swift */,
-				0A8E790629228EB600F75BB3 /* CreateUpdateCommand.swift */,
 				0AFDFA962952106D00F64D62 /* CreateUploadCommentCommand.swift */,
 				0A374DE32927B3490036C184 /* DeleteCollaborationCommand.swift */,
 				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
 				0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */,
+				0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */,
 				0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */,
+				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
-				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift */,
-				0A797F79292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift */,
-				0A797F6C292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift */,
-				0ACACBC92A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift */,
-				0A28A1BF290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift */,
+				0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */,
+				0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */,
 				0AC89D79290944EC00D3CCA1 /* UpdateCommentTextCommand.swift */,
 				0A374DE72927D0200036C184 /* UpdateGeometriesArchivedCommand.swift */,
 				0AA5A1202965904300E19ECA /* UpdateGeometryLocationCommand.swift */,
@@ -2632,7 +2626,7 @@
 				0A671F9528E9943F00F78B34 /* GeometriesAnnotationPinsDisplay.swift in Sources */,
 				0A97233227FDCFAF00D744F4 /* CameraService.swift in Sources */,
 				0A2B3F592AF513DB00D3D0D2 /* TextAnnotationViewModel.swift in Sources */,
-				0A28A1C0290AD83C00465A84 /* UpdateCollaborationsTagsCommand.swift in Sources */,
+				0A28A1C0290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift in Sources */,
 				0A4DC78127F48FD300712518 /* UIViewController+Flow.swift in Sources */,
 				0AAC46CB2B51901500D87549 /* SelectedItemPickerItemsView.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
@@ -2707,7 +2701,6 @@
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirestoreCanvas.swift in Sources */,
-				0ACACBCA2A48BA2600E29CE3 /* UpdateCollaborationsStatusAndArchiveCommand.swift in Sources */,
 				0A5394272A251482008583F0 /* ScribbleAnnotationViewModel.swift in Sources */,
 				0A9382A72935FE2200FD032C /* CanvasSelectorCardViewController.swift in Sources */,
 				0A632EE827E516B7001A019B /* CanvasViewController.swift in Sources */,
@@ -2721,7 +2714,7 @@
 				0A51A44A2AB9F049008C5B84 /* OrganizationModel.swift in Sources */,
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */,
-				0A797F7A292D50A600D63567 /* UpdateCollaborationsAssigneeCommand.swift in Sources */,
+				0A797F7A292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift in Sources */,
 				0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */,
 				0A078E142BBAC66800857DE5 /* LineAnnotationView.swift in Sources */,
 				0AC3C0232A03F7EF001E3199 /* Sequence+AsyncMap.swift in Sources */,
@@ -2757,7 +2750,7 @@
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
 				0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
-				0A797F6D292BCB9F00D63567 /* UpdateCollaborationsStatusCommand.swift in Sources */,
+				0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */,
 				0A4DC78527F490CA00712518 /* Canvas.swift in Sources */,
 				0AFCD61A2939285F004843AA /* String+Size.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
@@ -2822,8 +2815,7 @@
 				0A985B1D2A9E37B600442617 /* UserModel+RealmMigration.swift in Sources */,
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
 				0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */,
-				0A8E790729228EB600F75BB3 /* CreateUpdateCommand.swift in Sources */,
-				0A7121BA290EEAB40013E2F8 /* UpdateCollaborationsDueDateCommand.swift in Sources */,
+				0A7121BA290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift in Sources */,
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
@@ -2958,7 +2950,7 @@
 				0A4DC76D27EE100400712518 /* PDFPageSizeTest.swift in Sources */,
 				0A82A8EC292277A700A4BBCE /* CreateCollaborationCommentCommandTest.swift in Sources */,
 				0A881981291C25630050FC41 /* TestPendingActionsModel.swift in Sources */,
-				0A88198F291D713E0050FC41 /* UpdateCollaborationsDueDateCommandTest.swift in Sources */,
+				0A88198F291D713E0050FC41 /* UpdateCollaborationDueDateCommandTest.swift in Sources */,
 				0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */,
 				0A34C17F284551F500BEDC7C /* FirestoreStatusNameTest.swift in Sources */,
 				0ABFD8AE28EDB962008CDA74 /* UserPreferencesTest.swift in Sources */,
@@ -2967,7 +2959,7 @@
 				0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */,
 				0A3714E32950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift in Sources */,
 				0A34C1832845F89700BEDC7C /* FirestoreCollaborationTest.swift in Sources */,
-				0A88198B291D38FC0050FC41 /* UpdateCollaborationsTagsCommandTest.swift in Sources */,
+				0A88198B291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift in Sources */,
 				0A966F9C28DDE70C00E50284 /* ArrayUtilsTest.swift in Sources */,
 				0A3831DB28E44FF5001AF38A /* FirestoreUpdateTest.swift in Sources */,
 				0A374DE62927BA730036C184 /* DeleteCollaborationCommandTest.swift in Sources */,
@@ -2980,7 +2972,7 @@
 				0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */,
 				0A374DEE2927DAC50036C184 /* DeleteUploadCommandTest.swift in Sources */,
 				0A7393762A5DABA40079A7FB /* RangeBezierPathTest.swift in Sources */,
-				0A797F7C292D55BA00D63567 /* UpdateCollaborationsAssigneeCommandTest.swift in Sources */,
+				0A797F7C292D55BA00D63567 /* UpdateCollaborationAssigneeCommandTest.swift in Sources */,
 				0AE007A22A6DA12900EA3232 /* MediaKeyTest.swift in Sources */,
 				0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */,
 				0A73937B2A6005AE0079A7FB /* AnnotationsTest.swift in Sources */,

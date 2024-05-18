@@ -3,12 +3,11 @@ import FirebaseFirestore
 import RealmSwift
 import XCTest
 
-/// Tests applying `UpdateCollaborationsStatusCommand` in local Realm db
-final class UpdateCollaborationsStatusCommandRealmTest: ProjectModelTestCase {
+/// Tests applying `UpdateCollaborationStatusCommand` in local Realm db
+final class UpdateCollaborationStatusCommandRealmTest: ProjectModelTestCase {
     func testApply_noCollaboration() throws {
-        let command = UpdateCollaborationsStatusCommand(
-            authorId: "user1",
-            collaborationIds: ["collaboration1"],
+        let command = UpdateCollaborationStatusCommand(
+            collaborationId: "collaboration1",
             statusId: "status1"
         )
         XCTAssertThrowsError(
@@ -24,9 +23,8 @@ final class UpdateCollaborationsStatusCommandRealmTest: ProjectModelTestCase {
         try realm.write {
             realm.add(collaboration1)
         }
-        let command = UpdateCollaborationsStatusCommand(
-            authorId: "user1",
-            collaborationIds: ["collaboration1"],
+        let command = UpdateCollaborationStatusCommand(
+            collaborationId: "collaboration1",
             statusId: "status1"
         )
         XCTAssertThrowsError(
@@ -43,174 +41,38 @@ final class UpdateCollaborationsStatusCommandRealmTest: ProjectModelTestCase {
         try realm.write {
             realm.add([collaboration1, status1])
         }
-        let command = UpdateCollaborationsStatusCommand(
-            authorId: "user1",
-            collaborationIds: ["collaboration1"],
+        let command = UpdateCollaborationStatusCommand(
+            collaborationId: "collaboration1",
             statusId: "status1"
         )
         try realm.write {
             try command.apply(inRealm: realm)
         }
 
-        XCTAssertNil(
-            realm.object(ofType: Update.self, forPrimaryKey: command.updateIds[0]),
-            "Update is not created when running command in Realm"
-        )
         XCTAssertEqual(collaboration1.status, status1)
     }
 }
 
-/// Tests applying `UpdateCollaborationsStatusCommand` to Firestore
-final class UpdateCollaborationsStatusCommandFirestoreTest: XCTestCase {
-    func testApply_noCollaboration() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
+/// Tests getting the parameters for the Firebase function call
+final class UpdateCollaborationStatusCommandFirebaseFunctionTest: XCTestCase {
+    let command = UpdateCollaborationStatusCommand(
+        collaborationId: "collaboration1",
+        statusId: "status1"
+    )
 
-        let command = UpdateCollaborationsStatusCommand(
-            authorId: "user1",
-            collaborationIds: ["collaboration1"],
-            statusId: "status1"
-        )
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("collaboration doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
+    func test_functionName() throws {
+        XCTAssertEqual(command.functionName, "updateCollaboration")
     }
 
-    func testApply_noStatus() throws {
-        // collaboration exists
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .collaboration("collaboration1"): FirestoreCollaboration(
-                featureId: "feature1",
-                timestamp: Timestamp(),
-                statusId: nil,
-                name: "old name",
-                collaborationDescription: nil,
-                tagIds: []
-            ),
-        ])
-
-        let command = UpdateCollaborationsStatusCommand(
-            authorId: "user1",
-            collaborationIds: ["collaboration1"],
-            statusId: "status1"
-        )
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("status doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
-    }
-
-    func testApply_successful() throws {
-        // collaboration exists
-        let context = TestFirestoreCommandContext(
-            docs: [.statusName("status1"), .statusName("status2")],
-            docsData: [
-                .collaboration("collaboration1"): FirestoreCollaboration(
-                    featureId: "feature1",
-                    timestamp: Timestamp(),
-                    statusId: nil,
-                    name: "old name",
-                    collaborationDescription: nil,
-                    tagIds: []
-                ),
-                .collaboration("collaboration2"): FirestoreCollaboration(
-                    featureId: "feature2",
-                    timestamp: Timestamp(),
-                    statusId: "status2",
-                    name: "",
-                    collaborationDescription: nil,
-                    tagIds: []
-                ),
-            ]
-        )
-
-        let command = UpdateCollaborationsStatusCommand(
-            authorId: "user1",
-            collaborationIds: ["collaboration1", "collaboration2"],
-            statusId: "status1"
-        )
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 4)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.collaboration("collaboration1"), ["statusName": "status1"])
-        )
-        AssertOperationsEqual(
-            context.operations[1],
-            .set(.update(command.updateIds[0]), [
-                "parent": "collaboration1",
-                "parentType": "Collaboration",
-                "timestamp": FieldValue.serverTimestamp(),
-                "user": "user1",
-                "field": Update.Field.statusName.rawValue,
-                "newValue": "status1",
-            ])
-        )
-        AssertOperationsEqual(
-            context.operations[2],
-            .update(.collaboration("collaboration2"), ["statusName": "status1"])
-        )
-        AssertOperationsEqual(
-            context.operations[3],
-            .set(.update(command.updateIds[1]), [
-                "parent": "collaboration2",
-                "parentType": "Collaboration",
-                "timestamp": FieldValue.serverTimestamp(),
-                "user": "user1",
-                "field": Update.Field.statusName.rawValue,
-                "oldValue": "status2",
-                "newValue": "status1",
-            ])
-        )
-    }
-
-    /// Test for idempotency
-    /// The Update is already added, reapply
-    func testApply_noOp_updateExists() throws {
-        let command = UpdateCollaborationsStatusCommand(
-            authorId: "user1",
-            collaborationIds: ["collaboration1"],
-            statusId: "status1"
-        )
-        // update exists
-        let context = TestFirestoreCommandContext(
-            docs: [.update(command.updateIds[0]),
-                   .statusName("status1")],
-            docsData: [.collaboration("collaboration1"): FirestoreCollaboration(
-                featureId: "feature1",
-                timestamp: Timestamp(),
-                statusId: nil,
-                name: "name",
-                collaborationDescription: nil,
-                tagIds: []
-            )]
-        )
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 2)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.collaboration("collaboration1"), ["statusName": "status1"])
-        )
-        AssertOperationsEqual(
-            context.operations[1],
-            .set(.update(command.updateIds[0]), [
-                "parent": "collaboration1",
-                "parentType": "Collaboration",
-                "timestamp": FieldValue.serverTimestamp(),
-                "user": "user1",
-                "field": Update.Field.statusName.rawValue,
-                "newValue": "status1",
-            ])
-        )
+    func test_functionData() throws {
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1",
+            "collaborationId": "collaboration1",
+            "statusId": "status1",
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }

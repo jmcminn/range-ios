@@ -54,6 +54,7 @@ class TaskListCardViewController: SheetCardViewController {
     private var selectedTasks = Set<String>()
 
     private var bulkActionsBottomBar: UIView?
+    private var bulkActionsBottomBarShowing: Bool = false
     private var selectedTasksCountLabel: UILabel?
     private var bulkActionsButton: UIButton?
 
@@ -553,7 +554,7 @@ extension TaskListCardViewController {
     /// show or hide the bottom bar for bulk actions button
     private func updateBulkActionsBottomBarVisibility() {
         let shouldHide = selectedTasks.isEmpty
-        if shouldHide {
+        if bulkActionsBottomBarShowing, shouldHide {
             if let bottomBar = bulkActionsBottomBar {
                 bottomBar.snp.remakeConstraints { make in
                     make.leading.trailing.equalToSuperview()
@@ -569,7 +570,7 @@ extension TaskListCardViewController {
             }
             tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             tableView.scrollIndicatorInsets = tableView.contentInset
-        } else {
+        } else if !bulkActionsBottomBarShowing, !shouldHide {
             setupBulkActionsBottomBar()
             if let bottomBar = bulkActionsBottomBar {
                 bottomBar.snp.remakeConstraints { make in
@@ -594,6 +595,7 @@ extension TaskListCardViewController {
                 }
             }
         }
+        bulkActionsBottomBarShowing = !shouldHide
     }
 
     private func showBulkActions() {
@@ -702,9 +704,9 @@ extension TaskListCardViewController {
     }
 
     private func bulkUpdateTags(_ tagsModel: TagsViewModel, add: Bool) {
-        projectModel.run(
-            projectModel.update(tags: tagsModel.selectedTags, forCollaborations: [String](selectedTasks), add: add)
-        ) { error in
+        let commands = selectedTasks
+            .compactMap { projectModel.update(tags: tagsModel.selectedTags, forCollaboration: $0, add: add) }
+        projectModel.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update tags") }
         }
     }
@@ -723,9 +725,8 @@ extension TaskListCardViewController {
     }
 
     private func bulkUpdateDueDate(_ date: Date?) {
-        projectModel.run(
-            projectModel.update(dueDate: date, forCollaborations: [String](selectedTasks))
-        ) { error in
+        let commands = selectedTasks.map { projectModel.update(dueDate: date, forCollaboration: $0) }
+        projectModel.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the due date") }
         }
     }
@@ -743,9 +744,8 @@ extension TaskListCardViewController {
     }
 
     private func bulkUpdateAssignee(_ assigneeId: String?) {
-        projectModel.run(
-            projectModel.update(assigneeId: assigneeId, forCollaborations: [String](selectedTasks))
-        ) { error in
+        let commands = selectedTasks.map { projectModel.update(assigneeId: assigneeId, forCollaboration: $0) }
+        projectModel.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the assignee") }
         }
     }
@@ -769,9 +769,8 @@ extension TaskListCardViewController {
     }
 
     private func bulkUpdateStatus(_ status: Status) {
-        projectModel.run(
-            projectModel.update(status: status, forCollaborations: [String](selectedTasks))
-        ) { error in
+        let commands = selectedTasks.map { projectModel.update(status: status, forCollaboration: $0) }
+        projectModel.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status") }
         }
     }
@@ -786,13 +785,11 @@ extension TaskListCardViewController {
         let completedAndArchivedCount = collaborationsToArchive.count
         let completedOnlyCount = selectedTasks.count - completedAndArchivedCount
 
-        projectModel.run(
-            projectModel.update(
-                status: status,
-                forCollaborations: [String](selectedTasks),
-                andArchiveCollaborations: collaborationsToArchive
-            )
-        ) { error in
+        var commands: [Command] = []
+        commands.append(contentsOf: selectedTasks.map { projectModel.update(status: status, forCollaboration: $0) })
+        commands.append(projectModel.update(archived: true, forCollaborations: collaborationsToArchive))
+
+        projectModel.run(commands) { error in
             if error == nil {
                 var messageStrings: [String] = []
                 if completedOnlyCount > 0 {

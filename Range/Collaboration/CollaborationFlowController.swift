@@ -551,11 +551,11 @@ extension CollaborationFlowController {
 
     private func updateStatusAndArchive(_ status: Status) {
         guard let collaboration = collaboration else { return }
-        model.run(model.update(
-            status: status,
-            forCollaborations: [collaboration.id],
-            andArchiveCollaborations: [collaboration.id]
-        )) { error in
+        let commands = [
+            model.update(status: status, forCollaboration: collaboration.id),
+            model.update(archived: true, forCollaborations: [collaboration.id])
+        ]
+        model.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }
         }
     }
@@ -649,7 +649,7 @@ extension CollaborationFlowController {
 
     private func updateDueDate(_ dueDate: Date?) {
         guard let collaboration = collaboration else { return }
-        model.run(model.update(dueDate: dueDate, forCollaboration: collaboration)) { error in
+        model.run(model.update(dueDate: dueDate, forCollaboration: collaboration.id)) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the due date") }
         }
     }
