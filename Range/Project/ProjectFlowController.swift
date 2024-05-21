@@ -33,6 +33,7 @@ final class ProjectFlowController: UIViewController {
     let localFiles: LocalFiles
     let mediaCache: MediaCache
     let canvasFileLoader: CanvasFileLoader
+    let userModel: UserModel
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
 
@@ -136,6 +137,7 @@ final class ProjectFlowController: UIViewController {
         self.mediaCache = mediaCache
         self.canvasFileLoader = canvasFileLoader
         self.initialRoute = initialRoute
+        self.userModel = userModel
         model = try ProjectModel(
             userId: userModel.userId,
             projectId: projectId,
@@ -595,8 +597,9 @@ final class ProjectFlowController: UIViewController {
                             .userInterfaceStyle == .dark ? .light : .dark
                     }
                 ),
+
                 ActionItem(
-                    title: "Show dev settings",
+                    title: "Show dev settings (\(userModel.currentUser.email))",
                     imageName: "gearshape",
                     handler: { [weak self] in
                         self?.showDebugSettingsAction()

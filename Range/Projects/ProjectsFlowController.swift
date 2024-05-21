@@ -146,17 +146,19 @@ class ProjectsFlowController: UINavigationController {
     }
 
     func stop() async {
-        do {
-            try await userModel.stop()
-        } catch {
-            Logger.model.error("Failed to stop the userModel: \(error)s")
-        }
+        // first do all the "sync" stops (not doing any network calls, etc.)
         pendingUploadsModel.stop()
         pendingActionsModel.stop()
         currentUserNotificationToken?.invalidate()
         currentOrganizationObservation?.invalidate()
         currentProjectNotificationToken?.invalidate()
         organizationsNotificationToken?.invalidate()
+        // then wait for the userModel to stop (which is async)
+        do {
+            try await userModel.stop()
+        } catch {
+            Logger.model.error("Failed to stop the userModel: \(error)s")
+        }
     }
 
     private func setupSettingsViewController() -> UIViewController {

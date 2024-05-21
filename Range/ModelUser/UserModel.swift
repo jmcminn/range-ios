@@ -278,6 +278,7 @@ class UserModel: NSObject, RealmModel {
 
     /// Deregisters all observers.
     func stop() async throws {
+        clearCurrentOrganization()
         userNotificationToken?.invalidate()
         userNotificationToken = nil
         invitationsNotificationToken?.invalidate()

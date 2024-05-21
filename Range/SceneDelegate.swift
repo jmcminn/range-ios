@@ -366,19 +366,40 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     @MainActor
     private func onSignedOut() async {
+        Logger.auth.info("signOut started")
         if let authenticatedUserListenerHandle = authenticatedUserListenerHandle {
             Auth.auth().removeStateDidChangeListener(authenticatedUserListenerHandle)
         }
         if let projectsFC = window?.rootViewController as? ProjectsFlowController {
             await projectsFC.stop()
         }
+        // TODO: we cannot really terminate the firestore as it's a shared instance and we are
+        // using firestore even when the user is signed out.
+        // Even when firestore is terminated and started for newly signed in user it'll still not fix
+        // the problem when only the first user will receive a document-deletion event...
+        // The problem is when 2 users are signed in one after another and sync a project.
+        // Then some document is removed on a different client. The first user will receive the
+        // deletion event but after sign out and sign in of the 2nd user, the deletion event will not
+        // be delievered again... (that's not how firestore works, it'll just fetch all docs and listen
+        // for collection change).
+        // the default firestore sync cannot really be used when we want to truly support multiple
+        // users on one device.
+        // This could be solved by having a custom user-level feed that user listens to (and this feed
+        // is only growing)
+//        do {
+//            try await Firestore.firestore().terminate()
+//        } catch {
+//            Logger.firestore.error("Error while terminating Firestore: \(error.localizedDescription, privacy:
+//            .public)")
+//        }
         do {
             try Auth.auth().signOut()
         } catch {
-            Logger.firebase.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
+            Logger.auth.error("Error while trying to sign out: \(error.localizedDescription, privacy: .public)")
         }
         SentrySDK.setUser(nil)
         analytics?.reset()
+        Logger.auth.info("signOut finished")
         showAuth()
     }
 
