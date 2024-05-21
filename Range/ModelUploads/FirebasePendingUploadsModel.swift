@@ -28,10 +28,10 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
 
     /// The Range id of the current logged in user
     let userId: String
-    unowned let localFiles: LocalFiles
-    unowned let mediaCache: MediaCache
+    let localFiles: LocalFiles
+    let mediaCache: MediaCache
     /// required for starting the ProjectModel after uploading a file for given project
-    unowned let pendingActionsModel: PendingActionsModel
+    let pendingActionsModel: PendingActionsModel
 
     /// uploading depends on the cellular/wifi user settings
     private let userSettings: UserSettings
@@ -58,6 +58,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     enum PendingUploadsError: Error {
         case localFileNotFound
     }
+
+    var stopped = false
 
     /// Initializes the pending uploads model
     /// - Parameters:
@@ -162,6 +164,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
         networkMonitor.cancel()
         userSettingsUploadUsingCellularSubscriber?.cancel()
         userSettingsUploadUsingCellularSubscriber = nil
+        stopped = true
     }
 
     /// Observe user settings to detect change in uploadUsingCellular setting and potentially start uploads
@@ -223,6 +226,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     ///
     /// To be invoked on the writeQueue
     func _maybePerformUpload() {
+        guard !stopped else { return }
         if let pendingUpload = writeRealm.objects(PendingUpload.self)
             .sorted(byKeyPath: "_id", ascending: true)
             .first
@@ -274,7 +278,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 do {
                     try await _performUpload(pendingUpload)
                 } catch {
-                    Logger.model.error("Error performing upload: \(error.localizedDescription)")
+                    Logger.model
+                        .error("Error performing upload: \(error.localizedDescription), stopped: \(self.stopped)")
                 }
                 // maybe there's another one to upload
                 self.writeQueue.async {
@@ -326,7 +331,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
 
         do {
             // upload the file
-            Logger.storage.debug("Will upload file: \(mediaKey, privacy: .public)")
+            Logger.storage.info("Will upload file: \(mediaKey, privacy: .public), stopped: \(self.stopped)")
 
             // Start the project model to save the storageVersion for Upload
             // Don't initiate the firestore sync, we need a local save only
@@ -345,10 +350,11 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             try await projectModel.write { realm in
                 uploadExists = realm.object(ofType: Upload.self, forPrimaryKey: mediaKey.uploadId) != nil
             }
+            Logger.storage.debug("Upload \(mediaKey, privacy: .public) existst in local db: \(uploadExists), stopped: \(self.stopped)")
 
             if uploadExists {
                 let resultMetadata = try await uploadRef.putFileAsync(from: cacheFileURL, metadata: metadata)
-                Logger.storage.info("Uploaded file: \(mediaKey, privacy: .public)")
+                Logger.storage.info("Uploaded file: \(mediaKey, privacy: .public), stopped: \(self.stopped)")
 
                 let storageVersion = String(resultMetadata.generation)
 
@@ -369,6 +375,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                     }
                     upload.localStorageVersion.setMain(annotated: mediaKey.annotated, value: storageVersion)
                 }
+                Logger.storage.info("Did upload file: \(mediaKey, privacy: .public), stopped: \(self.stopped)")
             } else {
                 // Upload in Firestore is gone, remove the pending upload and local files
                 Logger.storage.warning(
@@ -381,7 +388,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             }
 
         } catch {
-            Logger.storage.error("Error uploading file: \(error.localizedDescription)")
+            Logger.storage.error("Error uploading file: \(error.localizedDescription), stopped: \(self.stopped)")
             // store the error for pending upload
             try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { _ in
                 guard !pendingUpload.isInvalidated else { return }
