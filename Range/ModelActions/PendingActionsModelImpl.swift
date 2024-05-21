@@ -47,6 +47,8 @@ class PendingActionsModelImpl: PendingActionsModel {
         static let lastError = "actions.lastError"
     }
 
+    var stopped = false
+
     init(userId: String) {
         defaults = UserDefaults.forUser(userId)
         // a default value for retry count when not set yet
@@ -112,6 +114,7 @@ class PendingActionsModelImpl: PendingActionsModel {
 
     func stop() {
         networkMonitor.cancel()
+        stopped = true
     }
 
     /// Return true if network connected
@@ -201,6 +204,8 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// or schedules perform in the future (for exponential backoff)
     /// To be invoked on the `operationQueue`
     private func maybePerformAction() {
+        // stop performing actions if stopped
+        guard !stopped else { return }
         // action is performing, do nothing
         guard !performingAction else { return }
 
@@ -214,6 +219,12 @@ class PendingActionsModelImpl: PendingActionsModel {
         } catch {
             // drop this action if it fails to decode
             Logger.pendingActions.error("Couldn't decode pending action \(actionData). Dropping action!")
+            SentrySDK.capture(error: "Pending action decoding failed") { scope in
+                scope.setExtras([
+                    "actionData": actionData,
+                ])
+                scope.setLevel(.warning)
+            }
             // remove this action from the 'queue' and clean the retry info so next action starts fresh
             removeFirstPendingAction()
             resetRetryInfo()
@@ -238,7 +249,10 @@ class PendingActionsModelImpl: PendingActionsModel {
         // mark that action is being performed
         performingAction = true
 
-        performAction(action) { error in
+        Logger.pendingActions.info("Will perform action \(action.logDescription)")
+
+        performAction(action) { [weak self] error in
+            guard let self else { return }
             let goToNext: Bool // is processing of this action done?
             if let error = error {
                 let (dropAction, sentryLevel) = self.handleActionError(action, error)
@@ -255,10 +269,18 @@ class PendingActionsModelImpl: PendingActionsModel {
                         scope.setLevel(sentryLevel)
                     }
                 }
-                goToNext = dropAction
+                // don't remove the first pending action when stopped, the error might be caused by
+                // user not authenticated or some random network errors
+                goToNext = !stopped && dropAction
+                if goToNext {
+                    Logger.pendingActions
+                        .error(
+                            "Will drop errored action \(action.logDescription, privacy: .public), stopped: \(self.stopped)"
+                        )
+                }
             } else {
                 // no error
-                Logger.pendingActions.info("Action succeeded: \(action.debugDescription, privacy: .private)")
+                Logger.pendingActions.info("Action succeeded: \(action.logDescription, privacy: .public)")
                 goToNext = true
             }
             self.operationQueue.sync {
@@ -287,12 +309,11 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// Returns `true` if the action should be dropped because of the error. `false` means the operation should be retried.
     /// Returns optional SentryLevel for error reporting. If nil then it shouldn't be reported in Sentry at all
     private func handleActionError(_ action: Action, _ error: Error) -> (Bool, SentryLevel?) {
-        let actionName = String(describing: type(of: action.command.localCommand))
-        Logger.pendingActions.debug("Action \(actionName) error: \(error)")
+        Logger.pendingActions.debug("Action \(action.logDescription, privacy: .public) error: \(error)")
         if let error = error as? FirestoreCommandError, case .obsolete = error {
             // --- custom obsolete errors ----------------------------------------------------------
             // obsolete action is dropped so it's done
-            Logger.pendingActions.debug("Dropping obsolete action \(actionName, privacy: .private)")
+            Logger.pendingActions.debug("Dropping obsolete action \(action.logDescription, privacy: .public)")
             // no need to log it in Sentry, it's an obsolete action, meaning the correct business
             // logic is not to apply it
             return (true, nil)
@@ -301,7 +322,7 @@ class PendingActionsModelImpl: PendingActionsModel {
         {
             // network error, we need to retry
             Logger.pendingActions.debug(
-                "Will retry action because user is offline: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+                "Will retry action because user is offline: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
             )
             return (false, nil)
         } else if (error as NSError).domain == FirestoreErrorDomain,
@@ -309,12 +330,13 @@ class PendingActionsModelImpl: PendingActionsModel {
         {
             // --- FirestoreErrorDomain ------------------------------------------------------------
             // permission denied => drop the action and notify the user
-            Logger.pendingActions.warning("Dropping action, permission denied: \(actionName, privacy: .private)")
+            Logger.pendingActions
+                .warning("Dropping action, permission denied: \(action.logDescription, privacy: .public)")
             // This is a rather technical message shown to the user but it's better than
             // nothing... Also this doesn't rollback the local action, but since the action
             // is removed from local actions the next sync will overwrite it's results (unless it was creating something)
             // So we need something better than that...
-            ToastWindow.shared.showWarning(text: "You don't have permission for \(actionName), aborting!")
+            ToastWindow.shared.showWarning(text: "You don't have permission for \(action.name), aborting!")
             // this probably shouldn't happen unless user was removed from project/org, report as warning
             // and let's see if it ever happens
             return (true, .warning)
@@ -324,7 +346,7 @@ class PendingActionsModelImpl: PendingActionsModel {
             // --- FirestoreErrorDomain ------------------------------------------------------------
             // Error codes to be retried
             Logger.pendingActions.debug(
-                "Will retry action: \(actionName, privacy: .private) because of Firestore error: \(error, privacy: .public)"
+                "Will retry action: \(action.logDescription, privacy: .public) because of Firestore error: \(error, privacy: .public)"
             )
             return (false, nil)
         } else if let error = error as NSError?, error.domain == FunctionsErrorDomain,
@@ -336,19 +358,20 @@ class PendingActionsModelImpl: PendingActionsModel {
                 // likely a mismatch between client side and server side validation)
                 let message = error.localizedDescription
                 Logger.pendingActions.error(
-                    "Dropping action, callable function: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+                    "Dropping action, callable function: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
                 )
-                ToastWindow.shared.showError(text: "\(actionName) failed: \(message), aborting!")
+                ToastWindow.shared.showError(text: "\(action.name) failed: \(message), aborting!")
                 return (true, .error)
             } else if code == .alreadyExists {
                 // this is most probably a double invocation of a function, so it's ok to drop it
                 Logger.pendingActions.warning(
-                    "Dropping action, callable function: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+                    "Dropping action, callable function: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
                 )
                 return (true, .warning)
             } else if code == .permissionDenied || code == .unauthenticated {
-                ToastWindow.shared.showWarning(text: "You don't have permission for \(actionName), aborting!")
-                Logger.pendingActions.warning("Dropping action, permission denied: \(actionName, privacy: .private)")
+                ToastWindow.shared.showWarning(text: "You don't have permission for \(action.name), aborting!")
+                Logger.pendingActions
+                    .warning("Dropping action, permission denied: \(action.logDescription, privacy: .public)")
                 // this probably shouldn't happen unless user was removed from project/org, report as warning
                 // and let's see if it ever happens
                 return (true, .warning)
@@ -363,20 +386,20 @@ class PendingActionsModelImpl: PendingActionsModel {
             ].contains(error.code) {
                 // this means we're offline and it's ok to retry
                 Logger.pendingActions.debug(
-                    "Will retry action because user is offline: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+                    "Will retry action because user is offline: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
                 )
                 return (false, nil)
             } else if error.code == -1200 {
                 // this is SSL related error, let's log it as warning to observe if it doesn't escalate
                 Logger.pendingActions.debug(
-                    "Will retry action because user is offline: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+                    "Will retry action because user is offline: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
                 )
                 return (false, .warning)
             }
         }
         // there's some non-handled error, retry the action and log error in Sentry so we can add handling for it
         Logger.pendingActions.error(
-            "Will retry action: \(actionName, privacy: .private) error: \(error, privacy: .public)"
+            "Will retry action: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
         )
         return (false, .error)
     }
@@ -410,11 +433,8 @@ class PendingActionsModelImpl: PendingActionsModel {
                 }
         } else {
             // assert for debug builds but mark as obsolete in the prod app
-            assertionFailure(
-                "Action command not supported \(String(describing: type(of: action.command.localCommand)))"
-            )
-            completion(FirestoreCommandError
-                .obsolete("Action command not supported \(String(describing: type(of: action.command.localCommand)))"))
+            assertionFailure("Action command not supported \(action.name)")
+            completion(FirestoreCommandError.obsolete("Action command not supported \(action.name)"))
         }
     }
 }

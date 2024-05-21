@@ -12,6 +12,16 @@ struct Action: Codable, CustomDebugStringConvertible {
         "projectId: \(projectId), \(command.localCommand)"
     }
 
+    // name to be used in logs
+    var name: String {
+        String(describing: type(of: command.localCommand))
+    }
+
+    // description to be used in logs
+    var logDescription: String {
+        "projectId: \(projectId), \(name)(targetIds: \(command.localCommand.targetIds)"
+    }
+
     /// Init action for given projectId and command (that should be convertible to ActionCommand)
     init(projectId: String, command: Command) {
         self.projectId = projectId
