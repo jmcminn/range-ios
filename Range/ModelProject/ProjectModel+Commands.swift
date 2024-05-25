@@ -331,8 +331,7 @@ extension ProjectModel {
 
     /// Create command for creating a new comment (or note if isNote = `true`) for given collaboration id.
     func addComment(commentText: String, isNote: Bool, toCollaboration collaborationId: String) -> Command {
-        CreateCollaborationCommentCommand(
-            commentId: generateRealmId(),
+        CreateCommentCommand.collaborationComment(
             collaborationId: collaborationId,
             authorId: userId,
             text: commentText,
@@ -342,12 +341,7 @@ extension ProjectModel {
 
     /// Create command for creating a new comment for given upload id.
     func addComment(commentText: String, toUpload uploadId: String) -> Command {
-        CreateUploadCommentCommand(
-            commentId: generateRealmId(),
-            uploadId: uploadId,
-            authorId: userId,
-            text: commentText
-        )
+        CreateCommentCommand.uploadComment(uploadId: uploadId, authorId: userId, text: commentText)
     }
 
     /// Updates the name for collaboration if it's different than the current name.

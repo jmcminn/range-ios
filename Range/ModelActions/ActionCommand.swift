@@ -23,9 +23,8 @@ import RealmSwift
 /// Not ideal either but at least it's keyed by the enum cases...
 enum ActionCommand: Codable {
     case addUploadsToCollaboration(AddUploadsToCollaborationCommand)
-    case createCollaborationComment(CreateCollaborationCommentCommand)
     case createCollaboration(CreateCollaborationCommand)
-    case createUploadComment(CreateUploadCommentCommand)
+    case createComment(CreateCommentCommand)
     case deleteCollaboration(DeleteCollaborationCommand)
     case deleteComment(DeleteCommentCommand)
     case deleteUpload(DeleteUploadCommand)
@@ -46,9 +45,8 @@ enum ActionCommand: Codable {
     init(_ c: Any) {
         switch c {
         case let c as AddUploadsToCollaborationCommand: self = .addUploadsToCollaboration(c)
-        case let c as CreateCollaborationCommentCommand: self = .createCollaborationComment(c)
         case let c as CreateCollaborationCommand: self = .createCollaboration(c)
-        case let c as CreateUploadCommentCommand: self = .createUploadComment(c)
+        case let c as CreateCommentCommand: self = .createComment(c)
         case let c as DeleteCollaborationCommand: self = .deleteCollaboration(c)
         case let c as DeleteCommentCommand: self = .deleteComment(c)
         case let c as DeleteUploadCommand: self = .deleteUpload(c)
@@ -72,9 +70,8 @@ enum ActionCommand: Codable {
     var localCommand: LocalCommand {
         switch self {
         case let .addUploadsToCollaboration(c): return c
-        case let .createCollaborationComment(c): return c
         case let .createCollaboration(c): return c
-        case let .createUploadComment(c): return c
+        case let .createComment(c): return c
         case let .deleteCollaboration(c): return c
         case let .deleteComment(c): return c
         case let .deleteUpload(c): return c
@@ -97,8 +94,6 @@ enum ActionCommand: Codable {
     var firestoreCommand: FirestoreCommand? {
         switch self {
         case let .addUploadsToCollaboration(c): return c
-        case let .createCollaborationComment(c): return c
-        case let .createUploadComment(c): return c
         case let .updateCommentText(c): return c
         case let .updateGeometriesArchived(c): return c
         case let .updateGeometryLocation(c): return c
@@ -113,6 +108,7 @@ enum ActionCommand: Codable {
     var firebaseFunctionCommand: FirebaseFunctionCommand? {
         switch self {
         case let .createCollaboration(c): return c
+        case let .createComment(c): return c
         case let .deleteCollaboration(c): return c
         case let .deleteComment(c): return c
         case let .deleteUpload(c): return c

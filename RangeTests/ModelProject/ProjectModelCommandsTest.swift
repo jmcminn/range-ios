@@ -29,8 +29,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         try realm.write {
             realm.add([collaboration1, user1])
         }
-        let command = CreateCollaborationCommentCommand(
-            commentId: "comment1",
+        let command = CreateCommentCommand.collaborationComment(
             collaborationId: "collaboration1",
             authorId: "user1",
             text: "text",
@@ -38,7 +37,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         )
         try await model.run(command)
         realm.refresh()
-        let comment = try XCTUnwrap(realm.object(ofType: Comment.self, forPrimaryKey: "comment1"))
+        let comment = try XCTUnwrap(realm.object(ofType: Comment.self, forPrimaryKey: command.commentId))
         XCTAssertEqual(comment.text, "text")
     }
 
@@ -51,8 +50,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         try realm.write {
             realm.add([collaboration1, user1])
         }
-        let command = CreateCollaborationCommentCommand(
-            commentId: "comment1",
+        let command = CreateCommentCommand.collaborationComment(
             collaborationId: "collaboration1",
             authorId: "user1",
             text: "text",
@@ -63,7 +61,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
         XCTAssertEqual(pendingActionsModel.preparedActions.count, 1)
         let preparedAction = try XCTUnwrap(pendingActionsModel.preparedActions.first)
         XCTAssertEqual(preparedAction.projectId, model.projectId)
-        guard case .createCollaborationComment = preparedAction.command else {
+        guard case .createComment = preparedAction.command else {
             XCTFail("Wrong command")
             return
         }
