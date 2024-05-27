@@ -620,13 +620,16 @@ class AddPhotoFlowController {
             }
         }
         if let geometryId = geometryId {
-            try await model.run(model.addPhotos(
-                photosToAddViewModel.photos,
-                tags: tagsViewModel.selectedTags,
-                description: photoDescription,
-                toCollaborationForGeometryId: geometryId,
-                correlationId: correlationId
-            ))
+            let commands = try photosToAddViewModel.photos.map { photoToAdd in
+                try self.model.addPhoto(
+                    photoToAdd,
+                    tags: tagsViewModel.selectedTags,
+                    description: photoDescription,
+                    toCollaborationForGeometryId: geometryId,
+                    correlationId: correlationId
+                )
+            }
+            try await model.run(commands)
             resultGeometryId = geometryId
             newCollaborationCreated = false
             shouldEditCollaboration = false

@@ -78,7 +78,7 @@ extension ProjectModel {
 // MARK: - commands
 
 extension ProjectModel {
-    /// Adds given photos to pending uploads and returns command for:
+    /// Adds given photo to pending uploads and returns command for:
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
     /// Throws error if geometry with given id not found, or it has not feature with colllaboration
     ///
@@ -86,19 +86,18 @@ extension ProjectModel {
     /// The write operation will be executed on a `writeRealm` so not on the main thread
     ///
     /// - Parameters:
-    ///     - photosToAdd: the data for the images to add
+    ///     - photoToAdd: the data for the image to add
     ///     - tags: array of tags, existing or new ones
     ///     - description: upload description
     ///     - geometryId: 'photoMarker' to add the upload to (to it's first feature/first collaboration)
-    ///     - correlationId: set if the uploads are new versions of some other upload
-    @MainActor
-    func addPhotos(
-        _ photosToAdd: [PhotoToAdd],
+    ///     - correlationId: set if the upload is a new versions of some other upload
+    func addPhoto(
+        _ photoToAdd: PhotoToAdd,
         tags: [TagViewModel],
         description: String,
         toCollaborationForGeometryId geometryId: String,
         correlationId: String? = nil
-    ) async throws -> Command {
+    ) throws -> Command {
         guard let geometry = mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
             throw ModelError.geometryNotFound
         }
@@ -109,27 +108,25 @@ extension ProjectModel {
             throw ModelError.collaborationNotFound
         }
 
-        for photoToAdd in photosToAdd {
-            analytics?._trackProjectEvent(name: "media uploaded", self, [
-                "mediaType": photoToAdd.mediaKey.fileType.rawValue,
-            ])
-            if photoToAdd.annotatedMediaKey != nil {
-                analytics?._trackProjectEvent(name: "photo annotated", self, [:])
-            }
-            if photoToAdd.isCanvasSnippet {
-                analytics?._trackProjectEvent(name: "snippet created", self, [:])
-            }
-            tags.forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self, [:])
-            }
+        analytics?._trackProjectEvent(name: "media uploaded", self, [
+            "mediaType": photoToAdd.mediaKey.fileType.rawValue,
+        ])
+        if photoToAdd.annotatedMediaKey != nil {
+            analytics?._trackProjectEvent(name: "photo annotated", self, [:])
+        }
+        if photoToAdd.isCanvasSnippet {
+            analytics?._trackProjectEvent(name: "snippet created", self, [:])
+        }
+        tags.forEach { _ in
+            analytics?._trackProjectEvent(name: "tag added", self, [:])
         }
 
-        return AddUploadsToCollaborationCommand(
+        return CreateUploadCommand(
             authorId: userId,
             collaborationId: collaboration.id,
             tags: tags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: description,
-            uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:)),
+            upload: CommandUpload(fromPhotoToAdd: photoToAdd),
             correlationId: correlationId
         )
     }
@@ -148,11 +145,11 @@ extension ProjectModel {
             "mediaType": fileType.rawValue,
         ])
 
-        return AddUploadsToCollaborationCommand(
+        return CreateUploadCommand(
             authorId: userId,
             collaborationId: collaboration.id,
             tags: [],
-            uploads: [CommandUpload(mediaKey: mediaKey, fileSize: Int64(data.count), name: name)]
+            upload: CommandUpload(mediaKey: mediaKey, fileSize: Int64(data.count), name: name)
         )
     }
 

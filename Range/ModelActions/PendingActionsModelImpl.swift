@@ -37,6 +37,8 @@ class PendingActionsModelImpl: PendingActionsModel {
 
     /// Keys for storing pending actions data in UserDefaults
     enum DefaultsKey {
+        /// The version of the actions stored in defaults. For tracking changes and migrating the pending actions
+        static let actionsVersion = "actions.version"
         /// for storing pending actions = Array<Data>
         static let actions = "actions"
         /// How many times the current (first) action was already retried
@@ -53,6 +55,20 @@ class PendingActionsModelImpl: PendingActionsModel {
         defaults = UserDefaults.forUser(userId)
         // a default value for retry count when not set yet
         defaults.register(defaults: [DefaultsKey.retryCount: 0])
+        
+        let version = defaults.integer(forKey: DefaultsKey.actionsVersion)
+        Logger.pendingActions.info("Version \(version)")
+        
+        // Run migration if version is 1 (or 0 = not provided, as we started versionsing from 2,
+        // so no version = version 1)
+        if (version < 2) {
+            // migrate
+            Logger.pendingActions.info("Migrating \(version) to v2")
+            let v1Data = pendingActions()
+            let v2Data = _migrateV1PendingActions(data: v1Data)
+            setPendingActions(v2Data)
+            defaults.set(2, forKey: DefaultsKey.actionsVersion)
+        }
     }
 
     /// Before adding the action to pending actions it needs to be transformed to Data first.
@@ -208,10 +224,10 @@ class PendingActionsModelImpl: PendingActionsModel {
         guard !stopped else { return }
         // action is performing, do nothing
         guard !performingAction else { return }
-
+        
         // get 1st action data
         guard let actionData = pendingActions().first else { return }
-
+        
         // try to decode to Action or drop it if cannot be decoded
         let action: Action
         do {
