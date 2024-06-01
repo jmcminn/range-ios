@@ -5,7 +5,7 @@ struct RangeIsClosedView: View {
         let supportEmail = "support@range.io"
         var text =
             AttributedString(
-                "We’re currently undergoing some scheduled maintenance. We apologise for the inconvenience, but we’ll be back online soon.\n\nIf you need to contact us, please email \(supportEmail)"
+                "We’re currently undergoing some scheduled maintenance. We apologize for the inconvenience, but we’ll be back online soon.\n\nIf you need to contact us, please email \(supportEmail)"
             )
         text.foregroundColor = .dynamic(.Neutral_05)
         text.font = .subheadline
