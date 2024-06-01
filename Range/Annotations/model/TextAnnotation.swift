@@ -35,7 +35,7 @@ class TextAnnotation: Annotation {
         color: UIColor
     ) {
         self.text = text
-        self.position = position.roundCoordinates()
+        self.position = position._rounded(toPlaces: 2)
         self.fontSize = fontSize
         self.color = color
         hexColor = color.hexString
@@ -55,8 +55,8 @@ class TextAnnotation: Annotation {
     override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(text, forKey: .text)
-        try container.encode(position, forKey: .position)
-        try container.encode(fontSize, forKey: .fontSize)
+        try container.encode(position._rounded(toPlaces: 2), forKey: .position)
+        try container.encode(fontSize._rounded(toPlaces: 6), forKey: .fontSize)
         try container.encode(hexColor, forKey: .hexColor)
         try super.encode(to: encoder)
     }

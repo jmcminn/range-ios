@@ -494,6 +494,8 @@
 		0AF561852B4547C50029120B /* MapSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF561842B4547C50029120B /* MapSearch.swift */; };
 		0AF722AF296EE63400A18F75 /* TaskListCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */; };
 		0AF722B1296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */; };
+		0AF77E442C0BA644009318C7 /* Double+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF77E432C0BA644009318C7 /* Double+Rounding.swift */; };
+		0AF77E462C0BA66F009318C7 /* CGPoint+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF77E452C0BA66F009318C7 /* CGPoint+Rounding.swift */; };
 		0AF812B92840D53700F7BD09 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF812B82840D53700F7BD09 /* Logging.swift */; };
 		0AF89B552A0CC9A100E49F40 /* BadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF89B542A0CC9A100E49F40 /* BadgeView.swift */; };
 		0AF89B572A1281DA00E49F40 /* GeometryArchivedFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF89B562A1281DA00E49F40 /* GeometryArchivedFeedItemCell.swift */; };
@@ -1014,6 +1016,8 @@
 		0AF561842B4547C50029120B /* MapSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSearch.swift; sourceTree = "<group>"; };
 		0AF722AE296EE63400A18F75 /* TaskListCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCardViewController.swift; sourceTree = "<group>"; };
 		0AF722B0296EEC8D00A18F75 /* TaskListCollaborationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListCollaborationTableViewCell.swift; sourceTree = "<group>"; };
+		0AF77E432C0BA644009318C7 /* Double+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Rounding.swift"; sourceTree = "<group>"; };
+		0AF77E452C0BA66F009318C7 /* CGPoint+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Rounding.swift"; sourceTree = "<group>"; };
 		0AF812B82840D53700F7BD09 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		0AF812BA2840D5AC00F7BD09 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0AF89B542A0CC9A100E49F40 /* BadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeView.swift; sourceTree = "<group>"; };
@@ -1575,6 +1579,7 @@
 				0A724F6C28900D4400708C6B /* Async.swift */,
 				0A130EA628D7409800FF1368 /* Date+Formatting.swift */,
 				0A7121B7290EE2DC0013E2F8 /* Date+Utils.swift */,
+				0AF77E432C0BA644009318C7 /* Double+Rounding.swift */,
 				0A720C6228007011003D6B13 /* Image+Resize.swift */,
 				0A724F6E2890168D00708C6B /* Kingfisher+Async.swift */,
 				0A0D31CE28A3ED03007A8D49 /* Mapbox.swift */,
@@ -1600,6 +1605,7 @@
 				0A4DC78027F48FD300712518 /* UIViewController+Flow.swift */,
 				0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */,
 				0A4D11BA29A5242400D681E7 /* URL+Extensions.swift */,
+				0AF77E452C0BA66F009318C7 /* CGPoint+Rounding.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2729,6 +2735,7 @@
 				0A51A44A2AB9F049008C5B84 /* OrganizationModel.swift in Sources */,
 				0A724F63288AAFFD00708C6B /* PendingUpload.swift in Sources */,
 				0A1F1B7A2A288D1D00A2E613 /* AnnotationsDevSettings.swift in Sources */,
+				0AF77E462C0BA66F009318C7 /* CGPoint+Rounding.swift in Sources */,
 				0A797F7A292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift in Sources */,
 				0AC9E18D28F57AC100C7185D /* ProjectsFlowController.swift in Sources */,
 				0A078E142BBAC66800857DE5 /* LineAnnotationView.swift in Sources */,
@@ -2819,6 +2826,7 @@
 				0A2F3309283CE1B200D04A1C /* DebugSettings.swift in Sources */,
 				0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */,
 				0A7393882A61415F0079A7FB /* Annotations.swift in Sources */,
+				0AF77E442C0BA644009318C7 /* Double+Rounding.swift in Sources */,
 				0A985B172A9CC31A00442617 /* FirestoreSuspendedParticipants.swift in Sources */,
 				0A94E8D528CE24CF00A09616 /* CollaborationBadgeButton.swift in Sources */,
 				0A1F1B7C2A288E2700A2E613 /* AnnotationsDevSettingsView.swift in Sources */,
