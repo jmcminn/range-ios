@@ -142,7 +142,7 @@ internal struct PathDLexer: IteratorProtocol, Sequence {
                     return currentCommand
                 }
 
-            case PathDConstants.DCharacter.sign.rawValue,
+            case PathDConstants.DCharacter.sign.rawValue where !(numberArray.last == 101 || numberArray.last == 69), // don't treat "-" as "next command" if the last character was "e"||"E". It means we're reading a number in scientific notation
                  PathDConstants.DCharacter.point.rawValue
                      where numberArray.contains(PathDConstants.DCharacter.point.rawValue):
                 pushCoordinateIfPossible(numberArray)

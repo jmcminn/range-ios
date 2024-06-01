@@ -76,4 +76,19 @@ final class RangeBezierPathTest: XCTestCase {
             .close,
         ])
     }
+    
+    func testConvertSVGPathDToRangeBezierPath_numbersWithScientificNotation() {
+        let dString = "M10,-5.1e+1 C110e-1,2 21.2,3e-16 22,3"
+
+        let path = RangeBezierPath.svgPathDToRangeBezierPath(dString)
+
+        XCTAssertEqual(path.elements, [
+            .move(to: CGPoint(x: 10, y: -51)),
+            .addCurve(
+                to: CGPoint(x: 22, y: 3),
+                controlPoint1: CGPoint(x: 11, y: 2),
+                controlPoint2: CGPoint(x: 21.2, y: 0.0000000000000003)
+            ),
+        ])
+    }
 }
