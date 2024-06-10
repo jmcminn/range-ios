@@ -91,6 +91,7 @@
 		0A25D2B92AB8C02F00A331E1 /* DBScorer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B12AB8C02F00A331E1 /* DBScorer.m */; };
 		0A25D2BA2AB8C02F00A331E1 /* DBMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */; };
 		0A26CC3B2A6971DE004C6DFC /* ProjectModelTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */; };
+		0A2869EC2C10B24400215B8B /* UpdateCollaborationFollowersCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2869EB2C10B24400215B8B /* UpdateCollaborationFollowersCommand.swift */; };
 		0A28A1C0290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */; };
 		0A2B3F552AF3CFF000D3D0D2 /* TextAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */; };
 		0A2B3F572AF3E53C00D3D0D2 /* AnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */; };
@@ -608,6 +609,7 @@
 		0A25D2B42AB8C02F00A331E1 /* DBMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBMatcher.m; sourceTree = "<group>"; };
 		0A25D82C28C8B53200F132D4 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		0A26CC3A2A6971DE004C6DFC /* ProjectModelTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTestCase.swift; sourceTree = "<group>"; };
+		0A2869EB2C10B24400215B8B /* UpdateCollaborationFollowersCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationFollowersCommand.swift; sourceTree = "<group>"; };
 		0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationTagsCommand.swift; sourceTree = "<group>"; };
 		0A2B3F542AF3CFF000D3D0D2 /* TextAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnnotation.swift; sourceTree = "<group>"; };
 		0A2B3F562AF3E53C00D3D0D2 /* AnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationViewModel.swift; sourceTree = "<group>"; };
@@ -2243,6 +2245,7 @@
 				0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */,
 				0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
+				0A2869EB2C10B24400215B8B /* UpdateCollaborationFollowersCommand.swift */,
 				0ABFD8BA28F44037008CDA74 /* UpdateCollaborationNameCommand.swift */,
 				0A797F6C292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift */,
 				0A28A1BF290AD83C00465A84 /* UpdateCollaborationTagsCommand.swift */,
@@ -2563,6 +2566,7 @@
 				0A25D2B92AB8C02F00A331E1 /* DBScorer.m in Sources */,
 				0A45BAFF2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift in Sources */,
 				0A376BC429803180004C9B6F /* AppAttestAppCheckProviderFactory.swift in Sources */,
+				0A2869EC2C10B24400215B8B /* UpdateCollaborationFollowersCommand.swift in Sources */,
 				0A374DE42927B3490036C184 /* DeleteCollaborationCommand.swift in Sources */,
 				0A966F9A28DDE5BD00E50284 /* Array+Utils.swift in Sources */,
 				0A187AE72A7BDED500EC179C /* ProjectsTableViewHeaderCell.swift in Sources */,

@@ -646,6 +646,7 @@ class AddPhotoFlowController {
                 assignee: pinToCopy?.assignee?.participation == .active ? pinToCopy?.assignee : nil,
                 dueDate: pinToCopy?.dueDateTimestamp,
                 tags: pinToCopy?.tags.map(TagViewModel.init(fromTag:)) ?? [],
+                followerIds: pinToCopy?.followers.map(\.id) ?? [],
                 photosToAdd: photosToAddViewModel.photos,
                 uploadTags: tagsViewModel.selectedTags,
                 uploadDescription: photoDescription

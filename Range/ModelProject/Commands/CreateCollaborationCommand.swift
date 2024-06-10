@@ -24,6 +24,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
     var assigneeId: String?
     var dueDateTimestamp: Date?
     var tags: [CommandTag]
+    var followerIds: [String]
     var uploadTags: [CommandTag]
     var uploadDescription: String?
     var uploads: [CommandUpload]
@@ -41,6 +42,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         assigneeId: String? = nil,
         dueDateTimestamp: Date? = nil,
         tags: [CommandTag] = [],
+        followerIds: [String] = [],
         uploadTags: [CommandTag] = [],
         uploadDescription: String? = nil,
         uploads: [CommandUpload] = []
@@ -57,6 +59,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         self.assigneeId = assigneeId
         self.dueDateTimestamp = dueDateTimestamp
         self.tags = tags
+        self.followerIds = followerIds
         self.uploadTags = uploadTags
         self.uploadDescription = uploadDescription
         self.uploads = uploads
@@ -76,6 +79,9 @@ extension CreateCollaborationCommand: LocalCommand {
                 .or(error: ModelError.userNotFound)
         } else {
             assignee = nil
+        }
+        let followers = try followerIds.map { id in
+            try realm.object(ofType: Participant.self, forPrimaryKey: id).or(error: ModelError.userNotFound)
         }
 
         let geometry = Geometry(
@@ -105,6 +111,8 @@ extension CreateCollaborationCommand: LocalCommand {
         tags.forEach { realm.add($0, update: .modified) }
         collaboration.tags.append(objectsIn: tags)
         tags.forEach { t in t.collaborations.insert(collaboration) }
+        
+        collaboration.followers.append(objectsIn: followers)
 
         // add or update tags
         let uploadTags = uploadTags.map(\.asTag)
@@ -178,6 +186,7 @@ extension CreateCollaborationCommand: FirebaseFunctionCommand {
             "statusId": statusId as Any,
             "dueDateTimestamp": dueDateTimestamp.map { Int($0.timeIntervalSince1970 * 1000) } as Any,
             "tags": tags.map { ["id": $0.id, "name": $0.name] },
+            "followers": followerIds,
             "uploads": uploads.map { [
                 "id": $0.mediaKey.uploadId,
                 "fileType": $0.mediaKey.fileType.rawValue,

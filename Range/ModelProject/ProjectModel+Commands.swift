@@ -185,6 +185,7 @@ extension ProjectModel {
         assignee: Participant? = nil,
         dueDate: Date? = nil,
         tags: [TagViewModel] = [],
+        followerIds: [String] = [],
         photosToAdd: [PhotoToAdd] = [],
         uploadTags: [TagViewModel] = [],
         uploadDescription: String? = nil
@@ -236,6 +237,7 @@ extension ProjectModel {
             assigneeId: assignee?.id,
             dueDateTimestamp: dueDate,
             tags: tags.map(CommandTag.init(fromViewModel:)),
+            followerIds: followerIds,
             uploadTags: uploadTags.map(CommandTag.init(fromViewModel:)),
             uploadDescription: uploadDescription,
             uploads: photosToAdd.map(CommandUpload.init(fromPhotoToAdd:))
@@ -528,5 +530,10 @@ extension ProjectModel {
         analytics?._trackProjectEvent(name: "photo annotated", self, [:])
 
         return UpdateUploadAnnotationsCommand(uploadId: uploadId, annotations: annotations, mediaKey: mediaKey)
+    }
+
+    /// Updates Collaboration.followers
+    func update(followers: [String], forCollaboration collaborationId: String) -> Command {
+        UpdateCollaborationFollowersCommand(collaborationId: collaborationId, followerIds: followers)
     }
 }

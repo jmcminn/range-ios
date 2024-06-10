@@ -33,6 +33,8 @@ class Collaboration: Object, WithPlaceholder, WithId {
     @Persisted var dueDateTimestamp: Date?
     /// identifier for the UI
     @Persisted var identifier: String?
+    /// project participants following this collaboration
+    @Persisted var followers: List<Participant>
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -123,5 +125,16 @@ class Collaboration: Object, WithPlaceholder, WithId {
             .compactMap { realm.objectOrPlaceholder(ofType: Tag.self, forPrimaryKey: $0) }
         tags.append(objectsIn: newTags)
         newTags.forEach { $0.collaborations.insert(self) }
+    }
+    
+    func addNewFollowers(newFollowerIds: [String], realm: Realm) {
+        // for fast lookup
+        let currentIdsSet = Set(followers.map(\.id))
+
+        let newFollowers = newFollowerIds.uniqued()
+            .filter { !currentIdsSet.contains($0) }
+            .compactMap { realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: $0) }
+        followers.append(objectsIn: newFollowers)
+        
     }
 }

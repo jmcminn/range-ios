@@ -81,6 +81,8 @@ final class FlowEvent: UIEvent {
     func takeSnapshotAction(sender: Any?, event: FlowEvent?)
     /// Edit annotations for given Upload
     func editAnnotationsAction(sender: Any?, event: FlowEvent)
+    /// Edit followers for given Collaboration
+    func editFollowersAction(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -459,7 +461,7 @@ extension ProjectFlowController {
 // MARK: - more menu actions
 
 extension ProjectFlowController {
-    func moreAction(sender _: Any?, event: FlowEvent) {
+    func moreAction(sender: Any?, event: FlowEvent) {
         view.endEditing(true)
         if let collaboration = event.object as? Collaboration {
             guard !collaboration.isInvalidated else { return }
@@ -489,6 +491,10 @@ extension ProjectFlowController {
                 ActionItem(
                     title: String(localized: "Update Location"), imageName: "mappin.and.ellipse",
                     handler: { [weak self] in self?.moveCollaboration(collaboration) }
+                ),
+                ActionItem(
+                    title: String(localized: "Followers"), imageName: "person.badge.plus",
+                    handler: { [weak self] in self?.editFollowersAction(sender: sender, event: event) }
                 ),
             ])
             if model.currentUser.canArchive(collaboration) {
@@ -947,6 +953,34 @@ extension ProjectFlowController {
             } catch {
                 ToastWindow.shared.showError(text: "Failed to update the annotations")
             }
+        }
+    }
+}
+
+// MARK: - followers
+
+extension ProjectFlowController {
+    func editFollowersAction(sender _: Any?, event: FlowEvent) {
+        guard let collaboration = event.object as? Collaboration, !collaboration.isInvalidated else { return }
+        let viewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: false)
+        for follower in collaboration.followers {
+            viewModel.set(userWithId: follower.id, selected: true)
+        }
+        let userPicker = UserPickerCardViewController(
+            icon: UIImage(systemName: "person.badge.plus"),
+            title: "Followers",
+            viewModel: viewModel
+        )
+        userPicker.onClose = { [weak self] in
+            self?.updateFollowers(collaboration, followers: viewModel.selectedUsers.map(\.id))
+        }
+        userPicker.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    private func updateFollowers(_ collaboration: Collaboration, followers: [String]) {
+        guard collaboration.followers.map(\.id) != followers else { return }
+        model.run(model.update(followers: followers, forCollaboration: collaboration.id)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the followers") }
         }
     }
 }

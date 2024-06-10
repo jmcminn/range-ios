@@ -29,6 +29,8 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
     var statusButton: CollaborationStatusButton!
     /// shown for archived collaboration (for tasks it replaces the status button)
     var archivedLabel: LabelWithTextInsets!
+    var followersButton: UIButton!
+    var followersBadgeView: BadgeView!
     var moreButton: UIButton!
     var closeButton: UIButton!
     var idLabel: UILabel?
@@ -176,6 +178,15 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.trailing.equalTo(closeButton.snp.leading).offset(-8)
         }
 
+        setupFollowersButton()
+        containerView.addSubview(followersButton)
+        followersButton.snp.makeConstraints { make in
+            make.width.height.top.equalTo(closeButton)
+            make.trailing.equalTo(moreButton.snp.leading).offset(-8)
+        }
+        setupFollowersButtonBadge()
+        updateFollowersButtonBadge()
+
         if let idLabel {
             setupIdLabel()
             containerView.addSubview(idLabel)
@@ -316,6 +327,7 @@ extension CollaborationViewController {
             // don't overwrite the name when user is editing it
             nameTextView.text = name
         }
+        updateFollowersButtonBadge()
     }
 }
 
@@ -335,6 +347,46 @@ extension CollaborationViewController {
         )
         .withCustomRangeHighlightColor()
         .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
+    }
+
+    private func setupFollowersButton() {
+        followersButton = RangeButton(
+            configuration: UIButton.Configuration.closeButton(),
+            primaryAction: UIAction(image: UIImage(systemName: "person.badge.plus")) { [weak self] _ in
+                guard let self = self else { return }
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowController.editFollowersAction), to: nil, from: self,
+                    for: FlowEvent(self.collaboration)
+                )
+            }
+        )
+        .withCustomRangeHighlightColor()
+        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
+    }
+
+    private func setupFollowersButtonBadge() {
+        let badge = BadgeView()
+        badge.backgroundColor = .Primary_Blue_04
+        
+        badge.contentInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+        badge.textColor = .white
+        badge.font = .systemFont(ofSize: 8)
+//        badge.contentInsets = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
+//        badge.textColor = .Neutral_01
+//        badge.font = .systemFont(ofSize: 11, weight: .bold)
+        badge.isUserInteractionEnabled = false
+        followersButton.addSubview(badge)
+        badge.snp.makeConstraints { make in
+            make.centerX.equalToSuperview().offset(-12)
+            make.centerY.equalToSuperview().offset(-12)
+        }
+        followersBadgeView = badge
+    }
+
+    private func updateFollowersButtonBadge() {
+        let followersCount = collaboration.followers.count
+        followersBadgeView.isHidden = followersCount == 0
+        followersBadgeView.text = followersCount > 9 ? "9⁺" : String(followersCount)
     }
 
     private func setupArchivedLabel() {

@@ -291,7 +291,8 @@ class AddPinFlowController {
                 collaborationDescription: pinToCopy.collaborationDescription,
                 assignee: pinToCopy.assignee?.participation == .active ? pinToCopy.assignee : nil,
                 dueDate: pinToCopy.dueDateTimestamp,
-                tags: pinToCopy.tags.map(TagViewModel.init(fromTag:))
+                tags: pinToCopy.tags.map(TagViewModel.init(fromTag:)),
+                followerIds: pinToCopy.followers.map(\.id)
             )
             userPreferences.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
         }

@@ -179,6 +179,7 @@ final class CreateCollaborationCommandFirebaseFunctionTest: XCTestCase {
             "tags": [
                 ["id": "tag3", "name": "tag 3"],
             ],
+            "followers": [],
             "uploads": [
                 ["id": "upload1",
                  "fileType": "jpeg", "fileSize": 1024, "imageHeightToWidth": 1,

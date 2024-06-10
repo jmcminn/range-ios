@@ -24,13 +24,13 @@ class UserPickerCardViewController: SheetCardViewController {
     /// Show a special row (in the 1st section) that allows for selecting the "no user option" (to remove the user in single selection or to selected the unassigned option in multiselect)
     var showNoUserOption: Bool = false
 
-    init(title: String, viewModel: UsersViewModel) {
+    init(icon: UIImage? = UIImage(systemName: "person"), title: String, viewModel: UsersViewModel) {
         self.viewModel = viewModel
         selectedUsersView = viewModel.multiselect
             ? SelectedUsersView(viewModel: viewModel, showEditUserCell: false)
             : nil
 
-        super.init(icon: UIImage(systemName: "person"), title: title, showSearchView: true)
+        super.init(icon: icon ?? UIImage(systemName: "person"), title: title, showSearchView: true)
     }
 
     override func viewDidLoad() {
@@ -183,7 +183,10 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
         if user.id == UserViewModel.unassignedUserId {
             indexPath = IndexPath(item: 0, section: 0)
         } else {
-            indexPath = IndexPath(item: viewModel.filteredUsers.firstIndex(of: user) ?? 0, section: 1)
+            indexPath = IndexPath(
+                item: viewModel.filteredUsers.firstIndex(of: user) ?? 0,
+                section: showNoUserOption ? 1 : 0
+            )
         }
         tableView.reloadRows(at: [indexPath], with: .automatic)
 
