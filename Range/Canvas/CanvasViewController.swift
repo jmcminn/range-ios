@@ -71,7 +71,7 @@ class CanvasViewController: UIViewController {
     /// report panning when the camera changes. (the mapbox gestures delegate only reports start/end of gesture)
     private var currentCameraChangeReason: CanvasCameraChangeReason?
 
-    unowned let model: ProjectModel
+    let model: ProjectModel
     unowned let canvasFileLoader: CanvasFileLoader
     private(set) var canvas: Canvas
     // only when displaying pdf source
