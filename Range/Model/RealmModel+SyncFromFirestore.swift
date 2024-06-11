@@ -22,6 +22,7 @@ protocol FirestoreToRealmSyncableWithCustomDelete {
 extension RealmModel {
     /// Applies the changes from document to Realm
     /// Catches all errors and log them, does not throw.
+    /// It needs to be run in realm.write transaction
     private func apply<T: Decodable & FirestoreToRealmSyncable>(
         documentChangeType changeType: DocumentChangeType,
         snapshot: DocumentSnapshot,
@@ -35,51 +36,48 @@ extension RealmModel {
         Logger.firestore.debug("\(collectionId) \(changeType) \(documentId, privacy: .public)")
         do {
             let firestoreObject = try snapshot.data(as: type, decoder: decoder)
-            try realm.write {
-                if changeType == .added || changeType == .modified {
-                    // get local modifications for this document
-                    let localCommands = localCommandsProvider?(documentId) ?? []
-                    let deletedLocally = localCommands.contains { $0.type == .delete }
-                    // skip updates for locally deleted objects
-                    guard !deletedLocally else {
-                        Logger.firestore.debug(
-                            "ignored locally deleted \(collectionId) \(changeType) \(documentId, privacy: .public)"
-                        )
-                        return
-                    }
-                    try firestoreObject.upsert(withId: documentId, inRealm: realm)
-                    // apply local changes on top of objects received from Firestore. We need to reapply
-                    // these changes as on each start the changes cached by Firestore SDK may overwrite the local
-                    // changes if they were not synced yet. (so the Firestore has a different data than the Realm,
-                    // the difference is provided by given LocalCommands)
-                    let localUpdates = localCommands.filter { $0.type == .update }
-                    if !localUpdates.isEmpty {
-                        Logger.firestore.debug(
-                            "apply local updates for \(collectionId) \(changeType) \(documentId, privacy: .public)"
-                        )
-                        try localUpdates.forEach { try $0.apply(inRealm: realm) }
-                    }
-                } else if changeType == .removed {
-                    guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: documentId)
-                    else {
-                        return
-                    }
-                    if let firestoreObjectWithCustomDelete =
-                        firestoreObject as? FirestoreToRealmSyncableWithCustomDelete
-                    {
-                        firestoreObjectWithCustomDelete.customDelete(object: object, inRealm: realm)
-                    } else {
-                        realm.delete(object)
-                    }
-                } else {
-                    throw "Change type \(changeType) not handled"
+            if changeType == .added || changeType == .modified {
+                // get local modifications for this document
+                let localCommands = localCommandsProvider?(documentId) ?? []
+                let deletedLocally = localCommands.contains { $0.type == .delete }
+                // skip updates for locally deleted objects
+                guard !deletedLocally else {
+                    Logger.firestore.debug(
+                        "ignored locally deleted \(collectionId) \(changeType) \(documentId, privacy: .public)"
+                    )
+                    return
                 }
+                try firestoreObject.upsert(withId: documentId, inRealm: realm)
+                // apply local changes on top of objects received from Firestore. We need to reapply
+                // these changes as on each start the changes cached by Firestore SDK may overwrite the local
+                // changes if they were not synced yet. (so the Firestore has a different data than the Realm,
+                // the difference is provided by given LocalCommands)
+                let localUpdates = localCommands.filter { $0.type == .update }
+                if !localUpdates.isEmpty {
+                    Logger.firestore.debug(
+                        "apply local updates for \(collectionId) \(changeType) \(documentId, privacy: .public)"
+                    )
+                    try localUpdates.forEach { try $0.apply(inRealm: realm) }
+                }
+            } else if changeType == .removed {
+                guard let object = realm.object(ofType: type.ModelType, forPrimaryKey: documentId)
+                else {
+                    return
+                }
+                if let firestoreObjectWithCustomDelete =
+                    firestoreObject as? FirestoreToRealmSyncableWithCustomDelete
+                {
+                    firestoreObjectWithCustomDelete.customDelete(object: object, inRealm: realm)
+                } else {
+                    realm.delete(object)
+                }
+            } else {
+                throw "Change type \(changeType) not handled"
             }
         } catch let DecodingError.dataCorrupted(context),
                     let DecodingError.keyNotFound(_, context),
                     let DecodingError.valueNotFound(_, context),
-                    let DecodingError.typeMismatch(_, context)
-        {
+                    let DecodingError.typeMismatch(_, context) {
             Logger.firestore.error(
                 "\(collectionId) decode failed [\(documentId, privacy: .public)]: \(context.debugDescription, privacy: .public)"
             )
@@ -136,12 +134,20 @@ extension RealmModel {
                     return
                 }
                 let changeType: DocumentChangeType = .modified
-                self.apply(
-                    documentChangeType: changeType,
-                    snapshot: snapshot,
-                    as: type,
-                    inRealm: self.writeRealm
-                )
+                do {
+                    try self.writeRealm.write {
+                        self.apply(
+                            documentChangeType: changeType,
+                            snapshot: snapshot,
+                            as: type,
+                            inRealm: self.writeRealm
+                        )
+                    }
+                } catch {
+                    Logger.firestore.error(
+                        "\(loggingId) \(changeType) failed: \(error.localizedDescription, privacy: .public)"
+                    )
+                }
             }
         }
 
@@ -164,15 +170,25 @@ extension RealmModel {
                     )
                     return
                 }
+                // write all the changes for given collection in one transaction. This makes
+                // it much faster when getting the initial data with all the documents
                 self.writeQueue.async {
-                    snapshot.documentChanges.forEach { diff in
-                        let document = diff.document
-                        let changeType = diff.type
-                        self.apply(
-                            documentChangeType: changeType,
-                            snapshot: document,
-                            as: type,
-                            inRealm: self.writeRealm
+                    do {
+                        try self.writeRealm.write {
+                            snapshot.documentChanges.forEach { diff in
+                                let document = diff.document
+                                let changeType = diff.type
+                                self.apply(
+                                    documentChangeType: changeType,
+                                    snapshot: document,
+                                    as: type,
+                                    inRealm: self.writeRealm
+                                )
+                            }
+                        }
+                    } catch {
+                        Logger.firestore.error(
+                            "\(collectionRef.path) write failed: \(error.localizedDescription)"
                         )
                     }
                 }
@@ -197,8 +213,7 @@ extension RealmModel {
             } catch let DecodingError.dataCorrupted(context),
                         let DecodingError.keyNotFound(_, context),
                         let DecodingError.valueNotFound(_, context),
-                        let DecodingError.typeMismatch(_, context)
-            {
+                        let DecodingError.typeMismatch(_, context) {
                 Logger.firestore.error(
                     "\(collectionId) sync decode failed [\(documentId, privacy: .public)]: \(context.debugDescription, privacy: .public)"
                 )
