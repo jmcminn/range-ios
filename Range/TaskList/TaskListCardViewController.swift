@@ -23,6 +23,11 @@ class TaskListCardViewController: SheetCardViewController {
 
     // all collaborations
     private let collaborations: Results<Collaboration>
+    // query to apply to collaborations to select tasks
+    private let tasksQuery = { (c: Query<Collaboration>) -> Query<Bool> in
+        c.placeholder == false && c.status != nil // only tasks
+    }
+
     // collaborations after applying the filters
     private var filteredCollaborations: [Collaboration] = []
     // collaborations after applying the filters and searchTerm
@@ -68,10 +73,7 @@ class TaskListCardViewController: SheetCardViewController {
         self.canvasContainer = canvasContainer
         filters = userPreferences.taskListFilters(forModel: projectModel)
         defaultFilters = CollaborationFilters(model: projectModel, variant: .taskList)
-        collaborations = projectModel.mainRealm.objects(Collaboration.self)
-            .where { (c: Query<Collaboration>) -> Query<Bool> in
-                c.placeholder == false && c.status != nil // only tasks
-            }
+        collaborations = projectModel.mainRealm.objects(Collaboration.self).where(tasksQuery)
 
         super.init(
             icon: UIImage(systemName: "list.bullet"),
@@ -154,16 +156,32 @@ class TaskListCardViewController: SheetCardViewController {
 
     /// Sort collaborations and update table view
     private func updateData() {
-        filteredCollaborations = collaborations.filter(filters.match).sorted { c1, c2 in
-            // sort by last updated desc
-            c1.lastUpdatedTimestamp > c2.lastUpdatedTimestamp
+        // Perform filtering on the background queue and realm. When it was run on the main thread
+        // it was causing the UI freezes.
+        projectModel.writeQueue.async { [weak self] in
+            guard let self else { return }
+            // ACHTUNG: the filteredCollaborations and searchedCollaborations are "frozen" in Realm
+            // terms: https://www.mongodb.com/docs/atlas/device-sdks/sdk/swift/crud/threading/#frozen-objects
+            // When frozen the objects can be shared across threads, so we don't have to create a
+            // copy of the result in the main thread Realm.
+            // Frozen objects cannot be updated or observed, but it's fine, we only observe
+            // the "self.collaborations" on the Main thread
+            self.filteredCollaborations = self.projectModel.writeRealm.objects(Collaboration.self)
+                .where(tasksQuery)
+                .filter(self.filters.match)
+                .sorted { c1, c2 in
+                    // sort by last updated desc
+                    c1.lastUpdatedTimestamp > c2.lastUpdatedTimestamp
+                }
+                .map { c in c.freeze() }
+            self.searchedCollaborations = self.filteredCollaborations.filter(self.matchSearchTerms)
+
+            DispatchQueue.main.async {
+                self.reloadSelectedTasks()
+                self.tableView.reloadData()
+                self.onCollaborationsChanged()
+            }
         }
-        searchedCollaborations = filteredCollaborations.filter(matchSearchTerms)
-        reloadSelectedTasks()
-
-        tableView.reloadData()
-
-        onCollaborationsChanged()
     }
 
     /// Called after tasks were updated, some tasks might be gone, so they're no longer selected
@@ -406,14 +424,24 @@ extension TaskListCardViewController {
     /// Show filters indicator badge only if the number of items filtered by the current filter is different than the number
     /// of items filtered by the default filter
     private func updateFiltersIndicatorBadge() {
-        let filteredCount = filteredCollaborations.count
+        // Do the filters on the background queue and realm
+        projectModel.writeQueue.async { [weak self] in
+            guard let self else { return }
 
-        let filteredByDefaultFilterCount = collaborations.filter(defaultFilters.match).count
+            let filteredCount = self.filteredCollaborations.count
 
-        // don't show the indicator if filter is not impacting the visible tasks
-        filtersIndicatorBadge.isHidden = filteredCount == filteredByDefaultFilterCount
+            let filteredByDefaultFilterCount = self.projectModel.writeRealm.objects(Collaboration.self)
+                .where(tasksQuery)
+                .filter(defaultFilters.match)
+                .count
 
-        filtersIndicatorBadge.text = filteredCount >= 99 ? "99+" : String(filteredCount)
+            DispatchQueue.main.async {
+                // don't show the indicator if filter is not impacting the visible tasks
+                self.filtersIndicatorBadge.isHidden = filteredCount == filteredByDefaultFilterCount
+
+                self.filtersIndicatorBadge.text = filteredCount >= 99 ? "99+" : String(filteredCount)
+            }
+        }
     }
 }
 
@@ -610,7 +638,7 @@ extension TaskListCardViewController {
                        handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
         ]
 
-        let selectedTasks = collaborations
+        let selectedTasks = filteredCollaborations
             .filter { self.selectedTasks.contains($0.id) }
 
         // only show the Archive option if user has permissions to archive any of the tasks
@@ -777,7 +805,7 @@ extension TaskListCardViewController {
 
     private func bulkUpdateStatusAndArchive(_ status: Status) {
         // only archive the collaborations user have permissions to archive
-        let collaborationsToArchive = [String](collaborations
+        let collaborationsToArchive = [String](filteredCollaborations
             .filter { self.selectedTasks.contains($0.id) }
             .filter { self.projectModel.currentUser.canArchive($0) }
             .map(\.id))
