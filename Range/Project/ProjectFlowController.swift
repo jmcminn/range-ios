@@ -688,17 +688,25 @@ extension ProjectFlowController {
     /// Updates the filters indicator badge visibility and number to indicate that filters are affecting the visible pins.
     /// Called when filters change or pins are updated or canvas is switched.
     @objc private func updateFiltersIndicatorBadge() {
-        let allPins = model.currentCanvas.pins
-            .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
+        let threadSafeCanvas = ThreadSafeReference(to: model.currentCanvas)
+        // switch to background realm and queue to calculate the filters results outside of the main UI queue
+        // This function is called frequently on project initial load (because pins are being loaded)
+        // and it was freezing the UI when filtering was done on the main thread.
+        model.writeQueue.async { [weak self] in
+            guard let self, let canvas = self.model.writeRealm.resolve(threadSafeCanvas) else { return }
+            let allPins = canvas.pins.compactMap(\.features.first?.collaborations.first) // geometry => collaboration
 
-        let filteredPinsCount = allPins.filter(canvasFilters.match).count
-        let defaultFilteredPinsCount = allPins.filter(defaultCanvasFilters.match).count
+            let filteredPinsCount = allPins.filter(self.canvasFilters.match).count
+            let defaultFilteredPinsCount = allPins.filter(self.defaultCanvasFilters.match).count
 
-        // don't show the indicator if filter is not impacting the visible pins
-        controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == defaultFilteredPinsCount
+            DispatchQueue.main.async {
+                // don't show the indicator if filter is not impacting the visible pins
+                self.controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == defaultFilteredPinsCount
 
-        // show the pins count (including the archived pins if enabled)
-        controls.canvasFiltersIndicatorBadge?.text = filteredPinsCount >= 99 ? "99+" : String(filteredPinsCount)
+                // show the pins count (including the archived pins if enabled)
+                self.controls.canvasFiltersIndicatorBadge?.text = filteredPinsCount >= 99 ? "99+" : String(filteredPinsCount)
+            }
+        }
     }
 }
 

@@ -37,7 +37,7 @@ class ProjectModel: NSObject, RealmModel {
     /// Background serial queue to perform write operations.
     let writeQueue = DispatchQueue(label: "model-write-queue")
     /// Realm operating on `writeQueue`, initialized on first use
-    var writeRealm: Realm!
+    private(set) var writeRealm: Realm!
     /// provides LocalCommands from PendingActionsModel
     var localCommandsProvider: RealmModelLocalCommandsProvider?
 
