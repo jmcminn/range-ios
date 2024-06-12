@@ -28,6 +28,9 @@ class TaskListCardViewController: SheetCardViewController {
         c.placeholder == false && c.status != nil // only tasks
     }
 
+    // ACHTUNG: filteredCollaborations and searchedCollaborations are realm-frozen
+    // and shouldn't be passed outside of this class. (As other classes usually expect
+    // a main thread realm object, which they can observe, etc.)
     // collaborations after applying the filters
     private var filteredCollaborations: [Collaboration] = []
     // collaborations after applying the filters and searchTerm
@@ -363,9 +366,15 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
         tableView.deselectRow(at: indexPath, animated: true)
 
         guard indexPath.row < searchedCollaborations.count else { return }
-        let collaboration = searchedCollaborations[indexPath.row]
 
         if mode == .normal {
+            let collaborationId = searchedCollaborations[indexPath.row].id
+            // we need Collaboration from the main thread realm, the searchedCollaborations
+            // are realm-frozen
+            guard let collaboration = self.projectModel.mainRealm.object(
+                ofType: Collaboration.self,
+                forPrimaryKey: collaborationId
+            ) else { return }
             UIApplication.shared.sendAction(
                 #selector(ProjectFlowActions.showCollaborationAction),
                 to: nil,
