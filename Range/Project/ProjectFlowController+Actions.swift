@@ -969,6 +969,7 @@ extension ProjectFlowController {
         let userPicker = UserPickerCardViewController(
             icon: UIImage(systemName: "person.badge.plus"),
             title: "Followers",
+            description: "Followers receive notification updates.",
             viewModel: viewModel
         )
         userPicker.onClose = { [weak self] in

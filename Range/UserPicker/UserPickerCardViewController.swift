@@ -24,13 +24,23 @@ class UserPickerCardViewController: SheetCardViewController {
     /// Show a special row (in the 1st section) that allows for selecting the "no user option" (to remove the user in single selection or to selected the unassigned option in multiselect)
     var showNoUserOption: Bool = false
 
-    init(icon: UIImage? = UIImage(systemName: "person"), title: String, viewModel: UsersViewModel) {
+    init(
+        icon: UIImage? = UIImage(systemName: "person"),
+        title: String,
+        description: String? = nil,
+        viewModel: UsersViewModel
+    ) {
         self.viewModel = viewModel
         selectedUsersView = viewModel.multiselect
             ? SelectedUsersView(viewModel: viewModel, showEditUserCell: false)
             : nil
 
-        super.init(icon: icon ?? UIImage(systemName: "person"), title: title, showSearchView: true)
+        super.init(
+            icon: icon ?? UIImage(systemName: "person"),
+            title: title,
+            description: description,
+            showSearchView: true
+        )
     }
 
     override func viewDidLoad() {
