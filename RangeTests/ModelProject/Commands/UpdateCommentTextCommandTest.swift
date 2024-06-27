@@ -36,65 +36,23 @@ final class UpdateCommentTextCommandRealmTest: ProjectModelTestCase {
     }
 }
 
-/// Tests applying `UpdateCommentTextCommand` to Firestore
-final class UpdateCommentTextCommandFirestoreTest: XCTestCase {
-    func testApply_noComment() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
+/// Tests getting the parameters for Firebase function call
+final class UpdateCommentTextCommandNameFirebaseFunctionTest: XCTestCase {
+    let command = UpdateCommentTextCommand(commentId: "comment1", text: "text")
 
-        let command = UpdateCommentTextCommand(commentId: "comment1", text: "text")
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("comment doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
+    func test_functionName() throws {
+        XCTAssertEqual(command.functionName, "updateComment")
     }
 
-    func testApply_successful() throws {
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .comment("comment1"): FirestoreComment(
-                parentId: "collaboration1",
-                parentType: "Collaboration",
-                authorId: "user1",
-                timestamp: Timestamp(),
-                text: "something"
-            ),
-        ])
-
-        let command = UpdateCommentTextCommand(commentId: "comment1", text: "text")
-
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 1)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.comment("comment1"), [
-                "text": "text",
-                "textIsEdited": true,
-            ])
-        )
-    }
-
-    /// Test for idempotency
-    /// The text is the same as in Firestore... ignore
-    func testApply_noOp_textUnchanged() throws {
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .comment("comment1"): FirestoreComment(
-                parentId: "collaboration1",
-                parentType: "Collaboration",
-                authorId: "user1",
-                timestamp: Timestamp(),
-                text: "text"
-            ),
-        ])
-
-        let command = UpdateCommentTextCommand(commentId: "comment1", text: "text")
-
-        try command.apply(inFirestore: context)
-
-        // the update of tags is still perfomed as updating tags multiple times to same value is ok
-        XCTAssertEqual(context.operations.count, 0)
+    func test_functionData() throws {
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1",
+            "commentId": "comment1",
+            "text": "text",
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }

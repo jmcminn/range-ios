@@ -21,27 +21,15 @@ extension UpdateCommentTextCommand: LocalCommand {
     }
 }
 
-/// Apply the `Comment` update in Firestore.
-extension UpdateCommentTextCommand: FirestoreCommand {
-    func apply(inFirestore ctx: FirestoreCommandContext) throws {
-        // ------------- READS -----------------
-        // check that target exists, otherwise abort (the command cannot be applied)
-        guard let comment = try ctx.getDocument(.comment(commentId), as: FirestoreComment.self)
-        else {
-            throw FirestoreCommandError.obsolete("comment doesn't exist")
-        }
-        guard comment.text != text else {
-            // do nothing, the text is the same
-            return
-        }
+/// Provide data for firebase function call
+extension UpdateCommentTextCommand: FirebaseFunctionCommand {
+    var functionName: String { "updateComment" }
 
-        // ------------- WRITES ----------------
-        ctx.updateData(
-            [
-                FirestoreComment.CodingKeys.text.rawValue: text,
-                FirestoreComment.CodingKeys.textIsEdited.rawValue: true,
-            ],
-            forDocument: .comment(commentId)
-        )
+    func functionData(_ projectId: String) -> Any? {
+        [
+            "projectId": projectId,
+            "commentId": commentId,
+            "text": text,
+        ]
     }
 }
