@@ -9,6 +9,7 @@ struct UpdateNoteCompletedCommand: Command, Codable, Equatable {
 
     let noteId: String
     var completedById: String?
+    var completedTimestamp: Date?
 }
 
 extension UpdateNoteCompletedCommand: LocalCommand {
@@ -16,42 +17,27 @@ extension UpdateNoteCompletedCommand: LocalCommand {
         guard let comment = realm.object(ofType: Comment.self, forPrimaryKey: noteId) else {
             throw ModelError.commentNotFound
         }
-        if let completedById = completedById {
+        comment.completedTimestamp = completedTimestamp
+        if let completedById {
             guard let user = realm.object(ofType: Participant.self, forPrimaryKey: completedById) else {
                 throw ModelError.userNotFound
             }
             comment.completedBy = user
-            // do not set completedTimestamp as this is only done by the remote command
         } else {
             comment.completedBy = nil
-            comment.completedTimestamp = nil
         }
     }
 }
 
-/// Apply the `Comment` update in Firestore.
-extension UpdateNoteCompletedCommand: FirestoreCommand {
-    func apply(inFirestore ctx: FirestoreCommandContext) throws {
-        // ------------- READS -----------------
-        // check that target exists, otherwise abort (the command cannot be applied)
-        guard try ctx.exists(.comment(noteId)) else {
-            throw FirestoreCommandError.obsolete("comment doesn't exist")
-        }
-        if let completedById = completedById {
-            guard try ctx.exists(.participant(completedById)) else {
-                throw FirestoreCommandError.obsolete("user doesn't exist")
-            }
-        }
+/// Provide data for firebase function call
+extension UpdateNoteCompletedCommand: FirebaseFunctionCommand {
+    var functionName: String { "updateComment" }
 
-        // ------------- WRITES ----------------
-        ctx.updateData(
-            [
-                FirestoreComment.CodingKeys.completedById.rawValue: completedById ?? FieldValue.delete(),
-                FirestoreComment.CodingKeys.completedTimestamp.rawValue: completedById != nil
-                    ? FieldValue.serverTimestamp()
-                    : FieldValue.delete(),
-            ],
-            forDocument: .comment(noteId)
-        )
+    func functionData(_ projectId: String) -> Any? {
+        [
+            "projectId": projectId,
+            "commentId": noteId,
+            "completedTimestamp": completedTimestamp.map { Int($0.timeIntervalSince1970 * 1000) } as Any,
+        ]
     }
 }

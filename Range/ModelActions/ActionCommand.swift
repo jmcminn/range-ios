@@ -98,7 +98,6 @@ enum ActionCommand: Codable {
         switch self {
         case let .updateGeometriesArchived(c): return c
         case let .updateGeometryLocation(c): return c
-        case let .updateNoteCompleted(c): return c
         case let .updateUploadAnnotations(c): return c
         case let .updateUploadDescription(c): return c
         case let .updateUploadsTags(c): return c
@@ -122,6 +121,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationStatus(c): return c
         case let .updateCollaborationTags(c): return c
         case let .updateCommentText(c): return c
+        case let .updateNoteCompleted(c): return c
         default: return nil
         }
     }
