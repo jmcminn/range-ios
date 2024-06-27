@@ -824,7 +824,7 @@ extension TaskListCardViewController {
 
         var commands: [Command] = []
         commands.append(contentsOf: selectedTasks.map { projectModel.update(status: status, forCollaboration: $0) })
-        commands.append(projectModel.update(archived: true, forCollaborations: collaborationsToArchive))
+        commands.append(contentsOf: collaborationsToArchive.map { projectModel.update(archived: true, forCollaboration: $0) })
 
         projectModel.run(commands) { error in
             if error == nil {
@@ -847,9 +847,8 @@ extension TaskListCardViewController {
     }
 
     private func bulkArchive(_ tasks: [String]) {
-        projectModel.run(
-            projectModel.update(archived: true, forCollaborations: tasks)
-        ) { error in
+        let commands = tasks.map { projectModel.update(archived: true, forCollaboration: $0) }
+        projectModel.run(commands) { error in
             if error == nil {
                 ToastWindow.shared.showSuccess(text:
                     "\(tasks.count) \(tasks.count == 1 ? "task" : "tasks") archived successfully")

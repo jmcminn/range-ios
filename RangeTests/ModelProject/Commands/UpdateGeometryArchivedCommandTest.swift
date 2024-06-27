@@ -5,10 +5,10 @@ import RealmSwift
 import Turf
 import XCTest
 
-/// Tests applying `UpdateGeometriesArchivedCommand` in local Realm db
-final class UpdateGeometriesArchivedCommandRealmTest: ProjectModelTestCase {
+/// Tests applying `UpdateGeometryArchivedCommand` in local Realm db
+final class UpdateGeometryArchivedCommandRealmTest: ProjectModelTestCase {
     func testApply_noGeometry() throws {
-        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
+        let command = UpdateGeometryArchivedCommand(collaborationId: "collaboration1", archivedTimestamp: nil)
         XCTAssertThrowsError(
             try command.apply(inRealm: realm)
         ) { error in
@@ -22,14 +22,19 @@ final class UpdateGeometriesArchivedCommandRealmTest: ProjectModelTestCase {
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
+        let feature = Feature(placeholderId: "feature1")
+        let collaboration = Collaboration(placeholderId: "collaboration1")
         try realm.write {
-            realm.add(geometry)
+            realm.add([geometry, feature, collaboration])
+            geometry.features.insert(feature)
+            feature.collaborations.insert(collaboration)
         }
-        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
+        let archivedTimestamp = Date()
+        let command = UpdateGeometryArchivedCommand(collaborationId: "collaboration1", archivedTimestamp: archivedTimestamp)
         try realm.write {
             try command.apply(inRealm: realm)
         }
-        XCTAssertNotNil(geometry.archivedTimestamp)
+        XCTAssertEqual(geometry.archivedTimestamp, archivedTimestamp)
     }
 
     func testApply_unarchive_successful() throws {
@@ -37,12 +42,16 @@ final class UpdateGeometriesArchivedCommandRealmTest: ProjectModelTestCase {
             id: "geometry1",
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5))),
-            archivedTimestamp: Date.now
+            archivedTimestamp: Date()
         )
+        let feature = Feature(placeholderId: "feature1")
+        let collaboration = Collaboration(placeholderId: "collaboration1")
         try realm.write {
-            realm.add(geometry)
+            realm.add([geometry, feature, collaboration])
+            geometry.features.insert(feature)
+            feature.collaborations.insert(collaboration)
         }
-        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: false)
+        let command = UpdateGeometryArchivedCommand(collaborationId: "collaboration1", archivedTimestamp: nil)
         try realm.write {
             try command.apply(inRealm: realm)
         }
@@ -50,51 +59,36 @@ final class UpdateGeometriesArchivedCommandRealmTest: ProjectModelTestCase {
     }
 }
 
-/// Tests applying `UpdateGeometriesArchivedCommand` to Firestore
-final class UpdateGeometriesArchivedCommandFirestoreTest: XCTestCase {
-    func testApply_noGeometry() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
-
-        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("geometry doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
+/// Tests getting the parameters for Firebase function call
+final class UpdateGeometryArchivedCommandFirebaseFunctionTest: XCTestCase {
+    func test_archive() throws {
+        let archivedTimestamp = Date()
+        let command = UpdateGeometryArchivedCommand(collaborationId: "collaboration1", archivedTimestamp: archivedTimestamp)
+        XCTAssertEqual(command.functionName, "updateCollaboration")
+        
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1",
+            "collaborationId": "collaboration1",
+            "archivedTimestamp": Int(archivedTimestamp.timeIntervalSince1970 * 1000),
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
-
-    func testApply_archive_successful() throws {
-        let context = TestFirestoreCommandContext(docs: [.geometry("geometry1")])
-
-        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: true)
-
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 1)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.geometry("geometry1"), [
-                "archivedTimestamp": FieldValue.serverTimestamp(),
-            ])
-        )
-    }
-
-    func testApply_unarchive_successful() throws {
-        let context = TestFirestoreCommandContext(docs: [.geometry("geometry1")])
-
-        let command = UpdateGeometriesArchivedCommand(geometryIds: ["geometry1"], archive: false)
-
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 1)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.geometry("geometry1"), [
-                "archivedTimestamp": FieldValue.delete(),
-            ])
-        )
+    
+    func test_unarchive() throws {
+        let command = UpdateGeometryArchivedCommand(collaborationId: "collaboration1", archivedTimestamp: nil)
+        XCTAssertEqual(command.functionName, "updateCollaboration")
+        
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1",
+            "collaborationId": "collaboration1",
+            "archivedTimestamp": nil
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }

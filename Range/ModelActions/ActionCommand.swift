@@ -36,7 +36,7 @@ enum ActionCommand: Codable {
     case updateCollaborationStatus(UpdateCollaborationStatusCommand)
     case updateCollaborationTags(UpdateCollaborationTagsCommand)
     case updateCommentText(UpdateCommentTextCommand)
-    case updateGeometriesArchived(UpdateGeometriesArchivedCommand)
+    case updateGeometryArchived(UpdateGeometryArchivedCommand)
     case updateGeometryLocation(UpdateGeometryLocationCommand)
     case updateNoteCompleted(UpdateNoteCompletedCommand)
     case updateUploadAnnotations(UpdateUploadAnnotationsCommand)
@@ -59,7 +59,7 @@ enum ActionCommand: Codable {
         case let c as UpdateCollaborationStatusCommand: self = .updateCollaborationStatus(c)
         case let c as UpdateCollaborationTagsCommand: self = .updateCollaborationTags(c)
         case let c as UpdateCommentTextCommand: self = .updateCommentText(c)
-        case let c as UpdateGeometriesArchivedCommand: self = .updateGeometriesArchived(c)
+        case let c as UpdateGeometryArchivedCommand: self = .updateGeometryArchived(c)
         case let c as UpdateGeometryLocationCommand: self = .updateGeometryLocation(c)
         case let c as UpdateNoteCompletedCommand: self = .updateNoteCompleted(c)
         case let c as UpdateUploadAnnotationsCommand: self = .updateUploadAnnotations(c)
@@ -85,7 +85,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationStatus(c): return c
         case let .updateCollaborationTags(c): return c
         case let .updateCommentText(c): return c
-        case let .updateGeometriesArchived(c): return c
+        case let .updateGeometryArchived(c): return c
         case let .updateGeometryLocation(c): return c
         case let .updateNoteCompleted(c): return c
         case let .updateUploadAnnotations(c): return c
@@ -96,7 +96,6 @@ enum ActionCommand: Codable {
 
     var firestoreCommand: FirestoreCommand? {
         switch self {
-        case let .updateGeometriesArchived(c): return c
         case let .updateGeometryLocation(c): return c
         case let .updateUploadAnnotations(c): return c
         case let .updateUploadDescription(c): return c
@@ -121,6 +120,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationStatus(c): return c
         case let .updateCollaborationTags(c): return c
         case let .updateCommentText(c): return c
+        case let .updateGeometryArchived(c): return c
         case let .updateNoteCompleted(c): return c
         default: return nil
         }

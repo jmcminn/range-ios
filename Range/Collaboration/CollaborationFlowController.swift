@@ -553,7 +553,7 @@ extension CollaborationFlowController {
         guard let collaboration = collaboration else { return }
         let commands = [
             model.update(status: status, forCollaboration: collaboration.id),
-            model.update(archived: true, forCollaborations: [collaboration.id])
+            model.update(archived: true, forCollaboration: collaboration.id)
         ]
         model.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }
