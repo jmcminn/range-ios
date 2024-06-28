@@ -46,76 +46,24 @@ final class UpdateUploadDescriptionCommandRealmTest: ProjectModelTestCase {
     }
 }
 
-/// Tests applying `UpdateUploadDescriptionCommand` to Firestore
-final class UpdateUploadDescriptionCommandFirestoreTest: XCTestCase {
-    func testApply_noUpload() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
-
+/// Tests getting the parameters for Firebase function call
+final class UpdateUploadDescriptionCommandFirebaseFunctionTest: XCTestCase {
+    func testFunctionCommand() throws {
         let command = UpdateUploadDescriptionCommand(
             authorId: "user1",
             uploadId: "upload1",
             uploadDescription: "new description"
         )
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("upload doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
-    }
+        XCTAssertEqual(command.functionName, "updateUpload")
 
-    func testApply_successful() throws {
-        // upload exists
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .upload("upload1"): FirestoreUpload(
-                parentId: "collaboration1",
-                parentType: "Collaboration",
-                authorId: "user1",
-                timestamp: Timestamp(),
-                correlationId: "upload1",
-                tagIds: []
-            ),
-        ])
-
-        let command = UpdateUploadDescriptionCommand(
-            authorId: "user1",
-            uploadId: "upload1",
-            uploadDescription: "new description"
-        )
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 1)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.upload("upload1"), ["description": "new description"])
-        )
-    }
-
-    /// Test for idempotency
-    /// The description is the same as in Firestore... ignore
-    func testApply_noOp_descriptionUnchanged() throws {
-        // upload exists
-        let context = TestFirestoreCommandContext(docs: [], docsData: [
-            .upload("upload1"): FirestoreUpload(
-                parentId: "collaboration1",
-                parentType: "Collaboration",
-                authorId: "user1",
-                timestamp: Timestamp(),
-                uploadDescription: "description",
-                correlationId: "upload1",
-                tagIds: []
-            ),
-        ])
-        // same description
-        let command = UpdateUploadDescriptionCommand(
-            authorId: "user1",
-            uploadId: "upload1",
-            uploadDescription: "description"
-        )
-        try command.apply(inFirestore: context)
-
-        XCTAssertEqual(context.operations.count, 0)
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1",
+            "uploadId": "upload1",
+            "description": "new description"
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }

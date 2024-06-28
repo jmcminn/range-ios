@@ -21,26 +21,15 @@ extension UpdateUploadDescriptionCommand: LocalCommand {
     }
 }
 
-/// Apply the update in Firestore.
-extension UpdateUploadDescriptionCommand: FirestoreCommand {
-    func apply(inFirestore ctx: FirestoreCommandContext) throws {
-        // ------------- READS -----------------
-        // check that target exists, otherwise abort (the command cannot be applied)
-        guard let upload = try ctx.getDocument(.upload(uploadId), as: FirestoreUpload.self)
-        else {
-            throw FirestoreCommandError.obsolete("upload doesn't exist")
-        }
-        guard upload.uploadDescription != uploadDescription else {
-            // do nothing, the name is not really different...
-            return
-        }
+/// Provide data for firebase function call
+extension UpdateUploadDescriptionCommand: FirebaseFunctionCommand {
+    var functionName: String { "updateUpload" }
 
-        // ------------- WRITES ----------------
-        ctx.updateData(
-            [FirestoreUpload.CodingKeys.uploadDescription.rawValue: uploadDescription != nil
-                ? uploadDescription!
-                : FieldValue.delete()],
-            forDocument: .upload(uploadId)
-        )
+    func functionData(_ projectId: String) -> Any? {
+        [
+            "projectId": projectId,
+            "uploadId": uploadId,
+            "description": uploadDescription
+        ]
     }
 }
