@@ -7,15 +7,15 @@ import Turf
 /// Update location (point geometry coordinates and canvas) for geometry
 struct UpdateGeometryLocationCommand: Command, Codable, Equatable {
     var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([geometryId]) }
+    var targetIds: [String] { .init([collaborationId]) }
 
-    let geometryId: String
+    let collaborationId: String
     var canvasId: String
     var coordinates: LocationCoordinate2DCodable // no CLLocationCoordinate2D as it needs to be codable
     var coordinatesForFirestore: String
 
-    init(geometryId: String, canvasId: String, coordinates: CLLocationCoordinate2D) throws {
-        self.geometryId = geometryId
+    init(collaborationId: String, canvasId: String, coordinates: CLLocationCoordinate2D) throws {
+        self.collaborationId = collaborationId
         self.canvasId = canvasId
         self.coordinates = .init(coordinates)
         let coordinatesArray: [Double] = [coordinates.longitude, coordinates.latitude]
@@ -28,7 +28,9 @@ struct UpdateGeometryLocationCommand: Command, Codable, Equatable {
 
 extension UpdateGeometryLocationCommand: LocalCommand {
     func apply(inRealm realm: Realm) throws {
-        guard let geometry = realm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
+        guard let geometry = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)?.feature
+            .first?.geometry.first
+        else {
             throw ModelError.geometryNotFound
         }
 
@@ -44,25 +46,16 @@ extension UpdateGeometryLocationCommand: LocalCommand {
     }
 }
 
-/// Apply the `Comment` update in Firestore.
-extension UpdateGeometryLocationCommand: FirestoreCommand {
-    func apply(inFirestore ctx: FirestoreCommandContext) throws {
-        // ------------- READS -----------------
-        // check that target exists, otherwise abort (the command cannot be applied)
-        guard try ctx.exists(.geometry(geometryId)) else {
-            throw FirestoreCommandError.obsolete("geometry doesn't exist")
-        }
-        guard try ctx.exists(.canvas(canvasId)) else {
-            throw FirestoreCommandError.obsolete("canvas doesn't exist")
-        }
+/// Provide data for firebase function call
+extension UpdateGeometryLocationCommand: FirebaseFunctionCommand {
+    var functionName: String { "updateCollaboration" }
 
-        // ------------- WRITES ----------------
-        ctx.updateData(
-            [
-                FirestoreGeometry.CodingKeys.canvas.rawValue: canvasId,
-                FirestoreGeometry.CodingKeys.coordinates.rawValue: coordinatesForFirestore,
-            ],
-            forDocument: .geometry(geometryId)
-        )
+    func functionData(_ projectId: String) -> Any? {
+        [
+            "projectId": projectId,
+            "collaborationId": collaborationId,
+            "canvasId": canvasId,
+            "coordinates": coordinatesForFirestore
+        ]
     }
 }

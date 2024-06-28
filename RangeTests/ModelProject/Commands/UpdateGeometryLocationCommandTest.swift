@@ -9,7 +9,7 @@ import XCTest
 final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
     func testApply_noGeometry() throws {
         let command = try UpdateGeometryLocationCommand(
-            geometryId: "geometry1",
+            collaborationId: "collaboration1",
             canvasId: "canvas1",
             coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)
         )
@@ -26,12 +26,16 @@ final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
+        let feature = Feature(placeholderId: "feature1")
+        let collaboration = Collaboration(placeholderId: "collaboration1")
         try realm.write {
-            realm.add(geometry)
+            realm.add([geometry, feature, collaboration])
+            geometry.features.insert(feature)
+            feature.collaborations.insert(collaboration)
         }
 
         let command = try UpdateGeometryLocationCommand(
-            geometryId: "geometry1",
+            collaborationId: "collaboration1",
             canvasId: "canvas2",
             coordinates: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)
         )
@@ -42,20 +46,24 @@ final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
         }
     }
 
-    func testApply_archive_successful() throws {
+    func testApply_successful() throws {
         let geometry = Geometry(
             id: "geometry1",
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
+        let feature = Feature(placeholderId: "feature1")
+        let collaboration = Collaboration(placeholderId: "collaboration1")
         let canvas1 = Canvas(placeholderId: "canvas1")
         let canvas2 = Canvas(placeholderId: "canvas2")
         try realm.write {
-            realm.add([geometry, canvas1, canvas2])
+            realm.add([geometry, feature, collaboration, canvas1, canvas2])
+            geometry.features.insert(feature)
+            feature.collaborations.insert(collaboration)
             canvas1.geometries.insert(geometry)
         }
         let command = try UpdateGeometryLocationCommand(
-            geometryId: "geometry1",
+            collaborationId: "collaboration1",
             canvasId: "canvas2",
             coordinates: CLLocationCoordinate2D(latitude: 33.5, longitude: -96.5)
         )
@@ -68,61 +76,26 @@ final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
     }
 }
 
-/// Tests applying `UpdateGeometryLocationCommand` to Firestore
-final class UpdateGeometryLocationCommandFirestoreTest: XCTestCase {
-    func testApply_noGeometry() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [])
-
-        let command = try UpdateGeometryLocationCommand(
-            geometryId: "geometry1",
-            canvasId: "canvas1",
-            coordinates: CLLocationCoordinate2D(latitude: 33.5, longitude: -96.5)
-        )
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("geometry doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
-    }
-
-    func testApply_noCanvas() throws {
-        // no data exists
-        let context = TestFirestoreCommandContext(docs: [.geometry("geometry1")])
-
-        let command = try UpdateGeometryLocationCommand(
-            geometryId: "geometry1",
-            canvasId: "canvas1",
-            coordinates: CLLocationCoordinate2D(latitude: 33.5, longitude: -96.5)
-        )
-        XCTAssertThrowsError(
-            try command.apply(inFirestore: context)
-        ) { error in
-            guard case .obsolete("canvas doesn't exist") = error as? FirestoreCommandError else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-        }
-    }
-
+/// Tests getting the parameters for Firebase function call
+final class UpdateGeometryLocationCommandFirebaseFunctionTest: XCTestCase {
     func testApply_successful() throws {
-        let context = TestFirestoreCommandContext(docs: [.geometry("geometry1"), .canvas("canvas2")])
-
+        let archivedTimestamp = Date()
         let command = try UpdateGeometryLocationCommand(
-            geometryId: "geometry1",
+            collaborationId: "collaboration1",
             canvasId: "canvas2",
             coordinates: CLLocationCoordinate2D(latitude: 33.5, longitude: -96.5)
         )
-        try command.apply(inFirestore: context)
+        XCTAssertEqual(command.functionName, "updateCollaboration")
 
-        XCTAssertEqual(context.operations.count, 1)
-        AssertOperationsEqual(
-            context.operations[0],
-            .update(.geometry("geometry1"), [
-                "canvas": "canvas2",
-                "coordinates": "[-96.5,33.5]",
-            ])
-        )
+        let data = command.functionData("project1") as? [String: Any?]
+        let expected: [String: Any?] = [
+            "projectId": "project1",
+            "collaborationId": "collaboration1",
+            "canvasId": "canvas2",
+            "coordinates": "[-96.5,33.5]",
+        ]
+        // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
+        // so the compiler stops saying that the types are not comparable, etc.
+        XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
 }

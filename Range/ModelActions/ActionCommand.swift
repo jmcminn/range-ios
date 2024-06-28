@@ -96,7 +96,6 @@ enum ActionCommand: Codable {
 
     var firestoreCommand: FirestoreCommand? {
         switch self {
-        case let .updateGeometryLocation(c): return c
         case let .updateUploadAnnotations(c): return c
         case let .updateUploadDescription(c): return c
         case let .updateUploadsTags(c): return c
@@ -121,6 +120,7 @@ enum ActionCommand: Codable {
         case let .updateCollaborationTags(c): return c
         case let .updateCommentText(c): return c
         case let .updateGeometryArchived(c): return c
+        case let .updateGeometryLocation(c): return c
         case let .updateNoteCompleted(c): return c
         default: return nil
         }

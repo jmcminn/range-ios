@@ -458,11 +458,8 @@ extension ProjectModel {
     func update(coordinates: CLLocationCoordinate2D, andCanvas canvas: Canvas,
                 forCollaboration collaboration: Collaboration) throws -> Command
     {
-        guard let geometry = collaboration.feature.first?.geometry.first else {
-            throw ModelError.geometryNotFound
-        }
         return try UpdateGeometryLocationCommand(
-            geometryId: geometry.id, canvasId: canvas.id, coordinates: coordinates
+            collaborationId: collaboration.id, canvasId: canvas.id, coordinates: coordinates
         )
     }
 
