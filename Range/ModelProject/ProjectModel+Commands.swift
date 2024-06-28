@@ -255,39 +255,23 @@ extension ProjectModel {
         }
     }
 
-    /// Create command for updating given Upload tags  (only if tags are different than existing ones).
-    /// The command creates new tags.
-    func update(tags: [TagViewModel], forUpload upload: Upload) -> Command? {
-        let tagIdsSet = Set(tags.map(\.id))
-        let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
-        guard tagIdsSet != existingTagIdsSet else { return nil }
-
-        // only report tag added for newly attached tags
-        tags.filter { !existingTagIdsSet.contains($0.id) }
-            .forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self, [:])
-            }
-
-        return UpdateUploadsTagsCommand(
-            uploadIds: [upload.id],
-            tags: tags.map(CommandTag.init(fromViewModel:))
-        )
-    }
-
-    /// Update mulitple uploads with given tags.
+    /// Update upload with given tags.
     /// If adding (add is `true`) then append the tags to current upload tags for each upload.
     /// If add is `false` then replace the current tags with the newly provided ones
-    func update(tags: [TagViewModel], forUploads uploads: [String], add: Bool) -> Command {
-        uploads.forEach { uploadId in
-            guard let upload = mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return }
-            let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
-            // only report tag added for newly attached tags
-            tags.filter { !existingTagIdsSet.contains($0.id) }
-                .forEach { _ in
-                    analytics?._trackProjectEvent(name: "tag added", self, [:])
-                }
+    func update(tags: [TagViewModel], forUpload uploadId: String, add: Bool = false) -> Command? {
+        guard let upload = mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId) else { return nil }
+        let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
+        // only report tag added for newly attached tags
+        let newTags = tags.filter { !existingTagIdsSet.contains($0.id) }
+        newTags.forEach { _ in analytics?._trackProjectEvent(name: "tag added", self, [:]) }
+        let updatedTags: [TagViewModel]
+        if add {
+            let currentTags = upload.tags.map { TagViewModel(fromTag: $0) }
+            updatedTags = currentTags + newTags
+        } else {
+            updatedTags = tags
         }
-        return UpdateUploadsTagsCommand(uploadIds: uploads, tags: tags.map(CommandTag.init(fromViewModel:)), add: add)
+        return UpdateUploadTagsCommand(uploadId: uploadId, tags: updatedTags.map(CommandTag.init(fromViewModel:)))
     }
 
     /// Create command for updating given Collaboration tags (only if tags are different than existing ones).
@@ -401,11 +385,14 @@ extension ProjectModel {
             throw ModelError.geometryNotFound
         }
         let archive = geometry.archivedTimestamp == nil
-        return UpdateGeometryArchivedCommand(collaborationId: collaboration.id, archivedTimestamp: archive ? Date() : nil)
+        return UpdateGeometryArchivedCommand(
+            collaborationId: collaboration.id,
+            archivedTimestamp: archive ? Date() : nil
+        )
     }
 
     func update(archived: Bool, forCollaboration collaborationId: String) -> Command {
-        return UpdateGeometryArchivedCommand(collaborationId: collaborationId, archivedTimestamp: archived ? Date() : nil)
+        UpdateGeometryArchivedCommand(collaborationId: collaborationId, archivedTimestamp: archived ? Date() : nil)
     }
 
     /// Updates the status for collaboration if it's different than the current one.
@@ -458,7 +445,7 @@ extension ProjectModel {
     func update(coordinates: CLLocationCoordinate2D, andCanvas canvas: Canvas,
                 forCollaboration collaboration: Collaboration) throws -> Command
     {
-        return try UpdateGeometryLocationCommand(
+        try UpdateGeometryLocationCommand(
             collaborationId: collaboration.id, canvasId: canvas.id, coordinates: coordinates
         )
     }

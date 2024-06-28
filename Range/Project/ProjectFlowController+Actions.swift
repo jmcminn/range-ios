@@ -309,7 +309,7 @@ extension ProjectFlowController: ProjectFlowActions {
         if let collaboration = object as? Collaboration {
             command = model.update(tags: selectedTags, forCollaboration: collaboration)
         } else if let upload = object as? Upload {
-            command = model.update(tags: selectedTags, forUpload: upload)
+            command = model.update(tags: selectedTags, forUpload: upload.id)
         } else {
             fatalError("updateTagsIfChanged not implemented for \(String(describing: object))")
         }

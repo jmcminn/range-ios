@@ -41,7 +41,7 @@ enum ActionCommand: Codable {
     case updateNoteCompleted(UpdateNoteCompletedCommand)
     case updateUploadAnnotations(UpdateUploadAnnotationsCommand)
     case updateUploadDescription(UpdateUploadDescriptionCommand)
-    case updateUploadsTags(UpdateUploadsTagsCommand)
+    case updateUploadTags(UpdateUploadTagsCommand)
 
     init(_ c: Any) {
         switch c {
@@ -64,7 +64,7 @@ enum ActionCommand: Codable {
         case let c as UpdateNoteCompletedCommand: self = .updateNoteCompleted(c)
         case let c as UpdateUploadAnnotationsCommand: self = .updateUploadAnnotations(c)
         case let c as UpdateUploadDescriptionCommand: self = .updateUploadDescription(c)
-        case let c as UpdateUploadsTagsCommand: self = .updateUploadsTags(c)
+        case let c as UpdateUploadTagsCommand: self = .updateUploadTags(c)
         default: fatalError("ActionCommand not implemented for \(c)")
         }
     }
@@ -90,13 +90,12 @@ enum ActionCommand: Codable {
         case let .updateNoteCompleted(c): return c
         case let .updateUploadAnnotations(c): return c
         case let .updateUploadDescription(c): return c
-        case let .updateUploadsTags(c): return c
+        case let .updateUploadTags(c): return c
         }
     }
 
     var firestoreCommand: FirestoreCommand? {
         switch self {
-        case let .updateUploadsTags(c): return c
         default: return nil
         }
     }
@@ -122,6 +121,7 @@ enum ActionCommand: Codable {
         case let .updateNoteCompleted(c): return c
         case let .updateUploadAnnotations(c): return c
         case let .updateUploadDescription(c): return c
+        case let .updateUploadTags(c): return c
         default: return nil
         }
     }

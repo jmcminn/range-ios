@@ -705,9 +705,8 @@ extension MediaCardViewController {
     }
 
     private func updateTags(_ tagsModel: TagsViewModel, add: Bool) {
-        projectModel.run(
-            projectModel.update(tags: tagsModel.selectedTags, forUploads: [String](selectedUploads), add: add)
-        ) { error in
+        let commands = selectedUploads.compactMap { projectModel.update(tags: tagsModel.selectedTags, forUpload: $0, add: add) }
+        projectModel.run(commands) { error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to update tags")
             }
