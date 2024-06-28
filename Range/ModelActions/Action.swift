@@ -28,3 +28,15 @@ struct Action: Codable, CustomDebugStringConvertible {
         self.command = ActionCommand(command)
     }
 }
+
+enum ActionError: Error, LocalizedError {
+    // The Action is not recognized by the PendingActionsModel (in theory it can only happen during development)
+    case notSupported(String)
+
+    public var errorDescription: String? {
+        switch self {
+        case let .notSupported(details): return "The command is not supported: \(details)"
+        }
+    }
+}
+

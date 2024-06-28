@@ -339,11 +339,9 @@
 		0A83D9102AB20008003A8DCE /* EnterAccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */; };
 		0A83D9122AB33A54003A8DCE /* DropdownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A83D9112AB33A54003A8DCE /* DropdownButton.swift */; };
 		0A859CF829D5F49000CCAEC5 /* Delayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A859CF729D5F49000CCAEC5 /* Delayer.swift */; };
-		0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */; };
 		0A88197F291C24A60050FC41 /* PendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88197E291C24A60050FC41 /* PendingActionsModel.swift */; };
 		0A881981291C25630050FC41 /* TestPendingActionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881980291C25630050FC41 /* TestPendingActionsModel.swift */; };
 		0A881983291D018B0050FC41 /* FirestoreDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881982291D018B0050FC41 /* FirestoreDocument.swift */; };
-		0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */; };
 		0A881987291D17060050FC41 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881986291D17060050FC41 /* CommandTypes.swift */; };
 		0A881989291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */; };
 		0A88198B291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */; };
@@ -867,11 +865,9 @@
 		0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterAccountInfoView.swift; sourceTree = "<group>"; };
 		0A83D9112AB33A54003A8DCE /* DropdownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownButton.swift; sourceTree = "<group>"; };
 		0A859CF729D5F49000CCAEC5 /* Delayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayer.swift; sourceTree = "<group>"; };
-		0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A88197E291C24A60050FC41 /* PendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModel.swift; sourceTree = "<group>"; };
 		0A881980291C25630050FC41 /* TestPendingActionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPendingActionsModel.swift; sourceTree = "<group>"; };
 		0A881982291D018B0050FC41 /* FirestoreDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreDocument.swift; sourceTree = "<group>"; };
-		0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCommandContext.swift; sourceTree = "<group>"; };
 		0A881986291D17060050FC41 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
 		0A881988291D21160050FC41 /* UpdateUploadsTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUploadsTagsCommandTest.swift; sourceTree = "<group>"; };
 		0A88198A291D38FC0050FC41 /* UpdateCollaborationTagsCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationTagsCommandTest.swift; sourceTree = "<group>"; };
@@ -1373,7 +1369,6 @@
 			isa = PBXGroup;
 			children = (
 				0A881982291D018B0050FC41 /* FirestoreDocument.swift */,
-				0A881984291D045D0050FC41 /* FirestoreCommandContext.swift */,
 				0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */,
 				0A2F32FE2837E8E500D04A1C /* FirestoreProjectSummary.swift */,
 				0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */,
@@ -1800,7 +1795,6 @@
 				0A4DC77027EE111400712518 /* Resources */,
 				0ABFD8AC28EDB945008CDA74 /* Settings */,
 				0AD9B75B28644D85005ACFD7 /* Tags */,
-				0A88197C291C23630050FC41 /* TestFirestoreCommandContext.swift */,
 				0A881980291C25630050FC41 /* TestPendingActionsModel.swift */,
 				0AABC34C28A1766C006A50AF /* TestPendingUploadsModel.swift */,
 				0A0A858F2B9672C20093055F /* RoutingTest.swift */,
@@ -2656,7 +2650,6 @@
 				0AAC46CB2B51901500D87549 /* SelectedItemPickerItemsView.swift in Sources */,
 				0A07D51A28075CAA00B6F9A2 /* PassthroughView.swift in Sources */,
 				0AD0255D285079C000106CA5 /* HeaderExpander.swift in Sources */,
-				0A881985291D045D0050FC41 /* FirestoreCommandContext.swift in Sources */,
 				0A7393782A5FDE450079A7FB /* UpdateUploadAnnotationsCommand.swift in Sources */,
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A9341C429A8A464006166C1 /* CopyPinTableViewCell.swift in Sources */,
@@ -3010,7 +3003,6 @@
 				0A0A85902B9672C20093055F /* RoutingTest.swift in Sources */,
 				0A3680DC29ED9AA600CD1D98 /* CollaborationFiltersTest.swift in Sources */,
 				0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */,
-				0A88197D291C23630050FC41 /* TestFirestoreCommandContext.swift in Sources */,
 				0A6DB6A7292E56220017D511 /* UpdateCollaborationDescriptionCommandTest.swift in Sources */,
 				0A82A8E829222ED200A4BBCE /* CreateCollaborationCommandTest.swift in Sources */,
 				0A4995BD2857699A00E571FB /* HeaderExpanderCalculatorTest.swift in Sources */,

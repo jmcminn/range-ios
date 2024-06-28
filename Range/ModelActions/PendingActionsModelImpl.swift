@@ -55,13 +55,13 @@ class PendingActionsModelImpl: PendingActionsModel {
         defaults = UserDefaults.forUser(userId)
         // a default value for retry count when not set yet
         defaults.register(defaults: [DefaultsKey.retryCount: 0])
-        
+
         let version = defaults.integer(forKey: DefaultsKey.actionsVersion)
         Logger.pendingActions.info("Version \(version)")
-        
+
         // Run migration if version is 1 (or 0 = not provided, as we started versionsing from 2,
         // so no version = version 1)
-        if (version < 2) {
+        if version < 2 {
             // migrate
             Logger.pendingActions.info("Migrating \(version) to v2")
             let v1Data = pendingActions()
@@ -224,10 +224,10 @@ class PendingActionsModelImpl: PendingActionsModel {
         guard !stopped else { return }
         // action is performing, do nothing
         guard !performingAction else { return }
-        
+
         // get 1st action data
         guard let actionData = pendingActions().first else { return }
-        
+
         // try to decode to Action or drop it if cannot be decoded
         let action: Action
         do {
@@ -327,13 +327,11 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// Returns optional SentryLevel for error reporting. If nil then it shouldn't be reported in Sentry at all
     private func handleActionError(_ action: Action, _ error: Error) -> (Bool, SentryLevel?) {
         Logger.pendingActions.debug("Action \(action.logDescription, privacy: .public) error: \(error)")
-        if let error = error as? FirestoreCommandError, case .obsolete = error {
-            // --- custom obsolete errors ----------------------------------------------------------
-            // obsolete action is dropped so it's done
-            Logger.pendingActions.debug("Dropping obsolete action \(action.logDescription, privacy: .public)")
-            // no need to log it in Sentry, it's an obsolete action, meaning the correct business
-            // logic is not to apply it
-            return (true, nil)
+        if let error = error as? ActionError, case .notSupported = error {
+            // not supported action is dropped so it's done
+            Logger.pendingActions.debug("Dropping not supported action \(action.logDescription, privacy: .public)")
+            // log it in Sentry as Error as this shouldn't really happen
+            return (true, .error)
         } else if (error as NSError).domain == AuthErrorDomain,
                   (error as NSError).code == AuthErrorCode.networkError.rawValue
         {
@@ -423,26 +421,7 @@ class PendingActionsModelImpl: PendingActionsModel {
 
     /// To be only called from `maybePerformAction`
     private func performAction(_ action: Action, completion: @escaping (Error?) -> Void) {
-        if let firestoreCommand = action.command.firestoreCommand {
-            firestore.runTransaction { transaction, errorPointer -> Any? in
-                let context = TransactionalFirestoreCommandContext(
-                    transaction: transaction,
-                    firestore: self.firestore,
-                    projectId: action.projectId
-                )
-                do {
-                    try firestoreCommand.apply(inFirestore: context)
-                } catch let error as NSError {
-                    errorPointer?.pointee = error
-                    return false
-                }
-
-                // don't return nil, it's supposed to work but it crashes
-                return true
-            } completion: { _, error in
-                completion(error)
-            }
-        } else if let functionCommand = action.command.firebaseFunctionCommand {
+        if let functionCommand = action.command.firebaseFunctionCommand {
             Functions.functions(region: "us-west2")
                 .httpsCallable(functionCommand.functionName)
                 .call(functionCommand.functionData(action.projectId)) { _, error in
@@ -451,7 +430,7 @@ class PendingActionsModelImpl: PendingActionsModel {
         } else {
             // assert for debug builds but mark as obsolete in the prod app
             assertionFailure("Action command not supported \(action.name)")
-            completion(FirestoreCommandError.obsolete("Action command not supported \(action.name)"))
+            completion(ActionError.notSupported(action.name))
         }
     }
 }

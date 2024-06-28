@@ -30,29 +30,6 @@ protocol PendingUploadCommand: Command {
     func addPendingUploads(_: PendingUploadsModel) async throws
 }
 
-enum FirestoreCommandError: Error, LocalizedError {
-    // not applied because some preconditions are not met and will not be met,
-    // the command should be ignored (removed from pending)
-    case obsolete(String)
-
-    public var errorDescription: String? {
-        switch self {
-        case let .obsolete(details): return "The command is obsolete: \(details)"
-        }
-    }
-}
-
-/// A protocol for commands that can be applied to Firestore.
-protocol FirestoreCommand {
-    /// Apply the changes in a Firestore transaction
-    ///
-    /// This function should throw a special FirestoreCommandError.obsolete error if it decided it's not doing any updates
-    /// because it's obsolete for some reason (for example it wanted to update the name for collaboration that doesn't exist anymore).
-    /// This could have been achieved by just doing nothing but throwing this error makes it more explicit and allows for some special
-    /// behavior (like notifying the user...)
-    func apply(inFirestore context: FirestoreCommandContext) throws
-}
-
 /// A protocol for commands that can be applied by calling a Firebase callable function
 protocol FirebaseFunctionCommand {
     /// The name of the function to be called
