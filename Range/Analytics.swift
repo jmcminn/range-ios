@@ -75,4 +75,15 @@ extension Analytics {
 
         track(name: name, properties: properties)
     }
+    
+    func _trackOrganizationEvent(name: String, _ model: OrganizationModel, _ props: [String: String]) {
+        let properties = [
+            "userId": model.user.id,
+            "groupId": model.organizationId,
+            "organizationRole": model.currentUser.organizationRole.rawValue,
+            "platform": UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone",
+        ].merging(props) { _, new in new }
+
+        track(name: name, properties: properties)
+    }
 }

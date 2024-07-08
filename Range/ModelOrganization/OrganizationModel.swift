@@ -251,6 +251,12 @@ class OrganizationModel: NSObject, RealmModel {
         _ = try await Functions.functions(region: "us-west2")
             .httpsCallable("createProject")
             .call(parameters)
+        
+        analytics?._trackOrganizationEvent(name: "project created", self, [
+            "name": model.name,
+            "projectType": projectType,
+            "organizationName": organization.name
+        ])
 
         return projectId
     }
