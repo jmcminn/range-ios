@@ -12,23 +12,25 @@ import RealmSwift
 ///         "name"     : "name",
 ///         "description": "..."  // optional, not implemented on iOS
 ///     }
-struct FirestoreFeature: Codable, FirestoreToRealmSyncable {
+struct FirestoreFeature: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Feature
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
-        case geometryId = "geometry", name, featureDescription = "description"
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case descriptionString = "description",
+             geometryId = "geometry",
+             name
     }
 
     var geometryId: String
     var name: String
-    var featureDescription: String?
+    var descriptionString: String?
 
     /// For constructing with all properties
     init(geometryId: String, name: String, description: String?) {
         self.geometryId = geometryId
         self.name = name
-        featureDescription = description
+        descriptionString = description
     }
 
     /// For constructing from the `Feature` object
@@ -39,7 +41,7 @@ struct FirestoreFeature: Codable, FirestoreToRealmSyncable {
 
     func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
         let geometry = realm.objectOrPlaceholder(ofType: Geometry.self, forPrimaryKey: geometryId)
-        let feature = Feature(id: id, name: name, description: featureDescription)
+        let feature = Feature(id: id, name: name, description: descriptionString)
         realm.add(feature, update: .modified)
         geometry.features.insert(feature)
     }

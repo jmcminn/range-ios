@@ -24,6 +24,9 @@ extension DeleteCollaborationCommand: LocalCommand {
         }
         realm.delete(collaboration.comments)
         realm.delete(collaboration.updates)
+        collaboration.uploads.forEach { upload in
+            realm.delete(upload.comments)
+        }
         realm.delete(collaboration.uploads)
         realm.delete(geometry)
         realm.delete(feature)

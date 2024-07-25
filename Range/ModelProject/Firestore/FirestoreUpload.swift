@@ -17,22 +17,31 @@ import RealmSwift
 ///         "description": "",
 ///         "correlation": "6ebe0ded-414b-4a5e-be09-5d079d5dd7dc"
 ///     }
-struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
+struct FirestoreUpload: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Upload
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    enum CodingKeys: String, CodingKey {
-        case parentId = "parent", parentType, authorId = "author", timestamp, name,
-             uploadDescription = "description", correlationId = "correlation", tagIds = "tags",
-             fileTypeString = "fileType", imageHeightToWidth, fileSize, storageVersion, annotations
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case annotations,
+             authorId = "author",
+             correlationId = "correlation",
+             descriptionString = "description",
+             fileSize,
+             fileTypeString = "fileType",
+             imageHeightToWidth,
+             name,
+             parentId = "parent", parentType,
+             storageVersion,
+             tagIds = "tags",
+             timestamp
     }
 
     var parentId: String
     var parentType: String
     var authorId: String
-    var timestamp: Timestamp
+    var timestamp: Date
     var name: String?
-    var uploadDescription: String?
+    var descriptionString: String?
     var correlationId: String
     var tagIds: [String]
     var fileTypeString: String?
@@ -74,9 +83,9 @@ struct FirestoreUpload: Codable, FirestoreToRealmSyncable {
         let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
         let upload = Upload(
             id: id,
-            timestamp: timestamp.dateValue(),
+            timestamp: timestamp,
             name: name,
-            description: uploadDescription,
+            description: descriptionString,
             correlationId: correlationId,
             fileType: fileType,
             imageHeightToWidth: imageHeightToWidth,

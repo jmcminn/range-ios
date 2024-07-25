@@ -16,6 +16,7 @@ extension DeleteUploadCommand: LocalCommand {
         guard let upload = realm.object(ofType: Upload.self, forPrimaryKey: uploadId) else {
             throw ModelError.uploadNotFound
         }
+        realm.delete(upload.comments)
         realm.delete(upload)
     }
 }

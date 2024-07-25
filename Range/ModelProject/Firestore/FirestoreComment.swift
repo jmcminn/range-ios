@@ -16,24 +16,28 @@ import RealmSwift
 ///         "text": "Starting on the polygon",
 ///         "isCompleted": false  // optional
 ///     }
-struct FirestoreComment: Codable, FirestoreToRealmSyncable {
+struct FirestoreComment: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Comment
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    enum CodingKeys: String, CodingKey {
-        case parentId = "parent", parentType, authorId = "author", timestamp, text, textIsEdited,
-             isNote, completedById = "completedBy", completedTimestamp
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case authorId = "author",
+             completedById = "completedBy", completedTimestamp,
+             isNote,
+             parentId = "parent", parentType,
+             text, textIsEdited,
+             timestamp
     }
 
     var parentId: String
     var parentType: String
     var authorId: String
-    var timestamp: Timestamp
+    var timestamp: Date
     var text: String
     var textIsEdited: Bool? // if missing will default to false
     var isNote: Bool? // if missing will default to false
     var completedById: String? // participant id
-    var completedTimestamp: Timestamp?
+    var completedTimestamp: Date?
 
     func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
         guard parentType == "Collaboration" || parentType == "Upload" else {
@@ -42,11 +46,11 @@ struct FirestoreComment: Codable, FirestoreToRealmSyncable {
         let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
         let comment = Comment(
             id: id,
-            timestamp: timestamp.dateValue(),
+            timestamp: timestamp,
             text: text,
             textIsEdited: textIsEdited ?? false,
             isNote: isNote ?? false,
-            completedTimestamp: completedTimestamp?.dateValue()
+            completedTimestamp: completedTimestamp
         )
         comment.author = author
         if let completedById = completedById {

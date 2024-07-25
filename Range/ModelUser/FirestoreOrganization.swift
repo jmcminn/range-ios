@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 
 /// Represents the `Organization`` (`organizations/` path in Firestore)
-struct FirestoreOrganization: Codable, FirestoreToRealmSyncable {
+struct FirestoreOrganization: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Organization
 
     /// name

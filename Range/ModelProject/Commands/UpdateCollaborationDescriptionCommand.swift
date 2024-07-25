@@ -33,7 +33,7 @@ extension UpdateCollaborationDescriptionCommand: FirebaseFunctionCommand {
         [
             "projectId": projectId,
             "collaborationId": collaborationId,
-            FirestoreCollaboration.CodingKeys.collaborationDescription.rawValue: collaborationDescription,
+            FirestoreCollaboration.CodingKeys.descriptionString.rawValue: collaborationDescription,
         ]
     }
 }

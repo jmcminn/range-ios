@@ -11,10 +11,10 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
         let firestoreCollaboration = FirestoreCollaboration(
             featureId: "feature1",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: "",
+            descriptionString: "",
             tagIds: []
         )
         try realm.write {
@@ -48,10 +48,10 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
         var firestoreCollaboration1 = FirestoreCollaboration(
             featureId: "feature1",
             authorId: "user1",
-            timestamp: Timestamp(seconds: 1, nanoseconds: 0),
+            timestamp: Date(timeIntervalSince1970: 1),
             statusId: "status1",
             name: "Collaboration1",
-            collaborationDescription: "",
+            descriptionString: "",
             tagIds: ["tag1"]
         )
         try realm.write {
@@ -83,10 +83,10 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
         let firestoreCollaboration2 = FirestoreCollaboration(
             featureId: "feature1",
             authorId: "user1",
-            timestamp: Timestamp(seconds: 1, nanoseconds: 0),
+            timestamp: Date(timeIntervalSince1970: 1),
             statusId: "status1",
             name: "Collaboration2",
-            collaborationDescription: "",
+            descriptionString: "",
             tagIds: []
         )
         try realm.write {
@@ -116,10 +116,10 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
         let firestoreCollaboration = FirestoreCollaboration(
             featureId: "feature1",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             statusId: nil,
             name: "Collaboration1",
-            collaborationDescription: "",
+            descriptionString: "",
             tagIds: []
         )
         try realm.write {
@@ -143,10 +143,10 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
         var firestoreCollaboration = FirestoreCollaboration(
             featureId: "feature1",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             statusId: nil,
             name: "Collaboration1",
-            collaborationDescription: "",
+            descriptionString: "",
             tagIds: ["tag1", "tag2", "tag1"]
         )
         try realm.write {

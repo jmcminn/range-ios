@@ -70,7 +70,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 23
+            config.schemaVersion = 24
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("user_\(userId)_project_\(projectId)")
             config.fileURL!.appendPathExtension("realm")
@@ -80,6 +80,7 @@ class ProjectModel: NSObject, RealmModel {
             Logger.model.info("project realm file url: \(config.fileURL?.path ?? "")")
         }
         config.objectTypes = [
+            ProjectMetadata.self,
             ProjectSummary.self, Status.self, Tag.self, Participant.self,
             Canvas.self, CanvasSource.self, Geometry.self, Feature.self, Collaboration.self, Comment.self,
             Update.self, Upload.self, Location.self, StatusTaskCount.self,

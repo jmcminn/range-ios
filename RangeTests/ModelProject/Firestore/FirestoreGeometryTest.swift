@@ -5,42 +5,7 @@ import Turf
 import XCTest
 
 class FirestoreGeometryTest: ProjectModelTestCase {
-    // MARK: - encode/decode tests
-
-    func testEncode_unsupportedGeometry() throws {
-        let geometry = FirestoreGeometry(
-            canvasId: "5678",
-            geometry: .lineString(LineString([CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)]))
-        )
-        XCTAssertThrowsError(
-            try JSONEncoder().encode(geometry)
-        ) { error in
-            guard
-                let error = error as? EncodingError,
-                case let .invalidValue(_, context) = error
-            else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-            XCTAssertEqual(context.debugDescription, "Unsupported geometry")
-        }
-    }
-
-    func testEncode() throws {
-        let geometry = FirestoreGeometry(
-            canvasId: "5678",
-            geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
-        )
-        let data = try JSONEncoder().encode(geometry)
-
-        let decodedGeometry = try JSONDecoder().decode(FirestoreGeometry.self, from: data)
-        XCTAssertEqual(decodedGeometry.canvasId, "5678")
-        XCTAssertEqual(decodedGeometry.annotationType, .photoMarker)
-        guard case let .point(point) = decodedGeometry.geometry else {
-            XCTFail("unexpected geometry type: \(decodedGeometry.geometry)"); return
-        }
-        XCTAssertEqual(point.coordinates.longitude, -96.5, accuracy: 0.000000001)
-        XCTAssertEqual(point.coordinates.latitude, 32.5, accuracy: 0.000000001)
-    }
+    // MARK: - decode tests
 
     func testDecode_unsupportedType() {
         let inputString = """

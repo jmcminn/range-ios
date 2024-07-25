@@ -5,7 +5,7 @@ import RealmSwift
 
 /// Represents the `ProjectSummary`` (`projects/` path in Firestore)
 /// This struct exists because conformance to `Codable` cannot be added in class extension and we don't want to polute Realm model with Firestore related logic.
-struct FirestoreProjectSummary: Codable, FirestoreToRealmSyncable {
+struct FirestoreProjectSummary: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = ProjectSummary
 
     /// center

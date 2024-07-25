@@ -3,7 +3,7 @@ import FirebaseFirestore
 import RealmSwift
 import XCTest
 
-class FirestorCommentRealmSyncTest: ProjectModelTestCase {
+class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
     // MARK: - upsert tests
 
     // Tests if firebase object fills in the defaults for optionals
@@ -12,7 +12,7 @@ class FirestorCommentRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             text: "comment 1"
         )
         try realm.write {
@@ -33,7 +33,7 @@ class FirestorCommentRealmSyncTest: ProjectModelTestCase {
             parentId: "feature1",
             parentType: "Feature",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             text: "comment 1"
         )
         XCTAssertThrowsError(
@@ -51,7 +51,7 @@ class FirestorCommentRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user2",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             text: "comment 1"
         )
         try realm.write {
@@ -95,7 +95,7 @@ class FirestorCommentRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: Timestamp(seconds: 1, nanoseconds: 0),
+            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 1"
         )
         try realm.write {
@@ -125,7 +125,7 @@ class FirestorCommentRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: Timestamp(seconds: 1, nanoseconds: 0),
+            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 2"
         )
         try realm.write {
@@ -167,12 +167,12 @@ class FirestorCommentRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: Timestamp(seconds: 1, nanoseconds: 0),
+            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 1",
             textIsEdited: true,
             isNote: true,
             completedById: "user2",
-            completedTimestamp: Timestamp(seconds: 2, nanoseconds: 0)
+            completedTimestamp: Date(timeIntervalSince1970: 2)
         )
         try realm.write {
             try firestoreComment1.upsert(withId: "comment1", inRealm: realm)

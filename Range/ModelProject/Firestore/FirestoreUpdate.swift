@@ -16,17 +16,21 @@ import RealmSwift
 ///         "oldValue": "name", // optional, type depends on the field
 ///         "newValue": null // optional, type depends on the field
 ///     }
-struct FirestoreUpdate: Codable, FirestoreToRealmSyncable {
+struct FirestoreUpdate: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Update
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    enum CodingKeys: String, CodingKey {
-        case parentId = "parent", parentType, timestamp, userId = "user", field, oldValue, newValue
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case field,
+             newValue, oldValue,
+             parentId = "parent", parentType,
+             timestamp,
+             userId = "user"
     }
 
     var parentId: String
     var parentType: String
-    var timestamp: Timestamp
+    var timestamp: Date
     var userId: String
     var field: String // allow anything but constrain to supported Update.Field when upserting
     // old and new value can have different types depending on the field. For now Int, String or
@@ -47,13 +51,7 @@ struct FirestoreUpdate: Codable, FirestoreToRealmSyncable {
         let user = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: userId)
         let oldValue: AnyRealmValue = oldValue?.anyRealmValue ?? .none
         let newValue: AnyRealmValue = newValue?.anyRealmValue ?? .none
-        let update = Update(
-            id: id,
-            timestamp: timestamp.dateValue(),
-            field: updateField,
-            oldValue: oldValue,
-            newValue: newValue
-        )
+        let update = Update(id: id, timestamp: timestamp, field: updateField, oldValue: oldValue, newValue: newValue)
         update.user = user
         realm.add(update, update: .modified)
         collaboration.updates.insert(update)

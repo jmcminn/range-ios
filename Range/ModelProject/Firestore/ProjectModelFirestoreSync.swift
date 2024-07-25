@@ -1,9 +1,12 @@
 import CoreLocation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseFunctions
+import FirebaseSharedSwift
 import Foundation
 import OSLog
 import RealmSwift
+import Sentry
 
 //
 //          applyLocally                         upsertCmd                       decode
@@ -45,6 +48,14 @@ class ProjectModelFirestoreSync {
             Logger.firestore.error("initial sync failed: \(error.localizedDescription)")
         }
 
+        // get all collaborations data
+        do {
+            let timestamp = try await model.getAllData()
+            observeFeed(since: timestamp)
+        } catch {
+            Logger.functions.error("getAllDataForProject failed: \(error.localizedDescription)")
+        }
+
         // after this point it's only registering for observation and the function returns
         listeners.append(contentsOf: [
             model.sync(collection(.canvas), as: FirestoreCanvas.self),
@@ -53,12 +64,6 @@ class ProjectModelFirestoreSync {
             model.sync(collection(.tagName), as: FirestoreTagName.self),
             model.sync(collection(.participant), as: FirestoreParticipant.self),
             model.sync(collection(.suspendedParticipant), as: FirestoreSuspendedParticipant.self),
-            model.sync(collection(.geometry), as: FirestoreGeometry.self),
-            model.sync(collection(.feature), as: FirestoreFeature.self),
-            model.sync(collection(.collaboration), as: FirestoreCollaboration.self),
-            model.sync(collection(.comment), as: FirestoreComment.self),
-            model.sync(collection(.update), as: FirestoreUpdate.self),
-            model.sync(collection(.upload), as: FirestoreUpload.self),
         ])
     }
 
@@ -106,6 +111,168 @@ class ProjectModelFirestoreSync {
     func stop() {
         listeners.forEach { $0.remove() }
         listeners.removeAll()
+    }
+}
+
+// MARK: - feed sync
+
+extension ProjectModelFirestoreSync {
+    // Observe feed and apply changes to local db
+    private func observeFeed(since timestamp: Date) {
+        let feedItems = projectRef.collection("feeds/\(model.userId)/items")
+        let feedItemsQuery = feedItems.whereField("createdAt", isGreaterThanOrEqualTo: timestamp)
+
+        let feedItemsListener = feedItemsQuery.addSnapshotListener { [weak self] snapshot, error in
+            guard let self else { return }
+            guard let snapshot else {
+                Logger.firestore.error("\(feedItems.path) fetching snapshots failed: \(error!.localizedDescription)")
+                return
+            }
+
+            self.model.writeQueue.async { [weak self] in
+                guard let self else { return }
+                do {
+                    try self.model.writeRealm.write {
+                        let feedItemsWithIds = snapshot.documentChanges.compactMap { documentChange in
+                            self.getFeedItem(documentChange.document)
+                        }
+                        feedItemsWithIds.forEach { id, feedItem in
+                            self.handleFeedItem(feedItem, id: id, inRealm: self.model.writeRealm)
+                        }
+                        // Update feedLastUpdatedTimestamp so next getAllData doesn't refetch what was already
+                        // covered by feed updates
+                        if let maxFeedItemTimestamp = feedItemsWithIds.map(\.1.createdAt).max() {
+                            self.model.writeRealm.add(
+                                ProjectMetadata(feedLastUpdatedTimestamp: maxFeedItemTimestamp),
+                                update: .modified
+                            )
+                        }
+                    }
+                } catch {
+                    Logger.model.error("Storing feed item changes failed: \(error.localizedDescription)")
+                }
+            }
+        }
+        listeners.append(feedItemsListener)
+    }
+
+    private func getFeedItem(_ doc: DocumentSnapshot) -> (String, FirestoreFeedItem)? {
+        let decoder = Firestore.Decoder()
+        do {
+            return (doc.documentID, try doc.data(as: FirestoreFeedItem.self, decoder: decoder))
+        } catch {
+            Logger.firestore.error(
+                "Feed item decoding failure: \(doc.reference.path): \(error.localizedDescription)"
+            )
+            return nil
+        }
+    }
+
+    private func handleFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
+        switch item.itemType {
+        case "Collaboration": handleCollaborationFeedItem(item, id: id, inRealm: realm)
+        case "Comment": handleCommentFeedItem(item, id: id, inRealm: realm)
+        case "Update": handleUpdateFeedItem(item, id: id, inRealm: realm)
+        case "Upload": handleUploadFeedItem(item, id: id, inRealm: realm)
+        default: reportUnsupportedFeedItem(item, id: id)
+        }
+    }
+
+    private func handleCollaborationFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
+        switch item.action {
+        case "added", "updated", "access-gained":
+            runAsyncFeedBlock(id) {
+                let collaboration = try await self.collection(.collaboration).document(item.itemId)
+                    .getDocument(as: FirestoreCollaboration.self)
+                let feature = try await self.collection(.feature).document(collaboration.featureId)
+                    .getDocument(as: FirestoreFeature.self)
+                let geometry = try await self.collection(.geometry).document(feature.geometryId)
+                    .getDocument(as: FirestoreGeometry.self)
+                try await self.model.write { realm in
+                    try geometry.upsert(withId: feature.geometryId, inRealm: realm)
+                    try feature.upsert(withId: collaboration.featureId, inRealm: realm)
+                    try collaboration.upsert(withId: item.itemId, inRealm: realm)
+                }
+            }
+        case "deleted", "access-lost":
+            model.deleteLocalCollaborations([item.itemId], inRealm: realm)
+        default:
+            reportUnsupportedFeedItem(item, id: id)
+        }
+    }
+
+    private func handleCommentFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
+        switch item.action {
+        case "added", "updated":
+            runAsyncFeedBlock(id) {
+                let comment = try await self.collection(.comment).document(item.itemId)
+                    .getDocument(as: FirestoreComment.self)
+                try await self.model.write { realm in
+                    try comment.upsert(withId: item.itemId, inRealm: realm)
+                }
+            }
+        case "deleted":
+            model.deleteLocalComments([item.itemId], inRealm: realm)
+        default:
+            reportUnsupportedFeedItem(item, id: id)
+        }
+    }
+
+    private func handleUpdateFeedItem(_ item: FirestoreFeedItem, id: String, inRealm _: Realm) {
+        switch item.action {
+        case "added":
+            runAsyncFeedBlock(id) {
+                let update = try await self.collection(.update).document(item.itemId)
+                    .getDocument(as: FirestoreUpdate.self)
+                try await self.model.write { realm in
+                    try update.upsert(withId: item.itemId, inRealm: realm)
+                }
+            }
+        default:
+            reportUnsupportedFeedItem(item, id: id)
+        }
+    }
+
+    private func handleUploadFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
+        switch item.action {
+        case "added", "updated":
+            runAsyncFeedBlock(id) {
+                let upload = try await self.collection(.upload).document(item.itemId)
+                    .getDocument(as: FirestoreUpload.self)
+                try await self.model.write { realm in
+                    try upload.upsert(withId: item.itemId, inRealm: realm)
+                }
+            }
+        case "deleted":
+            model.deleteLocalUploads([item.itemId], inRealm: realm)
+        default:
+            reportUnsupportedFeedItem(item, id: id)
+        }
+    }
+
+    // just a wrapper for async block and exception logger
+    private func runAsyncFeedBlock(_ docId: String, _ block: @escaping () async throws -> Void) {
+        Task {
+            do {
+                try await block()
+            } catch {
+                Logger.model.error("Failed to process feed item \(docId): \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func reportUnsupportedFeedItem(_ item: FirestoreFeedItem, id: String) {
+        SentrySDK.capture(error: "Unsupported feed item") { scope in
+            scope.setExtras([
+                "projectId": self.model.projectId,
+                "userId": self.model.userId,
+                "id": id,
+                "itemId": item.itemId,
+                "itemType": item.itemType,
+                "action": item.action,
+            ])
+            scope.setLevel(.warning)
+        }
     }
 }
 

@@ -10,7 +10,7 @@ import RealmSwift
 ///     {
 ///         "name": "",
 ///     }
-struct FirestoreTagName: Codable, FirestoreToRealmSyncable {
+struct FirestoreTagName: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Tag
 
     var name: String

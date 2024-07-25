@@ -26,6 +26,7 @@ extension ProjectModel {
         // v21 introduces ProjectSummary.identifier and Collaboration.identifier
         // v22 introduces ProjectSummary.statusTaskCounts
         // v23 introduces Collaboration.followers
+        // v24 introduces ProjectMetadata
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource

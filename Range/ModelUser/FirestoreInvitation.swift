@@ -3,7 +3,7 @@ import Foundation
 import RealmSwift
 
 /// Represents the `Invitation` (`users/invitations/` path in Firestore)
-struct FirestoreInvitation: Codable, FirestoreToRealmSyncable {
+struct FirestoreInvitation: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Invitation
 
     /// Inviter first name
@@ -13,7 +13,7 @@ struct FirestoreInvitation: Codable, FirestoreToRealmSyncable {
     /// Organization name
     var organizationName: String
     // timestamp
-    var timestamp: Timestamp
+    var timestamp: Date
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
@@ -26,7 +26,7 @@ struct FirestoreInvitation: Codable, FirestoreToRealmSyncable {
             inviterFirstName: inviterFirstName,
             inviterLastName: inviterLastName,
             organizationName: organizationName,
-            timestamp: timestamp.dateValue()
+            timestamp: timestamp
         )
         realm.add(invitation, update: .modified)
     }

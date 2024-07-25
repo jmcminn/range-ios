@@ -4,7 +4,7 @@ import RealmSwift
 import XCTest
 
 class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
-    // MARK: - encode/decode tests
+    // MARK: - decode tests
 
     func testDecode_unsupportedValueType() {
         let inputString = """
@@ -20,8 +20,15 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         guard let inputData = inputString.data(using: .utf8) else {
             XCTFail("no input data"); return
         }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom({ decoder in
+            let container = try decoder.singleValueContainer()
+            let value = try container.decode(Timestamp.self)
+            return value.dateValue()
+        })
+        
         XCTAssertThrowsError(
-            try JSONDecoder().decode(FirestoreUpdate.self, from: inputData)
+            try decoder.decode(FirestoreUpdate.self, from: inputData)
         ) { error in
             guard let error = error as? StringOrDate.StringOrDateError, case .missingValue = error else {
                 XCTFail("unexpected error: \(error)"); return
@@ -35,7 +42,7 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         let firestoreUpdate = FirestoreUpdate(
             parentId: "feature1",
             parentType: "Feature",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             userId: "user1",
             field: "name"
         )
@@ -52,7 +59,7 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         let firestoreUpdate = FirestoreUpdate(
             parentId: "collaboration1",
             parentType: "Collaboration",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             userId: "user1",
             field: "length"
         )
@@ -70,7 +77,7 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         let firestoreUpdate = FirestoreUpdate(
             parentId: "collaboration1",
             parentType: "Collaboration",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             userId: "user2",
             field: "name"
         )
@@ -94,13 +101,13 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         let user1 = Participant(placeholderId: "user1")
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date.now,
+            timestamp: Date(),
             name: "Collaboration1",
             description: ""
         )
         let collaboration2 = Collaboration(
             id: "collaboration2",
-            timestamp: Date.now,
+            timestamp: Date(),
             name: "Collaboration2",
             description: ""
         )
@@ -114,7 +121,7 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         let firestoreUpdate1 = FirestoreUpdate(
             parentId: "collaboration1",
             parentType: "Collaboration",
-            timestamp: Timestamp(seconds: 1, nanoseconds: 0),
+            timestamp: Date(timeIntervalSince1970: 1),
             userId: "user1",
             field: "name",
             oldValue: nil,
@@ -136,7 +143,7 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         let firestoreUpdate2 = FirestoreUpdate(
             parentId: "collaboration1",
             parentType: "Collaboration",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             userId: "user1",
             field: "name",
             oldValue: .string("before"),

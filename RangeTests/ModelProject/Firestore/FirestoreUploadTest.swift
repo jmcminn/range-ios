@@ -11,9 +11,9 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
             parentId: "feature1",
             parentType: "Feature",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             name: "name",
-            uploadDescription: "description",
+            descriptionString: "description",
             correlationId: "upload1",
             tagIds: ["tag1"]
         )
@@ -32,7 +32,7 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user2",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             correlationId: "upload1",
             tagIds: []
         )
@@ -77,9 +77,9 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: Timestamp(seconds: 1, nanoseconds: 0),
+            timestamp: Date(timeIntervalSince1970: 1),
             name: "upload 1",
-            uploadDescription: "upload 1 description",
+            descriptionString: "upload 1 description",
             correlationId: "upload1",
             tagIds: []
         )
@@ -108,9 +108,9 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             name: "upload 2",
-            uploadDescription: "upload 2 description",
+            descriptionString: "upload 2 description",
             correlationId: "upload2",
             tagIds: []
         )
@@ -146,7 +146,7 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
             parentId: "collaboration1",
             parentType: "Collaboration",
             authorId: "user1",
-            timestamp: Timestamp(),
+            timestamp: Date(),
             correlationId: "upload1",
             tagIds: ["tag1", "tag2", "tag1"]
         )

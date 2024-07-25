@@ -2,6 +2,7 @@ import CoreLocation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 import Foundation
+import OSLog
 import RealmSwift
 import Turf
 
@@ -18,12 +19,12 @@ import Turf
 ///         "annotationType" : "photoMarker",
 ///         "coordinates": "[-96.77546339604037, 32.82483564429168]"
 ///     }
-struct FirestoreGeometry: Codable, FirestoreToRealmSyncable {
+struct FirestoreGeometry: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Geometry
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    enum CodingKeys: String, CodingKey {
-        case canvas, annotationType, coordinates, archivedTimestamp
+    enum CodingKeys: String, CodingKey, CaseIterable {
+        case annotationType, archivedTimestamp, canvas, coordinates
     }
 
     /// UUID identifier of parent canvas
@@ -33,9 +34,9 @@ struct FirestoreGeometry: Codable, FirestoreToRealmSyncable {
     /// decodes into Turf Geometry
     var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
     /// not nil if the geometry was archived
-    var archivedTimestamp: Timestamp?
+    var archivedTimestamp: Date?
 
-    init(canvasId: String, geometry: Turf.Geometry, archivedTimestamp: Timestamp? = nil) {
+    init(canvasId: String, geometry: Turf.Geometry, archivedTimestamp: Date? = nil) {
         self.canvasId = canvasId
         self.geometry = geometry
         self.archivedTimestamp = archivedTimestamp
@@ -63,30 +64,14 @@ struct FirestoreGeometry: Codable, FirestoreToRealmSyncable {
         let coordinates = CLLocationCoordinate2D(latitude: coordinatesArray[1], longitude: coordinatesArray[0])
 
         geometry = .point(Point(coordinates))
-        archivedTimestamp = try container.decodeIfPresent(Timestamp.self, forKey: .archivedTimestamp)
-    }
-
-    /// Custom implementation of encoding that handles different geometry types
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(canvasId, forKey: .canvas)
-        try container.encode(annotationType.rawValue, forKey: .annotationType)
-        switch geometry {
-        case let .point(point):
-            let coordinatesArray: [Double] = [point.coordinates.longitude, point.coordinates.latitude]
-            let coordinatesData: Data = try JSONEncoder().encode(coordinatesArray)
-            let coordinatesString = try String(data: coordinatesData, encoding: .utf8)
-                .or(error: EncodingError.invalidValue(self, EncodingError.Context(
-                    codingPath: encoder.codingPath,
-                    debugDescription: "Unsupported coordinates"
-                )))
-            try container.encode(coordinatesString, forKey: .coordinates)
-        default:
-            let context = EncodingError.Context(codingPath: encoder.codingPath,
-                                                debugDescription: "Unsupported geometry")
-            throw EncodingError.invalidValue(self, context)
+        // archivedTimestamp can be encoded as Firestore.Timestamp or Int milliseconds (when coming from getAllData)
+        do {
+            archivedTimestamp = (try container.decodeIfPresent(Timestamp.self, forKey: .archivedTimestamp))?.dateValue()
+        } catch {
+            if let archivedTimestampMillis = try container.decodeIfPresent(Int.self, forKey: .archivedTimestamp) {
+                archivedTimestamp = Date(timeIntervalSince1970: TimeInterval(archivedTimestampMillis) / 1000.0)
+            }
         }
-        try container.encodeIfPresent(archivedTimestamp, forKey: .archivedTimestamp)
     }
 
     func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
@@ -103,7 +88,7 @@ struct FirestoreGeometry: Codable, FirestoreToRealmSyncable {
             id: id,
             annotationType: annotationType,
             geometry: geometry,
-            archivedTimestamp: archivedTimestamp?.dateValue()
+            archivedTimestamp: archivedTimestamp
         )
         realm.add(geometry, update: .modified)
         canvas.geometries.insert(geometry)

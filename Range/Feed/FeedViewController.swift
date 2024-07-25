@@ -85,7 +85,7 @@ class FeedViewController: UIViewController {
     }
 
     unowned let mediaCache: MediaCache
-    unowned let projectModel: ProjectModel
+    let projectModel: ProjectModel
     // for the archived feed item
     let geometry: Geometry?
     let collaboration: Collaboration?

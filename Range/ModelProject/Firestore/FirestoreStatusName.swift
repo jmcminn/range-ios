@@ -11,7 +11,7 @@ import RealmSwift
 ///         "isInitial"  : true,
 ///         "isCompleted": false,
 ///     }
-struct FirestoreStatusName: Codable, FirestoreToRealmSyncable {
+struct FirestoreStatusName: Decodable, FirestoreToRealmSyncable {
     typealias ModelType = Status
 
     var name: String
