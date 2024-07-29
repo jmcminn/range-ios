@@ -548,7 +548,7 @@ extension FullscreenMediaCardViewController {
 extension FullscreenMediaCardViewController {
     @objc private func updatePhotoAction() {
         guard let upload = correlatedUploads.last else { return }
-        guard let geometryId = upload.collaboration.first?.feature.first?.geometry.first?.id else {
+        guard let geometryId = upload.collaboration.first?.geometry.first?.id else {
             // upload collaboration should have a geometry... (this shouldn't really happen)
             return
         }

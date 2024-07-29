@@ -22,12 +22,10 @@ final class UpdateGeometryArchivedCommandRealmTest: ProjectModelTestCase {
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
-        let feature = Feature(placeholderId: "feature1")
         let collaboration = Collaboration(placeholderId: "collaboration1")
         try realm.write {
-            realm.add([geometry, feature, collaboration])
-            geometry.features.insert(feature)
-            feature.collaborations.insert(collaboration)
+            realm.add([geometry, collaboration])
+            geometry.collaborations.insert(collaboration)
         }
         let archivedTimestamp = Date()
         let command = UpdateGeometryArchivedCommand(collaborationId: "collaboration1", archivedTimestamp: archivedTimestamp)
@@ -44,12 +42,10 @@ final class UpdateGeometryArchivedCommandRealmTest: ProjectModelTestCase {
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5))),
             archivedTimestamp: Date()
         )
-        let feature = Feature(placeholderId: "feature1")
         let collaboration = Collaboration(placeholderId: "collaboration1")
         try realm.write {
-            realm.add([geometry, feature, collaboration])
-            geometry.features.insert(feature)
-            feature.collaborations.insert(collaboration)
+            realm.add([geometry, collaboration])
+            geometry.collaborations.insert(collaboration)
         }
         let command = UpdateGeometryArchivedCommand(collaborationId: "collaboration1", archivedTimestamp: nil)
         try realm.write {

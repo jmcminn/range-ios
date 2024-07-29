@@ -108,7 +108,7 @@ class TagsViewModelTest: ProjectModelTestCase {
     func testMostUsedTags() throws {
         let upload1 = Upload(
             id: "upload1",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "",
             description: "",
             correlationId: "upload1",
@@ -118,7 +118,7 @@ class TagsViewModelTest: ProjectModelTestCase {
         )
         let upload2 = Upload(
             id: "upload2",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "",
             description: "",
             correlationId: "upload1",

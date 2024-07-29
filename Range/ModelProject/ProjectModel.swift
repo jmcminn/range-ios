@@ -70,7 +70,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 24
+            config.schemaVersion = 26
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("user_\(userId)_project_\(projectId)")
             config.fileURL!.appendPathExtension("realm")
@@ -213,6 +213,6 @@ class ProjectModel: NSObject, RealmModel {
     func correlatedUploads(_ upload: Upload) -> Results<Upload> {
         mainRealm.objects(Upload.self)
             .where { $0.correlationId == upload.correlationId }
-            .sorted(by: \.timestamp)
+            .sorted(by: \.createdAt)
     }
 }

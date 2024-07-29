@@ -29,7 +29,7 @@ class CollaborationBadgeButton: RangeButton {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.updateBadge()
         }
-        geometryNotificationToken = collaboration.feature.first?.geometry.first?.observe { [weak self] _ in
+        geometryNotificationToken = collaboration.geometry.first?.observe { [weak self] _ in
             self?.updateBadge()
         }
         // observe comments as the badge depends on whether there are any uncompleted comments

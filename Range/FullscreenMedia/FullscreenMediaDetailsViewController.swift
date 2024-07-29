@@ -147,7 +147,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
         // only add if there's a collaboration and it has a canvas (it should always have a canvas but
         // in case of placeholders or bad data just don't show the button)
         if showCollaborationButton, let collaboration = currentUpload?.collaboration.first,
-           collaboration.feature.first?.geometry.first?.canvas.first != nil
+           collaboration.geometry.first?.canvas.first != nil
         {
             setupCollaborationButton(collaboration: collaboration)
             headerView.addSubview(collaborationButton!)
@@ -654,7 +654,7 @@ extension FullscreenMediaDetailsViewController {
             string: currentUpload.author?.displayName ?? "",
             attributes: [.strikethroughStyle: currentUpload.author?.strikethroughStyle ?? 0]
         )
-        timestampLabel.text = Date.format1(currentUpload.timestamp)
+        timestampLabel.text = Date.format1(currentUpload.createdAt)
 
         updateDescription()
         updateTags()

@@ -4,6 +4,7 @@ import UIKit
 /// View that covers the collaboration header in full screen mode
 /// Replicates the cover, so it contains the badge, name (non editable) and .../close buttons
 class CollaborationHeaderCoverViewController: UIViewController {
+    let model: ProjectModel
     let collaboration: Collaboration
     private var collaborationNotificationToken: NotificationToken?
     private var geometryNotificationToken: NotificationToken?
@@ -17,6 +18,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
 
     /// - Parameters:
     init(model: ProjectModel, collaboration: Collaboration) {
+        self.model = model
         self.collaboration = collaboration
         if let collaborationID = model.collaborationIdentifier(collaboration) {
             idLabel = UILabel()
@@ -28,7 +30,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.onCollaborationUpdated()
         }
-        geometryNotificationToken = collaboration.feature.first?.geometry.first?.observe { [weak self] _ in
+        geometryNotificationToken = collaboration.geometry.first?.observe { [weak self] _ in
             self?.onCollaborationUpdated()
         }
     }
@@ -149,6 +151,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
     @objc private func statusBadgeTapped(recognizer: UITapGestureRecognizer) {
         // only for tasks
         guard collaboration.status != nil else { return }
+        guard model.currentUser.canComplete(collaboration) else { return }
         let selector = recognizer.numberOfTapsRequired == 1
             ? #selector(ProjectFlowController.markTaskCompletedAction)
             : #selector(ProjectFlowController.markTaskCompletedAndArchiveAction)

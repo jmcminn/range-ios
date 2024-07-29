@@ -22,7 +22,7 @@ class FeedViewController: UIViewController {
             guard !collaboration.isInvalidated else { return nil }
             guard collaboration.author != nil else { return nil }
             id = collaboration.id
-            timestamp = collaboration.timestamp
+            timestamp = collaboration.createdAt
             item = collaboration
             isMajor = true
         }
@@ -38,14 +38,14 @@ class FeedViewController: UIViewController {
 
         init(_ item: Comment) {
             id = item.id
-            timestamp = item.timestamp
+            timestamp = item.createdAt
             self.item = item
             isMajor = true
         }
 
         init(_ item: Upload) {
             id = item.id
-            timestamp = item.timestamp
+            timestamp = item.createdAt
             self.item = item
             isMajor = true
         }
@@ -54,7 +54,7 @@ class FeedViewController: UIViewController {
         /// otherwise minor)
         init(_ update: Update, projectModel: ProjectModel) {
             id = update.id
-            timestamp = update.timestamp
+            timestamp = update.createdAt
             item = update
             if update.field == .statusName, let statusId = update.newValue.stringValue,
                let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId),
@@ -136,7 +136,7 @@ class FeedViewController: UIViewController {
     init(mediaCache: MediaCache, projectModel: ProjectModel, collaboration: Collaboration) {
         self.mediaCache = mediaCache
         self.projectModel = projectModel
-        geometry = collaboration.feature.first?.geometry.first
+        geometry = collaboration.geometry.first
         self.collaboration = collaboration
         // convert collections to results
         uploads = collaboration.uploads.filter(NSPredicate(value: true))
@@ -358,7 +358,7 @@ class FeedViewController: UIViewController {
         guard let uploads = uploads else { return }
         uploadsNotificationToken = uploads
             .where { $0.placeholder == false }
-            .sorted(by: \Upload.timestamp, ascending: _debugSettings.feedSortedAscendingByTimestamp)
+            .sorted(by: \Upload.createdAt, ascending: _debugSettings.feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
                 switch change {
@@ -397,7 +397,7 @@ class FeedViewController: UIViewController {
         commentsNotificationToken?.invalidate()
         commentsNotificationToken = comments
             .where { $0.placeholder == false }
-            .sorted(by: \Comment.timestamp, ascending: _debugSettings.feedSortedAscendingByTimestamp)
+            .sorted(by: \Comment.createdAt, ascending: _debugSettings.feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
                 switch change {
@@ -436,7 +436,7 @@ class FeedViewController: UIViewController {
                     ($0.field == .name || $0.field == .description || $0.field == .statusName ||
                         $0.field == .assignee || $0.field == .dueDateTimestamp)
             }
-            .sorted(by: \Update.timestamp, ascending: _debugSettings.feedSortedAscendingByTimestamp)
+            .sorted(by: \Update.createdAt, ascending: _debugSettings.feedSortedAscendingByTimestamp)
             .observe { [weak self] change in
                 guard let self = self else { return }
                 switch change {

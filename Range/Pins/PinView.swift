@@ -23,7 +23,7 @@ class PinView: UIImageView {
     /// The geometry should have a collaboration that is not a placeholder
     init?(geometry: Geometry?) {
         guard let geometry = geometry else { return nil }
-        guard let collaboration = geometry.features.first?.collaborations.first else {
+        guard let collaboration = geometry.collaborations.first else {
             Logger.mapbox.error("Trying to assign geometry with no collaboration")
             return nil
         }
@@ -50,7 +50,7 @@ class PinView: UIImageView {
             Logger.mapbox.error("Trying to reuse PinView for different geometry")
             return
         }
-        guard let collaboration = geometry.features.first?.collaborations.first else {
+        guard let collaboration = geometry.collaborations.first else {
             Logger.mapbox.error("Trying to assign geometry with no collaboration")
             return
         }

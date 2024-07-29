@@ -70,7 +70,7 @@ class AssigneeUpdateFeedItemCell: UITableViewCell {
             messageString.append(NSAttributedString(string: " removed the assignee", attributes: messageAttributes))
         }
         messageString.append(NSAttributedString(
-            string: " \(Date.format2(update.timestamp)).",
+            string: " \(Date.format2(update.createdAt)).",
             attributes: messageAttributes
         ))
         messageLabel.attributedText = messageString

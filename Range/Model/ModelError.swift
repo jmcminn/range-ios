@@ -9,7 +9,6 @@ enum ModelError: Error, Equatable {
     case collaborationNotFound
     case commentNotFound
     case currentUserNotFound
-    case featureNotFound
     case fieldMissingValue(_ field: String)
     case fieldNotSupported(_ field: String)
     case fileTypeNotSupported(_ type: String)
@@ -34,7 +33,6 @@ extension ModelError: LocalizedError {
         case .collaborationNotFound: return "Collaboration not found"
         case .commentNotFound: return "Comment not found"
         case .currentUserNotFound: return "Couldn't load user data"
-        case .featureNotFound: return "Feature not found"
         case let .fieldMissingValue(field): return "\(field) field has no value"
         case let .fieldNotSupported(field): return "\(field) field not supported"
         case let .fileTypeNotSupported(type): return "\(type) fileType not supported"

@@ -160,7 +160,7 @@ class MediaCardViewController: SheetCardViewController {
     private func prepareSnapshot() -> NSDiffableDataSourceSnapshot<String, CollectionItem> {
         var sectionName = ""
 
-        let uploads = filteredUploads.sorted(using: SortDescriptor(\Upload.timestamp, order: .reverse))
+        let uploads = filteredUploads.sorted(using: SortDescriptor(\Upload.createdAt, order: .reverse))
 
         var snapshot = NSDiffableDataSourceSnapshot<String, CollectionItem>()
         var sectionItems = [CollectionItem]()
@@ -182,14 +182,14 @@ class MediaCardViewController: SheetCardViewController {
                     if u1.isImage != u2.isImage {
                         return u1.isImage
                     }
-                    return u1.timestamp > u2.timestamp
+                    return u1.createdAt > u2.createdAt
                 }
                 snapshot.appendItems(sortedSectionItems)
             }
         }
 
         for upload in uploads {
-            let uploadSectionName = Date.formatMediaHeader(upload.timestamp)
+            let uploadSectionName = Date.formatMediaHeader(upload.createdAt)
             // put uploads with same formatted timestamp into one section
             if uploadSectionName != sectionName {
                 // close previous section

@@ -20,7 +20,7 @@ final class UpdateCollaborationDescriptionCommandRealmTest: ProjectModelTestCase
     func testApply_successful() throws {
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "old name",
             description: "description"
         )

@@ -82,7 +82,7 @@ class NameUpdateFeedItemCell: UITableViewCell {
                 .strikethroughStyle: update.user?.strikethroughStyle ?? 0,
             ]
         )
-        let messageText = " changed the \(update.field.rawValue) \(Date.format2(update.timestamp))."
+        let messageText = " changed the \(update.field.rawValue) \(Date.format2(update.createdAt))."
         messageString.append(NSAttributedString(string: messageText, attributes: [
             .foregroundColor: chooseColor(.Neutral_05),
             .font: UIFont.preferredFont(forTextStyle: .footnote),

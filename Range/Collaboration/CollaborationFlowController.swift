@@ -142,8 +142,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     /// Finds the first collaboration for this geometry and show its window
     func showCollaborationWindow(forGeometry geometryId: String, animated: Bool) {
         if let geometry = model.mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId),
-           let feature = geometry.features.first,
-           let collaboration = feature.collaborations.first
+           let collaboration = geometry.collaborations.first
         {
             showCollaborationWindow(collaboration, animated: animated)
         } else {
@@ -156,7 +155,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
 
     func showCollaborationWindow(_ collaboration: Collaboration, animated: Bool) {
         geometryNotificationToken?.invalidate()
-        if let geometry = collaboration.feature.first?.geometry.first {
+        if let geometry = collaboration.geometry.first {
             geometryNotificationToken = geometry.observe { [weak self] change in
                 if case .deleted = change {
                     ToastWindow.shared.showWarning(text: String(localized: "Pin removed"))
@@ -402,7 +401,7 @@ extension CollaborationFlowController {
 
 extension CollaborationFlowController {
     func addPhotosAction() {
-        guard let geometryId = collaboration?.feature.first?.geometry.first?.id else {
+        guard let geometryId = collaboration?.geometry.first?.id else {
             // the collaboration should be selected and have a geometry... (this shouldn't really happen)
             return
         }
@@ -553,7 +552,7 @@ extension CollaborationFlowController {
         guard let collaboration = collaboration else { return }
         let commands = [
             model.update(status: status, forCollaboration: collaboration.id),
-            model.update(archived: true, forCollaboration: collaboration.id)
+            model.update(archived: true, forCollaboration: collaboration.id),
         ]
         model.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }

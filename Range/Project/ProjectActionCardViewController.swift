@@ -2,6 +2,7 @@ import SnapKit
 import UIKit
 
 class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
+    let model: ProjectModel
     let actions: [ActionItem]
 
     var cardDragging: NonModalCardDragging?
@@ -28,7 +29,8 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     /// Initiates with additional actions to show in the action selector
     /// - Parameters:
     ///   - actions: array of actions
-    init(actions: [ActionItem] = []) {
+    init(model: ProjectModel, actions: [ActionItem] = []) {
+        self.model = model
         self.actions = actions
         super.init(nibName: nil, bundle: nil)
     }
@@ -48,30 +50,32 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
 
         containerView.installSliderView()
 
-        setupAddPinButton()
+        let showCreatePinSection = model.currentUser.canCreateCollaboration()
 
-        setupAddPinButton()
-        setupAddSnippetButton()
-        setupPhotoButton()
+        if showCreatePinSection {
+            setupAddPinButton()
+            setupAddSnippetButton()
+            setupPhotoButton()
 
-        [addPinButton, addSnippetButton, photoButton].forEach(containerView.addSubview)
+            [addPinButton, addSnippetButton, photoButton].forEach(containerView.addSubview)
 
-        addPinButton.snp.makeConstraints { make in
-            make.top.equalTo(photoButton)
-            make.height.equalTo(photoButton)
-            make.leading.equalToSuperview().inset(16)
-            make.trailing.equalTo(addSnippetButton.snp.leading).offset(-16)
-        }
-        addSnippetButton.snp.makeConstraints { make in
-            make.top.equalTo(photoButton)
-            make.height.equalTo(photoButton)
-            make.width.greaterThanOrEqualTo(52)
-            make.centerX.equalToSuperview()
-        }
-        photoButton.snp.makeConstraints { make in
-            make.top.equalTo(ProjectActionCardViewController.topPadding)
-            make.leading.equalTo(addSnippetButton.snp.trailing).offset(16)
-            make.trailing.equalTo(-16)
+            addPinButton.snp.makeConstraints { make in
+                make.top.equalTo(photoButton)
+                make.height.equalTo(photoButton)
+                make.leading.equalToSuperview().inset(16)
+                make.trailing.equalTo(addSnippetButton.snp.leading).offset(-16)
+            }
+            addSnippetButton.snp.makeConstraints { make in
+                make.top.equalTo(photoButton)
+                make.height.equalTo(photoButton)
+                make.width.greaterThanOrEqualTo(52)
+                make.centerX.equalToSuperview()
+            }
+            photoButton.snp.makeConstraints { make in
+                make.top.equalTo(ProjectActionCardViewController.topPadding)
+                make.leading.equalTo(addSnippetButton.snp.trailing).offset(16)
+                make.trailing.equalTo(-16)
+            }
         }
 
         let allMediaAction = ActionItem(
@@ -95,8 +99,12 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         actionSelectorVC = ActionSelectorViewController(actions: [allMediaAction, taskListAction] + actions)
         add(childController: actionSelectorVC, toView: containerView)
         actionSelectorVC.view.snp.makeConstraints { make in
-            make.top.equalTo(photoButton.snp.bottom)
-                .offset(ProjectActionCardViewController.headerToActionsPadding).priority(.required)
+            if showCreatePinSection {
+                make.top.equalTo(photoButton.snp.bottom)
+                    .offset(ProjectActionCardViewController.headerToActionsPadding).priority(.required)
+            } else {
+                make.top.equalTo(ProjectActionCardViewController.topPadding)
+            }
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().offset(12).priority(.required)
         }
@@ -178,18 +186,25 @@ extension ProjectActionCardViewController: CardPresentable {
             height: UIView.layoutFittingCompressedSize.height
         )
 
-        var height = (
-            ProjectActionCardViewController.topPadding +
-                photoButton.systemLayoutSizeFitting(
-                    fittingSize,
-                    withHorizontalFittingPriority: .required,
-                    verticalFittingPriority: .defaultLow
-                ).height +
+        let extraHeightWhenPinSectionHidden = 24.0
+        var height = ProjectActionCardViewController.topPadding
+        if let photoButton {
+            height += photoButton.systemLayoutSizeFitting(
+                fittingSize,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .defaultLow
+            ).height +
                 ProjectActionCardViewController.headerToActionsPadding
-        )
+        } else {
+            height += extraHeightWhenPinSectionHidden
+        }
 
         if cardPosition == .max {
-            height += (actionSelectorVC.tableView.contentSize.height + 12.0)
+            if photoButton != nil {
+                height += (actionSelectorVC.tableView.contentSize.height + 12.0)
+            } else {
+                height += (actionSelectorVC.tableView.contentSize.height + 12.0) - extraHeightWhenPinSectionHidden
+            }
         }
 
         return height

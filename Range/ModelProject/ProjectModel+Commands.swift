@@ -80,7 +80,7 @@ extension ProjectModel {
 extension ProjectModel {
     /// Adds given photo to pending uploads and returns command for:
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
-    /// Throws error if geometry with given id not found, or it has not feature with colllaboration
+    /// Throws error if geometry with given id not found, or it has no colllaboration
     ///
     /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
     /// The write operation will be executed on a `writeRealm` so not on the main thread
@@ -89,7 +89,7 @@ extension ProjectModel {
     ///     - photoToAdd: the data for the image to add
     ///     - tags: array of tags, existing or new ones
     ///     - description: upload description
-    ///     - geometryId: 'photoMarker' to add the upload to (to it's first feature/first collaboration)
+    ///     - geometryId: 'photoMarker' to add the upload to (to it's first collaboration)
     ///     - correlationId: set if the upload is a new versions of some other upload
     func addPhoto(
         _ photoToAdd: PhotoToAdd,
@@ -101,10 +101,7 @@ extension ProjectModel {
         guard let geometry = mainRealm.object(ofType: Geometry.self, forPrimaryKey: geometryId) else {
             throw ModelError.geometryNotFound
         }
-        guard let feature = geometry.features.first else {
-            throw ModelError.featureNotFound
-        }
-        guard let collaboration = feature.collaborations.first else {
+        guard let collaboration = geometry.collaborations.first else {
             throw ModelError.collaborationNotFound
         }
 
@@ -155,7 +152,7 @@ extension ProjectModel {
 
     /// Adds given photos to pending uploads and returns command for:
     /// - creating a new geometry of photoMarker type and adding it to given canvas.
-    /// - creating a feature attached to this geometry and the collaboration attached to the feature.
+    /// - creating a collaboration attached to the geometry.
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
     ///
     /// Marked with @MainActor as it needs to run on the main thread to have access to main thread realm objects (canvas)
@@ -381,7 +378,7 @@ extension ProjectModel {
 
     /// Updates the archivedTimestamp for geometry of given collaboration
     func toggleCollaborationArchived(collaboration: Collaboration) throws -> Command {
-        guard let geometry = collaboration.feature.first?.geometry.first else {
+        guard let geometry = collaboration.geometry.first else {
             throw ModelError.geometryNotFound
         }
         let archive = geometry.archivedTimestamp == nil

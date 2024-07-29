@@ -16,26 +16,10 @@ final class DeleteCollaborationCommandRealmTest: ProjectModelTestCase {
         }
     }
 
-    func testApply_noFeature() throws {
-        let collaboration = Collaboration(id: "collaboration1", timestamp: Date(), name: "", description: nil)
+    func testApply_noGeometry() throws {
+        let collaboration = Collaboration(id: "collaboration1", createdAt: Date(), lastUpdatedAt: Date(), name: "", description: nil)
         try realm.write {
             realm.add(collaboration)
-        }
-
-        let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
-        XCTAssertThrowsError(
-            try command.apply(inRealm: realm)
-        ) { error in
-            XCTAssertEqual(error as! ModelError, ModelError.featureNotFound)
-        }
-    }
-
-    func testApply_noGeometry() throws {
-        let collaboration = Collaboration(id: "collaboration1", timestamp: Date(), name: "", description: nil)
-        let feature = Feature(id: "feature1", name: "", description: nil)
-        try realm.write {
-            realm.add([collaboration, feature])
-            feature.collaborations.insert(collaboration)
         }
 
         let command = DeleteCollaborationCommand(collaborationId: "collaboration1")
@@ -47,20 +31,19 @@ final class DeleteCollaborationCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_successful() throws {
-        let collaboration = Collaboration(id: "collaboration1", timestamp: Date(), name: "", description: nil)
-        let feature = Feature(id: "feature1", name: "", description: nil)
+        let collaboration = Collaboration(id: "collaboration1", createdAt: Date(), lastUpdatedAt: Date(), name: "", description: nil)
         let geometry = Geometry(
             id: "geometry1",
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
         let comment = Comment(
-            id: "comment1", timestamp: Date(), text: "",
+            id: "comment1", createdAt: Date(), lastUpdatedAt: Date(), text: "",
             textIsEdited: false, isNote: false, completedTimestamp: nil
         )
         let upload = Upload(
             id: "upload1",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: nil,
             description: nil,
             correlationId: "upload1",
@@ -68,12 +51,11 @@ final class DeleteCollaborationCommandRealmTest: ProjectModelTestCase {
             imageHeightToWidth: 1,
             fileSize: 1024
         )
-        let update = Update(id: "update1", timestamp: Date(), field: .name, oldValue: .none, newValue: .string("name"))
+        let update = Update(id: "update1", createdAt: Date(), field: .name, oldValue: .none, newValue: .string("name"))
         let tag = Tag(id: "tag1", name: "tag 1")
         try realm.write {
-            realm.add([collaboration, feature, geometry, comment, upload, update, tag])
-            feature.collaborations.insert(collaboration)
-            geometry.features.insert(feature)
+            realm.add([collaboration, geometry, comment, upload, update, tag])
+            geometry.collaborations.insert(collaboration)
             collaboration.comments.insert(comment)
             collaboration.uploads.insert(upload)
             collaboration.updates.insert(update)
@@ -86,7 +68,6 @@ final class DeleteCollaborationCommandRealmTest: ProjectModelTestCase {
         }
 
         XCTAssertTrue(geometry.isInvalidated)
-        XCTAssertTrue(feature.isInvalidated)
         XCTAssertTrue(collaboration.isInvalidated)
         XCTAssertTrue(comment.isInvalidated)
         XCTAssertTrue(upload.isInvalidated)
@@ -94,7 +75,6 @@ final class DeleteCollaborationCommandRealmTest: ProjectModelTestCase {
         XCTAssertEqual(tag.collaborations.count, 0)
         XCTAssertEqual(tag.uploads.count, 0)
         XCTAssertNil(realm.object(ofType: Geometry.self, forPrimaryKey: "geometry1"))
-        XCTAssertNil(realm.object(ofType: Feature.self, forPrimaryKey: "feature1"))
         XCTAssertNil(realm.object(ofType: Collaboration.self, forPrimaryKey: "collaboration1"))
         XCTAssertNil(realm.object(ofType: Upload.self, forPrimaryKey: "upload1"))
         XCTAssertNil(realm.object(ofType: Comment.self, forPrimaryKey: "comment1"))

@@ -217,7 +217,7 @@ extension GeometriesAnnotationPinsDisplay {
             // this geometry should be ignored and not displayed
             return nil
         }
-        guard let collaboration = geometry.features.first?.collaborations.first else {
+        guard let collaboration = geometry.collaborations.first else {
             // no collaboration, ignore
             return nil
         }

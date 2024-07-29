@@ -11,8 +11,8 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         {
             "parent": "13083d62-03a1-43d7-8eb0-ca5bb8b357f3",
             "parentType": "Collaboration",
-            "timestamp": { "seconds": 1649228400, "nanoseconds": 0 },
-            "user": "9e06df97-aa0f-4e0f-8c78-8892bfb126ec",
+            "createdAt": { "seconds": 1649228400, "nanoseconds": 0 },
+            "createdBy": "9e06df97-aa0f-4e0f-8c78-8892bfb126ec",
             "field": "name",
             "oldValue": false
         }
@@ -21,12 +21,12 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
             XCTFail("no input data"); return
         }
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .custom({ decoder in
+        decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let value = try container.decode(Timestamp.self)
             return value.dateValue()
-        })
-        
+        }
+
         XCTAssertThrowsError(
             try decoder.decode(FirestoreUpdate.self, from: inputData)
         ) { error in
@@ -40,11 +40,11 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
 
     func testUpsert_wrongParentType() throws {
         let firestoreUpdate = FirestoreUpdate(
+            createdAt: Date(),
+            createdById: "user1",
+            field: "name",
             parentId: "feature1",
-            parentType: "Feature",
-            timestamp: Date(),
-            userId: "user1",
-            field: "name"
+            parentType: "Feature"
         )
         XCTAssertThrowsError(
             try realm.write {
@@ -57,11 +57,11 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
 
     func testUpsert_unsupportedField() throws {
         let firestoreUpdate = FirestoreUpdate(
+            createdAt: Date(),
+            createdById: "user1",
+            field: "length",
             parentId: "collaboration1",
-            parentType: "Collaboration",
-            timestamp: Date(),
-            userId: "user1",
-            field: "length"
+            parentType: "Collaboration"
         )
         XCTAssertThrowsError(
             try realm.write {
@@ -75,11 +75,11 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
     // Adds a parent and author placeholders if not found
     func testUpsert_createPlaceholders() throws {
         let firestoreUpdate = FirestoreUpdate(
+            createdAt: Date(),
+            createdById: "user2",
+            field: "name",
             parentId: "collaboration1",
-            parentType: "Collaboration",
-            timestamp: Date(),
-            userId: "user2",
-            field: "name"
+            parentType: "Collaboration"
         )
         try realm.write {
             try firestoreUpdate.upsert(withId: "update1", inRealm: realm)
@@ -101,13 +101,13 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         let user1 = Participant(placeholderId: "user1")
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration1",
             description: ""
         )
         let collaboration2 = Collaboration(
             id: "collaboration2",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration2",
             description: ""
         )
@@ -119,13 +119,13 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
 
         // 2. add update to collaboration1
         let firestoreUpdate1 = FirestoreUpdate(
-            parentId: "collaboration1",
-            parentType: "Collaboration",
-            timestamp: Date(timeIntervalSince1970: 1),
-            userId: "user1",
+            createdAt: Date(timeIntervalSince1970: 1),
+            createdById: "user1",
             field: "name",
+            newValue: .string("after"),
             oldValue: nil,
-            newValue: .string("after")
+            parentId: "collaboration1",
+            parentType: "Collaboration"
         )
         try realm.write {
             try firestoreUpdate1.upsert(withId: "update1", inRealm: realm)
@@ -133,7 +133,7 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
         XCTAssertEqual(collaboration1.updates.count, 1)
         XCTAssertEqual(collaboration2.updates.count, 0)
         let update1 = try XCTUnwrap(realm.object(ofType: Update.self, forPrimaryKey: "update1"), "update1 not found")
-        XCTAssertEqual(update1.timestamp.timeIntervalSince1970, 1)
+        XCTAssertEqual(update1.createdAt.timeIntervalSince1970, 1)
         XCTAssertEqual(update1.user, user1)
         XCTAssertEqual(update1.field, Update.Field.name)
         XCTAssertEqual(update1.oldValue, .none)
@@ -141,13 +141,13 @@ class FirestoreUpdateRealmSyncTest: ProjectModelTestCase {
 
         // 4. add another update to collaboration1
         let firestoreUpdate2 = FirestoreUpdate(
-            parentId: "collaboration1",
-            parentType: "Collaboration",
-            timestamp: Date(),
-            userId: "user1",
+            createdAt: Date(),
+            createdById: "user1",
             field: "name",
+            newValue: nil,
             oldValue: .string("before"),
-            newValue: nil
+            parentId: "collaboration1",
+            parentType: "Collaboration"
         )
         try realm.write {
             try firestoreUpdate2.upsert(withId: "update2", inRealm: realm)

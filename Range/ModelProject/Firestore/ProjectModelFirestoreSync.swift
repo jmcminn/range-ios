@@ -184,13 +184,10 @@ extension ProjectModelFirestoreSync {
             runAsyncFeedBlock(id) {
                 let collaboration = try await self.collection(.collaboration).document(item.itemId)
                     .getDocument(as: FirestoreCollaboration.self)
-                let feature = try await self.collection(.feature).document(collaboration.featureId)
-                    .getDocument(as: FirestoreFeature.self)
-                let geometry = try await self.collection(.geometry).document(feature.geometryId)
+                let geometry = try await self.collection(.geometry).document(collaboration.geometryId)
                     .getDocument(as: FirestoreGeometry.self)
                 try await self.model.write { realm in
-                    try geometry.upsert(withId: feature.geometryId, inRealm: realm)
-                    try feature.upsert(withId: collaboration.featureId, inRealm: realm)
+                    try geometry.upsert(withId: collaboration.geometryId, inRealm: realm)
                     try collaboration.upsert(withId: item.itemId, inRealm: realm)
                 }
             }

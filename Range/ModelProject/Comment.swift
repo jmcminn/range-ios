@@ -8,8 +8,10 @@ class Comment: Object, WithPlaceholder, WithId {
     // comment authr, needs to be optional because of how Realm
     // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
     @Persisted var author: Participant?
-    // timestamp
-    @Persisted var timestamp: Date
+    // createdAt
+    @Persisted var createdAt: Date
+    // lastUpdatedAt
+    @Persisted var lastUpdatedAt: Date
     // text
     @Persisted var text: String
     // whether the text was ever edited
@@ -36,7 +38,8 @@ class Comment: Object, WithPlaceholder, WithId {
     /// Initializer to init all the fields of object.
     init(
         id: String,
-        timestamp: Date,
+        createdAt: Date,
+        lastUpdatedAt: Date,
         text: String,
         textIsEdited: Bool,
         isNote: Bool,
@@ -45,7 +48,8 @@ class Comment: Object, WithPlaceholder, WithId {
     ) {
         super.init()
         self.id = id
-        self.timestamp = timestamp
+        self.createdAt = createdAt
+        self.lastUpdatedAt = lastUpdatedAt
         self.text = text
         self.textIsEdited = textIsEdited
         self.isNote = isNote
@@ -57,7 +61,8 @@ class Comment: Object, WithPlaceholder, WithId {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
-            timestamp: Date(),
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
             text: "",
             textIsEdited: false,
             isNote: false,

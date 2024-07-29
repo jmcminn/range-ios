@@ -5,10 +5,12 @@ import UIKit
 /// Button displaying the status name and a chevron.down icon with a background in status color.
 class CollaborationStatusButton: RangeButton {
     private let collaboration: Collaboration
+    private let currentUser: Participant
     private var collaborationNotificationToken: NotificationToken?
 
-    init(_ collaboration: Collaboration) {
+    init(_ collaboration: Collaboration, currentUser: Participant) {
         self.collaboration = collaboration
+        self.currentUser = currentUser
         super.init(frame: .zero)
 
         tapAreaInsets = UIEdgeInsets(top: -4, left: 0, bottom: -4, right: 0)
@@ -30,6 +32,13 @@ class CollaborationStatusButton: RangeButton {
         setTitle(collaboration.status?.name ?? "", for: .normal)
         configuration?.baseBackgroundColor = collaboration.status?.color ?? .Primary_Blue_04
         setNeedsUpdateConfiguration()
+
+        if let status = collaboration.status, status.isCompleted, !currentUser.canComplete(collaboration) {
+            // current user cannot complete/uncomplete the collaboration, hide the chevron
+            setImage(nil, for: .normal)
+        } else {
+            setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        }
     }
 
     private func setupConfiguration() {
@@ -49,7 +58,6 @@ class CollaborationStatusButton: RangeButton {
         config.imagePadding = 6
 
         configuration = config
-        setImage(UIImage(systemName: "chevron.down"), for: .normal)
     }
 
     deinit {

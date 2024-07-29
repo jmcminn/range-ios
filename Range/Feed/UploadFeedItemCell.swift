@@ -227,7 +227,7 @@ class UploadFeedItemCell: UITableViewCell {
         )
 
         if let upload = upload {
-            timestampLabel.text = Date.format1(upload.timestamp)
+            timestampLabel.text = Date.format1(upload.createdAt)
             if let imageHeightToWidth = upload.imageHeightToWidth {
                 updateUploadPreviewConstraints(imageHeight2Width: imageHeightToWidth)
             }

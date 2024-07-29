@@ -10,8 +10,8 @@ import RealmSwift
 ///     {
 ///         "parent": "13083d62-03a1-43d7-8eb0-ca5bb8b357f3",
 ///         "parentType": "Collaboration",
-///         "timestamp": 1649228400000,
-///         "user": "9e06df97-aa0f-4e0f-8c78-8892bfb126ec",
+///         "createdAt": 1649228400000,
+///         "createdBy": "9e06df97-aa0f-4e0f-8c78-8892bfb126ec",
 ///         "field": "name",
 ///         "oldValue": "name", // optional, type depends on the field
 ///         "newValue": null // optional, type depends on the field
@@ -21,23 +21,22 @@ struct FirestoreUpdate: Decodable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     enum CodingKeys: String, CodingKey, CaseIterable {
-        case field,
-             newValue, oldValue,
-             parentId = "parent", parentType,
-             timestamp,
-             userId = "user"
+        case createdById = "createdBy", createdAt,
+            field,
+            newValue, oldValue,
+            parentId = "parent", parentType
     }
 
-    var parentId: String
-    var parentType: String
-    var timestamp: Date
-    var userId: String
+    var createdAt: Date
+    var createdById: String
     var field: String // allow anything but constrain to supported Update.Field when upserting
     // old and new value can have different types depending on the field. For now Int, String or
     // Date is supported. The support needs to be made on the firebase object level as it requires proper
     // decoding depending on the type. (e.g. it cannot say oldValue: AnyObject, as it's not Codable)
-    var oldValue: StringOrDate?
     var newValue: StringOrDate?
+    var oldValue: StringOrDate?
+    var parentId: String
+    var parentType: String
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
         guard parentType == "Collaboration" else {
@@ -48,10 +47,10 @@ struct FirestoreUpdate: Decodable, FirestoreToRealmSyncable {
             .or(error: ModelError.fieldNotSupported(field))
 
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
-        let user = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: userId)
+        let user = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: createdById)
         let oldValue: AnyRealmValue = oldValue?.anyRealmValue ?? .none
         let newValue: AnyRealmValue = newValue?.anyRealmValue ?? .none
-        let update = Update(id: id, timestamp: timestamp, field: updateField, oldValue: oldValue, newValue: newValue)
+        let update = Update(id: id, createdAt: createdAt, field: updateField, oldValue: oldValue, newValue: newValue)
         update.user = user
         realm.add(update, update: .modified)
         collaboration.updates.insert(update)

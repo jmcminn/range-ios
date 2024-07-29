@@ -59,7 +59,7 @@ class DueDateUpdateFeedItemCell: UITableViewCell {
             message = "removed the due date"
         }
         messageString.append(NSAttributedString(
-            string: " \(message) \(Date.format2(update.timestamp)).",
+            string: " \(message) \(Date.format2(update.createdAt)).",
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_05),
                 .font: UIFont.preferredFont(forTextStyle: .footnote),

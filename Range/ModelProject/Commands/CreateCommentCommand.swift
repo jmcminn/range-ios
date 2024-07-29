@@ -62,7 +62,8 @@ extension CreateCommentCommand: LocalCommand {
 
         let comment = Comment(
             id: commentId,
-            timestamp: Date(),
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
             text: text,
             textIsEdited: false,
             isNote: isNote,

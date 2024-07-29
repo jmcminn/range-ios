@@ -296,7 +296,7 @@ extension CollaborationDetailsViewController {
     }
 
     private func setupThumbnails() {
-        let imageUploads = collaborationImages.sorted(by: \Upload.timestamp, ascending: false)
+        let imageUploads = collaborationImages.sorted(by: \Upload.createdAt, ascending: false)
         thumbnailsVC = ThumbnailsViewController(
             mediaCache: mediaCache,
             projectModel: projectModel,

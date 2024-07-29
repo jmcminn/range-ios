@@ -60,7 +60,6 @@ extension ProjectModel {
                 "since": since.map { Int($0.timeIntervalSince1970 * 1000) } as Any,
                 "selectedFields": [
                     "geometries": FirestoreGeometry.CodingKeys.allCases.map(\.stringValue),
-                    "features": FirestoreFeature.CodingKeys.allCases.map(\.stringValue),
                     "collaborations": FirestoreCollaboration.CodingKeys.allCases.map(\.stringValue),
                     "updates": FirestoreUpdate.CodingKeys.allCases.map(\.stringValue),
                     "uploads": FirestoreUpload.CodingKeys.allCases.map(\.stringValue),
@@ -87,7 +86,6 @@ extension ProjectModel {
             )
 
             self.upsertObjects(data["geometries"], as: FirestoreGeometry.self, inRealm: realm, replace: replace)
-            self.upsertObjects(data["features"], as: FirestoreFeature.self, inRealm: realm, replace: replace)
             self.upsertObjects(
                 data["collaborations"],
                 as: FirestoreCollaboration.self,

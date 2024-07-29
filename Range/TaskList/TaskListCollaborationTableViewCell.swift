@@ -181,7 +181,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
                     textAttributes: [.strikethroughStyle: assignee.strikethroughStyle]
                 ))
             }
-            if let canvasName = collaboration.feature.first?.geometry.first?.canvas.first?.name {
+            if let canvasName = collaboration.geometry.first?.canvas.first?.name {
                 detailsStackView.addArrangedSubview(PillView(iconName: "square.3.layers.3d", text: canvasName))
             }
             detailsStackView.addArrangedSubview(PillView(iconName: "tag", text: String(collaboration.tags.count)))

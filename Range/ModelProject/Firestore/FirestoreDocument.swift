@@ -7,7 +7,6 @@ enum FirestoreDocumentType: String {
     case canvasSource = "canvasSources"
     case collaboration = "collaborations"
     case comment = "comments"
-    case feature = "features"
     case geometry = "geometries"
     case participant = "participants"
     case suspendedParticipant = "suspendedParticipants"
@@ -33,7 +32,6 @@ struct FirestoreDocument: Hashable, Equatable {
     static func canvasSource(_ id: String) -> FirestoreDocument { .init(.canvasSource, id) }
     static func collaboration(_ id: String) -> FirestoreDocument { .init(.collaboration, id) }
     static func comment(_ id: String) -> FirestoreDocument { .init(.comment, id) }
-    static func feature(_ id: String) -> FirestoreDocument { .init(.feature, id) }
     static func geometry(_ id: String) -> FirestoreDocument { .init(.geometry, id) }
     static func participant(_ id: String) -> FirestoreDocument { .init(.participant, id) }
     static func suspendedParticipant(_ id: String) -> FirestoreDocument { .init(.suspendedParticipant, id) }

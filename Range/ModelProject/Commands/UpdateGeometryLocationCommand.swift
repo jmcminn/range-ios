@@ -28,8 +28,7 @@ struct UpdateGeometryLocationCommand: Command, Codable, Equatable {
 
 extension UpdateGeometryLocationCommand: LocalCommand {
     func apply(inRealm realm: Realm) throws {
-        guard let geometry = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)?.feature
-            .first?.geometry.first
+        guard let geometry = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)?.geometry.first
         else {
             throw ModelError.geometryNotFound
         }
@@ -55,7 +54,7 @@ extension UpdateGeometryLocationCommand: FirebaseFunctionCommand {
             "projectId": projectId,
             "collaborationId": collaborationId,
             "canvasId": canvasId,
-            "coordinates": coordinatesForFirestore
+            "coordinates": coordinatesForFirestore,
         ]
     }
 }

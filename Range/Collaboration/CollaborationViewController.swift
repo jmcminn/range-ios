@@ -146,7 +146,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
             make.top.equalTo(21)
         }
 
-        statusButton = CollaborationStatusButton(collaboration)
+        statusButton = CollaborationStatusButton(collaboration, currentUser: projectModel.currentUser)
         statusButton.addTarget(self, action: #selector(statusTapped), for: .touchUpInside)
         containerView.addSubview(statusButton)
         statusButton.snp.makeConstraints { make in
@@ -225,7 +225,7 @@ class CollaborationViewController: UIViewController, NonModalCardCoordinating {
         collaborationNotificationToken = collaboration.observe { [weak self] _ in
             self?.onCollaborationUpdated()
         }
-        geometryNotificationToken = collaboration.feature.first?.geometry.first?.observe { [weak self] _ in
+        geometryNotificationToken = collaboration.geometry.first?.observe { [weak self] _ in
             self?.onCollaborationUpdated()
         }
         onCollaborationUpdated()
@@ -298,6 +298,7 @@ extension CollaborationViewController {
     @objc private func statusBadgeTapped(recognizer: UITapGestureRecognizer) {
         // only for tasks
         guard collaboration.status != nil else { return }
+        guard projectModel.currentUser.canComplete(collaboration) else { return }
         let selector = recognizer.numberOfTapsRequired == 1
             ? #selector(ProjectFlowController.markTaskCompletedAction)
             : #selector(ProjectFlowController.markTaskCompletedAndArchiveAction)
@@ -306,6 +307,11 @@ extension CollaborationViewController {
     }
 
     @objc private func statusTapped() {
+        if let status = collaboration.status, status.isCompleted,
+           !projectModel.currentUser.canComplete(collaboration) {
+            // cannot uncomplete
+            return
+        }
         UIApplication.shared.sendAction(
             #selector(CollaborationFlowActions.editStatusAction), to: nil, from: self, for: nil
         )

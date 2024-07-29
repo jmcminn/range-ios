@@ -18,7 +18,13 @@ final class UpdateCollaborationDueDateCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_successful() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
+            name: "old name",
+            description: nil
+        )
         // setup collaboration1 with tag1 and tag2
         try realm.write {
             realm.add(collaboration1)

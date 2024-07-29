@@ -28,8 +28,10 @@ class Upload: Object, WithPlaceholder, WithId {
     @Persisted var author: Participant?
     /// Backlink to the Collaboration. This is automatically updated whenever this upload is added to or removed from the parent
     @Persisted(originProperty: "uploads") var collaboration: LinkingObjects<Collaboration>
-    // timestamp (@objc to use it in SortDescriptor)
-    @objc @Persisted var timestamp: Date
+    // createdAt (@objc to use it in SortDescriptor)
+    @objc @Persisted var createdAt: Date
+    // lastUpdatedAt
+    @Persisted var lastUpdatedAt: Date
     // name
     @Persisted var name: String?
     // description
@@ -78,7 +80,8 @@ class Upload: Object, WithPlaceholder, WithId {
     /// Initializer to init all the fields of object.
     init(
         id: String,
-        timestamp: Date,
+        createdAt: Date,
+        lastUpdatedAt: Date,
         name: String?,
         description: String?,
         correlationId: String,
@@ -92,7 +95,8 @@ class Upload: Object, WithPlaceholder, WithId {
     ) {
         super.init()
         self.id = id
-        self.timestamp = timestamp
+        self.createdAt = createdAt
+        self.lastUpdatedAt = lastUpdatedAt
         self.name = name
         uploadDescription = description
         self.correlationId = correlationId
@@ -109,7 +113,8 @@ class Upload: Object, WithPlaceholder, WithId {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
-            timestamp: Date(),
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
             name: "",
             description: nil,
             correlationId: id,

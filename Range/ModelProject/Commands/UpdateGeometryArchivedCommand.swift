@@ -13,8 +13,7 @@ struct UpdateGeometryArchivedCommand: Command, Codable, Equatable {
 
 extension UpdateGeometryArchivedCommand: LocalCommand {
     func apply(inRealm realm: Realm) throws {
-        guard let geometry = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)?.feature
-            .first?.geometry.first
+        guard let geometry = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)?.geometry.first
         else {
             throw ModelError.geometryNotFound
         }

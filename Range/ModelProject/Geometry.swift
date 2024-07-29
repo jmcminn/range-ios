@@ -19,23 +19,23 @@ class Geometry: Object, WithId, WithPlaceholder {
     /// the geometry shape is stored as Turf.Geometry as this is what Mapbox uses for representing geometries in their SDK
     /// some default is needed otherwise it cannot be marked as required (or it will crash when querying geometries using realm filters)
     @Persisted var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
-    /// features for this geometry, the order doesn't matter so it's a set
-    @Persisted var features: MutableSet<Feature>
+    /// collaboraitons for this geometry, the order doesn't matter so it's a set
+    @Persisted var collaborations: MutableSet<Collaboration>
     /// for archived geometries
     @Persisted var archivedTimestamp: Date?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
-    /// Count all uploads from all features
+    /// Count all uploads from all collaborations
     var uploadsCount: Int {
-        features.reduce(0) { count, feature in
-            count + feature.uploadsCount
+        collaborations.reduce(0) { count, collaboration in
+            count + collaboration.uploads.count
         }
     }
 
-    /// If any feature has uncompleted notes
+    /// If any collaboration has uncompleted notes
     var hasUncompletedNotes: Bool {
-        features.contains { $0.hasUncompletedNotes }
+        collaborations.contains { $0.hasUncompletedNotes }
     }
 
     /// Default initializer required by Realm.

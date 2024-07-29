@@ -18,7 +18,13 @@ final class UpdateCollaborationAssigneeCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_noUser() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
+            name: "old name",
+            description: nil
+        )
         // setup collaboration1
         try realm.write {
             realm.add(collaboration1)
@@ -36,7 +42,13 @@ final class UpdateCollaborationAssigneeCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_successful() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
+            name: "old name",
+            description: nil
+        )
         let user2 = Participant(placeholderId: "user2")
         // setup collaboration1
         try realm.write {

@@ -1,20 +1,22 @@
 import Foundation
 import RealmSwift
 
-/// Realm object for `project/details/collaborations/<id>`
+/// Realm object for `project/<projectId>/collaborations/<id>`
 class Collaboration: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
-    /// Backlink to the Feature. This is automatically updated whenever this coolaboration is added to or removed from the parent
-    @Persisted(originProperty: "collaborations") var feature: LinkingObjects<Feature>
+    /// Backlink to the Geometry. This is automatically updated whenever this coolaboration is added to or removed from the parent
+    @Persisted(originProperty: "collaborations") var geometry: LinkingObjects<Geometry>
     // collaboration status, needs to be optional because of how Realm
     // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
     @Persisted var status: Status?
     // the author, needs to be optional because of how Realm
     // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
     @Persisted var author: Participant?
-    // timestamp
-    @Persisted var timestamp: Date
+    // createdAt
+    @Persisted var createdAt: Date
+    // lastUpdatedAt
+    @Persisted var lastUpdatedAt: Date
     /// name
     @Persisted var name: String
     /// description (can't really use the description name for it as it's already used)
@@ -50,7 +52,7 @@ class Collaboration: Object, WithPlaceholder, WithId {
 
     /// Whether the collaboration is archived, based on the geometry.archivedTimestamp existence
     var isArchived: Bool {
-        feature.first?.geometry.first?.archivedTimestamp != nil
+        geometry.first?.archivedTimestamp != nil
     }
 
     /// it's completed if it has a status with isCompleted = true
@@ -60,9 +62,8 @@ class Collaboration: Object, WithPlaceholder, WithId {
 
     /// The timestamp of the most recent Update or Comment or Upload or `timestamp` if no updates
     var lastUpdatedTimestamp: Date {
-        (Array(updates.map(\.timestamp)) + Array(uploads.map(\.timestamp)) + Array(comments.map(\.timestamp)))
-            .max() ?? timestamp
-//        (updates.map(\.timestamp) + uploads.map(\.timestamp) + comments.map(\.timestamp)).max() ?? timestamp
+        ([lastUpdatedAt] + Array(uploads.map(\.lastUpdatedAt)) + Array(comments.map(\.lastUpdatedAt)))
+            .max() ?? lastUpdatedAt
     }
 
     /// Default initializer required by Realm.
@@ -73,7 +74,8 @@ class Collaboration: Object, WithPlaceholder, WithId {
     /// Initializer to init all the fields of object.
     init(
         id: String,
-        timestamp: Date,
+        createdAt: Date,
+        lastUpdatedAt: Date,
         name: String,
         description: String?,
         dueDateTimestamp: Date? = nil,
@@ -82,7 +84,8 @@ class Collaboration: Object, WithPlaceholder, WithId {
     ) {
         super.init()
         self.id = id
-        self.timestamp = timestamp
+        self.createdAt = createdAt
+        self.lastUpdatedAt = lastUpdatedAt
         self.name = name
         collaborationDescription = description
         self.dueDateTimestamp = dueDateTimestamp
@@ -94,7 +97,8 @@ class Collaboration: Object, WithPlaceholder, WithId {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
-            timestamp: Date(),
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
             name: "",
             description: nil,
             placeholder: true
@@ -126,7 +130,7 @@ class Collaboration: Object, WithPlaceholder, WithId {
         tags.append(objectsIn: newTags)
         newTags.forEach { $0.collaborations.insert(self) }
     }
-    
+
     func addNewFollowers(newFollowerIds: [String], realm: Realm) {
         // for fast lookup
         let currentIdsSet = Set(followers.map(\.id))
@@ -135,6 +139,5 @@ class Collaboration: Object, WithPlaceholder, WithId {
             .filter { !currentIdsSet.contains($0) }
             .compactMap { realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: $0) }
         followers.append(objectsIn: newFollowers)
-        
     }
 }

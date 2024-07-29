@@ -94,8 +94,8 @@ extension MediaFilters {
         if mediaTypeFilter == .photos, !upload.isImage { return false }
         if mediaTypeFilter == .documents, upload.isImage { return false }
 
-        if let fromDate = fromDate, upload.timestamp < fromDate { return false }
-        if let toDate = toDate, upload.timestamp > toDate { return false }
+        if let fromDate = fromDate, upload.createdAt < fromDate { return false }
+        if let toDate = toDate, upload.createdAt > toDate { return false }
 
         if let authorFilter = authorFilter, !authorFilter.isEmpty {
             if !matchAuthor(authorFilter, upload: upload) { return false }
@@ -135,7 +135,7 @@ extension MediaFilters {
     /// Return `true` if the upload belongs to a collaboration on one of given canvases
     func matchCanvas(_ canvases: [String], upload: Upload) -> Bool {
         for canvas in canvases {
-            if upload.collaboration.first?.feature.first?.geometry.first?.canvas.first?.id == canvas {
+            if upload.collaboration.first?.geometry.first?.canvas.first?.id == canvas {
                 return true
             }
         }

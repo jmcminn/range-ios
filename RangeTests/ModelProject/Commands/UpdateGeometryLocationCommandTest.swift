@@ -26,12 +26,10 @@ final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
-        let feature = Feature(placeholderId: "feature1")
         let collaboration = Collaboration(placeholderId: "collaboration1")
         try realm.write {
-            realm.add([geometry, feature, collaboration])
-            geometry.features.insert(feature)
-            feature.collaborations.insert(collaboration)
+            realm.add([geometry, collaboration])
+            geometry.collaborations.insert(collaboration)
         }
 
         let command = try UpdateGeometryLocationCommand(
@@ -52,14 +50,12 @@ final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
             annotationType: .photoMarker,
             geometry: .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5)))
         )
-        let feature = Feature(placeholderId: "feature1")
         let collaboration = Collaboration(placeholderId: "collaboration1")
         let canvas1 = Canvas(placeholderId: "canvas1")
         let canvas2 = Canvas(placeholderId: "canvas2")
         try realm.write {
-            realm.add([geometry, feature, collaboration, canvas1, canvas2])
-            geometry.features.insert(feature)
-            feature.collaborations.insert(collaboration)
+            realm.add([geometry, collaboration, canvas1, canvas2])
+            geometry.collaborations.insert(collaboration)
             canvas1.geometries.insert(geometry)
         }
         let command = try UpdateGeometryLocationCommand(

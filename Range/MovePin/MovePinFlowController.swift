@@ -112,7 +112,7 @@ class MovePinFlowController {
     private func createPinsDisplay() {
         // When moving a collaboration we display it's pin using the separate `pinView` so we need
         // to hide the pin on canvas
-        let ignoredGeometryId = collaboration.feature.first?.geometry.first?.id
+        let ignoredGeometryId = collaboration.geometry.first?.id
         pinsDisplay = _createGeometriesPinsDisplay(
             usingNativeViews: _debugSettings.nativeViewsForPins,
             canvas: model.currentCanvas,

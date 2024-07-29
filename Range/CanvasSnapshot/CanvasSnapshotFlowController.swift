@@ -38,7 +38,7 @@ class CanvasSnapshotFlowController {
         canvasContainer: CanvasContainerViewController
     ) {
         if let collaboration, !collaboration.isInvalidated {
-            geometryId = collaboration.feature.first?.geometry.first?.id
+            geometryId = collaboration.geometry.first?.id
         } else {
             geometryId = nil
         }

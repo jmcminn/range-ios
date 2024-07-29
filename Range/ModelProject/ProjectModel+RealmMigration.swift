@@ -5,14 +5,11 @@ import RealmSwift
 /// Defines the migration of old Realm schemas
 extension ProjectModel {
     class func migrate(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-        if oldSchemaVersion < 8 {
-            // schema version 8 changes Upload.FileType.image to jpeg
-            migrateToSchemaVersion8(migration)
-        }
-        if oldSchemaVersion < 10 {
-            // schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource
-            migrateToSchemaVersion10(migration)
-        }
+        // schema version 8 changes Upload.FileType.image to jpeg
+        if oldSchemaVersion < 8 { migrateToSchemaVersion8(migration) }
+
+        // schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource
+        if oldSchemaVersion < 10 { migrateToSchemaVersion10(migration) }
 
         // v12 introduces optional Upload.annotations (no Firestore sync), migration not needed
         // v13 introduces Upload.localStorageVersion (no Firestore sync), migration not needed
@@ -27,6 +24,12 @@ extension ProjectModel {
         // v22 introduces ProjectSummary.statusTaskCounts
         // v23 introduces Collaboration.followers
         // v24 introduces ProjectMetadata
+
+        // v25 renames timestamp to createdAt and introduces lastUpdatedAt = timestamp
+        if oldSchemaVersion < 25 { migrateToSchemaVersion25(migration) }
+
+        // v26 removes Feature and links Geometry directly to Collaboration
+        if oldSchemaVersion < 26 { migrateToSchemaVersion26(migration) }
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource
@@ -109,5 +112,47 @@ extension ProjectModel {
                 newObject!["fileType"] = "jpeg"
             }
         }
+    }
+
+    /// v25 renames timestamp to createdAt and introduces lastUpdatedAt = timestamp
+    private class func migrateToSchemaVersion25(_ migration: Migration) {
+        let addLastUpdatedAt: MigrationObjectEnumerateBlock = { oldObject, newObject in
+            if let timestamp = oldObject!["timestamp"] as? Date {
+                newObject!["lastUpdatedAt"] = timestamp
+            }
+        }
+        migration.enumerateObjects(ofType: "Collaboration", addLastUpdatedAt)
+        migration.enumerateObjects(ofType: "Comment", addLastUpdatedAt)
+        migration.enumerateObjects(ofType: "Upload", addLastUpdatedAt)
+
+        migration.renameProperty(onType: "Collaboration", from: "timestamp", to: "createdAt")
+        migration.renameProperty(onType: "Comment", from: "timestamp", to: "createdAt")
+        migration.renameProperty(onType: "Update", from: "timestamp", to: "createdAt")
+        migration.renameProperty(onType: "Upload", from: "timestamp", to: "createdAt")
+    }
+
+    /// Adds a direct link between Geometry and Collaboration and removes Feature
+    private class func migrateToSchemaVersion26(_ migration: Migration) {
+        // 1. store collaborations from new version so they can be assigned to Geometry
+        // map of id => new collaboration
+        var newCollaborations = [String: MigrationObject]()
+        migration.enumerateObjects(ofType: "Collaboration") { _, newObject in
+            guard let newObject, let id = newObject["id"] as? String else { return }
+            newCollaborations[id] = newObject
+        }
+        migration.enumerateObjects(ofType: "Geometry") { oldGeometry, newGeometry in
+            guard let oldGeometry, let newGeometry else { return }
+
+            // this code is (properly) assuming that there at most 1 feature per geometry and
+            // 1 collaboration per feature
+            guard let oldFeature = (oldGeometry["features"] as? MutableSet<MigrationObject>)?.first else { return }
+            if let oldCollaboration = (oldFeature["collaborations"] as? MutableSet<MigrationObject>)?.first,
+               let collaborationId = oldCollaboration["id"] as? String,
+               let newCollaboration = newCollaborations[collaborationId]
+            {
+                (newGeometry["collaborations"] as? MutableSet<MigrationObject>)?.insert(newCollaboration)
+            }
+        }
+        migration.deleteData(forType: "Feature")
     }
 }

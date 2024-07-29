@@ -45,7 +45,13 @@ final class CreateCommentCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_noUser() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
+            name: "old name",
+            description: nil
+        )
         try realm.write {
             realm.add(collaboration1)
         }
@@ -58,7 +64,13 @@ final class CreateCommentCommandRealmTest: ProjectModelTestCase {
 
     func testApply_collaborationComment_successful() throws {
         let commentId = collaborationCommentCommand.commentId
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
+            name: "old name",
+            description: nil
+        )
         let user1 = Participant(placeholderId: "user1")
         try realm.write {
             realm.add([collaboration1, user1])
@@ -76,7 +88,7 @@ final class CreateCommentCommandRealmTest: ProjectModelTestCase {
 
     func testApply_uploadComment_successful() throws {
         let commentId = uploadCommentCommand.commentId
-        let upload1 = Upload(id: "upload1", timestamp: Date(), name: nil, description: nil,
+        let upload1 = Upload(id: "upload1", createdAt: Date(), lastUpdatedAt: Date(), name: nil, description: nil,
                              correlationId: "upload1", fileType: .jpeg, imageHeightToWidth: nil, fileSize: 1024)
         let user1 = Participant(placeholderId: "user1")
         try realm.write {
@@ -110,15 +122,20 @@ final class CreateCommentCommandFirebaseFunctionTest: XCTestCase {
             "parentType": "Upload",
             "parentId": "upload1",
             "text": "text",
-            "isNote": false
+            "isNote": false,
         ]
         // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
         // so the compiler stops saying that the types are not comparable, etc.
         XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
-    
+
     func test_functionData_collaborationComment() throws {
-        let command = CreateCommentCommand.collaborationComment(collaborationId: "collaboration1", authorId: "user1", text: "text", isNote: true)
+        let command = CreateCommentCommand.collaborationComment(
+            collaborationId: "collaboration1",
+            authorId: "user1",
+            text: "text",
+            isNote: true
+        )
         let data = command.functionData("project1") as? [String: Any?]
         let expected: [String: Any?] = [
             "projectId": "project1",
@@ -126,7 +143,7 @@ final class CreateCommentCommandFirebaseFunctionTest: XCTestCase {
             "parentType": "Collaboration",
             "parentId": "collaboration1",
             "text": "text",
-            "isNote": true
+            "isNote": true,
         ]
         // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
         // so the compiler stops saying that the types are not comparable, etc.

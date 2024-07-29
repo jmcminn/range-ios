@@ -8,13 +8,14 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
 
     func testUpsert_wrongParentType() throws {
         let firestoreUpload = FirestoreUpload(
+            correlationId: "upload1",
+            createdById: "user1",
+            createdAt: Date(),
+            descriptionString: "description",
+            lastUpdatedAt: Date(),
+            name: "name",
             parentId: "feature1",
             parentType: "Feature",
-            authorId: "user1",
-            timestamp: Date(),
-            name: "name",
-            descriptionString: "description",
-            correlationId: "upload1",
             tagIds: ["tag1"]
         )
         XCTAssertThrowsError(
@@ -29,11 +30,11 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
     // Adds a parent and author placeholders if not found
     func testUpsert_createPlaceholders() throws {
         let firestoreUpload = FirestoreUpload(
+            correlationId: "upload1",
+            createdById: "user2",
+            createdAt: Date(), lastUpdatedAt: Date(),
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user2",
-            timestamp: Date(),
-            correlationId: "upload1",
             tagIds: []
         )
         try realm.write {
@@ -56,13 +57,13 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
         let user1 = Participant(placeholderId: "user1")
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration1",
             description: ""
         )
         let collaboration2 = Collaboration(
             id: "collaboration2",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration2",
             description: ""
         )
@@ -74,13 +75,14 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
 
         // 2. add upload to collaboration1
         var firestoreUpload1 = FirestoreUpload(
+            correlationId: "upload1",
+            createdById: "user1",
+            createdAt: Date(timeIntervalSince1970: 1), 
+            descriptionString: "upload 1 description",
+            lastUpdatedAt: Date(),
+            name: "upload 1",
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: Date(timeIntervalSince1970: 1),
-            name: "upload 1",
-            descriptionString: "upload 1 description",
-            correlationId: "upload1",
             tagIds: []
         )
         try realm.write {
@@ -89,7 +91,7 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
         XCTAssertEqual(collaboration1.uploads.count, 1)
         XCTAssertEqual(collaboration2.uploads.count, 0)
         let upload1 = try XCTUnwrap(realm.object(ofType: Upload.self, forPrimaryKey: "upload1"), "upload1 not found")
-        XCTAssertEqual(upload1.timestamp.timeIntervalSince1970, 1)
+        XCTAssertEqual(upload1.createdAt.timeIntervalSince1970, 1)
         XCTAssertEqual(upload1.name, "upload 1")
         XCTAssertEqual(upload1.uploadDescription, "upload 1 description")
         XCTAssertEqual(upload1.author, user1)
@@ -105,13 +107,14 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
 
         // 4. add another upload to collaboration1
         let firestoreUpload2 = FirestoreUpload(
+            correlationId: "upload2",
+            createdById: "user1",
+            createdAt: Date(), 
+            descriptionString: "upload 2 description",
+            lastUpdatedAt: Date(),
+            name: "upload 2",
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: Date(),
-            name: "upload 2",
-            descriptionString: "upload 2 description",
-            correlationId: "upload2",
             tagIds: []
         )
         try realm.write {
@@ -143,11 +146,12 @@ class FirestoreUploadRealmSyncTest: ProjectModelTestCase {
 
         // given an upload with tag1 and tag2 and a duplicate of tag1
         var firestoreUpload = FirestoreUpload(
+            correlationId: "upload1",
+            createdById: "user1",
+            createdAt: Date(), 
+            lastUpdatedAt: Date(),
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: Date(),
-            correlationId: "upload1",
             tagIds: ["tag1", "tag2", "tag1"]
         )
         try realm.write {

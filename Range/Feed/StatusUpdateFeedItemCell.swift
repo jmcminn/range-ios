@@ -78,7 +78,7 @@ class StatusUpdateFeedItemCell: UITableViewCell {
         messageString
             .append(
                 NSAttributedString(
-                    string: " \(nonBrakingSpace)\(Date.format2(update.timestamp)).",
+                    string: " \(nonBrakingSpace)\(Date.format2(update.createdAt)).",
                     attributes: textAttributes
                 )
             )

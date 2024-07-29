@@ -16,10 +16,7 @@ extension DeleteCollaborationCommand: LocalCommand {
         guard let collaboration = realm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId) else {
             throw ModelError.collaborationNotFound
         }
-        guard let feature = collaboration.feature.first else {
-            throw ModelError.featureNotFound
-        }
-        guard let geometry = feature.geometry.first else {
+        guard let geometry = collaboration.geometry.first else {
             throw ModelError.geometryNotFound
         }
         realm.delete(collaboration.comments)
@@ -29,7 +26,6 @@ extension DeleteCollaborationCommand: LocalCommand {
         }
         realm.delete(collaboration.uploads)
         realm.delete(geometry)
-        realm.delete(feature)
         realm.delete(collaboration)
     }
 }

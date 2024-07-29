@@ -26,7 +26,7 @@ final class CreateUploadCommandRealmTest: ProjectModelTestCase {
     func testApply_noUser() throws {
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration1",
             description: ""
         )
@@ -44,7 +44,7 @@ final class CreateUploadCommandRealmTest: ProjectModelTestCase {
         let user1 = Participant(placeholderId: "user1")
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration1",
             description: ""
         )

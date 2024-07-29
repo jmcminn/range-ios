@@ -9,10 +9,10 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
     // Tests if firebase object fills in the defaults for optionals
     func testUpsert_defaultValues() throws {
         let firestoreComment = FirestoreComment(
+            createdById: "user1",
+            createdAt: Date(), lastUpdatedAt: Date(),
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: Date(),
             text: "comment 1"
         )
         try realm.write {
@@ -30,10 +30,10 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
 
     func testUpsert_wrongParentType() throws {
         let firestoreComment = FirestoreComment(
+            createdById: "user1",
+            createdAt: Date(), lastUpdatedAt: Date(),
             parentId: "feature1",
             parentType: "Feature",
-            authorId: "user1",
-            timestamp: Date(),
             text: "comment 1"
         )
         XCTAssertThrowsError(
@@ -48,10 +48,10 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
     // Adds a parent and author placeholders if not found
     func testUpsert_createPlaceholders() throws {
         let firestoreComment = FirestoreComment(
+            createdById: "user2",
+            createdAt: Date(), lastUpdatedAt: Date(),
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user2",
-            timestamp: Date(),
             text: "comment 1"
         )
         try realm.write {
@@ -74,13 +74,13 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
         let user1 = Participant(placeholderId: "user1")
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration1",
             description: ""
         )
         let collaboration2 = Collaboration(
             id: "collaboration2",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration2",
             description: ""
         )
@@ -92,10 +92,10 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
 
         // 2. add comment to collaboration1
         var firestoreComment1 = FirestoreComment(
+            createdById: "user1",
+            createdAt: Date(timeIntervalSince1970: 1), lastUpdatedAt: Date(),
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 1"
         )
         try realm.write {
@@ -109,7 +109,7 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
         )
         XCTAssertEqual(comment1.text, "comment 1")
         XCTAssertEqual(comment1.author, user1)
-        XCTAssertEqual(comment1.timestamp.timeIntervalSince1970, 1)
+        XCTAssertEqual(comment1.createdAt.timeIntervalSince1970, 1)
 
         // 3. update comment1
         firestoreComment1.text = "comment 1 ..."
@@ -122,10 +122,10 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
 
         // 4. add another comment to collaboration1
         let firestoreComment2 = FirestoreComment(
+            createdById: "user1",
+            createdAt: Date(), lastUpdatedAt: Date(),
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 2"
         )
         try realm.write {
@@ -153,7 +153,7 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
         let user2 = Participant(placeholderId: "user2")
         let collaboration1 = Collaboration(
             id: "collaboration1",
-            timestamp: Date.now,
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: "Collaboration1",
             description: ""
         )
@@ -164,15 +164,16 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
 
         // 2. add note to collaboration1
         let firestoreComment1 = FirestoreComment(
+            completedById: "user2",
+            completedTimestamp: Date(timeIntervalSince1970: 2),
+            createdById: "user1",
+            createdAt: Date(timeIntervalSince1970: 1), 
+            isNote: true,
+            lastUpdatedAt: Date(),
             parentId: "collaboration1",
             parentType: "Collaboration",
-            authorId: "user1",
-            timestamp: Date(timeIntervalSince1970: 1),
             text: "comment 1",
-            textIsEdited: true,
-            isNote: true,
-            completedById: "user2",
-            completedTimestamp: Date(timeIntervalSince1970: 2)
+            textIsEdited: true
         )
         try realm.write {
             try firestoreComment1.upsert(withId: "comment1", inRealm: realm)
@@ -184,7 +185,7 @@ class FirestoreCommentRealmSyncTest: ProjectModelTestCase {
         )
         XCTAssertEqual(comment1.text, "comment 1")
         XCTAssertEqual(comment1.author, user1)
-        XCTAssertEqual(comment1.timestamp.timeIntervalSince1970, 1)
+        XCTAssertEqual(comment1.createdAt.timeIntervalSince1970, 1)
         XCTAssertTrue(comment1.isNote)
         XCTAssertTrue(comment1.textIsEdited)
         XCTAssertEqual(comment1.completedBy, user2)

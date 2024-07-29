@@ -17,7 +17,7 @@ final class UpdateCommentTextCommandRealmTest: ProjectModelTestCase {
     func testApply_successful() throws {
         let comment1 = Comment(
             id: "comment1",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             text: "",
             textIsEdited: false,
             isNote: false,

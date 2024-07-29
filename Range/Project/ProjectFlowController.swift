@@ -614,7 +614,7 @@ final class ProjectFlowController: UIViewController {
                 ),
             ]
             : []
-        let vc = ProjectActionCardViewController(actions: additionalCardActions)
+        let vc = ProjectActionCardViewController(model: model, actions: additionalCardActions)
         vc.onCamera = { [weak self] in
             self?.startAddPhotoFlow()
         }
@@ -694,7 +694,7 @@ extension ProjectFlowController {
         // and it was freezing the UI when filtering was done on the main thread.
         model.writeQueue.async { [weak self] in
             guard let self, let canvas = self.model.writeRealm.resolve(threadSafeCanvas) else { return }
-            let allPins = canvas.pins.compactMap(\.features.first?.collaborations.first) // geometry => collaboration
+            let allPins = canvas.pins.compactMap(\.collaborations.first) // geometry => collaboration
 
             let filteredPinsCount = allPins.filter(self.canvasFilters.match).count
             let defaultFilteredPinsCount = allPins.filter(self.defaultCanvasFilters.match).count

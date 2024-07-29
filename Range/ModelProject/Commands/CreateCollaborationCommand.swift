@@ -15,7 +15,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
     var authorId: String
     var canvasId: String
     var geometryId: String
-    var featureId: String // generated in init
+    var featureId: String // generated in init, still expected by backend but not needed locally
     var collaborationId: String // generated in initializer
     var coordinates: LocationCoordinate2DCodable // no CLLocationCoordinate2D as it needs to be codable
     var statusId: String? // optional status to create a task collaboration
@@ -92,13 +92,10 @@ extension CreateCollaborationCommand: LocalCommand {
         realm.add(geometry, update: .modified)
         canvas.geometries.insert(geometry)
 
-        let feature = Feature(id: featureId, name: "", description: nil)
-        realm.add(feature, update: .modified)
-        geometry.features.insert(feature)
-
         let collaboration = Collaboration(
             id: collaborationId,
-            timestamp: Date.now,
+            createdAt: Date.now,
+            lastUpdatedAt: Date.now,
             name: name ?? "",
             description: collaborationDescription,
             dueDateTimestamp: dueDateTimestamp
@@ -106,7 +103,7 @@ extension CreateCollaborationCommand: LocalCommand {
         realm.add(collaboration, update: .modified)
         collaboration.author = author
         collaboration.assignee = assignee
-        feature.collaborations.insert(collaboration)
+        geometry.collaborations.insert(collaboration)
         let tags = tags.map(\.asTag)
         tags.forEach { realm.add($0, update: .modified) }
         collaboration.tags.append(objectsIn: tags)
@@ -131,7 +128,8 @@ extension CreateCollaborationCommand: LocalCommand {
             }
             let upload = Upload(
                 id: $0.mediaKey.uploadId,
-                timestamp: Date.now,
+                createdAt: Date.now,
+                lastUpdatedAt: Date.now,
                 name: $0.name,
                 description: uploadDescription,
                 correlationId: $0.mediaKey.uploadId,

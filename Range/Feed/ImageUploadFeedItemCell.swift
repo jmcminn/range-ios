@@ -228,7 +228,7 @@ class ImageUploadFeedItemCell: UITableViewCell {
                 versionPill.label.text = "Version \(uploadIndex + 1)"
             }
 
-            timestampLabel.text = Date.format1(upload.timestamp)
+            timestampLabel.text = Date.format1(upload.createdAt)
             possiblyUpdateUploadImageViewConstraints(upload: upload)
             if let imageDataProvider = imageDataProvider {
                 uploadImageView.kf.setImage(with: imageDataProvider, options: imageDataProvider.options)

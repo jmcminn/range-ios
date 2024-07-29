@@ -15,7 +15,7 @@ final class UpdateCollaborationTagsCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_successful() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "", description: nil)
+        let collaboration1 = Collaboration(id: "collaboration1", createdAt: Date(), lastUpdatedAt: Date(), name: "", description: nil)
         let tag1 = Tag(id: "tag1", name: "tag 1")
         let tag2 = Tag(id: "tag2", name: "tag 2")
         // setup collaboration1 with tag1 and tag2
@@ -48,7 +48,7 @@ final class UpdateCollaborationTagsCommandRealmTest: ProjectModelTestCase {
 
     /// Test that new tags are added but not duplicated (not added if already there)
     func testApply_add() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "", description: nil)
+        let collaboration1 = Collaboration(id: "collaboration1", createdAt: Date(), lastUpdatedAt: Date(), name: "", description: nil)
         let tag1 = Tag(id: "tag1", name: "tag 1")
         let tag2 = Tag(id: "tag2", name: "tag 2")
         // setup collab1 with tag1 and tag2

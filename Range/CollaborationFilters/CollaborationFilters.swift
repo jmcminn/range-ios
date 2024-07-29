@@ -149,8 +149,7 @@ class CollaborationFilters: Codable, Equatable {
                     c.placeholder == false && c.status != nil // only tasks
                 })
         } else {
-            return model.currentCanvas.pins
-                .compactMap(\.features.first?.collaborations.first) // geometry => collaboration
+            return model.currentCanvas.pins.compactMap(\.collaborations.first)
         }
     }
 
@@ -214,7 +213,7 @@ extension CollaborationFilters {
         }
 
         if let showCreatedInLastNDays = showCreatedInLastNDays,
-           !DateOptions.isTimestampInLastNDays(showCreatedInLastNDays, timestamp: collaboration.timestamp)
+           !DateOptions.isTimestampInLastNDays(showCreatedInLastNDays, timestamp: collaboration.createdAt)
         {
             return false
         }
@@ -254,7 +253,7 @@ extension CollaborationFilters {
     /// Return `true` if the task is on one of given canvases
     func matchCanvas(_ canvases: [String], collaboration: Collaboration) -> Bool {
         for canvas in canvases {
-            if collaboration.feature.first?.geometry.first?.canvas.first?.id == canvas { return true }
+            if collaboration.geometry.first?.canvas.first?.id == canvas { return true }
         }
         return false
     }

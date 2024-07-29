@@ -21,7 +21,7 @@ final class UpdateUploadDescriptionCommandRealmTest: ProjectModelTestCase {
     func testApply_successful() throws {
         let upload1 = Upload(
             id: "upload1",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             name: nil,
             description: "description",
             correlationId: "upload1",

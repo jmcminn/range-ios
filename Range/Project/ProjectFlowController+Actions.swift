@@ -228,7 +228,7 @@ extension ProjectFlowController: ProjectFlowActions {
 
     func showCollaborationAction(sender _: Any?, event: FlowEvent) {
         guard let collaboration = event.object as? Collaboration,
-              let geometry = collaboration.feature.first?.geometry.first,
+              let geometry = collaboration.geometry.first,
               let canvas = geometry.canvas.first
         else { return }
         // update the canvas
@@ -745,7 +745,7 @@ extension ProjectFlowController {
         guard !collaboration.isInvalidated else { return }
         // not allow if already moving
         guard movePinFlow == nil else { return }
-        guard let geometryId = collaboration.feature.first?.geometry.first?.id,
+        guard let geometryId = collaboration.geometry.first?.id,
               let pin = pinsDisplay?.pinForGeometryId(geometryId) else { return }
         let canvasVC = canvasContainer.canvasViewController
         // center map view on the pin (for long press case, when started from collaboration window is already centered)

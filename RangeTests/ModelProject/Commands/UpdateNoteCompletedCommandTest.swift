@@ -18,7 +18,7 @@ final class UpdateNoteCompletedCommandRealmTest: ProjectModelTestCase {
         let user1 = Participant(placeholderId: "user1")
         let comment1 = Comment(
             id: "comment1",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             text: "",
             textIsEdited: false,
             isNote: false,
@@ -40,7 +40,7 @@ final class UpdateNoteCompletedCommandRealmTest: ProjectModelTestCase {
         let user1 = Participant(placeholderId: "user1")
         let comment1 = Comment(
             id: "comment1",
-            timestamp: Date(),
+            createdAt: Date(), lastUpdatedAt: Date(),
             text: "",
             textIsEdited: false,
             isNote: false,
@@ -62,9 +62,13 @@ final class UpdateNoteCompletedCommandRealmTest: ProjectModelTestCase {
 final class UpdateNoteCompletedCommandFirebaseFunctionTest: XCTestCase {
     func test_complete() throws {
         let completedTimestamp = Date()
-        let command = UpdateNoteCompletedCommand(noteId: "comment1", completedById: "user1", completedTimestamp: completedTimestamp)
+        let command = UpdateNoteCompletedCommand(
+            noteId: "comment1",
+            completedById: "user1",
+            completedTimestamp: completedTimestamp
+        )
         XCTAssertEqual(command.functionName, "updateComment")
-        
+
         let data = command.functionData("project1") as? [String: Any?]
         let expected: [String: Any?] = [
             "projectId": "project1",
@@ -75,11 +79,11 @@ final class UpdateNoteCompletedCommandFirebaseFunctionTest: XCTestCase {
         // so the compiler stops saying that the types are not comparable, etc.
         XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)
     }
-    
+
     func test_uncomplete() throws {
         let command = UpdateNoteCompletedCommand(noteId: "comment1")
         XCTAssertEqual(command.functionName, "updateComment")
-        
+
         let data = command.functionData("project1") as? [String: Any?]
         let expected: [String: Any?] = [
             "projectId": "project1",

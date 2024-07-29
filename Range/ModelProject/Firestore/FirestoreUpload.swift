@@ -23,32 +23,33 @@ struct FirestoreUpload: Decodable, FirestoreToRealmSyncable {
     /// CodingKeys used by Codable as a keys in the encoded form
     enum CodingKeys: String, CodingKey, CaseIterable {
         case annotations,
-             authorId = "author",
              correlationId = "correlation",
+             createdById = "createdBy", createdAt,
              descriptionString = "description",
              fileSize,
              fileTypeString = "fileType",
              imageHeightToWidth,
+             lastUpdatedAt,
              name,
              parentId = "parent", parentType,
              storageVersion,
-             tagIds = "tags",
-             timestamp
+             tagIds = "tags"
     }
 
-    var parentId: String
-    var parentType: String
-    var authorId: String
-    var timestamp: Date
-    var name: String?
-    var descriptionString: String?
+    var annotations: String?
     var correlationId: String
-    var tagIds: [String]
+    var createdById: String
+    var createdAt: Date
+    var descriptionString: String?
+    var fileSize: Int64?
     var fileTypeString: String?
     var imageHeightToWidth: Double?
-    var fileSize: Int64?
+    var lastUpdatedAt: Date
+    var name: String?
+    var parentId: String
+    var parentType: String
     var storageVersion: [String: String]?
-    var annotations: String?
+    var tagIds: [String]
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
         let fileType: Upload.FileType
@@ -80,10 +81,11 @@ struct FirestoreUpload: Decodable, FirestoreToRealmSyncable {
         }
 
         let collaboration = realm.objectOrPlaceholder(ofType: Collaboration.self, forPrimaryKey: parentId)
-        let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: authorId)
+        let author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: createdById)
         let upload = Upload(
             id: id,
-            timestamp: timestamp,
+            createdAt: createdAt,
+            lastUpdatedAt: lastUpdatedAt,
             name: name,
             description: descriptionString,
             correlationId: correlationId,

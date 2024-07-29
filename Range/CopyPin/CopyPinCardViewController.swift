@@ -47,7 +47,7 @@ class CopyPinCardViewController: SheetCardViewController {
         self.projectModel = projectModel
         self.userPreferences = userPreferences
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
-            .sorted(by: \Collaboration.timestamp, ascending: false)
+            .sorted(by: \Collaboration.createdAt, ascending: false)
 
         super.init(
             icon: UIImage(systemName: "mappin.and.ellipse"),

@@ -44,7 +44,8 @@ extension CreateUploadCommand: LocalCommand {
         }
         let realmUpload = Upload(
             id: upload.mediaKey.uploadId,
-            timestamp: Date.now,
+            createdAt: Date.now,
+            lastUpdatedAt: Date.now,
             name: upload.name,
             description: uploadDescription,
             correlationId: correlationId ?? upload.mediaKey.uploadId,

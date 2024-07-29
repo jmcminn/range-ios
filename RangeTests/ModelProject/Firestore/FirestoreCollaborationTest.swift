@@ -9,22 +9,23 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
     // Adds a feature and status placeholders if not found
     func testUpsert_createPlaceholders() throws {
         let firestoreCollaboration = FirestoreCollaboration(
-            featureId: "feature1",
-            authorId: "user1",
-            timestamp: Date(),
-            statusId: "status1",
-            name: "Collaboration1",
+            createdById: "user1",
+            createdAt: Date(), 
             descriptionString: "",
+            geometryId: "geometry1",
+            lastUpdatedAt: Date(),
+            name: "Collaboration1",
+            statusId: "status1",
             tagIds: []
         )
         try realm.write {
             try firestoreCollaboration.upsert(withId: "collaboration1", inRealm: realm)
         }
-        let feature = try XCTUnwrap(
-            realm.object(ofType: Feature.self, forPrimaryKey: "feature1"),
-            "feature1 not found"
+        let geometry = try XCTUnwrap(
+            realm.object(ofType: Geometry.self, forPrimaryKey: "geometry1"),
+            "geometry1 not found"
         )
-        XCTAssertTrue(feature.placeholder)
+        XCTAssertTrue(geometry.placeholder)
         let status = try XCTUnwrap(
             realm.object(ofType: Status.self, forPrimaryKey: "status1"),
             "status1 not found"
@@ -35,38 +36,39 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
     func testUpsert_successful() throws {
         // 1. create 2 features and a status
         let status1 = Status(id: "status1", name: "Status", hexColor: "#000000", isInitial: true, isCompleted: false)
-        let feature1 = Feature(id: "feature1", name: "Feature1", description: "")
-        let feature2 = Feature(id: "feature2", name: "Feature2", description: "")
+        let geometry1 = Geometry(placeholderId: "geometry1")
+        let geometry2 = Geometry(placeholderId: "geometry2")
         let tag = Tag(id: "tag1", name: "tag 1")
         try realm.write {
-            realm.add([status1, feature1, feature2, tag])
+            realm.add([status1, geometry1, geometry2, tag])
         }
-        XCTAssertEqual(feature1.collaborations.count, 0)
-        XCTAssertEqual(feature2.collaborations.count, 0)
+        XCTAssertEqual(geometry1.collaborations.count, 0)
+        XCTAssertEqual(geometry2.collaborations.count, 0)
 
         // 2. add collaboration to feature1
         var firestoreCollaboration1 = FirestoreCollaboration(
-            featureId: "feature1",
-            authorId: "user1",
-            timestamp: Date(timeIntervalSince1970: 1),
-            statusId: "status1",
-            name: "Collaboration1",
+            createdById: "user1",
+            createdAt: Date(timeIntervalSince1970: 1), 
             descriptionString: "",
+            geometryId: "geometry1",
+            lastUpdatedAt: Date(),
+            name: "Collaboration1",
+            statusId: "status1",
             tagIds: ["tag1"]
         )
         try realm.write {
             try firestoreCollaboration1.upsert(withId: "collaboration1", inRealm: realm)
         }
-        XCTAssertEqual(feature1.collaborations.count, 1)
-        XCTAssertEqual(feature2.collaborations.count, 0)
+        XCTAssertEqual(geometry1.collaborations.count, 1)
+        XCTAssertEqual(geometry2.collaborations.count, 0)
         let collaboration1 = try XCTUnwrap(
             realm.object(ofType: Collaboration.self, forPrimaryKey: "collaboration1"),
             "collaboration1 not found"
         )
-        XCTAssertEqual(collaboration1.timestamp.timeIntervalSince1970, 1)
+        XCTAssertEqual(collaboration1.createdAt.timeIntervalSince1970, 1)
         XCTAssertEqual(collaboration1.name, "Collaboration1")
         XCTAssertEqual(collaboration1.status, status1)
-        XCTAssertEqual(collaboration1.feature.first, feature1)
+        XCTAssertEqual(collaboration1.geometry.first, geometry1)
         XCTAssertEqual(collaboration1.tags.first, tag)
         XCTAssertEqual(tag.collaborations.first, collaboration1)
 
@@ -75,25 +77,26 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
         try realm.write {
             try firestoreCollaboration1.upsert(withId: "collaboration1", inRealm: realm)
         }
-        XCTAssertEqual(feature1.collaborations.count, 1)
-        XCTAssertEqual(feature2.collaborations.count, 0)
+        XCTAssertEqual(geometry1.collaborations.count, 1)
+        XCTAssertEqual(geometry2.collaborations.count, 0)
         XCTAssertEqual(collaboration1.name, "Collaboration1...")
 
         // 4. add another collaboration to feature1
         let firestoreCollaboration2 = FirestoreCollaboration(
-            featureId: "feature1",
-            authorId: "user1",
-            timestamp: Date(timeIntervalSince1970: 1),
-            statusId: "status1",
-            name: "Collaboration2",
+            createdById: "user1",
+            createdAt: Date(timeIntervalSince1970: 1), 
             descriptionString: "",
+            geometryId: "geometry1",
+            lastUpdatedAt: Date(),
+            name: "Collaboration2",
+            statusId: "status1",
             tagIds: []
         )
         try realm.write {
             try firestoreCollaboration2.upsert(withId: "collaboration2", inRealm: realm)
         }
-        XCTAssertEqual(feature1.collaborations.count, 2)
-        XCTAssertEqual(feature2.collaborations.count, 0)
+        XCTAssertEqual(geometry1.collaborations.count, 2)
+        XCTAssertEqual(geometry2.collaborations.count, 0)
 
         // 5. remove collaboration2
         try realm.write {
@@ -103,23 +106,24 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
             )
             realm.delete(collaboration2)
         }
-        XCTAssertEqual(feature1.collaborations.count, 1)
-        XCTAssertEqual(feature2.collaborations.count, 0)
-        XCTAssertEqual(feature1.collaborations.first, collaboration1)
+        XCTAssertEqual(geometry1.collaborations.count, 1)
+        XCTAssertEqual(geometry2.collaborations.count, 0)
+        XCTAssertEqual(geometry1.collaborations.first, collaboration1)
     }
 
     func testUpsert_statusIsOptional() throws {
-        let feature1 = Feature(id: "feature1", name: "Feature1", description: "")
+        let geometry1 = Geometry(placeholderId: "geometry1")
         try realm.write {
-            realm.add(feature1)
+            realm.add(geometry1)
         }
         let firestoreCollaboration = FirestoreCollaboration(
-            featureId: "feature1",
-            authorId: "user1",
-            timestamp: Date(),
-            statusId: nil,
-            name: "Collaboration1",
+            createdById: "user1",
+            createdAt: Date(timeIntervalSince1970: 1), 
             descriptionString: "",
+            geometryId: "geometry1",
+            lastUpdatedAt: Date(),
+            name: "Collaboration1",
+            statusId: nil,
             tagIds: []
         )
         try realm.write {
@@ -131,22 +135,23 @@ class FirestoreCollaborationTest: ProjectModelTestCase {
     }
 
     func testUpsert_updateTags() throws {
-        let feature1 = Feature(id: "feature1", name: "Feature1", description: "")
+        let geometry1 = Geometry(placeholderId: "geometry1")
         let tag1 = Tag(id: "tag1", name: "tag 1")
         let tag2 = Tag(id: "tag2", name: "tag 2")
         let tag3 = Tag(id: "tag3", name: "tag 3")
         try realm.write {
-            realm.add([feature1, tag1, tag2, tag3])
+            realm.add([geometry1, tag1, tag2, tag3])
         }
 
         // given a collaboration with tag1 and tag2 and a duplicate of tag1
         var firestoreCollaboration = FirestoreCollaboration(
-            featureId: "feature1",
-            authorId: "user1",
-            timestamp: Date(),
-            statusId: nil,
-            name: "Collaboration1",
+            createdById: "user1",
+            createdAt: Date(), 
             descriptionString: "",
+            geometryId: "geometry1",
+            lastUpdatedAt: Date(),
+            name: "Collaboration1",
+            statusId: nil,
             tagIds: ["tag1", "tag2", "tag1"]
         )
         try realm.write {

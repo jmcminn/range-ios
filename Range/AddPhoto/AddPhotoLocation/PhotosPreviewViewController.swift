@@ -44,7 +44,7 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
     /// - Parameters:
     ///    - model: for accessing project data
     ///    - mediaCache: for handling photos
-    ///    - geometryId: display all uploads for collaborations for features for given geometry id
+    ///    - geometryId: display all uploads for collaborations for given geometry id
     ///    - confirmationVC: this view controller displays behing the `AddPhotoConfirmationViewController` and needs to know its height
     init(model: ProjectModel, mediaCache: MediaCache, geometryId: String,
          confirmationVC: AddPhotoConfirmationViewController)
@@ -55,19 +55,19 @@ class PhotosPreviewViewController: UIViewController, NonModalCardCoordinating {
         // find all uploads for geometry id
         imageUploads = model.mainRealm.objects(Upload.self)
             .where { $0.placeholder == false &&
-                $0.collaboration.feature.geometry.id.equals(geometryId)
+                $0.collaboration.geometry.id.equals(geometryId)
             }
             .where { $0.fileType == .jpeg || $0.fileType == .png }
-            .sorted(by: \Upload.timestamp, ascending: false)
+            .sorted(by: \Upload.createdAt, ascending: false)
         nonImageUploads = model.mainRealm.objects(Upload.self)
             .where { $0.placeholder == false &&
-                $0.collaboration.feature.geometry.id.equals(geometryId)
+                $0.collaboration.geometry.id.equals(geometryId)
             }
             .where { $0.fileType != .jpeg && $0.fileType != .png }
 
         let collaboration = model.mainRealm.objects(Collaboration.self)
             .where { $0.placeholder == false &&
-                $0.feature.geometry.id.equals(geometryId)
+                $0.geometry.id.equals(geometryId)
             }.first
         var components: [String] = []
         if let collaboration {

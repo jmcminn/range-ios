@@ -135,7 +135,6 @@
 		0A34073829CA1570007299A7 /* ProjectCanvasControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34073729CA1570007299A7 /* ProjectCanvasControls.swift */; };
 		0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17A28450CAC00BEDC7C /* String+Error.swift */; };
 		0A34C17F284551F500BEDC7C /* FirestoreStatusNameTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */; };
-		0A34C181284552AC00BEDC7C /* FirestoreFeatureTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */; };
 		0A34C1832845F89700BEDC7C /* FirestoreCollaborationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1822845F89700BEDC7C /* FirestoreCollaborationTest.swift */; };
 		0A34C1852845FB4100BEDC7C /* Participant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1842845FB4100BEDC7C /* Participant.swift */; };
 		0A34C1872845FB7800BEDC7C /* FirestoreParticipant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1862845FB7800BEDC7C /* FirestoreParticipant.swift */; };
@@ -505,7 +504,6 @@
 		0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */; };
 		0AFA1A4B294B19E100491492 /* FullscreenMediaDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFA1A4A294B19E100491492 /* FullscreenMediaDetailsViewController.swift */; };
 		0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B5283FC9EB002F216A /* Feature.swift */; };
-		0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */; };
 		0AFCD61A2939285F004843AA /* String+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCD6192939285F004843AA /* String+Size.swift */; };
 /* End PBXBuildFile section */
 
@@ -655,7 +653,6 @@
 		0A34073729CA1570007299A7 /* ProjectCanvasControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCanvasControls.swift; sourceTree = "<group>"; };
 		0A34C17A28450CAC00BEDC7C /* String+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Error.swift"; sourceTree = "<group>"; };
 		0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreStatusNameTest.swift; sourceTree = "<group>"; };
-		0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeatureTest.swift; sourceTree = "<group>"; };
 		0A34C1822845F89700BEDC7C /* FirestoreCollaborationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollaborationTest.swift; sourceTree = "<group>"; };
 		0A34C1842845FB4100BEDC7C /* Participant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Participant.swift; sourceTree = "<group>"; };
 		0A34C1862845FB7800BEDC7C /* FirestoreParticipant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreParticipant.swift; sourceTree = "<group>"; };
@@ -1031,7 +1028,6 @@
 		0AFA1A48294A0A1E00491492 /* FullscreenMediaCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenMediaCardViewController.swift; sourceTree = "<group>"; };
 		0AFA1A4A294B19E100491492 /* FullscreenMediaDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenMediaDetailsViewController.swift; sourceTree = "<group>"; };
 		0AFAF1B5283FC9EB002F216A /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
-		0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeature.swift; sourceTree = "<group>"; };
 		0AFCD6192939285F004843AA /* String+Size.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Size.swift"; sourceTree = "<group>"; };
 		A6E8166BBA53B1A993643B7A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1389,7 +1385,6 @@
 				0A2F3302283BDC2B00D04A1C /* FirestoreCanvas.swift */,
 				0A598C1A29C067F400DB2849 /* FirestoreCanvasSource.swift */,
 				0A456237283E792200BA8D21 /* FirestoreGeometry.swift */,
-				0AFAF1B7283FCB6C002F216A /* FirestoreFeature.swift */,
 				0A17380E2C4FDC650097309A /* FirestoreFeedItem.swift */,
 				0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */,
 				0A34C1882845FE9C00BEDC7C /* FirestoreComment.swift */,
@@ -2017,7 +2012,6 @@
 				0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */,
 				0A34C1822845F89700BEDC7C /* FirestoreCollaborationTest.swift */,
 				0A34C18C2846030800BEDC7C /* FirestoreCommentTest.swift */,
-				0A34C180284552AC00BEDC7C /* FirestoreFeatureTest.swift */,
 				0A07D75F28104BF000B6F9A2 /* FirestoreGeometryTest.swift */,
 				0A34C17E284551F500BEDC7C /* FirestoreStatusNameTest.swift */,
 				0A4995C22859D8C900E571FB /* FirestoreTagNameTest.swift */,
@@ -2739,7 +2733,6 @@
 				0A956FB42BAB4625008E5803 /* RangeIsClosedView.swift in Sources */,
 				0AC8D1342BB3044400D37202 /* MapboxSnapshotter.swift in Sources */,
 				0AC9E19128F8057B00C7185D /* PinImage.swift in Sources */,
-				0AFAF1B8283FCB6C002F216A /* FirestoreFeature.swift in Sources */,
 				0AAC46CD2B53EE5A00D87549 /* ItemPicker+Canvas.swift in Sources */,
 				0AD9B77A286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift in Sources */,
 				0A797F76292CC60800D63567 /* UserTableViewCell.swift in Sources */,
@@ -2990,7 +2983,6 @@
 				0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */,
 				0A34C17F284551F500BEDC7C /* FirestoreStatusNameTest.swift in Sources */,
 				0ABFD8AE28EDB962008CDA74 /* UserPreferencesTest.swift in Sources */,
-				0A34C181284552AC00BEDC7C /* FirestoreFeatureTest.swift in Sources */,
 				0AD9B75D28644D99005ACFD7 /* TagsViewModelTest.swift in Sources */,
 				0A88198D291D56060050FC41 /* UpdateCollaborationNameCommandTest.swift in Sources */,
 				0A3714E32950A4BE004ED1B0 /* UpdateUploadDescriptionCommandTest.swift in Sources */,

@@ -29,8 +29,8 @@ class Canvas: Object, WithPlaceholder, WithId {
     var pins: Results<Geometry> {
         geometries.where { $0.placeholder == false &&
             $0.annotationType == .photoMarker &&
-            // has at least 1 collaboration (have > 0 features that have > 0 collaborations)
-            ($0.features.collaborations.count > 0).count > 0
+            // has at least 1 collaboration 
+            ($0.collaborations.count > 0)
         }
     }
 

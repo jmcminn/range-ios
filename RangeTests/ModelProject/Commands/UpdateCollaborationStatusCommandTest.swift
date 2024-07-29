@@ -18,7 +18,13 @@ final class UpdateCollaborationStatusCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_noStatus() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
+            name: "old name",
+            description: nil
+        )
         // setup collaboration
         try realm.write {
             realm.add(collaboration1)
@@ -35,7 +41,13 @@ final class UpdateCollaborationStatusCommandRealmTest: ProjectModelTestCase {
     }
 
     func testApply_successful() throws {
-        let collaboration1 = Collaboration(id: "collaboration1", timestamp: Date(), name: "old name", description: nil)
+        let collaboration1 = Collaboration(
+            id: "collaboration1",
+            createdAt: Date(),
+            lastUpdatedAt: Date(),
+            name: "old name",
+            description: nil
+        )
         let status1 = Status(id: "status1", name: "Status 1", hexColor: "#123456", isInitial: false, isCompleted: false)
         // setup collaboration and status
         try realm.write {

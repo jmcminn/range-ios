@@ -144,7 +144,7 @@ class CommentFeedItemCell: UITableViewCell {
             string: comment.author?.displayName ?? "",
             attributes: [.strikethroughStyle: comment.author?.strikethroughStyle ?? 0]
         )
-        timestampLabel.text = Date.format1(comment.timestamp)
+        timestampLabel.text = Date.format1(comment.createdAt)
 
         // only show more button if user is allowed to do any of its actions
         let showMoreButton = model.currentUser.canDelete(comment) || model.currentUser.canEditText(comment)

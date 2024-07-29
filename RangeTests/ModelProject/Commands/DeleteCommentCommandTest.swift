@@ -16,7 +16,7 @@ final class DeleteCommentCommandRealmTest: ProjectModelTestCase {
 
     func testApply_successful() throws {
         let comment1 = Comment(
-            id: "comment1", timestamp: Date(), text: "",
+            id: "comment1", createdAt: Date(), lastUpdatedAt: Date(), text: "",
             textIsEdited: false, isNote: false, completedTimestamp: nil
         )
         try realm.write {

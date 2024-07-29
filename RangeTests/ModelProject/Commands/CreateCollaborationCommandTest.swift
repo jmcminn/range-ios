@@ -98,13 +98,9 @@ final class CreateCollaborationCommandRealmTest: ProjectModelTestCase {
         XCTAssertEqual(geometry1.annotationType, .photoMarker)
         XCTAssertEqual(geometry1.geometry, .point(Point(CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5))))
 
-        let feature1 = try XCTUnwrap(realm.object(ofType: Feature.self, forPrimaryKey: "feature1"))
-        XCTAssertEqual(feature1.geometry.first, geometry1)
-        XCTAssertEqual(geometry1.features.map(\.id), ["feature1"])
-
         let collaboration1 = try XCTUnwrap(realm.object(ofType: Collaboration.self, forPrimaryKey: "collaboration1"))
-        XCTAssertEqual(collaboration1.feature.first, feature1)
-        XCTAssertEqual(feature1.collaborations.map(\.id), ["collaboration1"])
+        XCTAssertEqual(collaboration1.geometry.first, geometry1)
+        XCTAssertEqual(geometry1.collaborations.map(\.id), ["collaboration1"])
         XCTAssertEqual(collaboration1.assignee, user2)
         XCTAssertEqual(collaboration1.name, "name")
         XCTAssertEqual(collaboration1.collaborationDescription, "description")

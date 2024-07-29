@@ -6,18 +6,37 @@ extension Participant {
     func canCreateProject() -> Bool {
         organizationRole == .Admin
     }
-
-    /// Only author or Admin can delete a collaboration
-    func canDelete(_ collaboration: Collaboration) -> Bool {
-        if organizationRole == .Admin { return true }
-        if id == collaboration.author?.id { return true }
+    
+    /// Guest cannot create a collaboration
+    func canCreateCollaboration() -> Bool {
+        if organizationRole == .Admin || organizationRole == .Collaborator { return true }
         return false
     }
 
-    /// Only author or Admin can archive a collaboration
+    /// Only Collaboratora author or Admin can delete a collaboration
+    func canDelete(_ collaboration: Collaboration) -> Bool {
+        switch organizationRole {
+        case .Admin: return true
+        case .Collaborator: return id == collaboration.author?.id
+        case .Guest: return false
+        case .Unknown: return false
+        }
+    }
+
+    /// Only Collaborator author or Admin can archive a collaboration
     func canArchive(_ collaboration: Collaboration) -> Bool {
-        if organizationRole == .Admin { return true }
-        if id == collaboration.author?.id { return true }
+        switch organizationRole {
+        case .Admin: return true
+        case .Collaborator: return id == collaboration.author?.id
+        case .Guest: return false
+        case .Unknown: return false
+        }
+    }
+
+    // TODO: 3190 use it when changing status (selector update?), bulk
+    /// Guest cannot complete or uncomplete a task
+    func canComplete(_: Collaboration) -> Bool {
+        if organizationRole == .Admin || organizationRole == .Collaborator { return true }
         return false
     }
 

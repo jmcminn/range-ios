@@ -21,6 +21,7 @@ class Participant: Object, WithPlaceholder, WithId {
     enum OrganizationRole: String, Codable, PersistableEnum {
         case Admin
         case Collaborator
+        case Guest
         case Unknown // only valid for suspended participants
     }
 

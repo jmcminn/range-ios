@@ -57,7 +57,7 @@ class ConvertedToTaskFeedItemCell: UITableViewCell {
             ]
         )
         messageString.append(NSAttributedString(
-            string: " converted this Photo Pin to a Task \(Date.format3(update.timestamp)).",
+            string: " converted this Photo Pin to a Task \(Date.format3(update.createdAt)).",
             attributes: [
                 .foregroundColor: chooseColor(.Neutral_05),
                 .font: UIFont.preferredFont(forTextStyle: .footnote),
