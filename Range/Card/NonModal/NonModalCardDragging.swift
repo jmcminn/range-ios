@@ -40,6 +40,7 @@ class NonModalCardDragging: CardDragging {
     }
 
     fileprivate func setInitialCardFrame() {
+        guard let containerView else { return }
         var cardFrame = containerView.bounds
         cardFrame.origin.y = containerView.bounds.height
         if config.allowsFullScreen {

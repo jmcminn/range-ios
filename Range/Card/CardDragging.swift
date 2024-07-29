@@ -28,7 +28,7 @@ extension CardDraggingDelegate {
 /// Helper class for installing the gesture recognizers on the card-presented view controller's view and managing the card dragging.
 class CardDragging: NSObject {
     unowned let presentedViewController: UIViewController & CardPresentable
-    unowned let containerView: UIView
+    weak var containerView: UIView?
     let config: CardConfiguration
 
     /// dictionary of delegates stored per id
@@ -119,14 +119,17 @@ class CardDragging: NSObject {
 extension CardDragging {
     // we don't want to cover the top safe area
     var maxAllowedCardHeight: CGFloat {
-        containerView.bounds.height - containerView.safeAreaInsets.top
+        guard let containerView else { return 0 }
+        return containerView.bounds.height - containerView.safeAreaInsets.top
     }
 
     var cardHeight: CGFloat {
         get {
-            containerView.bounds.height - presentedViewController.view.frame.origin.y
+            guard let containerView else { return 0 }
+            return containerView.bounds.height - presentedViewController.view.frame.origin.y
         }
         set {
+            guard let containerView else { return }
             presentedViewController.view.frame.origin.y = containerView.bounds.height - newValue
             /// when the card is handling the fullscreen it's responsible for it's max height (which can be bigger than the
             /// screen height). The height can also change so update it if needed.
@@ -148,6 +151,7 @@ extension CardDragging {
     }
 
     func cardHeight(forPosition cardPosition: CardPosition) -> CGFloat {
+        guard let containerView else { return 0 }
         var height = presentedViewController.height(
             forContainer: containerView,
             cardPosition: cardPosition

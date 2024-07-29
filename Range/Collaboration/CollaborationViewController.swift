@@ -617,8 +617,7 @@ extension CollaborationViewController {
 
     /// Update the textViewHeight and returns `true` if it has changed
     private func updateTextViewHeight() -> Bool {
-        guard let cardDragging = cardDragging else { return false }
-        let cardContainer = cardDragging.containerView
+        guard let cardDragging, let cardContainer = cardDragging.containerView else { return false }
 
         // 20 is the height for the default font size, we just need some more less correct value here so the text view height is not initially 0
         let minTextViewHeight = 10.0

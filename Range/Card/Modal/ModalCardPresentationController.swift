@@ -60,9 +60,9 @@ class ModalCardPresentationController: UIPresentationController {
     }
 
     override var frameOfPresentedViewInContainerView: CGRect {
-        guard let cardDragging = cardDragging else { return .zero }
+        guard let cardDragging, let containerView = cardDragging.containerView else { return .zero }
         let targetHeight = cardDragging.cardHeight(forPosition: cardDragging.position)
-        var frame = cardDragging.containerView.bounds
+        var frame = containerView.bounds
         frame.origin.y = frame.size.height - targetHeight
         frame.size.height = cardDragging.maxAllowedCardHeight
         return frame
