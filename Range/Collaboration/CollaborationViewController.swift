@@ -298,7 +298,7 @@ extension CollaborationViewController {
     @objc private func statusBadgeTapped(recognizer: UITapGestureRecognizer) {
         // only for tasks
         guard collaboration.status != nil else { return }
-        guard projectModel.currentUser.canComplete(collaboration) else { return }
+        guard projectModel.currentUser.canCompleteTasks() else { return }
         let selector = recognizer.numberOfTapsRequired == 1
             ? #selector(ProjectFlowController.markTaskCompletedAction)
             : #selector(ProjectFlowController.markTaskCompletedAndArchiveAction)
@@ -307,8 +307,7 @@ extension CollaborationViewController {
     }
 
     @objc private func statusTapped() {
-        if let status = collaboration.status, status.isCompleted,
-           !projectModel.currentUser.canComplete(collaboration) {
+        if let status = collaboration.status, status.isCompleted, !projectModel.currentUser.canCompleteTasks() {
             // cannot uncomplete
             return
         }
@@ -373,7 +372,7 @@ extension CollaborationViewController {
     private func setupFollowersButtonBadge() {
         let badge = BadgeView()
         badge.backgroundColor = .Primary_Blue_04
-        
+
         badge.contentInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
         badge.textColor = .white
         badge.font = .systemFont(ofSize: 8)

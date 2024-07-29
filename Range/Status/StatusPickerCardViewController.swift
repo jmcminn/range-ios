@@ -5,33 +5,26 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class StatusPickerCardViewController: SheetCardViewController {
-    let statuses: [Status]
-    private let selectedStatus: Status?
+    let options: [StatusOption]
+    private let selectedOption: StatusOption?
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    enum StatusOption {
+    enum StatusOption: Equatable {
         case status(Status) // a status was picked
         case completeAndArchive(Status) // a special option to complete and archive was picked
     }
 
     var onStatusPicked: ((StatusOption) -> Void)?
 
-    let options: [StatusOption]
 
     /// Initializer
     ///
     /// - Parameters:
     ///     - title:                         title of the card
-    ///     - statuses:                 statuses to show in the picker
-    init(title: String, statuses: [Status], selectedStatus: Status?, onStatusPicked: ((StatusOption) -> Void)? = nil) {
-        self.statuses = statuses
-        self.selectedStatus = selectedStatus
-        var options: [StatusOption] = statuses.map { .status($0) }
-        // present the complete+archive option
-        if let completeStatus = statuses.first(where: { $0.isCompleted }) {
-            options.append(.completeAndArchive(completeStatus))
-        }
+    ///     - options:                   statuses to show in the picker
+    init(title: String, options: [StatusOption], selectedOption: StatusOption?, onStatusPicked: ((StatusOption) -> Void)? = nil) {
         self.options = options
+        self.selectedOption = selectedOption
 
         super.init(icon: nil, title: title)
         self.onStatusPicked = onStatusPicked
@@ -109,13 +102,13 @@ extension StatusPickerCardViewController: UITableViewDelegate, UITableViewDataSo
                 withIdentifier: StatusTableViewCell.Variant.status.rawValue,
                 for: indexPath
             ) as! StatusTableViewCell
-            cell.setStatus(statusOption, selected: status == selectedStatus)
+            cell.setStatus(statusOption, selected: statusOption == selectedOption)
         } else {
             cell = tableView.dequeueReusableCell(
                 withIdentifier: StatusTableViewCell.Variant.statusAndArchive.rawValue,
                 for: indexPath
             ) as! StatusTableViewCell
-            cell.setStatus(statusOption, selected: false)
+            cell.setStatus(statusOption, selected: statusOption == selectedOption)
         }
         return cell
     }

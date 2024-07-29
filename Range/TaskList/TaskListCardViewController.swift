@@ -371,7 +371,7 @@ extension TaskListCardViewController: UITableViewDelegate, UITableViewDataSource
             let collaborationId = searchedCollaborations[indexPath.row].id
             // we need Collaboration from the main thread realm, the searchedCollaborations
             // are realm-frozen
-            guard let collaboration = self.projectModel.mainRealm.object(
+            guard let collaboration = projectModel.mainRealm.object(
                 ofType: Collaboration.self,
                 forPrimaryKey: collaborationId
             ) else { return }
@@ -788,17 +788,35 @@ extension TaskListCardViewController {
     }
 
     private func presentBulkUpdateStatusCard() {
-        let statuses = [Status](projectModel.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
+        let tasks = selectedTasks.compactMap {
+            projectModel.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: $0)
+        }
+        let canCompleteTasks = projectModel.currentUser.canCompleteTasks()
+        let canArchiveAnySelectedTask = !filteredCollaborations
+            .filter { self.selectedTasks.contains($0.id) }
+            .filter { projectModel.currentUser.canArchive($0) }
+            .isEmpty
+
+        let statuses = [Status](
+            projectModel.mainRealm.objects(Status.self)
+                .filter { canCompleteTasks || !$0.isCompleted }
+                .sorted(by: Status.uiSortingOrder)
+        )
+        var options: [StatusPickerCardViewController.StatusOption] = statuses.map { .status($0) }
+        if canArchiveAnySelectedTask, let completeStatus = statuses.first(where: { $0.isCompleted }) {
+            options.append(.completeAndArchive(completeStatus))
+        }
+
         StatusPickerCardViewController(
             title: "Assign Status",
-            statuses: statuses,
-            selectedStatus: nil,
+            options: options,
+            selectedOption: nil,
             onStatusPicked: { [weak self] result in
                 switch result {
                 case let .status(status):
                     self?.bulkUpdateStatus(status)
                 case let .completeAndArchive(status):
-                    self?.bulkUpdateStatusAndArchive(status)
+                    self?.bulkCompleteAndArchive(status)
                 }
             }
         )
@@ -806,14 +824,18 @@ extension TaskListCardViewController {
     }
 
     private func bulkUpdateStatus(_ status: Status) {
+        // No need to check if user can complete a task or not. If user is not able to complete
+        // tasks they are also not allowed to select this status from picker
         let commands = selectedTasks.map { projectModel.update(status: status, forCollaboration: $0) }
         projectModel.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status") }
         }
     }
 
-    private func bulkUpdateStatusAndArchive(_ status: Status) {
-        // only archive the collaborations user have permissions to archive
+    private func bulkCompleteAndArchive(_ status: Status) {
+        // If this function is called it means that user can Complete tasks (as the user
+        // can either Complete all tasks or none of them)
+        // But still user can lack permissions to Archive some of them...
         let collaborationsToArchive = [String](filteredCollaborations
             .filter { self.selectedTasks.contains($0.id) }
             .filter { self.projectModel.currentUser.canArchive($0) }
@@ -824,7 +846,9 @@ extension TaskListCardViewController {
 
         var commands: [Command] = []
         commands.append(contentsOf: selectedTasks.map { projectModel.update(status: status, forCollaboration: $0) })
-        commands.append(contentsOf: collaborationsToArchive.map { projectModel.update(archived: true, forCollaboration: $0) })
+        commands
+            .append(contentsOf: collaborationsToArchive
+                .map { projectModel.update(archived: true, forCollaboration: $0) })
 
         projectModel.run(commands) { error in
             if error == nil {

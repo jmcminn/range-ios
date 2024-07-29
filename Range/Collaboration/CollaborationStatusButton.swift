@@ -33,7 +33,7 @@ class CollaborationStatusButton: RangeButton {
         configuration?.baseBackgroundColor = collaboration.status?.color ?? .Primary_Blue_04
         setNeedsUpdateConfiguration()
 
-        if let status = collaboration.status, status.isCompleted, !currentUser.canComplete(collaboration) {
+        if let status = collaboration.status, status.isCompleted, !currentUser.canCompleteTasks() {
             // current user cannot complete/uncomplete the collaboration, hide the chevron
             setImage(nil, for: .normal)
         } else {

@@ -33,9 +33,8 @@ extension Participant {
         }
     }
 
-    // TODO: 3190 use it when changing status (selector update?), bulk
     /// Guest cannot complete or uncomplete a task
-    func canComplete(_: Collaboration) -> Bool {
+    func canCompleteTasks() -> Bool {
         if organizationRole == .Admin || organizationRole == .Collaborator { return true }
         return false
     }

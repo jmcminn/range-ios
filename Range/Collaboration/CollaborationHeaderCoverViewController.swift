@@ -151,7 +151,7 @@ class CollaborationHeaderCoverViewController: UIViewController {
     @objc private func statusBadgeTapped(recognizer: UITapGestureRecognizer) {
         // only for tasks
         guard collaboration.status != nil else { return }
-        guard model.currentUser.canComplete(collaboration) else { return }
+        guard model.currentUser.canCompleteTasks() else { return }
         let selector = recognizer.numberOfTapsRequired == 1
             ? #selector(ProjectFlowController.markTaskCompletedAction)
             : #selector(ProjectFlowController.markTaskCompletedAndArchiveAction)

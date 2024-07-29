@@ -518,23 +518,28 @@ extension CollaborationFlowController: UIDocumentPickerDelegate {
 extension CollaborationFlowController {
     func editStatusAction() {
         collaborationVC?.view.endEditing(true)
-        guard let collaboration = collaboration else { return }
-        guard collaboration.status != nil else { return } // not a task
-        let statuses = [Status](model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
+        guard let collaboration else { return }
+        guard let status = collaboration.status else { return } // not a task
+
+        let statuses = [Status](
+            model.mainRealm.objects(Status.self)
+                .filter { self.model.currentUser.canCompleteTasks() || !$0.isCompleted }
+                .sorted(by: Status.uiSortingOrder)
+        )
+        var options: [StatusPickerCardViewController.StatusOption] = statuses.map { .status($0) }
+        if model.currentUser.canArchive(collaboration), let completeStatus = statuses.first(where: { $0.isCompleted }) {
+            options.append(.completeAndArchive(completeStatus))
+        }
+        let selectedOption = StatusPickerCardViewController.StatusOption.status(status)
         StatusPickerCardViewController(
-            title: "Assign Status",
-            statuses: statuses,
-            selectedStatus: collaboration.status, onStatusPicked: { [weak self] result in
+            title: "Assign Status", options: options, selectedOption: selectedOption,
+            onStatusPicked: { [weak self] result in
                 guard let self = self else { return }
                 switch result {
                 case let .status(status):
                     self.updateStatus(status)
                 case let .completeAndArchive(status):
-                    if model.currentUser.canArchive(collaboration) {
-                        self.updateStatusAndArchive(status)
-                    } else {
-                        self.updateStatus(status)
-                    }
+                    self.updateStatusAndArchive(status)
                 }
             }
         )

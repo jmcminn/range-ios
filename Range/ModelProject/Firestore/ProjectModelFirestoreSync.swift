@@ -16,7 +16,7 @@ import Sentry
 /// This object provides the way to sync Firestore backend data with local Realm db.
 class ProjectModelFirestoreSync {
     /// The model to synchronize Firestore with
-    private unowned let model: ProjectModel
+    private let model: ProjectModel
 
     /// Firestore reference
     let firestore: Firestore
