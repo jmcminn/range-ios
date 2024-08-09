@@ -119,7 +119,7 @@ class ProjectModelFirestoreSync {
 extension ProjectModelFirestoreSync {
     // Observe feed and apply changes to local db
     private func observeFeed(since timestamp: Date) {
-        let feedItems = projectRef.collection("feeds/\(model.userId)/items")
+        let feedItems = projectRef.collection("participants/\(model.userId)/feedItems")
         let feedItemsQuery = feedItems.whereField("createdAt", isGreaterThanOrEqualTo: timestamp)
 
         let feedItemsListener = feedItemsQuery.addSnapshotListener { [weak self] snapshot, error in
