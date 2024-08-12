@@ -23,14 +23,10 @@ extension Participant {
         }
     }
 
-    /// Only Collaborator author or Admin can archive a collaboration
+    /// Only Collaborator or Admin can archive a collaboration
     func canArchive(_ collaboration: Collaboration) -> Bool {
-        switch organizationRole {
-        case .Admin: return true
-        case .Collaborator: return id == collaboration.author?.id
-        case .Guest: return false
-        case .Unknown: return false
-        }
+        if organizationRole == .Admin || organizationRole == .Collaborator { return true }
+        return false
     }
 
     /// Guest cannot complete or uncomplete a task
