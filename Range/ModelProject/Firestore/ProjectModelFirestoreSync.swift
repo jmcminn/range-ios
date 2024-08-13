@@ -170,6 +170,7 @@ extension ProjectModelFirestoreSync {
 
     private func handleFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
         switch item.itemType {
+        case "Organization": handleOrganizationFeedItem(item, id: id, inRealm: realm)
         case "Collaboration": handleCollaborationFeedItem(item, id: id, inRealm: realm)
         case "Comment": handleCommentFeedItem(item, id: id, inRealm: realm)
         case "Update": handleUpdateFeedItem(item, id: id, inRealm: realm)
@@ -178,6 +179,22 @@ extension ProjectModelFirestoreSync {
         }
     }
 
+    private func handleOrganizationFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
+        switch item.action {
+        case "role-changed":
+            // role-changed is a big change that may have multiple changes (not reported separately
+            // via feed items). So we need to trigger getting all data (which will most probably
+            // do a full server-side-forced fetch, as it will ignore the since parameter because
+            // of this `role-changed` feed item it'll also observe)
+            runAsyncFeedBlock(id) {
+                let timestamp = try await self.model.getAllData()
+            }
+            break
+        default:
+            reportUnsupportedFeedItem(item, id: id)
+        }
+    }
+    
     private func handleCollaborationFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
         switch item.action {
         case "added", "updated", "access-gained":
