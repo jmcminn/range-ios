@@ -142,11 +142,21 @@ extension ProjectModel {
             "mediaType": fileType.rawValue,
         ])
 
+        var imageHeightToWidth: Double?
+        if let image = UIImage(data: data) {
+            imageHeightToWidth = image.size.height / image.size.width
+        }
+
         return CreateUploadCommand(
             authorId: userId,
             collaborationId: collaboration.id,
             tags: [],
-            upload: CommandUpload(mediaKey: mediaKey, fileSize: Int64(data.count), name: name)
+            upload: CommandUpload(
+                mediaKey: mediaKey,
+                fileSize: Int64(data.count),
+                name: name,
+                imageHeightToWidth: imageHeightToWidth
+            )
         )
     }
 
