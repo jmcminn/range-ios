@@ -42,6 +42,7 @@ class OrganizationModel: NSObject, RealmModel {
     /// token for observing the current user in the realm
     private var userNotificationToken: NotificationToken?
     private var organizationNotificationToken: NotificationToken?
+    private var projectsNotificationToken: NotificationToken?
 
     /// Exposed for convenience, list of non placeholder ProjectSummary objects from this realm (so all user projects from this organization)
     let projects: Results<ProjectSummary>
@@ -120,6 +121,20 @@ class OrganizationModel: NSObject, RealmModel {
             throw ModelError.currentUserNotFound
         }
         self.currentUser = currentUser
+        
+        // whenever new projects are added we need to fetch the projects info. For example when project(s)
+        // are initially loaded
+        projectsNotificationToken = projects.observe { [weak self] change in
+            switch change {
+            case .update(_, deletions: let deletions, insertions: let insertions, modifications: let modifications):
+                // only if new projects inserted, don't react to modifications as the updateStatusCounts is
+                // causing the motification so it would cause an infinite loop
+                if !insertions.isEmpty {
+                    self?.updateStatusCounts()
+                }
+            default: break
+            }
+        }
 
         syncCurrentUserProjects()
         userNotificationToken = user.observe { [weak self] change in
@@ -206,6 +221,7 @@ class OrganizationModel: NSObject, RealmModel {
         listeners.removeAll()
         userNotificationToken?.invalidate()
         organizationNotificationToken?.invalidate()
+        projectsNotificationToken?.invalidate()
     }
 
     /// Loads the current organization
@@ -272,7 +288,7 @@ class OrganizationModel: NSObject, RealmModel {
         } else {
             // no throttler yet - first invocation is immediate and create throttler for next ones
             updateStatusCountsAndLogError()
-            updateStatusCountsThrottler = Throttler(throttleTime: 10)
+            updateStatusCountsThrottler = Throttler(throttleTime: 1)
         }
     }
 
@@ -291,6 +307,8 @@ class OrganizationModel: NSObject, RealmModel {
     @MainActor
     private func updateStatusCounts() async throws {
         let projectIds = Array(projects.map(\.id))
+        
+        guard !projectIds.isEmpty else { return }
 
         let result = try await Functions.functions(region: "us-west2")
             .httpsCallable("getProjectInfo")
