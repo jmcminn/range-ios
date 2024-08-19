@@ -3,7 +3,6 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseMessaging
 import OSLog
-import SegmentAppcues
 import Sentry
 import SwiftUI
 import UIKit
@@ -65,11 +64,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 await handleAuthAction(activity)
                 await handleUniversalLinks(activity)
             }
-
-            if let appcues = AppcuesDestination.shared.appcues {
-                // Handle Appcues deep links.
-                appcues.filterAndHandle(connectionOptions.urlContexts)
-            }
         }
     }
 
@@ -129,10 +123,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        // Handle Appcues deep links.
-        if let appcues = AppcuesDestination.shared.appcues {
-            appcues.filterAndHandle(URLContexts)
-        }
     }
 
     func scene(_: UIScene, continue activity: NSUserActivity) {

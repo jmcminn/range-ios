@@ -390,7 +390,6 @@
 		0A9C04982BCD9C0600410760 /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9C04972BCD9C0500410760 /* RangeSlider.swift */; };
 		0A9E861E297E96CC0099F22F /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E861D297E96CC0099F22F /* UserSettings.swift */; };
 		0A9E8620297E97F10099F22F /* UserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E861F297E97F10099F22F /* UserSettingsView.swift */; };
-		0A9F41992BAA30ED00CE7E4C /* SegmentAppcues in Frameworks */ = {isa = PBXBuildFile; productRef = 0A9F41982BAA30ED00CE7E4C /* SegmentAppcues */; };
 		0AA424322913C6F40088E2B1 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424312913C6F40088E2B1 /* Action.swift */; };
 		0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424332913C7030088E2B1 /* ActionCommand.swift */; };
 		0AA42437291431470088E2B1 /* PendingActionsModelImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */; };
@@ -1047,7 +1046,6 @@
 				0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */,
 				0A06241929534AA0004B6512 /* FirebaseFirestore in Frameworks */,
 				0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */,
-				0A9F41992BAA30ED00CE7E4C /* SegmentAppcues in Frameworks */,
 				0AAF04BB2A334CEA00E8C39D /* Lottie in Frameworks */,
 				0A45BB062AAB3F7000B86B85 /* GoogleSignInSwift in Frameworks */,
 				0ADC16A12B864125001DF998 /* Knock in Frameworks */,
@@ -2385,7 +2383,6 @@
 				0ADC16A02B864125001DF998 /* Knock */,
 				0A01DE4F2BA324BD00CCC680 /* SWXMLHash */,
 				0AF516382BA9B7710058C77D /* Segment */,
-				0A9F41982BAA30ED00CE7E4C /* SegmentAppcues */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -2473,7 +2470,6 @@
 				0ADC169F2B864125001DF998 /* XCRemoteSwiftPackageReference "knock-swift" */,
 				0A01DE4E2BA324BD00CCC680 /* XCRemoteSwiftPackageReference "SWXMLHash" */,
 				0AF516372BA9B7710058C77D /* XCRemoteSwiftPackageReference "analytics-swift" */,
-				0A9F41972BAA30ED00CE7E4C /* XCRemoteSwiftPackageReference "segment-appcues-ios" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -3118,7 +3114,6 @@
 		0A37836C291A62320018BF3C /* Debug demo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = "Range demo";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -3262,7 +3257,6 @@
 		0A378370291A623C0018BF3C /* Release demo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = "Range demo";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-demo";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -3469,7 +3463,6 @@
 		0A632ED327E49639001A019B /* Debug production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = Range;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -3518,7 +3511,6 @@
 		0A632ED427E49639001A019B /* Release production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = Range;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -3707,7 +3699,6 @@
 		0A724F33288806DF00708C6B /* Debug firebase emulator */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = "Range emulator";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -3857,7 +3848,6 @@
 		0A859CFA29D5FCC900CCAEC5 /* Debug custom */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = "Range custom";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -4001,7 +3991,6 @@
 		0A99BF2F28C88C4E00DB3F96 /* Release dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "b2640fdf-cb6a-4294-bef5-cddcae63f424";
 				APP_DISPLAY_NAME = "Range dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -4152,7 +4141,6 @@
 		0A99BF3328C890B700DB3F96 /* Debug dev */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "b2640fdf-cb6a-4294-bef5-cddcae63f424";
 				APP_DISPLAY_NAME = "Range dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -4302,7 +4290,6 @@
 		0ACE196A296C7E0F00D223EB /* Debug staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = "Range staging";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -4447,7 +4434,6 @@
 		0ACE196E296C7EC600D223EB /* Release staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPCUES_APPLICATION_ID = "";
 				APP_DISPLAY_NAME = "Range staging";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -4671,14 +4657,6 @@
 				minimumVersion = 5.0.0;
 			};
 		};
-		0A9F41972BAA30ED00CE7E4C /* XCRemoteSwiftPackageReference "segment-appcues-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/appcues/segment-appcues-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.1.0;
-			};
-		};
 		0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
@@ -4801,11 +4779,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
-		};
-		0A9F41982BAA30ED00CE7E4C /* SegmentAppcues */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0A9F41972BAA30ED00CE7E4C /* XCRemoteSwiftPackageReference "segment-appcues-ios" */;
-			productName = SegmentAppcues;
 		};
 		0AAF04BA2A334CEA00E8C39D /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

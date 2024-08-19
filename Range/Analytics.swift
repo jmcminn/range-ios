@@ -1,19 +1,10 @@
-import AppcuesKit
 import Foundation
 import OSLog
 import Segment
-import SegmentAppcues
 import UIKit
 
 /// global object for analytics access
 var analytics: Segment.Analytics?
-
-extension AppcuesDestination {
-    // Creating a shared reference to this destination will allow us to access the underlying
-    // Appcues SDK in other areas of the code.  This enables access to any additional SDK
-    // functionality desired, like the Debugger
-    static var shared = AppcuesDestination()
-}
 
 func setupAnalytics() {
     let runningTests = UserDefaults.standard.bool(forKey: "isTest")
@@ -36,13 +27,6 @@ func setupAnalytics() {
 
     // the only way to add data to event context is to use a plugin
     analytics!.add(plugin: CustomizeAllTrackCalls())
-
-    // only init Appcues when the application id is provided (it's not actually used here, only
-    // for handling links which is needed only for flows debugging, but it's used as marker
-    // to mark the environments we want to enable Appcue in)
-    if let appcuesAppId: String = try? AppConfiguration.value(for: "AppcuesApplicationId"), !appcuesAppId.isEmpty {
-        analytics!.add(plugin: AppcuesDestination.shared)
-    }
 }
 
 class CustomizeAllTrackCalls: Segment.EventPlugin {

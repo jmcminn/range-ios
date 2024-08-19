@@ -1,5 +1,5 @@
 {
-  "originHash" : "80bea2bbfa7f08e048bd8f6ca2df3655f4fbe9c3cd75ca2e83d8f34945602d1a",
+  "originHash" : "12bb838b86e45fd916dd00730fd72a7ae8b09585860ad5ab6718cc343ae0e4eb",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -35,15 +35,6 @@
       "state" : {
         "revision" : "c89ed571ae140f8eb1142735e6e23d7bb8c34cb2",
         "version" : "1.7.5"
-      }
-    },
-    {
-      "identity" : "appcues-ios-sdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/appcues/appcues-ios-sdk.git",
-      "state" : {
-        "revision" : "80653acbe4296ea5b484879c4d12fbb402da7333",
-        "version" : "3.1.10"
       }
     },
     {
@@ -233,15 +224,6 @@
       "state" : {
         "revision" : "a4d731076e6a52f4366d844c78369ac7c9c6b1c0",
         "version" : "10.49.2"
-      }
-    },
-    {
-      "identity" : "segment-appcues-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/appcues/segment-appcues-ios.git",
-      "state" : {
-        "revision" : "9984e1c3b0c40fa7640a2ee2e86f115db4bdb9c8",
-        "version" : "3.1.0"
       }
     },
     {

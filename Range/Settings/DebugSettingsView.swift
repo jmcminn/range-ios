@@ -1,5 +1,3 @@
-import AppcuesKit
-import SegmentAppcues
 import SwiftUI
 
 struct DebugSettingsView: View {
@@ -17,11 +15,6 @@ struct DebugSettingsView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Appcues")) {
-                actionButton(title: "debug", action: {
-                    AppcuesDestination.shared.appcues?.debug()
-                })
-            }
 //            #if DEBUG
 //                Section(header: Text("Callable functions")) {
 //                    Group { // Group needed because of 10 subviews limit
