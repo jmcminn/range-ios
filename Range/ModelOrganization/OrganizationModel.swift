@@ -2,6 +2,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import FirebaseFunctions
 import FirebaseMessaging
+import FirebaseSharedSwift
 import Foundation
 import OSLog
 import RealmSwift
@@ -251,11 +252,11 @@ class OrganizationModel: NSObject, RealmModel {
         _ = try await Functions.functions(region: "us-west2")
             .httpsCallable("createProject")
             .call(parameters)
-        
+
         analytics?._trackOrganizationEvent(name: "project created", self, [
             "name": model.name,
             "projectType": projectType,
-            "organizationName": organization.name
+            "organizationName": organization.name,
         ])
 
         return projectId
@@ -289,31 +290,65 @@ class OrganizationModel: NSObject, RealmModel {
     /// Update collaboration counts per status for all projects in this organization
     @MainActor
     private func updateStatusCounts() async throws {
-        _ = try await projects.concurrentMapOnMain { project in
-            // fetch statuses for given project
-            // TODO? this could be a custom getModelElements(as: ...Syncable)... so it returns [Status] given getModelElements(as: FirestoreStatusName)
-            let statusNames: [Status] = try await self.firestore.collection("projects/\(project.id)/statusNames")
-                .getDocuments().documents
-                // map document snapshots to Statuses
-                .map { try $0.data(as: FirestoreStatusName.self).modelObject(withId: $0.documentID) }
-                // sort the status names, so the counts are sorted by status reversed
-                .sorted(by: Status.uiSortingOrder)
-                .reversed()
+        let projectIds = Array(projects.map(\.id))
 
-            // fetch task count per status
-            let statusTaskCounts = try await statusNames.concurrentMapOnMain { status in
-                let query = self.firestore.collection("projects/\(project.id)/collaborations")
-                    .whereField("statusName", isEqualTo: status.id)
-                let taskCount = try await query.count.getAggregation(source: .server).count as? Int ?? 0
-                return StatusTaskCount(
-                    id: status.id, name: status.name, hexColor: status.hexColor, taskCount: taskCount
-                )
+        let result = try await Functions.functions(region: "us-west2")
+            .httpsCallable("getProjectInfo")
+            .call(["projectIds": projectIds])
+
+        guard let result = result.data as? [[String: Any]]
+        else {
+            Logger.model.error("Unexpected result from getProjectInfo: \(result)")
+            throw "Unexpected result from getProjectInfo: \(result)"
+        }
+
+        for projectResult in result { try storeStatusCountsProjectResult(result: projectResult) }
+    }
+
+    private func storeStatusCountsProjectResult(result: [String: Any]) throws {
+        guard let projectId = result["projectId"] as? String,
+              let statusTaskCountsData = result["statusTaskCounts"] as? [[String: Any]]
+        else {
+            Logger.model.error("Unexpected result from getProjectInfo: \(result)")
+            throw "Unexpected result from getProjectInfo: \(result)"
+        }
+        guard let project = projects.first(where: { project in project.id == projectId }) else {
+            Logger.model.warning("Unexpected result from getProjectInfo, projectId not found in local projects")
+            return
+        }
+
+        let decoder = FirebaseDataDecoder()
+
+        var statusIdToTaskCount = [String: Int]()
+
+        let statuses = try statusTaskCountsData.map { statusTaskCountData in
+            guard let id = statusTaskCountData["id"] as? String else {
+                Logger.model.error("Unexpected result from getProjectInfo, missing status id: \(result)")
+                throw "Unexpected result from getProjectInfo, missing status id: \(result)"
             }
-            // save the task counts per status for given project in Realm
-            try self.mainRealm.write {
-                project.statusTaskCounts.removeAll()
-                project.statusTaskCounts.append(objectsIn: statusTaskCounts)
+            guard let taskCount = statusTaskCountData["taskCount"] as? Int else {
+                Logger.model.error("Unexpected result from getProjectInfo, missing taskCount: \(result)")
+                throw "Unexpected result from getProjectInfo, missing taskCount: \(result)"
             }
+            let status = try decoder.decode(FirestoreStatusName.self, from: statusTaskCountData).modelObject(withId: id)
+            statusIdToTaskCount[id] = taskCount
+            return status
+        }
+        // sort the status names, so the counts are sorted by status reversed
+        .sorted(by: Status.uiSortingOrder)
+        .reversed()
+
+        // fetch task count per status
+        let statusTaskCounts = statuses.map { status in
+            let taskCount = statusIdToTaskCount[status.id] ?? 0
+            return StatusTaskCount(
+                id: status.id, name: status.name, hexColor: status.hexColor, taskCount: taskCount
+            )
+        }
+        // save the task counts per status for given project in Realm
+        try self.mainRealm.write {
+            project.statusTaskCounts.removeAll()
+            project.statusTaskCounts.append(objectsIn: statusTaskCounts)
         }
     }
 }
