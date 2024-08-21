@@ -27,6 +27,7 @@ extension Color {
     static let Neutral_10 = Color("Neutral_10")
     static let Orange_03 = Color("Orange_03")
     static let Orange_04 = Color("Orange_04")
+    static let Orange_Banner = Color("Orange_Banner")
     static let Pink_01 = Color("Pink_01")
     static let Pink_02 = Color("Pink_02")
     static let Pink_03 = Color("Pink_03")
@@ -43,6 +44,7 @@ extension Color {
     static let Secondary_03 = Color("Secondary_03")
     static let Special_01 = Color("Special_01")
     static let Special_02 = Color("Special_02")
+    static let Special_03 = Color("Special_03")
 }
 
 extension UIColor {
@@ -67,6 +69,7 @@ extension UIColor {
     static let Neutral_10 = UIColor(named: "Neutral_10")!
     static let Orange_03 = UIColor(named: "Orange_03")!
     static let Orange_04 = UIColor(named: "Orange_04")!
+    static let Orange_Banner = UIColor(named: "Orange_Banner")!
     static let Pink_01 = UIColor(named: "Pink_01")!
     static let Pink_02 = UIColor(named: "Pink_02")!
     static let Pink_03 = UIColor(named: "Pink_03")!
@@ -83,6 +86,7 @@ extension UIColor {
     static let Secondary_03 = UIColor(named: "Secondary_03")!
     static let Special_01 = UIColor(named: "Special_01")!
     static let Special_02 = UIColor(named: "Special_02")!
+    static let Special_03 = UIColor(named: "Special_03")!
 }
 
 /// Dynamic colors

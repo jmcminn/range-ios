@@ -14,4 +14,16 @@ extension UIViewController {
             return self
         }
     }
+    
+    /// Find the root view controller
+    func _rootViewController() -> UIViewController {
+        if let presentingViewController {
+            return presentingViewController._rootViewController()
+        } else if let navigationController {
+            return navigationController._rootViewController()
+        } else if let parent {
+            return parent._rootViewController()
+        }
+        return self
+    }
 }

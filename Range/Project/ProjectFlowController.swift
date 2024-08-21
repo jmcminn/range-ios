@@ -36,6 +36,7 @@ final class ProjectFlowController: UIViewController {
     let userModel: UserModel
     let model: ProjectModel
     let modelFirestoreSync: ProjectModelFirestoreSync
+    let userDataSyncState: UserDataSyncState
 
     /// Project level in app feed
     let knockFeedModel: KnockFeedModel
@@ -129,6 +130,7 @@ final class ProjectFlowController: UIViewController {
         canvasFileLoader: CanvasFileLoader,
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
+        userDataSyncState: UserDataSyncState,
         userSettings: UserSettings,
         userPreferences: UserPreferences,
         initialRoute: ProjectRoute?
@@ -147,6 +149,7 @@ final class ProjectFlowController: UIViewController {
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel
         )
+        self.userDataSyncState = userDataSyncState
         try await model.start()
 
         modelFirestoreSync = ProjectModelFirestoreSync(model: model)
@@ -464,15 +467,16 @@ final class ProjectFlowController: UIViewController {
     func setUIState(_ state: UIState, animated: Bool) {
         uiState = state
 
-        if state == .fullScreenCanvas || state == .canvasSnapshot {
-            controls.hideTopViewController(animated: animated)
-        } else {
+        if state == .default || state == .collaboration || state == .locationSimulation {
             controls.showTopViewController(
                 title: model.projectSummary.name,
                 onBack: onBack,
                 showInAppFeedButton: true,
+                userDataSyncState: userDataSyncState,
                 animated: animated
             )
+        } else {
+            controls.hideTopViewController(animated: animated)
         }
         updateTopIndicatorView()
 
@@ -664,7 +668,8 @@ extension ProjectFlowController {
                 self.controls.canvasFiltersIndicatorBadge?.isHidden = filteredPinsCount == defaultFilteredPinsCount
 
                 // show the pins count (including the archived pins if enabled)
-                self.controls.canvasFiltersIndicatorBadge?.text = filteredPinsCount >= 99 ? "99+" : String(filteredPinsCount)
+                self.controls.canvasFiltersIndicatorBadge?
+                    .text = filteredPinsCount >= 99 ? "99+" : String(filteredPinsCount)
             }
         }
     }

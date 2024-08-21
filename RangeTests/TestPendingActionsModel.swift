@@ -5,12 +5,12 @@ import Foundation
 class TestPendingActionsModel: PendingActionsModel {
     private(set) var preparedActions = [Action]()
 
-    func prepareAction(_ action: Action) throws -> Data {
+    override func prepareAction(_ action: Action) throws -> Data {
         preparedActions.append(action)
         return Data()
     }
 
-    func addAction(data _: Data) {}
+    override func addAction(data _: Data) {}
 
-    func getLocalCommands(forProjectId _: String, targetObjectId _: String) -> [LocalCommand] { [] }
+    override func getLocalCommands(forProjectId _: String, targetObjectId _: String) -> [LocalCommand] { [] }
 }

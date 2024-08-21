@@ -181,7 +181,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     /// Assumes the upload file is already in the LocalFiles
     /// Creates a `PendingUpload` to upload this image to Firebase storage
     /// The write operation will be executed on a `writeRealm` so not on the main thread
-    func addPendingUpload(forKey key: MediaKey) async throws {
+    override func addPendingUpload(forKey key: MediaKey) async throws {
         try await _asyncRealmWriteOnQueue(queue: writeQueue, realm: writeRealm) { realm in
             let pendingUpload = PendingUpload(key)
             let pendingUploads = realm.objects(PendingUpload.self)
@@ -214,11 +214,12 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
     func _networkConditionsMet() -> Bool {
         if userSettings.uploadUsingCellular {
             // any network is good
-            return networkMonitor.currentPath.status == .satisfied
+            networkConditionsMet = networkMonitor.currentPath.status == .satisfied
         } else {
             // "wifi" only
-            return networkMonitor.currentPath.status == .satisfied && !networkMonitor.currentPath.isExpensive
+            networkConditionsMet = networkMonitor.currentPath.status == .satisfied && !networkMonitor.currentPath.isExpensive
         }
+        return networkConditionsMet
     }
 
     /// Checks if there's a PendingUpload waiting to be uploaded and runs the `_performUpload` async method (not waiting for it)
@@ -231,6 +232,7 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
             .sorted(byKeyPath: "_id", ascending: true)
             .first
         {
+            hasPendingUploads = true
             guard _networkConditionsMet() else {
                 Logger.storage
                     .debug("Network conditions not met, upload \(pendingUpload.uploadId) will not be performed")
@@ -287,6 +289,8 @@ class FirebasePendingUploadsModel: PendingUploadsModel {
                 }
             }
             firstUpload = false
+        } else {
+            hasPendingUploads = false
         }
     }
 

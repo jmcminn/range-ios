@@ -54,6 +54,7 @@ extension ProjectCanvasControls {
         title: String,
         onBack: (() -> Void)? = nil,
         showInAppFeedButton: Bool = false,
+        userDataSyncState: UserDataSyncState? = nil,
         animated: Bool
     ) {
         if topViewController == nil {
@@ -66,8 +67,16 @@ extension ProjectCanvasControls {
                         UIApplication.shared.sendAction(#selector(ProjectFlowActions.showProjectInAppFeed),
                                                         to: nil, from: self, for: nil)
                     })
-                    : nil
+                    : nil,
+                userDataSyncState: userDataSyncState
             )
+            if let userDataSyncState {
+                topViewController.onDataSyncBannerTapped = { [weak self] in
+                    guard let self else { return }
+                    _dataSyncInfoCard(userDataSyncState.state)
+                        .installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)
+                }
+            }
             canvasContainer.add(childController: topViewController, toView: self)
             topViewController.view.tag = ViewTag.topView.rawValue
 

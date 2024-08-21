@@ -18,6 +18,7 @@ class ProjectsFlowController: UINavigationController {
     let userPreferences: UserPreferences
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel: PendingActionsModelImpl
+    let userDataSyncState: UserDataSyncState
 
     var onSignedOut: (() -> Void)?
 
@@ -59,6 +60,7 @@ class ProjectsFlowController: UINavigationController {
             userPreferences: userPreferences,
             pendingActionsModel: pendingActionsModel
         )
+        userDataSyncState = UserDataSyncState(pendingActionsModel: pendingActionsModel, pendingUploadsModel: pendingUploadsModel)
         super.init(rootViewController: LaunchScreenViewController())
     }
 
@@ -231,7 +233,7 @@ class ProjectsFlowController: UINavigationController {
             }
             projectsNavigationController.setViewControllers([projectsVC], animated: false)
 
-            let feedVC = OrganizationInAppFeedViewController(model: organizationModel)
+            let feedVC = OrganizationInAppFeedViewController(model: organizationModel, userDataSyncState: userDataSyncState)
             feedVC.onOrganizationButtonTap = { [weak self] in
                 self?.selectOrganizationAction()
             }
@@ -350,6 +352,7 @@ class ProjectsFlowController: UINavigationController {
             canvasFileLoader: canvasFileLoader,
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
+            userDataSyncState: userDataSyncState,
             userSettings: userSettings,
             userPreferences: userPreferences,
             initialRoute: initialRoute

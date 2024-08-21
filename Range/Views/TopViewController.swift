@@ -1,3 +1,4 @@
+import Combine
 import UIKit
 
 /// The view displayed at the top of the screen that looks similar to navigation bar (but is a custom view)
@@ -17,14 +18,27 @@ class TopViewController: UIViewController {
         ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
     }
 
+    private let userDataSyncState: UserDataSyncState?
+    /// combine observers
+    private var subscriptions = Set<AnyCancellable>()
+    private var dataSyncBannerView: DataSyncBannerView?
+    var onDataSyncBannerTapped: (() -> Void)?
+
     ///
     /// - Parameters:
     ///   - rightAction - the button displayed in the right of the bar
-    init(iconName: String? = nil, title: String, onBack: (() -> Void)? = nil, rightAction: UIAction? = nil) {
+    init(
+        iconName: String? = nil,
+        title: String,
+        onBack: (() -> Void)? = nil,
+        rightAction: UIAction? = nil,
+        userDataSyncState: UserDataSyncState? = nil
+    ) {
         self.iconName = iconName
         titleLabel.text = title
         self.onBack = onBack
         self.rightAction = rightAction
+        self.userDataSyncState = userDataSyncState
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -48,6 +62,14 @@ class TopViewController: UIViewController {
             make.height.equalTo(1)
         }
 
+        setupDataSyncBannerView()
+        if let dataSyncBannerView {
+            view.addSubview(dataSyncBannerView)
+            dataSyncBannerView.snp.makeConstraints { make in
+                make.centerX.width.top.equalToSuperview()
+            }
+        }
+
         imageAndTitle.axis = .horizontal
         imageAndTitle.distribution = .equalSpacing
         imageAndTitle.spacing = 8
@@ -64,7 +86,10 @@ class TopViewController: UIViewController {
         imageAndTitle.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().offset(-10)
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+            make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+            if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
+                make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
+            }
         }
 
         setupBackButton()
@@ -86,6 +111,15 @@ class TopViewController: UIViewController {
                 make.centerY.equalTo(imageAndTitle.snp.centerY)
             }
         }
+
+        updateDataSyncBanner(animated: false)
+        if let userDataSyncState {
+            userDataSyncState.$state
+                .receive(on: DispatchQueue.main)
+                .removeDuplicates()
+                .sink { [weak self] _ in self?.updateDataSyncBanner() }
+                .store(in: &subscriptions)
+        }
     }
 
     // Make sure that image/label is centered horizontally but not when if the text is long and
@@ -101,7 +135,10 @@ class TopViewController: UIViewController {
                 imageAndTitle.snp.remakeConstraints { make in
                     make.centerX.equalToSuperview()
                     make.bottom.equalToSuperview().offset(-10)
-                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                    make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                    if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
+                        make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
+                    }
                 }
             } else {
                 // align to back button on the leading side and superview on the trailing (it doesn't
@@ -110,7 +147,10 @@ class TopViewController: UIViewController {
                     make.leading.equalTo(backButton.snp.trailing)
                     make.trailing.equalToSuperview().offset(-12)
                     make.bottom.equalToSuperview().offset(-10)
-                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                    make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                    if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
+                        make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
+                    }
                 }
             }
         } else {
@@ -120,8 +160,15 @@ class TopViewController: UIViewController {
                 make.trailing.lessThanOrEqualToSuperview().offset(-12)
                 make.centerX.equalToSuperview()
                 make.bottom.equalToSuperview().offset(-10)
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
+                    make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
+                }
             }
+        }
+
+        if let userDataSyncState, let dataSyncBannerView {
+            dataSyncBannerView.isHidden = userDataSyncState.state == .noPending
         }
     }
 
@@ -179,4 +226,25 @@ class TopViewController: UIViewController {
         titleLabel.font = font
         titleLabel.adjustsFontForContentSizeCategory = true
     }
+
+    private func setupDataSyncBannerView() {
+        guard userDataSyncState != nil else { return }
+        dataSyncBannerView = DataSyncBannerView()
+        dataSyncBannerView?.onTapped = onDataSyncBannerTapped
+    }
+
+    private func updateDataSyncBanner(animated: Bool = true) {
+        guard let userDataSyncState, let dataSyncBannerView else { return }
+        dataSyncBannerView.setState(userDataSyncState.state)
+        view.setNeedsLayout()
+        if animated {
+            UIView.animate(withDuration: 0.2) {
+                self.view.layoutIfNeeded()
+            }
+        } else {
+            view.layoutIfNeeded()
+        }
+    }
 }
+
+

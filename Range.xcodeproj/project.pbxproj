@@ -123,6 +123,7 @@
 		0A30E8B728490C7200A50D54 /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */; };
 		0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B82849E06F00A50D54 /* SearchView.swift */; };
 		0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */; };
+		0A32F03F2C7E314D0083A881 /* DataSyncBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32F03E2C7E314D0083A881 /* DataSyncBannerView.swift */; };
 		0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072329C077E7007299A7 /* CanvasSourceData.swift */; };
 		0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */; };
 		0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */; };
@@ -144,6 +145,7 @@
 		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
+		0A35A7F02C75EF0700B81C5A /* UserDataSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */; };
 		0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */; };
 		0A3680DC29ED9AA600CD1D98 /* CollaborationFiltersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680DB29ED9AA600CD1D98 /* CollaborationFiltersTest.swift */; };
 		0A36CDF7299BD2260004758E /* LocalFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36CDF6299BD2260004758E /* LocalFiles.swift */; };
@@ -640,6 +642,7 @@
 		0A30E8B628490C7200A50D54 /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		0A30E8B82849E06F00A50D54 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSelectionViewController.swift; sourceTree = "<group>"; };
+		0A32F03E2C7E314D0083A881 /* DataSyncBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSyncBannerView.swift; sourceTree = "<group>"; };
 		0A34072329C077E7007299A7 /* CanvasSourceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceData.swift; sourceTree = "<group>"; };
 		0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSourceTest.swift; sourceTree = "<group>"; };
 		0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasTest.swift; sourceTree = "<group>"; };
@@ -661,6 +664,7 @@
 		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
+		0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataSyncState.swift; sourceTree = "<group>"; };
 		0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A3680DB29ED9AA600CD1D98 /* CollaborationFiltersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFiltersTest.swift; sourceTree = "<group>"; };
 		0A36CDF6299BD2260004758E /* LocalFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFiles.swift; sourceTree = "<group>"; };
@@ -1643,6 +1647,7 @@
 				0AF89B542A0CC9A100E49F40 /* BadgeView.swift */,
 				0A94E8D628CF0E6000A09616 /* RangeButton.swift */,
 				0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */,
+				0A32F03E2C7E314D0083A881 /* DataSyncBannerView.swift */,
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
 				0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */,
 				0AC89D7D290980DD00D3CCA1 /* GradientView.swift */,
@@ -2189,6 +2194,7 @@
 				0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */,
 				0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */,
 				0AD78DFF2AB9869700710260 /* ProjectsEmptyStateView.swift */,
+				0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -2581,9 +2587,11 @@
 				0AECB0B3290833A4004FABA4 /* UpdateNoteCompletedCommand.swift in Sources */,
 				0AC9E18F28F6C2C900C7185D /* CollaborationStatusButton.swift in Sources */,
 				0A99BF1928BFA35800DB3F96 /* NSItemProvider+Async.swift in Sources */,
+				0A35A7F02C75EF0700B81C5A /* UserDataSyncState.swift in Sources */,
 				0AD9B780286EFA69005ACFD7 /* Firestore+Extensions.swift in Sources */,
 				0A078E162BBAD55C00857DE5 /* LineDrawing.swift in Sources */,
 				0A8CC5CD2B30920D00D26716 /* RepresentedSearchView.swift in Sources */,
+				0A32F03F2C7E314D0083A881 /* DataSyncBannerView.swift in Sources */,
 				0AFAF1B6283FC9EB002F216A /* Feature.swift in Sources */,
 				0A671F9328E992FB00F78B34 /* GeometriesPinsDisplay.swift in Sources */,
 				0A73938D2A6428630079A7FB /* AnnotationsRenderer.swift in Sources */,

@@ -2,15 +2,29 @@ import Foundation
 
 /// Interface for classes to implement model for pending actions. There's only one real implementation - `PendingActionsModelImpl`,
 /// but we need an interface for tests.
-protocol PendingActionsModel: AnyObject {
+class PendingActionsModel: ObservableObject {
     /// Before adding the action to pending actions it needs to be transformed to Data first.
     /// This is a separate function from `addAction` so the project model can invoke it first and abort the local actions if this fails
     /// (so it's kind of a 2-phase commit)
-    func prepareAction(_ action: Action) throws -> Data
+    func prepareAction(_: Action) throws -> Data {
+        fatalError("function to be implemented by subclasses")
+    }
 
     /// Store action data obtained from `prepareAction` for execution
-    func addAction(data: Data)
+    func addAction(data _: Data) {
+        fatalError("function to be implemented by subclasses")
+    }
 
     /// Get pending local commands for given project and target object id
-    func getLocalCommands(forProjectId projectId: String, targetObjectId: String) -> [LocalCommand]
+    func getLocalCommands(forProjectId _: String, targetObjectId _: String) -> [LocalCommand] {
+        fatalError("function to be implemented by subclasses")
+    }
+
+    init() {
+        hasPendingActions = false
+        networkConditionsMet = false
+    }
+
+    @Published var hasPendingActions: Bool
+    @Published var networkConditionsMet: Bool
 }

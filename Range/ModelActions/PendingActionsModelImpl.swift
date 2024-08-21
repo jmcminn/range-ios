@@ -28,7 +28,7 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// This is indicating if an action is currently being performed.
     /// To be set/get on the `operationQueue` only
     var performingAction: Bool = false
-
+ 
     /// for monitoring network access
     let networkMonitor = NWPathMonitor()
 
@@ -55,6 +55,8 @@ class PendingActionsModelImpl: PendingActionsModel {
         defaults = UserDefaults.forUser(userId)
         // a default value for retry count when not set yet
         defaults.register(defaults: [DefaultsKey.retryCount: 0])
+        
+        super.init()
 
         let version = defaults.integer(forKey: DefaultsKey.actionsVersion)
         Logger.pendingActions.info("Version \(version)")
@@ -74,12 +76,12 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// Before adding the action to pending actions it needs to be transformed to Data first.
     /// This is a separate function from `addAction` so the project model can invoke it first and abort the local actions if this fails
     /// (so it's kind of a 2-phase commit)
-    func prepareAction(_ action: Action) throws -> Data {
+    override func prepareAction(_ action: Action) throws -> Data {
         try jsonEncoder.encode(action)
     }
 
     /// Store action data obtained from `prepareAction` in UserDefaults
-    func addAction(data: Data) {
+    override func addAction(data: Data) {
         operationQueue.sync {
             addPendingAction(data: data)
         }
@@ -90,7 +92,7 @@ class PendingActionsModelImpl: PendingActionsModel {
     }
 
     /// Get pending local commands for given project and target object id
-    func getLocalCommands(forProjectId projectId: String, targetObjectId: String) -> [LocalCommand] {
+    override func getLocalCommands(forProjectId projectId: String, targetObjectId: String) -> [LocalCommand] {
         operationQueue.sync {
             let actionsData = pendingActions()
             let actions: [Action] = actionsData
@@ -114,6 +116,7 @@ class PendingActionsModelImpl: PendingActionsModel {
     func start() {
         // check if there are any pending actions
         operationQueue.async {
+            self.hasPendingActions = !self.pendingActions().isEmpty
             self.maybeScheduleNextAttempt()
             self.maybePerformAction()
         }
@@ -135,7 +138,8 @@ class PendingActionsModelImpl: PendingActionsModel {
 
     /// Return true if network connected
     private func _networkConditionsMet() -> Bool {
-        networkMonitor.currentPath.status == .satisfied
+        self.networkConditionsMet = networkMonitor.currentPath.status == .satisfied
+        return self.networkConditionsMet
     }
 
     /// Adds pending action data to the end of the pending actions array
@@ -163,6 +167,7 @@ class PendingActionsModelImpl: PendingActionsModel {
 
     /// To be invoked on the `operationQueue`
     private func setPendingActions(_ actions: [Data]) {
+        hasPendingActions = !actions.isEmpty
         defaults.set(actions, forKey: DefaultsKey.actions)
     }
 
