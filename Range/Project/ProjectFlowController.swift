@@ -573,48 +573,8 @@ final class ProjectFlowController: UIViewController {
         }
     }
 
-    /// Shows view controller for debug settings
-    @objc func showDebugSettingsAction() {
-        let debugSettingsVC = UIHostingController(
-            rootView: DebugSettingsView().environmentObject(_debugSettings)
-        )
-        present(debugSettingsVC, animated: true)
-    }
-
-    @objc func showTypeScaleAction() {
-        TypeScaleCardViewController().installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
-    }
-
     fileprivate func setupActionCardVC() -> ProjectActionCardViewController {
-        let additionalCardActions = AppConfiguration.showDebugOptions
-            ? [
-                ActionItem(
-                    title: "Toggle Light/Dark mode",
-                    imageName: "lightbulb",
-                    handler: { [weak self] in
-                        guard let self = self else { return }
-                        self.view.window?.overrideUserInterfaceStyle = self.traitCollection
-                            .userInterfaceStyle == .dark ? .light : .dark
-                    }
-                ),
-
-                ActionItem(
-                    title: "Show dev settings (\(userModel.currentUser.email))",
-                    imageName: "gearshape",
-                    handler: { [weak self] in
-                        self?.showDebugSettingsAction()
-                    }
-                ),
-                ActionItem(
-                    title: "Type Scale",
-                    imageName: "textformat.size",
-                    handler: { [weak self] in
-                        self?.showTypeScaleAction()
-                    }
-                ),
-            ]
-            : []
-        let vc = ProjectActionCardViewController(model: model, actions: additionalCardActions)
+        let vc = ProjectActionCardViewController(model: model)
         vc.onCamera = { [weak self] in
             self?.startAddPhotoFlow()
         }

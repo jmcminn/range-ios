@@ -58,6 +58,16 @@ struct DebugSettingsView: View {
 //                    }
 //                }
 //            #endif
+            Section(header: Text("Appearance")) {
+                actionButton(
+                    title: "Toggle Light/Dark mode",
+                    action: DebugSettings.toggleLightDarkMode
+                )
+                actionButton(
+                    title: "Type Scale",
+                    action: DebugSettings.showTypeScale
+                )
+            }
             Section(header: Text("App Start")) {
                 Toggle(isOn: $debugSettings.openLastProjectOnStart) {
                     Text("Open last project on start")

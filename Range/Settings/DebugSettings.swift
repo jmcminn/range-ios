@@ -1,6 +1,7 @@
 import Combine
 import FirebaseFunctions
 import Foundation
+import SwiftUI
 
 /// global variable for debug settings
 var _debugSettings = DebugSettings()
@@ -88,6 +89,30 @@ final class DebugSettings: ObservableObject {
         _feedSortedAscendingByTimestamp = .init(initialValue: defaults
             .bool(forKey: Keys.feedSortedAscendingByTimestamp))
     }
+
+    static func toggleLightDarkMode() {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.keyWindow else { return }
+        window.overrideUserInterfaceStyle = window.traitCollection.userInterfaceStyle == .dark ? .light : .dark
+    }
+    
+    static func showTypeScale() {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.keyWindow else { return }
+        
+        guard let vc = window.rootViewController?._topViewController() else { return }
+        TypeScaleCardViewController().installAndShowCard(in: vc)
+    }
+
+//    ActionItem(
+//        title: "Toggle Light/Dark mode",
+//        imageName: "lightbulb",
+//        handler: { [weak self] in
+//            guard let self = self else { return }
+//            self.view.window?.overrideUserInterfaceStyle = self.traitCollection
+//                .userInterfaceStyle == .dark ? .light : .dark
+//        }
+//    ),
 
     static func createOrganizationTest() {
         Functions.functions(region: "us-west2").httpsCallable("createOrganization").call([

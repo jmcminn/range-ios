@@ -1,9 +1,9 @@
+import RealmSwift
 import SnapKit
 import UIKit
 
 class ProjectActionCardViewController: UIViewController, NonModalCardCoordinating {
     let model: ProjectModel
-    let actions: [ActionItem]
 
     var cardDragging: NonModalCardDragging?
 
@@ -13,10 +13,14 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     static let topPadding = 21.0
     static let headerToActionsPadding = 16.0
 
-    var addPinButton: UIButton!
-    var addSnippetButton: UIButton!
-    var photoButton: UIButton!
-    var actionSelectorVC: ActionSelectorViewController!
+    var addPinButton: UIButton?
+    var addSnippetButton: UIButton?
+    var photoButton: UIButton?
+
+    var allMediaButton: UIButton? // only for Guest
+    var taskListButton: UIButton? // only for Guest
+
+    var actionSelectorVC: ActionSelectorViewController?
 
     var roundedShadowView: RoundShadowView {
         view as! RoundShadowView
@@ -26,13 +30,25 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         roundedShadowView.containerView
     }
 
-    /// Initiates with additional actions to show in the action selector
-    /// - Parameters:
-    ///   - actions: array of actions
-    init(model: ProjectModel, actions: [ActionItem] = []) {
+    private var currentUserNotificationToken: NotificationToken?
+    private var createPinSectionShown: Bool = false
+
+    init(model: ProjectModel) {
         self.model = model
-        self.actions = actions
         super.init(nibName: nil, bundle: nil)
+
+        currentUserNotificationToken = model.currentUser.observe { [weak self] _ in
+            guard let self = self else { return }
+            if self.createPinSectionShown != self.model.currentUser.canCreateCollaboration() {
+                self.updateLayout()
+                guard let cardDragging = cardDragging else { return }
+                cardDragging.setPosition(.min, withVelocity: 0)
+            }
+        }
+    }
+
+    deinit {
+        currentUserNotificationToken?.invalidate()
     }
 
     @available(*, unavailable)
@@ -48,68 +64,88 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         super.viewDidLoad()
         containerView.backgroundColor = .dynamic(.Neutral_10)
 
-        containerView.installSliderView()
+        updateLayout()
 
-        let showCreatePinSection = model.currentUser.canCreateCollaboration()
+        updateColors()
+    }
 
-        if showCreatePinSection {
+    private func updateLayout() {
+        containerView.subviews.forEach { $0.removeFromSuperview() }
+        actionSelectorVC = nil
+        
+        createPinSectionShown = model.currentUser.canCreateCollaboration()
+
+        if createPinSectionShown {
+            containerView.installSliderView()
+
             setupAddPinButton()
             setupAddSnippetButton()
             setupPhotoButton()
 
-            [addPinButton, addSnippetButton, photoButton].forEach(containerView.addSubview)
+            [addPinButton!, addSnippetButton!, photoButton!].forEach(containerView.addSubview)
 
-            addPinButton.snp.makeConstraints { make in
-                make.top.equalTo(photoButton)
-                make.height.equalTo(photoButton)
+            addPinButton!.snp.makeConstraints { make in
+                make.top.equalTo(photoButton!)
+                make.height.equalTo(photoButton!)
                 make.leading.equalToSuperview().inset(16)
-                make.trailing.equalTo(addSnippetButton.snp.leading).offset(-16)
+                make.trailing.equalTo(addSnippetButton!.snp.leading).offset(-16)
             }
-            addSnippetButton.snp.makeConstraints { make in
-                make.top.equalTo(photoButton)
-                make.height.equalTo(photoButton)
+            addSnippetButton!.snp.makeConstraints { make in
+                make.top.equalTo(photoButton!)
+                make.height.equalTo(photoButton!)
                 make.width.greaterThanOrEqualTo(52)
                 make.centerX.equalToSuperview()
             }
-            photoButton.snp.makeConstraints { make in
+            photoButton!.snp.makeConstraints { make in
                 make.top.equalTo(ProjectActionCardViewController.topPadding)
-                make.leading.equalTo(addSnippetButton.snp.trailing).offset(16)
+                make.leading.equalTo(addSnippetButton!.snp.trailing).offset(16)
+                make.trailing.equalTo(-16)
+            }
+
+            let allMediaAction = ActionItem(
+                title: String(localized: "All Media"),
+                imageName: "photo",
+                handler: { [weak self] in
+                    UIApplication.shared.sendAction(
+                        #selector(ProjectFlowActions.showMediaAction), to: nil, from: self, for: nil
+                    )
+                }
+            )
+            let taskListAction = ActionItem(
+                title: String(localized: "Task List"),
+                imageName: "list.bullet",
+                handler: { [weak self] in
+                    UIApplication.shared.sendAction(
+                        #selector(ProjectFlowActions.showTaskListAction), to: nil, from: self, for: nil
+                    )
+                }
+            )
+
+            actionSelectorVC = ActionSelectorViewController(actions: [allMediaAction, taskListAction])
+            add(childController: actionSelectorVC!, toView: containerView)
+            actionSelectorVC!.view.snp.makeConstraints { make in
+                make.top.equalTo(photoButton!.snp.bottom)
+                    .offset(ProjectActionCardViewController.headerToActionsPadding).priority(.required)
+                make.leading.trailing.equalToSuperview()
+                make.bottom.equalToSuperview().offset(12).priority(.required)
+            }
+        } else {
+            // if there's no "create pin" section in the header, we put the "All Media" and "Task List"
+            // there (and not in the ActionSelectorViewController table below the header)
+            setupAllMediaButton()
+            setupTaskListButton()
+            [allMediaButton!, taskListButton!].forEach(containerView.addSubview)
+
+            allMediaButton!.snp.makeConstraints { make in
+                make.top.equalTo(16)
+                make.leading.equalToSuperview().inset(16)
+                make.width.equalToSuperview().dividedBy(2).offset(-24)
+            }
+            taskListButton!.snp.makeConstraints { make in
+                make.top.height.width.equalTo(allMediaButton!)
                 make.trailing.equalTo(-16)
             }
         }
-
-        let allMediaAction = ActionItem(
-            title: String(localized: "All Media"),
-            imageName: "photo",
-            handler: { [weak self] in
-                UIApplication.shared.sendAction(
-                    #selector(ProjectFlowActions.showMediaAction), to: nil, from: self, for: nil
-                )
-            }
-        )
-        let taskListAction = ActionItem(
-            title: String(localized: "Task List"),
-            imageName: "list.bullet",
-            handler: { [weak self] in
-                UIApplication.shared.sendAction(
-                    #selector(ProjectFlowActions.showTaskListAction), to: nil, from: self, for: nil
-                )
-            }
-        )
-        actionSelectorVC = ActionSelectorViewController(actions: [allMediaAction, taskListAction] + actions)
-        add(childController: actionSelectorVC, toView: containerView)
-        actionSelectorVC.view.snp.makeConstraints { make in
-            if showCreatePinSection {
-                make.top.equalTo(photoButton.snp.bottom)
-                    .offset(ProjectActionCardViewController.headerToActionsPadding).priority(.required)
-            } else {
-                make.top.equalTo(ProjectActionCardViewController.topPadding)
-            }
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().offset(12).priority(.required)
-        }
-
-        updateColors()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -159,7 +195,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
         )
         .withCustomRangeHighlightColor()
 
-        addSnippetButton.setContentHuggingPriority(.required, for: .horizontal)
+        addSnippetButton!.setContentHuggingPriority(.required, for: .horizontal)
     }
 
     private func setupPhotoButton() {
@@ -168,6 +204,33 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             primaryAction: UIAction(title: String(localized: "Capture"),
                                     image: UIImage(systemName: "camera")) { [weak self] _ in
                 self?.onCamera?()
+            }
+        )
+        .withCustomRangeHighlightColor()
+    }
+
+    private func setupAllMediaButton() {
+        allMediaButton = RangeButton(
+            configuration: UIButton.Configuration.blackButton(imagePlacement: .leading),
+            primaryAction: UIAction(title: String(localized: "All Media"),
+                                    image: UIImage(systemName: "photo")) { [weak self] _ in
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowActions.showMediaAction), to: nil, from: self, for: nil
+                )
+            }
+        )
+        .withCustomRangeHighlightColor()
+    }
+
+    private func setupTaskListButton() {
+        taskListButton = RangeButton(
+            configuration: UIButton.Configuration.blackButton(imagePlacement: .leading),
+            primaryAction: UIAction(title: String(localized: "Task List"),
+                                    image: UIImage(systemName: "list.bullet")) { [weak self] _ in
+                UIApplication.shared.sendAction(
+                    #selector(ProjectFlowActions.showTaskListAction), to: nil, from: self,
+                    for: nil
+                )
             }
         )
         .withCustomRangeHighlightColor()
@@ -186,31 +249,31 @@ extension ProjectActionCardViewController: CardPresentable {
             height: UIView.layoutFittingCompressedSize.height
         )
 
-        let extraHeightWhenPinSectionHidden = 24.0
-        var height = ProjectActionCardViewController.topPadding
+        var height = 0.0
         if let photoButton {
-            height += photoButton.systemLayoutSizeFitting(
+            height += ProjectActionCardViewController.topPadding + photoButton.systemLayoutSizeFitting(
                 fittingSize,
                 withHorizontalFittingPriority: .required,
                 verticalFittingPriority: .defaultLow
             ).height +
                 ProjectActionCardViewController.headerToActionsPadding
-        } else {
-            height += extraHeightWhenPinSectionHidden
+        } else if let allMediaButton {
+            height += 16 + allMediaButton.systemLayoutSizeFitting(
+                fittingSize,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .defaultLow
+            ).height +
+                ProjectActionCardViewController.headerToActionsPadding
         }
 
-        if cardPosition == .max {
-            if photoButton != nil {
-                height += (actionSelectorVC.tableView.contentSize.height + 12.0)
-            } else {
-                height += (actionSelectorVC.tableView.contentSize.height + 12.0) - extraHeightWhenPinSectionHidden
-            }
+        if cardPosition == .max, let actionSelectorVC {
+            height += (actionSelectorVC.tableView.contentSize.height + 12.0)
         }
 
         return height
     }
 
     func drivingScrollView() -> UIScrollView? {
-        actionSelectorVC.tableView
+        actionSelectorVC?.tableView
     }
 }
