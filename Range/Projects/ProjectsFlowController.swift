@@ -60,7 +60,10 @@ class ProjectsFlowController: UINavigationController {
             userPreferences: userPreferences,
             pendingActionsModel: pendingActionsModel
         )
-        userDataSyncState = UserDataSyncState(pendingActionsModel: pendingActionsModel, pendingUploadsModel: pendingUploadsModel)
+        userDataSyncState = UserDataSyncState(
+            pendingActionsModel: pendingActionsModel,
+            pendingUploadsModel: pendingUploadsModel
+        )
         super.init(rootViewController: LaunchScreenViewController())
     }
 
@@ -233,7 +236,10 @@ class ProjectsFlowController: UINavigationController {
             }
             projectsNavigationController.setViewControllers([projectsVC], animated: false)
 
-            let feedVC = OrganizationInAppFeedViewController(model: organizationModel, userDataSyncState: userDataSyncState)
+            let feedVC = OrganizationInAppFeedViewController(
+                model: organizationModel,
+                userDataSyncState: userDataSyncState
+            )
             feedVC.onOrganizationButtonTap = { [weak self] in
                 self?.selectOrganizationAction()
             }
@@ -447,7 +453,23 @@ class ProjectsFlowController: UINavigationController {
         // TODO: delete all realm files on sign in when the user is different from the previous one?
         // We need to delete all projects, so Realm.deleteFiles(for: config) is not enough, manual removal
         // like describe here https://github.com/realm/realm-swift/issues/4625 needed
-        onSignedOut?()
+        if userDataSyncState.state != .noPending {
+            // dismiss the Settings vc
+            dismiss(animated: true)
+            let alertController = UIAlertController(
+                title: "Media still syncing",
+                message: "If you sign out now, any pending media will fail to sync. Are you sure you want to continue?",
+                preferredStyle: .alert
+            )
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            })
+            alertController.addAction(UIAlertAction(title: "Sign out", style: .destructive) { [weak self] _ in
+                self?.onSignedOut?()
+            })
+            present(alertController, animated: true)
+        } else {
+            onSignedOut?()
+        }
     }
 
     func showRoute(_ orgRoute: OrgRoute) async {
