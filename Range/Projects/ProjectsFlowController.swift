@@ -458,7 +458,7 @@ class ProjectsFlowController: UINavigationController {
             dismiss(animated: true)
             let alertController = UIAlertController(
                 title: "Media still syncing",
-                message: "If you sign out now, any pending media will fail to sync. Are you sure you want to continue?",
+                message: "If you sign out, any pending media will not sync until you sign back in again. Are you sure you want to continue?",
                 preferredStyle: .alert
             )
             alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in

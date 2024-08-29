@@ -185,7 +185,7 @@ class OrganizationModel: NSObject, RealmModel {
 
         // 1. remove the projects that are no longer configured for user
         for project in currentProjects {
-            if !newProjectIds.contains(project.id) {
+            if !project.isInvalidated, !newProjectIds.contains(project.id) {
                 Logger.model.debug("user lost permissions for project \(project.id), removing.")
                 try? mainRealm.write {
                     mainRealm.delete(project)
