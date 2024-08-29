@@ -211,11 +211,12 @@ extension RealmModel {
     }
 
     /// Upsert all given documents.
-    /// Remove from local db any documents that are not present in given list
-    func replaceDocuments<T: Decodable & FirestoreToRealmSyncable>(
-        with documents: [QueryDocumentSnapshot],
+    /// Remove from local db any documents that are not present in given list if `replacing` set to `true`
+    func upsertDocuments<T: Decodable & FirestoreToRealmSyncable>(
+        _ documents: [QueryDocumentSnapshot],
         as type: T.Type,
-        inRealm realm: Realm
+        inRealm realm: Realm,
+        replacing: Bool = false
     ) {
         documents.forEach {
             // failing to load some documents shouldn't fail the whole sync
@@ -237,16 +238,19 @@ extension RealmModel {
                 )
             }
         }
-        /// for fast lookup
-        let newObjectsIds = Set(documents.map(\.documentID))
-        /// delete all objects from local db that are not in documents
-        for oldObject in realm.objects(type.ModelType) {
-            if !newObjectsIds.contains(oldObject.id) {
-                Logger.firestore
-                    .debug(
-                        "\(type.ModelType.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
-                    )
-                realm.delete(oldObject)
+        
+        if replacing {
+            /// for fast lookup
+            let newObjectsIds = Set(documents.map(\.documentID))
+            /// delete all objects from local db that are not in documents
+            for oldObject in realm.objects(type.ModelType) {
+                if !newObjectsIds.contains(oldObject.id) {
+                    Logger.firestore
+                        .debug(
+                            "\(type.ModelType.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
+                        )
+                    realm.delete(oldObject)
+                }
             }
         }
     }

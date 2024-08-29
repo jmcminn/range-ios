@@ -99,10 +99,10 @@ class ProjectModelFirestoreSync {
         // store in the db
         try await model.write { [self] realm in
             try projectSummary.upsert(withId: model.projectId, inRealm: realm)
-            model.replaceDocuments(with: canvases.documents, as: FirestoreCanvas.self, inRealm: realm)
-            model.replaceDocuments(with: canvasSources.documents, as: FirestoreCanvasSource.self, inRealm: realm)
+            model.upsertDocuments(canvases.documents, as: FirestoreCanvas.self, inRealm: realm, replacing: true)
+            model.upsertDocuments(canvasSources.documents, as: FirestoreCanvasSource.self, inRealm: realm, replacing: true)
             try user.upsert(withId: model.userId, inRealm: realm)
-            model.replaceDocuments(with: statuses.documents, as: FirestoreStatusName.self, inRealm: realm)
+            model.upsertDocuments(statuses.documents, as: FirestoreStatusName.self, inRealm: realm, replacing: true)
         }
     }
 
@@ -179,7 +179,7 @@ extension ProjectModelFirestoreSync {
         }
     }
 
-    private func handleOrganizationFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
+    private func handleOrganizationFeedItem(_ item: FirestoreFeedItem, id: String, inRealm _: Realm) {
         switch item.action {
         case "role-changed":
             // role-changed is a big change that may have multiple changes (not reported separately
@@ -189,15 +189,14 @@ extension ProjectModelFirestoreSync {
             runAsyncFeedBlock(id) {
                 _ = try await self.model.getAllData()
             }
-            break
         default:
             reportUnsupportedFeedItem(item, id: id)
         }
     }
-    
+
     private func handleCollaborationFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
         switch item.action {
-        case "added", "updated", "access-gained":
+        case "added", "updated":
             runAsyncFeedBlock(id) {
                 let collaboration = try await self.collection(.collaboration).document(item.itemId)
                     .getDocument(as: FirestoreCollaboration.self)
@@ -206,6 +205,23 @@ extension ProjectModelFirestoreSync {
                 try await self.model.write { realm in
                     try geometry.upsert(withId: collaboration.geometryId, inRealm: realm)
                     try collaboration.upsert(withId: item.itemId, inRealm: realm)
+                }
+            }
+        case "access-gained":
+            runAsyncFeedBlock(id) {
+                let collaboration = try await self.collection(.collaboration).document(item.itemId)
+                    .getDocument(as: FirestoreCollaboration.self)
+                let geometry = try await self.collection(.geometry).document(collaboration.geometryId)
+                    .getDocument(as: FirestoreGeometry.self)
+                let comments = try await self.collection(.comment).whereField("collaborationId", isEqualTo: item.itemId).getDocuments()
+                let updates = try await self.collection(.update).whereField("collaborationId", isEqualTo: item.itemId).getDocuments()
+                let uploads = try await self.collection(.upload).whereField("collaborationId", isEqualTo: item.itemId).getDocuments()
+                try await self.model.write { realm in
+                    try geometry.upsert(withId: collaboration.geometryId, inRealm: realm)
+                    try collaboration.upsert(withId: item.itemId, inRealm: realm)
+                    self.model.upsertDocuments(comments.documents, as: FirestoreComment.self, inRealm: realm)
+                    self.model.upsertDocuments(updates.documents, as: FirestoreUpdate.self, inRealm: realm)
+                    self.model.upsertDocuments(uploads.documents, as: FirestoreUpload.self, inRealm: realm)
                 }
             }
         case "deleted", "access-lost":
