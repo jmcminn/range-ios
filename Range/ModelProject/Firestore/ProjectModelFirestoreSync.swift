@@ -187,7 +187,7 @@ extension ProjectModelFirestoreSync {
             // do a full server-side-forced fetch, as it will ignore the since parameter because
             // of this `role-changed` feed item it'll also observe)
             runAsyncFeedBlock(id) {
-                let timestamp = try await self.model.getAllData()
+                _ = try await self.model.getAllData()
             }
             break
         default:

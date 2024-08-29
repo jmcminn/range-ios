@@ -47,6 +47,7 @@ extension ProjectModel {
             timestamp: timestamp,
             data: data,
             deleted: resultData["deleted"] as? [String: [String]],
+            accessLost: resultData["accessLost"] as? [String: [String]],
             replace: replace
         )
         return timestamp
@@ -74,6 +75,7 @@ extension ProjectModel {
         timestamp: Date,
         data: [String: [[String: Any]]],
         deleted: [String: [String]]?,
+        accessLost: [String: [String]]?,
         replace: Bool
     ) async throws {
         let decoder = FirebaseDataDecoder()
@@ -100,6 +102,9 @@ extension ProjectModel {
                 self.deleteLocalCollaborations(deleted["collaborationIds"], inRealm: realm)
                 self.deleteLocalComments(deleted["commentIds"], inRealm: realm)
                 self.deleteLocalUploads(deleted["uploadIds"], inRealm: realm)
+            }
+            if let accessLost {
+                self.deleteLocalCollaborations(accessLost["collaborationIds"], inRealm: realm)
             }
         }
     }

@@ -579,17 +579,17 @@ extension FeedViewController: UITableViewDelegate {
 
 extension FeedViewController {
     func cell(forTableView tableView: UITableView, indexPath: IndexPath, feedItem: FeedItem) -> UITableViewCell? {
-        if let collaboration = feedItem.item as? Collaboration {
+        if let collaboration = feedItem.item as? Collaboration, !collaboration.isInvalidated {
             let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCreated",
                                                      for: indexPath) as! CollaborationCreatedFeedItemCell
             cell.set(collaboration: collaboration)
             return cell
-        } else if let geometry = feedItem.item as? Geometry {
+        } else if let geometry = feedItem.item as? Geometry, geometry.isInvalidated {
             let cell = tableView.dequeueReusableCell(withIdentifier: "GeometryArchived",
                                                      for: indexPath) as! GeometryArchivedFeedItemCell
             cell.set(geometry: geometry)
             return cell
-        } else if let upload = feedItem.item as? Upload, upload.isImage {
+        } else if let upload = feedItem.item as? Upload, !upload.isInvalidated, upload.isImage {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ImageUpload",
                                                      for: indexPath) as! ImageUploadFeedItemCell
             if let mediaKey = MediaKey.autoAnnotatedMediaKey(
@@ -601,7 +601,7 @@ extension FeedViewController {
             }
             cell.set(upload: upload, model: projectModel)
             return cell
-        } else if let upload = feedItem.item as? Upload {
+        } else if let upload = feedItem.item as? Upload, !upload.isInvalidated {
             let cell = tableView.dequeueReusableCell(withIdentifier: "Upload",
                                                      for: indexPath) as! UploadFeedItemCell
             if let currentPreviewVC = cell.uploadPreviewVC {
@@ -615,18 +615,18 @@ extension FeedViewController {
             cell.set(upload: upload, model: projectModel, previewVC: uploadPreviewVC, tableView: tableView)
             uploadPreviewVC.didMove(toParent: self)
             return cell
-        } else if let comment = feedItem.item as? Comment {
+        } else if let comment = feedItem.item as? Comment, !comment.isInvalidated {
             let cell = tableView.dequeueReusableCell(withIdentifier: "Comment",
                                                      for: indexPath) as! CommentFeedItemCell
             cell.set(comment: comment, model: projectModel)
             return cell
-        } else if let update = feedItem.item as? Update, update.field == .name || update.field == .description {
+        } else if let update = feedItem.item as? Update, !update.isInvalidated, update.field == .name || update.field == .description {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NameUpdate",
                                                      for: indexPath) as! NameUpdateFeedItemCell
             cell.tableView = tableView
             cell.set(update: update)
             return cell
-        } else if let update = feedItem.item as? Update, update.field == .statusName,
+        } else if let update = feedItem.item as? Update, !update.isInvalidated, update.field == .statusName,
                   let statusId = update.newValue.stringValue,
                   let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId)
         {
@@ -646,7 +646,7 @@ extension FeedViewController {
                 cell.set(update: update, status: status)
                 return cell
             }
-        } else if let update = feedItem.item as? Update, update.field == .assignee {
+        } else if let update = feedItem.item as? Update, !update.isInvalidated, update.field == .assignee {
             let cell = tableView.dequeueReusableCell(withIdentifier: "AssigneeUpdate",
                                                      for: indexPath) as! AssigneeUpdateFeedItemCell
             let oldAssignee = projectModel.mainRealm.object(
@@ -659,13 +659,18 @@ extension FeedViewController {
             )
             cell.set(update: update, oldAssignee: oldAssignee, newAssignee: newAssignee)
             return cell
-        } else if let update = feedItem.item as? Update, update.field == .dueDateTimestamp {
+        } else if let update = feedItem.item as? Update, !update.isInvalidated, update.field == .dueDateTimestamp {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DueDateUpdate",
                                                      for: indexPath) as! DueDateUpdateFeedItemCell
             cell.set(update: update, timeZone: projectModel.projectSummary.timeZone)
             return cell
         }
-        return nil
+        // return some random cell for the case where none of the above matches. This should
+        // mean that some objects were invalidated (user was removed from collaboration, etc.)
+        Logger.ui.warning("Couldn't construct a collaboration feed cell for index \(indexPath)")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CollaborationCreated",
+                                                 for: indexPath) as! CollaborationCreatedFeedItemCell
+        return cell
     }
 }
 
