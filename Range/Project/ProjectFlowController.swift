@@ -241,7 +241,9 @@ final class ProjectFlowController: UIViewController {
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
 
-        if !userPreferences.cardOnboardingComplete {
+        // only show the card onboarding if user can create a collaboration, so is not a Guest
+        // If user is a Guest then currently the card has a fixed size
+        if !userPreferences.cardOnboardingComplete, model.currentUser.canCreateCollaboration() {
             controls.showCardOnboardingView(aboveView: actionCardVC.view)
             actionCardDraggingDelegateId = actionCardVC.cardDragging?.addDelegate(self)
         }
