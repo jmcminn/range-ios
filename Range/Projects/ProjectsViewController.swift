@@ -9,6 +9,7 @@ class ProjectsViewController: UIViewController {
     /// Model to access the current organization and projects
     let model: OrganizationModel
     let userPreferences: UserPreferences
+    let userDataSyncState: UserDataSyncState
 
     private var tableView: UITableView!
     private var emptyStateViewController: UIHostingController<ProjectsEmptyStateView>?
@@ -43,9 +44,10 @@ class ProjectsViewController: UIViewController {
 
     private var recentProjects: [ProjectSummary] = []
 
-    init(model: OrganizationModel, userPreferences: UserPreferences) {
+    init(model: OrganizationModel, userPreferences: UserPreferences, userDataSyncState: UserDataSyncState) {
         self.model = model
         self.userPreferences = userPreferences
+        self.userDataSyncState = userDataSyncState
         projects = model.projects.sorted(by: \.name)
         super.init(nibName: nil, bundle: nil)
 
@@ -84,7 +86,7 @@ class ProjectsViewController: UIViewController {
         }
 
         setupOrganizationSelectorButton()
-        setupSettingsButton()
+        setupRightBarButtonItems()
         setupTitleView()
         updateTitleLabel()
         setupCreateProjectButton()
@@ -249,7 +251,7 @@ class ProjectsViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
     }
 
-    private func setupSettingsButton() {
+    private func setupRightBarButtonItems() {
         var config = UIButton.Configuration.plain()
         config.baseForegroundColor = .dynamic(.Neutral_04)
         let button = RangeButton(
@@ -267,7 +269,16 @@ class ProjectsViewController: UIViewController {
         }
         button.tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+        let dataSyncDotView = DataSyncDotView(userDataSyncState)
+        dataSyncDotView.onTapped = { [weak self] in
+            guard let self else { return }
+            _dataSyncInfoCard(self.userDataSyncState.state).installAndShowCard(in: self._rootViewController())
+        }
+        
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(customView: button),
+            UIBarButtonItem(customView: dataSyncDotView)
+        ]
     }
 }
 

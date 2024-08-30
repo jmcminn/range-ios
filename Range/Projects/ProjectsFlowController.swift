@@ -214,7 +214,7 @@ class ProjectsFlowController: UINavigationController {
         guard let projectsNavigationController, let feedNavigationController else { return }
         organizationSubscriptions.removeAll()
         if let organizationModel = userModel.currentOrganizationModel {
-            let projectsVC = ProjectsViewController(model: organizationModel, userPreferences: userPreferences)
+            let projectsVC = ProjectsViewController(model: organizationModel, userPreferences: userPreferences, userDataSyncState: userDataSyncState)
             projectsVC.title = String(localized: "My Projects")
             projectsVC.onOrganizationButtonTap = { [weak self] in
                 self?.selectOrganizationAction()

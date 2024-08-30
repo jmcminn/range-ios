@@ -124,6 +124,7 @@
 		0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B82849E06F00A50D54 /* SearchView.swift */; };
 		0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */; };
 		0A32F03F2C7E314D0083A881 /* DataSyncBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32F03E2C7E314D0083A881 /* DataSyncBannerView.swift */; };
+		0A32F0412C80BD9C0083A881 /* DataSyncDotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32F0402C80BD9C0083A881 /* DataSyncDotView.swift */; };
 		0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072329C077E7007299A7 /* CanvasSourceData.swift */; };
 		0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */; };
 		0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */; };
@@ -643,6 +644,7 @@
 		0A30E8B82849E06F00A50D54 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSelectionViewController.swift; sourceTree = "<group>"; };
 		0A32F03E2C7E314D0083A881 /* DataSyncBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSyncBannerView.swift; sourceTree = "<group>"; };
+		0A32F0402C80BD9C0083A881 /* DataSyncDotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSyncDotView.swift; sourceTree = "<group>"; };
 		0A34072329C077E7007299A7 /* CanvasSourceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceData.swift; sourceTree = "<group>"; };
 		0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSourceTest.swift; sourceTree = "<group>"; };
 		0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasTest.swift; sourceTree = "<group>"; };
@@ -1648,6 +1650,7 @@
 				0A94E8D628CF0E6000A09616 /* RangeButton.swift */,
 				0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */,
 				0A32F03E2C7E314D0083A881 /* DataSyncBannerView.swift */,
+				0A32F0402C80BD9C0083A881 /* DataSyncDotView.swift */,
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
 				0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */,
 				0AC89D7D290980DD00D3CCA1 /* GradientView.swift */,
@@ -2779,6 +2782,7 @@
 				0A88730B2B299B24006DF885 /* RecentAnnotationsSelectorView.swift in Sources */,
 				0A966F9828DD919D00E50284 /* ImageLoadingIndicator.swift in Sources */,
 				0A6DB6A5292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift in Sources */,
+				0A32F0412C80BD9C0083A881 /* DataSyncDotView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */,
 				0A4DC78527F490CA00712518 /* Canvas.swift in Sources */,

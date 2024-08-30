@@ -1,16 +1,6 @@
 import Foundation
 import UIKit
 
-func _dataSyncInfoCard(_ state: UserDataSyncState.State) -> SheetCardViewController {
-    let title = state == .offlinePending ? "Media Sync Pending" : "Media Sync In-progress"
-    let description = state == .offlinePending
-        ?
-        "Your device currently has no Internet connection or uploading media via an internet connection has been disabled.\n\nYou can continue to use the app and when your device has an Internet connection or wifi access, all pending media will be synced to your Range Organization automatically when the app is open."
-        :
-        "Your device has established an Internet connection or wifi access and is currently syncing your pending media to your Organization. Once complete, this banner will disappear."
-    return SheetCardViewController(icon: UIImage(systemName: "photo"), title: title, description: description)
-}
-
 class DataSyncBannerView: UIView {
     private let titleView = UIStackView()
     private let titleLabel = UILabel()
