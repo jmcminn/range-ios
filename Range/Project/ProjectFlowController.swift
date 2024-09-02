@@ -57,6 +57,7 @@ final class ProjectFlowController: UIViewController {
     weak var fullscreenMediaVC: FullscreenMediaCardViewController?
     weak var taskListVC: TaskListCardViewController?
 
+    private var currentUserNotificationToken: NotificationToken?
     /// To observed changes in model.currentCanvas
     private var currentCanvasObservation: NSKeyValueObservation?
     /// Observe canvas source to update UI based on the canvas source type
@@ -271,6 +272,7 @@ final class ProjectFlowController: UIViewController {
         controls.locationSimulationButton?.isHidden = !locationSimulationButtonVisible
         collaborationFlow.start()
         observeDebugSettings()
+        observeCurrentUser()
         observeCanvas()
 
         currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
@@ -374,6 +376,28 @@ final class ProjectFlowController: UIViewController {
         }
     }
 
+    private func observeCurrentUser() {
+        currentUserNotificationToken = model.currentUser.observe { [weak self] change in
+            guard let self else { return }
+            if case let .change(_, properties) = change {
+                if let roleProperty = properties
+                    .first(where: { $0.name == FirestoreParticipant.CodingKeys.organizationRole.rawValue
+                    }), let newRole = roleProperty.newValue as? String
+                {
+                    let alertController = UIAlertController(
+                        title: "Your role has been changed to \(newRole)",
+                        message: "Your project access permissions may have changed. We'll return you to the Projects page momentarily.",
+                        preferredStyle: .alert
+                    )
+                    alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak self] _ in
+                        self?.onBack?()
+                    }))
+                    self.present(alertController, animated: true)
+                }
+            }
+        }
+    }
+
     private func observeCanvas() {
         geometriesNotificationToken?.invalidate()
         geometriesNotificationToken = model.currentCanvas.pins.observe { [weak self] _ in
@@ -452,6 +476,7 @@ final class ProjectFlowController: UIViewController {
         remove(childController: canvasContainer)
         debugSettingsNativeViewsForPinsSubscriber?.cancel()
         debugSettingsNativeViewsForPinsSubscriber = nil
+        currentUserNotificationToken?.invalidate()
         currentCanvasObservation?.invalidate()
         currentCanvasObservation = nil
         canvasNotificationToken?.invalidate()

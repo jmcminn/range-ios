@@ -18,7 +18,7 @@ struct FirestoreParticipant: Decodable, FirestoreToRealmSyncable, FirestoreToRea
     typealias ModelType = Participant
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case firstName, lastName, avatarUrlString = "avatarUrl", email, organizationRole
     }
 

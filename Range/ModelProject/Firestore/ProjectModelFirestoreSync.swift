@@ -183,12 +183,16 @@ extension ProjectModelFirestoreSync {
         switch item.action {
         case "role-changed":
             // role-changed is a big change that may have multiple changes (not reported separately
-            // via feed items). So we need to trigger getting all data (which will most probably
-            // do a full server-side-forced fetch, as it will ignore the since parameter because
-            // of this `role-changed` feed item it'll also observe)
-            runAsyncFeedBlock(id) {
-                _ = try await self.model.getAllData()
-            }
+            // via feed items).
+            // We could trigger getting all data (which will most probably do a full server-side-forced 
+            // fetch, as it will ignore the since parameter because of this `role-changed` feed item
+            // it'll also observe)
+            // But instead it's handled in the ProjectFlowController by observing the user role
+            // and going back to projects listing, so we don't have to do all the UI updates in place
+//            runAsyncFeedBlock(id) {
+//                _ = try await self.model.getAllData()
+//            }
+            break
         default:
             reportUnsupportedFeedItem(item, id: id)
         }
