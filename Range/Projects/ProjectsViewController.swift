@@ -52,8 +52,7 @@ class ProjectsViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
 
         filteredProjects = [ProjectSummary](projects)
-        recentProjects = userPreferences.recentProjectIds(forOrganizationId: model.organizationId)
-            .compactMap { projectId in projects.first { $0.id == projectId } }
+        updateRecentProjects()
     }
 
     @available(*, unavailable)
@@ -100,10 +99,7 @@ class ProjectsViewController: UIViewController {
         super.viewWillAppear(animated)
 
         // reload the recent projects (we may be back from a project so the recent list may have changed)
-        recentProjects = userPreferences.recentProjectIds(forOrganizationId: model.organizationId)
-            .compactMap { projectId in
-                model.projects.first { $0.id == projectId }
-            }
+        updateRecentProjects()
         tableView.reloadData()
 
         analytics?.screen(title: "organization projects")
@@ -129,10 +125,19 @@ class ProjectsViewController: UIViewController {
             }
         }
     }
+    
+    private func updateRecentProjects() {
+        recentProjects = userPreferences.recentProjectIds(forOrganizationId: model.organizationId)
+            .compactMap { projectId in
+                model.projects.first { $0.id == projectId }
+            }
+    }
 
     /// apply the search terms to filter the projects and reload the table view
     private func updateData() {
         filteredProjects = projects.filter(matchSearchTerms)
+
+        updateRecentProjects()
 
         tableView.reloadData()
     }
@@ -274,10 +279,10 @@ class ProjectsViewController: UIViewController {
             guard let self else { return }
             _dataSyncInfoCard(self.userDataSyncState.state).installAndShowCard(in: self._rootViewController())
         }
-        
+
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(customView: button),
-            UIBarButtonItem(customView: dataSyncIndicatorView)
+            UIBarButtonItem(customView: dataSyncIndicatorView),
         ]
     }
 }
