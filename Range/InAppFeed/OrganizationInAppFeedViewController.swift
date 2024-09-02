@@ -17,7 +17,7 @@ class OrganizationInAppFeedViewController: UIViewController {
     private let titleLabel = UILabel()
     private let headerStroke = UIView()
     private var markAllAsReadButton: RangeButton!
-    private let dataSyncBannerView = DataSyncBannerView()
+    private let dataSyncIndicatorView: DataSyncIndicatorView
 
     private var subscriptions = Set<AnyCancellable>()
 
@@ -29,6 +29,7 @@ class OrganizationInAppFeedViewController: UIViewController {
             variant: .organization,
             participantProvider: { userId in model.mainRealm.object(ofType: Participant.self, forPrimaryKey: userId) }
         )
+        self.dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
         super.init(nibName: nil, bundle: nil)
 
         model.knockFeedModel.$feed
@@ -49,10 +50,10 @@ class OrganizationInAppFeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupDataSyncBannerView()
         setupTitleLabel()
         setupOrganizationSelectorButton()
         setupMarkAllAsReadButton()
+        setupDataSyncIndicatorView()
 
         view.backgroundColor = .dynamic(.Neutral_10)
 
@@ -67,12 +68,6 @@ class OrganizationInAppFeedViewController: UIViewController {
         }
 
         updateMarkAllAsReadButtonEnabled()
-        updateDataSyncBanner(animated: false)
-        userDataSyncState.$state
-            .receive(on: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] _ in self?.updateDataSyncBanner() }
-            .store(in: &subscriptions)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -87,7 +82,7 @@ class OrganizationInAppFeedViewController: UIViewController {
         titleLabel.adjustsFontForContentSizeCategory = true
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
             make.centerX.equalToSuperview()
         }
     }
@@ -158,36 +153,15 @@ class OrganizationInAppFeedViewController: UIViewController {
         }
     }
 
-    private func setupDataSyncBannerView() {
-        dataSyncBannerView.onTapped = { [weak self] in
+    private func setupDataSyncIndicatorView() {
+        dataSyncIndicatorView.onTapped = { [weak self] in
             guard let self else { return }
             _dataSyncInfoCard(userDataSyncState.state).installAndShowCard(in: self._rootViewController())
         }
-        view.addSubview(dataSyncBannerView)
-        dataSyncBannerView.snp.makeConstraints { make in
-            make.centerX.width.top.equalToSuperview()
-        }
-        dataSyncBannerView.setContentHuggingPriority(.required, for: .vertical)
-    }
-
-    private func updateDataSyncBanner(animated: Bool = true) {
-        dataSyncBannerView.setState(userDataSyncState.state)
-        dataSyncBannerView.isHidden = userDataSyncState.state == .noPending
-        titleLabel.snp.remakeConstraints { make in
-            if userDataSyncState.state == .noPending {
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-                make.centerX.equalToSuperview()
-            } else {
-                make.top.equalTo(self.dataSyncBannerView.snp.bottom).offset(10)
-                make.centerX.equalToSuperview()
-            }
-        }
-        if animated {
-            UIView.animate(withDuration: 0.2) {
-                self.view.layoutIfNeeded()
-            }
-        } else {
-            view.layoutIfNeeded()
+        view.addSubview(dataSyncIndicatorView)
+        dataSyncIndicatorView.snp.makeConstraints { make in
+            make.trailing.equalTo(markAllAsReadButton.snp.leading).offset(-8)
+            make.centerY.equalTo(markAllAsReadButton)
         }
     }
 }

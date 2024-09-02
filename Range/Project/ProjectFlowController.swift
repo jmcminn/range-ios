@@ -469,7 +469,9 @@ final class ProjectFlowController: UIViewController {
     func setUIState(_ state: UIState, animated: Bool) {
         uiState = state
 
-        if state == .default || state == .collaboration || state == .locationSimulation {
+        if state == .fullScreenCanvas || state == .canvasSnapshot {
+            controls.hideTopViewController(animated: animated)
+        } else {
             controls.showTopViewController(
                 title: model.projectSummary.name,
                 onBack: onBack,
@@ -477,8 +479,6 @@ final class ProjectFlowController: UIViewController {
                 userDataSyncState: userDataSyncState,
                 animated: animated
             )
-        } else {
-            controls.hideTopViewController(animated: animated)
         }
         updateTopIndicatorView()
 

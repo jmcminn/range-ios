@@ -8,13 +8,17 @@ class UserDataSyncState: ObservableObject {
         case noPending // there's no pending data or uploads to sync
     }
 
+    private let pendingActionsModel: PendingActionsModel
+    private let pendingUploadsModel: PendingUploadsModel
+
     /// combine observers
     private var subscriptions = Set<AnyCancellable>()
 
-    // TODO: 3026 debounce the listener a little bit if it switches between actions
     @Published var state: State = .noPending
 
     init(pendingActionsModel: PendingActionsModel, pendingUploadsModel: PendingUploadsModel) {
+        self.pendingActionsModel = pendingActionsModel
+        self.pendingUploadsModel = pendingUploadsModel
         Publishers.CombineLatest4(
             pendingActionsModel.$hasPendingActions,
             pendingActionsModel.$networkConditionsMet,
@@ -22,16 +26,31 @@ class UserDataSyncState: ObservableObject {
             pendingUploadsModel.$networkConditionsMet
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] values in self?.updateDataSyncState(values.0, values.1, values.2, values.3) }
+        .sink { [weak self] _ in self?.maybeUpdateState() }
         .store(in: &subscriptions)
     }
 
-    private func updateDataSyncState(
-        _ hasPendingActions: Bool,
-        _ pendingActionsNetworkConditionsMet: Bool,
-        _ hasPendingUploads: Bool,
-        _ pendingUploadsNetworkConditionsMet: Bool
-    ) {
+    private func maybeUpdateState() {
+        let newState = calculateState()
+
+        // switch to syncing state with delay. In case the user is online we
+        // don't want to show the sync indicator on each operation
+        if newState == .onlineSync {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+                guard let self else { return }
+                self.state = calculateState()
+            }
+        } else {
+            state = newState
+        }
+    }
+
+    private func calculateState() -> State {
+        let hasPendingActions = pendingActionsModel.hasPendingActions
+        let pendingActionsNetworkConditionsMet = pendingActionsModel.networkConditionsMet
+        let hasPendingUploads = pendingUploadsModel.hasPendingUploads
+        let pendingUploadsNetworkConditionsMet = pendingUploadsModel.networkConditionsMet
+
         // if (offline and has pending) for at least one model => then show offline
         // else if has pending for at least one model => then show online
         // else nothing
@@ -40,11 +59,11 @@ class UserDataSyncState: ObservableObject {
         if (hasPendingActions && !pendingActionsNetworkConditionsMet) ||
             (hasPendingUploads && !pendingUploadsNetworkConditionsMet)
         {
-            state = .offlinePending
+            return .offlinePending
         } else if hasPendingActions || hasPendingUploads {
-            state = .onlineSync
+            return .onlineSync
         } else {
-            state = .noPending
+            return .noPending
         }
     }
 }

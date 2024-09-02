@@ -71,7 +71,7 @@ extension ProjectCanvasControls {
                 userDataSyncState: userDataSyncState
             )
             if let userDataSyncState {
-                topViewController.onDataSyncBannerTapped = { [weak self] in
+                topViewController.onDataSyncButtonTapped = { [weak self] in
                     guard let self else { return }
                     _dataSyncInfoCard(userDataSyncState.state)
                         .installAndShowCard(in: self.canvasContainer, inView: self.canvasContainer.controls)

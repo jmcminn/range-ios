@@ -269,15 +269,15 @@ class ProjectsViewController: UIViewController {
         }
         button.tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
 
-        let dataSyncDotView = DataSyncDotView(userDataSyncState)
-        dataSyncDotView.onTapped = { [weak self] in
+        let dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
+        dataSyncIndicatorView.onTapped = { [weak self] in
             guard let self else { return }
             _dataSyncInfoCard(self.userDataSyncState.state).installAndShowCard(in: self._rootViewController())
         }
         
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(customView: button),
-            UIBarButtonItem(customView: dataSyncDotView)
+            UIBarButtonItem(customView: dataSyncIndicatorView)
         ]
     }
 }

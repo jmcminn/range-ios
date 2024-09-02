@@ -3,19 +3,22 @@ import Foundation
 import UIKit
 
 func _dataSyncInfoCard(_ state: UserDataSyncState.State) -> SheetCardViewController {
-    let title = state == .offlinePending ? "Media Sync Pending" : "Media Sync In-progress"
+    let title = state == .offlinePending ? "Data Sync Pending" : "Data Sync In-progress"
     let description = state == .offlinePending
         ?
         "Your device currently has no Internet connection or uploading media via an internet connection has been disabled.\n\nYou can continue to use the app and when your device has an Internet connection or wifi access, all pending media will be synced to your Range Organization automatically when the app is open."
         :
         "Your device has established an Internet connection or wifi access and is currently syncing your pending media to your Organization. Once complete, this banner will disappear."
-    return SheetCardViewController(icon: UIImage(systemName: "photo"), title: title, description: description)
+    return SheetCardViewController(
+        icon: UIImage(systemName: "arrow.triangle.2.circlepath.circle.fill"),
+        iconTintColor: state == .offlinePending ? .Orange_Banner : .Special_03,
+        title: title, description: description)
 }
 
-class DataSyncDotView: UIView {
+class DataSyncIndicatorView: UIView {
     private let state: UserDataSyncState
     private let bgView = UIView()
-    private let dotView = UIView()
+    private let imageView = UIImageView(image: UIImage(systemName: "arrow.triangle.2.circlepath.circle.fill"))
     private var subscriptions = Set<AnyCancellable>()
     var onTapped: (() -> Void)?
     
@@ -27,32 +30,30 @@ class DataSyncDotView: UIView {
         self.state = state
         super.init(frame: .zero)
         
-        bgView.layer.cornerRadius = 11
+        bgView.layer.cornerRadius = 12
         bgView.layer.borderWidth = 1
         bgView.backgroundColor = .dynamic(.Neutral_09)
         addSubview(bgView)
         bgView.snp.makeConstraints { make in
-            make.width.height.equalTo(22)
+            make.width.height.equalTo(24)
             make.center.equalToSuperview()
         }
         bgView.isUserInteractionEnabled = false
 
-        dotView.layer.cornerRadius = 5
-        addSubview(dotView)
-        dotView.snp.makeConstraints { make in
-            make.width.height.equalTo(10)
+        addSubview(imageView)
+        imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-        dotView.isUserInteractionEnabled = false
+        imageView.isUserInteractionEnabled = false
         
-        let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
-        scaleAnimation.duration = 0.5
+        let scaleAnimation = CABasicAnimation(keyPath: "opacity")
+        scaleAnimation.duration = 1.0
         scaleAnimation.fromValue = 1.0
-        scaleAnimation.toValue = 1.5
+        scaleAnimation.toValue = 0.5
         scaleAnimation.repeatCount = .infinity
         scaleAnimation.autoreverses = true
         scaleAnimation.isRemovedOnCompletion = false   //Set this property to false.
-        dotView.layer.add(scaleAnimation, forKey: "scale")
+        imageView.layer.add(scaleAnimation, forKey: "opacity")
         
         updateColors()
         updateState()
@@ -88,10 +89,10 @@ class DataSyncDotView: UIView {
     func updateState() {
         switch state.state {
         case .offlinePending:
-            dotView.backgroundColor = .Orange_Banner
+            imageView.tintColor = .Orange_Banner
             isHidden = false
         case .onlineSync:
-            dotView.backgroundColor = .Special_03
+            imageView.tintColor = .Special_03
             isHidden = false
         case .noPending:
             isHidden = true

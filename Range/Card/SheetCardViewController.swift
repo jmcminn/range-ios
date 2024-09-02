@@ -39,6 +39,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     ///   - autoDismiss: by default the card is dismissed when closed, for dismissing manually (in response to onClose) set to false
     init(
         icon: UIImage?,
+        iconTintColor: UIColor = .dynamic(.Neutral_04),
         title: String?,
         subtitle: String? = nil,
         description: String? = nil,
@@ -54,7 +55,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         self.onClose = onClose
 
         if let icon = icon {
-            setupTitleIcon(image: icon)
+            setupTitleIcon(image: icon, tintColor: iconTintColor)
         }
         if let title = title {
             setupTitleLabel(title: title)
@@ -289,11 +290,11 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         sheetHeaderView.setContentHuggingPriority(.required, for: .vertical)
     }
 
-    private func setupTitleIcon(image: UIImage) {
+    private func setupTitleIcon(image: UIImage, tintColor: UIColor) {
         let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
             .applying(UIImage.SymbolConfiguration(weight: .bold))
         titleIcon = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(imageConfig))
-        titleIcon!.tintColor = .dynamic(.Neutral_04)
+        titleIcon!.tintColor = tintColor
     }
 
     private func setupTitleLabel(title: String) {

@@ -1,4 +1,3 @@
-import Combine
 import UIKit
 
 /// The view displayed at the top of the screen that looks similar to navigation bar (but is a custom view)
@@ -13,6 +12,7 @@ class TopViewController: UIViewController {
     private let rightAction: UIAction?
     // the button for the rightAction
     private(set) var rightButton: UIButton?
+    private var dataSyncIndicatorView: DataSyncIndicatorView?
 
     private var font: UIFont {
         ._preferredFont(forTextStyle: .callout, symbolicTraits: .traitBold)
@@ -20,9 +20,7 @@ class TopViewController: UIViewController {
 
     private let userDataSyncState: UserDataSyncState?
     /// combine observers
-    private var subscriptions = Set<AnyCancellable>()
-    private var dataSyncBannerView: DataSyncBannerView?
-    var onDataSyncBannerTapped: (() -> Void)?
+    var onDataSyncButtonTapped: (() -> Void)?
 
     ///
     /// - Parameters:
@@ -62,14 +60,6 @@ class TopViewController: UIViewController {
             make.height.equalTo(1)
         }
 
-        setupDataSyncBannerView()
-        if let dataSyncBannerView {
-            view.addSubview(dataSyncBannerView)
-            dataSyncBannerView.snp.makeConstraints { make in
-                make.centerX.width.top.equalToSuperview()
-            }
-        }
-
         imageAndTitle.axis = .horizontal
         imageAndTitle.distribution = .equalSpacing
         imageAndTitle.spacing = 8
@@ -86,10 +76,7 @@ class TopViewController: UIViewController {
         imageAndTitle.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().offset(-10)
-            make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
-            if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
-                make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
-            }
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
         }
 
         setupBackButton()
@@ -111,14 +98,18 @@ class TopViewController: UIViewController {
                 make.centerY.equalTo(imageAndTitle.snp.centerY)
             }
         }
-
-        updateDataSyncBanner(animated: false)
-        if let userDataSyncState {
-            userDataSyncState.$state
-                .receive(on: DispatchQueue.main)
-                .removeDuplicates()
-                .sink { [weak self] _ in self?.updateDataSyncBanner() }
-                .store(in: &subscriptions)
+        
+        setupDataSyncIndicatorView()
+        if let dataSyncIndicatorView {
+            view.addSubview(dataSyncIndicatorView)
+            dataSyncIndicatorView.snp.makeConstraints { make in
+                if let rightButton {
+                    make.trailing.equalTo(rightButton.snp.leading).offset(-8)
+                } else {
+                    make.trailing.equalToSuperview().inset(8)
+                }
+                make.centerY.equalTo(imageAndTitle.snp.centerY)
+            }
         }
     }
 
@@ -135,10 +126,7 @@ class TopViewController: UIViewController {
                 imageAndTitle.snp.remakeConstraints { make in
                     make.centerX.equalToSuperview()
                     make.bottom.equalToSuperview().offset(-10)
-                    make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
-                    if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
-                        make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
-                    }
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
                 }
             } else {
                 // align to back button on the leading side and superview on the trailing (it doesn't
@@ -147,10 +135,7 @@ class TopViewController: UIViewController {
                     make.leading.equalTo(backButton.snp.trailing)
                     make.trailing.equalToSuperview().offset(-12)
                     make.bottom.equalToSuperview().offset(-10)
-                    make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
-                    if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
-                        make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
-                    }
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
                 }
             }
         } else {
@@ -160,15 +145,8 @@ class TopViewController: UIViewController {
                 make.trailing.lessThanOrEqualToSuperview().offset(-12)
                 make.centerX.equalToSuperview()
                 make.bottom.equalToSuperview().offset(-10)
-                make.top.greaterThanOrEqualTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
-                if let dataSyncBannerView, let userDataSyncState, userDataSyncState.state != .noPending {
-                    make.top.greaterThanOrEqualTo(dataSyncBannerView.snp.bottom).offset(10)
-                }
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
             }
-        }
-
-        if let userDataSyncState, let dataSyncBannerView {
-            dataSyncBannerView.isHidden = userDataSyncState.state == .noPending
         }
     }
 
@@ -210,6 +188,12 @@ class TopViewController: UIViewController {
         config.preferredSymbolConfigurationForImage = imageConfig
         rightButton = RangeButton(configuration: config, primaryAction: rightAction)
     }
+    
+    private func setupDataSyncIndicatorView() {
+        guard let userDataSyncState else { return }
+        dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
+        dataSyncIndicatorView?.onTapped = onDataSyncButtonTapped
+    }
 
     private func setupImageView() {
         guard let iconName = iconName else { return }
@@ -226,25 +210,4 @@ class TopViewController: UIViewController {
         titleLabel.font = font
         titleLabel.adjustsFontForContentSizeCategory = true
     }
-
-    private func setupDataSyncBannerView() {
-        guard userDataSyncState != nil else { return }
-        dataSyncBannerView = DataSyncBannerView()
-        dataSyncBannerView?.onTapped = onDataSyncBannerTapped
-    }
-
-    private func updateDataSyncBanner(animated: Bool = true) {
-        guard let userDataSyncState, let dataSyncBannerView else { return }
-        dataSyncBannerView.setState(userDataSyncState.state)
-        view.setNeedsLayout()
-        if animated {
-            UIView.animate(withDuration: 0.2) {
-                self.view.layoutIfNeeded()
-            }
-        } else {
-            view.layoutIfNeeded()
-        }
-    }
 }
-
-
