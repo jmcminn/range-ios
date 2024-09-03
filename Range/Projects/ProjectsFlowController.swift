@@ -144,9 +144,8 @@ class ProjectsFlowController: UINavigationController {
         let content = UNMutableNotificationContent()
         content.title = state == .offlinePending ? "Range • Offline Mode" : "Range • Data Sync In-progress"
         content.body = state == .offlinePending
-            ?
-            "To sync your offline data and data to your Organization, please remember to open the app when you have an Internet connection."
-            : "Please open the app to continue syncing your offline data to your Organization."
+            ? "You have offline data that has not been synced. Once you have an Internet connection, open the Range app to sync your offline data."
+            : "You have offline data that has not been synced. Please open the Range app to complete the data sync process."
 
         let uuidString = UUID().uuidString
         let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
@@ -165,7 +164,7 @@ class ProjectsFlowController: UINavigationController {
         guard state != .noPending else { return }
         let content = UNMutableNotificationContent()
         content.title = "Range • Data Sync In-progress"
-        content.body = "Please open the app to continue syncing your offline data to your Organization."
+        content.body = "Please sign back into the Range app to continue syncing your data."
 
         let uuidString = UUID().uuidString
         let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)

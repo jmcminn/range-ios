@@ -5,10 +5,8 @@ import UIKit
 func _dataSyncInfoCard(_ state: UserDataSyncState.State) -> SheetCardViewController {
     let title = state == .offlinePending ? "Data Sync Pending" : "Data Sync In-progress"
     let description = state == .offlinePending
-        ?
-        "Your device currently has no Internet connection or uploading media via an internet connection has been disabled.\n\nYou can continue to use the app and when your device has an Internet connection or wifi access, all pending media will be synced to your Range Organization automatically when the app is open."
-        :
-        "Your device has established an Internet connection or wifi access and is currently syncing your pending media to your Organization. Once complete, this banner will disappear."
+        ? "Your device has no Internet connection or you have disabled “uploading data via cellular data” in the Range app settings.\n\nYou can continue to use the Range app and we’ll sync all your data once you have an Internet connection."
+        : "We are currently syncing your offline data to Range. Please keep the app open and once the syncing is complete, this banner will disappear."
     return SheetCardViewController(
         icon: UIImage(systemName: "arrow.triangle.2.circlepath.circle.fill"),
         iconTintColor: state == .offlinePending ? .Orange_Banner : .Special_03,
