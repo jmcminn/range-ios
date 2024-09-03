@@ -361,6 +361,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             Auth.auth().removeStateDidChangeListener(authenticatedUserListenerHandle)
         }
         if let projectsFC = window?.rootViewController as? ProjectsFlowController {
+            projectsFC.triggerDataSyncNotificationOnSignOut()
             await projectsFC.stop()
         }
         // TODO: we cannot really terminate the firestore as it's a shared instance and we are

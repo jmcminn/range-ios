@@ -131,6 +131,52 @@ class ProjectsFlowController: UINavigationController {
         observeCurrentUser()
         observeCurrentOrganization()
         observeOrganizations()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(triggerDataSyncNotificationOnResignActive),
+                                               name: UIApplication.willResignActiveNotification,
+                                               object: nil)
+    }
+
+    @objc private func triggerDataSyncNotificationOnResignActive() {
+        let state = userDataSyncState.state
+        guard state != .noPending else { return }
+        let content = UNMutableNotificationContent()
+        content.title = state == .offlinePending ? "Range • Offline Mode" : "Range • Data Sync In-progress"
+        content.body = state == .offlinePending
+            ?
+            "To sync your offline data and data to your Organization, please remember to open the app when you have an Internet connection."
+            : "Please open the app to continue syncing your offline data to your Organization."
+
+        let uuidString = UUID().uuidString
+        let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
+
+        Task {
+            let notificationCenter = UNUserNotificationCenter.current()
+            do {
+                try await notificationCenter.add(request)
+            } catch {
+            }
+        }
+    }
+    
+    func triggerDataSyncNotificationOnSignOut() {
+        let state = userDataSyncState.state
+        guard state != .noPending else { return }
+        let content = UNMutableNotificationContent()
+        content.title = "Range • Data Sync In-progress"
+        content.body = "Please open the app to continue syncing your offline data to your Organization."
+
+        let uuidString = UUID().uuidString
+        let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
+
+        Task {
+            let notificationCenter = UNUserNotificationCenter.current()
+            do {
+                try await notificationCenter.add(request)
+            } catch {
+            }
+        }
     }
 
     private func autoShowOrganizationSelectorIfNeeded() {
@@ -214,7 +260,11 @@ class ProjectsFlowController: UINavigationController {
         guard let projectsNavigationController, let feedNavigationController else { return }
         organizationSubscriptions.removeAll()
         if let organizationModel = userModel.currentOrganizationModel {
-            let projectsVC = ProjectsViewController(model: organizationModel, userPreferences: userPreferences, userDataSyncState: userDataSyncState)
+            let projectsVC = ProjectsViewController(
+                model: organizationModel,
+                userPreferences: userPreferences,
+                userDataSyncState: userDataSyncState
+            )
             projectsVC.title = String(localized: "My Projects")
             projectsVC.onOrganizationButtonTap = { [weak self] in
                 self?.selectOrganizationAction()
