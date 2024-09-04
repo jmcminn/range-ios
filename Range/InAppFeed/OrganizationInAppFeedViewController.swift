@@ -82,7 +82,7 @@ class OrganizationInAppFeedViewController: UIViewController {
         titleLabel.adjustsFontForContentSizeCategory = true
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(6)
             make.centerX.equalToSuperview()
         }
     }
@@ -124,7 +124,7 @@ class OrganizationInAppFeedViewController: UIViewController {
 
         view.addSubview(button)
         button.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(12)
+            make.leading.equalToSuperview().offset(16)
             make.width.height.equalTo(32)
             make.centerY.equalTo(titleLabel)
         }
@@ -148,7 +148,7 @@ class OrganizationInAppFeedViewController: UIViewController {
         markAllAsReadButton.tapAreaInsets = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
         view.addSubview(markAllAsReadButton)
         markAllAsReadButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(12)
+            make.trailing.equalToSuperview().inset(8)
             make.centerY.equalTo(titleLabel)
         }
     }
@@ -160,7 +160,7 @@ class OrganizationInAppFeedViewController: UIViewController {
         }
         view.addSubview(dataSyncIndicatorView)
         dataSyncIndicatorView.snp.makeConstraints { make in
-            make.trailing.equalTo(markAllAsReadButton.snp.leading).offset(-8)
+            make.trailing.equalTo(markAllAsReadButton.snp.leading).offset(2)
             make.centerY.equalTo(markAllAsReadButton)
         }
     }

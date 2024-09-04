@@ -7,16 +7,25 @@ func _dataSyncInfoCard(_ state: UserDataSyncState.State) -> SheetCardViewControl
     let description = state == .offlinePending
         ? "Your device has no Internet connection or you have disabled “uploading data via cellular data” in the Range app settings.\n\nYou can continue to use the Range app and we’ll sync all your data once you have an Internet connection."
         : "We are currently syncing your offline data to Range. Please keep the app open and once the syncing is complete, this banner will disappear."
+    let iconBgView = DataSyncIconBackgroundView()
+    iconBgView.snp.makeConstraints { make in
+        make.width.height.equalTo(28)
+    }
     return SheetCardViewController(
-        icon: UIImage(systemName: "arrow.triangle.2.circlepath.circle.fill"),
+        icon: UIImage(systemName: "arrow.triangle.2.circlepath"),
         iconTintColor: state == .offlinePending ? .Orange_Banner : .Special_03,
+        iconImageConfig: UIImage.SymbolConfiguration(pointSize: 16, weight: .black),
+        iconBgView: iconBgView,
         title: title, description: description)
 }
 
 class DataSyncIndicatorView: UIView {
     private let state: UserDataSyncState
-    private let bgView = UIView()
-    private let imageView = UIImageView(image: UIImage(systemName: "arrow.triangle.2.circlepath.circle.fill"))
+    private let bgView = DataSyncIconBackgroundView()
+    private let imageView = UIImageView(image: UIImage(
+        systemName: "arrow.triangle.2.circlepath",
+        withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .black)
+    ))
     private var subscriptions = Set<AnyCancellable>()
     var onTapped: (() -> Void)?
     
@@ -28,12 +37,9 @@ class DataSyncIndicatorView: UIView {
         self.state = state
         super.init(frame: .zero)
         
-        bgView.layer.cornerRadius = 12
-        bgView.layer.borderWidth = 1
-        bgView.backgroundColor = .dynamic(.Neutral_09)
         addSubview(bgView)
         bgView.snp.makeConstraints { make in
-            make.width.height.equalTo(24)
+            make.width.height.equalTo(28)
             make.center.equalToSuperview()
         }
         bgView.isUserInteractionEnabled = false
@@ -53,7 +59,6 @@ class DataSyncIndicatorView: UIView {
         scaleAnimation.isRemovedOnCompletion = false   //Set this property to false.
         imageView.layer.add(scaleAnimation, forKey: "opacity")
         
-        updateColors()
         updateState()
         
         state.$state
@@ -75,15 +80,6 @@ class DataSyncIndicatorView: UIView {
         onTapped?()
     }
     
-    /// update colors
-    override func traitCollectionDidChange(_: UITraitCollection?) {
-        updateColors()
-    }
-
-    private func updateColors() {
-        bgView.layer.borderColor = chooseColor(.Neutral_07).cgColor
-    }
-
     func updateState() {
         switch state.state {
         case .offlinePending:
@@ -95,5 +91,35 @@ class DataSyncIndicatorView: UIView {
         case .noPending:
             isHidden = true
         }
+    }
+}
+
+class DataSyncIconBackgroundView: UIView {
+    init() {
+        super.init(frame: .zero)
+        
+        layer.borderWidth = 1
+        backgroundColor = .dynamic(.Neutral_09)
+        updateColors()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    /// update colors
+    override func traitCollectionDidChange(_: UITraitCollection?) {
+        updateColors()
+    }
+
+    private func updateColors() {
+        layer.borderColor = chooseColor(.Neutral_07).cgColor
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        layer.cornerRadius = frame.width / 2.0
     }
 }

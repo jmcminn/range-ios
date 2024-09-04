@@ -18,6 +18,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     /// It also has some bottom margin added, so any sheet content view can be added directly below it
     let sheetHeaderView = UIView()
     private(set) var closeButton: UIButton!
+    private let iconBgView: UIView?
     private(set) var titleIcon: UIImageView?
     private(set) var titleLabel: UILabel?
     private(set) var subtitleLabel: UILabel?
@@ -40,6 +41,9 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     init(
         icon: UIImage?,
         iconTintColor: UIColor = .dynamic(.Neutral_04),
+        iconImageConfig: UIImage.SymbolConfiguration = UIImage.SymbolConfiguration(textStyle: .body)
+            .applying(UIImage.SymbolConfiguration(weight: .bold)),
+        iconBgView: UIView? = nil,
         title: String?,
         subtitle: String? = nil,
         description: String? = nil,
@@ -50,12 +54,13 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
     ) {
         self.cardConfig = cardConfig
         self.autoDismiss = autoDismiss
+        self.iconBgView = iconBgView
         super.init(nibName: nil, bundle: nil)
 
         self.onClose = onClose
 
         if let icon = icon {
-            setupTitleIcon(image: icon, tintColor: iconTintColor)
+            setupTitleIcon(image: icon, tintColor: iconTintColor, config: iconImageConfig)
         }
         if let title = title {
             setupTitleLabel(title: title)
@@ -135,11 +140,17 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             make.bottom.lessThanOrEqualToSuperview().offset(-16)
         }
 
-        if let titleIcon = titleIcon {
+        if let titleIcon {
             sheetHeaderView.addSubview(titleIcon)
             titleIcon.snp.makeConstraints { make in
                 make.centerY.equalTo(closeButton.snp.centerY)
                 make.leading.equalTo(16)
+            }
+            if let iconBgView {
+                sheetHeaderView.insertSubview(iconBgView, belowSubview: titleIcon)
+                iconBgView.snp.makeConstraints { make in
+                    make.center.equalTo(titleIcon)
+                }
             }
         }
         if let titleLabel = titleLabel {
@@ -290,10 +301,8 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         sheetHeaderView.setContentHuggingPriority(.required, for: .vertical)
     }
 
-    private func setupTitleIcon(image: UIImage, tintColor: UIColor) {
-        let imageConfig = UIImage.SymbolConfiguration(textStyle: .body)
-            .applying(UIImage.SymbolConfiguration(weight: .bold))
-        titleIcon = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(imageConfig))
+    private func setupTitleIcon(image: UIImage, tintColor: UIColor, config: UIImage.SymbolConfiguration) {
+        titleIcon = UIImageView(image: image.withRenderingMode(.alwaysTemplate).withConfiguration(config))
         titleIcon!.tintColor = tintColor
     }
 
