@@ -30,7 +30,10 @@ extension ProjectModel {
 
         // v26 removes Feature and links Geometry directly to Collaboration
         if oldSchemaVersion < 26 { migrateToSchemaVersion26(migration) }
+        
+        // v27 introduces ProjectSummary.isArchived
     }
+    
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource
     /// Renaming objects is not a supported migration so we need to create new Canvas objects,

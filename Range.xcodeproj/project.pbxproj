@@ -145,6 +145,7 @@
 		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
+		0A3526152C87A665001D49B5 /* ProjectFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3526142C87A665001D49B5 /* ProjectFiltersCardViewController.swift */; };
 		0A35A7F02C75EF0700B81C5A /* UserDataSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */; };
 		0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */; };
 		0A3680DC29ED9AA600CD1D98 /* CollaborationFiltersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680DB29ED9AA600CD1D98 /* CollaborationFiltersTest.swift */; };
@@ -189,6 +190,7 @@
 		0A45BB012AAA2BE000B86B85 /* TranslucentButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */; };
 		0A45BB032AAB2B0E00B86B85 /* BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45BB022AAB2B0E00B86B85 /* BackButton.swift */; };
 		0A45BB062AAB3F7000B86B85 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0A45BB052AAB3F7000B86B85 /* GoogleSignInSwift */; };
+		0A45C6972C889D4D00E923DA /* ProjectFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A45C6962C889D4D00E923DA /* ProjectFilters.swift */; };
 		0A47830028A516AA0063040F /* CollaborationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4782FF28A516AA0063040F /* CollaborationViewController.swift */; };
 		0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47830128A53FE50063040F /* ThumbnailCollectionViewCell.swift */; };
 		0A48ACDB281BDABF0044E06E /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A48ACDA281BDABF0044E06E /* DisplayLink.swift */; };
@@ -664,6 +666,7 @@
 		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
+		0A3526142C87A665001D49B5 /* ProjectFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataSyncState.swift; sourceTree = "<group>"; };
 		0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A3680DB29ED9AA600CD1D98 /* CollaborationFiltersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationFiltersTest.swift; sourceTree = "<group>"; };
@@ -710,6 +713,7 @@
 		0A45BAFE2AA8C9F600B86B85 /* AwaitEmailVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwaitEmailVerificationView.swift; sourceTree = "<group>"; };
 		0A45BB002AAA2BE000B86B85 /* TranslucentButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslucentButton.swift; sourceTree = "<group>"; };
 		0A45BB022AAB2B0E00B86B85 /* BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButton.swift; sourceTree = "<group>"; };
+		0A45C6962C889D4D00E923DA /* ProjectFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFilters.swift; sourceTree = "<group>"; };
 		0A4782FF28A516AA0063040F /* CollaborationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationViewController.swift; sourceTree = "<group>"; };
 		0A47830128A53FE50063040F /* ThumbnailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A48ACDA281BDABF0044E06E /* DisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
@@ -2195,6 +2199,8 @@
 				0A83D90F2AB20008003A8DCE /* EnterAccountInfoView.swift */,
 				0AD78DFF2AB9869700710260 /* ProjectsEmptyStateView.swift */,
 				0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */,
+				0A45C6962C889D4D00E923DA /* ProjectFilters.swift */,
+				0A3526142C87A665001D49B5 /* ProjectFiltersCardViewController.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -2671,6 +2677,7 @@
 				0AEC91AE2B2C910D00AE2329 /* ButtonStyles.swift in Sources */,
 				0A83D9122AB33A54003A8DCE /* DropdownButton.swift in Sources */,
 				0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */,
+				0A45C6972C889D4D00E923DA /* ProjectFilters.swift in Sources */,
 				0AD78E002AB9869700710260 /* ProjectsEmptyStateView.swift in Sources */,
 				0AC8D1322BB302BC00D37202 /* PDFScreenshotter.swift in Sources */,
 				0A97232D27FC85A900D744F4 /* ModalCardDisplay.swift in Sources */,
@@ -2860,6 +2867,7 @@
 				0A078E0F2BBAB86E00857DE5 /* LineAnnotation.swift in Sources */,
 				0A0D31D728A41AC6007A8D49 /* ThumbnailsViewController.swift in Sources */,
 				0A47830228A53FE50063040F /* ThumbnailCollectionViewCell.swift in Sources */,
+				0A3526152C87A665001D49B5 /* ProjectFiltersCardViewController.swift in Sources */,
 				0A73938B2A64284E0079A7FB /* ScribbleAnnotationRenderer.swift in Sources */,
 				0A0E2066296311A8001782A5 /* PinType.swift in Sources */,
 				0A25D2BA2AB8C02F00A331E1 /* DBMatcher.m in Sources */,

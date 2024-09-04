@@ -10,6 +10,7 @@ class ProjectsViewController: UIViewController {
     let model: OrganizationModel
     let userPreferences: UserPreferences
     let userDataSyncState: UserDataSyncState
+    let filters: ProjectFilters
 
     private var tableView: UITableView!
     private var emptyStateViewController: UIHostingController<ProjectsEmptyStateView>?
@@ -17,11 +18,17 @@ class ProjectsViewController: UIViewController {
     /// label shown as title view for navigation bar
     private let titleLabel = UILabel()
 
+    private var currentUserNotificationToken: NotificationToken?
     private let createProjectButton = RoundShadowButton(
         image: UIImage(systemName: "plus") ?? UIImage(),
         imageTintColor: .white,
         variant: .blue
     )
+
+    /// Default filters, never updated, for comparison of current filters output vs the default one for filters indicator badge
+    private let defaultFilters: ProjectFilters
+    private let filtersButton = RoundShadowButton(image: UIImage(named: "filter.search") ?? UIImage())
+    private let filtersIndicatorBadge = BadgeView()
 
     var onProjectSelected: ((ProjectSummary) -> Void)?
     var onOrganizationButtonTap: (() -> Void)?
@@ -40,19 +47,33 @@ class ProjectsViewController: UIViewController {
     /// It's an array of case/diactric insensitive and trimmed components of the search term
     /// If empty then it counts as matched.
     private var searchTerms: [String] = []
+    // projects after applying fitlers
     private var filteredProjects: [ProjectSummary] = []
+    // projects after applying fitlers and searchTerm
+    private var searchedProjects: [ProjectSummary] = []
 
     private var recentProjects: [ProjectSummary] = []
 
-    init(model: OrganizationModel, userPreferences: UserPreferences, userDataSyncState: UserDataSyncState) {
+    init(
+        model: OrganizationModel,
+        userPreferences: UserPreferences,
+        userDataSyncState: UserDataSyncState,
+        filters: ProjectFilters
+    ) {
         self.model = model
         self.userPreferences = userPreferences
         self.userDataSyncState = userDataSyncState
+        self.filters = filters
+        defaultFilters = ProjectFilters()
         projects = model.projects.sorted(by: \.name)
         super.init(nibName: nil, bundle: nil)
 
-        filteredProjects = [ProjectSummary](projects)
+        updateData()
         updateRecentProjects()
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(filtersUpdated),
+            name: ProjectFilters.UpdateNotificationName, object: nil
+        )
     }
 
     @available(*, unavailable)
@@ -61,6 +82,7 @@ class ProjectsViewController: UIViewController {
     }
 
     deinit {
+        currentUserNotificationToken?.invalidate()
         notificationToken?.invalidate()
     }
 
@@ -89,7 +111,10 @@ class ProjectsViewController: UIViewController {
         setupTitleView()
         updateTitleLabel()
         setupCreateProjectButton()
+        setupFiltersButton()
+        setupFiltersIndicatorBadge()
 
+        observeCurrentUser()
         observeProjects()
         tableView.reloadData()
         updateEmptyStateView()
@@ -107,6 +132,12 @@ class ProjectsViewController: UIViewController {
         onViewWillAppear?()
     }
 
+    private func observeCurrentUser() {
+        currentUserNotificationToken = model.currentUser.observe { [weak self] _ in
+            self?.updateButtonsState()
+        }
+    }
+
     private func observeProjects() {
         notificationToken?.invalidate()
         notificationToken = projects.observe { [weak self] (changes: RealmCollectionChange) in
@@ -116,30 +147,42 @@ class ProjectsViewController: UIViewController {
                 self.updateData()
                 self.updateTitleLabel()
                 self.updateEmptyStateView()
+                self.updateFiltersIndicatorBadge()
             case .update:
                 self.updateData()
                 self.updateTitleLabel()
                 self.updateEmptyStateView()
+                self.updateFiltersIndicatorBadge()
             case let .error(error):
                 Logger.model.error("observing projects failed: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
-    
+
     private func updateRecentProjects() {
         recentProjects = userPreferences.recentProjectIds(forOrganizationId: model.organizationId)
             .compactMap { projectId in
-                model.projects.first { $0.id == projectId }
+                filteredProjects.first { $0.id == projectId }
             }
+    }
+
+    @objc private func filtersUpdated() {
+        updateData()
+        updateTitleLabel()
+        updateFiltersIndicatorBadge()
     }
 
     /// apply the search terms to filter the projects and reload the table view
     private func updateData() {
-        filteredProjects = projects.filter(matchSearchTerms)
+        filteredProjects = projects.filter(filters.match)
+
+        searchedProjects = filteredProjects.filter(matchSearchTerms)
 
         updateRecentProjects()
 
-        tableView.reloadData()
+        if tableView != nil {
+            tableView.reloadData()
+        }
     }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
@@ -173,6 +216,50 @@ class ProjectsViewController: UIViewController {
         }
     }
 
+    private func setupFiltersButton() {
+        filtersButton.addTarget(self, action: #selector(projectFiltersButtonTapped), for: .touchUpInside)
+        view.addSubview(filtersButton)
+        filtersButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            if model.currentUser.canCreateProject() {
+                make.bottom.equalTo(createProjectButton.snp.top).offset(-12)
+            } else {
+                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-12)
+            }
+        }
+    }
+
+    private func setupFiltersIndicatorBadge() {
+        filtersIndicatorBadge.backgroundColor = .systemGreen
+        filtersIndicatorBadge.contentInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        filtersIndicatorBadge.textColor = .Neutral_10
+        filtersIndicatorBadge.font = .systemFont(ofSize: 11, weight: .bold)
+        filtersIndicatorBadge.isUserInteractionEnabled = false
+        filtersButton.addSubview(filtersIndicatorBadge)
+        filtersIndicatorBadge.snp.makeConstraints { make in
+            make.centerX.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview().offset(-16)
+        }
+    }
+
+    /// Show filters indicator badge only if the number of items filtered by the current filter is different than the number
+    /// of items filtered by the default filter
+    private func updateFiltersIndicatorBadge() {
+        let filteredCount = filteredProjects.count
+
+        let filteredByDefaultFilterCount = projects.filter(defaultFilters.match).count
+
+        // don't show the indicator if filter is not impacting the visible tasks
+        filtersIndicatorBadge.isHidden = filteredCount == filteredByDefaultFilterCount
+
+        filtersIndicatorBadge.text = filteredCount >= 99 ? "99+" : String(filteredCount)
+    }
+
+    @objc private func projectFiltersButtonTapped() {
+        UIApplication.shared.sendAction(#selector(ProjectsFlowActions.selectProjectFiltersAction),
+                                        to: nil, from: filtersButton, for: nil)
+    }
+
     /// Setup custom navigationItem.titleView with UILabel subview so we can set attributedText for title
     private func setupTitleView() {
         let titleView = UIView()
@@ -196,7 +283,7 @@ class ProjectsViewController: UIViewController {
             .font: UIFont._preferredFont(forTextStyle: .headline, symbolicTraits: .traitBold),
         ])
 
-        title.append(NSAttributedString(string: " (\(projects.count))", attributes: [
+        title.append(NSAttributedString(string: " (\(filteredProjects.count))", attributes: [
             .foregroundColor: UIColor.dynamic(.Neutral_05),
             .font: UIFont._preferredFont(forTextStyle: .subheadline, symbolicTraits: .traitBold),
         ]))
@@ -237,6 +324,18 @@ class ProjectsViewController: UIViewController {
             createProjectButton.isHidden = !model.currentUser.canCreateProject()
             if let emptyStateViewController = emptyStateViewController {
                 remove(childController: emptyStateViewController)
+            }
+        }
+    }
+
+    private func updateButtonsState() {
+        createProjectButton.isHidden = !model.currentUser.canCreateProject()
+        filtersButton.snp.remakeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            if model.currentUser.canCreateProject() {
+                make.bottom.equalTo(createProjectButton.snp.top).offset(-12)
+            } else {
+                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-12)
             }
         }
     }
@@ -300,8 +399,8 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
             // showing recent and all projects but only if there are any recent projects
             if recentProjects.isEmpty {
                 // can happen when user is removed from a project before the table is reloaded
-                guard row < projects.count else { return .header("") }
-                return .project(projects[row])
+                guard row < filteredProjects.count else { return .header("") }
+                return .project(filteredProjects[row])
             } else {
                 if row == 0 {
                     return .header(String(localized: "Recent Projects"))
@@ -311,14 +410,14 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
                 } else if row == recentProjects.count + 1 {
                     return .header(String(localized: "All Projects (A-Z)"))
                 } else {
-                    guard row - recentProjects.count - 2 < projects.count else { return .header("") }
-                    return .project(projects[row - recentProjects.count - 2])
+                    guard row - recentProjects.count - 2 < filteredProjects.count else { return .header("") }
+                    return .project(filteredProjects[row - recentProjects.count - 2])
                 }
             }
         } else {
             // showing search results only
-            guard row < filteredProjects.count else { return .header("") }
-            return .project(filteredProjects[row])
+            guard row < searchedProjects.count else { return .header("") }
+            return .project(searchedProjects[row])
         }
     }
 
@@ -326,16 +425,16 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
         if searchTerms.isEmpty {
             // showing recent and all projects but only if there are any recent projects
             if recentProjects.isEmpty {
-                return projects.count
+                return filteredProjects.count
             } else {
                 // (+1 for each header), as it's all rendered as cells (each project row is a separate
                 // section to get a rounded cell layout
-                return 1 + recentProjects.count + 1 + projects.count
+                return 1 + recentProjects.count + 1 + filteredProjects.count
             }
 
         } else {
             // showing search results only
-            return filteredProjects.count
+            return searchedProjects.count
         }
     }
 

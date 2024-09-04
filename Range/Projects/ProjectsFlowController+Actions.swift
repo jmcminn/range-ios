@@ -9,6 +9,8 @@ import UIKit
     func createProjectAction()
     /// show route
     func showRoute(sender: Any?, event: FlowEvent)
+    /// filter projects
+    func selectProjectFiltersAction()
 }
 
 extension ProjectsFlowController: ProjectsFlowActions {
@@ -41,5 +43,19 @@ extension ProjectsFlowController: ProjectsFlowActions {
             // url not recognized as app route, show in browser instead
             UIApplication.shared.open(url)
         }
+    }
+
+    func selectProjectFiltersAction() {
+        guard let organizationModel = userModel.currentOrganizationModel else { return }
+        let projectFiltersCardVC = ProjectFiltersCardViewController(
+            model: organizationModel,
+            filters: projectFilters
+        )
+        
+        projectFiltersCardVC.onClose = { [weak self] in
+            guard let self = self else { return }
+            userPreferences.setProjectFilters(self.projectFilters)
+        }
+        projectFiltersCardVC.installAndShowCard(in: _rootViewController())
     }
 }

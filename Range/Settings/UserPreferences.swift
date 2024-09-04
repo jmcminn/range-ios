@@ -12,6 +12,8 @@ class UserPreferences {
         static let lastPresentedOrganizationIds = "lastPresentedOrganizationIds"
         /// Id of the last open organization
         static let lastOpenOrganizationId = "lastOpenOrganizationId"
+        /// stores ProjectFilters
+        static let projectFilters = "projectFilters"
         /// Ids of the up to 3 recently open projects per organization, will be followe by an organization id
         static let recentProjectIdsPrefix = "recentProjectsIds_"
         /// the prefix to be used for storing last open canvas for a project, will be followed by a project id
@@ -70,6 +72,34 @@ class UserPreferences {
             } else {
                 defaults.removeObject(forKey: Keys.lastOpenOrganizationId)
             }
+        }
+    }
+
+    /// Returns the project filters for this user (filters used on the projects listing screen)
+    func projectFilters() -> ProjectFilters {
+        guard let filtersString = defaults.object(forKey: Keys.projectFilters) as? String else {
+            return ProjectFilters()
+        }
+        do {
+            let filtersData = try filtersString.data(using: .utf8)
+                .or(error: "Failed to get data from project filters string")
+            let jsonDecoder = JSONDecoder()
+            return try jsonDecoder.decode(ProjectFilters.self, from: filtersData)
+        } catch {
+            Logger.settings.error("Failed to load project filters: \(error)")
+            return ProjectFilters()
+        }
+    }
+
+    func setProjectFilters(_ filters: ProjectFilters) {
+        do {
+            let jsonEncoder = JSONEncoder()
+            let filtersData = try jsonEncoder.encode(filters)
+            let filtersString = try String(data: filtersData, encoding: .utf8)
+                .or(error: "Failed to create String from project filters data")
+            defaults.set(filtersString, forKey: Keys.projectFilters)
+        } catch {
+            Logger.settings.error("Failed to save project filters: \(error)")
         }
     }
 

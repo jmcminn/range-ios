@@ -41,6 +41,8 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
     @Persisted var canvasOrder: List<String>
     /// UI identifier for project
     @Persisted var identifier: String?
+    /// whether project is archived
+    @Persisted var isArchived: Bool = false
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
     /// Number of tasks per given status. Only available on organization model (not tracked on project model level)
@@ -62,6 +64,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         projectType: ProjectType,
         canvasOrder: [String] = [],
         identifier: String? = nil,
+        isArchived: Bool = false,
         placeholder: Bool = false
     ) {
         super.init()
@@ -75,6 +78,7 @@ class ProjectSummary: Object, WithPlaceholder, WithId {
         self.canvasOrder.removeAll()
         self.canvasOrder.append(objectsIn: canvasOrder)
         self.identifier = identifier
+        self.isArchived = isArchived
         self.placeholder = placeholder
     }
 

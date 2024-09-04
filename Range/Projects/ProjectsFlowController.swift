@@ -34,6 +34,8 @@ class ProjectsFlowController: UINavigationController {
     private var currentOrganizationObservation: NSKeyValueObservation?
     var currentProjectNotificationToken: NotificationToken?
     private var organizationsNotificationToken: NotificationToken?
+    
+    override var shouldAutomaticallyForwardAppearanceMethods: Bool { true }
 
     /// if present show this route when user signs in
     var showRouteOnLogin: OrgRoute?
@@ -42,6 +44,8 @@ class ProjectsFlowController: UINavigationController {
 
     /// combine observers for given organization
     private var organizationSubscriptions = Set<AnyCancellable>()
+    
+    let projectFilters: ProjectFilters
 
     init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
@@ -64,6 +68,7 @@ class ProjectsFlowController: UINavigationController {
             pendingActionsModel: pendingActionsModel,
             pendingUploadsModel: pendingUploadsModel
         )
+        projectFilters = userPreferences.projectFilters()
         super.init(rootViewController: LaunchScreenViewController())
     }
 
@@ -262,7 +267,8 @@ class ProjectsFlowController: UINavigationController {
             let projectsVC = ProjectsViewController(
                 model: organizationModel,
                 userPreferences: userPreferences,
-                userDataSyncState: userDataSyncState
+                userDataSyncState: userDataSyncState,
+                filters: projectFilters
             )
             projectsVC.title = String(localized: "My Projects")
             projectsVC.onOrganizationButtonTap = { [weak self] in

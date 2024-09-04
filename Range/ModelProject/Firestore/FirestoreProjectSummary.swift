@@ -24,11 +24,13 @@ struct FirestoreProjectSummary: Decodable, FirestoreToRealmSyncable {
     var organizationId: String
     /// identifier "1"... or a custom project identifier "M10"...
     var identifier: String?
+    /// whether project is archived
+    var isArchived: Bool?
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
         case center, name, projectDescription = "description", address, canvasOrder, projectTypeId = "projectType",
-             organizationId = "organization", identifier
+             organizationId = "organization", identifier, isArchived
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
@@ -48,7 +50,8 @@ struct FirestoreProjectSummary: Decodable, FirestoreToRealmSyncable {
             address: address,
             projectType: projectType,
             canvasOrder: canvasOrder ?? [],
-            identifier: identifier
+            identifier: identifier,
+            isArchived: isArchived ?? false
         )
         // preserve the task counts in Realm (they are local only data)
         if let existingProject = realm.object(ofType: ProjectSummary.self, forPrimaryKey: id) {
