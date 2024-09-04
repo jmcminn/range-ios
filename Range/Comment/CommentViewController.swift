@@ -226,6 +226,7 @@ class CommentViewController: UIViewController, NonModalCardCoordinating, CardPre
 
 extension CommentViewController {
     private func setupTextView() {
+        textView.backgroundColor = .dynamic(.Neutral_10)
         textView.placeholderText = placeholderText
         textView.textColor = .dynamic(.Neutral_04)
         textView.font = UIFont.preferredFont(forTextStyle: .body)
