@@ -145,7 +145,7 @@ class CanvasViewController: UIViewController {
             to: pdfView
         )
         // the size reported by the PDF page (unrelated to view rendering)
-        let pageBounds = page.bounds(for: .mediaBox)
+        let pageBounds = page._sizeAdjustedForRotation(for: .mediaBox)
         // pdf page size to the rendered view ratio
         let pageBoundsToViewFrameRatio = pageBounds.width / pdfView.frame.width
         // viewFrame in the coordinates of the page bounds (in PDF units, unrelated to view rendering)

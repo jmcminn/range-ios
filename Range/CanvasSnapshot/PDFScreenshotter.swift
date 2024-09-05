@@ -10,7 +10,7 @@ class PDFSnapshotter {
     ///   - selectedFrame - a frame to screenshot in PDF .mediaBox unit. The frame may be outside of the .mediaBox bounds - white background will be added
     func takeSnapshot(page: PDFPage, selectedFrame: CGRect) -> UIImage {
         // the size reported by the PDF page (unrelated to view rendering)
-        let pageBounds = page.bounds(for: .mediaBox)
+        let pageBounds = page._sizeAdjustedForRotation(for: .mediaBox)
         // Scale from the selected frame size to the expected image size
         // If pdf selection is 400x300 but we want a 4096px wide image then scale is 10.24 (4096/400)
         // This is needed to render images in constant resolution and not depending on the

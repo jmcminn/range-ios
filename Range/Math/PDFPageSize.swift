@@ -3,8 +3,8 @@ import PDFKit
 
 extension PDFPage {
     /// Uses bounds(for box) but swaps width/height if rotation is 90 or 270
-    func _sizeAdjustedForRotation(for _: PDFDisplayBox) -> CGSize {
-        let bounds = bounds(for: .mediaBox)
+    func _sizeAdjustedForRotation(for box: PDFDisplayBox) -> CGSize {
+        let bounds = bounds(for: box)
         if rotation == 90 || rotation == 270 {
             // swap width and height if rotated
             return CGSize(width: bounds.height, height: bounds.width)
