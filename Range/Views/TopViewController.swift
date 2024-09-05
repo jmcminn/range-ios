@@ -117,36 +117,24 @@ class TopViewController: UIViewController {
     // there's a back button, then we need to take the whole horizontal space
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let backButton = backButton {
-            let availableSpace = view.frame.width - 80 // 40 on each side (because of the back button on the left)
-            imageAndTitle.layoutIfNeeded()
-            if imageAndTitle.frame.width <= availableSpace {
-                // center
-                imageAndTitle.snp.remakeConstraints { make in
-                    make.centerX.equalToSuperview()
-                    make.bottom.equalToSuperview().offset(-10)
-                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
-                }
+        
+        let leftLimitingView = backButton
+        let rightLimitingView = dataSyncIndicatorView ?? rightButton
+        
+        imageAndTitle.snp.remakeConstraints { make in
+            if let leftLimitingView {
+                make.leading.greaterThanOrEqualTo(leftLimitingView.snp.trailing).offset(12)
             } else {
-                // align to back button on the leading side and superview on the trailing (it doesn't
-                // have to be centered anymore as the text will be ellipsed anyway
-                imageAndTitle.snp.remakeConstraints { make in
-                    make.leading.equalTo(backButton.snp.trailing)
-                    make.trailing.equalToSuperview().offset(-12)
-                    make.bottom.equalToSuperview().offset(-10)
-                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
-                }
-            }
-        } else {
-            // no back button, center but limit to leading/trailing
-            imageAndTitle.snp.remakeConstraints { make in
                 make.leading.greaterThanOrEqualToSuperview().offset(12)
-                make.trailing.lessThanOrEqualToSuperview().offset(-12)
-                make.centerX.equalToSuperview()
-                make.bottom.equalToSuperview().offset(-10)
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
             }
+            if let rightLimitingView {
+                make.trailing.lessThanOrEqualTo(rightLimitingView.snp.leading).offset(-12)
+            } else {
+                make.trailing.lessThanOrEqualToSuperview().offset(-12)
+            }
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-10)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
         }
     }
 
