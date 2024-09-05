@@ -72,7 +72,7 @@ class CanvasViewController: UIViewController {
     private var currentCameraChangeReason: CanvasCameraChangeReason?
 
     let model: ProjectModel
-    unowned let canvasFileLoader: CanvasFileLoader
+    let canvasFileLoader: CanvasFileLoader
     private(set) var canvas: Canvas
     // only when displaying pdf source
     private(set) var pdfPage: PDFPage?
