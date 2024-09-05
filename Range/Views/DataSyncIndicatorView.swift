@@ -28,7 +28,8 @@ class DataSyncIndicatorView: UIView {
     ))
     private var subscriptions = Set<AnyCancellable>()
     var onTapped: (() -> Void)?
-    
+    var onHiddenChange: (() -> Void)?
+
     override var intrinsicContentSize: CGSize {
         CGSize(width: 40, height: 40)
     }
@@ -85,11 +86,14 @@ class DataSyncIndicatorView: UIView {
         case .offlinePending:
             imageView.tintColor = .Orange_Banner
             isHidden = false
+            onHiddenChange?()
         case .onlineSync:
             imageView.tintColor = .Special_03
             isHidden = false
+            onHiddenChange?()
         case .noPending:
             isHidden = true
+            onHiddenChange?()
         }
     }
 }

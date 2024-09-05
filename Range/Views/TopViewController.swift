@@ -109,6 +109,7 @@ class TopViewController: UIViewController {
                     make.trailing.equalToSuperview().inset(8)
                 }
                 make.centerY.equalTo(imageAndTitle.snp.centerY)
+                make.width.height.equalTo(40)
             }
         }
     }
@@ -118,21 +119,30 @@ class TopViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        let leftLimitingView = backButton
-        let rightLimitingView = dataSyncIndicatorView ?? rightButton
+        imageAndTitle.setNeedsLayout()
+        imageAndTitle.layoutIfNeeded()
+
+        let leftMargin: CGFloat = backButton != nil ? 40 : 12
+        var rightMargin: CGFloat = 0.0
+        if rightButton != nil {
+            rightMargin += 48
+        }
+        if let dataSyncIndicatorView, !dataSyncIndicatorView.isHidden {
+            rightMargin += 40
+        }
+        rightMargin = max(rightMargin, 12)
         
+        let availableSpaceForCenterX = view.frame.width - 2 * max(leftMargin, rightMargin)
+
         imageAndTitle.snp.remakeConstraints { make in
-            if let leftLimitingView {
-                make.leading.greaterThanOrEqualTo(leftLimitingView.snp.trailing).offset(12)
+            if imageAndTitle.frame.width <= availableSpaceForCenterX {
+                make.left.greaterThanOrEqualToSuperview().offset(leftMargin)
+                make.right.lessThanOrEqualToSuperview().offset(-rightMargin)
+                make.centerX.equalToSuperview()
             } else {
-                make.leading.greaterThanOrEqualToSuperview().offset(12)
+                make.left.equalToSuperview().inset(leftMargin)
+                make.right.equalToSuperview().inset(rightMargin)
             }
-            if let rightLimitingView {
-                make.trailing.lessThanOrEqualTo(rightLimitingView.snp.leading).offset(-12)
-            } else {
-                make.trailing.lessThanOrEqualToSuperview().offset(-12)
-            }
-            make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().offset(-10)
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
         }
@@ -181,6 +191,7 @@ class TopViewController: UIViewController {
         guard let userDataSyncState else { return }
         dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
         dataSyncIndicatorView?.onTapped = onDataSyncButtonTapped
+        dataSyncIndicatorView?.onHiddenChange = { [weak self] in self?.view.setNeedsLayout() }
     }
 
     private func setupImageView() {
