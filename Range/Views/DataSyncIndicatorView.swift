@@ -9,7 +9,7 @@ func _dataSyncInfoCard(_ state: UserDataSyncState.State) -> SheetCardViewControl
         : "We are currently syncing your offline data to Range. Please keep the app open and once the syncing is complete, this banner will disappear."
     let iconBgView = DataSyncIconBackgroundView()
     iconBgView.snp.makeConstraints { make in
-        make.width.height.equalTo(28)
+        make.width.height.equalTo(30)
     }
     return SheetCardViewController(
         icon: UIImage(systemName: "arrow.triangle.2.circlepath"),
@@ -39,7 +39,7 @@ class DataSyncIndicatorView: UIView {
         
         addSubview(bgView)
         bgView.snp.makeConstraints { make in
-            make.width.height.equalTo(28)
+            make.width.height.equalTo(30)
             make.center.equalToSuperview()
         }
         bgView.isUserInteractionEnabled = false
@@ -50,14 +50,14 @@ class DataSyncIndicatorView: UIView {
         }
         imageView.isUserInteractionEnabled = false
         
-        let scaleAnimation = CABasicAnimation(keyPath: "opacity")
-        scaleAnimation.duration = 1.0
-        scaleAnimation.fromValue = 1.0
-        scaleAnimation.toValue = 0.5
-        scaleAnimation.repeatCount = .infinity
-        scaleAnimation.autoreverses = true
-        scaleAnimation.isRemovedOnCompletion = false   //Set this property to false.
-        imageView.layer.add(scaleAnimation, forKey: "opacity")
+        let fadeAnimation = CABasicAnimation(keyPath: "opacity")
+        fadeAnimation.duration = 1.5
+        fadeAnimation.fromValue = 1.0
+        fadeAnimation.toValue = 0.3
+        fadeAnimation.repeatCount = .infinity
+        fadeAnimation.autoreverses = true
+        fadeAnimation.isRemovedOnCompletion = false   //Set this property to false.
+        layer.add(fadeAnimation, forKey: "opacity")
         
         updateState()
         
