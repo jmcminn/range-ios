@@ -299,20 +299,25 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
         if searchTerms.isEmpty {
             // showing recent and all projects but only if there are any recent projects
             if recentProjects.isEmpty {
+                // can happen when user is removed from a project before the table is reloaded
+                guard row < projects.count else { return .header("") }
                 return .project(projects[row])
             } else {
                 if row == 0 {
                     return .header(String(localized: "Recent Projects"))
                 } else if row <= recentProjects.count {
+                    guard row - 1 < recentProjects.count else { return .header("") }
                     return .project(recentProjects[row - 1])
                 } else if row == recentProjects.count + 1 {
                     return .header(String(localized: "All Projects (A-Z)"))
                 } else {
+                    guard row - recentProjects.count - 2 < projects.count else { return .header("") }
                     return .project(projects[row - recentProjects.count - 2])
                 }
             }
         } else {
             // showing search results only
+            guard row < filteredProjects.count else { return .header("") }
             return .project(filteredProjects[row])
         }
     }
