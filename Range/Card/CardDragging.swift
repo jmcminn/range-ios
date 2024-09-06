@@ -175,6 +175,7 @@ extension CardDragging {
     func setCardHeight(_ height: CGFloat, animated: Bool = false, withVelocity velocity: CGFloat = 0,
                        completion: (() -> Void)? = nil)
     {
+        guard !height.isNaN else { return }
         if animated {
             let animator = animator(withVelocity: velocity)
             animator.addAnimations {
@@ -279,6 +280,7 @@ private extension CardDragging {
         } else {
             height = max(minHeight, min(maxHeight, height))
         }
+        guard !height.isNaN else { return }
         cardHeight = height
     }
 
