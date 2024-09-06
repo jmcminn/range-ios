@@ -17,13 +17,7 @@ class Canvas: Object, WithPlaceholder, WithId {
     @Persisted var placeholder: Bool = false
 
     /// The current canvas source for the currentCanvas, @objc dynamic so it can be observed
-    @objc dynamic var currentCanvasSource: CanvasSource! {
-        didSet {
-            guard currentCanvasSource != nil else { return }
-            // TODO: 2
-//            UserDefaults.setLastOpenCanvasSourceId(currentCanvasSource.id, forCanvasId: id)
-        }
-    }
+    @objc dynamic private(set) var currentCanvasSource: CanvasSource!
 
     /// Return all pins to be displayed for this canvas (not filtered)
     var pins: Results<Geometry> {
@@ -50,5 +44,10 @@ class Canvas: Object, WithPlaceholder, WithId {
     /// Convenience initializer for placeholder object
     required convenience init(placeholderId id: String) {
         self.init(id: id, name: "", placeholder: true)
+    }
+    
+    func setCurrentCanvasSource(_ canvasSource: CanvasSource, userPreferences: UserPreferences) {
+        currentCanvasSource = canvasSource
+        userPreferences.setLastOpenCanvasSourceId(canvasSource.id, forCanvasId: id)
     }
 }

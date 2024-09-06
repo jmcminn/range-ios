@@ -121,11 +121,22 @@ class ProjectModel: NSObject, RealmModel {
             }
             try setCurrentCanvas(initialCanvas)
         } else {
-            guard let firstCanvas = sortedCanvases.first else {
+            guard let firstCanvas = defaultInitialCanvas() else {
                 throw ModelError.canvasNotFound
             }
             try setCurrentCanvas(firstCanvas)
         }
+    }
+
+    /// By default select the first PDF canvas if found, if not then first canvas.
+    private func defaultInitialCanvas() -> Canvas? {
+        if let firstPdfCanvas = sortedCanvases.first(where: { canvas in
+            if let canvasSource = canvas.canvasSources.first, canvasSource.type == .pdf { return true }
+            return false
+        }) {
+            return firstPdfCanvas
+        }
+        return sortedCanvases.first
     }
 
     /// Sorts canvases by projectSummary.canvasOrder. If canvas id is not in canvasOrder it'll be at the end (sorted by name).
@@ -161,11 +172,13 @@ class ProjectModel: NSObject, RealmModel {
         if let initialCanvasSourceId = userPreferences.lastOpenCanvasSourceId(forCanvasId: canvas.id),
            let initialCanvasSource = canvas.canvasSources.first(where: { $0.id == initialCanvasSourceId })
         {
-            canvas.currentCanvasSource = initialCanvasSource
+            canvas.setCurrentCanvasSource(initialCanvasSource, userPreferences: userPreferences)
         }
         // If no last canvas then select the first one
-        if canvas.currentCanvasSource == nil {
-            canvas.currentCanvasSource = canvas.canvasSources.sorted(by: CanvasSource.sortingOrder).first
+        if canvas.currentCanvasSource == nil,
+           let firstCanvasSource = canvas.canvasSources.sorted(by: CanvasSource.sortingOrder).first
+        {
+            canvas.setCurrentCanvasSource(firstCanvasSource, userPreferences: userPreferences)
         }
         // if still no canvas then it's an error (canvas has no sources)
         if canvas.currentCanvasSource == nil {

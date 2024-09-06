@@ -118,7 +118,7 @@ extension ProjectFlowController: ProjectFlowActions {
             onCanvasSourceSelected: { [weak self] canvasSource in
                 guard let self = self else { return }
                 guard self.model.currentCanvas.currentCanvasSource != canvasSource else { return }
-                self.model.currentCanvas.currentCanvasSource = canvasSource
+                self.model.currentCanvas.setCurrentCanvasSource(canvasSource, userPreferences: userPreferences)
             }
         ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
