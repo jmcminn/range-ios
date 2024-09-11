@@ -13,14 +13,14 @@ class ProjectModel: NSObject, RealmModel {
     /// The UUID for the project
     let projectId: String
     /// Local files
-    unowned let localFiles: LocalFiles
+    let localFiles: LocalFiles
     /// Media cache
-    unowned let mediaCache: MediaCache
+    let mediaCache: MediaCache
     let userPreferences: UserPreferences
     /// global pending uploads
-    unowned let pendingUploadsModel: PendingUploadsModel
+    let pendingUploadsModel: PendingUploadsModel
     /// global pending actions
-    unowned let pendingActionsModel: PendingActionsModel
+    let pendingActionsModel: PendingActionsModel
     /// Configuration for creating realms to access this project objects
     let realmConfig: Realm.Configuration
     /// Main thread Realm

@@ -118,6 +118,8 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         geometryNotificationToken = nil
         removeAddCommentCard()
         canvasContainer.remove(childController: self)
+        collaborationVC = nil
+        collaborationHeaderCoverVC = nil
     }
 
     /// Create CollaborationViewController and setup the callbacks
