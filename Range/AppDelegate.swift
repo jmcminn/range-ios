@@ -93,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Storage.storage().useEmulator(withHost: "localhost", port: 9199)
             let settings = Firestore.firestore().settings
             settings.host = "localhost:9001"
-            settings.isPersistenceEnabled = false
+            settings.cacheSettings = MemoryCacheSettings()
             settings.isSSLEnabled = false
             Firestore.firestore().settings = settings
             Functions.functions(region: "us-west2").useEmulator(withHost: "127.0.0.1", port: 5001)
@@ -109,8 +109,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             #endif
 
             FirebaseApp.configure()
-            // ACHTUNG: isPersistenceEnabled must be true for Firestore. Otherwise it won't notify about
-            // removed objects while the app was not running
+            let firestoreSettings = Firestore.firestore().settings
+            // ACHTUNG: persistence is now disabled for Firestore. It wasn't working correctly anyway
+            // as it would only notify once about document deletion. But we can have multiple
+            // users signing in/out of the app, so we cannot rely on it. Instead we always fetch
+            // all objects and update local state based on the full list. We also use per user
+            // feeds for collaboration related data, and it manages the collaboration level removed data.
+            firestoreSettings.cacheSettings = MemoryCacheSettings()
+            Firestore.firestore().settings = firestoreSettings
         }
 
         setupRemoteConfig()

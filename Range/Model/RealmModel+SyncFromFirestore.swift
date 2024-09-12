@@ -218,42 +218,49 @@ extension RealmModel {
         inRealm realm: Realm,
         replacing: Bool = false
     ) {
-        documents.forEach {
-            // failing to load some documents shouldn't fail the whole sync
+        
+        let firestoreObjectsWithIds: [(String, T)] = documents.compactMap {
             let documentId = $0.documentID
             let collectionId = $0.reference.parent.collectionID
             do {
-                let firestoreObject = try $0.data(as: type)
-                try firestoreObject.upsert(withId: documentId, inRealm: realm)
-            } catch let DecodingError.dataCorrupted(context),
-                        let DecodingError.keyNotFound(_, context),
-                        let DecodingError.valueNotFound(_, context),
-                        let DecodingError.typeMismatch(_, context) {
-                Logger.firestore.error(
-                    "\(collectionId) sync decode failed [\(documentId, privacy: .public)]: \(context.debugDescription, privacy: .public)"
-                )
+                return (documentId, try $0.data(as: type))
             } catch {
                 Logger.firestore.error(
-                    "\(collectionId) upsert failed [\(documentId, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
+                    "\(collectionId) sync decode failed [\(documentId, privacy: .public)]: \(error.localizedDescription, privacy: .public)"
                 )
+                return nil
+            }
+        }
+        
+        for (id, firestoreObject) in firestoreObjectsWithIds {
+            do {
+                try applyLocalChangesAndUpsert(id: id, firestoreObject: firestoreObject, inRealm: realm)
+            } catch {
+                Logger.model.error("Error upserting object with id \(id): \(error.localizedDescription)")
             }
         }
         
         if replacing {
-            /// for fast lookup
-            let newObjectsIds = Set(documents.map(\.documentID))
-            /// delete all objects from local db that are not in documents
-            for oldObject in realm.objects(type.ModelType) {
-                if !newObjectsIds.contains(oldObject.id) {
-                    Logger.firestore
-                        .debug(
-                            "\(type.ModelType.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
-                        )
-                    realm.delete(oldObject)
-                }
+            removeObjectsNotMatchingIds(documents.map(\.documentID), ofType: type.ModelType, inRealm: realm)
+        }
+    }
+    
+    /// Remove objects of given type with ids outside of the provided list
+    func removeObjectsNotMatchingIds<T: Object & WithId>(_ ids: [String], ofType type: T.Type, inRealm realm: Realm) {
+        /// for fast lookup
+        let newObjectsIds = Set(ids)
+        /// delete all objects from local db that are not in new object ids
+        for oldObject in realm.objects(type) {
+            if !newObjectsIds.contains(oldObject.id) {
+                Logger.firestore
+                    .debug(
+                        "\(type.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
+                    )
+                realm.delete(oldObject)
             }
         }
     }
+    
 }
 
 /// Update RealmModel with results of getAllDataForProject
@@ -295,18 +302,7 @@ extension RealmModel {
         }
         
         if replace {
-            /// for fast lookup
-            let newObjectsIds = Set(objects.compactMap { $0["id"] as? String } )
-            /// delete all objects from local db that are not in new objects
-            for oldObject in realm.objects(type.ModelType) {
-                if !newObjectsIds.contains(oldObject.id) {
-                    Logger.firestore
-                        .debug(
-                            "\(type.ModelType.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
-                        )
-                    realm.delete(oldObject)
-                }
-            }
+            removeObjectsNotMatchingIds(firestoreObjectsWithIds.map(\.0), ofType: type.ModelType, inRealm: realm)
         }
     }
 }

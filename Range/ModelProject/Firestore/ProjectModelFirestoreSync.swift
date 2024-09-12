@@ -55,6 +55,21 @@ class ProjectModelFirestoreSync {
         } catch {
             Logger.functions.error("getAllDataForProject failed: \(error.localizedDescription)")
         }
+        
+        // Get the remaining data.
+        // Not required as initial data but we still need to fetch all to remove any data in local
+        // db that was already removed on the server side. We cannot rely on the Firestore persistence
+        // because it would only report the removed documents once. And we need it also if multiple
+        // users are logging in/out on 1 device.
+        // This is a fire-and-forget call, we don't want to block the start function waiting for all 
+        // these docs
+        Task {
+            do {
+                try await remainingDocumentsSync()
+            } catch {
+                Logger.functions.error("remainingDocumentsSync failed: \(error.localizedDescription)")
+            }
+        }
 
         // after this point it's only registering for observation and the function returns
         listeners.append(contentsOf: [
@@ -103,6 +118,33 @@ class ProjectModelFirestoreSync {
             model.upsertDocuments(canvasSources.documents, as: FirestoreCanvasSource.self, inRealm: realm, replacing: true)
             try user.upsert(withId: model.userId, inRealm: realm)
             model.upsertDocuments(statuses.documents, as: FirestoreStatusName.self, inRealm: realm, replacing: true)
+        }
+    }
+    
+    /// Fetches documents that are not required to start the project model but we still need to fetch them once (in addition to observing
+    /// the collection) in order to remove any documents in local db that were removed on the server side.
+    private func remainingDocumentsSync() async throws {
+        async let tagsRequest = collection(.tagName).getDocuments()
+        async let participantsRequest = collection(.participant).getDocuments()
+        async let suspendedParticipantsRequest = collection(.suspendedParticipant).getDocuments()
+
+        let tags = try await tagsRequest
+        let participants = try await participantsRequest
+        let suspendedParticipants = try await suspendedParticipantsRequest
+
+        // store in the db
+        try await model.write { [self] realm in
+            // TODO: 3023 replacing: true should support locally created documents that are not synced yet and skip them
+            // This requires that each command is more specific which ids are created/updated/removed
+            model.upsertDocuments(tags.documents, as: FirestoreTagName.self, inRealm: realm, replacing: true)
+            // we cannot replace participants and suspendedParticipants separately, as they are modelled
+            // as Participant in Realm (same type). They need to be replaced as a whole.
+            // 1. upsert new/changed documents:
+            model.upsertDocuments(participants.documents, as: FirestoreParticipant.self, inRealm: realm, replacing: false)
+            model.upsertDocuments(suspendedParticipants.documents, as: FirestoreSuspendedParticipant.self, inRealm: realm, replacing: false)
+            // 2. remove the ones not in any of the lists:
+            let allParticipantIds = participants.documents.map(\.documentID) + suspendedParticipants.documents.map(\.documentID)
+            model.removeObjectsNotMatchingIds(allParticipantIds, ofType: Participant.self, inRealm: realm)
         }
     }
 
