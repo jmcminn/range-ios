@@ -4,8 +4,12 @@ import RealmSwift
 
 /// Update tags for given Collaboration
 struct UpdateCollaborationTagsCommand: Command, Codable, Equatable {
-    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { [collaborationId] }
+    var operations: [CommandOperationType: [String]] {
+        [
+            .update: [collaborationId],
+            .create: tags.compactMap { $0.isNew ? $0.id : nil },
+        ]
+    }
 
     let collaborationId: String
     var tags: [CommandTag]

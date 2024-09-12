@@ -9,8 +9,13 @@ import Turf
 /// Creates tags if not existing yet.
 /// Attach provided tags to all uploads.
 struct CreateCollaborationCommand: Command, Codable, Equatable {
-    var type: CommandType { .create } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([geometryId, featureId, collaborationId]) }
+    var operations: [CommandOperationType: [String]] {
+        let createdIds: [String] =
+            [geometryId, featureId, collaborationId] +
+            uploads.map(\.mediaKey.uploadId) +
+            (tags + uploadTags).compactMap { $0.isNew ? $0.id : nil }
+        return [.create: createdIds]
+    }
 
     var authorId: String
     var canvasId: String
@@ -108,7 +113,7 @@ extension CreateCollaborationCommand: LocalCommand {
         tags.forEach { realm.add($0, update: .modified) }
         collaboration.tags.append(objectsIn: tags)
         tags.forEach { t in t.collaborations.insert(collaboration) }
-        
+
         collaboration.followers.append(objectsIn: followers)
 
         // add or update tags

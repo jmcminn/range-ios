@@ -5,8 +5,9 @@ import RealmSwift
 /// Creates an upload and adds it to given collaboration.
 /// Creates tags if not existing yet.
 struct CreateUploadCommand: Command, Codable, Equatable {
-    var type: CommandType { .create } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([collaborationId]) }
+    var operations: [CommandOperationType: [String]] {
+        [.create: [upload.mediaKey.uploadId] + tags.compactMap { $0.isNew ? $0.id : nil }]
+    }
 
     // Define the CodingKeys to skip the type
 //    private enum CodingKeys: String, CodingKey {
@@ -90,7 +91,7 @@ extension CreateUploadCommand: FirebaseFunctionCommand {
             "name": upload.name,
             "description": uploadDescription,
             "tags": tags.map { ["id": $0.id, "name": $0.name] },
-            "annotations": upload.annotations?.persistableValue
+            "annotations": upload.annotations?.persistableValue,
         ]
     }
 }

@@ -4,8 +4,9 @@ import RealmSwift
 
 /// Delete the `Collaboration`
 struct DeleteCollaborationCommand: Command, Codable, Equatable {
-    var type: CommandType { .delete } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([collaborationId]) }
+    var operations: [CommandOperationType : [String]] {
+        [.delete: [collaborationId]]
+    }
 
     let collaborationId: String
 }

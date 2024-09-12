@@ -6,8 +6,8 @@ func generateRealmId() -> String {
     UUID().uuidString.lowercased()
 }
 
-/// For providers of LocalCommands for given target object id
-typealias RealmModelLocalCommandsProvider = (String) -> [LocalCommand]
+/// For providers of LocalCommands for given target object id and OperationType (so all commands applying particular operation type to object with given id)
+typealias RealmModelLocalCommandsProvider = (String, CommandOperationType) -> [LocalCommand]
 
 /// To be adopted by classes implementing model based on Realm local db.
 /// By adopting this protocol the model gets the `write` function to write to Realm and also `sync` function to sync firestore changes to model.

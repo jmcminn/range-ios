@@ -4,8 +4,9 @@ import RealmSwift
 
 /// Update completedBy, completedTimestamp (serverside timestamp) for given note (comment)
 struct UpdateNoteCompletedCommand: Command, Codable, Equatable {
-    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([noteId]) }
+    var operations: [CommandOperationType : [String]] {
+        [.update: [noteId]]
+    }
 
     let noteId: String
     var completedById: String?

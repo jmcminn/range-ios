@@ -89,10 +89,15 @@ class ProjectModel: NSObject, RealmModel {
         mainRealm = try Realm(configuration: realmConfig)
         super.init()
 
-        localCommandsProvider = { [weak self] (targetId: String) -> [LocalCommand] in
-            guard let self = self else { return [] }
-            return self.pendingActionsModel.getLocalCommands(forProjectId: self.projectId, targetObjectId: targetId)
-        }
+        localCommandsProvider =
+            { [weak self] (targetId: String, operationType: CommandOperationType) -> [LocalCommand] in
+                guard let self = self else { return [] }
+                return self.pendingActionsModel.getLocalCommands(
+                    forProjectId: self.projectId,
+                    targetObjectId: targetId,
+                    operationType: operationType
+                )
+            }
     }
 
     /// Initiates the writeRealm

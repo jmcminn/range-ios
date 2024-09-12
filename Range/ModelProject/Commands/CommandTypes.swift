@@ -6,20 +6,30 @@ import Foundation
 struct CommandTag: Codable, Equatable {
     var id: String
     var name: String
+    var newTag: Bool? // optional for backward compatibility, should be treated as false
 
     /// to convert to other types
     var asFirestoreTagName: FirestoreTagName { FirestoreTagName(name: name) }
     var asTag: Tag { Tag(id: id, name: name) }
+    
+    var isNew: Bool {
+        if let newTag {
+            return newTag
+        }
+        return false
+    }
 
     init(id: String, name: String) {
         self.id = id
         self.name = name
+        newTag = false
     }
 
     /// to init from the TagViewModel
     init(fromViewModel tagViewModel: TagViewModel) {
         id = tagViewModel.id
         name = tagViewModel.name
+        newTag = tagViewModel.newTag
     }
 }
 

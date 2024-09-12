@@ -4,8 +4,12 @@ import RealmSwift
 
 /// Update tags for given Upload
 struct UpdateUploadTagsCommand: Command, Codable, Equatable {
-    var type: CommandType { .update } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([uploadId]) }
+    var operations: [CommandOperationType: [String]] {
+        [
+            .update: [uploadId],
+            .create: tags.compactMap { $0.isNew ? $0.id : nil },
+        ]
+    }
 
     let uploadId: String
     var tags: [CommandTag]

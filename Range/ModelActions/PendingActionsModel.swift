@@ -16,7 +16,9 @@ class PendingActionsModel: ObservableObject {
     }
 
     /// Get pending local commands for given project and target object id
-    func getLocalCommands(forProjectId _: String, targetObjectId _: String) -> [LocalCommand] {
+    func getLocalCommands(forProjectId _: String, targetObjectId _: String,
+                          operationType _: CommandOperationType) -> [LocalCommand]
+    {
         fatalError("function to be implemented by subclasses")
     }
 

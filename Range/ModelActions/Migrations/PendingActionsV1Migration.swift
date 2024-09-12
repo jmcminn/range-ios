@@ -52,8 +52,9 @@ enum V1ActionCommand: Codable {
 
 // The AddUploadsToCollaborationCommand to be migrated to [CreateUploadCommand]
 struct AddUploadsToCollaborationCommand: Command, Codable {
-    var type: CommandType { .create } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([collaborationId]) }
+    var operations: [CommandOperationType : [String]] {
+        [.create: [collaborationId]]
+    }
     
     var authorId: String
     var collaborationId: String

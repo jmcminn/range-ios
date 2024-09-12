@@ -21,7 +21,6 @@ protocol FirestoreToRealmSyncableWithCustomDelete {
 
 /// Extend RealmModel with sync from Firestore function
 extension RealmModel {
-    
     /// Upsert given firestore document but prioritize the local changes (so may skip upsert if it's deleted locally, or reapply local updates
     /// after upsert if any local changes present)
     private func applyLocalChangesAndUpsert<T: Decodable & FirestoreToRealmSyncable>(
@@ -29,12 +28,12 @@ extension RealmModel {
         firestoreObject: T,
         inRealm realm: Realm
     ) throws {
-        // get local modifications for object
-        let localCommands = localCommandsProvider?(id) ?? []
-        let deletedLocally = localCommands.contains { $0.type == .delete }
         let typeName = String(describing: firestoreObject.self)
+
+        // get local modifications for object
+        let localDeletions = localCommandsProvider?(id, .delete) ?? []
         // skip updates for locally deleted objects
-        guard !deletedLocally else {
+        guard localDeletions.isEmpty else {
             Logger.firestore.debug(
                 "ignored locally deleted \(typeName) \(id, privacy: .public)"
             )
@@ -45,7 +44,7 @@ extension RealmModel {
         // these changes as on each start the changes cached by Firestore SDK may overwrite the local
         // changes if they were not synced yet. (so the Firestore has a different data than the Realm,
         // the difference is provided by given LocalCommands)
-        let localUpdates = localCommands.filter { $0.type == .update }
+        let localUpdates = localCommandsProvider?(id, .update) ?? []
         if !localUpdates.isEmpty {
             Logger.firestore.debug(
                 "apply local updates for \(typeName) \(id, privacy: .public)"
@@ -53,8 +52,7 @@ extension RealmModel {
             try localUpdates.forEach { try $0.apply(inRealm: realm) }
         }
     }
-    
-    
+
     /// Applies the changes from document to Realm
     /// Catches all errors and log them, does not throw.
     /// It needs to be run in realm.write transaction
@@ -218,7 +216,6 @@ extension RealmModel {
         inRealm realm: Realm,
         replacing: Bool = false
     ) {
-        
         let firestoreObjectsWithIds: [(String, T)] = documents.compactMap {
             let documentId = $0.documentID
             let collectionId = $0.reference.parent.collectionID
@@ -231,7 +228,7 @@ extension RealmModel {
                 return nil
             }
         }
-        
+
         for (id, firestoreObject) in firestoreObjectsWithIds {
             do {
                 try applyLocalChangesAndUpsert(id: id, firestoreObject: firestoreObject, inRealm: realm)
@@ -239,28 +236,37 @@ extension RealmModel {
                 Logger.model.error("Error upserting object with id \(id): \(error.localizedDescription)")
             }
         }
-        
+
         if replacing {
             removeObjectsNotMatchingIds(documents.map(\.documentID), ofType: type.ModelType, inRealm: realm)
         }
     }
-    
+
     /// Remove objects of given type with ids outside of the provided list
+    ///
+    /// The exception is data that is not synced yet with backend, we don't want to remove local only objects.
     func removeObjectsNotMatchingIds<T: Object & WithId>(_ ids: [String], ofType type: T.Type, inRealm realm: Realm) {
         /// for fast lookup
         let newObjectsIds = Set(ids)
         /// delete all objects from local db that are not in new object ids
         for oldObject in realm.objects(type) {
             if !newObjectsIds.contains(oldObject.id) {
-                Logger.firestore
-                    .debug(
-                        "\(type.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
-                    )
-                realm.delete(oldObject)
+                let localCreations = localCommandsProvider?(oldObject.id, .create) ?? []
+                if localCreations.isEmpty {
+                    Logger.firestore
+                        .debug(
+                            "\(type.description()) removed \(oldObject.id, privacy: .public) when replacing documents"
+                        )
+                    realm.delete(oldObject)
+                } else {
+                    Logger.firestore
+                        .debug(
+                            "\(type.description()) not removed \(oldObject.id, privacy: .public) when replacing documents, it's a local only object"
+                        )
+                }
             }
         }
     }
-    
 }
 
 /// Update RealmModel with results of getAllDataForProject
@@ -273,10 +279,10 @@ extension RealmModel {
     /// that are in Realm but are not in `objects` will be removed, UNLESS they are locally added objects (so local changes have
     /// always a higher priority)
     func upsertObjects<T: Decodable & FirestoreToRealmSyncable>(_ objects: [[String: Any]]?, as type: T.Type,
-                                                                 inRealm realm: Realm, replace: Bool = false)
+                                                                inRealm realm: Realm, replace: Bool = false)
     {
         guard let objects else { return }
-        
+
         let decoder = FirebaseDataDecoder()
         decoder.dateDecodingStrategy = .millisecondsSince1970
 
@@ -300,7 +306,7 @@ extension RealmModel {
                 Logger.model.error("Error upserting object with id \(id): \(error.localizedDescription)")
             }
         }
-        
+
         if replace {
             removeObjectsNotMatchingIds(firestoreObjectsWithIds.map(\.0), ofType: type.ModelType, inRealm: realm)
         }

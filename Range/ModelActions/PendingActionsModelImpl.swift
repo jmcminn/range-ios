@@ -28,7 +28,7 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// This is indicating if an action is currently being performed.
     /// To be set/get on the `operationQueue` only
     var performingAction: Bool = false
- 
+
     /// for monitoring network access
     let networkMonitor = NWPathMonitor()
 
@@ -55,7 +55,7 @@ class PendingActionsModelImpl: PendingActionsModel {
         defaults = UserDefaults.forUser(userId)
         // a default value for retry count when not set yet
         defaults.register(defaults: [DefaultsKey.retryCount: 0])
-        
+
         super.init()
 
         let version = defaults.integer(forKey: DefaultsKey.actionsVersion)
@@ -92,7 +92,11 @@ class PendingActionsModelImpl: PendingActionsModel {
     }
 
     /// Get pending local commands for given project and target object id
-    override func getLocalCommands(forProjectId projectId: String, targetObjectId: String) -> [LocalCommand] {
+    override func getLocalCommands(
+        forProjectId projectId: String,
+        targetObjectId: String,
+        operationType: CommandOperationType
+    ) -> [LocalCommand] {
         operationQueue.sync {
             let actionsData = pendingActions()
             let actions: [Action] = actionsData
@@ -107,7 +111,7 @@ class PendingActionsModelImpl: PendingActionsModel {
                 .filter { $0.projectId == projectId }
             let localCommands = actions
                 .map(\.command.localCommand) // Action => LocalCommand
-                .filter { $0.targetIds.contains(targetObjectId) }
+                .filter { ($0.operations[operationType] ?? []).contains(targetObjectId) }
             return localCommands
         }
     }
@@ -138,8 +142,8 @@ class PendingActionsModelImpl: PendingActionsModel {
 
     /// Return true if network connected
     private func _networkConditionsMet() -> Bool {
-        self.networkConditionsMet = networkMonitor.currentPath.status == .satisfied
-        return self.networkConditionsMet
+        networkConditionsMet = networkMonitor.currentPath.status == .satisfied
+        return networkConditionsMet
     }
 
     /// Adds pending action data to the end of the pending actions array
@@ -229,7 +233,7 @@ class PendingActionsModelImpl: PendingActionsModel {
         guard !stopped else { return }
         // action is performing, do nothing
         guard !performingAction else { return }
-
+        
         // get 1st action data
         guard let actionData = pendingActions().first else { return }
 
@@ -283,7 +287,7 @@ class PendingActionsModelImpl: PendingActionsModel {
                         scope.setExtras([
                             "projectId": action.projectId,
                             // the string with all command properties dumped:
-                            "targetIds": action.command.localCommand.targetIds.joined(separator: ","),
+                            "operations": action.operationsLogDescription,
                         ])
                         // the name of the struct implementing the command:
                         scope.setTag(value: String(describing: type(of: action.command.localCommand)), key: "command")

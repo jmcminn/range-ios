@@ -134,7 +134,6 @@ class ProjectModelFirestoreSync {
 
         // store in the db
         try await model.write { [self] realm in
-            // TODO: 3023 replacing: true should support locally created documents that are not synced yet and skip them
             // This requires that each command is more specific which ids are created/updated/removed
             model.upsertDocuments(tags.documents, as: FirestoreTagName.self, inRealm: realm, replacing: true)
             // we cannot replace participants and suspendedParticipants separately, as they are modelled

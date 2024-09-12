@@ -3,8 +3,9 @@ import Foundation
 import RealmSwift
 
 struct CreateCommentCommand: Command, Codable, Equatable {
-    var type: CommandType { .create } // don't make it a stored property, so it's not encoded
-    var targetIds: [String] { .init([commentId]) }
+    var operations: [CommandOperationType : [String]] {
+        [.create: [commentId]]
+    }
 
     let commentId: String
     var parentId: String

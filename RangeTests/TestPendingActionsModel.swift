@@ -12,5 +12,9 @@ class TestPendingActionsModel: PendingActionsModel {
 
     override func addAction(data _: Data) {}
 
-    override func getLocalCommands(forProjectId _: String, targetObjectId _: String) -> [LocalCommand] { [] }
+    override func getLocalCommands(
+        forProjectId _: String,
+        targetObjectId _: String,
+        operationType _: CommandOperationType
+    ) -> [LocalCommand] { [] }
 }

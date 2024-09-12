@@ -19,7 +19,14 @@ struct Action: Codable, CustomDebugStringConvertible {
 
     // description to be used in logs
     var logDescription: String {
-        "projectId: \(projectId), \(name)(targetIds: \(command.localCommand.targetIds)"
+        "projectId: \(projectId), \(name)(operations: \(operationsLogDescription)"
+    }
+    
+    var operationsLogDescription: String {
+        command.localCommand.operations.compactMap {
+            guard !$0.value.isEmpty else { return nil }
+            return "\($0.key):[\($0.value.joined(separator: ","))]"
+        }.joined(separator: ", ")
     }
 
     /// Init action for given projectId and command (that should be convertible to ActionCommand)
