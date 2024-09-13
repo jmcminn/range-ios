@@ -66,6 +66,11 @@ class Collaboration: Object, WithPlaceholder, WithId {
             .max() ?? lastUpdatedAt
     }
 
+    var isPlacedOnMap: Bool {
+        guard let canvasSource = geometry.first?.canvas.first?.canvasSources.first else { return false }
+        return canvasSource.type != .pdf
+    }
+
     /// Default initializer required by Realm.
     override init() {
         super.init()

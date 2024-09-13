@@ -83,6 +83,8 @@ final class FlowEvent: UIEvent {
     func editAnnotationsAction(sender: Any?, event: FlowEvent)
     /// Edit followers for given Collaboration
     func editFollowersAction(sender: Any?, event: FlowEvent)
+    /// Shows the geographical information for map canvas Collaboration
+    func showAdditionalInformation(sender: Any?, event: FlowEvent)
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -497,6 +499,12 @@ extension ProjectFlowController {
                     handler: { [weak self] in self?.editFollowersAction(sender: sender, event: event) }
                 ),
             ])
+            if collaboration.isPlacedOnMap {
+                actions.append(ActionItem(
+                    title: String(localized: "Additional Information"), imageName: "globe",
+                    handler: { [weak self] in self?.showAdditionalInformation(sender: sender, event: event) }
+                ))
+            }
             if model.currentUser.canArchive(collaboration) {
                 actions.append(ActionItem(
                     title: collaboration.isArchived ? String(localized: "Unarchive") : String(localized: "Archive"),
@@ -983,5 +991,15 @@ extension ProjectFlowController {
         model.run(model.update(followers: followers, forCollaboration: collaboration.id)) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the followers") }
         }
+    }
+}
+
+// MARK: - additional information (geographical)
+
+extension ProjectFlowController {
+    func showAdditionalInformation(sender _: Any?, event: FlowEvent) {
+        guard let collaboration = event.object as? Collaboration, !collaboration.isInvalidated else { return }
+        AdditionalInformationCardViewController(collaboration: collaboration)
+            .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 }

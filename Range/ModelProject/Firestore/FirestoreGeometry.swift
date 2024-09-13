@@ -24,7 +24,7 @@ struct FirestoreGeometry: Decodable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     enum CodingKeys: String, CodingKey, CaseIterable {
-        case annotationType, archivedTimestamp, canvas, coordinates
+        case annotationType, archivedTimestamp, canvas, coordinates, elevation
     }
 
     /// UUID identifier of parent canvas
@@ -35,6 +35,8 @@ struct FirestoreGeometry: Decodable, FirestoreToRealmSyncable {
     var geometry: Turf.Geometry = .point(Point(CLLocationCoordinate2D(latitude: 0, longitude: 0)))
     /// not nil if the geometry was archived
     var archivedTimestamp: Date?
+    /// elevation
+    var elevation: Double?
 
     init(canvasId: String, geometry: Turf.Geometry, archivedTimestamp: Date? = nil) {
         self.canvasId = canvasId
@@ -72,6 +74,7 @@ struct FirestoreGeometry: Decodable, FirestoreToRealmSyncable {
                 archivedTimestamp = Date(timeIntervalSince1970: TimeInterval(archivedTimestampMillis) / 1000.0)
             }
         }
+        elevation = try container.decodeIfPresent(Double.self, forKey: .elevation)
     }
 
     func upsert(withId id: String, inRealm realm: RealmSwift.Realm) throws {
@@ -88,7 +91,8 @@ struct FirestoreGeometry: Decodable, FirestoreToRealmSyncable {
             id: id,
             annotationType: annotationType,
             geometry: geometry,
-            archivedTimestamp: archivedTimestamp
+            archivedTimestamp: archivedTimestamp,
+            elevation: elevation
         )
         realm.add(geometry, update: .modified)
         canvas.geometries.insert(geometry)

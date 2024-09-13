@@ -32,6 +32,7 @@ extension ProjectModel {
         if oldSchemaVersion < 26 { migrateToSchemaVersion26(migration) }
         
         // v27 introduces ProjectSummary.isArchived
+        // v28 introduces Geometry.elevation
     }
     
 

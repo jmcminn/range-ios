@@ -467,6 +467,32 @@ class FullscreenMediaDetailsViewController: UIViewController {
             make.leading.trailing.equalTo(authorLabel)
             make.bottom.lessThanOrEqualToSuperview().offset(-16)
         }
+
+        if let collaboration = currentUpload?.collaboration.first,
+           collaboration.isPlacedOnMap
+        {
+            let additionalInformationButton = RangeButton(
+                configuration: UIButton.Configuration.iconButton(
+                    backgroundColor: .dynamic(.Neutral_10), foregroundColor: .dynamic(.Neutral_04),
+                    strokeColor: .dynamic(.Neutral_07), imagePointSize: 12
+                ),
+                primaryAction: UIAction(image: UIImage(systemName: "globe")) { [weak self] _ in
+                    guard let self, let collaboration = self.currentUpload?.collaboration.first else { return }
+                    UIApplication.shared.sendAction(
+                        #selector(ProjectFlowController.showAdditionalInformation), to: nil, from: self,
+                        for: FlowEvent(collaboration)
+                    )
+                }
+            )
+            .withCustomRangeHighlightColor()
+            .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
+            authorView.addSubview(additionalInformationButton)
+            additionalInformationButton.snp.makeConstraints { make in
+                make.trailing.equalToSuperview().inset(16)
+                make.centerY.equalToSuperview()
+                make.width.height.equalTo(32)
+            }
+        }
     }
 
     /// this view shows either the description label or "add description" button depending on the state

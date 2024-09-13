@@ -23,6 +23,8 @@ class Geometry: Object, WithId, WithPlaceholder {
     @Persisted var collaborations: MutableSet<Collaboration>
     /// for archived geometries
     @Persisted var archivedTimestamp: Date?
+    /// elevation, optional, only for pins on map canvas
+    @Persisted var elevation: Double?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
 
@@ -49,6 +51,7 @@ class Geometry: Object, WithId, WithPlaceholder {
         annotationType: AnnotationType,
         geometry: Turf.Geometry,
         archivedTimestamp: Date? = nil,
+        elevation: Double? = nil,
         placeholder: Bool = false
     ) {
         super.init()
@@ -56,6 +59,7 @@ class Geometry: Object, WithId, WithPlaceholder {
         self.annotationType = annotationType
         self.geometry = geometry
         self.archivedTimestamp = archivedTimestamp
+        self.elevation = elevation
         self.placeholder = placeholder
     }
 

@@ -16,6 +16,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     private var selectedView: UIImageView?
     private let idLabel = UILabel()
     private let nameLabel = UILabel()
+    private var additionalInformationButton: RangeButton!
 
     private let detailsScrollView = UIScrollView()
     private let detailsStackView = UIStackView()
@@ -23,6 +24,8 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     private let bottomStroke = UIView()
     /// details scroll view has user interaction enabled, so tapping on it will prevent didSelectRow callback, we need to add a separate handler
     var onCollaborationTapped: ((String) -> Void)?
+
+    private var model: ProjectModel?
     /// stored to be used for callback
     private var collaborationId: String?
 
@@ -42,7 +45,8 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [idLabel, nameLabel, detailsScrollView, lastUpdatedLabel, bottomStroke].forEach(contentView.addSubview)
+        [idLabel, nameLabel, additionalInformationButton, detailsScrollView, lastUpdatedLabel, bottomStroke]
+            .forEach(contentView.addSubview)
 
         idLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
@@ -53,6 +57,11 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             make.top.equalToSuperview().inset(15)
             make.leading.equalToSuperview().inset(selectable ? 64 : 16)
             make.trailing.equalToSuperview().inset(14)
+        }
+        additionalInformationButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
+            make.width.height.equalTo(32)
+            make.centerY.equalTo(nameLabel)
         }
 
         detailsScrollView.snp.makeConstraints { make in
@@ -106,6 +115,18 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.adjustsFontForContentSizeCategory = true
 
+        additionalInformationButton = RangeButton(
+            configuration: UIButton.Configuration.iconButton(
+                backgroundColor: .dynamic(.Neutral_10), foregroundColor: .dynamic(.Neutral_04),
+                strokeColor: .dynamic(.Neutral_07), imagePointSize: 12
+            ),
+            primaryAction: UIAction(image: UIImage(systemName: "globe")) { [weak self] _ in
+                self?.additionalInformationAction()
+            }
+        )
+        .withCustomRangeHighlightColor()
+        .withTapAreaInsets(UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4))
+
         detailsScrollView.alwaysBounceHorizontal = true
         detailsScrollView.showsHorizontalScrollIndicator = false
         detailsScrollView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 8)
@@ -129,7 +150,10 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     }
 
     func setCollaboration(_ collaboration: Collaboration, model: ProjectModel) {
+        self.model = model
         collaborationId = collaboration.id
+
+        additionalInformationButton.isHidden = selectable || !collaboration.isPlacedOnMap
 
         if let collaborationID = model.collaborationIdentifier(collaboration) {
             idLabel.isHidden = false
@@ -137,14 +161,32 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
             nameLabel.snp.remakeConstraints { make in
                 make.top.greaterThanOrEqualTo(idLabel.snp.bottom).offset(2)
                 make.leading.equalToSuperview().inset(selectable ? 64 : 16)
-                make.trailing.equalToSuperview().inset(14)
+                if additionalInformationButton.isHidden {
+                    make.trailing.equalToSuperview().inset(14)
+                } else {
+                    make.trailing.equalTo(additionalInformationButton.snp.leading).offset(-4)
+                }
+            }
+            additionalInformationButton.snp.remakeConstraints { make in
+                make.width.height.equalTo(32)
+                make.trailing.equalToSuperview().inset(16)
+                make.centerY.equalTo(idLabel.snp.bottom)
             }
         } else {
-            idLabel.isHidden = false
+            idLabel.isHidden = true
             nameLabel.snp.remakeConstraints { make in
                 make.top.equalToSuperview().inset(15)
                 make.leading.equalToSuperview().inset(selectable ? 64 : 16)
-                make.trailing.equalToSuperview().inset(14)
+                if additionalInformationButton.isHidden {
+                    make.trailing.equalToSuperview().inset(14)
+                } else {
+                    make.trailing.equalTo(additionalInformationButton.snp.leading).offset(-4)
+                }
+            }
+            additionalInformationButton.snp.remakeConstraints { make in
+                make.width.height.equalTo(32)
+                make.trailing.equalToSuperview().inset(16)
+                make.centerY.equalTo(nameLabel)
             }
         }
 
@@ -192,6 +234,25 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
         }
     }
 
+    func additionalInformationAction() {
+        guard let collaborationId, let model, let collaboration = model.mainRealm.object(
+            ofType: Collaboration.self,
+            forPrimaryKey: collaborationId
+        ) else { return }
+        
+        // HACK: close the search task keyboard
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
+        UIApplication.shared.sendAction(
+            #selector(ProjectFlowController.showAdditionalInformation), to: nil, from: self,
+            for: FlowEvent(collaboration)
+        )
+    }
+
     func mark(selected: Bool) {
         selectedView?.image = selected
             ? UIImage(named: "checkmark_checked")
@@ -201,6 +262,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        model = nil
         nameLabel.text = nil
         detailsStackView.arrangedSubviews.forEach {
             detailsStackView.removeArrangedSubview($0)
