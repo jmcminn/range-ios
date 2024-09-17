@@ -40,8 +40,8 @@ class AdditionalInformationCardViewController: SheetCardViewController {
            let latString = coordinatesFormatter.string(from: point.coordinates.latitude as NSNumber),
            let lngString = coordinatesFormatter.string(from: point.coordinates.longitude as NSNumber)
         {
-            verticalStack.addArrangedSubview(rowView(label: "Latitude:", value: latString))
-            verticalStack.addArrangedSubview(rowView(label: "Longitude:", value: lngString))
+            verticalStack.addArrangedSubview(rowView(label: "Latitude:", toastLabel: "Latitude", value: latString))
+            verticalStack.addArrangedSubview(rowView(label: "Longitude:", toastLabel: "Longitude", value: lngString))
 
             copyAllString.append("Latitude: \(latString), Longitude: \(lngString)")
         }
@@ -55,8 +55,8 @@ class AdditionalInformationCardViewController: SheetCardViewController {
             elevationFormatter.numberFormatter.maximumFractionDigits = 2
             let metersString = elevationFormatter.string(from: meters)
             let feetString = elevationFormatter.string(from: feet)
-            verticalStack.addArrangedSubview(rowView(label: "Elevation:", value: metersString))
-            verticalStack.addArrangedSubview(rowView(label: "", value: feetString))
+            verticalStack.addArrangedSubview(rowView(label: "Elevation:", toastLabel: "Elevation", value: metersString))
+            verticalStack.addArrangedSubview(rowView(label: "", toastLabel: "Elevation", value: feetString))
 
             copyAllString.append(", Elevation: \(metersString) / \(feetString)")
         }
@@ -74,6 +74,7 @@ class AdditionalInformationCardViewController: SheetCardViewController {
             ),
             primaryAction: UIAction(title: "Copy to Clipboard", image: UIImage(systemName: "doc.on.doc")) { _ in
                 UIPasteboard.general.string = copyAllString
+                ToastWindow.shared.showSuccess(text: "Additional information copied to clipboard")
             }
         ).withCustomRangeHighlightColor()
         backgroundView.addSubview(copyButton)
@@ -83,7 +84,11 @@ class AdditionalInformationCardViewController: SheetCardViewController {
         }
     }
 
-    private func rowView(label labelString: String, value valueString: String) -> UIView {
+    ///
+    /// - Parameters:
+    ///   - label - to be used in UI
+    ///   - toastLabel - label to be used in "copied to clipboard" toast
+    private func rowView(label labelString: String, toastLabel: String, value valueString: String) -> UIView {
         let row = UIView()
         let label = labelView(labelString)
         let value = valueView(valueString)
@@ -108,6 +113,7 @@ class AdditionalInformationCardViewController: SheetCardViewController {
         }
         row.addGestureRecognizer(BindableGestureRecognizer(action: {
             UIPasteboard.general.string = valueString
+            ToastWindow.shared.showSuccess(text: "\(toastLabel) copied to clipboard")
         }))
         return row
     }
