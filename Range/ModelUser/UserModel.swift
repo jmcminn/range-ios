@@ -76,10 +76,15 @@ class UserModel: NSObject, RealmModel {
             self.writeRealm = try Realm(configuration: self.realmConfig, queue: self.writeQueue)
         }
 
-        // 1. require the current user, so it can be loaded and observed
-        let firUser = try await firestore.document("users/\(userId)").getDocument(as: FirestoreUser.self)
-        try await write { realm in
-            try firUser.upsert(withId: self.userId, inRealm: realm)
+        // 1. fetch the current user. If it fails we still proceed if we have the local copy (to
+        // handle the offline case)
+        do {
+            let firUser = try await firestore.document("users/\(userId)").getDocument(as: FirestoreUser.self, source: .server)
+            try await write { realm in
+                try firUser.upsert(withId: self.userId, inRealm: realm)
+            }
+        } catch {
+            Logger.firestore.warning("fetching current user failed: \(error.localizedDescription)")
         }
 
         // 2. load current user and observe for project updates

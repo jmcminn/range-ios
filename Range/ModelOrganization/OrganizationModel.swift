@@ -93,10 +93,15 @@ class OrganizationModel: NSObject, RealmModel {
         let userId = user.id
         let orgDoc = firestore.document("organizations/\(organizationId)")
 
-        // require the current organization
-        let firOrganization = try await orgDoc.getDocument(as: FirestoreOrganization.self)
-        try await write { realm in
-            try firOrganization.upsert(withId: self.organizationId, inRealm: realm)
+        // require the current organization, but still proceed if it failed (we may be offline
+        // but have it in the local Realm db)
+        do {
+            let firOrganization = try await orgDoc.getDocument(as: FirestoreOrganization.self, source: .server)
+            try await write { realm in
+                try firOrganization.upsert(withId: self.organizationId, inRealm: realm)
+            }
+        } catch {
+            Logger.firestore.warning("fetching organization failed: \(error.localizedDescription)")
         }
 
         // enable syncing the organization from Firestore
@@ -104,10 +109,15 @@ class OrganizationModel: NSObject, RealmModel {
 
         let orgParticipantDoc = orgDoc.collection("participants").document(userId)
 
-        // require the current user on start
-        let firParticipant = try await orgParticipantDoc.getDocument(as: FirestoreParticipant.self)
-        try await write { realm in
-            try firParticipant.upsert(withId: userId, inRealm: realm)
+        // require the current user on start, but still proceed if it failed (we may be offline but
+        // have it in the local Realm db)
+        do {
+            let firParticipant = try await orgParticipantDoc.getDocument(as: FirestoreParticipant.self)
+            try await write { realm in
+                try firParticipant.upsert(withId: userId, inRealm: realm)
+            }
+        } catch {
+            Logger.firestore.warning("fetching current user organization participant failed: \(error.localizedDescription)")
         }
 
         // enable syncing the participant from Firestore

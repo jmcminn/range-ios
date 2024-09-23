@@ -131,16 +131,15 @@ extension RealmModel {
     {
         let loggingId = "\(documentRef.parent.collectionID)/\(documentRef.documentID)"
         let listenerRegistration = documentRef.addSnapshotListener { [weak self] documentSnapshot, error in
-            guard let self = self else { return }
+            guard let self, let documentSnapshot else { return }
+            // ignore when the result isFromCache. The persistent Firestore cache is disabled and
+            // it will report empty data when no network and when reporting the initial result
+            // (that's how the snapshot listener works, it has no option to configure .server updates only).
+            // We only care about server side results. If we allowed cached objects we would
+            // hit the deleteObject case below in offline mode.
+            guard !documentSnapshot.metadata.isFromCache else { return }
             self.writeQueue.async {
-                guard let snapshot = documentSnapshot else {
-                    Logger.firestore.info(
-                        "\(loggingId) fetching snapshot failed, removing local object: \(error!.localizedDescription)"
-                    )
-                    self.deleteObject(documentRef, as: type, inRealm: self.writeRealm)
-                    return
-                }
-                guard snapshot.data() != nil else {
+                guard documentSnapshot.data() != nil else {
                     Logger.firestore.info("\(loggingId) fetched no data, removing local object")
                     self.deleteObject(documentRef, as: type, inRealm: self.writeRealm)
                     return
@@ -150,7 +149,7 @@ extension RealmModel {
                     try self.writeRealm.write {
                         self.apply(
                             documentChangeType: changeType,
-                            snapshot: snapshot,
+                            snapshot: documentSnapshot,
                             as: type,
                             inRealm: self.writeRealm
                         )
@@ -182,6 +181,9 @@ extension RealmModel {
                     )
                     return
                 }
+                // we don't care about results from cache. The Firestore persistent cache is disabled
+                // and we only need the server side updates
+                guard !snapshot.metadata.isFromCache else { return }
                 // write all the changes for given collection in one transaction. This makes
                 // it much faster when getting the initial data with all the documents
                 self.writeQueue.async {

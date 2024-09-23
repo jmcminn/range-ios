@@ -49,19 +49,36 @@ class ProjectModelFirestoreSync {
         }
 
         // get all collaborations data
+        var feedLastUpdatedTimestamp: Date?
         do {
-            let timestamp = try await model.getAllData()
-            observeFeed(since: timestamp)
+            feedLastUpdatedTimestamp = try await model.getAllData()
         } catch {
             Logger.functions.error("getAllDataForProject failed: \(error.localizedDescription)")
         }
+        // observe feed, using the last updated timestamp from getAllData call above, or, when it
+        // failed, just use the value from DB
+        if feedLastUpdatedTimestamp == nil {
+            model.writeQueue.sync {
+                feedLastUpdatedTimestamp = model.writeRealm.object(
+                    ofType: ProjectMetadata.self,
+                    forPrimaryKey: ProjectMetadata.metadataId
+                )?.feedLastUpdatedTimestamp
+            }
+        }
+        // If feedLastUpdatedTimestamp is not set it means this project was never loaded while
+        // being online. This case can be ignored here, as such a project will not have canvases
+        // loaded, etc.
+        if let feedLastUpdatedTimestamp {
+            observeFeed(since: feedLastUpdatedTimestamp)
+        }
         
+
         // Get the remaining data.
         // Not required as initial data but we still need to fetch all to remove any data in local
         // db that was already removed on the server side. We cannot rely on the Firestore persistence
         // because it would only report the removed documents once. And we need it also if multiple
         // users are logging in/out on 1 device.
-        // This is a fire-and-forget call, we don't want to block the start function waiting for all 
+        // This is a fire-and-forget call, we don't want to block the start function waiting for all
         // these docs
         Task {
             do {
@@ -91,18 +108,18 @@ class ProjectModelFirestoreSync {
         // synced by projects model, so just syncing it here would not have an effect if it's
         // already in the Firestore SDK cache and is not updated (as we ignore cached changes
         // when syncing from firestore using `model.sync`)
-        async let projectSummaryRequest = projectRef.getDocument(as: FirestoreProjectSummary.self)
-        async let canvasesRequest = collection(.canvas).getDocuments()
-        async let canvasSourcesRequest = collection(.canvasSource).getDocuments()
+        async let projectSummaryRequest = projectRef.getDocument(as: FirestoreProjectSummary.self, source: .server)
+        async let canvasesRequest = collection(.canvas).getDocuments(source: .server)
+        async let canvasSourcesRequest = collection(.canvasSource).getDocuments(source: .server)
         async let userRequest = collection(.participant).document(model.userId)
-            .getDocument(as: FirestoreParticipant.self)
+            .getDocument(as: FirestoreParticipant.self, source: .server)
 
         // fetch statuses in initial sync so they're guaranteed to be fetched before other objects
         // this way they'll be placed in local db in the same order as stored in Firestore.
         // If not done here, we could be fetching some collaboration before fetching it's status
         // and creating some placeholder status objects in the local db that would be out of order
         // We need statuses to keep the ordering from db as currently the order is not modelled in any way.
-        async let statusesRequest = collection(.statusName).getDocuments()
+        async let statusesRequest = collection(.statusName).getDocuments(source: .server)
 
         // await for results
         let projectSummary = try await projectSummaryRequest
@@ -115,18 +132,23 @@ class ProjectModelFirestoreSync {
         try await model.write { [self] realm in
             try projectSummary.upsert(withId: model.projectId, inRealm: realm)
             model.upsertDocuments(canvases.documents, as: FirestoreCanvas.self, inRealm: realm, replacing: true)
-            model.upsertDocuments(canvasSources.documents, as: FirestoreCanvasSource.self, inRealm: realm, replacing: true)
+            model.upsertDocuments(
+                canvasSources.documents,
+                as: FirestoreCanvasSource.self,
+                inRealm: realm,
+                replacing: true
+            )
             try user.upsert(withId: model.userId, inRealm: realm)
             model.upsertDocuments(statuses.documents, as: FirestoreStatusName.self, inRealm: realm, replacing: true)
         }
     }
-    
+
     /// Fetches documents that are not required to start the project model but we still need to fetch them once (in addition to observing
     /// the collection) in order to remove any documents in local db that were removed on the server side.
     private func remainingDocumentsSync() async throws {
-        async let tagsRequest = collection(.tagName).getDocuments()
-        async let participantsRequest = collection(.participant).getDocuments()
-        async let suspendedParticipantsRequest = collection(.suspendedParticipant).getDocuments()
+        async let tagsRequest = collection(.tagName).getDocuments(source: .server)
+        async let participantsRequest = collection(.participant).getDocuments(source: .server)
+        async let suspendedParticipantsRequest = collection(.suspendedParticipant).getDocuments(source: .server)
 
         let tags = try await tagsRequest
         let participants = try await participantsRequest
@@ -139,10 +161,21 @@ class ProjectModelFirestoreSync {
             // we cannot replace participants and suspendedParticipants separately, as they are modelled
             // as Participant in Realm (same type). They need to be replaced as a whole.
             // 1. upsert new/changed documents:
-            model.upsertDocuments(participants.documents, as: FirestoreParticipant.self, inRealm: realm, replacing: false)
-            model.upsertDocuments(suspendedParticipants.documents, as: FirestoreSuspendedParticipant.self, inRealm: realm, replacing: false)
+            model.upsertDocuments(
+                participants.documents,
+                as: FirestoreParticipant.self,
+                inRealm: realm,
+                replacing: false
+            )
+            model.upsertDocuments(
+                suspendedParticipants.documents,
+                as: FirestoreSuspendedParticipant.self,
+                inRealm: realm,
+                replacing: false
+            )
             // 2. remove the ones not in any of the lists:
-            let allParticipantIds = participants.documents.map(\.documentID) + suspendedParticipants.documents.map(\.documentID)
+            let allParticipantIds = participants.documents.map(\.documentID) + suspendedParticipants.documents
+                .map(\.documentID)
             model.removeObjectsNotMatchingIds(allParticipantIds, ofType: Participant.self, inRealm: realm)
         }
     }
@@ -180,14 +213,26 @@ extension ProjectModelFirestoreSync {
                         feedItemsWithIds.forEach { id, feedItem in
                             self.handleFeedItem(feedItem, id: id, inRealm: self.model.writeRealm)
                         }
-                        // Update feedLastUpdatedTimestamp so next getAllData doesn't refetch what was already
-                        // covered by feed updates
-                        if let maxFeedItemTimestamp = feedItemsWithIds.map(\.1.createdAt).max() {
-                            self.model.writeRealm.add(
-                                ProjectMetadata(feedLastUpdatedTimestamp: maxFeedItemTimestamp),
-                                update: .modified
-                            )
-                        }
+                        
+                        // We could update the ProjectMetadata.feedLastUpdatedTimestamp here with
+                        // the max "createdAt" from all the feed items and it would be logically
+                        // correct as we don't need to refetch the data handled here when calling
+                        // getAllDataForProject(since) next time but...
+                        // The handling of feed items ignores all exceptions. So it may happen
+                        // that user will get a feedItem but then will not be able to apply the
+                        // updates because the device will go offline for example.
+                        // We could in theory only update the feedLastUpdatedTimestamp only if
+                        // the changes were applied successfully but the device may go online/offline
+                        // multiple times during a session, so we could end up with data "holes" and
+                        // the timestamp moving forward.
+                        // It's more safe that only getAllDataForProject(since) updates this timestamp,
+                        // even if it means that it reapplies the changes applied "live" from feed.
+//                        if let maxFeedItemTimestamp = feedItemsWithIds.map(\.1.createdAt).max() {
+//                            self.model.writeRealm.add(
+//                                ProjectMetadata(feedLastUpdatedTimestamp: maxFeedItemTimestamp),
+//                                update: .modified
+//                            )
+//                        }
                     }
                 } catch {
                     Logger.model.error("Storing feed item changes failed: \(error.localizedDescription)")
@@ -225,7 +270,7 @@ extension ProjectModelFirestoreSync {
         case "role-changed":
             // role-changed is a big change that may have multiple changes (not reported separately
             // via feed items).
-            // We could trigger getting all data (which will most probably do a full server-side-forced 
+            // We could trigger getting all data (which will most probably do a full server-side-forced
             // fetch, as it will ignore the since parameter because of this `role-changed` feed item
             // it'll also observe)
             // But instead it's handled in the ProjectFlowController by observing the user role
@@ -244,9 +289,9 @@ extension ProjectModelFirestoreSync {
         case "added", "updated":
             runAsyncFeedBlock(id) {
                 let collaboration = try await self.collection(.collaboration).document(item.itemId)
-                    .getDocument(as: FirestoreCollaboration.self)
+                    .getDocument(as: FirestoreCollaboration.self, source: .server)
                 let geometry = try await self.collection(.geometry).document(collaboration.geometryId)
-                    .getDocument(as: FirestoreGeometry.self)
+                    .getDocument(as: FirestoreGeometry.self, source: .server)
                 try await self.model.write { realm in
                     try geometry.upsert(withId: collaboration.geometryId, inRealm: realm)
                     try collaboration.upsert(withId: item.itemId, inRealm: realm)
@@ -255,12 +300,15 @@ extension ProjectModelFirestoreSync {
         case "access-gained":
             runAsyncFeedBlock(id) {
                 let collaboration = try await self.collection(.collaboration).document(item.itemId)
-                    .getDocument(as: FirestoreCollaboration.self)
+                    .getDocument(as: FirestoreCollaboration.self, source: .server)
                 let geometry = try await self.collection(.geometry).document(collaboration.geometryId)
-                    .getDocument(as: FirestoreGeometry.self)
-                let comments = try await self.collection(.comment).whereField("collaborationId", isEqualTo: item.itemId).getDocuments()
-                let updates = try await self.collection(.update).whereField("collaborationId", isEqualTo: item.itemId).getDocuments()
-                let uploads = try await self.collection(.upload).whereField("collaborationId", isEqualTo: item.itemId).getDocuments()
+                    .getDocument(as: FirestoreGeometry.self, source: .server)
+                let comments = try await self.collection(.comment).whereField("collaborationId", isEqualTo: item.itemId)
+                    .getDocuments(source: .server)
+                let updates = try await self.collection(.update).whereField("collaborationId", isEqualTo: item.itemId)
+                    .getDocuments(source: .server)
+                let uploads = try await self.collection(.upload).whereField("collaborationId", isEqualTo: item.itemId)
+                    .getDocuments(source: .server)
                 try await self.model.write { realm in
                     try geometry.upsert(withId: collaboration.geometryId, inRealm: realm)
                     try collaboration.upsert(withId: item.itemId, inRealm: realm)
@@ -281,7 +329,7 @@ extension ProjectModelFirestoreSync {
         case "added", "updated":
             runAsyncFeedBlock(id) {
                 let comment = try await self.collection(.comment).document(item.itemId)
-                    .getDocument(as: FirestoreComment.self)
+                    .getDocument(as: FirestoreComment.self, source: .server)
                 try await self.model.write { realm in
                     try comment.upsert(withId: item.itemId, inRealm: realm)
                 }
@@ -298,7 +346,7 @@ extension ProjectModelFirestoreSync {
         case "added":
             runAsyncFeedBlock(id) {
                 let update = try await self.collection(.update).document(item.itemId)
-                    .getDocument(as: FirestoreUpdate.self)
+                    .getDocument(as: FirestoreUpdate.self, source: .server)
                 try await self.model.write { realm in
                     try update.upsert(withId: item.itemId, inRealm: realm)
                 }
@@ -313,7 +361,7 @@ extension ProjectModelFirestoreSync {
         case "added", "updated":
             runAsyncFeedBlock(id) {
                 let upload = try await self.collection(.upload).document(item.itemId)
-                    .getDocument(as: FirestoreUpload.self)
+                    .getDocument(as: FirestoreUpload.self, source: .server)
                 try await self.model.write { realm in
                     try upload.upsert(withId: item.itemId, inRealm: realm)
                 }
