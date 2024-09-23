@@ -394,13 +394,13 @@ class AnnotationsEditor: NSObject {
 
 extension AnnotationsEditor {
     func getAnnotations() -> Annotations? {
-        guard let hostView = hostView, let image = hostView.imageView.image else { return nil }
-        let imageWidth = image.size.width
-        let imageHeight = image.size.height
-        guard imageWidth > 0, imageHeight > 0 else { return nil }
-
         if annotationViewModels.isEmpty {
-            return nil
+            if installed {
+                return nil
+            } else {
+                // view not installed, so the view model was not build, return the initial
+                return initialAnnotations
+            }
         } else {
             return Annotations(
                 width: annotationsGeometry.imageWidth,
