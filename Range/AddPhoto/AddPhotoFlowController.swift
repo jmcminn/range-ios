@@ -271,7 +271,7 @@ class AddPhotoFlowController {
                 }
             }
         }
-        vc.modalPresentationStyle = .fullScreen
+        vc.modalPresentationStyle = .currentContext
         cameraVC.present(vc, animated: true)
     }
 
