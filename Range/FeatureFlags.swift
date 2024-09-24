@@ -28,5 +28,5 @@ func setupRemoteConfig() {
 
 /// Feature flag for the link to the "about range" vimeo url
 var aboutRangeVimeoUrl: String {
-    RemoteConfig.remoteConfig().configValue(forKey: "ran1564VimeoUrl").stringValue!
+    RemoteConfig.remoteConfig().configValue(forKey: "ran1564VimeoUrl").stringValue
 }

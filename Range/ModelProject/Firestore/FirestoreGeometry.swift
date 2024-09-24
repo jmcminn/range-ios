@@ -1,6 +1,5 @@
 import CoreLocation
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import Foundation
 import OSLog
 import RealmSwift

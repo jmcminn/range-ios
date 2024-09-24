@@ -1,5 +1,4 @@
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import FirebaseFunctions
 import FirebaseMessaging
 import Foundation

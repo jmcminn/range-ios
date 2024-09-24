@@ -1,5 +1,4 @@
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import FirebaseSharedSwift
 import Foundation
 import OSLog

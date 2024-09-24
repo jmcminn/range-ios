@@ -1,6 +1,5 @@
 import CoreLocation
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import FirebaseFunctions
 import FirebaseSharedSwift
 import Foundation
