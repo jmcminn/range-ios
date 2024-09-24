@@ -23,7 +23,7 @@ struct FirestoreGeometry: Decodable, FirestoreToRealmSyncable {
 
     /// CodingKeys used by Codable as a keys in the encoded form
     enum CodingKeys: String, CodingKey, CaseIterable {
-        case annotationType, archivedTimestamp, canvas, coordinates, elevation
+        case annotationType, archivedTimestamp, canvasId, coordinates, elevation
     }
 
     /// UUID identifier of parent canvas
@@ -46,7 +46,7 @@ struct FirestoreGeometry: Decodable, FirestoreToRealmSyncable {
     /// Custom implementation of decoding that handles different geometry types
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        canvasId = try container.decode(String.self, forKey: .canvas)
+        canvasId = try container.decode(String.self, forKey: .canvasId)
         let type = try container.decode(String.self, forKey: .annotationType)
         if type != annotationType.rawValue {
             throw DecodingError.dataCorruptedError(

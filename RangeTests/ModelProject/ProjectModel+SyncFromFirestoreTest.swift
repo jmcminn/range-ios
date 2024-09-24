@@ -10,11 +10,11 @@ final class ProjectModel_SyncFromFirestoreTest: ProjectModelTestCase {
 
         let geometryObjects = [
             ["id": "g1",
-             "canvas": "canvas1",
+             "canvasId": "canvas1",
              "annotationType": "photoMarker",
              "coordinates": "[-96.5, 32.5]"],
             ["id": "g3",
-             "canvas": "canvas1",
+             "canvasId": "canvas1",
              "annotationType": "photoMarker",
              "coordinates": "[-96.5, 32.5]"],
         ]
@@ -34,11 +34,11 @@ final class ProjectModel_SyncFromFirestoreTest: ProjectModelTestCase {
 
         let geometryObjects = [
             ["id": "g1",
-             "canvas": "canvas1",
+             "canvasId": "canvas1",
              "annotationType": "photoMarker",
              "coordinates": "[-96.5, 32.5]"],
             ["id": "g3",
-             "canvas": "canvas1",
+             "canvasId": "canvas1",
              "annotationType": "photoMarker",
              "coordinates": "[-96.5, 32.5]"],
         ]

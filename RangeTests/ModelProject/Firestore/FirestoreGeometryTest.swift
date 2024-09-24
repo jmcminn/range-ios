@@ -10,7 +10,7 @@ class FirestoreGeometryTest: ProjectModelTestCase {
     func testDecode_unsupportedType() {
         let inputString = """
         {
-            "canvas": "5678",
+            "canvasId": "5678",
             "annotationType": "polygon",
             "coordinates": "[-96.5, 32.5]"
         }
@@ -34,7 +34,7 @@ class FirestoreGeometryTest: ProjectModelTestCase {
     func testDecode() throws {
         let inputString = """
         {
-            "canvas": "5678",
+            "canvasId": "5678",
             "annotationType": "photoMarker",
             "coordinates": "[-96.5, 32.5]"
         }
