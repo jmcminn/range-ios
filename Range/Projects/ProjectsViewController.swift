@@ -135,6 +135,7 @@ class ProjectsViewController: UIViewController {
     private func observeCurrentUser() {
         currentUserNotificationToken = model.currentUser.observe { [weak self] _ in
             self?.updateButtonsState()
+            self?.tableView.reloadData()
         }
     }
 
@@ -458,7 +459,7 @@ extension ProjectsViewController: UITableViewDelegate, UITableViewDataSource {
                 withIdentifier: "ProjectCell",
                 for: indexPath
             ) as! ProjectTableViewCell
-            cell.setProject(project)
+            cell.setProject(project, model: model)
             return cell
         }
     }

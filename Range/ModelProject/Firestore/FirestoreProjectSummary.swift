@@ -28,7 +28,7 @@ struct FirestoreProjectSummary: Decodable, FirestoreToRealmSyncable {
     var isArchived: Bool?
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case center, name, projectDescription = "description", address, canvasOrder, projectTypeId = "projectType",
              organizationId = "organization", identifier, isArchived
     }

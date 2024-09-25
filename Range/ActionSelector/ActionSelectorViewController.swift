@@ -5,12 +5,15 @@ import UIKit
 class ActionSelectorViewController: UIViewController {
     var tableView: UITableView!
     let actions: [ActionItem]
+    // whether action at given index is enabled, true by default for all actions
+    var actionsEnabled: [Bool]
 
     /// Initiates with actions to show
     /// - Parameters:
     ///   - actions: array of actions
     init(actions: [ActionItem]) {
         self.actions = actions
+        self.actionsEnabled = actions.map { _ in true }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -51,6 +54,11 @@ class ActionSelectorViewController: UIViewController {
             make.edges.equalToSuperview()
         }
     }
+    
+    func setActionEnabled(_ enabled: Bool, atIndex: Int) {
+        actionsEnabled[atIndex] = enabled
+        tableView.reloadData()
+    }
 
     override func traitCollectionDidChange(_: UITraitCollection?) {
         // update the border color for cells
@@ -73,7 +81,7 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
             for: indexPath
         ) as! ActionItemTableViewCell
         let action = actions[indexPath.row]
-        cell.actionItem = action
+        cell.setActionItem(action, enabled: actionsEnabled[indexPath.row])
         return cell
     }
 
@@ -90,6 +98,7 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
 
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        guard actionsEnabled[indexPath.row] else { return }
         let action = actions[indexPath.row]
         action.handler?()
     }

@@ -116,7 +116,8 @@ class OrganizationModel: NSObject, RealmModel {
                 try firParticipant.upsert(withId: userId, inRealm: realm)
             }
         } catch {
-            Logger.firestore.warning("fetching current user organization participant failed: \(error.localizedDescription)")
+            Logger.firestore
+                .warning("fetching current user organization participant failed: \(error.localizedDescription)")
         }
 
         // enable syncing the participant from Firestore
@@ -131,12 +132,12 @@ class OrganizationModel: NSObject, RealmModel {
             throw ModelError.currentUserNotFound
         }
         self.currentUser = currentUser
-        
+
         // whenever new projects are added we need to fetch the projects info. For example when project(s)
         // are initially loaded
         projectsNotificationToken = projects.observe { [weak self] change in
             switch change {
-            case .update(_, deletions: let deletions, insertions: let insertions, modifications: let modifications):
+            case let .update(_, deletions: deletions, insertions: insertions, modifications: modifications):
                 // only if new projects inserted, don't react to modifications as the updateStatusCounts is
                 // causing the motification so it would cause an infinite loop
                 if !insertions.isEmpty {
@@ -287,6 +288,27 @@ class OrganizationModel: NSObject, RealmModel {
 
         return projectId
     }
+    
+    /// Calls the "deleteProject" firebase function with given parameters
+    @MainActor
+    func deleteProject(_ project: ProjectSummary) async throws {
+        let parameters: [String: Any?] = [
+            "projectId": project.id,
+        ]
+        _ = try await Functions.functions(region: "us-west2")
+            .httpsCallable("deleteProject")
+            .call(parameters)
+    }
+
+    @MainActor
+    func toggleProjectArchived(_ project: ProjectSummary) async throws {
+        let projectRef = firestore.document("projects/\(project.id)")
+        let updates = [FirestoreProjectSummary.CodingKeys.isArchived.rawValue: !project.isArchived]
+        _ = try await firestore.runTransaction { tx, _ in
+            tx.updateData(updates, forDocument: projectRef)
+            return true
+        }
+    }
 
     /// Update collaboration counts per status for all projects in this organization
     /// Throttled: First invocation is immediate, next ones no more often than every 10 seconds
@@ -317,7 +339,7 @@ class OrganizationModel: NSObject, RealmModel {
     @MainActor
     private func updateStatusCounts() async throws {
         let projectIds = Array(projects.map(\.id))
-        
+
         guard !projectIds.isEmpty else { return }
 
         let result = try await Functions.functions(region: "us-west2")
@@ -374,7 +396,7 @@ class OrganizationModel: NSObject, RealmModel {
             )
         }
         // save the task counts per status for given project in Realm
-        try self.mainRealm.write {
+        try mainRealm.write {
             project.statusTaskCounts.removeAll()
             project.statusTaskCounts.append(objectsIn: statusTaskCounts)
         }

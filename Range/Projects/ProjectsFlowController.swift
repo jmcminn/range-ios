@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import Network
 import OSLog
 import Realm
 import RealmSwift
@@ -46,6 +47,9 @@ class ProjectsFlowController: UINavigationController {
     private var organizationSubscriptions = Set<AnyCancellable>()
     
     let projectFilters: ProjectFilters
+    
+    /// for monitoring network access
+    let networkMonitor = NWPathMonitor()
 
     init(userId: String, newlySignedIn: Bool) throws {
         self.userId = userId
@@ -141,6 +145,8 @@ class ProjectsFlowController: UINavigationController {
                                                selector: #selector(triggerDataSyncNotificationOnResignActive),
                                                name: UIApplication.willResignActiveNotification,
                                                object: nil)
+        
+        networkMonitor.start(queue: DispatchQueue.main)
     }
 
     @objc private func triggerDataSyncNotificationOnResignActive() {
@@ -214,6 +220,7 @@ class ProjectsFlowController: UINavigationController {
         } catch {
             Logger.model.error("Failed to stop the userModel: \(error)s")
         }
+        networkMonitor.cancel()
     }
 
     private func setupSettingsViewController() -> UIViewController {

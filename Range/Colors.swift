@@ -38,6 +38,7 @@ extension Color {
     static let Primary_Blue_04 = Color("Primary_Blue_04")
     static let Primary_Blue_06 = Color("Primary_Blue_06")
     static let Red_01 = Color("Red_01")
+    static let Red_02 = Color("Red_02")
     static let Red_03 = Color("Red_03")
     static let Red_04 = Color("Red_04")
     static let Secondary_02 = Color("Secondary_02")
@@ -80,6 +81,7 @@ extension UIColor {
     static let Primary_Blue_04 = UIColor(named: "Primary_Blue_04")!
     static let Primary_Blue_06 = UIColor(named: "Primary_Blue_06")!
     static let Red_01 = UIColor(named: "Red_01")!
+    static let Red_02 = UIColor(named: "Red_02")!
     static let Red_03 = UIColor(named: "Red_03")!
     static let Red_04 = UIColor(named: "Red_04")!
     static let Secondary_02 = UIColor(named: "Secondary_02")!
@@ -148,6 +150,31 @@ extension UIColor {
         }
     }
 }
+
+/// Disabled colors
+extension UIColor {
+    var _disabledColor: UIColor {
+        // if the color is a clear color then return a clear color
+        var a: CGFloat = 0
+        getRed(nil, green: nil, blue: nil, alpha: &a)
+        if a <= 0 {
+            return .clear
+        }
+        // Can't compare the UIColor directly, need to compare the components, so we can as well compare the hex representation
+        switch hexString {
+        case UIColor.Neutral_10.hexString: return .Neutral_09
+        case UIColor.Neutral_09.hexString: return .Neutral_08
+        case UIColor.Neutral_02.hexString: return .Neutral_03
+        case UIColor.Neutral_01.hexString: return .Neutral_02
+        case UIColor.Pink_01.hexString: return .Pink_02
+        case UIColor.Secondary_02.hexString: return .Secondary_03
+        case UIColor.Red_03.hexString: return .Red_02
+        default:
+            fatalError("disabled color not defined for \(hexString)")
+        }
+    }
+}
+
 
 extension Color {
     /// Color that automatically adapts to light/dark

@@ -5,11 +5,15 @@ import UIKit
 class ProjectTableViewCell: UITableViewCell {
     private let idLabel = UILabel()
     private let nameLabel = UILabel()
+    private var moreButton: UIButton!
     private let descriptionLabel = UILabel()
     private let addressLabel = UILabel()
     private let tasksLabel = UILabel()
     private let statusCountScrollView = UIScrollView()
     private let statusCountStackView = UIStackView()
+
+    private var projectId: String?
+    private var model: OrganizationModel?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -17,7 +21,7 @@ class ProjectTableViewCell: UITableViewCell {
 
         setupViews()
 
-        [idLabel, nameLabel, descriptionLabel, addressLabel, tasksLabel, statusCountScrollView]
+        [idLabel, nameLabel, moreButton, descriptionLabel, addressLabel, tasksLabel, statusCountScrollView]
             .forEach(contentView.addSubview)
 
         idLabel.snp.makeConstraints { make in
@@ -29,6 +33,11 @@ class ProjectTableViewCell: UITableViewCell {
             make.top.equalToSuperview().inset(16)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(16)
             make.trailing.equalTo(contentView.snp.trailingMargin).offset(-16)
+        }
+        moreButton.snp.makeConstraints { make in
+            make.width.height.equalTo(40)
+            make.top.equalToSuperview().offset(4)
+            make.trailing.equalTo(contentView.snp.trailingMargin).offset(-4)
         }
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom).offset(8)
@@ -68,6 +77,10 @@ class ProjectTableViewCell: UITableViewCell {
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = ._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
 
+        moreButton = FeedItemCells.createMoreButton(handler: { [weak self] _ in
+            self?.moreAction()
+        })
+
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textColor = .dynamic(.Neutral_05)
         descriptionLabel.font = .preferredFont(forTextStyle: .footnote)
@@ -94,8 +107,11 @@ class ProjectTableViewCell: UITableViewCell {
         }
     }
 
-    func setProject(_ project: ProjectSummary) {
+    func setProject(_ project: ProjectSummary, model: OrganizationModel) {
         guard !project.isInvalidated else { return }
+        projectId = project.id
+        self.model = model
+        moreButton.isHidden = model.currentUser.organizationRole != .Admin
         if let identifier = project.identifier {
             idLabel.text = "ID: \(identifier)"
             idLabel.isHidden = false
@@ -110,7 +126,11 @@ class ProjectTableViewCell: UITableViewCell {
             nameLabel.snp.remakeConstraints { make in
                 make.top.equalToSuperview().inset(16)
                 make.leading.equalTo(contentView.snp.leadingMargin).offset(16)
-                make.trailing.equalTo(contentView.snp.trailingMargin).offset(-16)
+                if moreButton.isHidden {
+                    make.trailing.equalTo(contentView.snp.trailingMargin).offset(-16)
+                } else {
+                    make.trailing.equalTo(moreButton.snp.leading).offset(-8)
+                }
             }
         }
         nameLabel.text = project.name
@@ -155,6 +175,17 @@ class ProjectTableViewCell: UITableViewCell {
                 make.leading.trailing.equalTo(nameLabel)
             }
         }
+    }
+
+    private func moreAction() {
+        guard let model, let projectId, let project = model.mainRealm.object(
+            ofType: ProjectSummary.self,
+            forPrimaryKey: projectId
+        ) else { return }
+        UIApplication.shared.sendAction(
+            #selector(ProjectsFlowController.moreAction), to: nil, from: self,
+            for: FlowEvent(project)
+        )
     }
 
     override func prepareForReuse() {

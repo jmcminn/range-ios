@@ -36,26 +36,32 @@ class ActionItemTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    weak var actionItem: ActionItem? {
-        didSet {
-            if let actionItem = actionItem {
-                let actionColor: UIColor = actionItem.style == .destructive
-                    ? .Red_03
-                    : .dynamic(.Neutral_04)
-                iconView.tintColor = actionColor
-                iconView.contentMode = .scaleAspectFit
-                titleView.textColor = actionColor
-                titleView.text = actionItem.title
-                if let imageName = actionItem.imageName {
-                    iconView.image = UIImage(
-                        systemName: imageName,
-                        withConfiguration: UIImage.SymbolConfiguration(font: imageFont)
-                    )
-                }
+    weak var actionItem: ActionItem?
+    
+    func setActionItem(_ actionItem: ActionItem?, enabled: Bool) {
+        if let actionItem {
+            var actionColor: UIColor = actionItem.style == .destructive
+                ? .Red_03
+                : .dynamic(.Neutral_04)
+            if enabled {
+                selectionStyle = .default
             } else {
-                iconView.image = nil
-                titleView.text = nil
+                selectionStyle = .none
+                actionColor = actionColor._disabledColor
             }
+            iconView.tintColor = actionColor
+            iconView.contentMode = .scaleAspectFit
+            titleView.textColor = actionColor
+            titleView.text = actionItem.title
+            if let imageName = actionItem.imageName {
+                iconView.image = UIImage(
+                    systemName: imageName,
+                    withConfiguration: UIImage.SymbolConfiguration(font: imageFont)
+                )
+            }
+        } else {
+            iconView.image = nil
+            titleView.text = nil
         }
     }
 

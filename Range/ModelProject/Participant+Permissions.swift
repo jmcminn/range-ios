@@ -7,6 +7,14 @@ extension Participant {
         organizationRole == .Admin
     }
     
+    func canDeleteProject() -> Bool {
+        organizationRole == .Admin
+    }
+    
+    func canArchiveProject() -> Bool {
+        organizationRole == .Admin
+    }
+    
     /// Guest cannot create a collaboration
     func canCreateCollaboration() -> Bool {
         if organizationRole == .Admin || organizationRole == .Collaborator { return true }

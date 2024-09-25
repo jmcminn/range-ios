@@ -162,6 +162,7 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
                 } else {
                     make.leading.equalTo(16)
                 }
+                make.trailing.lessThanOrEqualTo(closeButton.snp.leading).offset(-8)
             }
             if let subtitleLabel = subtitleLabel {
                 sheetHeaderView.addSubview(subtitleLabel)
@@ -204,7 +205,10 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
                 if let subtitleLabel = subtitleLabel {
                     make.top.equalTo(subtitleLabel.snp.bottom).offset(8)
                 } else {
-                    make.top.equalTo(closeButton.snp.bottom).offset(8)
+                    make.top.greaterThanOrEqualTo(closeButton.snp.bottom).offset(8)
+                    if let titleLabel {
+                        make.top.greaterThanOrEqualTo(titleLabel.snp.bottom).offset(8)
+                    }
                 }
                 make.leading.trailing.bottom.equalToSuperview().inset(16)
             }
@@ -311,6 +315,8 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         titleLabel!.text = title
         titleLabel!.textColor = .dynamic(.Neutral_04)
         titleLabel!.font = UIFont._preferredFont(forTextStyle: .body, symbolicTraits: .traitBold)
+        titleLabel!.numberOfLines = 0
+        titleLabel!.lineBreakMode = .byWordWrapping
         titleLabel!.adjustsFontForContentSizeCategory = true
     }
 
