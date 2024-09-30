@@ -95,7 +95,7 @@ class CanvasSnapshotFlowController {
         } else {
             return try await withCheckedThrowingContinuation { continuation in
                 mapboxSnapshotter.takeSnapshot(
-                    canvasSourceData: canvas.currentCanvasSource.data,
+                    canvasSource: canvas.currentCanvasSource,
                     areaSize: snapshotFrame.size,
                     cameraState: canvasContainer.canvasViewController.mapView.mapboxMap.cameraState,
                     zoomConverter: canvasContainer.canvasViewController.zoomConverter

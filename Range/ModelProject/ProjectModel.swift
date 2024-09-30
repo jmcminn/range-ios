@@ -70,7 +70,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 28
+            config.schemaVersion = 29
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("user_\(userId)_project_\(projectId)")
             config.fileURL!.appendPathExtension("realm")
@@ -208,11 +208,7 @@ class ProjectModel: NSObject, RealmModel {
 
     /// gets the center of canvas source if it's the map, otherwise (for pdfs) returns the center of project
     var currentCanvasSourceCenter: CLLocationCoordinate2D {
-        switch currentCanvas.currentCanvasSource.data {
-        case .pdf: return projectSummary.center
-        case let .mapbox(mapboxData): return mapboxData.center.decodedCoordinates
-        case let .droneDeploy(droneDeployData): return droneDeployData.center.decodedCoordinates
-        }
+        currentCanvas.currentCanvasSource.center
     }
 
     /// Checks if given location is in range of current canvas source.

@@ -4,21 +4,44 @@ import OSLog
 import PDFKit
 import RealmSwift
 
+/// Supported canvas source types, all others are ignored by Range iOS app
+enum CanvasSourceType: String, Codable, PersistableEnum {
+    case pdf, mapbox, droneDeploy = "dronedeploy"
+    init?(fromString: String) {
+        if let type = CanvasSourceType.allCases.first(where: { $0.rawValue == fromString }) {
+            self = type
+        } else { return nil }
+    }
+}
+
 // Realm object for `project/<id>/canvasSources/<id>`.
 class CanvasSource: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
     /// Backlink to the canvas. This is automatically updated whenever this canvas source is added to or removed from the parent
     @Persisted(originProperty: "canvasSources") var canvas: LinkingObjects<Canvas>
+    /// The type
+    @Persisted var type: CanvasSourceType = .pdf
     /// The name of canvas source
     @Persisted var name: String
-    /// Canvas source type dependent data (Realm requires some default value)
-    @Persisted var data: CanvasSourceData = .pdf(PdfCanvasSourceData(userDefinedScale: 1))
+    /// The center
+    @Persisted var center: CLLocationCoordinate2D
+    /// For pdf canvas sources comes from model, for other types it's always set to 0 (not present in the model)
+    @Persisted var rotation: Double
+    /// For pdf canvases comes from model. Otherwise it's assumed to be true (as we can assume mapbox and dronedeploy are geolocated)
+    @Persisted var isGeolocated: Bool
+    /// Only for 'pdf' type - the scale of PDF. Example value: 48.0, meaning the scale is 1:48
+    @Persisted var userDefinedScale: Double?
+    /// Only for 'pdf' type. version of the pdf file, to recognize when new pdf was uploaded
+    @Persisted var mainStorageVersion: String?
+    /// Only for mapbox/dronedeploy types - mapbox zoom for map canvas
+    @Persisted var zoom: Double?
+    /// Only for mapbox/dronedeploy types, mapbox style url
+    @Persisted var styleUrl: String?
+    /// Only for dronedeploy types, dronedeploy tileset url
+    @Persisted var tilesetUrl: String?
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
-
-    /// CanvasSource type, based on the CanvasSourceData.type
-    var type: CanvasSourceType { data.type }
 
     // order: mapbox, dronedeploy, pdf
     // Otherwise sort by id asc
@@ -39,11 +62,32 @@ class CanvasSource: Object, WithPlaceholder, WithId {
     }
 
     /// Initializer to init all the fields
-    init(id: String, name: String, data: CanvasSourceData, placeholder: Bool = false) {
+    init(
+        id: String,
+        type: CanvasSourceType,
+        name: String,
+        center: CLLocationCoordinate2D,
+        rotation: Double,
+        isGeolocated: Bool,
+        userDefinedScale: Double?,
+        mainStorageVersion: String?,
+        zoom: Double?,
+        styleUrl: String?,
+        tilesetUrl: String?,
+        placeholder: Bool = false
+    ) {
         super.init()
         self.id = id
+        self.type = type
         self.name = name
-        self.data = data
+        self.center = center
+        self.rotation = rotation
+        self.isGeolocated = isGeolocated
+        self.userDefinedScale = userDefinedScale
+        self.mainStorageVersion = mainStorageVersion
+        self.zoom = zoom
+        self.styleUrl = styleUrl
+        self.tilesetUrl = tilesetUrl
         self.placeholder = placeholder
     }
 
@@ -51,8 +95,16 @@ class CanvasSource: Object, WithPlaceholder, WithId {
     required convenience init(placeholderId id: String) {
         self.init(
             id: id,
+            type: .pdf,
             name: "",
-            data: .pdf(PdfCanvasSourceData(userDefinedScale: 1)),
+            center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
+            rotation: 0,
+            isGeolocated: false,
+            userDefinedScale: 1,
+            mainStorageVersion: nil,
+            zoom: nil,
+            styleUrl: nil,
+            tilesetUrl: nil,
             placeholder: true
         )
     }

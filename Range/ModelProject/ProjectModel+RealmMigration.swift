@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import OSLog
 import RealmSwift
@@ -30,11 +31,16 @@ extension ProjectModel {
 
         // v26 removes Feature and links Geometry directly to Collaboration
         if oldSchemaVersion < 26 { migrateToSchemaVersion26(migration) }
-        
+
         // v27 introduces ProjectSummary.isArchived
         // v28 introduces Geometry.elevation
+
+        // v29 migrates CanvasSource from storing String with JSON encoded data to store
+        // the canvas source data it CanvasSource properties (so it has a superset of properties
+        // required for all types of canvas source)
+        // v29 add rotation, center and isGeolocated to existing PDF CanvasSources
+        if oldSchemaVersion < 29 { migrateToSchemaVersion29(migration) }
     }
-    
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource
     /// Renaming objects is not a supported migration so we need to create new Canvas objects,
@@ -159,4 +165,54 @@ extension ProjectModel {
         }
         migration.deleteData(forType: "Feature")
     }
+
+    // v29 migrates CanvasSource from storing String with JSON encoded data to store
+    // the canvas source data it CanvasSource properties (so it has a superset of properties
+    // required for all types of canvas source)
+    // v29 add rotation, center and isGeolocated to existing PDF CanvasSources (PdfCanvasSourceData)
+    private class func migrateToSchemaVersion29(_ migration: Migration) {
+        var projectCenter: MigrationObject?
+        migration.enumerateObjects(ofType: "ProjectSummary") { oldObject, _ in
+            guard let oldObject else { return }
+            projectCenter = oldObject["center"] as? MigrationObject
+        }
+        guard let projectCenter else {
+            Logger.model.error("Failed to migrate pdf canvasSource: ProjectSummary.center not found")
+            return
+        }
+        migration.enumerateObjects(ofType: "CanvasSource") { oldSource, newSource in
+            guard let oldSource, let newSource,
+                  let canvasSourceDataString = oldSource["data"] as? String,
+                  let data = canvasSourceDataString.data(using: .utf8),
+                  let dataJSON = try? JSONDecoder().decode(JSON.self, from: data),
+                  let typeString = dataJSON["type"]?.stringValue,
+                  let type = CanvasSourceType(fromString: typeString)
+            else {
+                Logger.model.error("Failed to migrate pdf canvasSource: \(oldSource)")
+                return
+            }
+            newSource["type"] = typeString
+            newSource["rotation"] = 0.0
+            if type == .pdf {
+                newSource["userDefinedScale"] = dataJSON["userDefinedScale"]?.doubleValue
+                newSource["mainStorageVersion"] = dataJSON["storageVersion"]?["main"]?.stringValue
+                newSource["isGeolocated"] = false
+            } else {
+                newSource["zoom"] = dataJSON["zoom"]?.doubleValue
+                newSource["styleUrl"] = dataJSON["styleUrl"]?.stringValue
+                newSource["tilesetUrl"] = dataJSON["tilesetUrl"]?.stringValue
+                newSource["isGeolocated"] = true
+            }
+            let centerLocation = Location()
+            if let centerArray = dataJSON["center"]?.arrayValue {
+                centerLocation.longitude = centerArray[0].doubleValue!
+                centerLocation.latitude = centerArray[1].doubleValue!
+            } else {
+                centerLocation.longitude = projectCenter["longitude"] as! Double
+                centerLocation.latitude = projectCenter["latitude"] as! Double
+            }
+            newSource["center"] = centerLocation
+        }
+    }
+
 }

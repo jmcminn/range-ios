@@ -37,7 +37,7 @@ private class CanvasFileLoadRequest: Hashable, Equatable {
         projectId: String,
         localStorageDirectoryURL: URL
     ) {
-        guard case let .pdf(pdfSource) = source.data else {
+        guard source.type == .pdf else {
             fatalError("reloadPdfPage called when canvas source is not a PDF")
         }
 
@@ -46,7 +46,7 @@ private class CanvasFileLoadRequest: Hashable, Equatable {
         // use storage version if present to load/store the file locally, so when the version
         // gets updated the new file will be downloaded
         let localFileName: String
-        if let storageVersion = pdfSource.mainStorageVersion() {
+        if let storageVersion = source.mainStorageVersion {
             localFileName = "\(storageVersion).pdf"
         } else {
             localFileName = "_.pdf"

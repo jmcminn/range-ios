@@ -274,9 +274,9 @@ class CanvasViewController: UIViewController {
     /// Observe when canvas source is updated
     private func observeCanvasSourceChanges() {
         canvasSourceNotificationToken?.invalidate()
-        if case .pdf = canvas.currentCanvasSource.data {
+        if canvas.currentCanvasSource.type == .pdf {
             // observe pdf source for storage version (or any) update to reload the pdf
-            self.canvasSourceNotificationToken = self.canvas.currentCanvasSource.observe { [weak self] _ in
+            canvasSourceNotificationToken = canvas.currentCanvasSource.observe { [weak self] _ in
                 Task { @MainActor in
                     // update the pdfCanvas
                     await self?.reloadPDFScrollView()
@@ -363,25 +363,25 @@ class CanvasViewController: UIViewController {
     /// - for pdf it uses the project center
     /// - otherwise it uses the zoom defined in the canvas source
     private func getCenterForCurrentCanvasSource() -> CLLocationCoordinate2D {
-        switch canvas.currentCanvasSource.data {
+        switch canvas.currentCanvasSource.type {
         case .pdf:
             return model.projectSummary.center
-        case let .mapbox(mapboxData):
-            return mapboxData.center.decodedCoordinates
-        case let .droneDeploy(droneDeployData):
-            return droneDeployData.center.decodedCoordinates
+        default:
+            return canvas.currentCanvasSource.center
         }
     }
 
     /// Based on the pdf properties and current pdf view size calculate what's the ratio of real world meters per screen point for pdf
     private func getInitialMetersPerPointForPdf() -> Double {
-        guard case let .pdf(pdfData) = canvas.currentCanvasSource.data else {
+        guard canvas.currentCanvasSource.type == .pdf,
+              let userDefinedScale = canvas.currentCanvasSource.userDefinedScale
+        else {
             fatalError("getInitialMetersPerPointForPdf called when canvas source is not pdf")
         }
-        guard let pdfPage = pdfPage else {
+        guard let pdfPage else {
             fatalError("getInitialMetersPerPointForPdf called when pdfPage is nil")
         }
-        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / pdfData.userDefinedScale)
+        let pdfSizeInMeters = pdfPage.sizeInMeters(forScale: 1.0 / userDefinedScale)
         let pdfWidthMetersPerPoint = pdfSizeInMeters.width / view.bounds.width
         let pdfHeightMetersPerPoint = pdfSizeInMeters.height / view.bounds.height
         let initialMetersPerPoint = max(pdfWidthMetersPerPoint, pdfHeightMetersPerPoint)
@@ -392,15 +392,14 @@ class CanvasViewController: UIViewController {
     /// - for pdf it matches the zoom scale of PDFPage when it fits the view
     /// - otherwise it uses the zoom defined in the source
     private func getZoomForCurrentCanvasSource() -> Double {
-        switch canvas.currentCanvasSource.data {
+        switch canvas.currentCanvasSource.type {
         case .pdf:
             let initialMetersPerPoint = getInitialMetersPerPointForPdf()
             /// Initial mapbox zoom matching the pdf page fitting the view
             return zoomConverter.getZoom(forMetersPerPoint: initialMetersPerPoint)
-        case let .mapbox(mapboxData):
-            return mapboxData.zoom
-        case let .droneDeploy(droneDeployData):
-            return droneDeployData.zoom
+        default:
+            return canvas.currentCanvasSource.zoom!
+        }
         }
     }
 
@@ -473,7 +472,7 @@ class CanvasViewController: UIViewController {
             mapView.gestures.options.pitchEnabled = true
         }
 
-        mapView.mapboxMap._loadMapboxStyle(forCanvasSourceData: canvas.currentCanvasSource.data)
+        mapView.mapboxMap._loadMapboxStyle(forCanvasSource: canvas.currentCanvasSource)
 
         if canvas.currentCanvasSource.type == .pdf {
             // no location support

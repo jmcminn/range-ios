@@ -23,6 +23,7 @@
 		0A06241929534AA0004B6512 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0A06241829534AA0004B6512 /* FirebaseFirestore */; };
 		0A06241D29534AA0004B6512 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0A06241C29534AA0004B6512 /* FirebaseStorage */; };
 		0A06241F2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06241E2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift */; };
+		0A06C6282CAAC77D0017C43A /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06C6272CAAC77D0017C43A /* JSON.swift */; };
 		0A06D7EA29CB55FB00CE3B91 /* MovePinFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06D7E929CB55FB00CE3B91 /* MovePinFlowController.swift */; };
 		0A06D7EC29CC5A1400CE3B91 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06D7EB29CC5A1400CE3B91 /* GridView.swift */; };
 		0A078E0F2BBAB86E00857DE5 /* LineAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A078E0E2BBAB86E00857DE5 /* LineAnnotation.swift */; };
@@ -124,7 +125,6 @@
 		0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8B82849E06F00A50D54 /* SearchView.swift */; };
 		0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */; };
 		0A32F0412C80BD9C0083A881 /* DataSyncIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32F0402C80BD9C0083A881 /* DataSyncIndicatorView.swift */; };
-		0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072329C077E7007299A7 /* CanvasSourceData.swift */; };
 		0A34072629C0BB33007299A7 /* FirestoreCanvasSourceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */; };
 		0A34072829C1C4B2007299A7 /* FirestoreCanvasTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */; };
 		0A34072A29C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */; };
@@ -540,6 +540,7 @@
 		0A05312829378FE900738BA3 /* MediaCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCardViewController.swift; sourceTree = "<group>"; };
 		0A05312A2937B2FA00738BA3 /* ImageMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A06241E2954B132004B6512 /* ConvertedToTaskFeedItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvertedToTaskFeedItemCell.swift; sourceTree = "<group>"; };
+		0A06C6272CAAC77D0017C43A /* JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
 		0A06D7E929CB55FB00CE3B91 /* MovePinFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovePinFlowController.swift; sourceTree = "<group>"; };
 		0A06D7EB29CC5A1400CE3B91 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		0A078E0E2BBAB86E00857DE5 /* LineAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineAnnotation.swift; sourceTree = "<group>"; };
@@ -647,7 +648,6 @@
 		0A30E8B82849E06F00A50D54 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		0A30E8BB284A0EAB00A50D54 /* TagsSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsSelectionViewController.swift; sourceTree = "<group>"; };
 		0A32F0402C80BD9C0083A881 /* DataSyncIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSyncIndicatorView.swift; sourceTree = "<group>"; };
-		0A34072329C077E7007299A7 /* CanvasSourceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceData.swift; sourceTree = "<group>"; };
 		0A34072529C0BB33007299A7 /* FirestoreCanvasSourceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasSourceTest.swift; sourceTree = "<group>"; };
 		0A34072729C1C4B1007299A7 /* FirestoreCanvasTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCanvasTest.swift; sourceTree = "<group>"; };
 		0A34072929C4702F007299A7 /* CanvasSourceSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSourceSelectorCardViewController.swift; sourceTree = "<group>"; };
@@ -1203,7 +1203,6 @@
 				0A34C1842845FB4100BEDC7C /* Participant.swift */,
 				0A5E897E2A9F6F8200C72235 /* Participant+Permissions.swift */,
 				0A4DC78427F490CA00712518 /* Canvas.swift */,
-				0A34072329C077E7007299A7 /* CanvasSourceData.swift */,
 				0A566EF529BA29480094BD60 /* CanvasSource.swift */,
 				0A07D75528101B3400B6F9A2 /* Geometry.swift */,
 				0AFAF1B5283FC9EB002F216A /* Feature.swift */,
@@ -1620,6 +1619,7 @@
 				0A374DDB292424100036C184 /* UIViewController+TopViewController.swift */,
 				0A4D11BA29A5242400D681E7 /* URL+Extensions.swift */,
 				0AF77E452C0BA66F009318C7 /* CGPoint+Rounding.swift */,
+				0A06C6272CAAC77D0017C43A /* JSON.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2783,6 +2783,7 @@
 				0A94F7392BE0DE3300F9E26D /* UserInitialView.swift in Sources */,
 				0AD9B75A28624204005ACFD7 /* Authentication.swift in Sources */,
 				0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */,
+				0A06C6282CAAC77D0017C43A /* JSON.swift in Sources */,
 				0A34073529C89E41007299A7 /* UIFont.TextStyle+Extensions.swift in Sources */,
 				0ABFD8A828ECB168008CDA74 /* SearchAndSelectTagsViewController.swift in Sources */,
 				0ABFD8BB28F44037008CDA74 /* UpdateCollaborationNameCommand.swift in Sources */,
@@ -2858,7 +2859,6 @@
 				0A94E8D728CF0E6000A09616 /* RangeButton.swift in Sources */,
 				0A985B1D2A9E37B600442617 /* UserModel+RealmMigration.swift in Sources */,
 				0A99BF2D28C7557000DB3F96 /* PanDirectionGestureRecognizer.swift in Sources */,
-				0A34072429C077E7007299A7 /* CanvasSourceData.swift in Sources */,
 				0A7121BA290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift in Sources */,
 				0A6FAC3D28B8EBB10057995B /* ImageGalleryPageView.swift in Sources */,
 				0A30E8BC284A0EAB00A50D54 /* TagsSelectionViewController.swift in Sources */,

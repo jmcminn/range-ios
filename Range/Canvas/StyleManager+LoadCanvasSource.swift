@@ -20,19 +20,19 @@ extension StyleManager {
 //            """
     }
 
-    func _loadMapboxStyle(forCanvasSourceData data: CanvasSourceData, completion: ((Error?) -> Void)? = nil) {
-        switch data {
-        case let .pdf(pdfSource):
-            loadMapboxStyle(forPdfSource: pdfSource, completion: completion)
-        case let .mapbox(mapboxSource):
-            _loadMapboxStyle(forMapboxSource: mapboxSource, completion: completion)
-        case let .droneDeploy(droneDeploySource):
-            _loadMapboxStyle(forDroneDeploySource: droneDeploySource, completion: completion)
+    func _loadMapboxStyle(forCanvasSource canvasSource: CanvasSource, completion: ((Error?) -> Void)? = nil) {
+        switch canvasSource.type {
+        case .pdf:
+            loadMapboxStyle(forPdfSource: canvasSource, completion: completion)
+        case .mapbox:
+            _loadMapboxStyle(forMapboxSource: canvasSource, completion: completion)
+        case .droneDeploy:
+            _loadMapboxStyle(forDroneDeploySource: canvasSource, completion: completion)
         }
     }
 
     /// Load the style appropriate for pdf canvas source
-    private func loadMapboxStyle(forPdfSource _: PdfCanvasSourceData, completion: ((Error?) -> Void)? = nil) {
+    private func loadMapboxStyle(forPdfSource _: CanvasSource, completion: ((Error?) -> Void)? = nil) {
         load(mapStyle: MapStyle(json: annotationsStyle)) { error in
             if let error = error {
                 Logger.mapbox.error("annotations style load failed: \(error.localizedDescription, privacy: .public)")
@@ -42,16 +42,16 @@ extension StyleManager {
     }
 
     /// Load mapbox style
-    func _loadMapboxStyle(forMapboxSource source: MapboxCanvasSourceData, completion: ((Error?) -> Void)? = nil) {
-        guard let styleURI = StyleURI(rawValue: source.styleUrl) else {
+    func _loadMapboxStyle(forMapboxSource source: CanvasSource, completion: ((Error?) -> Void)? = nil) {
+        guard let styleUrl = source.styleUrl, let styleURI = StyleURI(rawValue: styleUrl) else {
             Logger.mapbox.error("invalid mapbox style \(source.styleUrl)")
-            completion?("invalid mapbox style \(source.styleUrl)")
+            completion?("invalid mapbox style \(String(describing: source.styleUrl))")
             return
         }
         load(mapStyle: MapStyle(uri: styleURI)) { error in
             if let error {
                 Logger.mapbox.error(
-                    "failed to load mapbox style \(source.styleUrl) load failed: \(error.localizedDescription, privacy: .public)"
+                    "failed to load mapbox style \(styleUrl) load failed: \(error.localizedDescription, privacy: .public)"
                 )
             }
             completion?(error)
@@ -60,12 +60,14 @@ extension StyleManager {
 
     /// Load drone deploy style
     func _loadMapboxStyle(
-        forDroneDeploySource source: DroneDeployCanvasSourceData,
+        forDroneDeploySource source: CanvasSource,
         completion: ((Error?) -> Void)? = nil
     ) {
-        guard let styleURI = StyleURI(rawValue: source.styleUrl) else {
+        guard let styleUrl = source.styleUrl, let tilesetUrl = source.tilesetUrl,
+              let styleURI = StyleURI(rawValue: styleUrl)
+        else {
             Logger.mapbox.error("invalid mapbox style \(source.styleUrl)")
-            completion?("invalid mapbox style \(source.styleUrl)")
+            completion?("invalid mapbox style \(String(describing: source.styleUrl))")
             return
         }
         load(mapStyle: MapStyle(uri: styleURI)) { [weak self] error in
@@ -84,7 +86,7 @@ extension StyleManager {
                 let droneDeployLayer = try self.layer(withId: droneDeployLayerId)
                 let newDroneDeploySourceId = "droneDeploySource"
                 var droneDeploySource = RasterSource(id: newDroneDeploySourceId)
-                droneDeploySource.tiles = [source.tilesetUrl]
+                droneDeploySource.tiles = [tilesetUrl]
                 droneDeploySource.tileSize = 256
                 try self.addSource(droneDeploySource)
                 var newDroneDeployLayer = RasterLayer(id: "droneDeployLayer", source: newDroneDeploySourceId)

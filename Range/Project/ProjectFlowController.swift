@@ -370,7 +370,7 @@ final class ProjectFlowController: UIViewController {
     /// If the file is available locally it will not be redownloaded
     @MainActor
     private func possiblyDownloadPdfsForCanvasSources() {
-        let pdfSources = model.mainRealm.objects(CanvasSource.self).filter { $0.data.type == .pdf }
+        let pdfSources = model.mainRealm.objects(CanvasSource.self).filter { $0.type == .pdf }
         for pdfSource in pdfSources {
             canvasFileLoader.downloadPDF(forSource: pdfSource, projectId: model.projectId)
         }

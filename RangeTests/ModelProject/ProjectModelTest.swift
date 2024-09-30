@@ -55,10 +55,7 @@ class ProjectModelTest: ProjectModelTestCase {
                                      description: nil, address: nil, projectType: .architecture))
             realm.add(Participant(placeholderId: "user1"))
             let canvas = Canvas(id: "canvas1", name: "")
-            let canvasSource = CanvasSource(
-                id: "canvasSource1", name: "",
-                data: .pdf(PdfCanvasSourceData(userDefinedScale: 1))
-            )
+            let canvasSource = CanvasSource(placeholderId: "canvasSource1")
             realm.add([canvas, canvasSource])
             canvas.canvasSources.insert(canvasSource)
         }

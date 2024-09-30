@@ -1,57 +1,9 @@
+import CoreLocation
 @testable import Range
 import RealmSwift
 import XCTest
 
 final class FirestoreCanvasSourceTest: ProjectModelTestCase {
-    // MARK: - decode tests
-
-    func testDecode_unsupportedType() {
-        let inputString = """
-        {
-            "canvas": "5678",
-            "name": "",
-            "type": "png"
-        }
-        """
-        guard let inputData = inputString.data(using: .utf8) else {
-            XCTFail("no input data"); return
-        }
-        XCTAssertThrowsError(
-            try JSONDecoder().decode(FirestoreCanvasSource.self, from: inputData)
-        ) { error in
-            guard
-                let error = error as? DecodingError,
-                case let .dataCorrupted(context) = error
-            else {
-                XCTFail("unexpected error: \(error)"); return
-            }
-            XCTAssertEqual(context.debugDescription, "Unsupported type: png")
-        }
-    }
-
-    func testDecode_pdf() throws {
-        let inputString = """
-        {
-            "canvas": "5678",
-            "name": "canvas source name",
-            "type": "pdf",
-            "pageNumber": 1,
-            "userDefinedScale": 48
-        }
-        """
-        guard let inputData = inputString.data(using: .utf8) else {
-            XCTFail("no input data"); return
-        }
-        let decodedSource = try JSONDecoder().decode(FirestoreCanvasSource.self, from: inputData)
-        XCTAssertEqual(decodedSource.canvasId, "5678")
-        XCTAssertEqual(decodedSource.name, "canvas source name")
-        XCTAssertEqual(decodedSource.data.type, .pdf)
-        guard case let .pdf(pdfData) = decodedSource.data else {
-            XCTFail("unexpected canvas source data: \(decodedSource.data)"); return
-        }
-        XCTAssertEqual(pdfData.userDefinedScale, 48)
-    }
-
     // MARK: - upsert tests
 
     // Tests creating/updating the object in local db from Firestore object
@@ -59,8 +11,8 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
     // Adds a canvas placeholder if canvas not found
     func testUpsert_canvasNotFound() throws {
         let firestoreSource = FirestoreCanvasSource(
-            canvasId: "canvas1", name: "",
-            data: .pdf(PdfCanvasSourceData(userDefinedScale: 1))
+            canvasId: "canvas1", center: LocationCoordinate2DCodable(CLLocationCoordinate2D(latitude: 0, longitude: 0)),
+            name: "", typeString: "pdf"
         )
         try realm.write {
             try firestoreSource.upsert(withId: "canvasSource1", inRealm: realm)
@@ -79,8 +31,8 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
 
         // 2. add source to canvas1
         let firestoreSource1 = FirestoreCanvasSource(
-            canvasId: "canvas1", name: "canvas source name",
-            data: .pdf(PdfCanvasSourceData(userDefinedScale: 48))
+            canvasId: "canvas1", center: LocationCoordinate2DCodable(CLLocationCoordinate2D(latitude: 0, longitude: 0)),
+            name: "canvas source name", typeString: "pdf", userDefinedScale: 48
         )
         try realm.write {
             try firestoreSource1.upsert(withId: "canvasSource1", inRealm: realm)
@@ -93,9 +45,6 @@ final class FirestoreCanvasSourceTest: ProjectModelTestCase {
         XCTAssertEqual(source1.type, .pdf)
         XCTAssertEqual(source1.name, "canvas source name")
         XCTAssertEqual(source1.canvas.first, canvas1)
-        guard case let .pdf(pdfData) = source1.data else {
-            XCTFail("unexpected canvas source data: \(source1.data)"); return
-        }
-        XCTAssertEqual(pdfData.userDefinedScale, 48)
+        XCTAssertEqual(source1.userDefinedScale, 48)
     }
 }

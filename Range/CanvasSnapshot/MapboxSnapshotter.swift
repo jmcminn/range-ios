@@ -10,12 +10,12 @@ class MapboxSnapshotter {
     /// Converts the area pointed to by given cameraState with given areaSize (in view coordinates, in pixels)
     /// for given CanvasSourceData (to select a map style from) to a JPEG
     /// - Parameters:
-    ///   - canvasSourceData - for map styling
+    ///   - canvasSource - for map styling
     ///   - areaSize - size of the area to screenshot, in pixels, the middle point of this area is the camera center point
     ///   - cameraState - to decide which part of the map we want to screenshot (zoom, center, rotation)
     ///   - zoomConverter - required for adjusting the camera zoom to maximize the image resolution (and get a screenshot at a higher zoom level)
     func takeSnapshot(
-        canvasSourceData: CanvasSourceData,
+        canvasSource: CanvasSource,
         areaSize: CGSize,
         cameraState: CameraState,
         zoomConverter: MapboxZoomConverter,
@@ -85,7 +85,7 @@ class MapboxSnapshotter {
         cameraOptions.zoom = snapshotZoom
         mapSnapshotter = Snapshotter(options: snapshotOptions)
 
-        mapSnapshotter!._loadMapboxStyle(forCanvasSourceData: canvasSourceData) { error in
+        mapSnapshotter!._loadMapboxStyle(forCanvasSource: canvasSource) { error in
             if let error {
                 completion(.failure(error))
             } else {
