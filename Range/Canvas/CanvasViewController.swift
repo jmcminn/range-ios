@@ -42,6 +42,19 @@ protocol CanvasViewControllerDelegate {
     func canvasLongPressRecognized(at: CGPoint)
 }
 
+/// Stores the state needed to restore map for given canvas source. Used when switching between canvas (sources)
+struct CanvasSourceMapState {
+    var cameraState: CameraState
+
+    // Pdf canvas source:
+    // we only calculate the sync annotation views coordinates once when the canvas source is loaded
+    // as this is the time where the map has the initial center/zoom/rotation for a canvas source,
+    // later when user switches canvases/canvas sources we restore to the last camera state (while the
+    // project is open)
+    var topLeftAnnotationViewCoordinate: CLLocationCoordinate2D?
+    var bottomRightAnnotationViewCoordinate: CLLocationCoordinate2D?
+}
+
 /// Displays a mapbox map view for canvas.
 ///
 /// - For PDF canvas sources it shows the PDF view behind the map view (with an empty style so there's no map visible).  In this case
@@ -84,10 +97,9 @@ class CanvasViewController: UIViewController {
     /// **after** the new mapView instance is created.
     private(set) var mapView: MapView!
     var pdfScrollView: PDFPageScrollView?
-    var initialPdfScale: Double!
 
-    /// Remember the camera state when switching canvas sources. A dictionary of CanvasSource.id => CameraState
-    private var cameraStateCache = [String: CameraState]()
+    /// Remember the state when switching canvas sources. A dictionary of CanvasSource.id => CanvasSourceMapState
+    private var canvasSourceMapStateCache = [String: CanvasSourceMapState]()
 
     /// when animating the pdf and mapview together, we need to disable the sync of zoom/center between them
     private var programmaticAnimationInProgress = false
@@ -116,16 +128,106 @@ class CanvasViewController: UIViewController {
         canvas = model.currentCanvas
         zoomConverter = MapboxZoomConverter(latitude: model.projectSummary.center.latitude)
         super.init(nibName: nil, bundle: nil)
+    }
 
-        if canvas.currentCanvasSource.type == .pdf {
-            try await reloadPdfPage()
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        currentCanvasObservation?.invalidate()
+        currentCanvasSourceObservation?.invalidate()
+        canvasSourceNotificationToken?.invalidate()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+
+        let gridView = GridView(frame: view.bounds)
+        view.insertSubview(gridView, at: 0)
+
+        // initiate mapview
+        setupMapView()
+
+        currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.showCanvas(previousCanvas: self.canvas)
+            }
         }
+
+        Task { @MainActor in
+            await self.showCanvas(previousCanvas: nil)
+        }
+
+//        setupDebugViews()
+    }
+
+    /// Show the current model canvas
+    private func showCanvas(previousCanvas: Canvas?) async {
+        guard model.currentCanvas.id != previousCanvas?.id else { return }
+        canvas = model.currentCanvas
+        setFollowMeMode(enabled: false)
         observeCurrentCanvasSource()
         observeCanvasSourceChanges()
-        currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
-            guard let self = self else { return }
-            Task { @MainActor in
-                await self.onCanvasChange()
+        await showCanvasSource(previousCanvasSource: previousCanvas?.currentCanvasSource)
+    }
+
+    /// Show the current canvas source
+    private func showCanvasSource(previousCanvasSource: CanvasSource?) async {
+        if let previousCanvasSource {
+            // store the camera state so it can be reused when switching back to same canvas source
+            var state = CanvasSourceMapState(cameraState: mapView.mapboxMap.cameraState)
+            if previousCanvasSource.type == .pdf,
+               case let .point(topLeftPoint) = topLeftSyncViewAnnotation?.annotatedFeature.geometry,
+               case let .point(bottomRightPoint) = bottomRightSyncViewAnnotation?.annotatedFeature.geometry
+            {
+                state.topLeftAnnotationViewCoordinate = topLeftPoint.coordinates
+                state.bottomRightAnnotationViewCoordinate = bottomRightPoint.coordinates
+            }
+            canvasSourceMapStateCache[previousCanvasSource.id] = state
+        }
+        updateMapViewForCanvasSource()
+
+        if canvas.currentCanvasSource.type == .pdf {
+            await loadPDFScrollView(forceReload: false)
+        } else {
+            updateCameraForCanvasSource(useStateCache: true)
+            pdfScrollView?.removeFromSuperview()
+            pdfScrollView = nil
+        }
+    }
+
+    /// Observe when canvas source is switched to different canvas source
+    private func observeCurrentCanvasSource() {
+        currentCanvasSourceObservation?.invalidate()
+        currentCanvasSourceObservation = model.currentCanvas
+            .observe(\.currentCanvasSource, options: [.old]) { [weak self] _, change in
+                guard let self = self else { return }
+                self.observeCanvasSourceChanges()
+                setFollowMeMode(enabled: false)
+
+                guard let previousCanvasSource = change.oldValue ?? nil else {
+                    return
+                }
+                Task { @MainActor in
+                    await self.showCanvasSource(previousCanvasSource: previousCanvasSource)
+                }
+            }
+    }
+
+    /// Observe when canvas source is updated
+    private func observeCanvasSourceChanges() {
+        canvasSourceNotificationToken?.invalidate()
+        if canvas.currentCanvasSource.type == .pdf {
+            // observe pdf source for storage version (or any) update to reload the pdf
+            canvasSourceNotificationToken = canvas.currentCanvasSource.observe { [weak self] _ in
+                Task { @MainActor in
+                    // update the pdfCanvas
+                    await self?.loadPDFScrollView(forceReload: true)
+                }
             }
         }
     }
@@ -157,90 +259,6 @@ class CanvasViewController: UIViewController {
         )
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-
-        let gridView = GridView(frame: view.bounds)
-        view.insertSubview(gridView, at: 0)
-
-        // initiate mapview
-        setupMapView()
-
-        // setup annotation views
-        setupSyncAnnotationViews()
-
-        // update the style, etc. for current canvas/source
-        updateMapViewForCanvasSource()
-
-        // mixing aync MainActor invocation of setupPDFScrollView and
-        // the one from the main thread is not working properly, If this
-        // code was not dispatched on the main it would run in parallel
-        // with setupPDFScrollView triggered by canvas switch.
-        DispatchQueue.main.async {
-            // setup scroll view with given pdf page (if it's a pdf source)
-            self.setupPDFScrollView()
-
-            // this needs to be done after pdf view was set up as the zoom logic for pdfs is based on
-            // pdf frame size
-            self.updateCameraForCanvasSource()
-        }
-
-//        setupDebugViews()
-    }
-
-    /// Canvas was changed, reload the canvas view
-    private func onCanvasChange() async {
-        guard canvas.id != model.currentCanvas.id else { return }
-        let previousCanvas = canvas
-        canvas = model.currentCanvas
-        setFollowMeMode(enabled: false)
-        observeCurrentCanvasSource()
-        observeCanvasSourceChanges()
-        await onCanvasSourceChange(previousCanvasSource: previousCanvas.currentCanvasSource)
-    }
-
-    /// Canvas source changed, reload the view
-    private func onCanvasSourceChange(previousCanvasSource: CanvasSource) async {
-        // store the camera state so it can be reused when switching back to same canvas source
-        cameraStateCache[previousCanvasSource.id] = mapView.mapboxMap.cameraState
-        let fromPdfToPdf = previousCanvasSource.type == .pdf && canvas.currentCanvasSource.type == .pdf
-        if !fromPdfToPdf {
-            // if switching from pdf to other pdf the map view remains the same (empty style and configuration for pdf background)
-            updateMapViewForCanvasSource()
-        }
-        if canvas.currentCanvasSource.type == .pdf {
-            do {
-                try await reloadPdfPage()
-            } catch {
-                let sourceId = canvas.currentCanvasSource.id
-                Logger.model.error(
-                    "Failed to load pdf for canvas source \(sourceId, privacy: .public), \(error.localizedDescription, privacy: .public)"
-                )
-                ToastWindow.shared.showError(text: "Canvas failed to load")
-            }
-            DispatchQueue.main.async {
-                self.setupPDFScrollView()
-                self.updateCameraForCanvasSource()
-            }
-        } else {
-            updateCameraForCanvasSource()
-            pdfScrollView?.removeFromSuperview()
-            pdfScrollView = nil
-        }
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    deinit {
-        currentCanvasObservation?.invalidate()
-        currentCanvasSourceObservation?.invalidate()
-        canvasSourceNotificationToken?.invalidate()
-    }
-
     /// Add delegate and returns id so it can be later removed
     func addDelegate(_ delegate: CanvasViewControllerDelegate) -> UUID {
         let id = UUID()
@@ -253,42 +271,12 @@ class CanvasViewController: UIViewController {
         delegates.removeValue(forKey: id)
     }
 
-    /// Observe when canvas source is switched to different canvas source
-    private func observeCurrentCanvasSource() {
-        currentCanvasSourceObservation?.invalidate()
-        currentCanvasSourceObservation = model.currentCanvas
-            .observe(\.currentCanvasSource, options: [.old]) { [weak self] _, change in
-                guard let self = self else { return }
-                self.observeCanvasSourceChanges()
-                setFollowMeMode(enabled: false)
-
-                guard let previousCanvasSource = change.oldValue ?? nil else {
-                    return
-                }
-                Task { @MainActor in
-                    await self.onCanvasSourceChange(previousCanvasSource: previousCanvasSource)
-                }
-            }
-    }
-
-    /// Observe when canvas source is updated
-    private func observeCanvasSourceChanges() {
-        canvasSourceNotificationToken?.invalidate()
-        if canvas.currentCanvasSource.type == .pdf {
-            // observe pdf source for storage version (or any) update to reload the pdf
-            canvasSourceNotificationToken = canvas.currentCanvasSource.observe { [weak self] _ in
-                Task { @MainActor in
-                    // update the pdfCanvas
-                    await self?.reloadPDFScrollView()
-                }
-            }
-        }
-    }
-
     /// This is called when canvas PDF changes after loading the initial canvas.
     /// We keep the zoom/offset, so there's no recalculation of initial zoom.
+    /// - Parameters:
+    ///   - forceReload - ignored any cached canvas source state (like the last camera settings) and show with initial center, etc.
     @MainActor
-    private func reloadPDFScrollView() async {
+    private func loadPDFScrollView(forceReload: Bool) async {
         guard !canvas.isInvalidated, !canvas.currentCanvasSource.isInvalidated else { return }
         // first hide the previous pdf view
         pdfScrollView?.removeFromSuperview()
@@ -299,15 +287,22 @@ class CanvasViewController: UIViewController {
         do {
             // load the page
             try await reloadPdfPage()
-            // build new view
-            DispatchQueue.main.async {
-                self.setupPDFScrollView()
-                // sync with current zoom/offset from mapbox
-                self.syncPDFViewWithAnnotationViews()
-            }
         } catch {
-            Logger.model.error("load canvas error: \(error.localizedDescription, privacy: .public)")
-            ToastWindow.shared.showError(text: "Failed to load the canvas")
+            let sourceId = canvas.currentCanvasSource.id
+            Logger.model.error(
+                "Failed to load pdf for canvas source \(sourceId, privacy: .public), \(error.localizedDescription, privacy: .public)"
+            )
+            ToastWindow.shared.showError(text: "Canvas failed to load")
+        }
+        // build new view
+        DispatchQueue.main.async {
+            self.setupPDFScrollView()
+            // update the map view camera when switching canvases
+            self.updateCameraForCanvasSource(useStateCache: !forceReload)
+            // setup annotation views
+            self.setupSyncAnnotationViews(useStateCache: !forceReload)
+
+            self.syncPDFViewWithAnnotationViews()
         }
     }
 
@@ -326,7 +321,7 @@ class CanvasViewController: UIViewController {
 
         guard canvas.currentCanvasSource.type == .pdf else { return }
 
-        guard let pdfPage = pdfPage else {
+        guard let pdfPage else {
             fatalError("setupPDFScrollView called when pdfPage is nil")
         }
 
@@ -353,22 +348,6 @@ class CanvasViewController: UIViewController {
             right: pdfInset
         )
         self.pdfScrollView = pdfScrollView
-
-        let pdfMetersPerPoint = getInitialMetersPerPointForPdf()
-        let initialMapboxMetersPerPoint = zoomConverter.getMetersPerPoint(forZoom: initialMapboxZoom)
-        initialPdfScale = pdfMetersPerPoint / initialMapboxMetersPerPoint
-    }
-
-    /// Returns the center for the current canvas source.
-    /// - for pdf it uses the project center
-    /// - otherwise it uses the zoom defined in the canvas source
-    private func getCenterForCurrentCanvasSource() -> CLLocationCoordinate2D {
-        switch canvas.currentCanvasSource.type {
-        case .pdf:
-            return model.projectSummary.center
-        default:
-            return canvas.currentCanvasSource.center
-        }
     }
 
     /// Based on the pdf properties and current pdf view size calculate what's the ratio of real world meters per screen point for pdf
@@ -400,7 +379,6 @@ class CanvasViewController: UIViewController {
         default:
             return canvas.currentCanvasSource.zoom!
         }
-        }
     }
 
     // initial setup of map view
@@ -408,10 +386,8 @@ class CanvasViewController: UIViewController {
         guard mapView == nil else {
             fatalError("setupMapView called when mapView is not nil")
         }
-        // set initial mapbox zoom level and position
+        // set initial mapbox zoom level and position, this will be changed for given canvas source
         let cameraOptions = CameraOptions(
-            //            center: getCenterForCurrentCanvasSource(),
-//            zoom: getZoomForCurrentCanvasSource()
             center: model.projectSummary.center,
             zoom: initialMapboxZoom
         )
@@ -462,6 +438,9 @@ class CanvasViewController: UIViewController {
             // rotations and pitch change is not supported for PDF
             mapView.gestures.options.rotateEnabled = false
             mapView.gestures.options.pitchEnabled = false
+            mapView.ornaments.options.compass.visibility = .hidden
+            // When debugging the map view with PDF:
+//            mapView.layer.opacity = 0.5
         } else {
             mapView.subviews.forEach { subview in
                 if subview is MTKView {
@@ -470,6 +449,8 @@ class CanvasViewController: UIViewController {
             }
             mapView.gestures.options.rotateEnabled = true
             mapView.gestures.options.pitchEnabled = true
+            mapView.ornaments.options.compass.visibility = .adaptive
+//            mapView.layer.opacity = 1
         }
 
         mapView.mapboxMap._loadMapboxStyle(forCanvasSource: canvas.currentCanvasSource)
@@ -493,13 +474,18 @@ class CanvasViewController: UIViewController {
     }
 
     /// resets the camera for given canvas source
-    private func updateCameraForCanvasSource() {
-        let cameraState = cameraStateCache[canvas.currentCanvasSource.id]
+    /// - Parameters:
+    ///   - useStateCache - if true it tries to reset camera to the last state (if this canvas source was already shown in this project session)
+    private func updateCameraForCanvasSource(useStateCache: Bool) {
+        let state: CanvasSourceMapState? = useStateCache
+            ? canvasSourceMapStateCache[canvas.currentCanvasSource.id]
+            : nil
+        let cameraState = state?.cameraState
             ?? CameraState(
-                center: getCenterForCurrentCanvasSource(),
+                center: canvas.currentCanvasSource.center,
                 padding: .zero,
                 zoom: getZoomForCurrentCanvasSource(),
-                bearing: 0,
+                bearing: canvas.currentCanvasSource.rotation,
                 pitch: 0
             )
         mapView.mapboxMap.setCamera(to: CameraOptions(cameraState: cameraState))
@@ -508,7 +494,38 @@ class CanvasViewController: UIViewController {
     /// Add special mapbox annotation views that are transparent and act as a map -> pdf sync driver. Does nothing when canvas source is not pdf.
     /// These are just to special annotations placed in the top left and bottom right corners of a square that has a side length = `syncSquareSize` points (in screen coordiantes)
     /// and is centered at the mapView center
-    private func setupSyncAnnotationViews() {
+    private func setupSyncAnnotationViews(useStateCache: Bool) {
+        tearDownSyncAnnotationViews()
+
+        let topLeftCoordinate: CLLocationCoordinate2D
+        let bottomRightCoordinate: CLLocationCoordinate2D
+
+        let state: CanvasSourceMapState? = useStateCache
+            ? canvasSourceMapStateCache[canvas.currentCanvasSource.id]
+            : nil
+        if let topLeftAnnotationViewCoordinate = state?.topLeftAnnotationViewCoordinate,
+           let bottomRightAnnotationViewCoordinate = state?.bottomRightAnnotationViewCoordinate
+        {
+            topLeftCoordinate = topLeftAnnotationViewCoordinate
+            bottomRightCoordinate = bottomRightAnnotationViewCoordinate
+        } else {
+            let centerCoordinate = canvas.currentCanvasSource.center // geo
+            let centerPoint = mapView.mapboxMap.point(for: centerCoordinate) // screen
+            
+            // The sync points need no canvasSource rotation, the assumption is that the map
+            // is already rotated properly when this function is called
+            
+            topLeftCoordinate = mapView.mapboxMap.coordinate(for: CGPoint(
+                x: centerPoint.x - syncSquareSize / 2,
+                y: centerPoint.y - syncSquareSize / 2
+            ))
+
+            bottomRightCoordinate = mapView.mapboxMap.coordinate(for: CGPoint(
+                x: centerPoint.x + syncSquareSize / 2,
+                y: centerPoint.y + syncSquareSize / 2
+            ))
+        }
+
         // this is the size in screen coordiantes. It needs to be very big as mapbox only tracks
         // annotations that are currently on screen. Such big size guarantess that no matter
         // what zoom and center this annotation view is partially on screen (but still not visible
@@ -517,10 +534,7 @@ class CanvasViewController: UIViewController {
 
         let topLeft = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
         topLeft.backgroundColor = .clear
-        let topLeftViewAnnotation = ViewAnnotation(coordinate: mapView.mapboxMap.coordinate(for: CGPoint(
-            x: mapView.center.x - syncSquareSize / 2,
-            y: mapView.center.y - syncSquareSize / 2
-        )), view: topLeft)
+        let topLeftViewAnnotation = ViewAnnotation(coordinate: topLeftCoordinate, view: topLeft)
         topLeftViewAnnotation.allowOverlap = true
         topLeftViewAnnotation.allowOverlapWithPuck = true
         mapView.viewAnnotations.add(topLeftViewAnnotation)
@@ -528,10 +542,7 @@ class CanvasViewController: UIViewController {
 
         let bottomRight = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
         bottomRight.backgroundColor = .clear
-        let bottomRightViewAnnotation = ViewAnnotation(coordinate: mapView.mapboxMap.coordinate(for: CGPoint(
-            x: mapView.center.x + syncSquareSize / 2,
-            y: mapView.center.y + syncSquareSize / 2
-        )), view: bottomRight)
+        let bottomRightViewAnnotation = ViewAnnotation(coordinate: bottomRightCoordinate, view: bottomRight)
         bottomRightViewAnnotation.allowOverlap = true
         bottomRightViewAnnotation.allowOverlapWithPuck = true
         mapView.viewAnnotations.add(bottomRightViewAnnotation)
@@ -539,15 +550,15 @@ class CanvasViewController: UIViewController {
         bottomRightSyncViewAnnotation = bottomRightViewAnnotation
 
         // show topLeft/bottomRight dots to help debug
-//            let dotFrame = CGRect(origin: CGPoint(x: 50000 - 3, y: 50000 - 3), size: CGSize(width: 7, height: 7))
-//            let topLeftDot = UIView(frame: dotFrame)
-//            topLeftDot.layer.cornerRadius = 3.5
-//            topLeftDot.backgroundColor = .Red_03
-//            topLeft.addSubview(topLeftDot)
-//            let bottomRightDot = UIView(frame: dotFrame)
-//            bottomRightDot.layer.cornerRadius = 3.5
-//            bottomRightDot.backgroundColor = .Green_03
-//            bottomRight.addSubview(bottomRightDot)
+//        let dotFrame = CGRect(origin: CGPoint(x: 50000 - 3, y: 50000 - 3), size: CGSize(width: 7, height: 7))
+//        let topLeftDot = UIView(frame: dotFrame)
+//        topLeftDot.layer.cornerRadius = 3.5
+//        topLeftDot.backgroundColor = .Red_03
+//        topLeft.addSubview(topLeftDot)
+//        let bottomRightDot = UIView(frame: dotFrame)
+//        bottomRightDot.layer.cornerRadius = 3.5
+//        bottomRightDot.backgroundColor = .Green_03
+//        bottomRight.addSubview(bottomRightDot)
 
         bottomRightSyncAnnotationViewObservation = bottomRight.observe(\.frame) { [weak self] _, _ in
             self?.syncPDFViewWithAnnotationViews()
@@ -610,15 +621,14 @@ class CanvasViewController: UIViewController {
     private func syncPDFViewWithAnnotationViews() {
         guard let pdfScrollView = pdfScrollView,
               let topLeftCenter = topLeftSyncViewAnnotation?.view.center,
-              let bottomRightCenter = bottomRightSyncViewAnnotation?.view.center else { return }
+              let bottomRightCenter = bottomRightSyncViewAnnotation?.view.center,
+              canvas.currentCanvasSource.type == .pdf else { return }
 
         let syncViewsDistance = bottomRightCenter.x - topLeftCenter.x
         guard syncViewsDistance > 0 else { return }
 
-        // a scale for a view that has scale = 1 when the mapbox zoom is `initialMapboxZoom`
-        let referenceScale: CGFloat = syncViewsDistance / syncSquareSize
-        // Adjust the reference scale by the pdf scale at reference zoom
-        let pdfScale = initialPdfScale * referenceScale
+        // scale the PDF linearly with the sync square
+        let pdfScale = syncViewsDistance / syncSquareSize
         pdfScrollView.zoomScale = pdfScale
 
         let syncViewsCenter = CGPoint(

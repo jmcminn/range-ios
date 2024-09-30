@@ -3,6 +3,10 @@ import Foundation
 
 let mercatorR = 6_378_137.0
 
+func _deg2rad(_ number: Double) -> Double {
+    number * .pi / 180.0
+}
+
 /**
  Converter for mapbox zoom.
 
@@ -14,7 +18,7 @@ struct MapboxZoomConverter {
 
     /// The latitude is required for conversion because the real world size depends on the latitude.
     init(latitude: CLLocationDegrees) {
-        metersPerPointToZoomConstant = cos(latitude * .pi / 180.0) * 2 * Double
+        metersPerPointToZoomConstant = cos(_deg2rad(latitude)) * 2 * Double
             .pi * mercatorR / tileSize
     }
 

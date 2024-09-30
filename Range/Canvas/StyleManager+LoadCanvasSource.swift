@@ -39,6 +39,21 @@ extension StyleManager {
             }
             completion?(error)
         }
+        // Show the map view behind the PDF for debugging
+//        let styleUrl = "mapbox://styles/mapbox/streets-v12"
+//        guard let styleURI = StyleURI(rawValue: styleUrl) else {
+//            Logger.mapbox.error("invalid mapbox style \(styleUrl)")
+//            completion?("invalid mapbox style \(styleUrl)")
+//            return
+//        }
+//        load(mapStyle: MapStyle(uri: styleURI)) { error in
+//            if let error {
+//                Logger.mapbox.error(
+//                    "failed to load mapbox style \(styleUrl) load failed: \(error.localizedDescription, privacy: .public)"
+//                )
+//            }
+//            completion?(error)
+//        }
     }
 
     /// Load mapbox style
