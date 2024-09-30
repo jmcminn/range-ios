@@ -153,7 +153,7 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
         self.model = model
         collaborationId = collaboration.id
 
-        additionalInformationButton.isHidden = selectable || !collaboration.isPlacedOnMap
+        additionalInformationButton.isHidden = selectable || !collaboration.isGeolocated
 
         if let collaborationID = model.collaborationIdentifier(collaboration) {
             idLabel.isHidden = false

@@ -469,7 +469,7 @@ class FullscreenMediaDetailsViewController: UIViewController {
         }
 
         if let collaboration = currentUpload?.collaboration.first,
-           collaboration.isPlacedOnMap
+           collaboration.isGeolocated
         {
             let additionalInformationButton = RangeButton(
                 configuration: UIButton.Configuration.iconButton(

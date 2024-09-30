@@ -499,7 +499,7 @@ extension ProjectFlowController {
                     handler: { [weak self] in self?.editFollowersAction(sender: sender, event: event) }
                 ),
             ])
-            if collaboration.isPlacedOnMap {
+            if collaboration.isGeolocated {
                 actions.append(ActionItem(
                     title: String(localized: "Additional Information"), imageName: "globe",
                     handler: { [weak self] in self?.showAdditionalInformation(sender: sender, event: event) }

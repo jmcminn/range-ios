@@ -66,9 +66,9 @@ class Collaboration: Object, WithPlaceholder, WithId {
             .max() ?? lastUpdatedAt
     }
 
-    var isPlacedOnMap: Bool {
+    var isGeolocated: Bool {
         guard let canvasSource = geometry.first?.canvas.first?.canvasSources.first else { return false }
-        return canvasSource.type != .pdf
+        return canvasSource.isGeolocated
     }
 
     /// Default initializer required by Realm.
