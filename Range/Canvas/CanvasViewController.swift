@@ -90,6 +90,7 @@ class CanvasViewController: UIViewController {
     // only when displaying pdf source
     private(set) var pdfPage: PDFPage?
 
+    // TODO: 3 check for location usage
     /// Mapbox for rendering the background mapview for .mapbox and .dronedeploy sources and for rendering the pins for all sources
     /// Achtung: reloading mapView instance when switching sources is not supported now. So when switching sources the initial
     /// mapView instance needs to be used instead of creating a new one, because pins are already added to it, and are only reloaded
@@ -438,6 +439,8 @@ class CanvasViewController: UIViewController {
             // rotations and pitch change is not supported for PDF
             mapView.gestures.options.rotateEnabled = false
             mapView.gestures.options.pitchEnabled = false
+            // hide the compass for pdf. We could in theory show it if it's geolocated, but there's
+            // no way to disable it, and we don't want user to rotate the map by tapping it.
             mapView.ornaments.options.compass.visibility = .hidden
             // When debugging the map view with PDF:
 //            mapView.layer.opacity = 0.5
@@ -455,10 +458,7 @@ class CanvasViewController: UIViewController {
 
         mapView.mapboxMap._loadMapboxStyle(forCanvasSource: canvas.currentCanvasSource)
 
-        if canvas.currentCanvasSource.type == .pdf {
-            // no location support
-            mapView.location.options.puckType = nil
-        } else {
+        if canvas.currentCanvasSource.isGeolocated {
             // location support enabled
             mapView.location.override(provider: locationProvider)
             let blueDotPrototype = Puck2DConfiguration(
@@ -470,6 +470,9 @@ class CanvasViewController: UIViewController {
             )
             mapView.location.options.puckType = .puck2D(blueDotPrototype)
             mapView.location.options.puckBearingEnabled = true
+        } else {
+            // no location support
+            mapView.location.options.puckType = nil
         }
     }
 
@@ -511,10 +514,10 @@ class CanvasViewController: UIViewController {
         } else {
             let centerCoordinate = canvas.currentCanvasSource.center // geo
             let centerPoint = mapView.mapboxMap.point(for: centerCoordinate) // screen
-            
+
             // The sync points need no canvasSource rotation, the assumption is that the map
             // is already rotated properly when this function is called
-            
+
             topLeftCoordinate = mapView.mapboxMap.coordinate(for: CGPoint(
                 x: centerPoint.x - syncSquareSize / 2,
                 y: centerPoint.y - syncSquareSize / 2

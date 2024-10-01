@@ -91,7 +91,7 @@ class AddPhotoPinsDisplay {
     /// 2. Otherwise show photo pin in the center of the screen
     private func selectInitialLocation() {
         if autoSelectInitialLocation,
-           model.currentCanvas.currentCanvasSource.type != .pdf,
+           model.currentCanvas.currentCanvasSource.isGeolocated,
            let userLocation = canvasVC.mapView.location.latestLocation,
            model.isLocationInCurrentCanvasSourceRange(userLocation.coordinate)
         {

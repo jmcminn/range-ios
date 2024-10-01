@@ -568,7 +568,7 @@ final class ProjectFlowController: UIViewController {
 
     var followMeModeButtonVisible: Bool {
         guard uiState == .default || uiState == .locationSimulation else { return false }
-        guard model.currentCanvas.currentCanvasSource.type != .pdf else { return false }
+        guard model.currentCanvas.currentCanvasSource.isGeolocated else { return false }
         guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
             .authorizationStatus == .authorizedWhenInUse else { return false }
         guard let userLocation = canvasContainer.annotationsMapView.location.latestLocation else { return false }
@@ -579,7 +579,7 @@ final class ProjectFlowController: UIViewController {
     var locationSimulationButtonVisible: Bool {
         guard AppConfiguration.showDebugOptions else { return false }
         guard uiState == .default || uiState == .locationSimulation else { return false }
-        guard model.currentCanvas.currentCanvasSource.type != .pdf else { return false }
+        guard model.currentCanvas.currentCanvasSource.isGeolocated else { return false }
         guard locationProvider.authorizationStatus == .authorizedAlways || locationProvider
             .authorizationStatus == .authorizedWhenInUse else { return false }
         return true
