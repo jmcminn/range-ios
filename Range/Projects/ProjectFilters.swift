@@ -24,7 +24,7 @@ class ProjectFilters: Codable, Equatable {
     }
 
     /// whether to show all projects or only active or archved
-    var projectStateFilter: ProjectStateFilter = .all { didSet { postUpdate() }}
+    var projectStateFilter: ProjectStateFilter = .active { didSet { postUpdate() }}
 
     /// Use notification center to post the notification about update in filters
     private func postUpdate() {
