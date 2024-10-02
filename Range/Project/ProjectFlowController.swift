@@ -234,13 +234,14 @@ final class ProjectFlowController: UIViewController {
     private func start() {
         guard started == false else { return }
         started = true
-        createGeometriesPinsDisplay(useNativeViews: _debugSettings.nativeViewsForPins)
         add(childController: canvasContainer)
         canvasContainer.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         canvasContainer.view.setNeedsLayout()
         canvasContainer.view.layoutIfNeeded()
+        /// add pins after canvasContainer view is loaded, so the pins are added on top of annotations added by CanvasViewController
+        createGeometriesPinsDisplay(useNativeViews: _debugSettings.nativeViewsForPins)
 
         // only show the card onboarding if user can create a collaboration, so is not a Guest
         // If user is a Guest then currently the card has a fixed size

@@ -151,6 +151,9 @@ class CanvasViewController: UIViewController {
 
         // initiate mapview
         setupMapView()
+        // setup once, the annotations should be added as first to map view, so all the pins
+        // are above
+        setupSyncAnnotationViews()
 
         currentCanvasObservation = model.observe(\.currentCanvas) { [weak self] _, _ in
             guard let self else { return }
@@ -301,7 +304,7 @@ class CanvasViewController: UIViewController {
             // update the map view camera when switching canvases
             self.updateCameraForCanvasSource(useStateCache: !forceReload)
             // setup annotation views
-            self.setupSyncAnnotationViews(useStateCache: !forceReload)
+            self.updateSyncAnnotationViewsForCanvasSource(useStateCache: !forceReload)
 
             self.syncPDFViewWithAnnotationViews()
         }
@@ -497,8 +500,50 @@ class CanvasViewController: UIViewController {
     /// Add special mapbox annotation views that are transparent and act as a map -> pdf sync driver. Does nothing when canvas source is not pdf.
     /// These are just to special annotations placed in the top left and bottom right corners of a square that has a side length = `syncSquareSize` points (in screen coordiantes)
     /// and is centered at the mapView center
-    private func setupSyncAnnotationViews(useStateCache: Bool) {
-        tearDownSyncAnnotationViews()
+    /// This function just adds the views at the project center, the actual positions are calculated in `updateSyncAnnotationViewsForCanvasSource`
+    /// for each PDF canvas source when it's shown
+    private func setupSyncAnnotationViews() {
+        // this is the size in screen coordiantes. It needs to be very big as mapbox only tracks
+        // annotations that are currently on screen. Such big size guarantess that no matter
+        // what zoom and center this annotation view is partially on screen (but still not visible
+        // as it's an empty view with alpha = 0)
+        let annotationViewSize = CGSize(width: 100_001, height: 100_001)
+
+        let topLeft = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
+        topLeft.backgroundColor = .clear
+        let topLeftViewAnnotation = ViewAnnotation(coordinate: model.projectSummary.center, view: topLeft)
+        topLeftViewAnnotation.allowOverlap = true
+        topLeftViewAnnotation.allowOverlapWithPuck = true
+        mapView.viewAnnotations.add(topLeftViewAnnotation)
+        topLeftSyncViewAnnotation = topLeftViewAnnotation
+
+        let bottomRight = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
+        bottomRight.backgroundColor = .clear
+        let bottomRightViewAnnotation = ViewAnnotation(coordinate: model.projectSummary.center, view: bottomRight)
+        bottomRightViewAnnotation.allowOverlap = true
+        bottomRightViewAnnotation.allowOverlapWithPuck = true
+        mapView.viewAnnotations.add(bottomRightViewAnnotation)
+
+        bottomRightSyncViewAnnotation = bottomRightViewAnnotation
+
+        // show topLeft/bottomRight dots to help debug
+//        let dotFrame = CGRect(origin: CGPoint(x: 50000 - 3, y: 50000 - 3), size: CGSize(width: 7, height: 7))
+//        let topLeftDot = UIView(frame: dotFrame)
+//        topLeftDot.layer.cornerRadius = 3.5
+//        topLeftDot.backgroundColor = .Red_03
+//        topLeft.addSubview(topLeftDot)
+//        let bottomRightDot = UIView(frame: dotFrame)
+//        bottomRightDot.layer.cornerRadius = 3.5
+//        bottomRightDot.backgroundColor = .Green_03
+//        bottomRight.addSubview(bottomRightDot)
+
+        bottomRightSyncAnnotationViewObservation = bottomRight.observe(\.frame) { [weak self] _, _ in
+            self?.syncPDFViewWithAnnotationViews()
+        }
+    }
+
+    private func updateSyncAnnotationViewsForCanvasSource(useStateCache: Bool) {
+        guard let topLeftSyncViewAnnotation, let bottomRightSyncViewAnnotation else { return }
 
         let topLeftCoordinate: CLLocationCoordinate2D
         let bottomRightCoordinate: CLLocationCoordinate2D
@@ -529,43 +574,8 @@ class CanvasViewController: UIViewController {
             ))
         }
 
-        // this is the size in screen coordiantes. It needs to be very big as mapbox only tracks
-        // annotations that are currently on screen. Such big size guarantess that no matter
-        // what zoom and center this annotation view is partially on screen (but still not visible
-        // as it's an empty view with alpha = 0)
-        let annotationViewSize = CGSize(width: 100_001, height: 100_001)
-
-        let topLeft = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
-        topLeft.backgroundColor = .clear
-        let topLeftViewAnnotation = ViewAnnotation(coordinate: topLeftCoordinate, view: topLeft)
-        topLeftViewAnnotation.allowOverlap = true
-        topLeftViewAnnotation.allowOverlapWithPuck = true
-        mapView.viewAnnotations.add(topLeftViewAnnotation)
-        topLeftSyncViewAnnotation = topLeftViewAnnotation
-
-        let bottomRight = UIView(frame: CGRect(origin: .zero, size: annotationViewSize))
-        bottomRight.backgroundColor = .clear
-        let bottomRightViewAnnotation = ViewAnnotation(coordinate: bottomRightCoordinate, view: bottomRight)
-        bottomRightViewAnnotation.allowOverlap = true
-        bottomRightViewAnnotation.allowOverlapWithPuck = true
-        mapView.viewAnnotations.add(bottomRightViewAnnotation)
-
-        bottomRightSyncViewAnnotation = bottomRightViewAnnotation
-
-        // show topLeft/bottomRight dots to help debug
-//        let dotFrame = CGRect(origin: CGPoint(x: 50000 - 3, y: 50000 - 3), size: CGSize(width: 7, height: 7))
-//        let topLeftDot = UIView(frame: dotFrame)
-//        topLeftDot.layer.cornerRadius = 3.5
-//        topLeftDot.backgroundColor = .Red_03
-//        topLeft.addSubview(topLeftDot)
-//        let bottomRightDot = UIView(frame: dotFrame)
-//        bottomRightDot.layer.cornerRadius = 3.5
-//        bottomRightDot.backgroundColor = .Green_03
-//        bottomRight.addSubview(bottomRightDot)
-
-        bottomRightSyncAnnotationViewObservation = bottomRight.observe(\.frame) { [weak self] _, _ in
-            self?.syncPDFViewWithAnnotationViews()
-        }
+        topLeftSyncViewAnnotation.annotatedFeature = .geometry(Point(topLeftCoordinate))
+        bottomRightSyncViewAnnotation.annotatedFeature = .geometry(Point(bottomRightCoordinate))
     }
 
     /// Remove the mapbox annotation views for driving mapbox -> pdf sync and stop observing
