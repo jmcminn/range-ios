@@ -18,6 +18,7 @@ class ProjectCanvasControls: PassthroughView {
         case locationSimulationButton = 1009
         case followMeModeButton = 1010
         case inAppUnseenItemsBadge = 1011
+        case resetCanvasButton = 1012
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -427,7 +428,7 @@ extension ProjectCanvasControls {
 
     @objc private func canvasFiltersButtonTapped() {
         UIApplication.shared.sendAction(#selector(ProjectFlowActions.selectCanvasFiltersAction),
-                                        to: nil, from: canvasSourceSelectorButton, for: nil)
+                                        to: nil, from: canvasFiltersButton, for: nil)
     }
 
     /// Access to currently showing canvas filters indicators badge, or nil if not showing
@@ -452,6 +453,31 @@ extension ProjectCanvasControls {
             make.centerX.equalToSuperview().offset(16)
             make.centerY.equalToSuperview().offset(-16)
         }
+    }
+}
+
+// MARK: - resetCanvasButton
+
+extension ProjectCanvasControls {
+    /// Access to currently showing button, or nil if not showing
+    var resetCanvasButton: UIView? {
+        subviews.first { $0.tag == ViewTag.resetCanvasButton.rawValue }
+    }
+
+    func showResetCanvasButton(aboveView: UIView) {
+        let button = RoundShadowButton(image: UIImage(systemName: "viewfinder") ?? UIImage())
+        button.tag = ViewTag.resetCanvasButton.rawValue
+        button.addTarget(self, action: #selector(resetCanvasButtonTapped), for: .touchUpInside)
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.bottom.equalTo(aboveView.snp.top).offset(-12)
+        }
+    }
+
+    @objc private func resetCanvasButtonTapped() {
+        UIApplication.shared.sendAction(#selector(ProjectFlowActions.resetCanvasAction),
+                                        to: nil, from: resetCanvasButton, for: nil)
     }
 }
 

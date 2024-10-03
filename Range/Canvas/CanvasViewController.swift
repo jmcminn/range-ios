@@ -164,8 +164,6 @@ class CanvasViewController: UIViewController {
         Task { @MainActor in
             await self.showCanvas(previousCanvas: nil)
         }
-
-//        setupDebugViews()
     }
 
     /// Show the current model canvas
@@ -202,19 +200,30 @@ class CanvasViewController: UIViewController {
             pdfScrollView = nil
         }
     }
-    
+
+    func resetCamera() {
+        let cameraState = CameraState(
+            center: canvas.currentCanvasSource.center,
+            padding: .zero,
+            zoom: getZoomForCurrentCanvasSource(),
+            bearing: canvas.currentCanvasSource.rotation,
+            pitch: 0
+        )
+        mapView.camera.ease(to: CameraOptions(cameraState: cameraState), duration: 0.2)
+    }
+
     // reset rotation to the default value
     func resetRotationForPdf() {
         var cameraState = mapView.mapboxMap.cameraState
         cameraState.bearing = canvas.currentCanvasSource.rotation
         mapView.mapboxMap.setCamera(to: CameraOptions(cameraState: cameraState))
     }
-    
+
     // disable rotation if the current canvas source is pdf
     func disableRotationForPdf() {
         mapView.gestures.options.rotateEnabled = canvas.currentCanvasSource.type != .pdf
     }
-    
+
     // enable rotation for supported canvases
     func enableRotation() {
         mapView.gestures.options.rotateEnabled = canvas.currentCanvasSource.isGeolocated
@@ -610,20 +619,6 @@ class CanvasViewController: UIViewController {
         mapView.frame = view.bounds
     }
 
-//    private func setupDebugViews() {
-//        let resetButton = UIButton()
-//        resetButton.setTitle("reset", for: .normal)
-//        resetButton.addTarget(self, action: #selector(resetAction), for: .touchUpInside)
-//        resetButton.sizeToFit()
-//        resetButton.backgroundColor = .black.withAlphaComponent(0.5)
-//        view.addSubview(resetButton)
-//        resetButton.frame.origin = CGPoint(x: 10, y: 40)
-//    }
-//
-//    @objc func resetAction() {
-//        animatePanAndZoom(contentOffset: .zero, zoomScale: 1)
-//    }
-
     /// Animate to given cameraCenter and mapboxZoom.
     func animatePanAndZoom(cameraCenter: CLLocationCoordinate2D, mapboxZoom: Double, completion: (() -> Void)? = nil) {
         setFollowMeMode(enabled: false)
@@ -668,15 +663,15 @@ class CanvasViewController: UIViewController {
         )
         let xOffset = -(syncViewsCenter.x - pdfScrollView.center.x * pdfScale)
         let yOffset = -(syncViewsCenter.y - pdfScrollView.center.y * pdfScale)
-        
+
         // the rotation is based on the initial canvas source rotation, so the pdf is not rotated
         // when the map bearing = canvasSource.rotation (that's the initial state when loading canvas source)
         let pdfRotation = canvas.currentCanvasSource.rotation - mapView.mapboxMap.cameraState.bearing
-        
+
         pdfScrollView.zoomScale = pdfScale
         pdfScrollView.contentOffset = CGPoint(x: xOffset, y: yOffset)
         // The rotation needs to be applied to the pdfView.
-        // - cannot be applied to pdfScrollView 
+        // - cannot be applied to pdfScrollView
         //      - that would make the offset/zoom calculations much more complicated
         // - cannot be applied to pdfScrollView.contentView (parent view of pdfView)
         //      - scroll view controls it's transformation to support zoomScale

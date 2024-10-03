@@ -258,6 +258,7 @@ final class ProjectFlowController: UIViewController {
         controls.showCanvasSelectorButton(aboveView: actionCardVC.view)
         controls.showCanvasSourceSelectorButton(aboveView: controls.canvasSelectorButton!)
         controls.showCanvasFiltersButton(aboveView: controls.canvasSourceSelectorButton!)
+        controls.showResetCanvasButton(aboveView: controls.canvasFiltersButton!)
         controls.showCanvasFiltersIndicatorBadge()
         updateFiltersIndicatorBadge()
         // observe the filters and update the filters indicator badge on change
@@ -528,6 +529,7 @@ final class ProjectFlowController: UIViewController {
             controls.canvasSelectorButton?.isHidden = false
             controls.canvasSourceSelectorButton?.isHidden = canvasSourceSelectorHidden
             controls.canvasFiltersButton?.isHidden = false
+            controls.resetCanvasButton?.isHidden = false
             pinsDisplay?.start(onInitialLoad: nil)
         } else if state == .collaboration {
             // we don't hide the controls, only hide additional cards and minimize the action card
@@ -540,18 +542,21 @@ final class ProjectFlowController: UIViewController {
             controls.canvasSelectorButton?.isHidden = true
             controls.canvasSourceSelectorButton?.isHidden = true
             controls.canvasFiltersButton?.isHidden = true
+            controls.resetCanvasButton?.isHidden = false
         } else if state == .locationSimulation {
             // location simulation hides the pins so user can tap anywhere in the canvas to simulate user position
             actionCardVC.hideCard(animated: animated)
             controls.canvasSelectorButton?.isHidden = true
             controls.canvasSourceSelectorButton?.isHidden = true
             controls.canvasFiltersButton?.isHidden = true
+            controls.resetCanvasButton?.isHidden = true
             pinsDisplay?.stop()
         } else {
             actionCardVC.hideCard(animated: animated)
             controls.canvasSelectorButton?.isHidden = true
             controls.canvasSourceSelectorButton?.isHidden = true
             controls.canvasFiltersButton?.isHidden = true
+            controls.resetCanvasButton?.isHidden = true
             pinsDisplay?.stop()
         }
         controls.followMeModeButton?.isHidden = !followMeModeButtonVisible

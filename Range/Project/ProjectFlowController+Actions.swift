@@ -85,6 +85,8 @@ final class FlowEvent: UIEvent {
     func editFollowersAction(sender: Any?, event: FlowEvent)
     /// Shows the geographical information for map canvas Collaboration
     func showAdditionalInformation(sender: Any?, event: FlowEvent)
+    /// Reset canvas camera
+    func resetCanvasAction()
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -1001,5 +1003,12 @@ extension ProjectFlowController {
         guard let collaboration = event.object as? Collaboration, !collaboration.isInvalidated else { return }
         AdditionalInformationCardViewController(collaboration: collaboration)
             .installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+}
+
+// MARK: - reset canvas
+extension ProjectFlowController {
+    func resetCanvasAction() {
+        canvasContainer.canvasViewController.resetCamera()
     }
 }
