@@ -59,15 +59,21 @@ class CanvasSnapshotFlowController {
             guard let self else { return }
             self.selectionVC?.view.removeFromSuperview()
             self.selectionVC = nil
+            self.canvasContainer.canvasViewController.enableRotation()
             self.onStop?(self.geometryId, nil, nil)
         }
         selectionVC?.onDone = { [weak self] snapshotFrame in
+            self?.canvasContainer.canvasViewController.enableRotation()
             self?.takeSnapshotAndStartAddPhotoFlow(snapshotFrame)
         }
         canvasContainer.controls.addSubview(selectionVC!.view)
         selectionVC!.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        // we don't support taking snapshots of rotated pdfs so when starting the snapshotting
+        // we need to reset the rotation and disable it
+        canvasContainer.canvasViewController.resetRotationForPdf()
+        canvasContainer.canvasViewController.disableRotationForPdf()
     }
 
     @MainActor

@@ -90,7 +90,6 @@ class CanvasViewController: UIViewController {
     // only when displaying pdf source
     private(set) var pdfPage: PDFPage?
 
-    // TODO: 3 check for location usage
     /// Mapbox for rendering the background mapview for .mapbox and .dronedeploy sources and for rendering the pins for all sources
     /// Achtung: reloading mapView instance when switching sources is not supported now. So when switching sources the initial
     /// mapView instance needs to be used instead of creating a new one, because pins are already added to it, and are only reloaded
@@ -202,6 +201,23 @@ class CanvasViewController: UIViewController {
             pdfScrollView?.removeFromSuperview()
             pdfScrollView = nil
         }
+    }
+    
+    // reset rotation to the default value
+    func resetRotationForPdf() {
+        var cameraState = mapView.mapboxMap.cameraState
+        cameraState.bearing = canvas.currentCanvasSource.rotation
+        mapView.mapboxMap.setCamera(to: CameraOptions(cameraState: cameraState))
+    }
+    
+    // disable rotation if the current canvas source is pdf
+    func disableRotationForPdf() {
+        mapView.gestures.options.rotateEnabled = canvas.currentCanvasSource.type != .pdf
+    }
+    
+    // enable rotation for supported canvases
+    func enableRotation() {
+        mapView.gestures.options.rotateEnabled = canvas.currentCanvasSource.isGeolocated
     }
 
     /// Observe when canvas source is switched to different canvas source
@@ -338,6 +354,9 @@ class CanvasViewController: UIViewController {
         // just a small number and a big number, the zoom is controlled by the mapbox anyway.
         pdfScrollView.minimumZoomScale = 0.001
         pdfScrollView.maximumZoomScale = 100_000
+        // When pdf is rotated it's bounds are not matching the superview bounds so we may
+        // need to render outside of bounds
+        pdfScrollView.clipsToBounds = false
 
         // Just a big number to allow zooming out
         // TODO: add limit to geographical location the center may reach.
@@ -439,8 +458,7 @@ class CanvasViewController: UIViewController {
                     subview.isOpaque = false
                 }
             }
-            // rotations and pitch change is not supported for PDF
-            mapView.gestures.options.rotateEnabled = false
+            // pitch change is not supported for PDF
             mapView.gestures.options.pitchEnabled = false
             // hide the compass for pdf. We could in theory show it if it's geolocated, but there's
             // no way to disable it, and we don't want user to rotate the map by tapping it.
@@ -453,11 +471,11 @@ class CanvasViewController: UIViewController {
                     subview.isOpaque = true
                 }
             }
-            mapView.gestures.options.rotateEnabled = true
             mapView.gestures.options.pitchEnabled = true
             mapView.ornaments.options.compass.visibility = .adaptive
 //            mapView.layer.opacity = 1
         }
+        enableRotation()
 
         mapView.mapboxMap._loadMapboxStyle(forCanvasSource: canvas.currentCanvasSource)
 
@@ -631,18 +649,18 @@ class CanvasViewController: UIViewController {
     /// The calculations are based only on screen coordinates as the annotations were placed so their centers
     /// match the top-left and bottom-right corners of the PDF, so the PDF scale and offset can be inferred directly
     /// from current on screen positions of the annotation views, without doing any mapbox camera/zoom or geocoordinates calculations.
+    ///
+    /// Good article on how iOS UIScrollView works: https://www.objc.io/issues/3-views/scroll-view/
     private func syncPDFViewWithAnnotationViews() {
         guard let pdfScrollView = pdfScrollView,
               let topLeftCenter = topLeftSyncViewAnnotation?.view.center,
               let bottomRightCenter = bottomRightSyncViewAnnotation?.view.center,
               canvas.currentCanvasSource.type == .pdf else { return }
 
-        let syncViewsDistance = bottomRightCenter.x - topLeftCenter.x
-        guard syncViewsDistance > 0 else { return }
-
-        // scale the PDF linearly with the sync square
-        let pdfScale = syncViewsDistance / syncSquareSize
-        pdfScrollView.zoomScale = pdfScale
+        let syncViewsDistanceSquared = CGPointDistanceSquared(from: topLeftCenter, to: bottomRightCenter)
+        guard syncViewsDistanceSquared > 0 else { return }
+        // scale the PDF linearly with the sync square ( = syncViewsDistance / syncSquareSize*sqrt(2) <- initial distance
+        let pdfScale = sqrt(syncViewsDistanceSquared / 2.0) / syncSquareSize
 
         let syncViewsCenter = CGPoint(
             x: (topLeftCenter.x + bottomRightCenter.x) / 2,
@@ -650,7 +668,19 @@ class CanvasViewController: UIViewController {
         )
         let xOffset = -(syncViewsCenter.x - pdfScrollView.center.x * pdfScale)
         let yOffset = -(syncViewsCenter.y - pdfScrollView.center.y * pdfScale)
+        
+        // the rotation is based on the initial canvas source rotation, so the pdf is not rotated
+        // when the map bearing = canvasSource.rotation (that's the initial state when loading canvas source)
+        let pdfRotation = canvas.currentCanvasSource.rotation - mapView.mapboxMap.cameraState.bearing
+        
+        pdfScrollView.zoomScale = pdfScale
         pdfScrollView.contentOffset = CGPoint(x: xOffset, y: yOffset)
+        // The rotation needs to be applied to the pdfView.
+        // - cannot be applied to pdfScrollView 
+        //      - that would make the offset/zoom calculations much more complicated
+        // - cannot be applied to pdfScrollView.contentView (parent view of pdfView)
+        //      - scroll view controls it's transformation to support zoomScale
+        pdfScrollView.pdfView.transform = CGAffineTransformMakeRotation(_deg2rad(pdfRotation))
     }
 
     func setFollowMeMode(enabled: Bool) {

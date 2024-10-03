@@ -40,7 +40,8 @@ extension StyleManager {
             completion?(error)
         }
         // Show the map view behind the PDF for debugging
-//        let styleUrl = "mapbox://styles/mapbox/streets-v12"
+//        let styleUrl = "mapbox://styles/range-mapbox/clf1ibv5q000o01o5ugllamev"
+////        let styleUrl = "mapbox://styles/mapbox/streets-v12"
 //        guard let styleURI = StyleURI(rawValue: styleUrl) else {
 //            Logger.mapbox.error("invalid mapbox style \(styleUrl)")
 //            completion?("invalid mapbox style \(styleUrl)")
