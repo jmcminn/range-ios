@@ -91,15 +91,17 @@ final class FlowEvent: UIEvent {
 
 extension ProjectFlowController: ProjectFlowActions {
     func selectCanvasAction() {
+        onboarding.canvasSelectorTapped()
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
-        CanvasSelectorCardViewController(
+        let canvasSelector = CanvasSelectorCardViewController(
             title: String(localized: "Canvas Selector"),
             canvases: model.sortedCanvases,
             selectedCanvas: model.currentCanvas,
             onCanvasSelected: { [weak self] canvas in
-                guard let self = self else { return }
+                guard let self else { return }
+                self.onboarding.canvasSelectorHidden()
                 guard self.model.currentCanvas != canvas else { return }
                 do {
                     try self.model.setCurrentCanvas(canvas)
@@ -107,7 +109,11 @@ extension ProjectFlowController: ProjectFlowActions {
                     ToastWindow.shared.showError(text: "Canvas failed to load")
                 }
             }
-        ).installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+        )
+        canvasSelector.onClose = { [weak self] in
+            self?.onboarding.canvasSelectorHidden()
+        }
+        canvasSelector.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
 
     func selectCanvasSourceAction() {
@@ -128,6 +134,7 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func selectCanvasFiltersAction() {
+        onboarding.canvasFiltersTapped()
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
@@ -1007,6 +1014,7 @@ extension ProjectFlowController {
 }
 
 // MARK: - reset canvas
+
 extension ProjectFlowController {
     func resetCanvasAction() {
         canvasContainer.canvasViewController.resetCamera()

@@ -19,6 +19,8 @@ class ProjectCanvasControls: PassthroughView {
         case followMeModeButton = 1010
         case inAppUnseenItemsBadge = 1011
         case resetCanvasButton = 1012
+        case canvasSelectorOnboardingView = 1013
+        case canvasFiltersOnboardingView = 1014
     }
 
     unowned let canvasContainer: CanvasContainerViewController
@@ -295,6 +297,14 @@ extension ProjectCanvasControls {
         subviews.first { $0.tag == ViewTag.cardOnboardingView.rawValue }
     }
 
+    var canvasSelectorOnboardingView: UIView? {
+        subviews.first { $0.tag == ViewTag.canvasSelectorOnboardingView.rawValue }
+    }
+
+    var canvasFiltersOnboardingView: UIView? {
+        subviews.first { $0.tag == ViewTag.canvasFiltersOnboardingView.rawValue }
+    }
+
     func showCardOnboardingView(aboveView: UIView) {
         let overlay = PassthroughGradientView()
         overlay.tag = ViewTag.cardOnboardingView.rawValue
@@ -340,6 +350,52 @@ extension ProjectCanvasControls {
                        }, completion: { _ in
                            view.removeFromSuperview()
                        })
+    }
+
+    func showCanvasSelectorOnboardingView() {
+        guard let canvasSelectorButton else { return }
+        let tooltip = MapTooltipView(text: "Change Canvas Layer", boxColor: .Neutral_09, arrowPosition: .right)
+        tooltip.tag = ViewTag.canvasSelectorOnboardingView.rawValue
+        addSubview(tooltip)
+        tooltip.snp.makeConstraints { make in
+            make.centerY.equalTo(canvasSelectorButton)
+            make.trailing.equalTo(canvasSelectorButton.snp.leading).offset(-8)
+        }
+    }
+
+    func hideCanvasSelectorOnboardingView() {
+        guard let canvasSelectorOnboardingView else { return }
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                canvasSelectorOnboardingView.alpha = 0
+            }, completion: { _ in
+                canvasSelectorOnboardingView.removeFromSuperview()
+            }
+        )
+    }
+
+    func showCanvasFiltersOnboardingView() {
+        guard let canvasFiltersButton else { return }
+        let tooltip = MapTooltipView(text: "Adjust Canvas Filters", boxColor: .Neutral_09, arrowPosition: .right)
+        tooltip.tag = ViewTag.canvasFiltersOnboardingView.rawValue
+        addSubview(tooltip)
+        tooltip.snp.makeConstraints { make in
+            make.centerY.equalTo(canvasFiltersButton)
+            make.trailing.equalTo(canvasFiltersButton.snp.leading).offset(-8)
+        }
+    }
+
+    func hideCanvasFiltersOnboardingView() {
+        guard let canvasFiltersOnboardingView else { return }
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                canvasFiltersOnboardingView.alpha = 0
+            }, completion: { _ in
+                canvasFiltersOnboardingView.removeFromSuperview()
+            }
+        )
     }
 }
 

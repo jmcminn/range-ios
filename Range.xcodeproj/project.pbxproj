@@ -394,6 +394,7 @@
 		0A9C04982BCD9C0600410760 /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9C04972BCD9C0500410760 /* RangeSlider.swift */; };
 		0A9E861E297E96CC0099F22F /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E861D297E96CC0099F22F /* UserSettings.swift */; };
 		0A9E8620297E97F10099F22F /* UserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E861F297E97F10099F22F /* UserSettingsView.swift */; };
+		0A9F03AE2CB3EECA004DA4C4 /* ProjectOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F03AD2CB3EECA004DA4C4 /* ProjectOnboarding.swift */; };
 		0AA424322913C6F40088E2B1 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424312913C6F40088E2B1 /* Action.swift */; };
 		0AA424342913C7030088E2B1 /* ActionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA424332913C7030088E2B1 /* ActionCommand.swift */; };
 		0AA42437291431470088E2B1 /* PendingActionsModelImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */; };
@@ -928,6 +929,7 @@
 		0A9E5EFB29D5FFC000E7737D /* GoogleService-Info.custom.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.custom.plist"; sourceTree = "<group>"; };
 		0A9E861D297E96CC0099F22F /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		0A9E861F297E97F10099F22F /* UserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsView.swift; sourceTree = "<group>"; };
+		0A9F03AD2CB3EECA004DA4C4 /* ProjectOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectOnboarding.swift; sourceTree = "<group>"; };
 		0AA424312913C6F40088E2B1 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		0AA424332913C7030088E2B1 /* ActionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCommand.swift; sourceTree = "<group>"; };
 		0AA42436291431470088E2B1 /* PendingActionsModelImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsModelImpl.swift; sourceTree = "<group>"; };
@@ -1645,6 +1647,7 @@
 				0A3714DE29504FA6004ED1B0 /* ProjectFlowController+Actions.swift */,
 				0A4DC77D27F45F1F00712518 /* ProjectActionCardViewController.swift */,
 				0A34073729CA1570007299A7 /* ProjectCanvasControls.swift */,
+				0A9F03AD2CB3EECA004DA4C4 /* ProjectOnboarding.swift */,
 			);
 			path = Project;
 			sourceTree = "<group>";
@@ -2865,6 +2868,7 @@
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
 				0A7393832A606C360079A7FB /* Annotation.swift in Sources */,
 				0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */,
+				0A9F03AE2CB3EECA004DA4C4 /* ProjectOnboarding.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
 				0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */,
 				0A881983291D018B0050FC41 /* FirestoreDocument.swift in Sources */,

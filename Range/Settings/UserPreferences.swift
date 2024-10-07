@@ -38,6 +38,8 @@ class UserPreferences {
         static let taskListFiltersPrefix = "taskListFilters_"
         /// whether the card onboarding was complete (action card for project needs to be maximized)
         static let cardOnboardingComplete = "cardOnboardingComplete"
+        static let canvasSelectorOnboardingComplete = "canvasSelectorOnboardingComplete"
+        static let canvasFiltersOnboardingComplete = "canvasFiltersOnboardingComplete"
         /// the prefix used for storing last copied pins (array of ids) for a projects, will be followed by a project id
         /// it's stored as lastCopiedTasks_ for backward compatibility (it used to store tasks only)
         static let lastCopiedPinsPrefix = "lastCopiedTasks_"
@@ -308,10 +310,24 @@ class UserPreferences {
             defaults.set(cardOnboardingComplete, forKey: Keys.cardOnboardingComplete)
         }
     }
+    var canvasSelectorOnboardingComplete: Bool {
+        didSet {
+            defaults.set(canvasSelectorOnboardingComplete, forKey: Keys.canvasSelectorOnboardingComplete)
+        }
+    }
+    
+    var canvasFiltersOnboardingComplete: Bool {
+        didSet {
+            defaults.set(canvasFiltersOnboardingComplete, forKey: Keys.canvasFiltersOnboardingComplete)
+        }
+
+    }
 
     /// Reset onboarding user defaults, so onboarding animation can be tested again (for dev/testing purposes only)
     func resetOnboarding() {
         cardOnboardingComplete = false
+        canvasSelectorOnboardingComplete = false
+        canvasFiltersOnboardingComplete = false
     }
 
     /// construct key used for storing last copied pin ids for given project
@@ -354,5 +370,7 @@ class UserPreferences {
         moreUpdatesInTheFeed = defaults.bool(forKey: Keys.moreUpdatesInTheFeed)
         lastFCMToken = defaults.string(forKey: Keys.lastFCMToken)
         cardOnboardingComplete = defaults.bool(forKey: Keys.cardOnboardingComplete)
+        canvasSelectorOnboardingComplete = defaults.bool(forKey: Keys.canvasSelectorOnboardingComplete)
+        canvasFiltersOnboardingComplete = defaults.bool(forKey: Keys.canvasFiltersOnboardingComplete)
     }
 }

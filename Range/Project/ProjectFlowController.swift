@@ -114,6 +114,8 @@ final class ProjectFlowController: UIViewController {
 
     /// combine observers
     private var subscriptions = Set<AnyCancellable>()
+    
+    let onboarding: ProjectOnboarding
 
     /// Initialize ProjectFlowController
     /// This can throw if project model cannot be loaded or started
@@ -191,8 +193,12 @@ final class ProjectFlowController: UIViewController {
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
 
         knockFeedModel = KnockFeedModel(knockClient: userModel.knockClient, projectId: projectId)
+        
+        onboarding = ProjectOnboarding(model: model, userPreferences: userPreferences)
 
         super.init(nibName: nil, bundle: nil)
+        
+        onboarding.projectFlow = self
 
         // Make this view controller part of the responder chain for view controllers presented modally
         // on top of it. If not set the responder chain for VCs presented modally would skip it and
@@ -243,12 +249,7 @@ final class ProjectFlowController: UIViewController {
         /// add pins after canvasContainer view is loaded, so the pins are added on top of annotations added by CanvasViewController
         createGeometriesPinsDisplay(useNativeViews: _debugSettings.nativeViewsForPins)
 
-        // only show the card onboarding if user can create a collaboration, so is not a Guest
-        // If user is a Guest then currently the card has a fixed size
-        if !userPreferences.cardOnboardingComplete, model.currentUser.canCreateCollaboration() {
-            controls.showCardOnboardingView(aboveView: actionCardVC.view)
-            actionCardDraggingDelegateId = actionCardVC.cardDragging?.addDelegate(self)
-        }
+        actionCardDraggingDelegateId = actionCardVC.cardDragging?.addDelegate(self)
 
         controls.showFollowMeModeButton(aboveView: actionCardVC.view)
         if AppConfiguration.showDebugOptions {
@@ -267,6 +268,8 @@ final class ProjectFlowController: UIViewController {
             name: canvasFilters.updateNotificationName, object: nil
         )
 
+        onboarding.start()
+        
         setUIState(.default, animated: false)
 
         updateCanvasSourceSelectorVisibility()
@@ -515,7 +518,7 @@ final class ProjectFlowController: UIViewController {
         }
 
         if state == .default {
-            if ProjectFlowController.actionCardInitiallyExpanded, userPreferences.cardOnboardingComplete {
+            if ProjectFlowController.actionCardInitiallyExpanded, onboarding.currentStep != .cardOnboarding {
                 // when showing the project flow controller initially we want the card maximized
                 // But not if user hasn't completed the card onboarding
                 actionCardVC.cardDragging?.setPosition(.max, withVelocity: 0)
@@ -634,13 +637,8 @@ final class ProjectFlowController: UIViewController {
 extension ProjectFlowController: CardDraggingDelegate {
     func cardDidChangePosition(_ position: CardPosition) {
         if position == .max {
-            // mark the card onboarding complete
-            userPreferences.cardOnboardingComplete = true
+            onboarding.cardMaximized()
 
-            // and hide the onboarding animation with 1s delay
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [weak self] in
-                self?.controls.hideCardOnboardingView()
-            }
         }
     }
 }
