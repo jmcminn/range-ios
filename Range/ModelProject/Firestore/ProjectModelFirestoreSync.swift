@@ -256,6 +256,7 @@ extension ProjectModelFirestoreSync {
     private func handleFeedItem(_ item: FirestoreFeedItem, id: String, inRealm realm: Realm) {
         switch item.itemType {
         case "Organization": handleOrganizationFeedItem(item, id: id, inRealm: realm)
+        case "Project": handleProjectFeedItem(item, id: id, inRealm: realm)
         case "Collaboration": handleCollaborationFeedItem(item, id: id, inRealm: realm)
         case "Comment": handleCommentFeedItem(item, id: id, inRealm: realm)
         case "Update": handleUpdateFeedItem(item, id: id, inRealm: realm)
@@ -278,6 +279,17 @@ extension ProjectModelFirestoreSync {
 //                _ = try await self.model.getAllData()
 //            }
             break
+        default:
+            reportUnsupportedFeedItem(item, id: id)
+        }
+    }
+
+    private func handleProjectFeedItem(_ item: FirestoreFeedItem, id: String, inRealm _: Realm) {
+        switch item.action {
+        case "bulk-updated":
+            runAsyncFeedBlock(id) {
+                _ = try await self.model.getAllData()
+            }
         default:
             reportUnsupportedFeedItem(item, id: id)
         }
