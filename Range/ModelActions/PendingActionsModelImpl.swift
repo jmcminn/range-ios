@@ -413,8 +413,13 @@ class PendingActionsModelImpl: PendingActionsModel {
                     "Will retry action because user is offline: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
                 )
                 return (false, nil)
-            } else if error.code == -1200 {
-                // this is SSL related error, let's log it as warning to observe if it doesn't escalate
+            } else if
+                [
+                    NSURLErrorCancelled, // -999
+                    NSURLErrorSecureConnectionFailed, // -1200
+                ].contains(error.code)
+            {
+                // rare errors, let's log it as warning to observe if it doesn't escalate
                 Logger.pendingActions.debug(
                     "Will retry action because user is offline: \(action.logDescription, privacy: .public) error: \(error, privacy: .public)"
                 )
