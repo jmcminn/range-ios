@@ -579,7 +579,6 @@
 		0A130EAF28DB04F300FF1368 /* LabelWithTextInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelWithTextInsets.swift; sourceTree = "<group>"; };
 		0A130EB128DB1AB000FF1368 /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
 		0A130EB328DB1C2800FF1368 /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
-		0A144F442A49D0A0000F7593 /* Annotations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotations.swift; sourceTree = "<group>"; };
 		0A144F462A4B22FB000F7593 /* FullscreenImageGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryView.swift; sourceTree = "<group>"; };
 		0A144F482A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryScrollViewRepresentable.swift; sourceTree = "<group>"; };
 		0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
@@ -1714,7 +1713,6 @@
 				0A632ECB27E49639001A019B /* RangeUITests */,
 				0A632EA927E49636001A019B /* Products */,
 				0A48ACD5281822680044E06E /* Frameworks */,
-				0A7393862A607AEB0079A7FB /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1973,14 +1971,6 @@
 				0A1F1B7B2A288E2700A2E613 /* AnnotationsDevSettingsView.swift */,
 			);
 			path = settings;
-			sourceTree = "<group>";
-		};
-		0A7393862A607AEB0079A7FB /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				0A144F442A49D0A0000F7593 /* Annotations.swift */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		0A7393892A6428390079A7FB /* renderer */ = {
@@ -4632,15 +4622,15 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 11.0.0;
+				minimumVersion = 11.3.0;
 			};
 		};
 		0A2F32F42837BF2F00D04A1C /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.34.0;
+				kind = exactVersion;
+				version = 10.49.2;
 			};
 		};
 		0A45BB042AAB3F6F00B86B85 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
@@ -4648,7 +4638,7 @@
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
+				minimumVersion = 8.0.0;
 			};
 		};
 		0A4995D3286099D800E571FB /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
@@ -4664,7 +4654,7 @@
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
+				minimumVersion = 8.0.0;
 			};
 		};
 		0A4DC77727F2445200712518 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
@@ -4672,7 +4662,7 @@
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 11.0.0;
+				minimumVersion = 11.7.0;
 			};
 		};
 		0A4DC79927F61C8600712518 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
@@ -4688,7 +4678,7 @@
 			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
+				minimumVersion = 4.5.0;
 			};
 		};
 		0ABFD8A928ED98C3008CDA74 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
@@ -4703,16 +4693,16 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
-				kind = exactVersion;
-				version = 8.13.0;
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.37.0;
 			};
 		};
 		0ADC169F2B864125001DF998 /* XCRemoteSwiftPackageReference "knock-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/knocklabs/knock-swift.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				kind = exactVersion;
+				version = 1.1.0;
 			};
 		};
 		0AF516372BA9B7710058C77D /* XCRemoteSwiftPackageReference "analytics-swift" */ = {
@@ -4720,7 +4710,7 @@
 			repositoryURL = "https://github.com/segmentio/analytics-swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.6;
+				minimumVersion = 1.5.11;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
