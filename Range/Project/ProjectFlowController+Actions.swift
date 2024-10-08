@@ -95,7 +95,6 @@ extension ProjectFlowController: ProjectFlowActions {
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
-        // TODO: 2251 ItemPicker needs support for segmented control to change the subset of visible items (but not the selection)
         let canvasesViewModel = ItemPickerViewModel(canvasPickerForModel: model, multiselect: false)
         canvasesViewModel.set(itemWithId: model.currentCanvas.id, selected: true)
         let canvasSelector = ItemPickerCardViewController(canvasPickerForModel: canvasesViewModel)

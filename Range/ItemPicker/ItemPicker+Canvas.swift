@@ -27,7 +27,8 @@ extension ItemPickerCardViewController {
             title: "Canvas Selector",
             searchPlaceholderText: "Search for a canvas...",
             viewModel: viewModel,
-            selectedItemsViewConfig: .init(itemIconSystemName: "square.3.layers.3d")
+            selectedItemsViewConfig: .init(itemIconSystemName: "square.3.layers.3d"),
+            allVsMarkedConfiguration: .init(allOptionLabel: "All Canvases", markedOnlyOptionLabel: "Canvases With Pins")
         )
     }
 }

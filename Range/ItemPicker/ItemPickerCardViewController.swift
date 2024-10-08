@@ -6,10 +6,22 @@ import UIKit
 /// It presents the overlay over the presenting view controller.
 /// It can be dismissed by tapping the overlay, dragging down or tappin on the close button.
 class ItemPickerCardViewController: SheetCardViewController {
+    // To configure the optional segmented control to switch between all / marked items
+    struct AllVsMarkedConfiguration {
+        var allOptionLabel: String
+        var markedOnlyOptionLabel: String
+    }
+
     /// users to select
     private let viewModel: ItemPickerViewModel
 
-    // background view for searchView that has the headerStroke at the bottom, added so it can
+    // When provided, the picker displays a segmented control to choose between all
+    // items and marked items. This only impacts the selection list, the already selected
+    // items are not impacted when this is switched
+    private let allVsMarkedConfiguration: AllVsMarkedConfiguration?
+    private var allVsMarkedToggle: SegmentedControl!
+
+    // background view for selectedView that has the headerStroke at the bottom, added so it can
     // have a shadow when scrolling the list
     private let headerView = UIView()
     // only when viewModel is multiselect
@@ -26,9 +38,11 @@ class ItemPickerCardViewController: SheetCardViewController {
         title: String,
         searchPlaceholderText: String,
         viewModel: ItemPickerViewModel,
-        selectedItemsViewConfig: SelectedItemPickerItemsView.Config
+        selectedItemsViewConfig: SelectedItemPickerItemsView.Config,
+        allVsMarkedConfiguration: AllVsMarkedConfiguration? = nil
     ) {
         self.viewModel = viewModel
+        self.allVsMarkedConfiguration = allVsMarkedConfiguration
         selectedView = viewModel.multiselect
             ? SelectedItemPickerItemsView(viewModel: viewModel, config: selectedItemsViewConfig)
             : nil
@@ -41,10 +55,27 @@ class ItemPickerCardViewController: SheetCardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        searchView.textField.text = viewModel.filterString
+        setupSearchView()
+
+        if allVsMarkedConfiguration != nil {
+            setupAllVsMarkedToggle()
+            containerView.addSubview(allVsMarkedToggle)
+            allVsMarkedToggle.snp.makeConstraints { make in
+                make.height.equalTo(SegmentedControl.height)
+                make.top.equalTo(sheetHeaderView.snp.bottom)
+                make.leading.trailing.equalToSuperview().inset(16)
+            }
+        }
+
         setupHeaderVew()
         containerView.addSubview(headerView)
         headerView.snp.makeConstraints { make in
-            make.top.equalTo(sheetHeaderView.snp.bottom)
+            if let allVsMarkedToggle {
+                make.top.equalTo(allVsMarkedToggle.snp.bottom).offset(16)
+            } else {
+                make.top.equalTo(sheetHeaderView.snp.bottom)
+            }
             make.leading.trailing.equalToSuperview()
             if selectedView != nil, !viewModel.selectedItems.isEmpty {
                 self.headerHeightConstraint = make.height
@@ -55,14 +86,11 @@ class ItemPickerCardViewController: SheetCardViewController {
             }
         }
 
-        searchView.textField.text = viewModel.filterString
-        setupSearchView()
-
         if let selectedView = selectedView {
             selectedView.isHidden = viewModel.selectedItems.isEmpty
             headerView.addSubview(selectedView)
             selectedView.snp.makeConstraints { make in
-                make.leading.trailing.bottom.equalToSuperview()
+                make.leading.trailing.equalToSuperview()
                 make.bottom.equalToSuperview().offset(-12)
             }
         }
@@ -106,12 +134,27 @@ class ItemPickerCardViewController: SheetCardViewController {
         tableView
     }
 
-    private func setupHeaderVew() {
-        headerView.backgroundColor = .dynamic(.Neutral_10)
-    }
-
     private func setupSearchView() {
         searchView.addDelegate(self)
+    }
+
+    private func setupAllVsMarkedToggle() {
+        guard let allVsMarkedConfiguration else { return }
+
+        allVsMarkedToggle = SegmentedControl(items: [
+            ActionItem(title: allVsMarkedConfiguration.allOptionLabel,
+                       handler: { [weak self] in
+                           self?.filterItems()
+                       }),
+            ActionItem(title: allVsMarkedConfiguration.markedOnlyOptionLabel,
+                       handler: { [weak self] in
+                           self?.filterItems()
+                       }),
+        ])
+    }
+
+    private func setupHeaderVew() {
+        headerView.backgroundColor = .dynamic(.Neutral_10)
     }
 
     private func setupHeaderStroke() {
@@ -224,8 +267,13 @@ extension ItemPickerCardViewController: ItemPickerViewModelDelegate {
 // MARK: - filtering items
 
 extension ItemPickerCardViewController: SearchViewDelegate {
-    func searchView(_: SearchView, textDidChange text: String) {
-        viewModel.filter(by: text)
+    func searchView(_: SearchView, textDidChange _: String) {
+        filterItems()
+    }
+
+    func filterItems() {
+        let markedOnly = if let allVsMarkedToggle { allVsMarkedToggle.selectedSegmentIndex == 1 } else { false }
+        viewModel.filter(by: searchView.textField.text ?? "", markedOnly: markedOnly)
         tableView.reloadData()
     }
 }

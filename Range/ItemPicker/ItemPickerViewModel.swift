@@ -122,7 +122,8 @@ class ItemPickerViewModel: NSObject {
     }
 
     /// filter `allItems` by given String and store results in `filteredItems`
-    func filter(by filterString: String) {
+    /// If markedOnly is `true` then additionally filter by item.marked == true
+    func filter(by filterString: String, markedOnly: Bool = false) {
         self.filterString = filterString
         let filterStringTrimmed = filterString.trimmingCharacters(in: .whitespacesAndNewlines)
         // remove diacritics and make it lowercase
@@ -133,7 +134,8 @@ class ItemPickerViewModel: NSObject {
         // item matches if it contains all the filterTerms
         filteredItems = allItems.filter { item in
             // has to contain all of the search terms
-            filterTerms.allSatisfy { item.searchName.contains($0) }
+            if markedOnly, item.marked == false { return false }
+            return filterTerms.allSatisfy { item.searchName.contains($0) }
         }
         delegates.allObjects.forEach { $0.itemPickerViewModelFiltered?(self) }
     }
