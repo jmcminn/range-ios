@@ -4,7 +4,9 @@ import UIKit
 /// Convenience extension for creating an ItemPickerViewModel for project canvases
 extension ItemPickerViewModel {
     convenience init(canvasPickerForModel model: ProjectModel, multiselect: Bool) {
-        let allItems = model.sortedCanvases.map { ItemPickerItem(id: $0.id, name: $0.name) }
+        let allItems = model.sortedCanvases.map {
+            ItemPickerItem(id: $0.id, name: $0.name, marked: !$0.geometries.isEmpty)
+        }
         self.init(allItems: allItems, multiselect: multiselect)
     }
 }
@@ -22,7 +24,7 @@ extension ItemPickerCardViewController {
     convenience init(canvasPickerForModel viewModel: ItemPickerViewModel) {
         self.init(
             icon: UIImage(systemName: "square.3.layers.3d"),
-            title: "Canvas",
+            title: "Canvas Selector",
             searchPlaceholderText: "Search for a canvas...",
             viewModel: viewModel,
             selectedItemsViewConfig: .init(itemIconSystemName: "square.3.layers.3d")

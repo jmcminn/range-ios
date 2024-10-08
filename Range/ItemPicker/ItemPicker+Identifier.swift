@@ -8,7 +8,7 @@ extension ItemPickerViewModel {
     convenience init(collaborationIdentifiers collaborations: [Collaboration], model: ProjectModel, multiselect: Bool) {
         let allItems: [ItemPickerItem] = collaborations.compactMap {
             guard let collaborationIdentifier = model.collaborationIdentifier($0) else { return nil }
-            return ItemPickerItem(id: $0.id, name: collaborationIdentifier)
+            return ItemPickerItem(id: $0.id, name: collaborationIdentifier, marked: false)
         }
         .sorted { item0, item1 in item0.name < item1.name }
 

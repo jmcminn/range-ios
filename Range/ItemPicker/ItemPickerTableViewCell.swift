@@ -13,6 +13,7 @@ class ItemPickerTableViewCell: UITableViewCell {
     }
 
     let nameLabel = UILabel()
+    let pinkDot = UIView()
     let selectedIconView = UIImageView(image: UIImage(named: "checkmark_checked"))
     private let multiselect: Bool
 
@@ -22,13 +23,18 @@ class ItemPickerTableViewCell: UITableViewCell {
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in the view controller
 
         setupViews()
-        [nameLabel, selectedIconView].forEach(contentView.addSubview)
+        [nameLabel, pinkDot, selectedIconView].forEach(contentView.addSubview)
 
         nameLabel.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview().offset(11)
             make.bottom.lessThanOrEqualToSuperview().offset(-11)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 44 : 12)
             make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
+        }
+        pinkDot.snp.makeConstraints { make in
+            make.width.height.equalTo(8)
+            make.centerY.equalToSuperview()
+            make.trailing.equalTo(contentView.snp.trailingMargin).inset(12)
         }
         selectedIconView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
@@ -48,6 +54,9 @@ class ItemPickerTableViewCell: UITableViewCell {
     private func setupViews() {
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)
+        
+        pinkDot.backgroundColor = .Pink_03
+        pinkDot.layer.cornerRadius = 4
     }
 
     func setItem(_ item: ItemPickerItem) {
@@ -62,10 +71,13 @@ class ItemPickerTableViewCell: UITableViewCell {
         } else {
             selectedIconView.isHidden = !item.selected
         }
+        pinkDot.isHidden = !item.marked
     }
 
     override func prepareForReuse() {
+        super.prepareForReuse()
         nameLabel.text = nil
         selectedIconView.isHidden = true
+        pinkDot.isHidden = true
     }
 }

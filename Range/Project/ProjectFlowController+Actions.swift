@@ -95,23 +95,22 @@ extension ProjectFlowController: ProjectFlowActions {
         // minimize the action card
         actionCardVC.cardDragging?.setPosition(.min, withVelocity: 0, animated: true)
 
-        let canvasSelector = CanvasSelectorCardViewController(
-            title: String(localized: "Canvas Selector"),
-            canvases: model.sortedCanvases,
-            selectedCanvas: model.currentCanvas,
-            onCanvasSelected: { [weak self] canvas in
-                guard let self else { return }
-                self.onboarding.canvasSelectorHidden()
-                guard self.model.currentCanvas != canvas else { return }
-                do {
-                    try self.model.setCurrentCanvas(canvas)
-                } catch {
-                    ToastWindow.shared.showError(text: "Canvas failed to load")
-                }
-            }
-        )
+        // TODO: 2251 ItemPicker needs support for segmented control to change the subset of visible items (but not the selection)
+        let canvasesViewModel = ItemPickerViewModel(canvasPickerForModel: model, multiselect: false)
+        canvasesViewModel.set(itemWithId: model.currentCanvas.id, selected: true)
+        let canvasSelector = ItemPickerCardViewController(canvasPickerForModel: canvasesViewModel)
         canvasSelector.onClose = { [weak self] in
-            self?.onboarding.canvasSelectorHidden()
+            guard let self else { return }
+            self.onboarding.canvasSelectorHidden()
+            guard let selectedCanvasId = canvasesViewModel.selectedItems.first?.id,
+                  selectedCanvasId != self.model.currentCanvas.id,
+                  let canvas = self.model.mainRealm.object(ofType: Canvas.self, forPrimaryKey: selectedCanvasId)
+            else { return }
+            do {
+                try self.model.setCurrentCanvas(canvas)
+            } catch {
+                ToastWindow.shared.showError(text: "Canvas failed to load")
+            }
         }
         canvasSelector.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }

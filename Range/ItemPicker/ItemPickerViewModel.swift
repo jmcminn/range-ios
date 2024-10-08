@@ -6,6 +6,7 @@ import RealmSwift
 class ItemPickerItem: NSObject, Codable {
     let id: String
     @objc let name: String
+    let marked: Bool
     /// for searching we store a version of string that is diacriticInsensitive and caseInsensitive
     let searchName: String
     @objc fileprivate(set) dynamic var selected: Bool = false
@@ -14,9 +15,11 @@ class ItemPickerItem: NSObject, Codable {
     /// - Parameters:
     ///   - id: id
     ///   - name: name of the user
-    init(id: String, name: String) {
+    ///   - marked: whether the item is marked with a pink dot
+    init(id: String, name: String, marked: Bool) {
         self.id = id
         self.name = name
+        self.marked = marked
         searchName = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
     }
 
