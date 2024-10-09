@@ -645,6 +645,8 @@ extension TaskListCardViewController {
                        handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
             ActionItem(title: String(localized: "Status"), imageName: "circle.dashed",
                        handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
+            ActionItem(title: String(localized: "Followers"), imageName: "person.badge.plus",
+                       handler: { [weak self] in self?.presentBulkUpdateFollowersCard() }),
         ]
 
         let selectedTasks = filteredCollaborations
@@ -867,6 +869,47 @@ extension TaskListCardViewController {
             } else {
                 ToastWindow.shared.showError(text: "Failed to update the status and archive")
             }
+        }
+    }
+
+    private func presentBulkUpdateFollowersCard() {
+        let viewModel = UsersViewModel(model: projectModel, multiselect: true, showSuspendedUsers: false)
+
+        let userPicker = UserPickerCardViewController(
+            icon: UIImage(systemName: "person.badge.plus"),
+            title: "Followers",
+            description: "Add Followers to the selected tasks.",
+            viewModel: viewModel
+        )
+        userPicker.showTopActions([
+            .init(title: "Add Followers") { [weak userPicker] in
+                userPicker?.descriptionLabel?.text = "Add Followers to the selected tasks."
+            },
+            .init(title: "Remove Followers") { [weak userPicker] in
+                userPicker?.descriptionLabel?.text = "Remove Followers from the selected tasks."
+            },
+        ])
+        // closing or cancelling the picker does nothing
+        // only confirming runs the bulk update
+        userPicker.showCancelConfirmBottomBar = true
+        userPicker.onCancel = { [weak userPicker] in
+            userPicker?.dismissCard()
+        }
+        userPicker.onConfirm = { [weak self, weak userPicker] in
+            // add or remove depending on the option selected
+            let addFollowers: Bool = (userPicker?.segmentedControl?.selectedSegmentIndex ?? 0) == 0
+            self?.bulkUpdateFollowers(viewModel, add: addFollowers)
+            userPicker?.dismissCard()
+        }
+        userPicker.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    private func bulkUpdateFollowers(_ viewModel: UsersViewModel, add: Bool) {
+        let commands = selectedTasks.compactMap {
+            projectModel.update(followers: viewModel.selectedUsers.map(\.id), forCollaboration: $0, add: add)
+        }
+        projectModel.run(commands) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update followers") }
         }
     }
 

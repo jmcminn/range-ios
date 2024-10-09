@@ -227,8 +227,15 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
         updateColors()
     }
 
-    func addSheetHeaderSubview(_ subview: UIView) {
-        stackView.addArrangedSubview(subview)
+    /// - Parameters
+    ///   - position - optional view position, if `nil` then added as the last subview
+    ///                         Please note that description and search are placed in the header
+    func addSheetHeaderSubview(_ subview: UIView, at position: Int? = nil) {
+        if let position {
+            stackView.insertArrangedSubview(subview, at: position)
+        } else {
+            stackView.addArrangedSubview(subview)
+        }
         // not added yet to sheetHeaderView
         if stackView.superview == nil {
             sheetHeaderView.addSubview(stackView)

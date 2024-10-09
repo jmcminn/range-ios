@@ -525,4 +525,20 @@ extension ProjectModel {
     func update(followers: [String], forCollaboration collaborationId: String) -> Command {
         UpdateCollaborationFollowersCommand(collaborationId: collaborationId, followerIds: followers)
     }
+
+    /// Updates Collaboration.followers
+    /// If adding (add is `true`) then append the followers to collaboration followers
+    /// If add is `false` then remove given users from Collaboration followers
+    func update(followers: [String], forCollaboration collaborationId: String, add: Bool) -> Command? {
+        guard let collaboration = mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)
+        else { return nil }
+        let existingFollowerIdsSet: Set<String> = Set(collaboration.followers.map(\.id))
+        let newFollowerIds: [String]
+        if add {
+            newFollowerIds = Array(existingFollowerIdsSet.union(Set(followers)))
+        } else {
+            newFollowerIds = Array(existingFollowerIdsSet.subtracting(Set(followers)))
+        }
+        return UpdateCollaborationFollowersCommand(collaborationId: collaborationId, followerIds: newFollowerIds)
+    }
 }

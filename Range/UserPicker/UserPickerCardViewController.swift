@@ -23,7 +23,17 @@ class UserPickerCardViewController: SheetCardViewController {
 
     /// Show a special row (in the 1st section) that allows for selecting the "no user option" (to remove the user in single selection or to selected the unassigned option in multiselect)
     var showNoUserOption: Bool = false
+    
+    private(set) var segmentedControl: SegmentedControl? = nil
+    
+    /// whether to show the cancel/confirm bottom bar
+    var showCancelConfirmBottomBar: Bool = false
+    /// Called when buttons in bottom bar are tapped
+    var onCancel: (() -> Void)?
+    var onConfirm: (() -> Void)?
+    private var bottomBar: UIView?
 
+    ///
     init(
         icon: UIImage? = UIImage(systemName: "person"),
         title: String,
@@ -41,10 +51,23 @@ class UserPickerCardViewController: SheetCardViewController {
             description: description,
             showSearchView: true
         )
+        
     }
-
+    
+    /// adds a segmented control at the top (above the description)
+    func showTopActions(_ actions: [ActionItem]) {
+        segmentedControl = SegmentedControl(items: actions)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let segmentedControl {
+            addSheetHeaderSubview(segmentedControl, at: 0)
+            segmentedControl.snp.makeConstraints { make in
+                make.height.equalTo(SegmentedControl.height)
+            }
+        }
 
         setupHeaderVew()
         containerView.addSubview(headerView)
@@ -84,6 +107,10 @@ class UserPickerCardViewController: SheetCardViewController {
             make.leading.trailing.bottom.equalToSuperview()
         }
 
+        if showCancelConfirmBottomBar {
+            setupBottomBar()
+        }
+        
         viewModel.addDelegate(self)
     }
 
@@ -202,6 +229,8 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
 
         // 2. show/hide the selected users depending on the list being not empty
         updateSelectedUsersVisibility(userSelected: selected)
+        
+        updateBottomBarVisibility()
     }
 
     func updateSelectedUsersVisibility(userSelected selected: Bool) {
@@ -332,4 +361,99 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
         UIView()
     }
+}
+
+// MARK: - bottom bar
+extension UserPickerCardViewController {
+    
+    private func setupBottomBar() {
+        guard bottomBar == nil else { return }
+        let bottomBar = UIView()
+        bottomBar.backgroundColor = .dynamic(.Neutral_10)
+
+        let stroke = UIView()
+        stroke.backgroundColor = .dynamic(.Neutral_07)
+        bottomBar.addSubview(stroke)
+        stroke.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.height.equalTo(1)
+        }
+
+        let safeAreaCover = UIView()
+        safeAreaCover.backgroundColor = bottomBar.backgroundColor
+        bottomBar.addSubview(safeAreaCover)
+
+        let cancelButton = RangeButton(
+            configuration: UIButton.Configuration.grayButton(),
+            primaryAction: UIAction(
+                title: String(localized: "Cancel")
+            ) { [weak self] _ in self?.onCancel?() }
+        ).withCustomRangeHighlightColor()
+        let confirmButton = RangeButton(
+            configuration: UIButton.Configuration.blueButton(),
+            primaryAction: UIAction(
+                title: String(localized: "Confirm")
+            ) { [weak self] _ in self?.onConfirm?() }
+        ).withCustomRangeHighlightColor()
+        bottomBar.addSubview(cancelButton)
+        bottomBar.addSubview(confirmButton)
+        cancelButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        confirmButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        cancelButton.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview().inset(16)
+            make.trailing.equalTo(confirmButton.snp.leading).offset(-16)
+            make.width.equalTo(confirmButton.snp.width)
+        }
+        confirmButton.snp.makeConstraints { make in
+            make.trailing.equalTo(-16)
+            make.top.equalToSuperview().inset(16)
+        }
+        containerView.addSubview(bottomBar)
+        bottomBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(containerView.snp.bottom)
+        }
+        safeAreaCover.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(bottomBar.snp.bottom)
+            make.height.equalTo(self.view.safeAreaLayoutGuide.snp.height)
+        }
+
+        self.bottomBar = bottomBar
+    }
+    
+    /// show or hide the bottom bar depending on selection
+    private func updateBottomBarVisibility() {
+        guard showCancelConfirmBottomBar else { return }
+        let shouldHide = viewModel.selectedUsers.isEmpty
+        if shouldHide {
+            if let bottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.top.equalTo(bottomBar.superview!.snp.bottom)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                }
+            }
+            tableView.contentInset = .zero
+            tableView.scrollIndicatorInsets = tableView.contentInset
+        } else {
+            setupBottomBar()
+            if let bottomBar {
+                bottomBar.snp.remakeConstraints { make in
+                    make.leading.trailing.equalToSuperview()
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                }
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.containerView.layoutIfNeeded()
+                } completion: { [weak self] _ in
+                    guard let self else { return }
+                    self.tableView.contentInset.bottom =  self.bottomBar!.frame.height
+                    self.tableView.scrollIndicatorInsets = self.tableView.contentInset
+                }
+            }
+        }
+    }
+    
 }
