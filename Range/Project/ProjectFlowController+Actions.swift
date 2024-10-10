@@ -978,6 +978,9 @@ extension ProjectFlowController {
     func editFollowersAction(sender _: Any?, event: FlowEvent) {
         guard let collaboration = event.object as? Collaboration, !collaboration.isInvalidated else { return }
         let viewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: false)
+        let suspendedFollowersIds = collaboration.followers
+            .filter { $0.participation == .suspended }
+            .map(\.id)
         for follower in collaboration.followers {
             viewModel.set(userWithId: follower.id, selected: true)
         }
@@ -988,7 +991,10 @@ extension ProjectFlowController {
             viewModel: viewModel
         )
         userPicker.onClose = { [weak self] in
-            self?.updateFollowers(collaboration, followers: viewModel.selectedUsers.map(\.id))
+            let selectedFollowersIds = viewModel.selectedUsers.map(\.id)
+            // the UI editor is not presenting suspended followers so we need to add them back
+            let followersIds = Array((selectedFollowersIds + suspendedFollowersIds).uniqued())
+            self?.updateFollowers(collaboration, followers: followersIds)
         }
         userPicker.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
     }
