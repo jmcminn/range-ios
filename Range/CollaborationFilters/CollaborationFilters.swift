@@ -37,6 +37,7 @@ class CollaborationFilters: Codable, Equatable {
              showOnlyOverdue,
              canvasFilter,
              tagsFilter,
+             followersFilter,
              identifiersFilter,
              showOnlyCreatedByUser,
              showArchived
@@ -114,6 +115,17 @@ class CollaborationFilters: Codable, Equatable {
     /// If not nil and not empty then only match the collaborations that have (or their upload have) all of given tags (tag ids).
     var tagsFilter: [String]? = nil { didSet { postUpdate() }}
 
+    /// This is not nil when user enabled filtering by followers.
+    /// If not nil and not empty then only match the collaborations that have any of given followers
+    /// Achtung: it's private so it doesn't trigger the postUpdate, as it's updated in the TaskListFilters init. The setFollowersFilter is a public
+    /// method to change the filter and trigger the update
+    private(set) var followersFilter: [String]? = nil
+
+    func setFollowersFilter(_ followersFilter: [String]?) {
+        self.followersFilter = followersFilter
+        postUpdate()
+    }
+
     /// This is not nil when user enabled filtering by collaboration identifiers.
     /// If not nil and not empty then only match the collaborations that have given id (internal id, not the collaboration identifier, the
     /// collaboration identifier is only used for displaying at filters UI but at the end this filter specifies the exact ids)
@@ -165,6 +177,7 @@ class CollaborationFilters: Codable, Equatable {
         canvasFilter = defaults.canvasFilter
         hiddenStatuses = defaults.hiddenStatuses
         tagsFilter = defaults.tagsFilter
+        followersFilter = defaults.followersFilter
         identifiersFilter = defaults.identifiersFilter
         showOnlyOverdue = defaults.showOnlyOverdue
         showOnlyCreatedByUser = defaults.showOnlyCreatedByUser
@@ -182,6 +195,7 @@ class CollaborationFilters: Codable, Equatable {
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
         if lhs.canvasFilter != rhs.canvasFilter { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
+        if lhs.followersFilter != rhs.followersFilter { return false }
         if lhs.identifiersFilter != rhs.identifiersFilter { return false }
         if lhs.showOnlyOverdue != rhs.showOnlyOverdue { return false }
         if lhs.showOnlyCreatedByUser != rhs.showOnlyCreatedByUser { return false }
@@ -203,7 +217,7 @@ extension CollaborationFilters {
             // task filters
             if !showTasks { return false }
             if !show(status) { return false }
-            if let assigneeFilter = assigneeFilter, !assigneeFilter.isEmpty {
+            if let assigneeFilter, !assigneeFilter.isEmpty {
                 if !matchAssignee(assigneeFilter, collaboration: collaboration) { return false }
             }
             if showOnlyOverdue, !collaboration.isOverdue { return false }
@@ -212,25 +226,30 @@ extension CollaborationFilters {
             if !showPhotoCollaborations { return false }
         }
 
-        if let showCreatedInLastNDays = showCreatedInLastNDays,
-           !DateOptions.isTimestampInLastNDays(showCreatedInLastNDays, timestamp: collaboration.createdAt)
-        {
+        if let showCreatedInLastNDays, !DateOptions.isTimestampInLastNDays(
+            showCreatedInLastNDays,
+            timestamp: collaboration.createdAt
+        ) {
             return false
         }
 
-        if let showUpdatedInLastNDays = showUpdatedInLastNDays,
-           !DateOptions.isTimestampInLastNDays(showUpdatedInLastNDays, timestamp: collaboration.lastUpdatedTimestamp)
-        {
+        if let showUpdatedInLastNDays, !DateOptions.isTimestampInLastNDays(
+            showUpdatedInLastNDays,
+            timestamp: collaboration.lastUpdatedTimestamp
+        ) {
             return false
         }
 
-        if let canvasFilter = canvasFilter, !canvasFilter.isEmpty {
+        if let canvasFilter, !canvasFilter.isEmpty {
             if !matchCanvas(canvasFilter, collaboration: collaboration) { return false }
         }
 
         if showOnlyCreatedByUser, collaboration.author?.id != model?.userId { return false }
-        if let tagsFilter = tagsFilter, !tagsFilter.isEmpty {
+        if let tagsFilter, !tagsFilter.isEmpty {
             if !matchTags(tagsFilter, collaboration: collaboration) { return false }
+        }
+        if let followersFilter, !followersFilter.isEmpty {
+            if !matchFollowers(followersFilter, collaboration: collaboration) { return false }
         }
         if let identifiersFilter, !identifiersFilter.isEmpty {
             if !identifiersFilter.contains(collaboration.id) { return false }
@@ -275,5 +294,10 @@ extension CollaborationFilters {
         }
 
         return true
+    }
+
+    /// Return `true` if collaboration.followers contain at least one follower from the followers filter
+    func matchFollowers(_ followers: [String], collaboration: Collaboration) -> Bool {
+        return collaboration.followers.contains(where: { followers.contains($0.id) })
     }
 }
