@@ -78,24 +78,49 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // check whether user is authenticated
         if let user = Auth.auth().currentUser {
+            await selectInitialFlow(forUser: user)
+        } else {
+            // if Firebase Auth didn't report currentUser it can still do so with the state change
+            // listener. This is in fact the recommended way but it has its problems too. Sometimes
+            // the listener will first report the user = nil immediately followed by non-nil user.
+            // So the callback can be triggered twice resulting in auth screen being shown on start for
+            // a fraction of a second even for authenticated users...
+            // This problem is present in SDK 11.3.0, see this Firebase issue for more info:
+            // https://github.com/firebase/firebase-ios-sdk/issues/13231#issuecomment-2419130824
+            authenticatedUserListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+                Task {
+                    await self?.selectInitialFlow(forUser: user)
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    private func selectInitialFlow(forUser user: FirebaseAuth.User?) async {
+        if let user {
+            Logger.auth.debug("user is logged in: \(user.email ?? "nil", privacy: .public)")
             do {
                 // reload the user to update the email verification
                 try await user.reload()
             } catch {
                 // don't sign out on error while reloading the user, this might just mean that we're offline
-                Logger.auth.warning("Error while reloading the user: \(error)")
+                Logger.auth.warning("Error while reloading the user: \(error, privacy: .public)")
             }
             do {
                 let userId = try await user._getUserId()
                 if user.isEmailVerified {
+                    Logger.auth.debug("user is email verified")
                     await startMainFlow(forUser: userId, newlySignedIn: false)
                 } else {
+                    Logger.auth.debug("user is not email verified")
                     showAuth()
                 }
             } catch {
+                Logger.auth.warning("Error while fetching userId: \(error, privacy: .public)")
                 showAuth()
             }
         } else {
+            Logger.auth.debug("user is not logged in")
             showAuth()
         }
     }
