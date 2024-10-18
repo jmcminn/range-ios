@@ -497,6 +497,14 @@ extension ProjectFlowController {
                         )
                     }
                 ),
+            ])
+            if model.currentUser.canCreateCollaboration() {
+                actions.append(ActionItem(
+                    title: String(localized: "Duplicate"), imageName: "doc.on.doc",
+                    handler: { [weak self] in self?.duplicateCollaboration(collaboration) }
+                ))
+            }
+            actions.append(contentsOf: [
                 ActionItem(
                     title: String(localized: "Update Location"), imageName: "mappin.and.ellipse",
                     handler: { [weak self] in self?.moveCollaboration(collaboration) }
@@ -742,6 +750,43 @@ extension ProjectFlowController {
         model.run(model.delete(comment: comment)) { error in
             if error != nil {
                 ToastWindow.shared.showError(text: "Failed to delete the \(comment.isNote ? "note" : "comment")")
+            }
+        }
+    }
+
+    // Create a copy of the collaboration placed 1px above the original and start the MovePinFlow
+    // so user can place the pin
+    func duplicateCollaboration(_ collaboration: Collaboration) {
+        guard let canvas = collaboration.geometry.first?.canvas.first,
+              let coordinates = collaboration.geometry.first?.geometry.point?.coordinates else { return }
+        let point = canvasContainer.canvasViewController.mapView.mapboxMap.point(for: coordinates)
+        let offsetPoint = point.addTo(.init(x: 0, y: -10))
+        let offsetCoordinates = canvasContainer.canvasViewController.mapView.mapboxMap.coordinate(for: offsetPoint)
+        Task { @MainActor in
+            do {
+                let command = try await model.createCollaboration(
+                    at: offsetCoordinates,
+                    in: canvas,
+                    withGeometryId: generateRealmId(),
+                    isTask: collaboration.status != nil,
+                    name: collaboration.name,
+                    collaborationDescription: collaboration.collaborationDescription,
+                    status: collaboration.status,
+                    assignee: collaboration.assignee,
+                    dueDate: collaboration.dueDateTimestamp,
+                    tags: collaboration.tags.map(TagViewModel.init(fromTag:)),
+                    followerIds: collaboration.followers.map(\.id)
+                )
+                try await model.run(command)
+                model.mainRealm.refresh()
+                guard let collaboration = model.mainRealm.object(
+                    ofType: Collaboration.self,
+                    forPrimaryKey: command.collaborationId
+                ) else { return }
+                moveCollaboration(collaboration)
+            } catch {
+                Logger.model.error("Failed to duplicate collaboration \(error, privacy: .public)")
+                ToastWindow.shared.showError(text: "Failed to duplicate the pin")
             }
         }
     }

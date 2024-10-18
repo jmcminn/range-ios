@@ -189,6 +189,7 @@ extension ProjectModel {
         isTask: Bool,
         name: String? = nil,
         collaborationDescription: String? = nil,
+        status: Status? = nil,
         assignee: Participant? = nil,
         dueDate: Date? = nil,
         tags: [TagViewModel] = [],
@@ -196,7 +197,7 @@ extension ProjectModel {
         photosToAdd: [PhotoToAdd] = [],
         uploadTags: [TagViewModel] = [],
         uploadDescription: String? = nil
-    ) async throws -> Command {
+    ) async throws -> CreateCollaborationCommand {
         if let canvasSource = canvas.currentCanvasSource {
             // The canvas source is set if it's used in UI and can theoretically be null here
             // (although it shouldn't happen if user is adding a pin)
@@ -225,12 +226,12 @@ extension ProjectModel {
             analytics?._trackProjectEvent(name: "tag added", self, [:])
         }
 
-        var status: Status?
-        if isTask {
+        var collaborationStatus: Status? = status
+        if collaborationStatus == nil, isTask {
             guard let initialStatus = mainRealm.objects(Status.self).first(where: { $0.isInitial }) else {
                 throw ModelError.statusNotFound
             }
-            status = initialStatus
+            collaborationStatus = initialStatus
         }
 
         return CreateCollaborationCommand(
@@ -238,7 +239,7 @@ extension ProjectModel {
             canvasId: canvas.id,
             geometryId: geometryId,
             coordinates: coordinates,
-            statusId: status?.id,
+            statusId: collaborationStatus?.id,
             name: name,
             collaborationDescription: collaborationDescription,
             assigneeId: assignee?.id,
