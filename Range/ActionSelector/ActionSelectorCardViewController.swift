@@ -55,6 +55,6 @@ extension ActionSelectorCardViewController {
                 }
             )
         }
-        actionsVC = ActionSelectorViewController(actions: actions)
+        actionsVC = ActionSelectorViewController(actions: [actions])
     }
 }

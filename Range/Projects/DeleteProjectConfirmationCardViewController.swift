@@ -37,7 +37,7 @@ class DeleteProjectConfirmationCardViewController: SheetCardViewController, UITe
             make.leading.trailing.equalToSuperview().inset(16)
         }
 
-        actionsVC = ActionSelectorViewController(actions: [
+        actionsVC = ActionSelectorViewController(actions: [[
             ActionItem(
                 title: "Delete Project",
                 imageName: "trash", style: .destructive, handler: { [weak self] in
@@ -48,7 +48,7 @@ class DeleteProjectConfirmationCardViewController: SheetCardViewController, UITe
             ActionItem(title: "Cancel", imageName: "xmark", handler: { [weak self] in
                 self?.dismissCard()
             }),
-        ])
+        ]])
         add(childController: actionsVC, toView: containerView)
         actionsVC.view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()

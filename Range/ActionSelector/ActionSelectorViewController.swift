@@ -4,16 +4,17 @@ import UIKit
 /// View controller presenting given array of `ActionItem` in a table view
 class ActionSelectorViewController: UIViewController {
     var tableView: UITableView!
-    let actions: [ActionItem]
+    let actions: [[ActionItem]]
     // whether action at given index is enabled, true by default for all actions
+    // this only works for now for 1 section case
     var actionsEnabled: [Bool]
 
     /// Initiates with actions to show
     /// - Parameters:
-    ///   - actions: array of actions
-    init(actions: [ActionItem]) {
+    ///   - actions: array of arrays of actions (each subarray is a section of actions)
+    init(actions: [[ActionItem]]) {
         self.actions = actions
-        self.actionsEnabled = actions.map { _ in true }
+        self.actionsEnabled = actions[0].map { _ in true }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -68,11 +69,11 @@ class ActionSelectorViewController: UIViewController {
 
 extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        1
+        actions.count
     }
 
-    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        actions.count
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        actions[section].count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -80,7 +81,7 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
             withIdentifier: "ActionItemCell",
             for: indexPath
         ) as! ActionItemTableViewCell
-        let action = actions[indexPath.row]
+        let action = actions[indexPath.section][indexPath.row]
         cell.setActionItem(action, enabled: actionsEnabled[indexPath.row])
         return cell
     }
@@ -99,7 +100,7 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         guard actionsEnabled[indexPath.row] else { return }
-        let action = actions[indexPath.row]
+        let action = actions[indexPath.section][indexPath.row]
         action.handler?()
     }
 
@@ -107,7 +108,20 @@ extension ActionSelectorViewController: UITableViewDelegate, UITableViewDataSour
         CGFloat.leastNormalMagnitude
     }
 
-    func tableView(_: UITableView, heightForFooterInSection _: Int) -> CGFloat {
-        CGFloat.leastNormalMagnitude
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if section < actions.count - 1 {
+            24
+        } else {
+            CGFloat.leastNormalMagnitude
+        }
     }
+    
+    func tableView(_: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        if section < actions.count - 1 {
+            UIView()
+        } else {
+            nil
+        }
+    }
+
 }

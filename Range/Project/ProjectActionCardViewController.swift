@@ -121,7 +121,8 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
                 }
             )
 
-            actionSelectorVC = ActionSelectorViewController(actions: [allMediaAction, taskListAction])
+            var actions: [[ActionItem]] = [[allMediaAction, taskListAction]]
+            actionSelectorVC = ActionSelectorViewController(actions: actions)
             add(childController: actionSelectorVC!, toView: containerView)
             actionSelectorVC!.view.snp.makeConstraints { make in
                 make.top.equalTo(photoButton!.snp.bottom)
