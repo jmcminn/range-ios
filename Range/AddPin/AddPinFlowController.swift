@@ -12,6 +12,9 @@ class AddPinFlowController {
 
     /// in .copyPin mode this is the collaboration that we want to copy data from:
     private var pinToCopy: Collaboration?
+    
+    /// Whether the flow started to duplicated given pin
+    private var isDuplicatingPin: Bool = false
 
     /// called when the flow finishes, if pin was added the id of the created geometry is returned. If cancelled nil is passed
     var onStop: ((String?, PinTypeOption?) -> Void)?
@@ -36,6 +39,12 @@ class AddPinFlowController {
         self.canvasContainer = canvasContainer
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
     }
+    
+    func duplicateCollaboration(_ collaboration: Collaboration) {
+        pinTypeOption = .copyPin
+        pinToCopy = collaboration
+        isDuplicatingPin = true
+    }
 
     deinit {
         controls.removeFromSuperview()
@@ -43,7 +52,11 @@ class AddPinFlowController {
 
     /// Show the UI for pin selection
     func start() {
-        selectPinTypeOption()
+        if isDuplicatingPin {
+            showPinPlacementUI()
+        } else {
+            selectPinTypeOption()
+        }
     }
 
     private func selectPinTypeOption(showCopyPinOption: Bool = true) {
@@ -134,10 +147,12 @@ class AddPinFlowController {
         case .createPhoto: title = String(localized: "Add Photo Pin")
         case .createTask: title = String(localized: "Add Task Pin")
         case .copyPin:
-            guard let pinToCopy = pinToCopy else {
+            guard let pinToCopy else {
                 fatalError("pin to copy not selected")
             }
-            if pinToCopy.status == nil {
+            if isDuplicatingPin {
+                title = String(localized: "Duplicate Pin")
+            } else if pinToCopy.status == nil {
                 title = String(localized: "Add Photo Pin")
             } else {
                 title = String(localized: "Add Task Pin")
@@ -212,10 +227,12 @@ class AddPinFlowController {
             collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
         case .copyPin:
             // empty collaboration with initial status if taskToCopy is a task
-            guard let pinToCopy = pinToCopy else {
+            guard let pinToCopy else {
                 fatalError("pin to copy not selected")
             }
-            if pinToCopy.status != nil {
+            if isDuplicatingPin {
+                collaboration.status = pinToCopy.status
+            } else if pinToCopy.status != nil {
                 collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
             }
         }
@@ -289,6 +306,7 @@ class AddPinFlowController {
                 isTask: pinToCopy.status != nil,
                 name: pinToCopy.name,
                 collaborationDescription: pinToCopy.collaborationDescription,
+                status: isDuplicatingPin ? pinToCopy.status : nil,
                 assignee: pinToCopy.assignee?.participation == .active ? pinToCopy.assignee : nil,
                 dueDate: pinToCopy.dueDateTimestamp,
                 tags: pinToCopy.tags.map(TagViewModel.init(fromTag:)),

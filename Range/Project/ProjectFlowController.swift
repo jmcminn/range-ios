@@ -741,16 +741,19 @@ extension ProjectFlowController {
         }
     }
 
-    private func startAddPinFlow() {
+    func startAddPinFlow(duplicatedCollaboration: Collaboration? = nil) {
         addPinFlow = AddPinFlowController(
             model: model,
             userPreferences: userPreferences,
             canvasContainer: canvasContainer
         )
+        if let duplicatedCollaboration {
+            addPinFlow?.duplicateCollaboration(duplicatedCollaboration)
+        }
         addPinFlow?.onStop = { [weak self] geometryId, pinTypeOption in
-            guard let self = self else { return }
+            guard let self else { return }
             self.setUIState(.default, animated: true)
-            if let geometryId = geometryId {
+            if let geometryId {
                 // don't edit name if it was .taskCopy
                 self.selectCollaboration(forGeometryId: geometryId, andEditName: pinTypeOption != .copyPin)
             }

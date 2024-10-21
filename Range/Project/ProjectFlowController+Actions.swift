@@ -754,41 +754,11 @@ extension ProjectFlowController {
         }
     }
 
-    // Create a copy of the collaboration placed 1px above the original and start the MovePinFlow
-    // so user can place the pin
+    // Starts the AddPinFlow preconfigured with given collaboration to copy.
+    // The flow will only show the pin placement
     func duplicateCollaboration(_ collaboration: Collaboration) {
-        guard let canvas = collaboration.geometry.first?.canvas.first,
-              let coordinates = collaboration.geometry.first?.geometry.point?.coordinates else { return }
-        let point = canvasContainer.canvasViewController.mapView.mapboxMap.point(for: coordinates)
-        let offsetPoint = point.addTo(.init(x: 0, y: -10))
-        let offsetCoordinates = canvasContainer.canvasViewController.mapView.mapboxMap.coordinate(for: offsetPoint)
-        Task { @MainActor in
-            do {
-                let command = try await model.createCollaboration(
-                    at: offsetCoordinates,
-                    in: canvas,
-                    withGeometryId: generateRealmId(),
-                    isTask: collaboration.status != nil,
-                    name: collaboration.name,
-                    collaborationDescription: collaboration.collaborationDescription,
-                    status: collaboration.status,
-                    assignee: collaboration.assignee,
-                    dueDate: collaboration.dueDateTimestamp,
-                    tags: collaboration.tags.map(TagViewModel.init(fromTag:)),
-                    followerIds: collaboration.followers.map(\.id)
-                )
-                try await model.run(command)
-                model.mainRealm.refresh()
-                guard let collaboration = model.mainRealm.object(
-                    ofType: Collaboration.self,
-                    forPrimaryKey: command.collaborationId
-                ) else { return }
-                moveCollaboration(collaboration)
-            } catch {
-                Logger.model.error("Failed to duplicate collaboration \(error, privacy: .public)")
-                ToastWindow.shared.showError(text: "Failed to duplicate the pin")
-            }
-        }
+        pinsDisplay?.setSelectedPin(nil)
+        startAddPinFlow(duplicatedCollaboration: collaboration)
     }
 
     func moveCollaborationAction(sender _: Any?, event: FlowEvent) {
