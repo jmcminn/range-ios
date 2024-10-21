@@ -75,6 +75,7 @@ class OrganizationModel: NSObject, RealmModel {
             Location.self,
             Participant.self,
             StatusTaskCount.self,
+            Invitation.self,
         ]
         realmConfig = config
         mainRealm = try Realm(configuration: realmConfig)
@@ -172,6 +173,10 @@ class OrganizationModel: NSObject, RealmModel {
         listeners["suspendedParticipants"] = sync(
             orgDoc.collection(FirestoreDocumentType.suspendedParticipant.rawValue),
             as: FirestoreSuspendedParticipant.self
+        )
+        listeners["invitations"] = sync(
+            orgDoc.collection(FirestoreDocumentType.invitation.rawValue),
+            as: FirestoreInvitation.self
         )
 
         // associate user with given organization (which is called a group) in analytics

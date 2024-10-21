@@ -54,7 +54,7 @@ class UserModel: NSObject, RealmModel {
         self.userPreferences = userPreferences
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        config.schemaVersion = 8
+        config.schemaVersion = 9
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(userId)")
         config.fileURL!.appendPathExtension("realm")

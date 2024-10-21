@@ -8,6 +8,7 @@ enum FirestoreDocumentType: String {
     case collaboration = "collaborations"
     case comment = "comments"
     case geometry = "geometries"
+    case invitation = "invitations"
     case participant = "participants"
     case suspendedParticipant = "suspendedParticipants"
     case presence = "presences"
