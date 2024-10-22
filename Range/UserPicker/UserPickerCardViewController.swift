@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import SnapKit
 import UIKit
 
@@ -23,15 +24,22 @@ class UserPickerCardViewController: SheetCardViewController {
 
     /// Show a special row (in the 1st section) that allows for selecting the "no user option" (to remove the user in single selection or to selected the unassigned option in multiselect)
     var showNoUserOption: Bool = false
-    
-    private(set) var segmentedControl: SegmentedControl? = nil
-    
+
+    /// show user role pill in the user cell
+    var showRole: Bool = false
+    /// show the pending pill in the user cell indicating that this is a pending invitation
+    var showPending: Bool = false
+
+    private(set) var segmentedControl: SegmentedControl?
+
     /// whether to show the cancel/confirm bottom bar
     var showCancelConfirmBottomBar: Bool = false
     /// Called when buttons in bottom bar are tapped
     var onCancel: (() -> Void)?
     var onConfirm: (() -> Void)?
     private var bottomBar: UIView?
+
+    var onSelection: ((UserViewModel, Bool) async throws -> Void)?
 
     ///
     init(
@@ -51,17 +59,16 @@ class UserPickerCardViewController: SheetCardViewController {
             description: description,
             showSearchView: true
         )
-        
     }
-    
+
     /// adds a segmented control at the top (above the description)
     func showTopActions(_ actions: [ActionItem]) {
         segmentedControl = SegmentedControl(items: actions)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         if let segmentedControl {
             addSheetHeaderSubview(segmentedControl, at: 0)
             segmentedControl.snp.makeConstraints { make in
@@ -110,7 +117,7 @@ class UserPickerCardViewController: SheetCardViewController {
         if showCancelConfirmBottomBar {
             setupBottomBar()
         }
-        
+
         viewModel.addDelegate(self)
     }
 
@@ -229,7 +236,7 @@ extension UserPickerCardViewController: UsersViewModelDelegate {
 
         // 2. show/hide the selected users depending on the list being not empty
         updateSelectedUsersVisibility(userSelected: selected)
-        
+
         updateBottomBarVisibility()
     }
 
@@ -309,7 +316,7 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
         let user = viewModel.filteredUsers[indexPath.row]
         let avatarImage = viewModel.model.mainRealm.object(ofType: Participant.self, forPrimaryKey: user.id)?
             .avatarImage
-        cell.setUser(user, avatarImage: avatarImage)
+        cell.setUser(user, avatarImage: avatarImage, showRole: showRole, showPending: showPending)
         return cell
     }
 
@@ -330,8 +337,14 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
             let user = showNoUserOption && indexPath.section == 0
                 ? viewModel.unassignedUser
                 : viewModel.filteredUsers[indexPath.row]
-            viewModel.set(userWithId: user.id, selected: !user.selected)
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+            if onSelection != nil {
+                Task {
+                    await makeUserSelection(user, indexPath: indexPath, selected: !user.selected)
+                }
+            } else {
+                viewModel.set(userWithId: user.id, selected: !user.selected)
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
         } else {
             if showNoUserOption, indexPath.section == 0 {
                 // clear the selected user
@@ -363,9 +376,53 @@ extension UserPickerCardViewController: UITableViewDelegate, UITableViewDataSour
     }
 }
 
-// MARK: - bottom bar
+// MARK: - user selection
+
 extension UserPickerCardViewController {
-    
+    // Perform given async onSelection block.
+    // Block the screen while doing so
+    // The selection is only applied if the block succeeds
+    // This is to support some server side changes when updating the selected users
+    // (required for project membership management which is done "live" with no offline support)
+    @MainActor
+    private func makeUserSelection(_ user: UserViewModel, indexPath: IndexPath, selected: Bool) async {
+        guard let onSelection else { return }
+        let activityView = showActivityView(host: view)
+        do {
+            // hide the spinner when data store call is finished
+            defer {
+                DispatchQueue.main.async {
+                    activityView.removeFromSuperview()
+                }
+            }
+            try await onSelection(user, selected)
+            viewModel.set(userWithId: user.id, selected: selected)
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        } catch {
+            Logger.model.error(
+                "failed to make user \(user.id, privacy: .public) selected: \(selected) error: \(error.localizedDescription, privacy: .public)"
+            )
+            ToastWindow.shared.showError(text: "Failed to change project membership for \(user.name)")
+        }
+    }
+
+    /// show activity view (a spinner) that covers the screen disabling any user interactions
+    private func showActivityView(host: UIView) -> UIActivityIndicatorView {
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .black.withAlphaComponent(0.3)
+        activityView.color = .Pink_03
+        host.addSubview(activityView)
+        activityView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        activityView.startAnimating()
+        return activityView
+    }
+}
+
+// MARK: - bottom bar
+
+extension UserPickerCardViewController {
     private func setupBottomBar() {
         guard bottomBar == nil else { return }
         let bottomBar = UIView()
@@ -421,7 +478,7 @@ extension UserPickerCardViewController {
 
         self.bottomBar = bottomBar
     }
-    
+
     /// show or hide the bottom bar depending on selection
     private func updateBottomBarVisibility() {
         guard showCancelConfirmBottomBar else { return }
@@ -449,11 +506,10 @@ extension UserPickerCardViewController {
                     self?.containerView.layoutIfNeeded()
                 } completion: { [weak self] _ in
                     guard let self else { return }
-                    self.tableView.contentInset.bottom =  self.bottomBar!.frame.height
+                    self.tableView.contentInset.bottom = self.bottomBar!.frame.height
                     self.tableView.scrollIndicatorInsets = self.tableView.contentInset
                 }
             }
         }
     }
-    
 }

@@ -612,7 +612,11 @@ extension CollaborationFlowController {
 extension CollaborationFlowController {
     func editAssigneeAction() {
         guard let collaboration = collaboration else { return }
-        let viewModel = UsersViewModel(model: model, multiselect: false, showSuspendedUsers: false)
+        let viewModel = UsersViewModel(
+            projectParticipantsForModel: model,
+            multiselect: false,
+            showSuspendedUsers: false
+        )
         if let assignee = collaboration.assignee {
             viewModel.addUser(assignee)
             viewModel.set(userWithId: assignee.id, selected: true)

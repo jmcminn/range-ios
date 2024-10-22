@@ -992,7 +992,7 @@ extension ProjectFlowController {
 extension ProjectFlowController {
     func editFollowersAction(sender _: Any?, event: FlowEvent) {
         guard let collaboration = event.object as? Collaboration, !collaboration.isInvalidated else { return }
-        let viewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: false)
+        let viewModel = UsersViewModel(projectParticipantsForModel: model, multiselect: true, showSuspendedUsers: false)
         let suspendedFollowersIds = collaboration.followers
             .filter { $0.participation == .suspended }
             .map(\.id)

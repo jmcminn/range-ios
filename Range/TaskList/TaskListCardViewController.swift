@@ -771,7 +771,11 @@ extension TaskListCardViewController {
     }
 
     private func presentBulkUpdateAssigneeCard() {
-        let viewModel = UsersViewModel(model: projectModel, multiselect: false, showSuspendedUsers: false)
+        let viewModel = UsersViewModel(
+            projectParticipantsForModel: projectModel,
+            multiselect: false,
+            showSuspendedUsers: false
+        )
         let userPicker = UserPickerCardViewController(title: "Assignee", viewModel: viewModel)
         // add option to clear current assignee
         userPicker.showNoUserOption = true
@@ -790,9 +794,6 @@ extension TaskListCardViewController {
     }
 
     private func presentBulkUpdateStatusCard() {
-        let tasks = selectedTasks.compactMap {
-            projectModel.mainRealm.object(ofType: Collaboration.self, forPrimaryKey: $0)
-        }
         let canCompleteTasks = projectModel.currentUser.canCompleteTasks()
         let canArchiveAnySelectedTask = !filteredCollaborations
             .filter { self.selectedTasks.contains($0.id) }
@@ -873,7 +874,11 @@ extension TaskListCardViewController {
     }
 
     private func presentBulkUpdateFollowersCard() {
-        let viewModel = UsersViewModel(model: projectModel, multiselect: true, showSuspendedUsers: false)
+        let viewModel = UsersViewModel(
+            projectParticipantsForModel: projectModel,
+            multiselect: true,
+            showSuspendedUsers: false
+        )
 
         let userPicker = UserPickerCardViewController(
             icon: UIImage(systemName: "person.badge.plus"),

@@ -43,7 +43,11 @@ class MediaFiltersCardViewController: SheetCardViewController {
         self.model = model
         self.mediaFilters = mediaFilters
 
-        let usersViewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: true)
+        let usersViewModel = UsersViewModel(
+            projectParticipantsForModel: model,
+            multiselect: true,
+            showSuspendedUsers: true
+        )
         // preselect users from filters
         mediaFilters.authorFilter?.forEach { usersViewModel.set(userWithId: $0, selected: true) }
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)

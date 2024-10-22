@@ -20,7 +20,7 @@ class UsersViewModel: NSObject {
     private(set) var filteredUsers: [UserViewModel] = []
 
     /// used for sorting the users by name
-    private let nameSort = SortDescriptor(\UserViewModel.name, comparator: .localizedStandard)
+    private static let nameSort = SortDescriptor(\UserViewModel.name, comparator: .localizedStandard)
 
     /// Allows for multiple delegates
     private var delegates = NSHashTable<UsersViewModelDelegate>.weakObjects()
@@ -28,15 +28,57 @@ class UsersViewModel: NSObject {
     /// Special user with id = UserViewModel.unassignedUserId for filtering unassigned tasks
     let unassignedUser: UserViewModel
 
-    init(model: ProjectModel, multiselect: Bool, showSuspendedUsers: Bool) {
-        self.model = model
-        self.multiselect = multiselect
-        allUsers = model.mainRealm.objects(Participant.self)
+    convenience init(projectParticipantsForModel model: ProjectModel, multiselect: Bool, showSuspendedUsers: Bool) {
+        let allUsers = model.mainRealm.objects(Participant.self)
             .where { $0.placeholder == false }
             .where { showSuspendedUsers ? $0.participation != .removed : $0.participation == .active }
             .map { UserViewModel(fromParticipant: $0) }
-            .sorted(using: nameSort)
+            .sorted(using: Self.nameSort)
 
+        self.init(model: model, multiselect: multiselect, allUsers: allUsers)
+    }
+
+    convenience init(projectMembersSelectionForModel model: ProjectModel, organizationModel: OrganizationModel) {
+        let organizationUsers = organizationModel.mainRealm.objects(Participant.self)
+            .where { $0.placeholder == false }
+            .where { $0.organizationRole != .Admin }
+            .where { $0.participation == .active }
+            .map { UserViewModel(fromParticipant: $0) }
+        let organizationInvitees = organizationModel.mainRealm.objects(Invitation.self)
+            .where { $0.organizationRole != .Admin }
+            .where { $0.acceptedTimestamp == nil }
+            .map { UserViewModel(fromInvitation: $0) }
+
+        let allUsers = (Array(organizationUsers) + Array(organizationInvitees)).sorted(using: Self.nameSort)
+
+        self.init(model: model, multiselect: true, allUsers: allUsers)
+
+        // mark project members as selected
+        let projectMemberIds = Array(
+            model.mainRealm.objects(Participant.self)
+                .where { $0.placeholder == false }
+                .where { $0.organizationRole != .Admin }
+                .where { $0.participation == .active }
+                .map(\.id)
+        )
+
+        // mark users invited to organization that were invited to this
+        // project as selected
+        let invitedToProjectIds = Array(
+            organizationModel.mainRealm.objects(Invitation.self)
+                .where { $0.organizationRole != .Admin }
+                .where { $0.acceptedTimestamp == nil }
+                .where { $0.projectIds.contains(model.projectId) }
+                .map(\.id)
+        )
+
+        set(selectedUsersWithIds: projectMemberIds + invitedToProjectIds)
+    }
+
+    init(model: ProjectModel, multiselect: Bool, allUsers: [UserViewModel]) {
+        self.model = model
+        self.multiselect = multiselect
+        self.allUsers = allUsers
         allUsersIndex = Dictionary(uniqueKeysWithValues: zip(allUsers.map(\.id), allUsers))
         unassignedUser = UserViewModel.unassignedUser()
         allUsersIndex[unassignedUser.id] = unassignedUser
@@ -54,7 +96,7 @@ class UsersViewModel: NSObject {
         // insert so allUsers is still sorted by name
         allUsers.insert(userVM, at: allUsers.partitioningIndex(where: {
             // find the first user in allUsers that's bigger than inserted user
-            nameSort.compare($0, userVM) == .orderedDescending
+            UsersViewModel.nameSort.compare($0, userVM) == .orderedDescending
         }))
         filteredUsers = allUsers
     }
@@ -185,6 +227,9 @@ class UserViewModel: NSObject, Codable {
     let id: String
     @objc let name: String
     @objc let email: String
+    let role: Participant.OrganizationRole
+    // is the invitation pending
+    let pending: Bool
     let suspended: Bool
     /// for searching we store a version of string that is diacriticInsensitive and caseInsensitive
     let searchName: String
@@ -210,11 +255,15 @@ class UserViewModel: NSObject, Codable {
         id: String,
         name: String,
         email: String,
+        role: Participant.OrganizationRole,
+        pending: Bool,
         suspended: Bool
     ) {
         self.id = id
         self.name = name
         self.email = email
+        self.role = role
+        self.pending = pending
         self.suspended = suspended
         searchName = "\(name) \(email)".folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
     }
@@ -225,12 +274,32 @@ class UserViewModel: NSObject, Codable {
             id: participant.id,
             name: participant.displayName,
             email: participant.email,
+            role: participant.organizationRole,
+            pending: false,
             suspended: participant.participation == .suspended
         )
     }
 
+    convenience init(fromInvitation invitation: Invitation) {
+        self.init(
+            id: invitation.id,
+            name: invitation.inviteeEmail,
+            email: "Invited by \(invitation.inviterDisplayName) on \(Date.dueDateFormat(invitation.resentTimestamp ?? invitation.timestamp, timeZone: nil))",
+            role: invitation.organizationRole,
+            pending: true,
+            suspended: false
+        )
+    }
+
     static func unassignedUser() -> UserViewModel {
-        UserViewModel(id: unassignedUserId, name: String(localized: "Unassigned Tasks"), email: "", suspended: false)
+        UserViewModel(
+            id: unassignedUserId,
+            name: String(localized: "Unassigned Tasks"),
+            email: "",
+            role: .Unknown,
+            pending: false,
+            suspended: false
+        )
     }
 
     /// equatable to check for id only

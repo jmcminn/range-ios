@@ -13,6 +13,8 @@ class UserTableViewCell: UITableViewCell {
     }
 
     let avatarView = AvatarView()
+    let firstLineScrollView = UIScrollView()
+    let firstLineStackView = UIStackView()
     let nameLabel = UILabel()
     let emailLabel = UILabel()
     let selectedIconView = UIImageView(image: UIImage(named: "checkmark_checked"))
@@ -24,7 +26,7 @@ class UserTableViewCell: UITableViewCell {
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in the view controller
 
         setupViews()
-        [avatarView, nameLabel, emailLabel, selectedIconView].forEach(contentView.addSubview)
+        [avatarView, firstLineScrollView, emailLabel, selectedIconView].forEach(contentView.addSubview)
 
         avatarView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview().offset(14)
@@ -33,14 +35,14 @@ class UserTableViewCell: UITableViewCell {
             make.width.height.equalTo(32)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 44 : 12)
         }
-        nameLabel.snp.makeConstraints { make in
+        firstLineScrollView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview().offset(11)
             make.bottom.equalTo(contentView.snp.centerY).offset(2)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 84 : 52)
-            make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
+            make.trailing.equalTo(contentView.snp.trailingMargin)
         }
         emailLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom)
+            make.top.equalTo(firstLineStackView.snp.bottom)
             make.bottom.lessThanOrEqualToSuperview().offset(-11)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 84 : 52)
             make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
@@ -53,6 +55,9 @@ class UserTableViewCell: UITableViewCell {
                 make.trailing.equalTo(contentView.snp.trailingMargin).inset(12)
             }
         }
+        // the firstLineScrollView has user interaction disabled so the cell selection works
+        // but we still want it's pan gesture to work
+        contentView.addGestureRecognizer(firstLineScrollView.panGestureRecognizer)
     }
 
     @available(*, unavailable)
@@ -61,6 +66,20 @@ class UserTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
+        // no user interaction - we want taps recognized by the table view cell
+        firstLineScrollView.isUserInteractionEnabled = false
+        firstLineScrollView.showsHorizontalScrollIndicator = false
+        firstLineScrollView.addSubview(firstLineStackView)
+        firstLineStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalTo(firstLineScrollView)
+        }
+        firstLineStackView.isUserInteractionEnabled = false
+
+        firstLineStackView.axis = .horizontal
+        firstLineStackView.alignment = .center
+        firstLineStackView.spacing = 8
+
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)
 
@@ -68,7 +87,7 @@ class UserTableViewCell: UITableViewCell {
         emailLabel.font = ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold)
     }
 
-    func setUser(_ user: UserViewModel, avatarImage: UIImage?) {
+    func setUser(_ user: UserViewModel, avatarImage: UIImage?, showRole: Bool, showPending: Bool) {
         avatarView.setAvatar(avatarImage, initials: user.initials)
         nameLabel.attributedText = NSAttributedString(
             string: user.name,
@@ -76,22 +95,33 @@ class UserTableViewCell: UITableViewCell {
         )
         if user.suspended {
             // don't show email if user is suspended
-            nameLabel.snp.remakeConstraints { make in
+            firstLineScrollView.snp.remakeConstraints { make in
                 make.centerY.equalToSuperview()
                 make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 84 : 52)
-                make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
+                make.trailing.equalTo(contentView.snp.trailingMargin)
             }
             emailLabel.isHidden = true
             emailLabel.text = nil
         } else {
-            nameLabel.snp.remakeConstraints { make in
+            firstLineScrollView.snp.remakeConstraints { make in
                 make.top.greaterThanOrEqualToSuperview().offset(11)
                 make.bottom.equalTo(contentView.snp.centerY).offset(2)
                 make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 84 : 52)
-                make.trailing.equalTo(contentView.snp.trailingMargin).inset(16)
+                make.trailing.equalTo(contentView.snp.trailingMargin)
             }
             emailLabel.isHidden = false
             emailLabel.text = user.email
+        }
+        if showPending, user.pending {
+            firstLineStackView.addArrangedSubview(PillView(
+                iconName: nil, text: "Pending", verticalPadding: 0, backgroundColor: .Primary_Blue_01
+            ))
+        }
+        firstLineStackView.addArrangedSubview(nameLabel)
+        if showRole {
+            firstLineStackView.addArrangedSubview(PillView(
+                iconName: nil, text: user.role.rawValue, verticalPadding: 0, backgroundColor: .dynamic(.Neutral_10)
+            ))
         }
         if multiselect {
             selectedIconView.isHidden = false
@@ -107,6 +137,11 @@ class UserTableViewCell: UITableViewCell {
 
     override func prepareForReuse() {
         avatarView.setAvatar(nil, initials: nil)
+        firstLineStackView.arrangedSubviews.forEach {
+            firstLineStackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        firstLineScrollView.setContentOffset(.zero, animated: false)
         nameLabel.attributedText = nil
         emailLabel.text = nil
         selectedIconView.isHidden = true

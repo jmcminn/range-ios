@@ -79,7 +79,11 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
 
         statuses = (model.mainRealm.objects(Status.self).sorted(by: Status.uiSortingOrder))
 
-        let usersViewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: true)
+        let usersViewModel = UsersViewModel(
+            projectParticipantsForModel: model,
+            multiselect: true,
+            showSuspendedUsers: true
+        )
         // preselect users from filters
         filters.assigneeFilter?.forEach { usersViewModel.set(userWithId: $0, selected: true) }
         usersView = SelectedUsersView(viewModel: usersViewModel, showEditUserCell: true)
@@ -96,9 +100,13 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         filters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
-        
-        let followersViewModel = UsersViewModel(model: model, multiselect: true, showSuspendedUsers: true)
-        filters.followersFilter?.forEach { followersViewModel.set(userWithId: $0, selected: true)}
+
+        let followersViewModel = UsersViewModel(
+            projectParticipantsForModel: model,
+            multiselect: true,
+            showSuspendedUsers: true
+        )
+        filters.followersFilter?.forEach { followersViewModel.set(userWithId: $0, selected: true) }
         followersView = SelectedUsersView(viewModel: followersViewModel, showEditUserCell: true)
         self.followersViewModel = followersViewModel
 
