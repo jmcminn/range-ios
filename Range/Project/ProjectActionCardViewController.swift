@@ -122,6 +122,19 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
             )
 
             var actions: [[ActionItem]] = [[allMediaAction, taskListAction]]
+            if model.currentUser.organizationRole == .Admin {
+                actions.append([
+                    ActionItem(
+                        title: String(localized: "Project Members"),
+                        imageName: "person.2",
+                        handler: { [weak self] in
+                            UIApplication.shared.sendAction(
+                                #selector(ProjectFlowActions.showProjectMembersAction), to: nil, from: self, for: nil
+                            )
+                        }
+                    )
+                ])
+            }
             actionSelectorVC = ActionSelectorViewController(actions: actions)
             add(childController: actionSelectorVC!, toView: containerView)
             actionSelectorVC!.view.snp.makeConstraints { make in

@@ -1,4 +1,5 @@
 import CoreLocation
+import FirebaseFunctions
 import Foundation
 import Kingfisher
 import OSLog
@@ -542,4 +543,31 @@ extension ProjectModel {
         }
         return UpdateCollaborationFollowersCommand(collaborationId: collaborationId, followerIds: newFollowerIds)
     }
+}
+
+// Direct updates with no offline support
+extension ProjectModel {
+    
+    @MainActor
+    func addProjectParticipant(_ userId: String) async throws {
+        let parameters: [String: Any?] = [
+            "projectId": projectId,
+            "userId": userId
+        ]
+        _ = try await Functions.functions(region: "us-west2")
+            .httpsCallable("addProjectParticipant")
+            .call(parameters)
+    }
+    
+    @MainActor
+    func removeProjectParticipant(_ userId: String) async throws {
+        let parameters: [String: Any?] = [
+            "projectId": projectId,
+            "userId": userId
+        ]
+        _ = try await Functions.functions(region: "us-west2")
+            .httpsCallable("removeProjectParticipant")
+            .call(parameters)
+    }
+    
 }

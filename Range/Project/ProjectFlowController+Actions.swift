@@ -87,6 +87,8 @@ final class FlowEvent: UIEvent {
     func showAdditionalInformation(sender: Any?, event: FlowEvent)
     /// Reset canvas camera
     func resetCanvasAction()
+    /// Project members management
+    func showProjectMembersAction()
 }
 
 extension ProjectFlowController: ProjectFlowActions {
@@ -1037,5 +1039,45 @@ extension ProjectFlowController {
 extension ProjectFlowController {
     func resetCanvasAction() {
         canvasContainer.canvasViewController.resetCamera()
+    }
+}
+
+// MARK: - project members management
+
+extension ProjectFlowController {
+    func showProjectMembersAction() {
+        guard let organizationModel = userModel.currentOrganizationModel else { return }
+        let membersViewModel = UsersViewModel(
+            projectMembersSelectionForModel: model,
+            organizationModel: organizationModel
+        )
+        let membersVC = UserPickerCardViewController(
+            icon: UIImage(systemName: "person.2"),
+            title: "Project Members",
+            description: "View and manage project access for Collaborators and Guests. All Admins for this Organization have access.",
+            viewModel: membersViewModel
+        )
+        membersVC.showRole = true
+        membersVC.showPending = true
+        membersVC.onSelection = { [weak self] (user: UserViewModel, selected: Bool) async throws in
+            try await self?.updateProjectMembership(user: user, selected: selected)
+        }
+        membersVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
+    }
+
+    func updateProjectMembership(user: UserViewModel, selected: Bool) async throws {
+        guard let organizationModel = userModel.currentOrganizationModel else { throw "Organization not found" }
+        // perform the action according to selection
+        if user.pending {
+            // it's a pending invitation, update it to include/exclude this project
+            try await selected
+                ? organizationModel.addProjectId(model.projectId, toInvitation: user.id)
+                : organizationModel.removeProjectId(model.projectId, fromInvitation: user.id)
+        } else {
+            // it's an organization participant, add/remove from this project
+            try await selected
+                ? model.addProjectParticipant(user.id)
+                : model.removeProjectParticipant(user.id)
+        }
     }
 }

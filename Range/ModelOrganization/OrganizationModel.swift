@@ -293,7 +293,7 @@ class OrganizationModel: NSObject, RealmModel {
 
         return projectId
     }
-    
+
     /// Calls the "deleteProject" firebase function with given parameters
     @MainActor
     func deleteProject(_ project: ProjectSummary) async throws {
@@ -311,6 +311,34 @@ class OrganizationModel: NSObject, RealmModel {
         let updates = [FirestoreProjectSummary.CodingKeys.isArchived.rawValue: !project.isArchived]
         _ = try await firestore.runTransaction { tx, _ in
             tx.updateData(updates, forDocument: projectRef)
+            return true
+        }
+    }
+
+    @MainActor
+    func addProjectId(_ projectId: String, toInvitation invitationId: String) async throws {
+        guard let invitation = mainRealm.object(ofType: Invitation.self, forPrimaryKey: invitationId)
+        else { throw "Invitation \(invitationId) not found" }
+
+        let projectIds = Array(invitation.projectIds) + [projectId]
+        let invitationRef = firestore.document("organizations/\(organizationId)/invitations/\(invitationId)")
+        let updates = [FirestoreInvitation.CodingKeys.projectIds.rawValue: projectIds]
+        _ = try await firestore.runTransaction { tx, _ in
+            tx.updateData(updates, forDocument: invitationRef)
+            return true
+        }
+    }
+
+    @MainActor
+    func removeProjectId(_ projectId: String, fromInvitation invitationId: String) async throws {
+        guard let invitation = mainRealm.object(ofType: Invitation.self, forPrimaryKey: invitationId)
+        else { throw "Invitation \(invitationId) not found" }
+
+        let projectIds = Array(invitation.projectIds.filter { $0 != projectId })
+        let invitationRef = firestore.document("organizations/\(organizationId)/invitations/\(invitationId)")
+        let updates = [FirestoreInvitation.CodingKeys.projectIds.rawValue: projectIds]
+        _ = try await firestore.runTransaction { tx, _ in
+            tx.updateData(updates, forDocument: invitationRef)
             return true
         }
     }

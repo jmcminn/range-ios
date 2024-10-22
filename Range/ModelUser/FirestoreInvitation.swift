@@ -26,7 +26,7 @@ struct FirestoreInvitation: Decodable, FirestoreToRealmSyncable {
     var timestamp: Date
 
     /// CodingKeys used by Codable as a keys in the encoded form
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case acceptedTimestamp, inviteeEmail, inviterFirstName, inviterLastName, organizationName, organizationRole, projectIds, resentTimestamp, timestamp
     }
 
