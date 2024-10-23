@@ -11,7 +11,7 @@ class ProjectActionCardViewController: UIViewController, NonModalCardCoordinatin
     var onAddPin: (() -> Void)?
 
     static let topPadding = 21.0
-    static let headerToActionsPadding = 16.0
+    static let headerToActionsPadding = 24.0
 
     var addPinButton: UIButton?
     var addSnippetButton: UIButton?
@@ -264,24 +264,25 @@ extension ProjectActionCardViewController: CardPresentable {
         )
 
         var height = 0.0
+        let headerToActionsPaddingHiddenPartHeight: Double = 8
         if let photoButton {
             height += ProjectActionCardViewController.topPadding + photoButton.systemLayoutSizeFitting(
                 fittingSize,
                 withHorizontalFittingPriority: .required,
                 verticalFittingPriority: .defaultLow
             ).height +
-                ProjectActionCardViewController.headerToActionsPadding
+                ProjectActionCardViewController.headerToActionsPadding - headerToActionsPaddingHiddenPartHeight
         } else if let allMediaButton {
             height += 16 + allMediaButton.systemLayoutSizeFitting(
                 fittingSize,
                 withHorizontalFittingPriority: .required,
                 verticalFittingPriority: .defaultLow
             ).height +
-                ProjectActionCardViewController.headerToActionsPadding
+                ProjectActionCardViewController.headerToActionsPadding - headerToActionsPaddingHiddenPartHeight
         }
 
         if cardPosition == .max, let actionSelectorVC {
-            height += (actionSelectorVC.tableView.contentSize.height + 12.0)
+            height += headerToActionsPaddingHiddenPartHeight + (actionSelectorVC.tableView.contentSize.height + 12.0)
         }
 
         return height
