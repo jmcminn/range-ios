@@ -1059,6 +1059,7 @@ extension ProjectFlowController {
         )
         membersVC.showRole = true
         membersVC.showPending = true
+        membersVC.messageToShowWhenOffline = "Project members can't be modified offline"
         membersVC.onSelection = { [weak self] (user: UserViewModel, selected: Bool) async throws in
             try await self?.updateProjectMembership(user: user, selected: selected)
         }

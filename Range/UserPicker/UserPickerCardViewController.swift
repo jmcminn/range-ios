@@ -1,4 +1,5 @@
 import Foundation
+import Network
 import OSLog
 import SnapKit
 import UIKit
@@ -40,6 +41,10 @@ class UserPickerCardViewController: SheetCardViewController {
     private var bottomBar: UIView?
 
     var onSelection: ((UserViewModel, Bool) async throws -> Void)?
+
+    var messageToShowWhenOffline: String?
+    /// for monitoring network access
+    let networkMonitor = NWPathMonitor()
 
     ///
     init(
@@ -119,6 +124,30 @@ class UserPickerCardViewController: SheetCardViewController {
         }
 
         viewModel.addDelegate(self)
+
+        if let messageToShowWhenOffline {
+            networkMonitor.start(queue: DispatchQueue.main)
+            // monitor the network and once the status is obtained cancel - we want to show
+            // the message if the user is initially offline
+            networkMonitor.pathUpdateHandler = { [weak self] _ in
+                guard let self else { return }
+                self.networkMonitor.cancel()
+                if self.networkMonitor.currentPath.status == .unsatisfied {
+                    let alertController = UIAlertController(
+                        title: messageToShowWhenOffline,
+                        message: nil,
+                        preferredStyle: .alert
+                    )
+                    alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                    self.present(alertController, animated: true)
+                }
+            }
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        networkMonitor.cancel()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
