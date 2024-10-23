@@ -326,7 +326,8 @@ class AddPhotoFlowController {
             toFullscreenGallery: vc,
             interactivePresentation: interactivePresentation
         )
-        transitioningDelegate.onDismissedInteractively = {
+        transitioningDelegate.onDismissedInteractively = { [weak vc] in
+            guard let vc else { return }
             // when dismissed interactively, we want to treat it as if user tapped "done" - so
             // save all changes.
             hideReviewController(vc.removedPhotosIndices, true, vc.resultAnnotations, false)

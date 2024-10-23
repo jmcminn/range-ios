@@ -50,10 +50,11 @@ extension AnnotationsEditor {
         }
 
         // Recent texts button configuration update handler that changes the icon when the recent text selector is visible
-        recentTextButton.configurationUpdateHandler = { button in
+        recentTextButton.configurationUpdateHandler = { [weak self] button in
+            guard let self else { return }
             var config = button.configuration
             config?.imageColorTransformer = UIConfigurationColorTransformer { [weak self] incoming in
-                guard let self = self else { return incoming }
+                guard let self else { return incoming }
                 return self.viewModel.recentTextSelectorVisible ? .Primary_Blue_04 : .white
             }
             config?.image = self.viewModel.recentTextSelectorVisible

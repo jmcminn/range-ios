@@ -12,7 +12,7 @@ class AnnotationsEditorViewModel: ObservableObject {
     let userPreferences: UserPreferences
 
     /// currently annotated page in photos gallery
-    var annotationsEditor: AnnotationsEditor? { didSet {
+    weak var annotationsEditor: AnnotationsEditor? { didSet {
         currentAnnotationsEditorDidSet(previousAnnotationsEditor: oldValue)
     }}
 
