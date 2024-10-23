@@ -128,13 +128,15 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
         let page = setupPage()
         page.imageHeight2Width = pageHeight2Width
         if onMoreAction != nil {
-            page.onMoreAction = { [weak self] in
-                self?.onMoreAction?(page.moreButton ?? page)
+            page.onMoreAction = { [weak self, weak page] in
+                guard let self, let page else { return }
+                self.onMoreAction?(page.moreButton ?? page)
             }
         }
         if onShareAction != nil {
-            page.onShareAction = { [weak self] in
-                self?.onShareAction?(page.shareButton ?? page)
+            page.onShareAction = { [weak self, weak page] in
+                guard let self, let page else { return }
+                self.onShareAction?(page.shareButton ?? page)
             }
         }
         pages.insert(page, at: index)
@@ -200,13 +202,15 @@ class ImageGalleryViewController<PhotoKey: Equatable>: UIViewController, UIScrol
             .forEach { pageView in
                 pageView.imageHeight2Width = pageHeight2Width
                 if onMoreAction != nil {
-                    pageView.onMoreAction = { [weak self] in
-                        self?.onMoreAction?(pageView.moreButton ?? pageView)
+                    pageView.onMoreAction = { [weak self, weak pageView] in
+                        guard let self, let pageView else { return }
+                        self.onMoreAction?(pageView.moreButton ?? pageView)
                     }
                 }
                 if onShareAction != nil {
-                    pageView.onShareAction = { [weak self] in
-                        self?.onShareAction?(pageView.shareButton ?? pageView)
+                    pageView.onShareAction = { [weak self, weak pageView] in
+                        guard let self, let pageView else { return }
+                        self.onShareAction?(pageView.shareButton ?? pageView)
                     }
                 }
             }
