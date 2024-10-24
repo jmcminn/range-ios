@@ -38,6 +38,10 @@ class LocalFiles {
             Logger.cache.error("Failed to migrate local files to user local files \(error.localizedDescription)")
         }
     }
+    
+    func clearMemoryCache() {
+        cache.clearMemoryCache()
+    }
 
     /// Moves files from obsolete "local" directory to a cache per userId
     private func possiblyMigrateLocalFiles() throws {

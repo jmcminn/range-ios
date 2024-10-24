@@ -118,6 +118,10 @@ class AddPhotoFlowController {
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
     func start(onStarted: @escaping (Bool) -> Void) {
+        // clear local files memory cache on start so it's easier to debug memory problems
+        // It's ok to clear it, the disk cache is still available and there's more memory
+        // available for the photo flow.
+        localFiles.clearMemoryCache()
         if skipCameraScreen {
             nextStepAfterCamera()
             onStarted(true)
