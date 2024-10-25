@@ -185,7 +185,7 @@ class CopyPinTableViewCell: UITableViewCell {
 
         nameLabel.text = collaboration.name.isEmpty
             ? (collaboration.status == nil
-                ? String(localized: "Untitled photos...")
+                ? String(localized: "Untitled photo pin...")
                 : String(localized: "Untitled task..."))
             : collaboration.name
 
