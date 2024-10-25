@@ -140,31 +140,36 @@ class SheetCardViewController: UIViewController, NonModalCardCoordinating, CardP
             make.bottom.lessThanOrEqualToSuperview().offset(-16)
         }
 
-        if let titleIcon {
+        if let titleIcon, let iconBgView {
+            sheetHeaderView.addSubview(iconBgView)
+            iconBgView.snp.makeConstraints { make in
+                make.centerY.equalTo(closeButton.snp.centerY)
+                make.leading.equalTo(16)
+            }
+            iconBgView.addSubview(titleIcon)
+            titleIcon.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+            }
+        } else if let titleIcon {
             sheetHeaderView.addSubview(titleIcon)
             titleIcon.snp.makeConstraints { make in
                 make.centerY.equalTo(closeButton.snp.centerY)
                 make.leading.equalTo(16)
             }
-            if let iconBgView {
-                sheetHeaderView.insertSubview(iconBgView, belowSubview: titleIcon)
-                iconBgView.snp.makeConstraints { make in
-                    make.center.equalTo(titleIcon)
-                }
-            }
         }
-        if let titleLabel = titleLabel {
+        let titleIconViewToAlignTo = iconBgView ?? titleIcon
+        if let titleLabel {
             sheetHeaderView.addSubview(titleLabel)
             titleLabel.snp.makeConstraints { make in
                 make.centerY.equalTo(closeButton.snp.centerY)
-                if titleIcon != nil {
-                    make.leading.equalTo(titleIcon!.snp.trailing).offset(8)
+                if let titleIconViewToAlignTo {
+                    make.leading.equalTo(titleIconViewToAlignTo.snp.trailing).offset(8)
                 } else {
                     make.leading.equalTo(16)
                 }
                 make.trailing.lessThanOrEqualTo(closeButton.snp.leading).offset(-8)
             }
-            if let subtitleLabel = subtitleLabel {
+            if let subtitleLabel {
                 sheetHeaderView.addSubview(subtitleLabel)
                 subtitleLabel.snp.makeConstraints { make in
                     make.leading.equalTo(titleLabel)
