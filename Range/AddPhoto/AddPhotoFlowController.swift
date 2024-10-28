@@ -10,6 +10,7 @@ import UIKit
 /// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
 class AddPhotoFlowController {
     unowned let model: ProjectModel
+    let organizationCountsAndLimits: OrganizationCountsAndLimits
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
     unowned let userSettings: UserSettings
@@ -96,6 +97,7 @@ class AddPhotoFlowController {
     ///     - canvas: - the flow will operate on this canvas
     init(
         model: ProjectModel,
+        organizationCountsAndLimits: OrganizationCountsAndLimits,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
@@ -103,6 +105,7 @@ class AddPhotoFlowController {
         canvasContainer: CanvasContainerViewController
     ) {
         self.model = model
+        self.organizationCountsAndLimits = organizationCountsAndLimits
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
@@ -118,6 +121,12 @@ class AddPhotoFlowController {
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
     func start(onStarted: @escaping (Bool) -> Void) {
+        if !organizationCountsAndLimits.canAddUpload() {
+            OrganizationLimitsCardViewController(organizationCountsAndLimits)
+                .installAndShowCard(in: canvasContainer)
+            return
+        }
+
         // clear local files memory cache on start so it's easier to debug memory problems
         // It's ok to clear it, the disk cache is still available and there's more memory
         // available for the photo flow.
@@ -755,7 +764,17 @@ extension AddPhotoFlowController {
             self?.onPhotoLocationBack()
         }
         confirmationCardVC!.onDone = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
+
+            if self.pinsDisplay?.selectedPin == nil {
+                // we will create a new pin, check the limits
+                if !organizationCountsAndLimits.canAddCollaboration() {
+                    OrganizationLimitsCardViewController(organizationCountsAndLimits)
+                        .installAndShowCard(in: canvasContainer)
+                    return
+                }
+            }
+
             if self.pinTypeOption == .copyPin {
                 let copyPinCardVC = CopyPinCardViewController(
                     projectModel: self.model,

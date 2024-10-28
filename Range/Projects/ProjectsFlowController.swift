@@ -20,6 +20,7 @@ class ProjectsFlowController: UINavigationController {
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel: PendingActionsModelImpl
     let userDataSyncState: UserDataSyncState
+    let organizationCountsAndLimits: OrganizationCountsAndLimits
 
     var onSignedOut: (() -> Void)?
 
@@ -35,7 +36,7 @@ class ProjectsFlowController: UINavigationController {
     private var currentOrganizationObservation: NSKeyValueObservation?
     var currentProjectNotificationToken: NotificationToken?
     private var organizationsNotificationToken: NotificationToken?
-    
+
     override var shouldAutomaticallyForwardAppearanceMethods: Bool { true }
 
     /// if present show this route when user signs in
@@ -45,9 +46,9 @@ class ProjectsFlowController: UINavigationController {
 
     /// combine observers for given organization
     private var organizationSubscriptions = Set<AnyCancellable>()
-    
+
     let projectFilters: ProjectFilters
-    
+
     /// for monitoring network access
     let networkMonitor = NWPathMonitor()
 
@@ -71,6 +72,10 @@ class ProjectsFlowController: UINavigationController {
         userDataSyncState = UserDataSyncState(
             pendingActionsModel: pendingActionsModel,
             pendingUploadsModel: pendingUploadsModel
+        )
+        organizationCountsAndLimits = OrganizationCountsAndLimits(
+            userModel: userModel,
+            pendingActionsModel: pendingActionsModel
         )
         projectFilters = userPreferences.projectFilters()
         super.init(rootViewController: LaunchScreenViewController())
@@ -145,7 +150,7 @@ class ProjectsFlowController: UINavigationController {
                                                selector: #selector(triggerDataSyncNotificationOnResignActive),
                                                name: UIApplication.willResignActiveNotification,
                                                object: nil)
-        
+
         networkMonitor.start(queue: DispatchQueue.main)
     }
 
@@ -155,8 +160,10 @@ class ProjectsFlowController: UINavigationController {
         let content = UNMutableNotificationContent()
         content.title = state == .offlinePending ? "Range • Offline Mode" : "Range • Data Sync In-progress"
         content.body = state == .offlinePending
-            ? "You have offline data that has not been synced. Once you have an Internet connection, open the Range app to sync your offline data."
-            : "You have offline data that has not been synced. Please open the Range app to complete the data sync process."
+            ?
+            "You have offline data that has not been synced. Once you have an Internet connection, open the Range app to sync your offline data."
+            :
+            "You have offline data that has not been synced. Please open the Range app to complete the data sync process."
 
         let uuidString = UUID().uuidString
         let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: nil)
@@ -165,11 +172,10 @@ class ProjectsFlowController: UINavigationController {
             let notificationCenter = UNUserNotificationCenter.current()
             do {
                 try await notificationCenter.add(request)
-            } catch {
-            }
+            } catch {}
         }
     }
-    
+
     func triggerDataSyncNotificationOnSignOut() {
         let state = userDataSyncState.state
         guard state != .noPending else { return }
@@ -184,8 +190,7 @@ class ProjectsFlowController: UINavigationController {
             let notificationCenter = UNUserNotificationCenter.current()
             do {
                 try await notificationCenter.add(request)
-            } catch {
-            }
+            } catch {}
         }
     }
 
@@ -421,6 +426,7 @@ class ProjectsFlowController: UINavigationController {
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
             userDataSyncState: userDataSyncState,
+            organizationCountsAndLimits: organizationCountsAndLimits,
             userSettings: userSettings,
             userPreferences: userPreferences,
             initialRoute: initialRoute

@@ -10,6 +10,7 @@ import UIKit
 class CanvasSnapshotFlowController {
     let geometryId: String?
     let model: ProjectModel
+    let organizationCountsAndLimits: OrganizationCountsAndLimits
     let localFiles: LocalFiles
     let mediaCache: MediaCache
     let userSettings: UserSettings
@@ -31,6 +32,7 @@ class CanvasSnapshotFlowController {
     init?(
         collaboration: Collaboration?,
         model: ProjectModel,
+        organizationCountsAndLimits: OrganizationCountsAndLimits,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
@@ -43,6 +45,7 @@ class CanvasSnapshotFlowController {
             geometryId = nil
         }
         self.model = model
+        self.organizationCountsAndLimits = organizationCountsAndLimits
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
@@ -52,6 +55,13 @@ class CanvasSnapshotFlowController {
 
     /// Show the UI for canvas snapshot
     func start() {
+        if !organizationCountsAndLimits.canAddUpload() {
+            onStop?(nil, nil, nil)
+            OrganizationLimitsCardViewController(organizationCountsAndLimits)
+                .installAndShowCard(in: canvasContainer)
+            return
+        }
+        
         selectionVC = CanvasSnapshotSelectionViewController(
             canvasViewController: canvasContainer.canvasViewController
         )
@@ -126,6 +136,7 @@ class CanvasSnapshotFlowController {
 
                 let addPhotoFlow = AddPhotoFlowController(
                     model: model,
+                    organizationCountsAndLimits: organizationCountsAndLimits,
                     localFiles: localFiles,
                     mediaCache: mediaCache,
                     userSettings: userSettings,

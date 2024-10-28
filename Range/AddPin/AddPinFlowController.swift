@@ -4,6 +4,7 @@ import UIKit
 /// Manages the flow of adding new pin or moving an existing collaboration
 class AddPinFlowController {
     unowned let model: ProjectModel
+    let organizationCountsAndLimits: OrganizationCountsAndLimits
     let userPreferences: UserPreferences
     unowned let canvasContainer: CanvasContainerViewController
     private let controls: ProjectCanvasControls
@@ -12,7 +13,7 @@ class AddPinFlowController {
 
     /// in .copyPin mode this is the collaboration that we want to copy data from:
     private var pinToCopy: Collaboration?
-    
+
     /// Whether the flow started to duplicated given pin
     private var isDuplicatingPin: Bool = false
 
@@ -33,13 +34,19 @@ class AddPinFlowController {
     /// - Parameters:
     ///     - model: - the project model
     ///     - canvas: - the flow will operate on this canvas
-    init(model: ProjectModel, userPreferences: UserPreferences, canvasContainer: CanvasContainerViewController) {
+    init(
+        model: ProjectModel,
+        organizationCountsAndLimits: OrganizationCountsAndLimits,
+        userPreferences: UserPreferences,
+        canvasContainer: CanvasContainerViewController
+    ) {
         self.model = model
+        self.organizationCountsAndLimits = organizationCountsAndLimits
         self.userPreferences = userPreferences
         self.canvasContainer = canvasContainer
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
     }
-    
+
     func duplicateCollaboration(_ collaboration: Collaboration) {
         pinTypeOption = .copyPin
         pinToCopy = collaboration
@@ -52,6 +59,13 @@ class AddPinFlowController {
 
     /// Show the UI for pin selection
     func start() {
+        if !organizationCountsAndLimits.canAddCollaboration() {
+            onStop?(nil, nil)
+            OrganizationLimitsCardViewController(organizationCountsAndLimits)
+                .installAndShowCard(in: canvasContainer)
+            return
+        }
+
         if isDuplicatingPin {
             showPinPlacementUI()
         } else {

@@ -34,6 +34,7 @@ import UniformTypeIdentifiers
 /// All subviews and cards are added to this view controller view.
 class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     unowned let model: ProjectModel
+    let organizationCountsAndLimits: OrganizationCountsAndLimits
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
     unowned let userSettings: UserSettings
@@ -77,6 +78,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
     ///     - canvas: - the flow will operate on this canvas
     init(
         model: ProjectModel,
+        organizationCountsAndLimits: OrganizationCountsAndLimits,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
@@ -84,6 +86,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         canvasContainer: CanvasContainerViewController
     ) {
         self.model = model
+        self.organizationCountsAndLimits = organizationCountsAndLimits
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
@@ -409,6 +412,7 @@ extension CollaborationFlowController {
         }
         addPhotosFlow = AddPhotoFlowController(
             model: model,
+            organizationCountsAndLimits: organizationCountsAndLimits,
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
@@ -478,6 +482,12 @@ extension CollaborationFlowController {
 
 extension CollaborationFlowController: UIDocumentPickerDelegate {
     func addAttachmentAction() {
+        if !organizationCountsAndLimits.canAddUpload() {
+            OrganizationLimitsCardViewController(organizationCountsAndLimits)
+                .installAndShowCard(in: canvasContainer)
+            return
+        }
+
         var contentTypes = [UTType.jpeg, UTType.png, UTType.pdf]
         if let docxType = UTType(mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
             contentTypes.append(docxType)
