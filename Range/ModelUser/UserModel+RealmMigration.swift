@@ -13,9 +13,10 @@ extension UserModel {
             migrateToSchemaVersion5(migration)
         }
 
-        // v7 introduces User.jobTitle, User.language and Organization.industry
-        // v8 introduces Organization.icon
-        // v9 introduces Invitation.inviteeEmail,organizationRole,projectIds,resentTimestamp and acceptedTimestamp
+        // v7: User.jobTitle, User.language and Organization.industry
+        // v8: Organization.icon
+        // v9: Invitation.inviteeEmail,organizationRole,projectIds,resentTimestamp and acceptedTimestamp
+        // v10: Organization.plan, limitsAndCounts
     }
 
     /// v5 replaces Participant with User

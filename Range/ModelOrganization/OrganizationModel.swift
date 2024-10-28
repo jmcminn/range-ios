@@ -57,14 +57,15 @@ class OrganizationModel: NSObject, RealmModel {
         self.organizationId = organizationId
         firestore = Firestore.firestore()
         var config = Realm.Configuration.defaultConfiguration
-        // v3 introduces Organization.industry
-        // v4 introduces ProjectSummary.projectType
-        // v5 introduces ProjectSummary.organizationId
-        // v6 introduces ProjectSummary.identifier and Collaboration.identifier
-        // v7 introduces ProjectSummary.statusTaskCounts
-        // v8 introduces Organization.icon
-        // v9 introduces ProjectSummary.isArchived
-        config.schemaVersion = 9
+        // v3:  Organization.industry
+        // v4:  ProjectSummary.projectType
+        // v5:  ProjectSummary.organizationId
+        // v6:  ProjectSummary.identifier and Collaboration.identifier
+        // v7:  ProjectSummary.statusTaskCounts
+        // v8:  Organization.icon
+        // v9:  ProjectSummary.isArchived
+        // v10: Organization.plan, limitsAndCounts
+        config.schemaVersion = 10
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")

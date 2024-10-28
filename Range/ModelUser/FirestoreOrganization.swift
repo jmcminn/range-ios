@@ -13,14 +13,26 @@ struct FirestoreOrganization: Decodable, FirestoreToRealmSyncable {
     var icon: String?
     /// address
     var projectIds: [String]
+    /// plan
+    var plan: String
+    /// limitsAndCounts
+    var limitsAndCounts: [String: Int64]?
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case name, industry, icon, projectIds = "projects"
+        case name, industry, icon, limitsAndCounts, plan, projectIds = "projects"
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
-        let organization = Organization(id: id, name: name, industry: industry, icon: icon, projectIds: projectIds)
+        let organization = Organization(
+            id: id,
+            name: name,
+            industry: industry,
+            icon: icon,
+            plan: plan,
+            projectIds: projectIds,
+            limitsAndCounts: limitsAndCounts ?? [:]
+        )
         realm.add(organization, update: .modified)
     }
 }

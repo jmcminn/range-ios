@@ -14,6 +14,20 @@ class Organization: Object, WithId {
     @Persisted var icon: String?
     /// array of all projects ids of this organization (user may not have access to all of them)
     @Persisted var projectIds: List<String>
+    /// Organization Plan, iOS doesn't care about the actual plan so it's a String and not enum (only to be displayed in UI)
+    /// Optional so the current offline data doesn't need migration
+    @Persisted var plan: String?
+    //
+    //         int    collaborationCountLimit
+    //         int    uploadCountLimit
+    //         int    uploadStorageBytesLimit
+    //         int    userAndInvitationCountLimit
+    //
+    //         int    collaborationCount
+    //         int    uploadCount
+    //         int    uploadStorageBytesCount
+    //         int    userAndInvitationCount
+    @Persisted var limitsAndCounts: Map<String, Int64>
 
     lazy var iconImage: UIImage? = icon
         .flatMap { URL(string: $0) }
@@ -26,13 +40,23 @@ class Organization: Object, WithId {
     }
 
     /// Initializer to init all the fields of object.
-    init(id: String, name: String, industry: String, icon: String? = nil, projectIds: [String] = []) {
+    init(
+        id: String,
+        name: String,
+        industry: String,
+        icon: String? = nil,
+        plan: String,
+        projectIds: [String] = [],
+        limitsAndCounts: [String: Int64] = [:]
+    ) {
         super.init()
         self.id = id
         self.name = name
         self.industry = industry
         self.icon = icon
+        self.plan = plan
         self.projectIds.append(objectsIn: projectIds)
+        self.limitsAndCounts.merge(limitsAndCounts) { _, new in new }
     }
 
     /// Equality based on id
