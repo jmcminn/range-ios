@@ -17,6 +17,7 @@ extension UserModel {
         // v8: Organization.icon
         // v9: Invitation.inviteeEmail,organizationRole,projectIds,resentTimestamp and acceptedTimestamp
         // v10: Organization.plan, limitsAndCounts
+        // v11: Organization.isDisabled
     }
 
     /// v5 replaces Participant with User

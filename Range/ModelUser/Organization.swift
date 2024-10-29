@@ -28,6 +28,8 @@ class Organization: Object, WithId {
     //         int    uploadStorageBytesCount
     //         int    userAndInvitationCount
     @Persisted var limitsAndCounts: Map<String, Int64>
+    /// whether the organization is disabled and the whole UI for this org should be blocked
+    @Persisted var isDisabled: Bool
 
     lazy var iconImage: UIImage? = icon
         .flatMap { URL(string: $0) }
@@ -47,7 +49,8 @@ class Organization: Object, WithId {
         icon: String? = nil,
         plan: String,
         projectIds: [String] = [],
-        limitsAndCounts: [String: Int64] = [:]
+        limitsAndCounts: [String: Int64] = [:],
+        isDisabled: Bool = false
     ) {
         super.init()
         self.id = id
@@ -57,6 +60,7 @@ class Organization: Object, WithId {
         self.plan = plan
         self.projectIds.append(objectsIn: projectIds)
         self.limitsAndCounts.merge(limitsAndCounts) { _, new in new }
+        self.isDisabled = isDisabled
     }
 
     /// Equality based on id

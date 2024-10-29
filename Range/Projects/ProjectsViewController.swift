@@ -13,7 +13,7 @@ class ProjectsViewController: UIViewController {
     let filters: ProjectFilters
 
     private var tableView: UITableView!
-    private var emptyStateViewController: UIHostingController<ProjectsEmptyStateView>?
+    private var emptyStateViewController: UIViewController?
 
     /// label shown as title view for navigation bar
     private let titleLabel = UILabel()
@@ -37,6 +37,7 @@ class ProjectsViewController: UIViewController {
 
     /// Token for observing changes in projects
     private var notificationToken: NotificationToken?
+    private var organizationNotificationToken: NotificationToken?
 
     let searchController = UISearchController()
 
@@ -115,6 +116,7 @@ class ProjectsViewController: UIViewController {
         setupFiltersIndicatorBadge()
 
         observeCurrentUser()
+        observeOrganization()
         observeProjects()
         tableView.reloadData()
         updateEmptyStateView()
@@ -136,6 +138,12 @@ class ProjectsViewController: UIViewController {
         currentUserNotificationToken = model.currentUser.observe { [weak self] _ in
             self?.updateButtonsState()
             self?.tableView.reloadData()
+        }
+    }
+
+    private func observeOrganization() {
+        organizationNotificationToken = model.organization.observe { [weak self] _ in
+            self?.updateEmptyStateView()
         }
     }
 
@@ -295,14 +303,29 @@ class ProjectsViewController: UIViewController {
     private func updateEmptyStateView() {
         guard !model.currentUser.isInvalidated else { return }
 
-        if projects.isEmpty {
+        if let emptyStateViewController {
+            remove(childController: emptyStateViewController)
+        }
+        
+        if model.organization.isDisabled {
+            tabBarController?.tabBar.isHidden = true
             navigationItem.searchController = nil
+            navigationItem.titleView?.isHidden = true
+            tableView.isHidden = true
+            createProjectButton.isHidden = true
+            let emptyStateView = OrganizationDisabledView(organizationName: model.organization.name)
+            emptyStateViewController = UIHostingController(rootView: emptyStateView)
+            add(childController: emptyStateViewController!)
+            emptyStateViewController!.view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        } else if projects.isEmpty {
+            tabBarController?.tabBar.isHidden = true
+            navigationItem.searchController = nil
+            navigationItem.titleView?.isHidden = false
             tableView.isHidden = true
             createProjectButton.isHidden = true
 
-            if let emptyStateViewController = emptyStateViewController {
-                remove(childController: emptyStateViewController)
-            }
             let emptyState: ProjectsEmptyStateView.State = model.currentUser.organizationRole == .Admin
                 ? .noProjectsAdmin
                 : .noProjectsCollaborator
@@ -320,12 +343,11 @@ class ProjectsViewController: UIViewController {
                 make.edges.equalToSuperview()
             }
         } else {
+            tabBarController?.tabBar.isHidden = false
             navigationItem.searchController = searchController
+            navigationItem.titleView?.isHidden = false
             tableView.isHidden = false
             createProjectButton.isHidden = !model.currentUser.canCreateProject()
-            if let emptyStateViewController = emptyStateViewController {
-                remove(childController: emptyStateViewController)
-            }
         }
     }
 

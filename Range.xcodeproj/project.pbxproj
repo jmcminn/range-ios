@@ -146,6 +146,7 @@
 		0A34C18F2846134000BEDC7C /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C18E2846134000BEDC7C /* Upload.swift */; };
 		0A34C1912846190A00BEDC7C /* FirestoreUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C1902846190900BEDC7C /* FirestoreUpload.swift */; };
 		0A34C19328461ADB00BEDC7C /* FirestoreUploadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */; };
+		0A34DEC02CD12E6C0024736E /* OrganizationDisabledView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34DEBF2CD12E6C0024736E /* OrganizationDisabledView.swift */; };
 		0A3526152C87A665001D49B5 /* ProjectFiltersCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3526142C87A665001D49B5 /* ProjectFiltersCardViewController.swift */; };
 		0A35A7F02C75EF0700B81C5A /* UserDataSyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */; };
 		0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */; };
@@ -669,6 +670,7 @@
 		0A34C18E2846134000BEDC7C /* Upload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		0A34C1902846190900BEDC7C /* FirestoreUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpload.swift; sourceTree = "<group>"; };
 		0A34C19228461ADB00BEDC7C /* FirestoreUploadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUploadTest.swift; sourceTree = "<group>"; };
+		0A34DEBF2CD12E6C0024736E /* OrganizationDisabledView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationDisabledView.swift; sourceTree = "<group>"; };
 		0A3526142C87A665001D49B5 /* ProjectFiltersCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectFiltersCardViewController.swift; sourceTree = "<group>"; };
 		0A35A7EF2C75EF0700B81C5A /* UserDataSyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataSyncState.swift; sourceTree = "<group>"; };
 		0A3680D829ED7CE700CD1D98 /* EditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -2207,6 +2209,7 @@
 				0A45C6962C889D4D00E923DA /* ProjectFilters.swift */,
 				0A3526142C87A665001D49B5 /* ProjectFiltersCardViewController.swift */,
 				0A0C100D2CA55F6E00807DBD /* DeleteProjectConfirmationCardViewController.swift */,
+				0A34DEBF2CD12E6C0024736E /* OrganizationDisabledView.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -2904,6 +2907,7 @@
 				0AF89B572A1281DA00E49F40 /* GeometryArchivedFeedItemCell.swift in Sources */,
 				0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */,
 				0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */,
+				0A34DEC02CD12E6C0024736E /* OrganizationDisabledView.swift in Sources */,
 				0A38768A2C0621BC00A4CA5B /* PendingActionsV1Migration.swift in Sources */,
 				0A632EAC27E49636001A019B /* AppDelegate.swift in Sources */,
 				0A7393732A5D99A20079A7FB /* SVGPathDLexer.swift in Sources */,

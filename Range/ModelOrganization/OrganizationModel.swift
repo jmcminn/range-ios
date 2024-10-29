@@ -65,7 +65,8 @@ class OrganizationModel: NSObject, RealmModel {
         // v8:  Organization.icon
         // v9:  ProjectSummary.isArchived
         // v10: Organization.plan, limitsAndCounts
-        config.schemaVersion = 10
+        // v11: Organization.isDisabled
+        config.schemaVersion = 11
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")
