@@ -1,4 +1,3 @@
-// TODO: check local organization state based on PendingActions for all org projects?
 class OrganizationCountsAndLimits {
     let userModel: UserModel
     let pendingActionsModel: PendingActionsModel
@@ -13,27 +12,33 @@ class OrganizationCountsAndLimits {
     }
 
     // Check if Collaboration limits are still met.
-    // Currently does not account for local-only (offline) data. So while offline you can add
-    // infinite number of collaborations as long as the limits are not reached initially.
+    // Checks the current count reported by organization and number of pending (local) collaborations
     func canAddCollaboration() -> Bool {
         guard let organization else { return false }
 
         guard let collaborationCount = organization.limitsAndCounts["collaborationCount"],
               let collaborationLimit = organization.limitsAndCounts["collaborationCountLimit"] else { return true }
-        if collaborationCount >= collaborationLimit { return false }
+
+        let pendingCollaborationCreates = Int64(pendingActionsModel
+            .getCollaborationCreatesCount(forProjectIds: Array(organization.projectIds)))
+
+        if collaborationCount + pendingCollaborationCreates >= collaborationLimit { return false }
 
         return true
     }
 
     // Check if Upload limits are still met.
-    // Currently does not account for local-only (offline) data. So while offline you can add
-    // infinite number of uploads as long as the limits are not reached initially.
+    // Checks the current count reported by organization and number of pending (local) uploads
     func canAddUpload() -> Bool {
         guard let organization else { return false }
 
         guard let uploadCount = organization.limitsAndCounts["uploadCount"],
               let uploadLimit = organization.limitsAndCounts["uploadCountLimit"] else { return true }
-        if uploadCount >= uploadLimit { return false }
+
+        let pendingUploadCreates = Int64(pendingActionsModel
+            .getUploadCreatesCount(forProjectIds: Array(organization.projectIds)))
+
+        if uploadCount + pendingUploadCreates >= uploadLimit { return false }
 
         guard let uploadStorageBytesCount = organization.limitsAndCounts["uploadStorageBytesCount"],
               let uploadStorageBytesLimit = organization.limitsAndCounts["uploadStorageBytesLimit"] else { return true }

@@ -21,6 +21,16 @@ class PendingActionsModel: ObservableObject {
     {
         fatalError("function to be implemented by subclasses")
     }
+    
+    /// Get number of locally created Collaborations not synced yet to backend
+    func getCollaborationCreatesCount(forProjectIds _: [String]) -> Int {
+        fatalError("function to be implemented by subclasses")
+    }
+    
+    /// Get number of locally created Uploads not synced yet to backend
+    func getUploadCreatesCount(forProjectIds _: [String]) -> Int {
+        fatalError("function to be implemented by subclasses")
+    }
 
     init() {
         hasPendingActions = false

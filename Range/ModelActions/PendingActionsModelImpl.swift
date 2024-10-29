@@ -116,6 +116,45 @@ class PendingActionsModelImpl: PendingActionsModel {
         }
     }
 
+    override func getCollaborationCreatesCount(forProjectIds projectIds: [String]) -> Int {
+        let actionsData = pendingActions()
+        let actions: [Action] = actionsData
+            .compactMap {
+                do {
+                    return try jsonDecoder.decode(Action.self, from: $0)
+                } catch {
+                    Logger.pendingActions.error("Couldn't decode pending action \($0).")
+                    return nil
+                }
+            }
+            .filter { projectIds.contains($0.projectId) }
+            .filter { $0.command.localCommand is CreateCollaborationCommand }
+        return actions.count
+    }
+
+    override func getUploadCreatesCount(forProjectIds projectIds: [String]) -> Int {
+        let actionsData = pendingActions()
+        let actions: [Action] = actionsData
+            .compactMap {
+                do {
+                    return try jsonDecoder.decode(Action.self, from: $0)
+                } catch {
+                    Logger.pendingActions.error("Couldn't decode pending action \($0).")
+                    return nil
+                }
+            }
+            .filter { projectIds.contains($0.projectId) }
+        // count CreateUploadCommand
+        let uploadsCount = actions.filter { $0.command.localCommand is CreateUploadCommand }.count
+        // count uploads created when creating collaboration
+        let uploadsCountInCreateCollaboration = actions
+            .compactMap { $0.command.localCommand as? CreateCollaborationCommand }
+            .map { $0.uploads.count }
+            .reduce(0, +)
+        
+        return uploadsCount + uploadsCountInCreateCollaboration
+    }
+
     /// Starts synchronization - observe network and perform any pending actions
     func start() {
         // check if there are any pending actions
@@ -233,7 +272,7 @@ class PendingActionsModelImpl: PendingActionsModel {
         guard !stopped else { return }
         // action is performing, do nothing
         guard !performingAction else { return }
-        
+
         // get 1st action data
         guard let actionData = pendingActions().first else { return }
 
