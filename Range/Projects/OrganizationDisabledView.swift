@@ -5,7 +5,7 @@ struct OrganizationDisabledView: View {
     var organizationName: String
     
     func messageAttributedString() -> AttributedString {
-        let supportEmail = "info@range.io"
+        let supportEmail = "support@range.io"
         var text =
             AttributedString(
                 "We are unable to support free users indefinitely. Please contact us at \(supportEmail) so that we can migrate your Organization to a paid plan in order to continue using Range."
