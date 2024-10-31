@@ -4,12 +4,12 @@ class OrganizationLimitsCardViewController: SheetCardViewController {
     private let bgView = UIView()
     private let label = UILabel()
 
-    init(_ countsAndLimits: OrganizationCountsAndLimits) {
+    init(_ limitsAndCounts: OrganizationLimitsAndCounts) {
         super.init(
             icon: UIImage(systemName: "exclamationmark.triangle"),
-            title: "\(countsAndLimits.organization?.plan ?? "Organization") Plan Limits Reached"
+            title: "\(limitsAndCounts.organization?.plan ?? "Organization") Plan Limits Reached"
         )
-        let planString = countsAndLimits.organization?.plan?.lowercased() ?? "free"
+        let planString = limitsAndCounts.organization?.plan?.lowercased() ?? "free"
         label.text =
             "Your Organization has reached the limits of the \(planString) plan on Range. Use a web browser to visit Range.io to compare and upgrade your Range plan."
     }

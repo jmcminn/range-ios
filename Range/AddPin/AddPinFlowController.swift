@@ -4,7 +4,7 @@ import UIKit
 /// Manages the flow of adding new pin or moving an existing collaboration
 class AddPinFlowController {
     unowned let model: ProjectModel
-    let organizationCountsAndLimits: OrganizationCountsAndLimits
+    let organizationLimitsAndCounts: OrganizationLimitsAndCounts
     let userPreferences: UserPreferences
     unowned let canvasContainer: CanvasContainerViewController
     private let controls: ProjectCanvasControls
@@ -36,12 +36,12 @@ class AddPinFlowController {
     ///     - canvas: - the flow will operate on this canvas
     init(
         model: ProjectModel,
-        organizationCountsAndLimits: OrganizationCountsAndLimits,
+        organizationLimitsAndCounts: OrganizationLimitsAndCounts,
         userPreferences: UserPreferences,
         canvasContainer: CanvasContainerViewController
     ) {
         self.model = model
-        self.organizationCountsAndLimits = organizationCountsAndLimits
+        self.organizationLimitsAndCounts = organizationLimitsAndCounts
         self.userPreferences = userPreferences
         self.canvasContainer = canvasContainer
         controls = ProjectCanvasControls(canvasContainer: canvasContainer)
@@ -59,9 +59,9 @@ class AddPinFlowController {
 
     /// Show the UI for pin selection
     func start() {
-        if !organizationCountsAndLimits.canAddCollaboration() {
+        if !organizationLimitsAndCounts.canAddCollaboration() {
             onStop?(nil, nil)
-            OrganizationLimitsCardViewController(organizationCountsAndLimits)
+            OrganizationLimitsCardViewController(organizationLimitsAndCounts)
                 .installAndShowCard(in: canvasContainer)
             return
         }

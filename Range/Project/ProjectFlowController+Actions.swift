@@ -215,7 +215,7 @@ extension ProjectFlowController: ProjectFlowActions {
         let fromMedia = event.source == .media
         fullscreenMediaVC = FullscreenMediaCardViewController(
             projectModel: model,
-            organizationCountsAndLimits: organizationCountsAndLimits,
+            organizationLimitsAndCounts: organizationLimitsAndCounts,
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
@@ -932,7 +932,7 @@ extension ProjectFlowController {
         let collaboration = event?.object as? Collaboration
 
         canvasSnapshotFlow = CanvasSnapshotFlowController(
-            collaboration: collaboration, model: model, organizationCountsAndLimits: organizationCountsAndLimits,
+            collaboration: collaboration, model: model, organizationLimitsAndCounts: organizationLimitsAndCounts,
             localFiles: localFiles, mediaCache: mediaCache, userSettings: userSettings,
             userPreferences: userPreferences, canvasContainer: canvasContainer
         )

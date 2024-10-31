@@ -20,7 +20,7 @@ class ProjectsFlowController: UINavigationController {
     let pendingUploadsModel: FirebasePendingUploadsModel
     let pendingActionsModel: PendingActionsModelImpl
     let userDataSyncState: UserDataSyncState
-    let organizationCountsAndLimits: OrganizationCountsAndLimits
+    let organizationLimitsAndCounts: OrganizationLimitsAndCounts
 
     var onSignedOut: (() -> Void)?
 
@@ -73,7 +73,7 @@ class ProjectsFlowController: UINavigationController {
             pendingActionsModel: pendingActionsModel,
             pendingUploadsModel: pendingUploadsModel
         )
-        organizationCountsAndLimits = OrganizationCountsAndLimits(
+        organizationLimitsAndCounts = OrganizationLimitsAndCounts(
             userModel: userModel,
             pendingActionsModel: pendingActionsModel
         )
@@ -426,7 +426,7 @@ class ProjectsFlowController: UINavigationController {
             pendingUploadsModel: pendingUploadsModel,
             pendingActionsModel: pendingActionsModel,
             userDataSyncState: userDataSyncState,
-            organizationCountsAndLimits: organizationCountsAndLimits,
+            organizationLimitsAndCounts: organizationLimitsAndCounts,
             userSettings: userSettings,
             userPreferences: userPreferences,
             initialRoute: initialRoute

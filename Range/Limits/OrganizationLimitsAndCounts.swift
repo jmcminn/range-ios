@@ -1,4 +1,4 @@
-class OrganizationCountsAndLimits {
+class OrganizationLimitsAndCounts {
     let userModel: UserModel
     let pendingActionsModel: PendingActionsModel
 

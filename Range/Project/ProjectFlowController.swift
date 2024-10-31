@@ -35,7 +35,7 @@ final class ProjectFlowController: UIViewController {
     let canvasFileLoader: CanvasFileLoader
     let userModel: UserModel
     let model: ProjectModel
-    let organizationCountsAndLimits: OrganizationCountsAndLimits
+    let organizationLimitsAndCounts: OrganizationLimitsAndCounts
     let modelFirestoreSync: ProjectModelFirestoreSync
     let userDataSyncState: UserDataSyncState
 
@@ -135,7 +135,7 @@ final class ProjectFlowController: UIViewController {
         pendingUploadsModel: PendingUploadsModel,
         pendingActionsModel: PendingActionsModel,
         userDataSyncState: UserDataSyncState,
-        organizationCountsAndLimits: OrganizationCountsAndLimits,
+        organizationLimitsAndCounts: OrganizationLimitsAndCounts,
         userSettings: UserSettings,
         userPreferences: UserPreferences,
         initialRoute: ProjectRoute?
@@ -155,7 +155,7 @@ final class ProjectFlowController: UIViewController {
             pendingActionsModel: pendingActionsModel
         )
         self.userDataSyncState = userDataSyncState
-        self.organizationCountsAndLimits = organizationCountsAndLimits
+        self.organizationLimitsAndCounts = organizationLimitsAndCounts
         try await model.start()
 
         modelFirestoreSync = ProjectModelFirestoreSync(model: model)
@@ -186,7 +186,7 @@ final class ProjectFlowController: UIViewController {
         )
         collaborationFlow = CollaborationFlowController(
             model: model,
-            organizationCountsAndLimits: organizationCountsAndLimits,
+            organizationLimitsAndCounts: organizationLimitsAndCounts,
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
@@ -722,7 +722,7 @@ extension ProjectFlowController {
     private func startAddPhotoFlow() {
         addPhotoFlow = AddPhotoFlowController(
             model: model,
-            organizationCountsAndLimits: organizationCountsAndLimits,
+            organizationLimitsAndCounts: organizationLimitsAndCounts,
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,
@@ -749,7 +749,7 @@ extension ProjectFlowController {
     func startAddPinFlow(duplicatedCollaboration: Collaboration? = nil) {
         addPinFlow = AddPinFlowController(
             model: model,
-            organizationCountsAndLimits: organizationCountsAndLimits,
+            organizationLimitsAndCounts: organizationLimitsAndCounts,
             userPreferences: userPreferences,
             canvasContainer: canvasContainer
         )

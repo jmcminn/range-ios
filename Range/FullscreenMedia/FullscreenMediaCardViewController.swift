@@ -31,7 +31,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     private weak var presentingView: UIView?
 
     private let projectModel: ProjectModel
-    let organizationCountsAndLimits: OrganizationCountsAndLimits
+    let organizationLimitsAndCounts: OrganizationLimitsAndCounts
     unowned let localFiles: LocalFiles
     private let mediaCache: MediaCache
     private let userSettings: UserSettings
@@ -72,7 +72,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
     /// Initializer
     init(
         projectModel: ProjectModel,
-        organizationCountsAndLimits: OrganizationCountsAndLimits,
+        organizationLimitsAndCounts: OrganizationLimitsAndCounts,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
@@ -83,7 +83,7 @@ class FullscreenMediaCardViewController: UIViewController, NonModalCardCoordinat
         canvasContainer: CanvasContainerViewController
     ) {
         self.projectModel = projectModel
-        self.organizationCountsAndLimits = organizationCountsAndLimits
+        self.organizationLimitsAndCounts = organizationLimitsAndCounts
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
@@ -558,7 +558,7 @@ extension FullscreenMediaCardViewController {
         }
         updatePhotoFlow = AddPhotoFlowController(
             model: projectModel,
-            organizationCountsAndLimits: organizationCountsAndLimits,
+            organizationLimitsAndCounts: organizationLimitsAndCounts,
             localFiles: localFiles,
             mediaCache: mediaCache,
             userSettings: userSettings,

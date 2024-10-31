@@ -74,7 +74,7 @@
 		0A187AEB2A7BFE5000EC179C /* FirestoreOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AEA2A7BFE5000EC179C /* FirestoreOrganization.swift */; };
 		0A187AED2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AEC2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift */; };
 		0A187AEF2A7FAE4F00EC179C /* OrganizationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */; };
-		0A18D04B2CCF7F5300722C83 /* OrganizationCountsAndLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18D04A2CCF7F4900722C83 /* OrganizationCountsAndLimits.swift */; };
+		0A18D04B2CCF7F5300722C83 /* OrganizationLimitsAndCounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18D04A2CCF7F4900722C83 /* OrganizationLimitsAndCounts.swift */; };
 		0A1935322938C1E2000E8BF8 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935312938C1E2000E8BF8 /* AvatarView.swift */; };
 		0A1935342938F66B000E8BF8 /* MediaCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */; };
 		0A1CBCE62A813ED9003EBE74 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1CBCE52A813ED9003EBE74 /* FirebaseFunctions */; };
@@ -593,7 +593,7 @@
 		0A187AEA2A7BFE5000EC179C /* FirestoreOrganization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreOrganization.swift; sourceTree = "<group>"; };
 		0A187AEC2A7FAD5700EC179C /* OrganizationSelectorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationSelectorCardViewController.swift; sourceTree = "<group>"; };
 		0A187AEE2A7FAE4F00EC179C /* OrganizationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationTableViewCell.swift; sourceTree = "<group>"; };
-		0A18D04A2CCF7F4900722C83 /* OrganizationCountsAndLimits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationCountsAndLimits.swift; sourceTree = "<group>"; };
+		0A18D04A2CCF7F4900722C83 /* OrganizationLimitsAndCounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationLimitsAndCounts.swift; sourceTree = "<group>"; };
 		0A1935312938C1E2000E8BF8 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		0A1935332938F66B000E8BF8 /* MediaCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionHeaderView.swift; sourceTree = "<group>"; };
 		0A1F1B792A288D1D00A2E613 /* AnnotationsDevSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsDevSettings.swift; sourceTree = "<group>"; };
@@ -1492,7 +1492,7 @@
 		0A44F9F72CCBB65C005DFE54 /* Limits */ = {
 			isa = PBXGroup;
 			children = (
-				0A18D04A2CCF7F4900722C83 /* OrganizationCountsAndLimits.swift */,
+				0A18D04A2CCF7F4900722C83 /* OrganizationLimitsAndCounts.swift */,
 				0A44F9F82CCBB679005DFE54 /* OrganizationLimitsCardViewController.swift */,
 			);
 			path = Limits;
@@ -2827,7 +2827,7 @@
 				0A7121B8290EE2DC0013E2F8 /* Date+Utils.swift in Sources */,
 				0A83D90E2AB0BF20003A8DCE /* ResetPasswordView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirestoreParticipant.swift in Sources */,
-				0A18D04B2CCF7F5300722C83 /* OrganizationCountsAndLimits.swift in Sources */,
+				0A18D04B2CCF7F5300722C83 /* OrganizationLimitsAndCounts.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A5957112AFD29C40047E669 /* ArrowAnnotationView.swift in Sources */,
 				0A6FAC3B28B7E1F30057995B /* ImageGalleryViewController.swift in Sources */,

@@ -10,7 +10,7 @@ import UIKit
 class CanvasSnapshotFlowController {
     let geometryId: String?
     let model: ProjectModel
-    let organizationCountsAndLimits: OrganizationCountsAndLimits
+    let organizationLimitsAndCounts: OrganizationLimitsAndCounts
     let localFiles: LocalFiles
     let mediaCache: MediaCache
     let userSettings: UserSettings
@@ -32,7 +32,7 @@ class CanvasSnapshotFlowController {
     init?(
         collaboration: Collaboration?,
         model: ProjectModel,
-        organizationCountsAndLimits: OrganizationCountsAndLimits,
+        organizationLimitsAndCounts: OrganizationLimitsAndCounts,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
@@ -45,7 +45,7 @@ class CanvasSnapshotFlowController {
             geometryId = nil
         }
         self.model = model
-        self.organizationCountsAndLimits = organizationCountsAndLimits
+        self.organizationLimitsAndCounts = organizationLimitsAndCounts
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
@@ -55,9 +55,9 @@ class CanvasSnapshotFlowController {
 
     /// Show the UI for canvas snapshot
     func start() {
-        if !organizationCountsAndLimits.canAddUpload() {
+        if !organizationLimitsAndCounts.canAddUpload() {
             onStop?(nil, nil, nil)
-            OrganizationLimitsCardViewController(organizationCountsAndLimits)
+            OrganizationLimitsCardViewController(organizationLimitsAndCounts)
                 .installAndShowCard(in: canvasContainer)
             return
         }
@@ -136,7 +136,7 @@ class CanvasSnapshotFlowController {
 
                 let addPhotoFlow = AddPhotoFlowController(
                     model: model,
-                    organizationCountsAndLimits: organizationCountsAndLimits,
+                    organizationLimitsAndCounts: organizationLimitsAndCounts,
                     localFiles: localFiles,
                     mediaCache: mediaCache,
                     userSettings: userSettings,

@@ -10,7 +10,7 @@ import UIKit
 /// Manages the flow of taking photo, adding details like tags and description and assigning the location on the canvas
 class AddPhotoFlowController {
     unowned let model: ProjectModel
-    let organizationCountsAndLimits: OrganizationCountsAndLimits
+    let organizationLimitsAndCounts: OrganizationLimitsAndCounts
     unowned let localFiles: LocalFiles
     unowned let mediaCache: MediaCache
     unowned let userSettings: UserSettings
@@ -97,7 +97,7 @@ class AddPhotoFlowController {
     ///     - canvas: - the flow will operate on this canvas
     init(
         model: ProjectModel,
-        organizationCountsAndLimits: OrganizationCountsAndLimits,
+        organizationLimitsAndCounts: OrganizationLimitsAndCounts,
         localFiles: LocalFiles,
         mediaCache: MediaCache,
         userSettings: UserSettings,
@@ -105,7 +105,7 @@ class AddPhotoFlowController {
         canvasContainer: CanvasContainerViewController
     ) {
         self.model = model
-        self.organizationCountsAndLimits = organizationCountsAndLimits
+        self.organizationLimitsAndCounts = organizationLimitsAndCounts
         self.localFiles = localFiles
         self.mediaCache = mediaCache
         self.userSettings = userSettings
@@ -121,8 +121,8 @@ class AddPhotoFlowController {
 
     /// Attempts to start the photo flow. Will callback the `onStarted`on the main queue with the result
     func start(onStarted: @escaping (Bool) -> Void) {
-        if !organizationCountsAndLimits.canAddUpload() {
-            OrganizationLimitsCardViewController(organizationCountsAndLimits)
+        if !organizationLimitsAndCounts.canAddUpload() {
+            OrganizationLimitsCardViewController(organizationLimitsAndCounts)
                 .installAndShowCard(in: canvasContainer)
             return
         }
@@ -768,8 +768,8 @@ extension AddPhotoFlowController {
 
             if self.pinsDisplay?.selectedPin == nil {
                 // we will create a new pin, check the limits
-                if !organizationCountsAndLimits.canAddCollaboration() {
-                    OrganizationLimitsCardViewController(organizationCountsAndLimits)
+                if !organizationLimitsAndCounts.canAddCollaboration() {
+                    OrganizationLimitsCardViewController(organizationLimitsAndCounts)
                         .installAndShowCard(in: canvasContainer)
                     return
                 }
