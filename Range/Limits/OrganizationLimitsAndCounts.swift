@@ -10,6 +10,19 @@ class OrganizationLimitsAndCounts {
         self.userModel = userModel
         self.pendingActionsModel = pendingActionsModel
     }
+    
+    // Check if Project limits are still met.
+    // The current project count is take from Organization.projects (there's no projectCount maintained)
+    func canAddProject() -> Bool {
+        guard let organization else { return false }
+        guard let projectLimit = organization.limitsAndCounts["projectCountLimit"] else { return true }
+
+        let projectCount = organization.projectIds.count
+        
+        if projectCount >= projectLimit { return false }
+        
+        return true
+    }
 
     // Check if Collaboration limits are still met.
     // Checks the current count reported by organization and number of pending (local) collaborations

@@ -18,6 +18,12 @@ import UIKit
 
 extension ProjectsFlowController: ProjectsFlowActions {
     func createProjectAction() {
+        if !organizationLimitsAndCounts.canAddProject() {
+            OrganizationLimitsCardViewController(organizationLimitsAndCounts)
+                .installAndShowCard(in: self)
+            return
+        }
+        
         guard let organizationModel = userModel.currentOrganizationModel else { return }
         let createProjectFC = CreateProjectFlowController(organizationModel)
         createProjectFC.onCancelled = { [weak createProjectFC] in
