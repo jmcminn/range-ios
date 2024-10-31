@@ -18,6 +18,7 @@ extension UserModel {
         // v9: Invitation.inviteeEmail,organizationRole,projectIds,resentTimestamp and acceptedTimestamp
         // v10: Organization.plan, limitsAndCounts
         // v11: Organization.isDisabled
+        // v12: Organization.billingErrorGracePeriodEnd
     }
 
     /// v5 replaces Participant with User

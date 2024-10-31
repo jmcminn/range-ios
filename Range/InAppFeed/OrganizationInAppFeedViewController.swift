@@ -18,6 +18,7 @@ class OrganizationInAppFeedViewController: UIViewController {
     private let headerStroke = UIView()
     private var markAllAsReadButton: RangeButton!
     private let dataSyncIndicatorView: DataSyncIndicatorView
+    private let billingErrorIndicatorView: BillingErrorIndicatorView
 
     private var subscriptions = Set<AnyCancellable>()
 
@@ -30,6 +31,7 @@ class OrganizationInAppFeedViewController: UIViewController {
             participantProvider: { userId in model.mainRealm.object(ofType: Participant.self, forPrimaryKey: userId) }
         )
         self.dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
+        self.billingErrorIndicatorView = BillingErrorIndicatorView(model.organization)
         super.init(nibName: nil, bundle: nil)
 
         model.knockFeedModel.$feed
@@ -54,6 +56,7 @@ class OrganizationInAppFeedViewController: UIViewController {
         setupOrganizationSelectorButton()
         setupMarkAllAsReadButton()
         setupDataSyncIndicatorView()
+        setupBillingErrorIndicatorView()
 
         view.backgroundColor = .dynamic(.Neutral_10)
 
@@ -161,6 +164,18 @@ class OrganizationInAppFeedViewController: UIViewController {
         view.addSubview(dataSyncIndicatorView)
         dataSyncIndicatorView.snp.makeConstraints { make in
             make.trailing.equalTo(markAllAsReadButton.snp.leading).offset(2)
+            make.centerY.equalTo(markAllAsReadButton)
+        }
+    }
+    
+    private func setupBillingErrorIndicatorView() {
+        billingErrorIndicatorView.onTapped = { [weak self] in
+            guard let self else { return }
+            OrganizationBillingErrorCardViewController(model).installAndShowCard(in: self._rootViewController())
+        }
+        view.addSubview(billingErrorIndicatorView)
+        billingErrorIndicatorView.snp.makeConstraints { make in
+            make.trailing.equalTo(dataSyncIndicatorView.snp.leading).offset(2)
             make.centerY.equalTo(markAllAsReadButton)
         }
     }

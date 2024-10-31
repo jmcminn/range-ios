@@ -9,6 +9,7 @@ import Foundation
 @dynamicMemberLookup public enum JSON: Equatable {
     case string(String)
     case number(Double)
+    case date(Date)
     case object([String:JSON])
     case array([JSON])
     case bool(Bool)
@@ -32,6 +33,8 @@ extension JSON: Codable {
             try container.encode(number)
         case let .bool(bool):
             try container.encode(bool)
+        case let .date(date):
+            try container.encode(date)
         case .null:
             try container.encodeNil()
         }
@@ -51,6 +54,8 @@ extension JSON: Codable {
             self = .bool(bool)
         } else if let number = try? container.decode(Double.self) {
             self = .number(number)
+        } else if let date = try? container.decode(Date.self) {
+            self = .date(date)
         } else if container.decodeNil() {
             self = .null
         } else {
@@ -71,6 +76,8 @@ extension JSON: CustomDebugStringConvertible {
             return num.debugDescription
         case .bool(let bool):
             return bool.description
+        case .date(let date):
+            return date.description
         case .null:
             return "null"
         default:
@@ -104,6 +111,14 @@ public extension JSON {
     /// Return the bool value if this is a `.bool`, otherwise `nil`
     var boolValue: Bool? {
         if case .bool(let value) = self {
+            return value
+        }
+        return nil
+    }
+    
+    /// Return the Date value if this is a `.date`, otherwise `nil`
+    var dateValue: Date? {
+        if case .date(let value) = self {
             return value
         }
         return nil

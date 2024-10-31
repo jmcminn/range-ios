@@ -65,6 +65,8 @@
 		0A144F492A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A144F482A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift */; };
 		0A144F4C2A4C577A000F7593 /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */; };
 		0A147E7E294C5CB700B5833A /* CollaborationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A147E7D294C5CB700B5833A /* CollaborationButton.swift */; };
+		0A15B0902CD8DF9B00D5BC1A /* BillingErrorIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A15B08F2CD8DF9B00D5BC1A /* BillingErrorIndicatorView.swift */; };
+		0A15B0922CD8E70B00D5BC1A /* OrganizationBillingErrorCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A15B0912CD8E70B00D5BC1A /* OrganizationBillingErrorCardViewController.swift */; };
 		0A17380F2C4FDC650097309A /* FirestoreFeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A17380E2C4FDC650097309A /* FirestoreFeedItem.swift */; };
 		0A18126C283230E400A8515B /* MapTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126B283230E400A8515B /* MapTooltipView.swift */; };
 		0A18126F28339EC800A8515B /* UIView+Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A18126E28339EC800A8515B /* UIView+Shadow.swift */; };
@@ -236,6 +238,7 @@
 		0A4DC79F27F7289A00712518 /* UIScrollView+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */; };
 		0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4DC7A327F7618D00712518 /* RoundShadowView.swift */; };
 		0A51A44A2AB9F049008C5B84 /* OrganizationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */; };
+		0A52D2902CD3D2B600A9DF6D /* OrganizationBlockedDueToBillingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A52D28F2CD3D2B600A9DF6D /* OrganizationBlockedDueToBillingError.swift */; };
 		0A5394272A251482008583F0 /* ScribbleAnnotationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394262A251482008583F0 /* ScribbleAnnotationViewModel.swift */; };
 		0A5394292A264685008583F0 /* AnnotationsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5394282A264685008583F0 /* AnnotationsEditor.swift */; };
 		0A540F172BD1663800992082 /* InAppFeedTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A540F162BD1663800992082 /* InAppFeedTableViewController.swift */; };
@@ -584,6 +587,8 @@
 		0A144F482A4C278D000F7593 /* FullscreenImageGalleryScrollViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageGalleryScrollViewRepresentable.swift; sourceTree = "<group>"; };
 		0A144F4B2A4C577A000F7593 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
 		0A147E7D294C5CB700B5833A /* CollaborationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollaborationButton.swift; sourceTree = "<group>"; };
+		0A15B08F2CD8DF9B00D5BC1A /* BillingErrorIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingErrorIndicatorView.swift; sourceTree = "<group>"; };
+		0A15B0912CD8E70B00D5BC1A /* OrganizationBillingErrorCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationBillingErrorCardViewController.swift; sourceTree = "<group>"; };
 		0A17380E2C4FDC650097309A /* FirestoreFeedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreFeedItem.swift; sourceTree = "<group>"; };
 		0A18126B283230E400A8515B /* MapTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTooltipView.swift; sourceTree = "<group>"; };
 		0A18126E28339EC800A8515B /* UIView+Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Shadow.swift"; sourceTree = "<group>"; };
@@ -760,6 +765,7 @@
 		0A4DC79E27F7289A00712518 /* UIScrollView+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Properties.swift"; sourceTree = "<group>"; };
 		0A4DC7A327F7618D00712518 /* RoundShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundShadowView.swift; sourceTree = "<group>"; };
 		0A51A4492AB9F049008C5B84 /* OrganizationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationModel.swift; sourceTree = "<group>"; };
+		0A52D28F2CD3D2B600A9DF6D /* OrganizationBlockedDueToBillingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationBlockedDueToBillingError.swift; sourceTree = "<group>"; };
 		0A5394262A251482008583F0 /* ScribbleAnnotationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotationViewModel.swift; sourceTree = "<group>"; };
 		0A5394282A264685008583F0 /* AnnotationsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationsEditor.swift; sourceTree = "<group>"; };
 		0A540F162BD1663800992082 /* InAppFeedTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppFeedTableViewController.swift; sourceTree = "<group>"; };
@@ -1664,7 +1670,7 @@
 			isa = PBXGroup;
 			children = (
 				0AF89B542A0CC9A100E49F40 /* BadgeView.swift */,
-				0A94E8D628CF0E6000A09616 /* RangeButton.swift */,
+				0A15B08F2CD8DF9B00D5BC1A /* BillingErrorIndicatorView.swift */,
 				0A4ADD6329423AA8006DB186 /* ControlWithTapAreaInsets.swift */,
 				0A32F0402C80BD9C0083A881 /* DataSyncIndicatorView.swift */,
 				0A48ACDA281BDABF0044E06E /* DisplayLink.swift */,
@@ -1679,10 +1685,12 @@
 				0A07D51928075CAA00B6F9A2 /* PassthroughView.swift */,
 				0A720C6928044BDB003D6B13 /* PhotoPin.swift */,
 				0A9341C529A8A50D006166C1 /* PillView.swift */,
+				0A94E8D628CF0E6000A09616 /* RangeButton.swift */,
 				0A2F330D283CE8C800D04A1C /* RoundShadowButton.swift */,
 				0A4DC7A327F7618D00712518 /* RoundShadowView.swift */,
 				0A30E8B82849E06F00A50D54 /* SearchView.swift */,
 				0A30E8B22848AFDD00A50D54 /* SegmentedControl.swift */,
+				0A59571D2B062C340047E669 /* SelfSizingCollectionView.swift */,
 				0A4995B42854C28200E571FB /* TextView.swift */,
 				0A76BEFF29CDC03D009DF0E1 /* TopIndicatorView.swift */,
 				0ADC183C29633E70007A59CA /* TopViewController.swift */,
@@ -1690,7 +1698,6 @@
 				0A2B3F602AF7E55500D3D0D2 /* UITextViewWithNoTextPadding.swift */,
 				0AD9B770286AF9DF005ACFD7 /* UITextViewWithPlaceholder.swift */,
 				0A797F73292BDEF700D63567 /* ViewWithTapAreaInsets.swift */,
-				0A59571D2B062C340047E669 /* SelfSizingCollectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2210,6 +2217,8 @@
 				0A3526142C87A665001D49B5 /* ProjectFiltersCardViewController.swift */,
 				0A0C100D2CA55F6E00807DBD /* DeleteProjectConfirmationCardViewController.swift */,
 				0A34DEBF2CD12E6C0024736E /* OrganizationDisabledView.swift */,
+				0A52D28F2CD3D2B600A9DF6D /* OrganizationBlockedDueToBillingError.swift */,
+				0A15B0912CD8E70B00D5BC1A /* OrganizationBillingErrorCardViewController.swift */,
 			);
 			path = Projects;
 			sourceTree = "<group>";
@@ -2589,6 +2598,7 @@
 				0A7393852A606CBB0079A7FB /* ScribbleAnnotation.swift in Sources */,
 				0A3831D128E42CC4001AF38A /* FirestoreUpdate.swift in Sources */,
 				0A956FB22BAB447D008E5803 /* RangeStatus.swift in Sources */,
+				0A52D2902CD3D2B600A9DF6D /* OrganizationBlockedDueToBillingError.swift in Sources */,
 				0A24A55928E192D800B5413F /* UIBezierPath+Corners.swift in Sources */,
 				0A7A537B293E4E540093D913 /* UserModel.swift in Sources */,
 				0A3680D929ED7CE700CD1D98 /* EditCollectionViewCell.swift in Sources */,
@@ -2827,6 +2837,7 @@
 				0A7121B8290EE2DC0013E2F8 /* Date+Utils.swift in Sources */,
 				0A83D90E2AB0BF20003A8DCE /* ResetPasswordView.swift in Sources */,
 				0A34C1872845FB7800BEDC7C /* FirestoreParticipant.swift in Sources */,
+				0A15B0902CD8DF9B00D5BC1A /* BillingErrorIndicatorView.swift in Sources */,
 				0A18D04B2CCF7F5300722C83 /* OrganizationLimitsAndCounts.swift in Sources */,
 				0A07D76A2812C25300B6F9A2 /* AuthFlowController.swift in Sources */,
 				0A5957112AFD29C40047E669 /* ArrowAnnotationView.swift in Sources */,
@@ -2906,6 +2917,7 @@
 				0AD02559284E652500106CA5 /* UIScrollViewDelegateProxy.swift in Sources */,
 				0AF89B572A1281DA00E49F40 /* GeometryArchivedFeedItemCell.swift in Sources */,
 				0AD9B7682869E55E005ACFD7 /* Command.swift in Sources */,
+				0A15B0922CD8E70B00D5BC1A /* OrganizationBillingErrorCardViewController.swift in Sources */,
 				0AD02557284E15A500106CA5 /* SearchAndSelectTagsHeaderViewController.swift in Sources */,
 				0A34DEC02CD12E6C0024736E /* OrganizationDisabledView.swift in Sources */,
 				0A38768A2C0621BC00A4CA5B /* PendingActionsV1Migration.swift in Sources */,

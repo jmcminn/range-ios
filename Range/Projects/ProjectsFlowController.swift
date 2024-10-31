@@ -47,6 +47,9 @@ class ProjectsFlowController: UINavigationController {
     /// combine observers for given organization
     private var organizationSubscriptions = Set<AnyCancellable>()
 
+    /// Timer used to  wait for the billing error grace period end
+    var currentOrganizationBillingErrorGracePeriodEndTimer: Timer?
+
     let projectFilters: ProjectFilters
 
     /// for monitoring network access
@@ -474,6 +477,32 @@ class ProjectsFlowController: UINavigationController {
     private func observeCurrentOrganization() {
         currentOrganizationObservation = userModel.observe(\.currentOrganizationModel) { [weak self] _, _ in
             self?.updateProjectsViewController()
+            self?.observeCurrentOrganizationBillingErrorGracePeriodEnd()
+        }
+    }
+
+    /// When the grace period ends for the billing error we need to show the blocking UI for billing error
+    private func observeCurrentOrganizationBillingErrorGracePeriodEnd() {
+        userModel.mainRealm.refresh()
+        currentOrganizationBillingErrorGracePeriodEndTimer?.invalidate()
+        guard let gracePeriodEnd = userModel.currentOrganizationModel?.organization.billingErrorGracePeriodEnd
+        else { return }
+        let timeInterval = max(0, gracePeriodEnd.timeIntervalSinceNow)
+        currentOrganizationBillingErrorGracePeriodEndTimer = Timer.scheduledTimer(
+            timeInterval: timeInterval,
+            target: self,
+            selector: #selector(currentOrganizationBillingErrorGracePeriodEnded),
+            userInfo: nil,
+            repeats: false
+        )
+    }
+
+    @objc private func currentOrganizationBillingErrorGracePeriodEnded() {
+        updateProjectsViewController()
+        if let currentOrganization = userModel.currentOrganizationModel?.organization {
+            if currentOrganization.isDisabled || currentOrganization.isBlockedDueToBillingError {
+                closeCurrentProject()
+            }
         }
     }
 
@@ -502,6 +531,12 @@ class ProjectsFlowController: UINavigationController {
             // initially it's handled when showing projects view controller, here it would be too soon from the UI layout perspective
             if case .update = change {
                 self?.autoShowOrganizationSelectorIfNeeded()
+            }
+            if let currentOrganization = self?.userModel.currentOrganizationModel?.organization {
+                if currentOrganization.isDisabled || currentOrganization.isBlockedDueToBillingError {
+                    self?.closeCurrentProject()
+                }
+                self?.observeCurrentOrganizationBillingErrorGracePeriodEnd()
             }
         }
     }

@@ -19,10 +19,17 @@ struct FirestoreOrganization: Decodable, FirestoreToRealmSyncable {
     var limitsAndCounts: [String: Int64]?
     ///
     var isDisabled: Bool?
+    //    billingError: {
+    //        type: event.type,
+    //        priority: BILLING_ERROR_PRIORITIES.CARD_DECLINED,
+    //        timestamp: Date.now(),
+    //        gracePeriodEndsTimestamp: Date.now() + 7 * 24 * 60 * 60 * 1000, // default is 7 days from now
+    //    },
+    var billingError: JSON?
 
     /// CodingKeys used by Codable as a keys in the encoded form
     private enum CodingKeys: String, CodingKey {
-        case name, industry, icon, isDisabled, limitsAndCounts, plan, projectIds = "projects"
+        case billingError, icon, industry, isDisabled, limitsAndCounts, name, plan, projectIds = "projects"
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {
@@ -34,7 +41,8 @@ struct FirestoreOrganization: Decodable, FirestoreToRealmSyncable {
             plan: plan,
             projectIds: projectIds,
             limitsAndCounts: limitsAndCounts ?? [:],
-            isDisabled: isDisabled ?? false
+            isDisabled: isDisabled ?? false,
+            billingErrorGracePeriodEnd: billingError?["gracePeriodEndsTimestamp"]?.dateValue
         )
         realm.add(organization, update: .modified)
     }

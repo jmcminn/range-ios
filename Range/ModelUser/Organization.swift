@@ -30,6 +30,15 @@ class Organization: Object, WithId {
     @Persisted var limitsAndCounts: Map<String, Int64>
     /// whether the organization is disabled and the whole UI for this org should be blocked
     @Persisted var isDisabled: Bool
+    /// billingError.gracePeriodEndsTimestamp - when present it means that a billing error is currently present for this organization
+    /// and that its grace periods ends at given date.... after this date the organization is considered disabled (although the isDisabled
+    /// flag might not necessarily be set to true).
+    @Persisted var billingErrorGracePeriodEnd: Date?
+    
+    var isBlockedDueToBillingError: Bool {
+        guard let billingErrorGracePeriodEnd else { return false }
+        return billingErrorGracePeriodEnd < Date()
+    }
 
     lazy var iconImage: UIImage? = icon
         .flatMap { URL(string: $0) }
@@ -50,7 +59,8 @@ class Organization: Object, WithId {
         plan: String,
         projectIds: [String] = [],
         limitsAndCounts: [String: Int64] = [:],
-        isDisabled: Bool = false
+        isDisabled: Bool = false,
+        billingErrorGracePeriodEnd: Date? = nil
     ) {
         super.init()
         self.id = id
@@ -61,6 +71,7 @@ class Organization: Object, WithId {
         self.projectIds.append(objectsIn: projectIds)
         self.limitsAndCounts.merge(limitsAndCounts) { _, new in new }
         self.isDisabled = isDisabled
+        self.billingErrorGracePeriodEnd = billingErrorGracePeriodEnd
     }
 
     /// Equality based on id

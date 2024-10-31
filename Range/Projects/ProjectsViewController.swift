@@ -307,7 +307,19 @@ class ProjectsViewController: UIViewController {
             remove(childController: emptyStateViewController)
         }
         
-        if model.organization.isDisabled {
+        if model.organization.isBlockedDueToBillingError {
+            tabBarController?.tabBar.isHidden = true
+            navigationItem.searchController = nil
+            navigationItem.titleView?.isHidden = true
+            tableView.isHidden = true
+            createProjectButton.isHidden = true
+            let emptyStateView = OrganizationBlockedDueToBillingError(userOrganizationRole: model.currentUser.organizationRole)
+            emptyStateViewController = UIHostingController(rootView: emptyStateView)
+            add(childController: emptyStateViewController!)
+            emptyStateViewController!.view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        } else if model.organization.isDisabled {
             tabBarController?.tabBar.isHidden = true
             navigationItem.searchController = nil
             navigationItem.titleView?.isHidden = true
@@ -402,9 +414,16 @@ class ProjectsViewController: UIViewController {
             _dataSyncInfoCard(self.userDataSyncState.state).installAndShowCard(in: self._rootViewController())
         }
 
+        let billingErrorInticatorView = BillingErrorIndicatorView(model.organization)
+        billingErrorInticatorView.onTapped = { [weak self] in
+            guard let self else { return }
+            OrganizationBillingErrorCardViewController(self.model).installAndShowCard(in: self._rootViewController())
+        }
+
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(customView: button),
             UIBarButtonItem(customView: dataSyncIndicatorView),
+            UIBarButtonItem(customView: billingErrorInticatorView),
         ]
     }
 }
