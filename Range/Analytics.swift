@@ -54,6 +54,7 @@ extension Analytics {
             "groupId": model.projectSummary.organizationId,
             "organizationRole": model.currentUser.organizationRole.rawValue,
             "platform": UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone",
+            "projectName": model.projectSummary.name,
             "canvasType": model.currentCanvas.currentCanvasSource.type.rawValue,
         ].merging(props) { _, new in new }
 
