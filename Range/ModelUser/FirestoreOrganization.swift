@@ -42,7 +42,8 @@ struct FirestoreOrganization: Decodable, FirestoreToRealmSyncable {
             projectIds: projectIds,
             limitsAndCounts: limitsAndCounts ?? [:],
             isDisabled: isDisabled ?? false,
-            billingErrorGracePeriodEnd: billingError?["gracePeriodEndsTimestamp"]?.dateValue
+            billingErrorGracePeriodEnd: billingError?["gracePeriodEndsTimestamp"]?.dateValue,
+            billingErrorPriority: Int(billingError?["priority"]?.doubleValue ?? 1.0)
         )
         realm.add(organization, update: .modified)
     }

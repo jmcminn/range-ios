@@ -306,14 +306,17 @@ class ProjectsViewController: UIViewController {
         if let emptyStateViewController {
             remove(childController: emptyStateViewController)
         }
-        
+
         if model.organization.isBlockedDueToBillingError {
             tabBarController?.tabBar.isHidden = true
             navigationItem.searchController = nil
             navigationItem.titleView?.isHidden = true
             tableView.isHidden = true
             createProjectButton.isHidden = true
-            let emptyStateView = OrganizationBlockedDueToBillingError(userOrganizationRole: model.currentUser.organizationRole)
+            let emptyStateView = OrganizationBlockedDueToBillingError(
+                isCardDeclinedBillingError: model.organization.isCardDeclinedBillingError,
+                userOrganizationRole: model.currentUser.organizationRole
+            )
             emptyStateViewController = UIHostingController(rootView: emptyStateView)
             add(childController: emptyStateViewController!)
             emptyStateViewController!.view.snp.makeConstraints { make in

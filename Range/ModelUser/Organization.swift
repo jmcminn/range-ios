@@ -34,7 +34,17 @@ class Organization: Object, WithId {
     /// and that its grace periods ends at given date.... after this date the organization is considered disabled (although the isDisabled
     /// flag might not necessarily be set to true).
     @Persisted var billingErrorGracePeriodEnd: Date?
-    
+    /// By default (if absent) we treat errors as priority 1
+    /// See BILLING_ERROR_PRIORITIES in the backend. Priority 1 is CARD_DECLINED
+    @Persisted var billingErrorPriority: Int?
+
+    /// This should only be called if there's a billing error recognized, which should be based on the presence of the
+    /// billingErrorGracePeriodEnd
+    var isCardDeclinedBillingError: Bool {
+        if let billingErrorPriority, billingErrorPriority != 1 { return false }
+        return true
+    }
+
     var isBlockedDueToBillingError: Bool {
         guard let billingErrorGracePeriodEnd else { return false }
         return billingErrorGracePeriodEnd < Date()
@@ -60,7 +70,8 @@ class Organization: Object, WithId {
         projectIds: [String] = [],
         limitsAndCounts: [String: Int64] = [:],
         isDisabled: Bool = false,
-        billingErrorGracePeriodEnd: Date? = nil
+        billingErrorGracePeriodEnd: Date? = nil,
+        billingErrorPriority: Int? = nil
     ) {
         super.init()
         self.id = id
@@ -72,6 +83,7 @@ class Organization: Object, WithId {
         self.limitsAndCounts.merge(limitsAndCounts) { _, new in new }
         self.isDisabled = isDisabled
         self.billingErrorGracePeriodEnd = billingErrorGracePeriodEnd
+        self.billingErrorPriority = billingErrorPriority
     }
 
     /// Equality based on id

@@ -4,25 +4,47 @@ class OrganizationBillingErrorCardViewController: SheetCardViewController {
     private let bgView = UIView()
     private let label = UILabel()
     private let questionsLabel = UILabel()
+    private let contactUsButton: UIButton?
 
     init(_ model: OrganizationModel) {
+        let organization = model.organization!
+        let title = if organization.isCardDeclinedBillingError {
+            "Account Billing Issue"
+        } else {
+            "Billing Issue Identified"
+        }
+        if !organization.isCardDeclinedBillingError, model.currentUser.organizationRole == .Admin {
+            contactUsButton = RangeButton(
+                configuration: UIButton.Configuration.blueButton(),
+                primaryAction: UIAction(title: "Contact Us") { _ in
+                    guard let url = URL(string: "mailto:support@range.io") else { return }
+                    UIApplication.shared.open(url)
+                }
+            ).withCustomRangeHighlightColor()
+        } else {
+            contactUsButton = nil
+        }
         super.init(
             icon: UIImage(systemName: "exclamationmark.triangle"),
-            title: "Account Billing Issue"
+            title: title
         )
 
         let daysRemainingString: String
-        if let gracePeriodEnd = model.organization.billingErrorGracePeriodEnd {
+        if let gracePeriodEnd = organization.billingErrorGracePeriodEnd {
             let daysRemainingInt = max(0, Calendar.current._daysAgo(from: Date(), to: gracePeriodEnd) ?? 0)
             daysRemainingString = " (\(daysRemainingInt) \(daysRemainingInt == 1 ? "day" : "days") remaining)"
         } else {
             daysRemainingString = ""
         }
-        label.text = model.currentUser.organizationRole == .Admin
-            ?
-            "Your Range account has a billing issue. Please update the payment details to maintain access to your team’s data.\(daysRemainingString)"
-            :
-            "Your Range account has a billing issue. Please have a Range Admin update the payment details to maintain access to your team’s data.\(daysRemainingString)"
+        label.text = if organization.isCardDeclinedBillingError {
+            model.currentUser.organizationRole == .Admin
+                ?
+                "Your Range account has a billing issue. Please update the payment details to maintain access to your team’s data.\(daysRemainingString)"
+                :
+                "Your Range account has a billing issue. Please have a Range Admin update the payment details to maintain access to your team’s data.\(daysRemainingString)"
+        } else {
+            "We’ve identified a critical billing issue that needs to be resolved for the \(organization.name) Organization to continue using Range.\(daysRemainingString)"
+        }
 
         let questionsLabelText = NSMutableAttributedString(string: "Questions? Contact us at ",
                                                            attributes: [.foregroundColor: UIColor.dynamic(.Neutral_05)])
@@ -67,6 +89,14 @@ class OrganizationBillingErrorCardViewController: SheetCardViewController {
             make.leading.trailing.equalToSuperview().inset(16)
             make.top.equalTo(bgView.snp.bottom).offset(12)
         }
+        
+        if let contactUsButton {
+            containerView.addSubview(contactUsButton)
+            contactUsButton.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.top.equalTo(questionsLabel.snp.bottom).offset(12)
+            }
+        }
 
         updateColors()
     }
@@ -83,7 +113,13 @@ class OrganizationBillingErrorCardViewController: SheetCardViewController {
         if cardPosition == .max {
             view.layoutIfNeeded()
 
-            return baseHeight + 16 + bgView.frame.height + 12 + questionsLabel.frame.height
+            var height = baseHeight + 16 + bgView.frame.height + 12 + questionsLabel.frame.height
+            
+            if let contactUsButton {
+                height += 12 + contactUsButton.frame.height
+            }
+
+            return height
         }
         return baseHeight
     }

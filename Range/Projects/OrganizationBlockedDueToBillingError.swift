@@ -1,14 +1,26 @@
 import SwiftUI
 
 struct OrganizationBlockedDueToBillingError: View {
-    
+    var isCardDeclinedBillingError: Bool
     var userOrganizationRole: Participant.OrganizationRole
-    
-    func message() -> String {
-        if userOrganizationRole == .Admin {
-            "Your Range account has a billing issue, and the grace period has expired. To restore access to your team’s data, please visit app.range.io in a Web browser to update the payment details for your organization."
+
+    func title() -> String {
+        if isCardDeclinedBillingError {
+            "Update Billing Information"
         } else {
-            "Your Range account has a billing issue, and the grace period has expired. To restore access to your team’s data, please have a Range Admin visit app.range.io in a Web browser to update the payment details for your organization."
+            "Critical Billing Issue Unresolved"
+        }
+    }
+
+    func message() -> String {
+        if isCardDeclinedBillingError {
+            if userOrganizationRole == .Admin {
+                "Your Range account has a billing issue, and the grace period has expired. To restore access to your team’s data, please visit app.range.io in a Web browser to update the payment details for your organization."
+            } else {
+                "Your Range account has a billing issue, and the grace period has expired. To restore access to your team’s data, please have a Range Admin visit app.range.io in a Web browser to update the payment details for your organization."
+            }
+        } else {
+            "We’ve identified a billing issue that needs to be resolved immediately for this Organization to continue using Range."
         }
     }
 
@@ -47,18 +59,27 @@ struct OrganizationBlockedDueToBillingError: View {
                         .frame(height: 132)
                         .padding(EdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20))
 
-                    Text("Update Billing Information")
+                    Text(title())
                         .foregroundColor(.dynamic(.Neutral_03))
                         .font(.title2.bold())
-                        .padding(EdgeInsets(top: 0, leading: 32, bottom: 12, trailing: 32))
+                        .padding(EdgeInsets(top: 0, leading: 24, bottom: 12, trailing: 24))
 
                     Text(message())
-                    .foregroundColor(.dynamic(.Neutral_05))
-                    .font(.subheadline)
-                    .padding(EdgeInsets(top: 0, leading: 32, bottom: 12, trailing: 32))
+                        .foregroundColor(.dynamic(.Neutral_05))
+                        .font(.subheadline)
+                        .padding(EdgeInsets(top: 0, leading: 24, bottom: 12, trailing: 24))
 
                     Text(contactUsAttributedString())
-                        .padding(EdgeInsets(top: 0, leading: 32, bottom: 0, trailing: 32))
+                        .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
+
+                    if !isCardDeclinedBillingError, userOrganizationRole == .Admin {
+                        Button("Contact Us", action: {
+                            guard let url = URL(string: "mailto:support@range.io") else { return }
+                            UIApplication.shared.open(url)
+                        })
+                        .buttonStyle(BlueButtonStyle())
+                        .padding(EdgeInsets(top: 24, leading: 24, bottom: 0, trailing: 24))
+                    }
                 }
             }
             .multilineTextAlignment(.center)
@@ -68,5 +89,5 @@ struct OrganizationBlockedDueToBillingError: View {
 }
 
 #Preview {
-    OrganizationBlockedDueToBillingError(userOrganizationRole: .Admin)
+    OrganizationBlockedDueToBillingError(isCardDeclinedBillingError: true, userOrganizationRole: .Admin)
 }

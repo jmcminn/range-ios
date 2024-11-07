@@ -67,7 +67,8 @@ class OrganizationModel: NSObject, RealmModel {
         // v10: Organization.plan, limitsAndCounts
         // v11: Organization.isDisabled
         // v12: Organization.billingErrorGracePeriodEnd
-        config.schemaVersion = 12
+        // v13: Organization.billingErrorPriority
+        config.schemaVersion = 13
         config.fileURL!.deleteLastPathComponent()
         config.fileURL!.appendPathComponent("user_\(user.id)_org_\(organizationId)")
         config.fileURL!.appendPathExtension("realm")
