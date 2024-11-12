@@ -94,7 +94,8 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
                 height2Width: 1, fileSize: 1024
             )],
             uploadTags: [TagViewModel(id: "tag1", name: "tag 1", usageCount: 0)],
-            uploadDescription: "upload description"
+            uploadDescription: "upload description",
+            isDuplicate: false
         ) as? CreateCollaborationCommand else {
             XCTFail("addPhotos failed")
             return
