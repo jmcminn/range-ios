@@ -325,7 +325,13 @@ extension ProjectModel {
 
     /// Create command for creating a new comment (or note if isNote = `true`) for given collaboration id.
     func addComment(commentText: String, isNote: Bool, toCollaboration collaborationId: String) -> Command {
-        CreateCommentCommand.collaborationComment(
+        if let collaboration = mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId) {
+            analytics?._trackProjectEvent(name: "comment added", self, [
+                "collaborationTitle": collaboration.name,
+                "collaborationType": collaboration.status != nil ? "task" : "photo",
+            ])
+        }
+        return CreateCommentCommand.collaborationComment(
             collaborationId: collaborationId,
             authorId: userId,
             text: commentText,
@@ -335,7 +341,15 @@ extension ProjectModel {
 
     /// Create command for creating a new comment for given upload id.
     func addComment(commentText: String, toUpload uploadId: String) -> Command {
-        CreateCommentCommand.uploadComment(uploadId: uploadId, authorId: userId, text: commentText)
+        if let upload = mainRealm.object(ofType: Upload.self, forPrimaryKey: uploadId),
+           let collaboration = upload.collaboration.first
+        {
+            analytics?._trackProjectEvent(name: "comment added", self, [
+                "collaborationTitle": collaboration.name,
+                "collaborationType": collaboration.status != nil ? "task" : "photo",
+            ])
+        }
+        return CreateCommentCommand.uploadComment(uploadId: uploadId, authorId: userId, text: commentText)
     }
 
     /// Updates the name for collaboration if it's different than the current name.
@@ -549,27 +563,25 @@ extension ProjectModel {
 
 // Direct updates with no offline support
 extension ProjectModel {
-    
     @MainActor
     func addProjectParticipant(_ userId: String) async throws {
         let parameters: [String: Any?] = [
             "projectId": projectId,
-            "userId": userId
+            "userId": userId,
         ]
         _ = try await Functions.functions(region: "us-west2")
             .httpsCallable("addProjectParticipant")
             .call(parameters)
     }
-    
+
     @MainActor
     func removeProjectParticipant(_ userId: String) async throws {
         let parameters: [String: Any?] = [
             "projectId": projectId,
-            "userId": userId
+            "userId": userId,
         ]
         _ = try await Functions.functions(region: "us-west2")
             .httpsCallable("removeProjectParticipant")
             .call(parameters)
     }
-    
 }
