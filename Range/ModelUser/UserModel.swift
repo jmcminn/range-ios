@@ -78,7 +78,8 @@ class UserModel: NSObject, RealmModel {
         // 1. fetch the current user. If it fails we still proceed if we have the local copy (to
         // handle the offline case)
         do {
-            let firUser = try await firestore.document("users/\(userId)").getDocument(as: FirestoreUser.self, source: .server)
+            let firUser = try await firestore.document("users/\(userId)")
+                .getDocument(as: FirestoreUser.self, source: .server)
             try await write { realm in
                 try firUser.upsert(withId: self.userId, inRealm: realm)
             }
@@ -160,6 +161,16 @@ class UserModel: NSObject, RealmModel {
             try await organizationModel.start()
             currentOrganizationModel = organizationModel
             userPreferences.lastOpenOrganizationId = organizationId
+
+            // TODO: 3
+            analytics?.identify(userId: userId, traits: [
+                "email": currentUser.email,
+                "firstName": currentUser.firstName,
+                "lastName": currentUser.lastName,
+                "language": currentUser.language,
+                "jobTitle": currentUser.jobTitle,
+                "organizationRole": organizationModel.currentUser.organizationRole.rawValue,
+            ])
         }
     }
 
