@@ -110,13 +110,13 @@ extension ProjectModel {
             "mediaType": photoToAdd.mediaKey.fileType.rawValue,
         ])
         if photoToAdd.annotatedMediaKey != nil {
-            analytics?._trackProjectEvent(name: "photo annotated", self, [:])
+            analytics?._trackProjectEvent(name: "photo annotated", self)
         }
         if photoToAdd.isCanvasSnippet {
-            analytics?._trackProjectEvent(name: "snippet created", self, [:])
+            analytics?._trackProjectEvent(name: "snippet created", self)
         }
         tags.forEach { _ in
-            analytics?._trackProjectEvent(name: "tag added", self, [:])
+            analytics?._trackProjectEvent(name: "tag added", self)
         }
 
         return CreateUploadCommand(
@@ -214,17 +214,17 @@ extension ProjectModel {
             ])
             // report tag added for each photo
             uploadTags.forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self, [:])
+                analytics?._trackProjectEvent(name: "tag added", self)
             }
             if photoToAdd.annotatedMediaKey != nil {
-                analytics?._trackProjectEvent(name: "photo annotated", self, [:])
+                analytics?._trackProjectEvent(name: "photo annotated", self)
             }
             if photoToAdd.isCanvasSnippet {
-                analytics?._trackProjectEvent(name: "snippet created", self, [:])
+                analytics?._trackProjectEvent(name: "snippet created", self)
             }
         }
         tags.forEach { _ in
-            analytics?._trackProjectEvent(name: "tag added", self, [:])
+            analytics?._trackProjectEvent(name: "tag added", self)
         }
 
         var collaborationStatus: Status? = status
@@ -272,7 +272,7 @@ extension ProjectModel {
         let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
         // only report tag added for newly attached tags
         let newTags = tags.filter { !existingTagIdsSet.contains($0.id) }
-        newTags.forEach { _ in analytics?._trackProjectEvent(name: "tag added", self, [:]) }
+        newTags.forEach { _ in analytics?._trackProjectEvent(name: "tag added", self) }
         let updatedTags: [TagViewModel]
         if add {
             let currentTags = upload.tags.map { TagViewModel(fromTag: $0) }
@@ -293,7 +293,7 @@ extension ProjectModel {
         // only report tag added for newly attached tags
         tags.filter { !existingTagIdsSet.contains($0.id) }
             .forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self, [:])
+                analytics?._trackProjectEvent(name: "tag added", self)
             }
 
         return UpdateCollaborationTagsCommand(
@@ -312,7 +312,7 @@ extension ProjectModel {
         // only report tag added for newly attached tags
         tags.filter { !existingTagIdsSet.contains($0.id) }
             .forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self, [:])
+                analytics?._trackProjectEvent(name: "tag added", self)
             }
         return UpdateCollaborationTagsCommand(
             collaborationId: collaborationId,
@@ -518,7 +518,7 @@ extension ProjectModel {
         }
         let mediaKey = try await storeAnnotatedImageData(annotatedImageData)
 
-        analytics?._trackProjectEvent(name: "photo annotated", self, [:])
+        analytics?._trackProjectEvent(name: "photo annotated", self)
 
         return UpdateUploadAnnotationsCommand(uploadId: uploadId, annotations: annotations, mediaKey: mediaKey)
     }

@@ -309,9 +309,7 @@ final class ProjectFlowController: UIViewController {
             self?.possiblyDownloadPdfsForCanvasSources()
         }
 
-        analytics?.screen(title: "project canvas", properties: [
-            "projectType": model.projectSummary.projectType,
-        ])
+        analytics?._trackCanvasViewedEventAndScreen(model)
 
         canvasContainer.annotationsMapView.viewport.addStatusObserver(self)
         // visibility of location related controls depends on the location authorization
@@ -341,6 +339,7 @@ final class ProjectFlowController: UIViewController {
                 // show canvas
                 do {
                     try model.setCurrentCanvas(canvas)
+                    analytics?._trackCanvasViewedEventAndScreen(self.model)
                 } catch {
                     ToastWindow.shared.showError(text: "Canvas failed to load")
                 }

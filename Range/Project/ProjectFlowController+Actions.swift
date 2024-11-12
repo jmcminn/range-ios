@@ -109,6 +109,7 @@ extension ProjectFlowController: ProjectFlowActions {
             else { return }
             do {
                 try self.model.setCurrentCanvas(canvas)
+                analytics?._trackCanvasViewedEventAndScreen(self.model)
             } catch {
                 ToastWindow.shared.showError(text: "Canvas failed to load")
             }
@@ -160,10 +161,8 @@ extension ProjectFlowController: ProjectFlowActions {
             canvasContainer: canvasContainer
         )
         mediaVC.onClose = { [weak self] in
-            guard let self = self else { return }
-            analytics?.screen(title: "project canvas", properties: [
-                "projectType": self.model.projectSummary.projectType,
-            ])
+            guard let self else { return }
+            analytics?._trackCanvasViewedEventAndScreen(self.model)
         }
         mediaVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
         self.mediaVC = mediaVC
@@ -179,10 +178,8 @@ extension ProjectFlowController: ProjectFlowActions {
             canvasContainer: canvasContainer
         )
         taskListVC.onClose = { [weak self] in
-            guard let self = self else { return }
-            analytics?.screen(title: "project canvas", properties: [
-                "projectType": self.model.projectSummary.projectType,
-            ])
+            guard let self else { return }
+            analytics?._trackCanvasViewedEventAndScreen(self.model)
         }
         taskListVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
         self.taskListVC = taskListVC
@@ -245,7 +242,10 @@ extension ProjectFlowController: ProjectFlowActions {
         else { return }
         // update the canvas
         do {
-            try model.setCurrentCanvas(canvas)
+            if canvas.id != self.model.currentCanvas.id {
+                try model.setCurrentCanvas(canvas)
+                analytics?._trackCanvasViewedEventAndScreen(self.model)
+            }
         } catch {
             ToastWindow.shared.showError(text: "Canvas failed to load")
         }

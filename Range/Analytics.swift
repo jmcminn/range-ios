@@ -48,27 +48,43 @@ class CustomizeAllTrackCalls: Segment.EventPlugin {
 }
 
 extension Analytics {
-    func _trackProjectEvent(name: String, _ model: ProjectModel, _ props: [String: String]) {
-        let properties = [
+    func _trackCanvasViewedEventAndScreen(_ model: ProjectModel) {
+        _trackProjectEvent(name: "canvas viewed", model, [
+            "canvasName": model.currentCanvas.name,
+            "canvasCount": model.sortedCanvases.count,
+            "collaborationCount": model.currentCanvas.geometries.count
+        ])
+        screen(title: "project canvas", properties: [
+            "projectType": model.projectSummary.projectType,
+        ])
+    }
+    
+    func _trackProjectEvent(name: String, _ model: ProjectModel, _ props: [String: Codable]? = nil) {
+        var properties : [String: Codable] = [
             "userId": model.userId,
             "groupId": model.projectSummary.organizationId,
             "organizationRole": model.currentUser.organizationRole.rawValue,
             "platform": UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone",
             "projectName": model.projectSummary.name,
             "canvasType": model.currentCanvas.currentCanvasSource.type.rawValue,
-        ].merging(props) { _, new in new }
-
+        ]
+        if let props {
+            properties = properties.merging(props) { _, new in new }
+        }
         track(name: name, properties: properties)
     }
     
-    func _trackOrganizationEvent(name: String, _ model: OrganizationModel, _ props: [String: String]) {
-        let properties = [
+    func _trackOrganizationEvent(name: String, _ model: OrganizationModel, _ props: [String: Codable]? = nil) {
+        var properties : [String: Codable] = [
             "userId": model.user.id,
             "groupId": model.organizationId,
             "organizationRole": model.currentUser.organizationRole.rawValue,
             "platform": UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone",
-        ].merging(props) { _, new in new }
-
+        ]
+        if let props {
+            properties = properties.merging(props) { _, new in new }
+        }
         track(name: name, properties: properties)
     }
+    
 }
