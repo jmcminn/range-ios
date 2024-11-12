@@ -17,8 +17,6 @@ class OrganizationInAppFeedViewController: UIViewController {
     private let titleLabel = UILabel()
     private let headerStroke = UIView()
     private var markAllAsReadButton: RangeButton!
-    private let dataSyncIndicatorView: DataSyncIndicatorView
-    private let billingErrorIndicatorView: BillingErrorIndicatorView
 
     private var subscriptions = Set<AnyCancellable>()
 
@@ -30,8 +28,6 @@ class OrganizationInAppFeedViewController: UIViewController {
             variant: .organization,
             participantProvider: { userId in model.mainRealm.object(ofType: Participant.self, forPrimaryKey: userId) }
         )
-        self.dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
-        self.billingErrorIndicatorView = BillingErrorIndicatorView(model.organization)
         super.init(nibName: nil, bundle: nil)
 
         model.knockFeedModel.$feed
@@ -54,9 +50,7 @@ class OrganizationInAppFeedViewController: UIViewController {
 
         setupTitleLabel()
         setupOrganizationSelectorButton()
-        setupMarkAllAsReadButton()
-        setupDataSyncIndicatorView()
-        setupBillingErrorIndicatorView()
+        setupRightBarButtonItems()
 
         view.backgroundColor = .dynamic(.Neutral_10)
 
@@ -148,35 +142,36 @@ class OrganizationInAppFeedViewController: UIViewController {
                 self?.feedTableVC.markAllRead()
             }
         )
-        markAllAsReadButton.tapAreaInsets = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
-        view.addSubview(markAllAsReadButton)
         markAllAsReadButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(8)
-            make.centerY.equalTo(titleLabel)
+            make.width.height.equalTo(40)
         }
     }
 
-    private func setupDataSyncIndicatorView() {
+    private func setupRightBarButtonItems() {
+        setupMarkAllAsReadButton()
+
+        let dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
         dataSyncIndicatorView.onTapped = { [weak self] in
             guard let self else { return }
-            _dataSyncInfoCard(userDataSyncState.state).installAndShowCard(in: self._rootViewController())
+            _dataSyncInfoCard(self.userDataSyncState.state).installAndShowCard(in: self._rootViewController())
         }
-        view.addSubview(dataSyncIndicatorView)
-        dataSyncIndicatorView.snp.makeConstraints { make in
-            make.trailing.equalTo(markAllAsReadButton.snp.leading).offset(2)
-            make.centerY.equalTo(markAllAsReadButton)
-        }
-    }
-    
-    private func setupBillingErrorIndicatorView() {
-        billingErrorIndicatorView.onTapped = { [weak self] in
+
+        let billingErrorInticatorView = BillingErrorIndicatorView(model.organization)
+        billingErrorInticatorView.onTapped = { [weak self] in
             guard let self else { return }
-            OrganizationBillingErrorCardViewController(model).installAndShowCard(in: self._rootViewController())
+            OrganizationBillingErrorCardViewController(self.model).installAndShowCard(in: self._rootViewController())
         }
-        view.addSubview(billingErrorIndicatorView)
-        billingErrorIndicatorView.snp.makeConstraints { make in
-            make.trailing.equalTo(dataSyncIndicatorView.snp.leading).offset(2)
-            make.centerY.equalTo(markAllAsReadButton)
+        
+        let itemsStack = UIStackView.init(arrangedSubviews: [billingErrorInticatorView, dataSyncIndicatorView, markAllAsReadButton])
+        itemsStack.distribution = .equalSpacing
+        itemsStack.axis = .horizontal
+        itemsStack.alignment = .center
+        itemsStack.spacing = 0
+        
+        view.addSubview(itemsStack)
+        itemsStack.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
+            make.centerY.equalTo(titleLabel)
         }
     }
 }

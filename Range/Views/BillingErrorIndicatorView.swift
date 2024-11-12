@@ -8,7 +8,7 @@ class BillingErrorIndicatorView: UIView {
     private let bgView = UIView()
     private let imageView = UIImageView(image: UIImage(
         systemName: "exclamationmark.triangle",
-        withConfiguration: UIImage.SymbolConfiguration(pointSize: 16)
+        withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
     ))
     private var notificationToken: NotificationToken? = nil
     var onTapped: (() -> Void)?
@@ -27,12 +27,14 @@ class BillingErrorIndicatorView: UIView {
             make.center.equalToSuperview()
         }
         bgView.layer.cornerRadius = 15
-        bgView.backgroundColor = UIColor(hexString: "FB7901")?.withAlphaComponent(0.2)
+        bgView.layer.borderWidth = 1
+        bgView.backgroundColor = .dynamic(.Neutral_09)
         bgView.isUserInteractionEnabled = false
 
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-1)
         }
         imageView.tintColor = .Orange_03
         imageView.isUserInteractionEnabled = false
@@ -54,6 +56,15 @@ class BillingErrorIndicatorView: UIView {
     
     deinit {
         notificationToken?.invalidate()
+    }
+    
+    /// update colors
+    override func traitCollectionDidChange(_: UITraitCollection?) {
+        updateColors()
+    }
+
+    private func updateColors() {
+        bgView.layer.borderColor = chooseColor(.Neutral_07).cgColor
     }
     
     @objc private func tapped() {

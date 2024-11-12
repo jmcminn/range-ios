@@ -405,11 +405,9 @@ class ProjectsViewController: UIViewController {
                 self?.onSettingsButtonTap?()
             }
         )
-
         button.snp.makeConstraints { make in
-            make.width.height.equalTo(32)
+            make.width.height.equalTo(40)
         }
-        button.tapAreaInsets = UIEdgeInsets(top: -4, left: -4, bottom: -4, right: -4)
 
         let dataSyncIndicatorView = DataSyncIndicatorView(userDataSyncState)
         dataSyncIndicatorView.onTapped = { [weak self] in
@@ -422,12 +420,14 @@ class ProjectsViewController: UIViewController {
             guard let self else { return }
             OrganizationBillingErrorCardViewController(self.model).installAndShowCard(in: self._rootViewController())
         }
-
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(customView: button),
-            UIBarButtonItem(customView: dataSyncIndicatorView),
-            UIBarButtonItem(customView: billingErrorInticatorView),
-        ]
+        
+        let itemsStack = UIStackView.init(arrangedSubviews: [billingErrorInticatorView, dataSyncIndicatorView, button])
+        itemsStack.distribution = .equalSpacing
+        itemsStack.axis = .horizontal
+        itemsStack.alignment = .center
+        itemsStack.spacing = 0
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: itemsStack)
     }
 }
 
