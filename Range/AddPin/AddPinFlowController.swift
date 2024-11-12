@@ -300,14 +300,16 @@ class AddPinFlowController {
                 at: coordinates,
                 in: canvas,
                 withGeometryId: geometryId,
-                isTask: false
+                isTask: false,
+                isDuplicate: false
             )
         case .createTask:
             command = try await model.createCollaboration(
                 at: coordinates,
                 in: canvas,
                 withGeometryId: geometryId,
-                isTask: true
+                isTask: true,
+                isDuplicate: false
             )
         case .copyPin:
             guard let pinToCopy = pinToCopy else {
@@ -324,7 +326,8 @@ class AddPinFlowController {
                 assignee: pinToCopy.assignee?.participation == .active ? pinToCopy.assignee : nil,
                 dueDate: pinToCopy.dueDateTimestamp,
                 tags: pinToCopy.tags.map(TagViewModel.init(fromTag:)),
-                followerIds: pinToCopy.followers.map(\.id)
+                followerIds: pinToCopy.followers.map(\.id),
+                isDuplicate: true
             )
             userPreferences.addLastCopiedPin(pinToCopy.id, forProjectId: model.projectId)
         }

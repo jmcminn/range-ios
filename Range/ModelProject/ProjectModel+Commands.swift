@@ -197,14 +197,16 @@ extension ProjectModel {
         followerIds: [String] = [],
         photosToAdd: [PhotoToAdd] = [],
         uploadTags: [TagViewModel] = [],
-        uploadDescription: String? = nil
+        uploadDescription: String? = nil,
+        isDuplicate: Bool
     ) async throws -> CreateCollaborationCommand {
         if let canvasSource = canvas.currentCanvasSource {
             // The canvas source is set if it's used in UI and can theoretically be null here
             // (although it shouldn't happen if user is adding a pin)
-            analytics?._trackProjectEvent(name: "collaboration created", self, [
+            let eventName = isDuplicate ? "collaboration duplicated" : "collaboration created"
+            analytics?._trackProjectEvent(name: eventName, self, [
                 "collaborationType": isTask ? "task" : "photo",
-                "canvasType": canvasSource.type.rawValue,
+                "collaborationTitle": name ?? "",
             ])
         }
 

@@ -663,7 +663,8 @@ class AddPhotoFlowController {
                 followerIds: pinToCopy?.followers.map(\.id) ?? [],
                 photosToAdd: photosToAddViewModel.photos,
                 uploadTags: tagsViewModel.selectedTags,
-                uploadDescription: photoDescription
+                uploadDescription: photoDescription,
+                isDuplicate: pinTypeOption == .copyPin
             ))
             resultGeometryId = geometryId
             newCollaborationCreated = true
