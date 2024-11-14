@@ -152,12 +152,13 @@ extension ProjectFlowController: ProjectFlowActions {
     }
 
     func showMediaAction() {
+        let uploads = model.mainRealm.objects(Upload.self).where { $0.placeholder == false }
         let mediaVC = MediaCardViewController(
             projectModel: model,
             mediaCache: mediaCache,
             userPreferences: userPreferences,
             title: String(localized: "All Media"),
-            uploads: model.mainRealm.objects(Upload.self).where { $0.placeholder == false },
+            uploads: uploads,
             canvasContainer: canvasContainer
         )
         mediaVC.onClose = { [weak self] in
@@ -166,8 +167,8 @@ extension ProjectFlowController: ProjectFlowActions {
         }
         mediaVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
         self.mediaVC = mediaVC
-        analytics?.screen(title: "project media", properties: [
-            "projectType": model.projectSummary.projectType,
+        analytics?._trackProjectEvent(name: "project media viewed", model, [
+            "mediaCount": uploads.count
         ])
     }
 
