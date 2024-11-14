@@ -183,8 +183,8 @@ extension ProjectFlowController: ProjectFlowActions {
         }
         taskListVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
         self.taskListVC = taskListVC
-        analytics?.screen(title: "project tasklist", properties: [
-            "projectType": model.projectSummary.projectType,
+        analytics?._trackProjectEvent(name: "project tasklist viewed", model, [
+            "taskCount": taskListVC.collaborations.count
         ])
     }
 
@@ -242,9 +242,9 @@ extension ProjectFlowController: ProjectFlowActions {
         else { return }
         // update the canvas
         do {
-            if canvas.id != self.model.currentCanvas.id {
+            if canvas.id != model.currentCanvas.id {
                 try model.setCurrentCanvas(canvas)
-                analytics?._trackCanvasViewedEventAndScreen(self.model)
+                analytics?._trackCanvasViewedEventAndScreen(model)
             }
         } catch {
             ToastWindow.shared.showError(text: "Canvas failed to load")

@@ -22,7 +22,7 @@ class TaskListCardViewController: SheetCardViewController {
     private let selectAllTasksView = TaskListSelectAllTasksView()
 
     // all collaborations
-    private let collaborations: Results<Collaboration>
+    let collaborations: Results<Collaboration>
     // query to apply to collaborations to select tasks
     private let tasksQuery = { (c: Query<Collaboration>) -> Query<Bool> in
         c.placeholder == false && c.status != nil // only tasks
