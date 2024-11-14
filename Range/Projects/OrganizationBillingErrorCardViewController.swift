@@ -24,8 +24,17 @@ class OrganizationBillingErrorCardViewController: SheetCardViewController {
         } else {
             contactUsButton = nil
         }
+        let iconBgView = UIView()
+        iconBgView.backgroundColor = UIColor.init(hexString: "FB7901")?.withAlphaComponent(0.2)
+        iconBgView.layer.cornerRadius = 15
+        iconBgView.snp.makeConstraints { make in
+            make.width.height.equalTo(30)
+        }
         super.init(
             icon: UIImage(systemName: "exclamationmark.triangle"),
+            iconTintColor: .Orange_03,
+            iconImageConfig: UIImage.SymbolConfiguration(pointSize: 16, weight: .bold),
+            iconBgView: iconBgView,
             title: title
         )
 
@@ -39,7 +48,7 @@ class OrganizationBillingErrorCardViewController: SheetCardViewController {
         label.text = if organization.isCardDeclinedBillingError {
             model.currentUser.organizationRole == .Admin
                 ?
-                "Your Range account has a billing issue. Please update the payment details to maintain access to your team’s data.\(daysRemainingString)"
+                "Your Range account has a billing issue. Please update the payment details to maintain access to your team’s data. You can do this via the desktop web Range app.\(daysRemainingString)"
                 :
                 "Your Range account has a billing issue. Please have a Range Admin update the payment details to maintain access to your team’s data.\(daysRemainingString)"
         } else {
