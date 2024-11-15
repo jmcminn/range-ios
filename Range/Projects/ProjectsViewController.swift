@@ -129,7 +129,7 @@ class ProjectsViewController: UIViewController {
         updateRecentProjects()
         tableView.reloadData()
 
-        analytics?._trackOrganizationEvent(name: "projects viewed", model, [
+        analytics?._trackOrganizationEvent(name: "organization projects viewed", model, [
             "projectsActiveCount": model.projects.filter { $0.isArchived == false }.count,
             "projectsArchiveCount": model.projects.filter { $0.isArchived == true }.count
         ])

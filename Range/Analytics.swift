@@ -53,7 +53,7 @@ extension Analytics {
             "canvasName": model.currentCanvas.name,
             "canvasCount": model.sortedCanvases.count,
             "activePinCount": model.currentCanvas.pins.filter { $0.archivedTimestamp == nil }.count,
-            "archivePinCount": model.currentCanvas.pins.filter { $0.archivedTimestamp != nil }.count,
+            "archivedPinCount": model.currentCanvas.pins.filter { $0.archivedTimestamp != nil }.count,
         ])
         screen(title: "project canvas", properties: [
             "projectType": model.projectSummary.projectType,

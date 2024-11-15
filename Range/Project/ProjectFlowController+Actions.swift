@@ -185,7 +185,8 @@ extension ProjectFlowController: ProjectFlowActions {
         taskListVC.installAndShowCard(in: canvasContainer, inView: canvasContainer.controls)
         self.taskListVC = taskListVC
         analytics?._trackProjectEvent(name: "project tasklist viewed", model, [
-            "taskCount": taskListVC.collaborations.count
+            "activeTaskCount": taskListVC.collaborations.filter({ $0.isArchived == false}).count,
+            "archivedTaskCount": taskListVC.collaborations.filter({ $0.isArchived == true}).count,
         ])
     }
 
