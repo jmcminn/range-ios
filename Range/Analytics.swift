@@ -52,15 +52,16 @@ extension Analytics {
         _trackProjectEvent(name: "canvas viewed", model, [
             "canvasName": model.currentCanvas.name,
             "canvasCount": model.sortedCanvases.count,
-            "collaborationCount": model.currentCanvas.geometries.count
+            "activePinCount": model.currentCanvas.pins.filter { $0.archivedTimestamp == nil }.count,
+            "archivePinCount": model.currentCanvas.pins.filter { $0.archivedTimestamp != nil }.count,
         ])
         screen(title: "project canvas", properties: [
             "projectType": model.projectSummary.projectType,
         ])
     }
-    
+
     func _trackProjectEvent(name: String, _ model: ProjectModel, _ props: [String: Codable]? = nil) {
-        var properties : [String: Codable] = [
+        var properties: [String: Codable] = [
             "userId": model.userId,
             "groupId": model.projectSummary.organizationId,
             "organizationRole": model.currentUser.organizationRole.rawValue,
@@ -73,9 +74,9 @@ extension Analytics {
         }
         track(name: name, properties: properties)
     }
-    
+
     func _trackOrganizationEvent(name: String, _ model: OrganizationModel, _ props: [String: Codable]? = nil) {
-        var properties : [String: Codable] = [
+        var properties: [String: Codable] = [
             "userId": model.user.id,
             "groupId": model.organizationId,
             "organizationRole": model.currentUser.organizationRole.rawValue,
@@ -86,5 +87,4 @@ extension Analytics {
         }
         track(name: name, properties: properties)
     }
-    
 }
