@@ -186,7 +186,7 @@ extension ProjectFlowController: ProjectFlowActions {
         self.taskListVC = taskListVC
         analytics?._trackProjectEvent(name: "project tasklist viewed", model, [
             "activeTaskCount": taskListVC.collaborations.filter({ $0.isArchived == false}).count,
-            "archivedTaskCount": taskListVC.collaborations.filter({ $0.isArchived == true}).count,
+            "archiveTaskCount": taskListVC.collaborations.filter({ $0.isArchived == true}).count,
         ])
     }
 
