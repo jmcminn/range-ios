@@ -18,11 +18,12 @@ struct FirestoreStatusName: Decodable, FirestoreToRealmSyncable {
     var color: String
     var isInitial: Bool
     var isCompleted: Bool
+    var order: Double?
 
     /// Convert FirestoreStatusName to Status with given id.
     /// TODO? this could be part of FirestoreToRealmSyncable if needed for other documents.
     func modelObject(withId id: String) -> ModelType {
-        Status(id: id, name: name, hexColor: color, isInitial: isInitial, isCompleted: isCompleted)
+        Status(id: id, name: name, hexColor: color, isInitial: isInitial, isCompleted: isCompleted, order: order)
     }
 
     func upsert(withId id: String, inRealm realm: Realm) throws {

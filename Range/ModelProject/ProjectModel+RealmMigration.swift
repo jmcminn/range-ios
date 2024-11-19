@@ -40,6 +40,8 @@ extension ProjectModel {
         // required for all types of canvas source)
         // v29 add rotation, center and isGeolocated to existing PDF CanvasSources
         if oldSchemaVersion < 29 { migrateToSchemaVersion29(migration) }
+        
+        // v30 adds optional Status.order
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource
