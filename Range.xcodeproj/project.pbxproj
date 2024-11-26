@@ -176,6 +176,10 @@
 		0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 0A376BC5298031EF004C9B6F /* FirebaseAppCheck */; };
 		0A37837A291BAC450018BF3C /* CreateUploadCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A378379291BAC450018BF3C /* CreateUploadCommand.swift */; };
 		0A37837E291C08580018BF3C /* CreateUploadCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A37837D291C08580018BF3C /* CreateUploadCommandTest.swift */; };
+		0A3798222CF4CBF100F139CB /* INSCameraSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A37981E2CF4CB7700F139CB /* INSCameraSDK.xcframework */; };
+		0A3798232CF4CBF100F139CB /* INSCameraSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0A37981E2CF4CB7700F139CB /* INSCameraSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0A3798252CF4CBF300F139CB /* INSCoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3798202CF4CBD700F139CB /* INSCoreMedia.framework */; };
+		0A3798262CF4CBF300F139CB /* INSCoreMedia.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3798202CF4CBD700F139CB /* INSCoreMedia.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0A3831D128E42CC4001AF38A /* FirestoreUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D028E42CC4001AF38A /* FirestoreUpdate.swift */; };
 		0A3831D328E42D3D001AF38A /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831D228E42D3D001AF38A /* Update.swift */; };
 		0A3831DB28E44FF5001AF38A /* FirestoreUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3831DA28E44FF5001AF38A /* FirestoreUpdateTest.swift */; };
@@ -533,6 +537,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		0A3798242CF4CBF100F139CB /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0A3798232CF4CBF100F139CB /* INSCameraSDK.xcframework in Embed Frameworks */,
+				0A3798262CF4CBF300F139CB /* INSCoreMedia.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0A010C9E29913AFD0066D35A /* ProjectModel+RealmMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProjectModel+RealmMigration.swift"; sourceTree = "<group>"; };
 		0A0505732A1BC696001AF644 /* ScribbleAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScribbleAnnotationView.swift; sourceTree = "<group>"; };
@@ -704,6 +723,8 @@
 		0A378378291A72F80018BF3C /* GoogleService-Info.dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.dev.plist"; sourceTree = "<group>"; };
 		0A378379291BAC450018BF3C /* CreateUploadCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUploadCommand.swift; sourceTree = "<group>"; };
 		0A37837D291C08580018BF3C /* CreateUploadCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUploadCommandTest.swift; sourceTree = "<group>"; };
+		0A37981E2CF4CB7700F139CB /* INSCameraSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = INSCameraSDK.xcframework; sourceTree = "<group>"; };
+		0A3798202CF4CBD700F139CB /* INSCoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = INSCoreMedia.framework; sourceTree = "<group>"; };
 		0A3831D028E42CC4001AF38A /* FirestoreUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreUpdate.swift; sourceTree = "<group>"; };
 		0A3831D228E42D3D001AF38A /* Update.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
 		0A3831D428E44404001AF38A /* StringOrDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringOrDate.swift; sourceTree = "<group>"; };
@@ -1066,6 +1087,7 @@
 				0A376BC6298031EF004C9B6F /* FirebaseAppCheck in Frameworks */,
 				0A06241929534AA0004B6512 /* FirebaseFirestore in Frameworks */,
 				0A4995DB2861DBE600E571FB /* Kingfisher in Frameworks */,
+				0A3798222CF4CBF100F139CB /* INSCameraSDK.xcframework in Frameworks */,
 				0AAF04BB2A334CEA00E8C39D /* Lottie in Frameworks */,
 				0A45BB062AAB3F7000B86B85 /* GoogleSignInSwift in Frameworks */,
 				0ADC16A12B864125001DF998 /* Knock in Frameworks */,
@@ -1076,6 +1098,7 @@
 				0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */,
 				0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */,
 				0A06241529534AA0004B6512 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
+				0A3798252CF4CBF300F139CB /* INSCoreMedia.framework in Frameworks */,
 				0ACF0F2A2ACC3E0A001AE5B0 /* FirebaseRemoteConfig in Frameworks */,
 				0AF516392BA9B7710058C77D /* Segment in Frameworks */,
 			);
@@ -1523,6 +1546,8 @@
 		0A48ACD5281822680044E06E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0A37981E2CF4CB7700F139CB /* INSCameraSDK.xcframework */,
+				0A3798202CF4CBD700F139CB /* INSCoreMedia.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2383,6 +2408,7 @@
 				0A632EA527E49636001A019B /* Frameworks */,
 				0A632EA627E49636001A019B /* Resources */,
 				0A378374291A6BC90018BF3C /* ShellScript */,
+				0A3798242CF4CBF100F139CB /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -3164,10 +3190,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.111699888805-3u53g43qcnqt933kn4egvs57mpjhph2f";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3307,10 +3338,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.111699888805-3u53g43qcnqt933kn4egvs57mpjhph2f";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3513,10 +3549,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.229130128761-5guu2gkp18dms9tt1tr6r04k854olqbv";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3561,10 +3602,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.229130128761-5guu2gkp18dms9tt1tr6r04k854olqbv";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3749,10 +3795,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = emulator;
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.1015622064814-folagjdh01kajtaset6van9euommo3pk";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -3898,10 +3949,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.112515103277-kblt6pij5fsqdqm430sn6b5ip8i7ira5";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -4041,10 +4097,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.1015622064814-4p8jrh5k6cl4ufjnnokmrgpkc4tdok94";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -4191,10 +4252,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.1015622064814-4p8jrh5k6cl4ufjnnokmrgpkc4tdok94";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -4340,10 +4406,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.442450513996-056fk7uh6mvej7l8r1ofard4iido6ski";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
@@ -4484,10 +4555,15 @@
 				DEVELOPMENT_TEAM = 635N8CQN8T;
 				FIREBASE_PROJECT = "";
 				FIREBASE_REVERSED_CLIENT_ID = "com.googleusercontent.apps.442450513996-056fk7uh6mvej7l8r1ofard4iido6ski";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Range/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_CFBundleDisplayName = Range;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "uses Bluetooth access control the camera";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Range needs camera access if you want to take pictures and add them to pins on your plans.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Range needs location access to place your photos on the map.";

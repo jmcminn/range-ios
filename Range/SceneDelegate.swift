@@ -2,6 +2,7 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseMessaging
+import INSCameraSDK
 import OSLog
 import Sentry
 import SwiftUI
@@ -40,6 +41,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var requiredMinimumVersionListener: ListenerRegistration?
 
     var rangeIsClosedViewController: UIViewController?
+    
+    let insBluetoothManager: INSBluetoothManager = INSBluetoothManager()
 
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions)
@@ -94,7 +97,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
     }
-    
+
     @MainActor
     private func selectInitialFlow(forUser user: FirebaseAuth.User?) async {
         if let user {
@@ -147,8 +150,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window!.makeKeyAndVisible()
     }
 
-    func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    }
+    func scene(_: UIScene, openURLContexts _: Set<UIOpenURLContext>) {}
 
     func scene(_: UIScene, continue activity: NSUserActivity) {
         Task { @MainActor in
@@ -322,6 +324,42 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         Analytics.setUserID(userId)
         SentrySDK.setUser(Sentry.User(userId: userId))
         await showProjects(forUserId: userId, newlySignedIn: newlySignedIn)
+
+        INSCameraManager.socket().setup()
+        insBluetoothManager.scanCameras { [weak self] device, rssi, advertisementData in
+            print("XXX device \(device) \(rssi) \(advertisementData)")
+            self?.insBluetoothManager.connect(device, completion: { (err) in
+                print("XXX \(device.peripheral.identifier)")
+                if let err {
+                    print("XXX err", err)
+                }
+                if INSCameraManager.socket().cameraState == .connected {
+                    print("XXX already connected")
+                } else {
+                    INSCameraManager.socket().setup()
+                }
+                let commandManager = INSCameraManager.socket().commandManager
+                commandManager.openCameraWifi(with: nil) { err in
+                   print("XXX openCameraWifi err", err)
+                }
+//                commandManager.connect(device.peripheral) { err in
+//                    print("XXX commandManager.connect error", err)
+//                }
+//                guard let serialNumber = INSCameraManager.socket().currentCamera?.serialNumber else {
+//                    print("XXX no serial number")
+//                    return
+//                }
+//                INSCameraActivateManager.share().activateCamera(withSerial: serialNumber, commandManager: commandManager) { deviceInfo, error in
+//                    if let activateError = error {
+//                        print("XXX error Activate to \(serialNumber)", String(describing: activateError))
+//                    } else {
+//                        let deviceType = deviceInfo?["deviceType"] ?? ""
+//                        let serialNumber = deviceInfo?["serial"] ?? ""
+//                        print("XXX activate success", "deviceType: \(deviceType), serial: \(serialNumber)")
+//                    }
+//                }
+            })
+        }
     }
 
     private func observeAuthenticatedUser() {
