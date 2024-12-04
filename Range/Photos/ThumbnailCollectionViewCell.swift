@@ -15,7 +15,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
     weak var upload: Upload? {
         didSet {
             reloadImage()
-            if let upload = upload {
+            if let upload, !upload.isInvalidated {
                 // not observe again if already observing (also helps for the crash mentioned below)
                 if let previousUpload = oldValue, previousUpload.id == upload.id {
                     return
@@ -28,7 +28,7 @@ class ThumbnailCollectionViewCell: UICollectionViewCell {
                 // If it happens again we may want to reconsider switching to CoreData (or SQLite, etc.)
                 // from Realm...
                 DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
+                    guard let self, !upload.isInvalidated else { return }
                     self.notificationToken = upload.observe { [weak self] change in
                         if case .deleted = change {
                             self?.upload = nil
