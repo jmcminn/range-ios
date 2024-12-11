@@ -5,6 +5,7 @@ enum FirestoreDocumentType: String {
     case projectSummary
     case canvas = "canvases"
     case canvasSource = "canvasSources"
+    case category = "categories"
     case collaboration = "collaborations"
     case comment = "comments"
     case geometry = "geometries"

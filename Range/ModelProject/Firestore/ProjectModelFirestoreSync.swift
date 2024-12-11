@@ -91,6 +91,7 @@ class ProjectModelFirestoreSync {
         listeners.append(contentsOf: [
             model.sync(collection(.canvas), as: FirestoreCanvas.self),
             model.sync(collection(.canvasSource), as: FirestoreCanvasSource.self),
+            model.sync(collection(.category), as: FirestoreCategory.self),
             model.sync(collection(.statusName), as: FirestoreStatusName.self),
             model.sync(collection(.tagName), as: FirestoreTagName.self),
             model.sync(collection(.participant), as: FirestoreParticipant.self),
@@ -119,6 +120,7 @@ class ProjectModelFirestoreSync {
         // and creating some placeholder status objects in the local db that would be out of order
         // We need statuses to keep the ordering from db as currently the order is not modelled in any way.
         async let statusesRequest = collection(.statusName).getDocuments(source: .server)
+        async let categoriesRequest = collection(.category).getDocuments(source: .server)
 
         // await for results
         let projectSummary = try await projectSummaryRequest
@@ -126,6 +128,7 @@ class ProjectModelFirestoreSync {
         let canvasSources = try await canvasSourcesRequest
         let user = try await userRequest
         let statuses = try await statusesRequest
+        let categories = try await categoriesRequest
 
         // store in the db
         try await model.write { [self] realm in
@@ -139,6 +142,7 @@ class ProjectModelFirestoreSync {
             )
             try user.upsert(withId: model.userId, inRealm: realm)
             model.upsertDocuments(statuses.documents, as: FirestoreStatusName.self, inRealm: realm, replacing: true)
+            model.upsertDocuments(categories.documents, as: FirestoreCategory.self, inRealm: realm, replacing: true)
         }
     }
 

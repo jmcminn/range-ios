@@ -42,6 +42,7 @@ extension ProjectModel {
         if oldSchemaVersion < 29 { migrateToSchemaVersion29(migration) }
         
         // v30 adds optional Status.order
+        // v31 adds Category
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource

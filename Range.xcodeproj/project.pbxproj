@@ -332,6 +332,8 @@
 		0A7B8BF62906DB8500F1E0AA /* ActionItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */; };
 		0A7BD5572B1A3F28001694A7 /* MapboxViewportStatus+FollowMeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7BD5562B1A3F28001694A7 /* MapboxViewportStatus+FollowMeMode.swift */; };
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
+		0A7FA4EF2D09C72D0092FB3D /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FA4EE2D09C72A0092FB3D /* Category.swift */; };
+		0A7FA4F12D09C88F0092FB3D /* FirestoreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FA4F02D09C88C0092FB3D /* FirestoreCategory.swift */; };
 		0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */; };
 		0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4122844E05A0097888A /* Collaboration.swift */; };
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
@@ -864,6 +866,8 @@
 		0A7B8BF52906DB8500F1E0AA /* ActionItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionItemTableViewCell.swift; sourceTree = "<group>"; };
 		0A7BD5562B1A3F28001694A7 /* MapboxViewportStatus+FollowMeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapboxViewportStatus+FollowMeMode.swift"; sourceTree = "<group>"; };
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
+		0A7FA4EE2D09C72A0092FB3D /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		0A7FA4F02D09C88C0092FB3D /* FirestoreCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCategory.swift; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollaboration.swift; sourceTree = "<group>"; };
 		0A7FC4122844E05A0097888A /* Collaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collaboration.swift; sourceTree = "<group>"; };
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
@@ -1207,6 +1211,7 @@
 				0A724F38288835A600708C6B /* Placeholder.swift */,
 				0ABA978C2C414CD000458E24 /* ProjectMetadata.swift */,
 				0A2F32F22836D72C00D04A1C /* ProjectSummary.swift */,
+				0A7FA4EE2D09C72A0092FB3D /* Category.swift */,
 				0A7FC4142844E0670097888A /* Status.swift */,
 				0A4995BE2858D00100E571FB /* Tag.swift */,
 				0A34C1842845FB4100BEDC7C /* Participant.swift */,
@@ -1392,6 +1397,7 @@
 				0A881982291D018B0050FC41 /* FirestoreDocument.swift */,
 				0AD9B779286E28F6005ACFD7 /* ProjectModelFirestoreSync.swift */,
 				0A2F32FE2837E8E500D04A1C /* FirestoreProjectSummary.swift */,
+				0A7FA4F02D09C88C0092FB3D /* FirestoreCategory.swift */,
 				0A7FC4182844E6A80097888A /* FirestoreStatusName.swift */,
 				0A4995C02858D05D00E571FB /* FirestoreTagName.swift */,
 				0A34C1862845FB7800BEDC7C /* FirestoreParticipant.swift */,
@@ -2687,6 +2693,7 @@
 				0A30E8B92849E06F00A50D54 /* SearchView.swift in Sources */,
 				0A9341C429A8A464006166C1 /* CopyPinTableViewCell.swift in Sources */,
 				0A566EF629BA29480094BD60 /* CanvasSource.swift in Sources */,
+				0A7FA4EF2D09C72D0092FB3D /* Category.swift in Sources */,
 				0AE9A8B12B0CF4EC00AF7E46 /* UserPreferences+Annotations.swift in Sources */,
 				0A8322352A41A0810076D032 /* CollaborationFiltersCardViewController.swift in Sources */,
 				0A4DC7A427F7618D00712518 /* RoundShadowView.swift in Sources */,
@@ -2879,6 +2886,7 @@
 				0A34C18F2846134000BEDC7C /* Upload.swift in Sources */,
 				0A7393832A606C360079A7FB /* Annotation.swift in Sources */,
 				0ADC183B29631C9D007A59CA /* AddPinFlowController.swift in Sources */,
+				0A7FA4F12D09C88F0092FB3D /* FirestoreCategory.swift in Sources */,
 				0A9F03AE2CB3EECA004DA4C4 /* ProjectOnboarding.swift in Sources */,
 				0A0D31CF28A3ED03007A8D49 /* Mapbox.swift in Sources */,
 				0AFA1A49294A0A1E00491492 /* FullscreenMediaCardViewController.swift in Sources */,

@@ -70,7 +70,7 @@ class ProjectModel: NSObject, RealmModel {
         if inMemory {
             config.inMemoryIdentifier = self.projectId
         } else {
-            config.schemaVersion = 30
+            config.schemaVersion = 31
             config.fileURL!.deleteLastPathComponent()
             config.fileURL!.appendPathComponent("user_\(userId)_project_\(projectId)")
             config.fileURL!.appendPathExtension("realm")
@@ -81,7 +81,7 @@ class ProjectModel: NSObject, RealmModel {
         }
         config.objectTypes = [
             ProjectMetadata.self,
-            ProjectSummary.self, Status.self, Tag.self, Participant.self,
+            ProjectSummary.self, Category.self, Status.self, Tag.self, Participant.self,
             Canvas.self, CanvasSource.self, Geometry.self, Feature.self, Collaboration.self, Comment.self,
             Update.self, Upload.self, Location.self, StatusTaskCount.self,
         ]
