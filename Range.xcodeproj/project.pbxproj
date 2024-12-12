@@ -334,6 +334,7 @@
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FA4EF2D09C72D0092FB3D /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FA4EE2D09C72A0092FB3D /* Category.swift */; };
 		0A7FA4F12D09C88F0092FB3D /* FirestoreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FA4F02D09C88C0092FB3D /* FirestoreCategory.swift */; };
+		0A7FA4F32D09D0FC0092FB3D /* ItemPicker+Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FA4F22D09D0FC0092FB3D /* ItemPicker+Category.swift */; };
 		0A7FA4F62D0A1ED70092FB3D /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7FA4F52D0A1ED70092FB3D /* SVGKit */; };
 		0A7FA4F82D0A1ED70092FB3D /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7FA4F72D0A1ED70092FB3D /* SVGKitSwift */; };
 		0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */; };
@@ -870,6 +871,7 @@
 		0A7C8D5128E7592100AD28A4 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		0A7FA4EE2D09C72A0092FB3D /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		0A7FA4F02D09C88C0092FB3D /* FirestoreCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCategory.swift; sourceTree = "<group>"; };
+		0A7FA4F22D09D0FC0092FB3D /* ItemPicker+Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ItemPicker+Category.swift"; sourceTree = "<group>"; };
 		0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCollaboration.swift; sourceTree = "<group>"; };
 		0A7FC4122844E05A0097888A /* Collaboration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collaboration.swift; sourceTree = "<group>"; };
 		0A7FC4142844E0670097888A /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
@@ -2144,6 +2146,7 @@
 			isa = PBXGroup;
 			children = (
 				0AAC46CC2B53EE5A00D87549 /* ItemPicker+Canvas.swift */,
+				0A7FA4F22D09D0FC0092FB3D /* ItemPicker+Category.swift */,
 				0AAC46CE2B53F72400D87549 /* ItemPicker+Identifier.swift */,
 				0AAC46C22B51818A00D87549 /* ItemPickerViewModel.swift */,
 				0AAC46C42B518AE100D87549 /* ItemPickerCardViewController.swift */,
@@ -2821,6 +2824,7 @@
 				0A32F0412C80BD9C0083A881 /* DataSyncIndicatorView.swift in Sources */,
 				0A720C6A28044BDB003D6B13 /* PhotoPin.swift in Sources */,
 				0A797F6D292BCB9F00D63567 /* UpdateCollaborationStatusCommand.swift in Sources */,
+				0A7FA4F32D09D0FC0092FB3D /* ItemPicker+Category.swift in Sources */,
 				0A4DC78527F490CA00712518 /* Canvas.swift in Sources */,
 				0AFCD61A2939285F004843AA /* String+Size.swift in Sources */,
 				0A724F6D28900D4400708C6B /* Async.swift in Sources */,
