@@ -334,6 +334,8 @@
 		0A7C8D5228E7592100AD28A4 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C8D5128E7592100AD28A4 /* PinView.swift */; };
 		0A7FA4EF2D09C72D0092FB3D /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FA4EE2D09C72A0092FB3D /* Category.swift */; };
 		0A7FA4F12D09C88F0092FB3D /* FirestoreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FA4F02D09C88C0092FB3D /* FirestoreCategory.swift */; };
+		0A7FA4F62D0A1ED70092FB3D /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7FA4F52D0A1ED70092FB3D /* SVGKit */; };
+		0A7FA4F82D0A1ED70092FB3D /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0A7FA4F72D0A1ED70092FB3D /* SVGKitSwift */; };
 		0A7FC4112844DF580097888A /* FirestoreCollaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4102844DF580097888A /* FirestoreCollaboration.swift */; };
 		0A7FC4132844E05A0097888A /* Collaboration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4122844E05A0097888A /* Collaboration.swift */; };
 		0A7FC4152844E0670097888A /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FC4142844E0670097888A /* Status.swift */; };
@@ -1076,11 +1078,13 @@
 				0A06241D29534AA0004B6512 /* FirebaseStorage in Frameworks */,
 				0A06241729534AA0004B6512 /* FirebaseAuth in Frameworks */,
 				0A4DC79B27F61C8700712518 /* SnapKit in Frameworks */,
+				0A7FA4F82D0A1ED70092FB3D /* SVGKitSwift in Frameworks */,
 				0A4DC77927F2445200712518 /* MapboxMaps in Frameworks */,
 				0A76BF0229CE1175009DF0E1 /* FirebaseMessaging in Frameworks */,
 				0ABFD8AB28ED98C3008CDA74 /* OrderedCollections in Frameworks */,
 				0A06241529534AA0004B6512 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				0ACF0F2A2ACC3E0A001AE5B0 /* FirebaseRemoteConfig in Frameworks */,
+				0A7FA4F62D0A1ED70092FB3D /* SVGKit in Frameworks */,
 				0AF516392BA9B7710058C77D /* Segment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2417,6 +2421,8 @@
 				0ADC16A02B864125001DF998 /* Knock */,
 				0A01DE4F2BA324BD00CCC680 /* SWXMLHash */,
 				0AF516382BA9B7710058C77D /* Segment */,
+				0A7FA4F52D0A1ED70092FB3D /* SVGKit */,
+				0A7FA4F72D0A1ED70092FB3D /* SVGKitSwift */,
 			);
 			productName = Range;
 			productReference = 0A632EA827E49636001A019B /* Range.app */;
@@ -2504,6 +2510,7 @@
 				0ADC169F2B864125001DF998 /* XCRemoteSwiftPackageReference "knock-swift" */,
 				0A01DE4E2BA324BD00CCC680 /* XCRemoteSwiftPackageReference "SWXMLHash" */,
 				0AF516372BA9B7710058C77D /* XCRemoteSwiftPackageReference "analytics-swift" */,
+				0A7FA4F42D0A1ED70092FB3D /* XCRemoteSwiftPackageReference "SVGKit" */,
 			);
 			productRefGroup = 0A632EA927E49636001A019B /* Products */;
 			projectDirPath = "";
@@ -4705,6 +4712,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		0A7FA4F42D0A1ED70092FB3D /* XCRemoteSwiftPackageReference "SVGKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SVGKit/SVGKit";
+			requirement = {
+				branch = 3.x;
+				kind = branch;
+			};
+		};
 		0AAF04B92A334CEA00E8C39D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
@@ -4822,6 +4837,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0A06241329534AA0004B6512 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		0A7FA4F52D0A1ED70092FB3D /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A7FA4F42D0A1ED70092FB3D /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		0A7FA4F72D0A1ED70092FB3D /* SVGKitSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0A7FA4F42D0A1ED70092FB3D /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKitSwift;
 		};
 		0AAF04BA2A334CEA00E8C39D /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

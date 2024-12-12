@@ -1,4 +1,5 @@
 import RealmSwift
+import SVGKit
 import UIKit
 
 /// Realm object for `project/<id>/categories/<id>`.
@@ -15,6 +16,10 @@ class Category: Object, WithPlaceholder, WithId {
     @Persisted var order: Double
     /// Whether this object is just a placeholder for a real object
     @Persisted var placeholder: Bool = false
+
+    lazy var icon: UIImage? = iconUrl
+        .flatMap { try? Data(contentsOf: $0) }
+        .flatMap { SVGKImage(data: $0).uiImage.withRenderingMode(.alwaysTemplate) }
 
     // default first, then sorted by order
     static var uiSortingOrder: (Category, Category) -> Bool = { c1, c2 in
