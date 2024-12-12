@@ -6,7 +6,7 @@ import UIKit
 class EditCollectionViewCell: UICollectionViewCell {
     /// The cell has multiple variants based on the reuseIdentifier
     enum Variant {
-        case addTag, editTag, editUser, editCanvas, editID
+        case addTag, editTag, editUser, editCanvas, editID, editCategory
 
         var label: String {
             switch self {
@@ -15,6 +15,7 @@ class EditCollectionViewCell: UICollectionViewCell {
             case .editUser: return String(localized: "Edit")
             case .editCanvas: return String(localized: "Edit")
             case .editID: return String(localized: "Edit")
+            case .editCategory: return String(localized: "Edit")
             }
         }
 
@@ -25,6 +26,7 @@ class EditCollectionViewCell: UICollectionViewCell {
             case .editUser: return "person"
             case .editCanvas: return "square.3.layers.3d"
             case .editID: return "number.circle"
+            case .editCategory: return "hammer"
             }
         }
 

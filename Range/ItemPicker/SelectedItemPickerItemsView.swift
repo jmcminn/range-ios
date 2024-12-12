@@ -198,7 +198,9 @@ extension SelectedItemPickerItemsView: UICollectionViewDataSource, UICollectionV
             )
         } else {
             let imageWidth: CGFloat
-            if let cellIconName = config.itemIconSystemName, let cellImage = UIImage(
+            if item(forIndexPath: indexPath).icon != nil {
+                imageWidth = 20 + SelectedItemPickerItemCollectionViewCell.imageToLabelOffset
+            } else if let cellIconName = config.itemIconSystemName, let cellImage = UIImage(
                 systemName: cellIconName,
                 withConfiguration: UIImage
                     .SymbolConfiguration(font: ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold))

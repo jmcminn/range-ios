@@ -1,24 +1,28 @@
 import Algorithms
 import Foundation
 import RealmSwift
+import UIKit
 
 /// View model for ItemPicker item
-class ItemPickerItem: NSObject, Codable {
+class ItemPickerItem: NSObject {
     let id: String
     @objc let name: String
+    let icon: UIImage?
     let marked: Bool
     /// for searching we store a version of string that is diacriticInsensitive and caseInsensitive
     let searchName: String
     @objc fileprivate(set) dynamic var selected: Bool = false
 
-    /// Initializer for existing users
+    /// Initializer for ItemPickerItem
     /// - Parameters:
     ///   - id: id
-    ///   - name: name of the user
+    ///   - name: name of the item
+    ///   - icon: image for given item
     ///   - marked: whether the item is marked with a pink dot
-    init(id: String, name: String, marked: Bool) {
+    init(id: String, name: String, icon: UIImage? = nil, marked: Bool) {
         self.id = id
         self.name = name
+        self.icon = icon
         self.marked = marked
         searchName = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
     }

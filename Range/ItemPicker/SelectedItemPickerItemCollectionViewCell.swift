@@ -67,13 +67,31 @@ class SelectedItemPickerItemCollectionViewCell: UICollectionViewCell {
 
     func setItem(_ item: ItemPickerItem, imageSystemName: String?) {
         label.text = item.name
-        if let imageSystemName, let image = UIImage(
+        if let icon = item.icon {
+            imageView.image = icon
+            imageView.isHidden = false
+            imageView.snp.remakeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.leadingInset)
+                make.width.height.equalTo(20)
+            }
+            label.snp.remakeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalTo(imageView.snp.trailing)
+                    .offset(SelectedItemPickerItemCollectionViewCell.imageToLabelOffset)
+                make.trailing.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.trailingLabelInset)
+            }
+        } else if let imageSystemName, let image = UIImage(
             systemName: imageSystemName,
             withConfiguration: UIImage.SymbolConfiguration(font:
                 ._preferredFont(forTextStyle: .footnote, symbolicTraits: .traitBold))
         ) {
             imageView.image = image
             imageView.isHidden = false
+            imageView.snp.remakeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalToSuperview().inset(SelectedItemPickerItemCollectionViewCell.leadingInset)
+            }
             label.snp.remakeConstraints { make in
                 make.centerY.equalToSuperview()
                 make.leading.equalTo(imageView.snp.trailing)

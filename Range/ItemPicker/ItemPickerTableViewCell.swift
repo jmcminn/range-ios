@@ -14,6 +14,8 @@ class ItemPickerTableViewCell: UITableViewCell {
 
     let nameLabel = UILabel()
     let pinkDot = UIView()
+    let iconView = UIImageView()
+    let iconAndNameView = UIStackView()
     let selectedIconView = UIImageView(image: UIImage(named: "checkmark_checked"))
     private let multiselect: Bool
 
@@ -23,9 +25,9 @@ class ItemPickerTableViewCell: UITableViewCell {
         backgroundColor = UIColor.clear // bg is covered by addBackgroundWithBorder in the view controller
 
         setupViews()
-        [nameLabel, pinkDot, selectedIconView].forEach(contentView.addSubview)
+        [iconAndNameView, pinkDot, selectedIconView].forEach(contentView.addSubview)
 
-        nameLabel.snp.makeConstraints { make in
+        iconAndNameView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualToSuperview().offset(11)
             make.bottom.lessThanOrEqualToSuperview().offset(-11)
             make.leading.equalTo(contentView.snp.leadingMargin).offset(multiselect ? 44 : 12)
@@ -52,8 +54,21 @@ class ItemPickerTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
+        iconView.tintColor = .dynamic(.Neutral_04)
+        iconView.contentMode = .scaleAspectFit
+        iconView.snp.makeConstraints { make in
+            make.width.height.equalTo(32)
+        }
+        
         nameLabel.textColor = .dynamic(.Neutral_04)
         nameLabel.font = .preferredFont(forTextStyle: .body)
+        
+        iconAndNameView.axis = .horizontal
+        iconAndNameView.distribution = .fill
+        iconAndNameView.spacing = 8
+        iconAndNameView.alignment = .center
+        iconAndNameView.addArrangedSubview(iconView)
+        iconAndNameView.addArrangedSubview(nameLabel)
         
         pinkDot.backgroundColor = .Pink_03
         pinkDot.layer.cornerRadius = 4
@@ -71,11 +86,19 @@ class ItemPickerTableViewCell: UITableViewCell {
         } else {
             selectedIconView.isHidden = !item.selected
         }
+        if let image = item.icon {
+            iconView.isHidden = false
+            iconView.image = image
+        } else {
+            iconView.isHidden = true
+        }
         pinkDot.isHidden = !item.marked
+        
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        iconView.isHidden = true
         nameLabel.text = nil
         selectedIconView.isHidden = true
         pinkDot.isHidden = true
