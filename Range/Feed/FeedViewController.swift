@@ -620,16 +620,26 @@ extension FeedViewController {
                                                      for: indexPath) as! CommentFeedItemCell
             cell.set(comment: comment, model: projectModel)
             return cell
-        } else if let update = feedItem.item as? Update, !update.isInvalidated, update.field == .name || update.field == .description {
+        } else if let update = feedItem.item as? Update, !update.isInvalidated,
+                  update.field == .name || update.field == .description
+        {
             let cell = tableView.dequeueReusableCell(withIdentifier: "NameUpdate",
                                                      for: indexPath) as! NameUpdateFeedItemCell
             cell.tableView = tableView
             cell.set(update: update)
             return cell
         } else if let update = feedItem.item as? Update, !update.isInvalidated, update.field == .statusName,
-                  let statusId = update.newValue.stringValue,
-                  let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId)
+                  let statusId = update.newValue.stringValue
         {
+            let status = projectModel.mainRealm.object(ofType: Status.self, forPrimaryKey: statusId)
+                ?? Status(
+                    id: "deleted",
+                    name: "Deleted Status",
+                    hexColor: UIColor.dynamic(.Neutral_07).hexString,
+                    isInitial: false,
+                    isCompleted: false
+                )
+
             if status.isCompleted {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "CompletedStatusUpdate",
                                                          for: indexPath) as! CompletedStatusUpdateFeedItemCell
