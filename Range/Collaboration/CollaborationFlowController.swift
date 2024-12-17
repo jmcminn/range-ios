@@ -208,6 +208,9 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
         analytics?._trackProjectEvent(name: "collaboration viewed", model, [
             "collaborationType": collaboration.status != nil ? "task" : "photo",
             "collaborationTitle": collaboration.name,
+            "taskStatus": collaboration.status?.name ?? "",
+            "tagCount": collaboration.tags.count,
+            "mediaCount": collaboration.uploads.count
         ])
     }
 
