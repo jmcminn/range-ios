@@ -79,6 +79,12 @@ extension ProjectModel {
 // MARK: - commands
 
 extension ProjectModel {
+    private func trackTagAdded(_ tag: TagViewModel) {
+        analytics?._trackProjectEvent(name: "tag added", self, [
+            "tagName": tag.name,
+        ])
+    }
+
     /// Adds given photo to pending uploads and returns command for:
     /// - creating all new tags and an upload with given tags and description and adding it to a collaboration
     /// Throws error if geometry with given id not found, or it has no colllaboration
@@ -115,9 +121,7 @@ extension ProjectModel {
         if photoToAdd.isCanvasSnippet {
             analytics?._trackProjectEvent(name: "snippet created", self)
         }
-        tags.forEach { _ in
-            analytics?._trackProjectEvent(name: "tag added", self)
-        }
+        tags.forEach(trackTagAdded)
 
         return CreateUploadCommand(
             authorId: userId,
@@ -215,9 +219,7 @@ extension ProjectModel {
                 "mediaType": photoToAdd.mediaKey.fileType.rawValue,
             ])
             // report tag added for each photo
-            uploadTags.forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self)
-            }
+            uploadTags.forEach(trackTagAdded)
             if photoToAdd.annotatedMediaKey != nil {
                 analytics?._trackProjectEvent(name: "photo annotated", self)
             }
@@ -225,9 +227,7 @@ extension ProjectModel {
                 analytics?._trackProjectEvent(name: "snippet created", self)
             }
         }
-        tags.forEach { _ in
-            analytics?._trackProjectEvent(name: "tag added", self)
-        }
+        tags.forEach(trackTagAdded)
 
         var collaborationStatus: Status? = status
         if collaborationStatus == nil, isTask {
@@ -274,7 +274,7 @@ extension ProjectModel {
         let existingTagIdsSet: Set<String> = Set(upload.tags.map(\.id))
         // only report tag added for newly attached tags
         let newTags = tags.filter { !existingTagIdsSet.contains($0.id) }
-        newTags.forEach { _ in analytics?._trackProjectEvent(name: "tag added", self) }
+        newTags.forEach(trackTagAdded)
         let updatedTags: [TagViewModel]
         if add {
             let currentTags = upload.tags.map { TagViewModel(fromTag: $0) }
@@ -293,10 +293,7 @@ extension ProjectModel {
         guard tagIdsSet != existingTagIdsSet else { return nil }
 
         // only report tag added for newly attached tags
-        tags.filter { !existingTagIdsSet.contains($0.id) }
-            .forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self)
-            }
+        tags.filter { !existingTagIdsSet.contains($0.id) }.forEach(trackTagAdded)
 
         return UpdateCollaborationTagsCommand(
             collaborationId: collaboration.id,
@@ -312,10 +309,7 @@ extension ProjectModel {
         else { return nil }
         let existingTagIdsSet: Set<String> = Set(collaboration.tags.map(\.id))
         // only report tag added for newly attached tags
-        tags.filter { !existingTagIdsSet.contains($0.id) }
-            .forEach { _ in
-                analytics?._trackProjectEvent(name: "tag added", self)
-            }
+        tags.filter { !existingTagIdsSet.contains($0.id) }.forEach(trackTagAdded)
         return UpdateCollaborationTagsCommand(
             collaborationId: collaborationId,
             tags: tags.map(CommandTag.init(fromViewModel:)),
