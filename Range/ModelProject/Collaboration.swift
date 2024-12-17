@@ -5,6 +5,9 @@ import RealmSwift
 class Collaboration: Object, WithPlaceholder, WithId {
     /// Primary key, UUID
     @Persisted(primaryKey: true) var id: String
+    // collaboration category, needs to be optional because of how Realm
+    // stores To-One relationships https://www.mongodb.com/docs/realm/sdk/swift/examples/define-a-realm-object-model/#define-a-to-one-relationship-property
+    @Persisted var category: Category?
     /// Backlink to the Geometry. This is automatically updated whenever this coolaboration is added to or removed from the parent
     @Persisted(originProperty: "collaborations") var geometry: LinkingObjects<Geometry>
     // collaboration status, needs to be optional because of how Realm

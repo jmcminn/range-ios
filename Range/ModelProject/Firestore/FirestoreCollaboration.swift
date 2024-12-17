@@ -21,6 +21,7 @@ struct FirestoreCollaboration: Decodable, FirestoreToRealmSyncable {
     /// CodingKeys used by Codable as a keys in the encoded form
     enum CodingKeys: String, CodingKey, CaseIterable {
         case assigneeId = "assignee",
+             categoryId,
              createdById = "createdBy",
              createdAt,
              descriptionString = "description",
@@ -35,6 +36,7 @@ struct FirestoreCollaboration: Decodable, FirestoreToRealmSyncable {
     }
 
     var assigneeId: String?
+    var categoryId: String?
     var createdById: String?
     var createdAt: Date
     var descriptionString: String?
@@ -63,6 +65,9 @@ struct FirestoreCollaboration: Decodable, FirestoreToRealmSyncable {
             dueDateTimestamp: dueDateTimestamp,
             identifier: identifier
         )
+        if let categoryId {
+            collaboration.category = realm.objectOrPlaceholder(ofType: Category.self, forPrimaryKey: categoryId)
+        }
         if let createdById {
             collaboration.author = realm.objectOrPlaceholder(ofType: Participant.self, forPrimaryKey: createdById)
         }

@@ -43,6 +43,7 @@ extension ProjectModel {
         
         // v30 adds optional Status.order
         // v31 adds Category
+        // v32 adds Collaboration.category
     }
 
     /// schemaVersion 10 renames PDFCanvas -> Canvas and adds CanvasSource
