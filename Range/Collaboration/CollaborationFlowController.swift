@@ -26,6 +26,8 @@ import UniformTypeIdentifiers
     func editStatusAction()
     /// Edit collaboration assignee
     func editAssigneeAction()
+    /// Edit collaboration category
+    func editCategoryAction()
 }
 
 /// Manages displaying collaboration window
@@ -210,7 +212,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             "collaborationTitle": collaboration.name,
             "taskStatus": collaboration.status?.name ?? "",
             "tagCount": collaboration.tags.count,
-            "mediaCount": collaboration.uploads.count
+            "mediaCount": collaboration.uploads.count,
         ])
     }
 
@@ -576,6 +578,33 @@ extension CollaborationFlowController {
         ]
         model.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the status and archive") }
+        }
+    }
+}
+
+// MARK: - edit category
+
+extension CollaborationFlowController {
+    func editCategoryAction() {
+        collaborationVC?.view.endEditing(true)
+        guard let collaboration else { return }
+
+        let pickerViewModel = ItemPickerViewModel(categoryPickerForModel: model, multiselect: false)
+        if let category = collaboration.category {
+            pickerViewModel.set(itemWithId: category.id, selected: true)
+        }
+        let pickerVC = ItemPickerCardViewController(categoryPickerForModel: pickerViewModel)
+        pickerVC.onClose = { [weak self] in
+            guard let categoryId = pickerViewModel.selectedItems.first?.id else { return }
+            self?.updateCategory(categoryId)
+        }
+        pickerVC.installAndShowCard(in: self)
+    }
+
+    private func updateCategory(_ categoryId: String) {
+        guard let collaboration else { return }
+        model.run(model.update(category: categoryId, forCollaboration: collaboration)) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the category") }
         }
     }
 }

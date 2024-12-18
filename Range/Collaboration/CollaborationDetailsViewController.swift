@@ -20,7 +20,7 @@ class CollaborationDetailsViewController: UIViewController {
         // height of the assignee and duedate buttons
         static let assigneeButtonHeight = 48.0
         // height of the CTA buttons
-        static let ctasHeight = 40.0
+        static let ctasHeight = 86.0
         // height of thumbnails view
         static let thumbnailsHeight = ThumbnailsViewController.thumbnailHeight
         // height of the toggle to switch updates level of detail
@@ -62,6 +62,7 @@ class CollaborationDetailsViewController: UIViewController {
     var dueDateButton: DueDateButton!
     // ---- END: only for task collaboration
     var ctas: UIView!
+    var categoryButton: CategoryButton!
     var thumbnailsVC: ThumbnailsViewController!
     var updatesToggle: SegmentedControl!
 
@@ -193,6 +194,9 @@ class CollaborationDetailsViewController: UIViewController {
                 collaboration.dueDateTimestamp,
                 markOverdue: !collaboration.isCompleted && !collaboration.isArchived && collaboration.isOverdue
             )
+        }
+        if let categoryButton {
+            categoryButton.category = collaboration.category
         }
 
         if hideThumbnails != thumbnailsVC.view.isHidden {
@@ -356,7 +360,7 @@ extension CollaborationDetailsViewController {
 }
 
 extension CollaborationDetailsViewController {
-    /// Creates a view containing CTA buttons, to be reused for the bottom collaboration card
+    /// Creates a view containing CTA buttons
     func _createCollaborationCTAs() -> UIView {
         let ctas = UIView()
 
@@ -381,8 +385,9 @@ extension CollaborationDetailsViewController {
         ).withCustomRangeHighlightColor()
         ctas.addSubview(addSnippetButton)
         addSnippetButton.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
+            make.leading.top.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
+            make.height.equalTo(40)
         }
 
         var blueButtonConfig = UIButton.Configuration.blueButton(
@@ -400,9 +405,23 @@ extension CollaborationDetailsViewController {
         ).withCustomRangeHighlightColor()
         ctas.addSubview(addPhotosButton)
         addPhotosButton.snp.makeConstraints { make in
-            make.trailing.top.bottom.equalToSuperview()
+            make.trailing.top.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
+            make.height.equalTo(40)
         }
+
+        categoryButton = CategoryButton(primaryAction: UIAction(handler: { [weak self] _ in
+            UIApplication.shared.sendAction(
+                #selector(CollaborationFlowActions.editCategoryAction), to: nil, from: self, for: nil
+            )
+        })).withCustomRangeHighlightColor()
+        categoryButton.category = collaboration.category
+        ctas.addSubview(categoryButton)
+        categoryButton.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(30)
+        }
+
         return ctas
     }
 }

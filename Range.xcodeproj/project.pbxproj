@@ -185,6 +185,7 @@
 		0A38768D2C074F4A00A4CA5B /* PendingActionsV1MigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A38768C2C074F4A00A4CA5B /* PendingActionsV1MigrationTest.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserPreferences.swift */; };
+		0A4346462D1320A900AC09F2 /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4346452D1320A500AC09F2 /* CategoryButton.swift */; };
 		0A4346482D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4346472D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift */; };
 		0A44751D2AB88539000EC667 /* Invitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44751C2AB88539000EC667 /* Invitation.swift */; };
 		0A44751F2AB88549000EC667 /* FirestoreInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44751E2AB88549000EC667 /* FirestoreInvitation.swift */; };
@@ -720,6 +721,7 @@
 		0A38768C2C074F4A00A4CA5B /* PendingActionsV1MigrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsV1MigrationTest.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
+		0A4346452D1320A500AC09F2 /* CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButton.swift; sourceTree = "<group>"; };
 		0A4346472D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationCategoryCommand.swift; sourceTree = "<group>"; };
 		0A44751C2AB88539000EC667 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invitation.swift; sourceTree = "<group>"; };
 		0A44751E2AB88549000EC667 /* FirestoreInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreInvitation.swift; sourceTree = "<group>"; };
@@ -1528,6 +1530,7 @@
 				0A94E8D428CE24CF00A09616 /* CollaborationBadgeButton.swift */,
 				0AC9E18E28F6C2C900C7185D /* CollaborationStatusButton.swift */,
 				0AB8557328F9533900491E20 /* AssigneeButton.swift */,
+				0A4346452D1320A500AC09F2 /* CategoryButton.swift */,
 				0AB8557528F98EB500491E20 /* DueDateButton.swift */,
 				0ABBB4892C935259005C6393 /* AdditionalInformationCardViewController.swift */,
 			);
@@ -2773,6 +2776,7 @@
 				0A130E9E28D4A8F700FF1368 /* FeedViewController.swift in Sources */,
 				0A0D31D328A3F21E007A8D49 /* Resources.swift in Sources */,
 				0AA424322913C6F40088E2B1 /* Action.swift in Sources */,
+				0A4346462D1320A900AC09F2 /* CategoryButton.swift in Sources */,
 				0A3831D328E42D3D001AF38A /* Update.swift in Sources */,
 				0A2F3303283BDC2B00D04A1C /* FirestoreCanvas.swift in Sources */,
 				0A5394272A251482008583F0 /* ScribbleAnnotationViewModel.swift in Sources */,
