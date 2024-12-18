@@ -413,6 +413,10 @@ extension ProjectModel {
     func update(archived: Bool, forCollaboration collaborationId: String) -> Command {
         UpdateGeometryArchivedCommand(collaborationId: collaborationId, archivedTimestamp: archived ? Date() : nil)
     }
+    
+    func update(category categoryId: String, forCollaboration collaboration: Collaboration) -> Command {
+        UpdateCollaborationCategoryCommand(collaborationId: collaboration.id, categoryId: categoryId)
+    }
 
     /// Updates the status for collaboration if it's different than the current one.
     func update(status: Status, forCollaboration collaboration: Collaboration) -> Command? {

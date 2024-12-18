@@ -185,6 +185,7 @@
 		0A38768D2C074F4A00A4CA5B /* PendingActionsV1MigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A38768C2C074F4A00A4CA5B /* PendingActionsV1MigrationTest.swift */; };
 		0A3BBAF228364E67005358C7 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF128364E67005358C7 /* CGPoint.swift */; };
 		0A3BBAF428368567005358C7 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BBAF328368567005358C7 /* UserPreferences.swift */; };
+		0A4346482D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4346472D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift */; };
 		0A44751D2AB88539000EC667 /* Invitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44751C2AB88539000EC667 /* Invitation.swift */; };
 		0A44751F2AB88549000EC667 /* FirestoreInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44751E2AB88549000EC667 /* FirestoreInvitation.swift */; };
 		0A44F9F92CCBB686005DFE54 /* OrganizationLimitsCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44F9F82CCBB679005DFE54 /* OrganizationLimitsCardViewController.swift */; };
@@ -719,6 +720,7 @@
 		0A38768C2C074F4A00A4CA5B /* PendingActionsV1MigrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingActionsV1MigrationTest.swift; sourceTree = "<group>"; };
 		0A3BBAF128364E67005358C7 /* CGPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		0A3BBAF328368567005358C7 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
+		0A4346472D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCollaborationCategoryCommand.swift; sourceTree = "<group>"; };
 		0A44751C2AB88539000EC667 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invitation.swift; sourceTree = "<group>"; };
 		0A44751E2AB88549000EC667 /* FirestoreInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreInvitation.swift; sourceTree = "<group>"; };
 		0A44F9F82CCBB679005DFE54 /* OrganizationLimitsCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationLimitsCardViewController.swift; sourceTree = "<group>"; };
@@ -2284,6 +2286,7 @@
 				0A374DDF292786530036C184 /* DeleteCommentCommand.swift */,
 				0A374DEB2927DA550036C184 /* DeleteUploadCommand.swift */,
 				0A797F79292D50A600D63567 /* UpdateCollaborationAssigneeCommand.swift */,
+				0A4346472D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift */,
 				0A6DB6A4292E528F0017D511 /* UpdateCollaborationDescriptionCommand.swift */,
 				0A7121B9290EEAB40013E2F8 /* UpdateCollaborationDueDateCommand.swift */,
 				0A2869EB2C10B24400215B8B /* UpdateCollaborationFollowersCommand.swift */,
@@ -2952,6 +2955,7 @@
 				0A130EA928D74F3300FF1368 /* ImageUploadFeedItemCell.swift in Sources */,
 				0AE6C92D2923E8050090F3F3 /* StringOrDate.swift in Sources */,
 				0A34C17B28450CAC00BEDC7C /* String+Error.swift in Sources */,
+				0A4346482D1327A500AC09F2 /* UpdateCollaborationCategoryCommand.swift in Sources */,
 				0A3831DF28E492C8001AF38A /* ThumbnailSkeletonCollectionViewCell.swift in Sources */,
 				0A07D51C2808063C00B6F9A2 /* AddPhotoFlowController.swift in Sources */,
 				0AF89B552A0CC9A100E49F40 /* BadgeView.swift in Sources */,

@@ -29,6 +29,7 @@ enum ActionCommand: Codable {
     case deleteComment(DeleteCommentCommand)
     case deleteUpload(DeleteUploadCommand)
     case updateCollaborationAssignee(UpdateCollaborationAssigneeCommand)
+    case updateCollaborationCategory(UpdateCollaborationCategoryCommand)
     case updateCollaborationDescription(UpdateCollaborationDescriptionCommand)
     case updateCollaborationDueDate(UpdateCollaborationDueDateCommand)
     case updateCollaborationFollowers(UpdateCollaborationFollowersCommand)
@@ -52,6 +53,7 @@ enum ActionCommand: Codable {
         case let c as DeleteCommentCommand: self = .deleteComment(c)
         case let c as DeleteUploadCommand: self = .deleteUpload(c)
         case let c as UpdateCollaborationAssigneeCommand: self = .updateCollaborationAssignee(c)
+        case let c as UpdateCollaborationCategoryCommand: self = .updateCollaborationCategory(c)
         case let c as UpdateCollaborationDescriptionCommand: self = .updateCollaborationDescription(c)
         case let c as UpdateCollaborationDueDateCommand: self = .updateCollaborationDueDate(c)
         case let c as UpdateCollaborationFollowersCommand: self = .updateCollaborationFollowers(c)
@@ -78,6 +80,7 @@ enum ActionCommand: Codable {
         case let .deleteComment(c): return c
         case let .deleteUpload(c): return c
         case let .updateCollaborationAssignee(c): return c
+        case let .updateCollaborationCategory(c): return c
         case let .updateCollaborationDescription(c): return c
         case let .updateCollaborationDueDate(c): return c
         case let .updateCollaborationFollowers(c): return c
@@ -103,6 +106,7 @@ enum ActionCommand: Codable {
         case let .deleteComment(c): return c
         case let .deleteUpload(c): return c
         case let .updateCollaborationAssignee(c): return c
+        case let .updateCollaborationCategory(c): return c
         case let .updateCollaborationDescription(c): return c
         case let .updateCollaborationDueDate(c): return c
         case let .updateCollaborationFollowers(c): return c

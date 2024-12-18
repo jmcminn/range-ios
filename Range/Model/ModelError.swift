@@ -6,6 +6,7 @@ enum ModelError: Error, Equatable {
     case canvasNotFound
     case canvasSourceNotFound
     case canvasSourceTypeNotSupported(_ type: String)
+    case categoryNotFound
     case collaborationNotFound
     case commentNotFound
     case currentUserNotFound
@@ -30,6 +31,7 @@ extension ModelError: LocalizedError {
         case .canvasNotFound: return "Canvas not found"
         case .canvasSourceNotFound: return "Canvas source not found"
         case let .canvasSourceTypeNotSupported(type): return "\(type) canvas source type not supported"
+        case .categoryNotFound: return "Category not found"
         case .collaborationNotFound: return "Collaboration not found"
         case .commentNotFound: return "Comment not found"
         case .currentUserNotFound: return "Couldn't load user data"
