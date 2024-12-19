@@ -2,6 +2,12 @@ import Foundation
 
 /// Extension of Participant to check the privileges and answer if given operation can be performed on given object
 extension Participant {
+    
+    func isGuest() -> Bool {
+        guard !self.isInvalidated else { return false }
+        return organizationRole == .Guest
+    }
+    
     /// Only organization Admin can create a project
     func canCreateProject() -> Bool {
         guard !self.isInvalidated else { return false }

@@ -197,6 +197,7 @@ class CollaborationDetailsViewController: UIViewController {
         }
         if let categoryButton {
             categoryButton.category = collaboration.category
+            categoryButton.isEnabled = !projectModel.currentUser.isGuest()
         }
 
         if hideThumbnails != thumbnailsVC.view.isHidden {
