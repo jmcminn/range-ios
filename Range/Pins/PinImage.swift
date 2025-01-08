@@ -72,70 +72,81 @@ enum PinImage {
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: .Pink_03,
-                image: numberedImageName("marker.overlay.", count)
+                overlay: "marker.overlay",
+                icon: numberedImageName("marker.", count, ".icon")
             )
         case let .circleArchivedPhoto(count):
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: .Archived,
-                image: numberedImageName("marker.overlay.", count)
+                overlay: "marker.overlay",
+                icon: numberedImageName("marker.", count, ".icon")
             )
         case let .circleTask(color):
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: color,
-                image: "marker.task.overlay"
+                overlay: "marker.overlay",
+                icon: "marker.task.icon"
             )
         case .circleArchivedTask:
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: .Archived,
-                image: "marker.task.overlay"
+                overlay: "marker.overlay",
+                icon: "marker.task.icon"
             )
         case let .pinPhoto(count):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Pink_03,
-                image: numberedImageName("marker.selected.overlay.", count)
+                overlay: "marker.selected.overlay",
+                icon: numberedImageName("marker.selected.", count, ".icon")
             )
         case let .pinArchivedPhoto(count):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Archived,
-                image: numberedImageName("marker.selected.overlay.", count)
+                overlay: "marker.selected.overlay",
+                icon: numberedImageName("marker.selected.", count, ".icon")
             )
         case let .pinPhotoWithNote(count):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Pink_03,
-                image: numberedImageName("marker.selected.overlay.", count),
+                overlay: "marker.selected.overlay",
+                icon: numberedImageName("marker.selected.", count, ".icon"),
                 badge: "marker.selected.overlay.note"
             )
         case let .pinTask(color):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: color,
-                image: "task.selected.overlay"
+                overlay: "marker.selected.overlay",
+                icon: "marker.selected.task.icon"
             )
         case let .pinTaskWithNote(color):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: color,
-                image: "task.selected.overlay",
+                overlay: "marker.selected.overlay",
+                icon: "marker.selected.task.icon",
                 badge: "marker.selected.overlay.note"
             )
         case let .pinTaskWithOverdue(color):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: color,
-                image: "task.selected.overlay",
+                overlay: "marker.selected.overlay",
+                icon: "marker.selected.task.icon",
                 badge: "marker.selected.overlay.overdue"
             )
         case .pinArchivedTask:
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Archived,
-                image: "task.selected.overlay"
+                overlay: "marker.selected.overlay",
+                icon: "marker.selected.task.icon"
             )
         case .copyPin:
             return getAndCacheImage(named: id)
@@ -149,18 +160,39 @@ enum PinImage {
         return image
     }
 
-    /// Combines background image (using given tint color) with a (foreground) image and puts into cache with this pin image id.
+    /// Combines background image (using given tint color) with a (foreground) overlay and with an image on top and puts into cache
+    /// with this pin image id.
     /// It allows to construct pins that have different background color and same foreground
     /// If `badge` name is provided it adds one more layer, which is a badge for overdue or note
     private func constructAndCacheImage(
         bgImage: String,
         bgColor: UIColor,
-        image: String,
+        overlay: String,
+        icon: String,
+        badge: String? = nil
+    ) -> UIImage? {
+        guard let iconImage = UIImage(named: icon) else { return nil }
+        return constructAndCacheImage(
+            bgImage: bgImage,
+            bgColor: bgColor,
+            overlay: overlay,
+            icon: iconImage,
+            badge: badge
+        )
+    }
+
+    private func constructAndCacheImage(
+        bgImage: String,
+        bgColor: UIColor,
+        overlay: String,
+        icon: UIImage,
         badge: String? = nil
     ) -> UIImage? {
         guard var image = UIImage(named: bgImage)?
             .withTintColor(bgColor, renderingMode: .alwaysTemplate)
-            .mergeWith(topImage: UIImage(named: image)) else { return nil }
+            .mergeWith(topImage: UIImage(named: overlay))
+            .mergeWith(topImage: icon)
+        else { return nil }
         if let badge = badge, let badgeImage = UIImage(named: badge) {
             image = image.mergeWith(topImage: badgeImage)
         }

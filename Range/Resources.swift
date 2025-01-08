@@ -1,6 +1,6 @@
 import Foundation
 
-/// given base name and number produces full name <base><number> for numbers 0..8 and <base>9+ for numbers >= 9
-func numberedImageName(_ base: String, _ number: Int) -> String {
-    base + (number < 9 ? String(number) : "9+")
+/// given prefix name, number and suffix produces full name <prefix><number><suffix> for numbers 0..8 and <prefix>9+<suffix> for numbers >= 9
+func numberedImageName(_ prefix: String, _ number: Int, _ suffix: String? = nil) -> String {
+    prefix + (number < 9 ? String(number) : "9+") + (suffix ?? "")
 }

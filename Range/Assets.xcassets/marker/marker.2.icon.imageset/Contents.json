@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "marker.2.icon.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
