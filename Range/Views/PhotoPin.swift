@@ -21,7 +21,7 @@ class PhotoPin: PassthroughView {
     init(image: UIImage, taskPinColor: UIColor) {
         self.taskPinColor = taskPinColor
         // construct pin with "0" photos - the 0 will be covered by `image`
-        if let pinImage = PinImage.pinPhoto(count: 0).image {
+        if let pinImage = PinImage.pinPhoto(count: 0, category: nil).image {
             pinView = UIImageView(image: pinImage)
             _intrinsicContentSize = CGSize(
                 width: pinImage.size.width,
@@ -54,8 +54,8 @@ class PhotoPin: PassthroughView {
 
         let pinImage: PinImage
         switch pinType {
-        case .photo: pinImage = .pinPhoto(count: 0)
-        case .task: pinImage = .pinTask(color: taskPinColor)
+        case .photo: pinImage = .pinPhoto(count: 0, category: nil)
+        case .task: pinImage = .pinTask(color: taskPinColor, category: nil)
         case .photoOrTask: pinImage = .copyPin
         }
         pinView.image = pinImage.image

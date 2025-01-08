@@ -3,19 +3,20 @@ import UIKit
 
 /// Defines all possible canvas pins
 enum PinImage {
-    case circlePhoto(count: Int)
-    case circleArchivedPhoto(count: Int)
+    // TODO: 3941 pins
+    case circlePhoto(count: Int, category: Category?)
+    case circleArchivedPhoto(count: Int, category: Category?)
     case circleNote
     case circleOverdue
-    case circleTask(color: UIColor)
-    case circleArchivedTask
-    case pinPhoto(count: Int)
-    case pinArchivedPhoto(count: Int)
-    case pinPhotoWithNote(count: Int)
-    case pinTask(color: UIColor)
-    case pinTaskWithNote(color: UIColor)
-    case pinTaskWithOverdue(color: UIColor)
-    case pinArchivedTask
+    case circleTask(color: UIColor, category: Category?)
+    case circleArchivedTask(category: Category?)
+    case pinPhoto(count: Int, category: Category?)
+    case pinArchivedPhoto(count: Int, category: Category?)
+    case pinPhotoWithNote(count: Int, category: Category?)
+    case pinTask(color: UIColor, category: Category?)
+    case pinTaskWithNote(color: UIColor, category: Category?)
+    case pinTaskWithOverdue(color: UIColor, category: Category?)
+    case pinArchivedTask(category: Category?)
     case copyPin
 
     private static var imageCache: [String: UIImage] = [:]
@@ -24,32 +25,32 @@ enum PinImage {
     // that are stored in the assets (all non task images)
     var id: String {
         switch self {
-        case let .circlePhoto(count):
-            return numberedImageName("marker.", count)
-        case let .circleArchivedPhoto(count):
-            return numberedImageName("marker.archived.", count)
+        case let .circlePhoto(count, category):
+            return numberedImageWithCategoryName("marker", count, category)
+        case let .circleArchivedPhoto(count, category):
+            return numberedImageWithCategoryName("marker.archived", count, category)
         case .circleNote:
             return "marker.note"
         case .circleOverdue:
             return "marker.overdue"
-        case let .circleTask(color):
-            return "marker.task." + color.toHexString()
-        case .circleArchivedTask:
-            return "marker.task.archived"
-        case let .pinPhoto(count):
-            return numberedImageName("marker.selected.", count)
-        case let .pinArchivedPhoto(count):
-            return numberedImageName("marker.selected.archived.", count)
-        case let .pinPhotoWithNote(count):
-            return numberedImageName("marker.selected.badge.", count)
-        case let .pinTask(color):
-            return "marker.selected.task." + color.toHexString()
-        case let .pinTaskWithNote(color):
-            return "marker.selected.task.note." + color.toHexString()
-        case let .pinTaskWithOverdue(color):
-            return "marker.selected.task.overdue." + color.toHexString()
-        case .pinArchivedTask:
-            return "marker.selected.task.archived"
+        case let .circleTask(color, category):
+            return coloredImageName("marker.task", color, category)
+        case let .circleArchivedTask(category):
+            return "marker.task.archived." + (category?.id ?? "")
+        case let .pinPhoto(count, category):
+            return numberedImageWithCategoryName("marker.selected", count, category)
+        case let .pinArchivedPhoto(count, category):
+            return numberedImageWithCategoryName("marker.selected.archived", count, category)
+        case let .pinPhotoWithNote(count, category):
+            return numberedImageWithCategoryName("marker.selected.badge", count, category)
+        case let .pinTask(color, category):
+            return coloredImageName("marker.selected.task", color, category)
+        case let .pinTaskWithNote(color, category):
+            return coloredImageName("marker.selected.task.note", color, category)
+        case let .pinTaskWithOverdue(color, category):
+            return coloredImageName("marker.selected.task.overdue", color, category)
+        case let .pinArchivedTask(category):
+            return "marker.selected.task.archived" + (category?.id ?? "")
         case .copyPin:
             return "marker.copyPin"
         }
@@ -68,85 +69,85 @@ enum PinImage {
         case .circleNote, .circleOverdue:
             return getAndCacheImage(named: id)
         // constructed images
-        case let .circlePhoto(count):
+        case let .circlePhoto(count, category):
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: .Pink_03,
                 overlay: "marker.overlay",
-                icon: numberedImageName("marker.", count, ".icon")
+                icon: categoryImage(category) ?? numberedImage("marker", count, "icon")
             )
-        case let .circleArchivedPhoto(count):
+        case let .circleArchivedPhoto(count, category):
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: .Archived,
                 overlay: "marker.overlay",
-                icon: numberedImageName("marker.", count, ".icon")
+                icon: categoryImage(category) ?? numberedImage("marker", count, "icon")
             )
-        case let .circleTask(color):
+        case let .circleTask(color, category):
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: color,
                 overlay: "marker.overlay",
-                icon: "marker.task.icon"
+                icon: categoryImage(category) ?? UIImage(named: "marker.task.icon")
             )
-        case .circleArchivedTask:
+        case let .circleArchivedTask(category):
             return constructAndCacheImage(
                 bgImage: "marker.background",
                 bgColor: .Archived,
                 overlay: "marker.overlay",
-                icon: "marker.task.icon"
+                icon: categoryImage(category) ?? UIImage(named: "marker.task.icon")
             )
-        case let .pinPhoto(count):
+        case let .pinPhoto(count, category):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Pink_03,
                 overlay: "marker.selected.overlay",
-                icon: numberedImageName("marker.selected.", count, ".icon")
+                icon: categoryPinImage(category) ?? numberedImage("marker.selected", count, "icon")
             )
-        case let .pinArchivedPhoto(count):
+        case let .pinArchivedPhoto(count, category):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Archived,
                 overlay: "marker.selected.overlay",
-                icon: numberedImageName("marker.selected.", count, ".icon")
+                icon: categoryPinImage(category) ?? numberedImage("marker.selected", count, "icon")
             )
-        case let .pinPhotoWithNote(count):
+        case let .pinPhotoWithNote(count, category):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Pink_03,
                 overlay: "marker.selected.overlay",
-                icon: numberedImageName("marker.selected.", count, ".icon"),
+                icon: categoryPinImage(category) ?? numberedImage("marker.selected", count, "icon"),
                 badge: "marker.selected.overlay.note"
             )
-        case let .pinTask(color):
+        case let .pinTask(color, category):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: color,
                 overlay: "marker.selected.overlay",
-                icon: "marker.selected.task.icon"
+                icon: categoryPinImage(category) ?? UIImage(named: "marker.selected.task.icon")
             )
-        case let .pinTaskWithNote(color):
+        case let .pinTaskWithNote(color, category):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: color,
                 overlay: "marker.selected.overlay",
-                icon: "marker.selected.task.icon",
+                icon: categoryPinImage(category) ?? UIImage(named: "marker.selected.task.icon"),
                 badge: "marker.selected.overlay.note"
             )
-        case let .pinTaskWithOverdue(color):
+        case let .pinTaskWithOverdue(color, category):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: color,
                 overlay: "marker.selected.overlay",
-                icon: "marker.selected.task.icon",
+                icon: categoryPinImage(category) ?? UIImage(named: "marker.selected.task.icon"),
                 badge: "marker.selected.overlay.overdue"
             )
-        case .pinArchivedTask:
+        case let .pinArchivedTask(category):
             return constructAndCacheImage(
                 bgImage: "marker.selected.background",
                 bgColor: .Archived,
                 overlay: "marker.selected.overlay",
-                icon: "marker.selected.task.icon"
+                icon: categoryPinImage(category) ?? UIImage(named: "marker.selected.task.icon")
             )
         case .copyPin:
             return getAndCacheImage(named: id)
@@ -171,7 +172,7 @@ enum PinImage {
         icon: String,
         badge: String? = nil
     ) -> UIImage? {
-        guard let iconImage = UIImage(named: icon) else { return nil }
+        let iconImage = UIImage(named: icon)
         return constructAndCacheImage(
             bgImage: bgImage,
             bgColor: bgColor,
@@ -185,7 +186,7 @@ enum PinImage {
         bgImage: String,
         bgColor: UIColor,
         overlay: String,
-        icon: UIImage,
+        icon: UIImage?,
         badge: String? = nil
     ) -> UIImage? {
         guard var image = UIImage(named: bgImage)?
@@ -198,5 +199,35 @@ enum PinImage {
         }
         PinImage.imageCache[id] = image
         return image
+    }
+
+    // Create white image for category placed on the background of the size of the circle marker (so it's not stretched)
+    private func categoryImage(_ category: Category?) -> UIImage? {
+        category?.icon?
+            .imageResized(toFill: 28)
+            .addCircleBackground(bgSize: CGSize(width: 40, height: 40), bgColor: .clear, strokeColor: nil)
+            .withTintColor(.white, renderingMode: .alwaysTemplate)
+    }
+
+    // Create white image for category placed on the background of the size of the pin marker
+    // (so it's not stretched) and offset so it's placed in the pin circle area
+    private func categoryPinImage(_ category: Category?) -> UIImage? {
+        category?.icon?
+            .imageResized(toFill: 28)
+            .positionInImage(ofSize: CGSize(width: 56, height: 78), withCenterAt: CGPoint(x: 28, y: 32))
+            .withTintColor(.white, renderingMode: .alwaysTemplate)
+    }
+
+    private func coloredImageName(_ prefix: String, _ color: UIColor, _ category: Category? = nil) -> String {
+        let categorySuffix = if let category { ".\(category.id)" } else { "" }
+        return "\(prefix).\(color.hexString)\(categorySuffix)"
+    }
+
+    private func numberedImageWithCategoryName(_ prefix: String, _ number: Int, _ category: Category? = nil) -> String {
+        numberedImageName(prefix, number, category?.id)
+    }
+
+    private func numberedImage(_ prefix: String, _ number: Int, _ suffix: String? = nil) -> UIImage? {
+        UIImage(named: numberedImageName(prefix, number, suffix))
     }
 }
