@@ -223,6 +223,11 @@ class TaskListCollaborationTableViewCell: UITableViewCell {
                     textAttributes: [.strikethroughStyle: assignee.strikethroughStyle]
                 ))
             }
+            if let category = collaboration.category, !category.isDefault {
+                detailsStackView.addArrangedSubview(PillView(
+                    iconName: nil, iconImage: category.icon?.imageResized(toFill: 20), text: category.name
+                ))
+            }
             if let canvasName = collaboration.geometry.first?.canvas.first?.name {
                 detailsStackView.addArrangedSubview(PillView(iconName: "square.3.layers.3d", text: canvasName))
             }

@@ -40,6 +40,7 @@ class PillView: UIView {
 
     init(
         iconName: String?,
+        iconImage: UIImage? = nil,
         text: String,
         verticalPadding: Double = 8.0,
         backgroundColor: UIColor = .dynamic(.Neutral_09),
@@ -57,6 +58,9 @@ class PillView: UIView {
         if let iconName {
             iconView.image = UIImage(systemName: iconName, withConfiguration: UIImage.SymbolConfiguration(font: font))
             iconView.tintColor = style.tintColor
+        } else if let iconImage {
+            iconView.image = iconImage.withTintColor(style.tintColor, renderingMode: .alwaysTemplate)
+            iconView.tintColor = style.tintColor
         }
 
         if let textAttributes = textAttributes {
@@ -71,7 +75,7 @@ class PillView: UIView {
         updateColors()
 
         addSubview(borderView)
-        if iconName != nil {
+        if iconView.image != nil {
             borderView.addSubview(iconView)
             iconView.snp.makeConstraints { make in
                 make.centerY.equalToSuperview()
@@ -85,7 +89,7 @@ class PillView: UIView {
         }
 
         label.snp.makeConstraints { make in
-            if iconName != nil {
+            if iconView.image != nil {
                 make.leading.equalTo(iconView.snp.trailing).offset(6)
             } else {
                 make.leading.equalToSuperview().inset(8)
