@@ -37,6 +37,7 @@ class CollaborationFilters: Codable, Equatable {
              showOnlyOverdue,
              canvasFilter,
              tagsFilter,
+             categoriesFilter,
              followersFilter,
              identifiersFilter,
              showOnlyCreatedByUser,
@@ -114,6 +115,10 @@ class CollaborationFilters: Codable, Equatable {
     /// This is not nil when user enabled filtering by tags.
     /// If not nil and not empty then only match the collaborations that have (or their upload have) all of given tags (tag ids).
     var tagsFilter: [String]? = nil { didSet { postUpdate() }}
+    
+    /// This is not nil when user enabled filtering by categories.
+    /// If not nil and not empty then only match the collaborations that have any of given category (id).
+    var categoriesFilter: [String]? = nil { didSet { postUpdate() }}
 
     /// This is not nil when user enabled filtering by followers.
     /// If not nil and not empty then only match the collaborations that have any of given followers
@@ -177,6 +182,7 @@ class CollaborationFilters: Codable, Equatable {
         canvasFilter = defaults.canvasFilter
         hiddenStatuses = defaults.hiddenStatuses
         tagsFilter = defaults.tagsFilter
+        categoriesFilter = defaults.categoriesFilter
         followersFilter = defaults.followersFilter
         identifiersFilter = defaults.identifiersFilter
         showOnlyOverdue = defaults.showOnlyOverdue
@@ -195,6 +201,7 @@ class CollaborationFilters: Codable, Equatable {
         if lhs.hiddenStatuses != rhs.hiddenStatuses { return false }
         if lhs.canvasFilter != rhs.canvasFilter { return false }
         if lhs.tagsFilter != rhs.tagsFilter { return false }
+        if lhs.categoriesFilter != rhs.categoriesFilter { return false }
         if lhs.followersFilter != rhs.followersFilter { return false }
         if lhs.identifiersFilter != rhs.identifiersFilter { return false }
         if lhs.showOnlyOverdue != rhs.showOnlyOverdue { return false }
@@ -248,6 +255,9 @@ extension CollaborationFilters {
         if let tagsFilter, !tagsFilter.isEmpty {
             if !matchTags(tagsFilter, collaboration: collaboration) { return false }
         }
+        if let categoriesFilter, !categoriesFilter.isEmpty {
+            if !matchCategories(categoriesFilter, collaboration: collaboration) { return false }
+        }
         if let followersFilter, !followersFilter.isEmpty {
             if !matchFollowers(followersFilter, collaboration: collaboration) { return false }
         }
@@ -294,6 +304,12 @@ extension CollaborationFilters {
         }
 
         return true
+    }
+    
+    /// Return `true` if collaboration.category.id equals any of given ids
+    func matchCategories(_ categories: [String], collaboration: Collaboration) -> Bool {
+        guard let categoryId = collaboration.category?.id else { return false }
+        return categories.contains(categoryId)
     }
 
     /// Return `true` if collaboration.followers contain at least one follower from the followers filter

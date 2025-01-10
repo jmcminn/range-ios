@@ -16,6 +16,7 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
     private let usersViewModel: UsersViewModel
     private let canvasesViewModel: ItemPickerViewModel
     private let tagsViewModel: TagsViewModel
+    private let categoriesViewModel: ItemPickerViewModel
     private let followersViewModel: UsersViewModel
     private let identifiersViewModel: ItemPickerViewModel
 
@@ -40,6 +41,8 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
     private var statusSwitches = [Status: UISwitch]()
     private let filterByTagsSwitch = UISwitch()
     private let tagsView: SelectedTagsView
+    private let filterByCategoriesSwitch = UISwitch()
+    private let categoriesView: SelectedItemPickerItemsView
     private let filterByFollowersSwitch = UISwitch()
     private let followersView: SelectedUsersView
     private let filterByIdentifiersSwitch = UISwitch()
@@ -100,6 +103,12 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         filters.tagsFilter?.forEach { tagsViewModel.set(tagWithId: $0, selected: true) }
         tagsView = SelectedTagsView(viewModel: tagsViewModel, showEditTagCell: true)
         self.tagsViewModel = tagsViewModel
+        
+        let categoriesViewModel = ItemPickerViewModel(categoryPickerForModel: model, multiselect: true)
+        // preselect categories from the filter
+        filters.categoriesFilter?.forEach { categoriesViewModel.set(itemWithId: $0, selected: true) }
+        categoriesView = SelectedItemPickerItemsView(categoriesViewForModel: categoriesViewModel)
+        self.categoriesViewModel = categoriesViewModel
 
         let followersViewModel = UsersViewModel(
             projectParticipantsForModel: model,
@@ -136,6 +145,7 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
 
         usersViewModel.addDelegate(self)
         tagsViewModel.addDelegate(self)
+        categoriesViewModel.addDelegate(self)
         followersViewModel.addDelegate(self)
         canvasesViewModel.addDelegate(self)
         identifiersViewModel.addDelegate(self)
@@ -200,6 +210,9 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         filterByTagsSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByTagsSwitchAction()
         }), for: .valueChanged)
+        filterByCategoriesSwitch.addAction(.init(handler: { [weak self] _ in
+            self?.onFilterByCategoriesSwitchAction()
+        }), for: .valueChanged)
         filterByFollowersSwitch.addAction(.init(handler: { [weak self] _ in
             self?.onFilterByFollowersSwitchAction()
         }), for: .valueChanged)
@@ -241,6 +254,7 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         }
         filterByAssigneeSwitch.setOn(filters.assigneeFilter != nil, animated: false)
         filterByTagsSwitch.setOn(filters.tagsFilter != nil, animated: false)
+        filterByCategoriesSwitch.setOn(filters.categoriesFilter != nil, animated: false)
         filterByFollowersSwitch.setOn(filters.followersFilter != nil, animated: false)
         filterByIdentifiersSwitch.setOn(filters.identifiersFilter != nil, animated: false)
         showOnlyCreatedByUserSwitch.setOn(filters.showOnlyCreatedByUser, animated: false)
@@ -249,6 +263,7 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         usersView.setVisible(filters.assigneeFilterType == .select, animated: false)
         canvasesView.setVisible(filters.canvasFilter != nil, animated: false)
         tagsView.setVisible(filters.tagsFilter != nil, animated: false)
+        categoriesView.setVisible(filters.categoriesFilter != nil, animated: false)
         followersView.setVisible(filters.followersFilter != nil, animated: false)
         identifiersView.setVisible(filters.identifiersFilter != nil, animated: false)
         updateTaskPinsEnabled()
@@ -388,6 +403,13 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         addSpace(height: 9)
         addSeparator()
         
+        // ----- Categories ------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Categories")), control: filterByCategoriesSwitch,
+            bottomInset: 4) // the rest = 9 is added below categories view
+        addCategoriesView()
+        addSpace(height: 9)
+        addSeparator()
+        
         // ----- Followers -------------------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Filter by Followers")), control: filterByFollowersSwitch,
             bottomInset: 4) // the rest = 9 is added below followers view
@@ -463,6 +485,13 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         addSpace(height: 9)
         addSeparator()
         
+        // ----- Categories ------------------------------------------------------------------------
+        add(label: createLabel(text: String(localized: "Filter by Categories")), control: filterByCategoriesSwitch,
+            bottomInset: 4) // the rest = 9 is added below categories view
+        addCategoriesView()
+        addSpace(height: 9)
+        addSeparator()
+
         // ----- Followers -------------------------------------------------------------------------
         add(label: createLabel(text: String(localized: "Filter by Followers")), control: filterByFollowersSwitch,
             bottomInset: 4) // the rest = 9 is added below followers view
@@ -603,6 +632,18 @@ class CollaborationFiltersCardViewController: SheetCardViewController {
         tagsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tagsTapped)))
 
         addLeftRightGradients(to: tagsView)
+    }
+    
+    private func addCategoriesView() {
+        categoriesView.backgroundColor = stackView.backgroundColor
+        stackView.addArrangedSubview(categoriesView)
+        categoriesView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(40)
+        }
+        categoriesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(categoriesTapped)))
+
+        addLeftRightGradients(to: categoriesView)
     }
     
     private func addFollowersView() {
@@ -866,6 +907,37 @@ extension CollaborationFiltersCardViewController: TagsViewModelDelegate {
     }
 }
 
+// MARK: - categories
+
+extension CollaborationFiltersCardViewController {
+    /// Called when "Filter by Categories" switch is toggled
+    private func onFilterByCategoriesSwitchAction() {
+        if filterByCategoriesSwitch.isOn {
+            filters.categoriesFilter = []
+            categoriesView.setVisible(true)
+            showCategoriesSelector()
+        } else {
+            categoriesViewModel.clearSelection()
+            filters.categoriesFilter = nil
+            categoriesView.setVisible(false)
+        }
+        if let cardDragging {
+            cardDragging.setCardHeight(cardDragging.cardHeight(forPosition: cardDragging.position), animated: true)
+        }
+    }
+
+    /// Invoked when selected categories are tapped
+    @objc private func categoriesTapped() {
+        showCategoriesSelector()
+    }
+
+    /// Show Categories selection card operating on the categoriesViewModel used by this card (so all changes are propagated to this view automatically)
+    private func showCategoriesSelector() {
+        guard let presentingVC else { return }
+        ItemPickerCardViewController(categoryPickerForModel: categoriesViewModel).installAndShowCard(in: presentingVC)
+    }
+}
+
 // MARK: - followers
 
 extension CollaborationFiltersCardViewController {
@@ -940,6 +1012,8 @@ extension CollaborationFiltersCardViewController: ItemPickerViewModelDelegate {
             filters.canvasFilter = viewModel.selectedItems.map(\.id)
         } else if viewModel == identifiersViewModel {
             filters.identifiersFilter = viewModel.selectedItems.map(\.id)
+        } else if viewModel == categoriesViewModel {
+            filters.categoriesFilter = viewModel.selectedItems.map(\.id)
         }
     }
 }

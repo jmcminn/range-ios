@@ -12,7 +12,7 @@ extension ItemPickerViewModel {
 }
 
 extension SelectedItemPickerItemsView {
-    convenience init(categoriesViewModel viewModel: ItemPickerViewModel) {
+    convenience init(categoriesViewForModel viewModel: ItemPickerViewModel) {
         self.init(
             viewModel: viewModel,
             config: .init(editCellVariant: .editCategory, itemIconSystemName: nil)
