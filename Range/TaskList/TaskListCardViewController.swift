@@ -643,6 +643,8 @@ extension TaskListCardViewController {
                        handler: { [weak self] in self?.presentBulkUpdateDueDateCard() }),
             ActionItem(title: String(localized: "Assignee"), imageName: "person",
                        handler: { [weak self] in self?.presentBulkUpdateAssigneeCard() }),
+            ActionItem(title: String(localized: "Category"), imageName: "hammer",
+                       handler: { [weak self] in self?.presentBulkUpdateCategoryCard() }),
             ActionItem(title: String(localized: "Status"), imageName: "circle.dashed",
                        handler: { [weak self] in self?.presentBulkUpdateStatusCard() }),
             ActionItem(title: String(localized: "Followers"), imageName: "person.badge.plus",
@@ -790,6 +792,23 @@ extension TaskListCardViewController {
         let commands = selectedTasks.map { projectModel.update(assigneeId: assigneeId, forCollaboration: $0) }
         projectModel.run(commands) { error in
             if error != nil { ToastWindow.shared.showError(text: "Failed to update the assignee") }
+        }
+    }
+    
+    private func presentBulkUpdateCategoryCard() {
+        let pickerViewModel = ItemPickerViewModel(categoryPickerForModel: projectModel, multiselect: false)
+        let pickerVC = ItemPickerCardViewController(categoryPickerForModel: pickerViewModel)
+        pickerVC.onClose = { [weak self] in
+            guard let categoryId = pickerViewModel.selectedItems.first?.id else { return }
+            self?.bulkUpdateCategory(categoryId)
+        }
+        pickerVC.installAndShowCard(in: self)
+    }
+    
+    private func bulkUpdateCategory(_ categoryId: String) {
+        let commands = selectedTasks.map { projectModel.update(category: categoryId, forCollaboration: $0) }
+        projectModel.run(commands) { error in
+            if error != nil { ToastWindow.shared.showError(text: "Failed to update the category") }
         }
     }
 

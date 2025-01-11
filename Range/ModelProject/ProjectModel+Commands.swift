@@ -417,6 +417,10 @@ extension ProjectModel {
     func update(category categoryId: String, forCollaboration collaboration: Collaboration) -> Command {
         UpdateCollaborationCategoryCommand(collaborationId: collaboration.id, categoryId: categoryId)
     }
+    
+    func update(category categoryId: String, forCollaboration collaborationId: String) -> Command {
+        UpdateCollaborationCategoryCommand(collaborationId: collaborationId, categoryId: categoryId)
+    }
 
     /// Updates the status for collaboration if it's different than the current one.
     func update(status: Status, forCollaboration collaboration: Collaboration) -> Command? {
