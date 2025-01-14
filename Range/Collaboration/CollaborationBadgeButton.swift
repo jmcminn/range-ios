@@ -11,8 +11,8 @@ class CollaborationBadgeButton: RangeButton {
     private var commentsNotificationToken: NotificationToken?
     // optional label showing number of uploads, only for photo collabs (= no status)
     private var numberOfUploadsLabel: UILabel?
-    // optional checkmark shown for collaborations having status (instead of the numberOfUploadsLabel)
-    private var checkmarkView: UIImageView?
+    // optional category icon or checkmark shown for collaborations having status (instead of the numberOfUploadsLabel)
+    private var iconView: UIImageView?
     // optional marker view showing a flag if there are any uncompleted comments or an overdue icon
     private var markerView: UIImageView?
 
@@ -59,14 +59,26 @@ class CollaborationBadgeButton: RangeButton {
         guard !collaboration.isInvalidated else { return }
         let uploadsCount = collaboration.uploads.count
 
-        if collaboration.status != nil {
+        if let category = collaboration.category, !category.isDefault,
+           let icon = category.icon?.imageResized(toFill: 28).withRenderingMode(.alwaysTemplate)
+        {
+            // display category icon
+            numberOfUploadsLabel?.isHidden = true
+            if let iconView {
+                iconView.isHidden = false
+            } else {
+                setupIconView()
+            }
+            iconView?.image = icon
+        } else if collaboration.status != nil {
             // display status
             numberOfUploadsLabel?.isHidden = true
-            if let checkmarkView = checkmarkView {
-                checkmarkView.isHidden = false
+            if let iconView {
+                iconView.isHidden = false
             } else {
-                setupCheckmarkView()
+                setupIconView()
             }
+            setCheckmarkIcon()
         } else {
             // display number of photos
             if let label = numberOfUploadsLabel {
@@ -75,13 +87,13 @@ class CollaborationBadgeButton: RangeButton {
                 setupNumberOfUploadsLabel()
             }
             numberOfUploadsLabel?.text = uploadsCount < 9 ? String(uploadsCount) : "9⁺"
-            checkmarkView?.isHidden = true
+            iconView?.isHidden = true
         }
 
         if !collaboration.isArchived, !collaboration.isCompleted,
            collaboration.isOverdue || collaboration.hasUncompletedNotes
         {
-            if let markerView = markerView {
+            if let markerView {
                 markerView.isHidden = false
             } else {
                 setupMarkerView()
@@ -126,16 +138,20 @@ class CollaborationBadgeButton: RangeButton {
         numberOfUploadsLabel = label
     }
 
-    /// Setup image view showing checkmark for collaborations with status
-    private func setupCheckmarkView() {
-        let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
-        let checkmark = UIImageView(image: UIImage(systemName: "checkmark", withConfiguration: imageConfig))
-        checkmark.tintColor = .Neutral_01
-        addSubview(checkmark)
-        checkmark.snp.makeConstraints { make in
+    /// Setup image view showing category icon or checkmark for collaborations with status
+    private func setupIconView() {
+        let iconView = UIImageView()
+        iconView.tintColor = .Neutral_01
+        addSubview(iconView)
+        iconView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-        checkmarkView = checkmark
+        self.iconView = iconView
+    }
+
+    private func setCheckmarkIcon() {
+        let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
+        iconView?.image = UIImage(systemName: "checkmark", withConfiguration: imageConfig)
     }
 
     @available(*, unavailable)
