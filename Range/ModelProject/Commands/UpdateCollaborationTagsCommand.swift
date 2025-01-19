@@ -42,9 +42,8 @@ extension UpdateCollaborationTagsCommand: LocalCommand {
 extension UpdateCollaborationTagsCommand: FirebaseFunctionCommand {
     var functionName: String { "updateCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             "tags": tags.map { ["id": $0.id, "name": $0.name] },
             "addTags": add,

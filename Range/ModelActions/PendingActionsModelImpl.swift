@@ -14,8 +14,6 @@ class PendingActionsModelImpl: PendingActionsModel {
     let defaults: UserDefaults
     /// Firestore reference
     let firestore = Firestore.firestore()
-    /// Firebase functions
-    let firebaseFunctions = Functions.functions(region: "us-west2")
 
     /// for encoding/decoding actions as JSON data to store in UserDefaults
     let jsonEncoder = JSONEncoder()
@@ -149,9 +147,9 @@ class PendingActionsModelImpl: PendingActionsModel {
         // count uploads created when creating collaboration
         let uploadsCountInCreateCollaboration = actions
             .compactMap { $0.command.localCommand as? CreateCollaborationCommand }
-            .map { $0.uploads.count }
+            .map(\.uploads.count)
             .reduce(0, +)
-        
+
         return uploadsCount + uploadsCountInCreateCollaboration
     }
 
@@ -475,11 +473,15 @@ class PendingActionsModelImpl: PendingActionsModel {
     /// To be only called from `maybePerformAction`
     private func performAction(_ action: Action, completion: @escaping (Error?) -> Void) {
         if let functionCommand = action.command.firebaseFunctionCommand {
-            Functions.functions(region: "us-west2")
-                .httpsCallable(functionCommand.functionName)
-                .call(functionCommand.functionData(action.projectId)) { _, error in
-                    completion(error)
-                }
+            let data = [
+                "functionName": functionCommand.functionName,
+                "projectId": action.projectId,
+            ]
+            .merging(functionCommand.functionData ?? [:]) { _, new in new }
+            Functions
+                .functions(region: "us-west2")
+                .httpsCallable("genericOnCall")
+                .call(data) { _, error in completion(error) }
         } else {
             // assert for debug builds but mark as obsolete in the prod app
             assertionFailure("Action command not supported \(action.name)")

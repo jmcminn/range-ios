@@ -3,7 +3,7 @@ import Foundation
 import RealmSwift
 
 struct CreateCommentCommand: Command, Codable, Equatable {
-    var operations: [CommandOperationType : [String]] {
+    var operations: [CommandOperationType: [String]] {
         [.create: [commentId]]
     }
 
@@ -89,9 +89,8 @@ extension CreateCommentCommand: LocalCommand {
 extension CreateCommentCommand: FirebaseFunctionCommand {
     var functionName: String { "createComment" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "commentId": commentId,
             "parentType": parentType,
             "parentId": parentId,

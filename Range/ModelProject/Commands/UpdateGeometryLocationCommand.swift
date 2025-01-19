@@ -50,9 +50,8 @@ extension UpdateGeometryLocationCommand: LocalCommand {
 extension UpdateGeometryLocationCommand: FirebaseFunctionCommand {
     var functionName: String { "updateCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             "canvasId": canvasId,
             "coordinates": coordinatesForFirestore,

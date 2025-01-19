@@ -37,9 +37,8 @@ extension UpdateUploadTagsCommand: LocalCommand {
 extension UpdateUploadTagsCommand: FirebaseFunctionCommand {
     var functionName: String { "updateUpload" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "uploadId": uploadId,
             "tags": tags.map { ["id": $0.id, "name": $0.name] },
         ]

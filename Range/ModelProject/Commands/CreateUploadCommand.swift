@@ -79,9 +79,8 @@ extension CreateUploadCommand: PendingUploadCommand {
 extension CreateUploadCommand: FirebaseFunctionCommand {
     var functionName: String { "createUpload" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             "uploadId": upload.mediaKey.uploadId,
             "fileType": upload.mediaKey.fileType.rawValue,

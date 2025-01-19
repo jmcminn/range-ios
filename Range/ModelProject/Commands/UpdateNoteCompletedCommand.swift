@@ -34,9 +34,8 @@ extension UpdateNoteCompletedCommand: LocalCommand {
 extension UpdateNoteCompletedCommand: FirebaseFunctionCommand {
     var functionName: String { "updateComment" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "commentId": noteId,
             "completedTimestamp": completedTimestamp.map { Int($0.timeIntervalSince1970 * 1000) } as Any,
         ]

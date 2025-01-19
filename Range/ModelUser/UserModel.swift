@@ -393,7 +393,8 @@ extension UserModel {
         let inviterDisplayName = invitation.inviterDisplayName
         Task { @MainActor in
             do {
-                _ = try await Functions.functions(region: "us-west2").httpsCallable("acceptInvitation").call([
+                _ = try await Functions.functions(region: "us-west2").httpsCallable("genericOnCall").call([
+                    "functionName": "acceptInvitation",
                     "invitationId": invitation.id,
                 ])
                 ToastWindow.shared.showSuccess(

@@ -36,6 +36,6 @@ protocol PendingUploadCommand: Command {
 protocol FirebaseFunctionCommand {
     /// The name of the function to be called
     var functionName: String { get }
-    /// Parameters to be passed to function (for given projectId)
-    func functionData(_ projectId: String) -> Any?
+    /// Parameters to be passed to function (excluding projectId which is handled by the command runner)
+    var functionData: [String: Any?]? { get }
 }

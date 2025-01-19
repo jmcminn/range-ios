@@ -30,8 +30,8 @@ class KnockClient {
             }
 
             let result = try await Functions.functions(region: "us-west2")
-                .httpsCallable("updateKnockUserToken")
-                .call()
+                .httpsCallable("genericOnCall")
+                .call(["functionName": "updateKnockUserToken"])
             guard let data = result.data as? [String: Any], let userToken = data["token"] as? String else {
                 throw "Cannot connect to in app notifications"
             }

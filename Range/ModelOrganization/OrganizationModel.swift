@@ -273,6 +273,7 @@ class OrganizationModel: NSObject, RealmModel {
             "styleUrl": "mapbox://styles/mapbox/satellite-streets-v11",
         ]
         let parameters: [String: Any?] = [
+            "functionName": "createProject",
             "organizationId": organizationId,
             "projectId": projectId,
             "projectType": projectType,
@@ -286,7 +287,7 @@ class OrganizationModel: NSObject, RealmModel {
             "canvasSources": [mapCanvasSource],
         ]
         _ = try await Functions.functions(region: "us-west2")
-            .httpsCallable("createProject")
+            .httpsCallable("genericOnCall")
             .call(parameters)
 
         analytics?._trackOrganizationEvent(name: "project created", self, [
@@ -302,10 +303,11 @@ class OrganizationModel: NSObject, RealmModel {
     @MainActor
     func deleteProject(_ project: ProjectSummary) async throws {
         let parameters: [String: Any?] = [
+            "functionName": "deleteProject",
             "projectId": project.id,
         ]
         _ = try await Functions.functions(region: "us-west2")
-            .httpsCallable("deleteProject")
+            .httpsCallable("genericOnCall")
             .call(parameters)
     }
 
@@ -380,8 +382,11 @@ class OrganizationModel: NSObject, RealmModel {
         guard !projectIds.isEmpty else { return }
 
         let result = try await Functions.functions(region: "us-west2")
-            .httpsCallable("getProjectInfo")
-            .call(["projectIds": projectIds])
+            .httpsCallable("genericOnCall")
+            .call([
+                "functionName": "getProjectInfo",
+                "projectIds": projectIds
+            ])
 
         guard let result = result.data as? [[String: Any]]
         else {

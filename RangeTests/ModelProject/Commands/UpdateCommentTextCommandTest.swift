@@ -45,9 +45,8 @@ final class UpdateCommentTextCommandNameFirebaseFunctionTest: XCTestCase {
     }
 
     func test_functionData() throws {
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "commentId": "comment1",
             "text": "text",
         ]

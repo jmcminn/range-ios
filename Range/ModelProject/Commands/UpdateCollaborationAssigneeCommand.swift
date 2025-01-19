@@ -4,7 +4,7 @@ import RealmSwift
 
 /// Update assignee for given Collaboration(s)
 struct UpdateCollaborationAssigneeCommand: Command, Codable, Equatable {
-    var operations: [CommandOperationType : [String]] {
+    var operations: [CommandOperationType: [String]] {
         [.update: [collaborationId]]
     }
 
@@ -38,9 +38,8 @@ extension UpdateCollaborationAssigneeCommand: LocalCommand {
 extension UpdateCollaborationAssigneeCommand: FirebaseFunctionCommand {
     var functionName: String { "updateCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             "assigneeId": assigneeId,
         ]

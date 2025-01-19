@@ -47,8 +47,8 @@ final class DeleteUploadCommandFirebaseFunctionTest: XCTestCase {
 
     func test_functionData() throws {
         let command = DeleteUploadCommand(uploadId: "upload1")
-        let data = command.functionData("project1") as? [String: Any?]
-        let expected: [String: Any?] = ["projectId": "project1", "uploadId": "upload1"]
+        let data = command.functionData
+        let expected: [String: Any?] = ["uploadId": "upload1"]
         // There's no easy way to compare heterogenous dictionaries in swift, cast to NSDictionary
         // so the compiler stops saying that the types are not comparable, etc.
         XCTAssertEqual(try XCTUnwrap(data) as NSDictionary, expected as NSDictionary)

@@ -27,9 +27,8 @@ extension UpdateGeometryArchivedCommand: LocalCommand {
 extension UpdateGeometryArchivedCommand: FirebaseFunctionCommand {
     var functionName: String { "updateCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             "archivedTimestamp": archivedTimestamp.map { Int($0.timeIntervalSince1970 * 1000) } as Any,
         ]

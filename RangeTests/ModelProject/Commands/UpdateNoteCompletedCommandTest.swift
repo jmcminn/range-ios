@@ -69,9 +69,8 @@ final class UpdateNoteCompletedCommandFirebaseFunctionTest: XCTestCase {
         )
         XCTAssertEqual(command.functionName, "updateComment")
 
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "commentId": "comment1",
             "completedTimestamp": Int(completedTimestamp.timeIntervalSince1970 * 1000),
         ]
@@ -84,9 +83,8 @@ final class UpdateNoteCompletedCommandFirebaseFunctionTest: XCTestCase {
         let command = UpdateNoteCompletedCommand(noteId: "comment1")
         XCTAssertEqual(command.functionName, "updateComment")
 
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "commentId": "comment1",
             "completedTimestamp": nil,
         ]

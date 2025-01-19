@@ -115,9 +115,8 @@ final class CreateCommentCommandFirebaseFunctionTest: XCTestCase {
 
     func test_functionData_uploadComment() throws {
         let command = CreateCommentCommand.uploadComment(uploadId: "upload1", authorId: "user1", text: "text")
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "commentId": command.commentId,
             "parentType": "Upload",
             "parentId": "upload1",
@@ -136,9 +135,8 @@ final class CreateCommentCommandFirebaseFunctionTest: XCTestCase {
             text: "text",
             isNote: true
         )
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "commentId": command.commentId,
             "parentType": "Collaboration",
             "parentId": "collaboration1",

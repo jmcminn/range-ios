@@ -175,9 +175,8 @@ extension CreateCollaborationCommand: PendingUploadCommand {
 extension CreateCollaborationCommand: FirebaseFunctionCommand {
     var functionName: String { "createCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "canvasId": canvasId,
             "geometryId": geometryId,
             "featureId": featureId,

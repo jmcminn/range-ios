@@ -96,9 +96,8 @@ final class CreateUploadCommandFirebaseFunctionTest: ProjectModelTestCase {
             uploadDescription: "upload description",
             upload: CommandUpload(mediaKey: _mediaKey(uploadId: "upload1"), fileSize: 1024, imageHeightToWidth: 1.0)
         )
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "collaborationId": "collaboration1",
             "uploadId": "upload1",
             "fileType": "jpeg",
@@ -131,9 +130,8 @@ final class CreateUploadCommandFirebaseFunctionTest: ProjectModelTestCase {
                 fileSize: 1024, imageHeightToWidth: nil
             )
         )
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "collaborationId": "collaboration1",
             "uploadId": "upload1",
             "fileType": "pdf",

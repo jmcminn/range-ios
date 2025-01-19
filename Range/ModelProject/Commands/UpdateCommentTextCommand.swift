@@ -26,9 +26,8 @@ extension UpdateCommentTextCommand: LocalCommand {
 extension UpdateCommentTextCommand: FirebaseFunctionCommand {
     var functionName: String { "updateComment" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "commentId": commentId,
             "text": text,
         ]

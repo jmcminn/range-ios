@@ -26,10 +26,7 @@ extension DeleteUploadCommand: LocalCommand {
 extension DeleteUploadCommand: FirebaseFunctionCommand {
     var functionName: String { "deleteUpload" }
 
-    func functionData(_ projectId: String) -> Any? {
-        [
-            "projectId": projectId,
-            "uploadId": uploadId,
-        ]
+    var functionData: [String: Any?]? {
+        ["uploadId": uploadId]
     }
 }

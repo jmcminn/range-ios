@@ -26,9 +26,8 @@ extension UpdateUploadDescriptionCommand: LocalCommand {
 extension UpdateUploadDescriptionCommand: FirebaseFunctionCommand {
     var functionName: String { "updateUpload" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "uploadId": uploadId,
             "description": uploadDescription
         ]

@@ -4,7 +4,7 @@ import RealmSwift
 
 /// Delete the `Collaboration`
 struct DeleteCollaborationCommand: Command, Codable, Equatable {
-    var operations: [CommandOperationType : [String]] {
+    var operations: [CommandOperationType: [String]] {
         [.delete: [collaborationId]]
     }
 
@@ -35,10 +35,7 @@ extension DeleteCollaborationCommand: LocalCommand {
 extension DeleteCollaborationCommand: FirebaseFunctionCommand {
     var functionName: String { "deleteCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
-        [
-            "projectId": projectId,
-            "collaborationId": collaborationId,
-        ]
+    var functionData: [String: Any?]? {
+        ["collaborationId": collaborationId]
     }
 }

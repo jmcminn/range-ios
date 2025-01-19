@@ -34,9 +34,8 @@ extension UpdateUploadAnnotationsCommand: PendingUploadCommand {
 extension UpdateUploadAnnotationsCommand: FirebaseFunctionCommand {
     var functionName: String { "updateUpload" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "uploadId": uploadId,
             "annotations": annotations?.persistableValue
         ]

@@ -54,8 +54,9 @@ extension ProjectModel {
 
     private func makeGetAllDataCall(since: Date?) async throws -> HTTPSCallableResult {
         try await Functions.functions(region: "us-west2")
-            .httpsCallable("getAllDataForProject")
+            .httpsCallable("genericOnCall")
             .call([
+                "functionName": "getAllDataForProject",
                 "projectId": projectId,
                 "since": since.map { Int($0.timeIntervalSince1970 * 1000) } as Any,
                 "selectedFields": [

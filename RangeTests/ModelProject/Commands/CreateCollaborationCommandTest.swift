@@ -166,9 +166,9 @@ final class CreateCollaborationCommandFirebaseFunctionTest: XCTestCase {
     }
 
     func test_functionData() throws {
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1", "canvasId": "canvas1",
+            "canvasId": "canvas1",
             "geometryId": "geometry1", "featureId": "feature1", "collaborationId": "collaboration1",
             "coordinates": [-96.5, 32.5], "name": "name", "description": "description",
             "assigneeId": "user2", "statusId": nil, "dueDateTimestamp": 100_000,

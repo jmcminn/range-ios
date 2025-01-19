@@ -4,7 +4,7 @@ import RealmSwift
 
 /// Delete the `Comment`
 struct DeleteCommentCommand: Command, Codable, Equatable {
-    var operations: [CommandOperationType : [String]] {
+    var operations: [CommandOperationType: [String]] {
         [.delete: [commentId]]
     }
 
@@ -25,10 +25,7 @@ extension DeleteCommentCommand: LocalCommand {
 extension DeleteCommentCommand: FirebaseFunctionCommand {
     var functionName: String { "deleteComment" }
 
-    func functionData(_ projectId: String) -> Any? {
-        [
-            "projectId": projectId,
-            "commentId": commentId,
-        ]
+    var functionData: [String: Any?]? {
+        ["commentId": commentId]
     }
 }

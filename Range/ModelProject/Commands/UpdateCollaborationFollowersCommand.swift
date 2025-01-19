@@ -27,9 +27,8 @@ extension UpdateCollaborationFollowersCommand: LocalCommand {
 extension UpdateCollaborationFollowersCommand: FirebaseFunctionCommand {
     var functionName: String { "updateCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             "followers": followerIds
         ]

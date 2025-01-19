@@ -31,9 +31,8 @@ extension UpdateCollaborationDueDateCommand: LocalCommand {
 extension UpdateCollaborationDueDateCommand: FirebaseFunctionCommand {
     var functionName: String { "updateCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             FirestoreCollaboration.CodingKeys.dueDateTimestamp.rawValue: dueDateTimestamp
                 .map { Int($0.timeIntervalSince1970 * 1000) } as Any,

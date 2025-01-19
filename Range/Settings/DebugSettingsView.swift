@@ -15,49 +15,6 @@ struct DebugSettingsView: View {
 
     var body: some View {
         Form {
-//            #if DEBUG
-//                Section(header: Text("Callable functions")) {
-//                    Group { // Group needed because of 10 subviews limit
-//                        actionButton(title: "create organization", action: DebugSettings.createOrganizationTest)
-//                    }
-//                    Group {
-//                        actionButton(title: "change role", action: DebugSettings.changeOrganizationRoleTest)
-//                        actionButton(
-//                            title: "add organization participant",
-//                            action: DebugSettings.addOrganizationParticipantTest
-//                        )
-//                        actionButton(
-//                            title: "remove organization participant",
-//                            action: DebugSettings.removeOrganizationParticipantTest
-//                        )
-//                        actionButton(
-//                            title: "add project participant",
-//                            action: DebugSettings.addProjectParticipantTest
-//                        )
-//                        actionButton(
-//                            title: "remove project participant",
-//                            action: DebugSettings.removeProjectParticipantTest
-//                        )
-//                        actionButton(title: "invite to organization", action: DebugSettings.inviteToOrganizationTest)
-//                        actionButton(
-//                            title: "invite existing user to organization",
-//                            action: DebugSettings.inviteExistingUserToOrganizationTest
-//                        )
-//                        actionButton(
-//                            title: "invite member to organization",
-//                            action: DebugSettings.inviteMemberToOrganizationTest
-//                        )
-//                        actionButton(
-//                            title: "resend invitation",
-//                            action: DebugSettings.resendInvitationTest
-//                        )
-//                        actionButton(
-//                            title: "accept invitation",
-//                            action: DebugSettings.acceptInvitationTest
-//                        )
-//                    }
-//                }
-//            #endif
             Section(header: Text("Appearance")) {
                 actionButton(
                     title: "Toggle Light/Dark mode",

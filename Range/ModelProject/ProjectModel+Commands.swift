@@ -568,22 +568,24 @@ extension ProjectModel {
     @MainActor
     func addProjectParticipant(_ userId: String) async throws {
         let parameters: [String: Any?] = [
+            "functionName": "addProjectParticipant",
             "projectId": projectId,
             "userId": userId,
         ]
         _ = try await Functions.functions(region: "us-west2")
-            .httpsCallable("addProjectParticipant")
+            .httpsCallable("genericOnCall")
             .call(parameters)
     }
 
     @MainActor
     func removeProjectParticipant(_ userId: String) async throws {
         let parameters: [String: Any?] = [
+            "functionName": "removeProjectParticipant",
             "projectId": projectId,
             "userId": userId,
         ]
         _ = try await Functions.functions(region: "us-west2")
-            .httpsCallable("removeProjectParticipant")
+            .httpsCallable("genericOnCall")
             .call(parameters)
     }
 }

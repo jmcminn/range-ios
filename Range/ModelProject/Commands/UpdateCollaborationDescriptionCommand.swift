@@ -30,9 +30,8 @@ extension UpdateCollaborationDescriptionCommand: LocalCommand {
 extension UpdateCollaborationDescriptionCommand: FirebaseFunctionCommand {
     var functionName: String { "updateCollaboration" }
 
-    func functionData(_ projectId: String) -> Any? {
+    var functionData: [String: Any?]? {
         [
-            "projectId": projectId,
             "collaborationId": collaborationId,
             FirestoreCollaboration.CodingKeys.descriptionString.rawValue: collaborationDescription,
         ]

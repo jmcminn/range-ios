@@ -83,9 +83,8 @@ final class UpdateGeometryLocationCommandFirebaseFunctionTest: XCTestCase {
         )
         XCTAssertEqual(command.functionName, "updateCollaboration")
 
-        let data = command.functionData("project1") as? [String: Any?]
+        let data = command.functionData
         let expected: [String: Any?] = [
-            "projectId": "project1",
             "collaborationId": "collaboration1",
             "canvasId": "canvas2",
             "coordinates": "[-96.5,33.5]",
