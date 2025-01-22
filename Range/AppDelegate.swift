@@ -108,6 +108,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 AppCheck.setAppCheckProviderFactory(AppAttestAppCheckProviderFactory())
             #endif
 
+            // The Firebase is configured based on the GoogleService-Info file for given environment.
+            // The environment is selected by a custom script in Build Phases that copies
+            // the GoogleService-Info.(custom|dev|demo|staging|production).plist to
+            // GoogleService-Info.plist during the build.
             FirebaseApp.configure()
             let firestoreSettings = Firestore.firestore().settings
             // ACHTUNG: persistence is now disabled for Firestore. It wasn't working correctly anyway
