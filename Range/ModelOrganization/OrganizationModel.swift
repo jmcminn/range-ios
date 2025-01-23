@@ -142,7 +142,7 @@ class OrganizationModel: NSObject, RealmModel {
         // are initially loaded
         projectsNotificationToken = projects.observe { [weak self] change in
             switch change {
-            case let .update(_, deletions: deletions, insertions: insertions, modifications: modifications):
+            case let .update(_, deletions: _, insertions: insertions, modifications: _):
                 // only if new projects inserted, don't react to modifications as the updateStatusCounts is
                 // causing the motification so it would cause an infinite loop
                 if !insertions.isEmpty {

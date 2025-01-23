@@ -16,13 +16,17 @@ class StatusPickerCardViewController: SheetCardViewController {
 
     var onStatusPicked: ((StatusOption) -> Void)?
 
-
     /// Initializer
     ///
     /// - Parameters:
     ///     - title:                         title of the card
     ///     - options:                   statuses to show in the picker
-    init(title: String, options: [StatusOption], selectedOption: StatusOption?, onStatusPicked: ((StatusOption) -> Void)? = nil) {
+    init(
+        title: String,
+        options: [StatusOption],
+        selectedOption: StatusOption?,
+        onStatusPicked: ((StatusOption) -> Void)? = nil
+    ) {
         self.options = options
         self.selectedOption = selectedOption
 
@@ -97,7 +101,7 @@ extension StatusPickerCardViewController: UITableViewDelegate, UITableViewDataSo
 
         let cell: StatusTableViewCell
 
-        if case let .status(status) = statusOption {
+        if case .status = statusOption {
             cell = tableView.dequeueReusableCell(
                 withIdentifier: StatusTableViewCell.Variant.status.rawValue,
                 for: indexPath

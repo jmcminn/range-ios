@@ -204,7 +204,7 @@ extension ProjectModel {
         uploadDescription: String? = nil,
         isDuplicate: Bool
     ) async throws -> CreateCollaborationCommand {
-        if let canvasSource = canvas.currentCanvasSource {
+        if canvas.currentCanvasSource != nil {
             // The canvas source is set if it's used in UI and can theoretically be null here
             // (although it shouldn't happen if user is adding a pin)
             let eventName = isDuplicate ? "collaboration duplicated" : "collaboration created"
