@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/segmentio/analytics-swift.git",
       "state" : {
-        "revision" : "f6f3a7fafcace7bcdbda329f9b309f31bf9a42a1",
-        "version" : "1.5.11"
+        "revision" : "bfa46967624eb54b046c994ac80b2d65ab24b59d",
+        "version" : "1.7.2"
       }
     },
     {
