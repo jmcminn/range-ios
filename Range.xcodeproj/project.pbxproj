@@ -2426,7 +2426,7 @@
 				0A632EA427E49636001A019B /* Sources */,
 				0A632EA527E49636001A019B /* Frameworks */,
 				0A632EA627E49636001A019B /* Resources */,
-				0A378374291A6BC90018BF3C /* ShellScript */,
+				0A378374291A6BC90018BF3C /* Copy GoogleService-Info.plist */,
 				0AE97FD52D4291F100F8F62A /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -2592,8 +2592,9 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0A378374291A6BC90018BF3C /* ShellScript */ = {
+		0A378374291A6BC90018BF3C /* Copy GoogleService-Info.plist */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -2601,6 +2602,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Copy GoogleService-Info.plist";
 			outputFileListPaths = (
 			);
 			outputPaths = (
