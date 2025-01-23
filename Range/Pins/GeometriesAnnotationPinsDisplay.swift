@@ -121,7 +121,7 @@ class GeometriesAnnotationPinsDisplay: GeometriesPinsDisplay {
                 .compactMap { self.convertFeatureToPin($0.queriedFeature.feature) }
                 .filter {
                     // skip pins not matching filters
-                    guard let collaborationId = $0.userInfo?["collaborationId"] as? String,
+                    guard case let .string(collaborationId) = $0.customData["collaborationId"],
                           let collaboration = self.collaborations[collaborationId] else { return false }
                     return self.canvasFilters.match(collaboration)
                 }
@@ -231,9 +231,7 @@ extension GeometriesAnnotationPinsDisplay {
         }
         var pin = PointAnnotation(id: geometry.id, point: point)
         collaborations[collaboration.id] = collaboration
-        pin.userInfo = [
-            "collaborationId": collaboration.id,
-        ]
+        pin.customData["collaborationId"] = .string(collaboration.id)
         setPointAnnotationSelection(&pin)
         return pin
     }
@@ -254,7 +252,7 @@ extension GeometriesAnnotationPinsDisplay {
 
     /// Update opacity and symbol order for pins based on the selection state.
     private func setPointAnnotationSelection(_ pin: inout PointAnnotation) {
-        guard let collaborationId = pin.userInfo?["collaborationId"] as? String,
+        guard case let .string(collaborationId) = pin.customData["collaborationId"],
               let collaboration = collaborations[collaborationId] else { return }
         let selected = pin.id == selectedPin?.id
         let anythingSelected = selectedPin != nil
@@ -318,7 +316,7 @@ extension GeometriesAnnotationPinsDisplay {
                 .compactMap { self.convertFeatureToPin($0.queriedFeature.feature) }
                 .filter {
                     // skip pins not matching filters
-                    guard let collaborationId = $0.userInfo?["collaborationId"] as? String,
+                    guard case let .string(collaborationId) = $0.customData["collaborationId"],
                           let collaboration = self.collaborations[collaborationId] else { return false }
                     return self.canvasFilters.match(collaboration)
                 }
@@ -361,7 +359,7 @@ extension GeometriesAnnotationPinsDisplay: CanvasViewControllerDelegate {
     func canvasLongPressRecognized(at point: CGPoint) {
         findPin(at: point) { [weak self] pin in
             if let self, let pin, let pointAnnotation = self.pointAnnotationsById[pin.id],
-               let collaborationId = pointAnnotation.userInfo?["collaborationId"] as? String,
+               case let .string(collaborationId) = pointAnnotation.customData["collaborationId"],
                let collaboration = self.collaborations[collaborationId]
             {
                 UIApplication.shared.sendAction(
