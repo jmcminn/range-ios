@@ -82,7 +82,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
     // test commands created for adding a photo at a given location
     @MainActor
     func testCreatePhotoCollaboration() async throws {
-        guard let command = try await model.createCollaboration(
+        let command = try await model.createCollaboration(
             at: CLLocationCoordinate2D(latitude: 32.5, longitude: -96.5),
             in: canvas,
             withGeometryId: "geometry1",
@@ -96,10 +96,7 @@ class ProjectModelCommandsTest: ProjectModelTestCase {
             uploadTags: [TagViewModel(id: "tag1", name: "tag 1", usageCount: 0)],
             uploadDescription: "upload description",
             isDuplicate: false
-        ) as? CreateCollaborationCommand else {
-            XCTFail("addPhotos failed")
-            return
-        }
+        )
         XCTAssertEqual(command, CreateCollaborationCommand(
             authorId: "user1",
             canvasId: "canvas1",

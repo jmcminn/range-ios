@@ -41,7 +41,7 @@ final class PendingActionsV1MigrationTest: XCTestCase {
         // when converted to v2
         let data = _migrateV1PendingActions(data: v1Data)
         let actions = try data.map { try jsonDecoder.decode(Action.self, from: $0) }
-        let commands = actions.compactMap { $0.command.localCommand as? Command }
+        let commands = actions.compactMap { $0.command.localCommand }
 
         // then AddUploadsToCollaborationCommand is converted to [CreateUploadCommand]
         XCTAssertEqual(commands[0] as? DeleteUploadCommand, DeleteUploadCommand(uploadId: "upload1"))

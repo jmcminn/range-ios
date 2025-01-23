@@ -133,7 +133,7 @@ class FirestoreGeometryTest: ProjectModelTestCase {
         // 1. create 2 canvases and geometry in canvas1
         let canvas1 = Canvas(id: "canvas1", name: "")
         let canvas2 = Canvas(id: "canvas2", name: "")
-        var geometry1 = Geometry(placeholderId: "geometry1")
+        let geometry1 = Geometry(placeholderId: "geometry1")
         try realm.write {
             realm.add([canvas1, canvas2, geometry1])
             canvas1.geometries.insert(geometry1)

@@ -75,7 +75,6 @@ final class UpdateGeometryLocationCommandRealmTest: ProjectModelTestCase {
 /// Tests getting the parameters for Firebase function call
 final class UpdateGeometryLocationCommandFirebaseFunctionTest: XCTestCase {
     func testApply_successful() throws {
-        let archivedTimestamp = Date()
         let command = try UpdateGeometryLocationCommand(
             collaborationId: "collaboration1",
             canvasId: "canvas2",
