@@ -142,7 +142,6 @@ class CameraService: ObservableObject {
             session.addOutput(photoOutput)
 
             // configure the output
-            photoOutput.isHighResolutionCaptureEnabled = true
             photoOutput.maxPhotoQualityPrioritization = .quality
             DispatchQueue.main.async {
                 self.maxZoomFactor = min(10.0, videoDeviceInput.device.activeFormat.videoMaxZoomFactor)
@@ -325,8 +324,8 @@ class CameraService: ObservableObject {
 
             // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
 
-            // TODO: this is where we would resize the photo if we don't want the "high-res" 4032
-            let resizedPhotoData = resizeImage(imageData: photoCaptureProcessor.photoData, maxResolution: 4032)
+            // TODO: this is where we would resize the photo if we don't want the "high-res" 4096
+            let resizedPhotoData = resizeImage(imageData: photoCaptureProcessor.photoData, maxResolution: 4096)
             completion(resizedPhotoData)
             self.canCapturePhoto = true
 
@@ -375,8 +374,6 @@ class CameraService: ObservableObject {
         if videoDeviceInput.device.hasFlash, videoDeviceInput.device.isFlashAvailable {
             photoSettings.flashMode = flashMode
         }
-
-        photoSettings.isHighResolutionPhotoEnabled = true
 
         // Sets the preview thumbnail pixel format
         if !photoSettings.__availablePreviewPhotoPixelFormatTypes.isEmpty {
