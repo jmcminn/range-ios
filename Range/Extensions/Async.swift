@@ -1,5 +1,4 @@
 import Foundation
-import Realm
 import RealmSwift
 
 /// Runs given closure on given queue as an async function

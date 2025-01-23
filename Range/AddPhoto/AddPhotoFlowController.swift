@@ -2,7 +2,6 @@ import AVFoundation
 import Kingfisher
 import OSLog
 import PhotosUI
-import Realm
 import RealmSwift
 import Turf
 import UIKit

@@ -5,7 +5,6 @@ import Foundation
 import Kingfisher
 import Network
 import OSLog
-import Realm
 import RealmSwift
 import Sentry
 import UIKit

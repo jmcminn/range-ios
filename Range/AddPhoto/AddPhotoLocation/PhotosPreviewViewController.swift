@@ -1,6 +1,5 @@
 import Foundation
 import OSLog
-import Realm
 import RealmSwift
 import SnapKit
 import UIKit

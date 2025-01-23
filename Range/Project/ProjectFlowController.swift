@@ -2,7 +2,6 @@ import Combine
 import Kingfisher
 import Lottie
 import OSLog
-import Realm
 import RealmSwift
 import SnapKit
 import SwiftUI

@@ -1,7 +1,6 @@
 import Foundation
 import Kingfisher
 import OSLog
-import Realm
 import RealmSwift
 import UIKit
 
