@@ -2,8 +2,8 @@ import FirebaseRemoteConfig
 import Foundation
 import OSLog
 
-// Defaults loaded into remoteConfig so they're available before it's fetched
-private var featureFlagsDefaults: [String: NSObject] = [
+// Defaults loaded into remoteConfig so they're available before it's fetched.
+fileprivate let featureFlagsDefaults: [String: NSObject] = [
     "ran1564VimeoUrl": "https://vimeo.com/rangehq" as NSString,
 ]
 

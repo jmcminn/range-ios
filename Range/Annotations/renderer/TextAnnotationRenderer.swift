@@ -4,7 +4,7 @@ import UIKit
 enum TextAnnotationRenderer {
     /// The initial size for the box when calculating the annotation placement and the selection box when the text is empty (before user started typing)
     /// Unscaled
-    static var emptyTextBoxWidth: CGFloat = 84.0
+    static let emptyTextBoxWidth: CGFloat = 84.0
 
     /// Renders the TextAnnotation
     /// - Parameters:

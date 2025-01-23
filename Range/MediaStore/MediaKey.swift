@@ -1,8 +1,8 @@
 import Foundation
 import RealmSwift
 
-var _thumbnail0Size: Int = 200
-var _thumbnail1Size: Int = 650
+let _thumbnail0Size: Int = 200
+let _thumbnail1Size: Int = 650
 
 /// Used for accessing files in LocalFiles and MediaCache
 ///

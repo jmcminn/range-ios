@@ -4,7 +4,7 @@ import Foundation
 import SwiftUI
 
 /// global variable for debug settings
-var _debugSettings = DebugSettings()
+let _debugSettings = DebugSettings()
 
 /// Storage for hidden debug settings for prototyping new features, etc.
 final class DebugSettings: ObservableObject {

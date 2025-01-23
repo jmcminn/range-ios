@@ -1,6 +1,6 @@
 import UIKit
 
-private var associateKey: Void?
+@MainActor private var associateKey: Void?
 
 /// Objective-C associated object technique for adding new stored properties to classes.
 /// This is a little hacky but it's convenient to store the UIScrollViewDelegateProxy in the UIScrollView

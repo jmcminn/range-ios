@@ -4,7 +4,7 @@ import OSLog
 /// Extending logger to provide app-wide loggers for different categories
 extension Logger {
     /// subsystem to be used by all loggers in the app
-    private static var subsystem = Bundle.main.bundleIdentifier!
+    private static let subsystem = Bundle.main.bundleIdentifier!
 
     /// analytics related logs
     static let analytics = Logger(subsystem: subsystem, category: "analytics")

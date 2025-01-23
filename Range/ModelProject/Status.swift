@@ -25,7 +25,7 @@ class Status: Object, WithPlaceholder, WithId {
     private static let hardcodedStatusOrder: [String] = ["In Progress", "Blocked", "Needs Review", "Complete"]
 
     // initial first, completed last, otherwise keep the ordering
-    static var uiSortingOrder: (Status, Status) -> Bool = { s1, s2 in
+    static let uiSortingOrder: (Status, Status) -> Bool = { s1, s2 in
         if s1.isInitial { return true }
         if s2.isInitial { return false }
         if s2.isCompleted { return true }

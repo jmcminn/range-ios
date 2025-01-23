@@ -45,7 +45,7 @@ class CanvasSource: Object, WithPlaceholder, WithId {
 
     // order: mapbox, dronedeploy, pdf
     // Otherwise sort by id asc
-    static var sortingOrder: (CanvasSource, CanvasSource) -> Bool = { cs1, cs2 -> Bool in
+    static let sortingOrder: (CanvasSource, CanvasSource) -> Bool = { cs1, cs2 -> Bool in
         if cs1.type == cs2.type {
             return cs1.id < cs2.id
         }

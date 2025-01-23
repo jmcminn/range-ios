@@ -6,7 +6,7 @@ import OSLog
 ///
 /// The implementation assumes that calls to all model methods are made on the main thread.
 class KnockFeedModel {
-    private static var inAppFeedId = "58be23cc-2ccd-48a5-87b5-7e9fcc175027"
+    private static let inAppFeedId = "58be23cc-2ccd-48a5-87b5-7e9fcc175027"
 
     let client: KnockClient
     let feedOptions: Knock.FeedClientOptions

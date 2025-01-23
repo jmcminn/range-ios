@@ -3,8 +3,9 @@ import OSLog
 import Segment
 import UIKit
 
-/// global object for analytics access
-var analytics: Segment.Analytics?
+/// global object for analytics access, it's marked as nonisolated as Segment does not provide Analytics with
+/// a safe concurrency domain (it should be an actor and not a class?)
+nonisolated(unsafe) var analytics: Segment.Analytics?
 
 func setupAnalytics() {
     let runningTests = UserDefaults.standard.bool(forKey: "isTest")

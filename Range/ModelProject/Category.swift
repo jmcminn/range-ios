@@ -22,7 +22,7 @@ class Category: Object, WithPlaceholder, WithId {
         .flatMap { SVGKImage(data: $0).uiImage.withRenderingMode(.alwaysTemplate) }
 
     // default first, then sorted by order
-    static var uiSortingOrder: (Category, Category) -> Bool = { c1, c2 in
+    static let uiSortingOrder: (Category, Category) -> Bool = { c1, c2 in
         if c1.isDefault { return true }
         if c2.isDefault { return false }
         return c1.order <= c2.order
