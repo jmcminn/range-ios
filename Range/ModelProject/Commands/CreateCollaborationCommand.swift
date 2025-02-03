@@ -24,6 +24,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
     var collaborationId: String // generated in initializer
     var coordinates: LocationCoordinate2DCodable // no CLLocationCoordinate2D as it needs to be codable
     var statusId: String? // optional status to create a task collaboration
+    var categoryId: String?
     var name: String?
     var collaborationDescription: String?
     var assigneeId: String?
@@ -42,6 +43,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         collaborationId: String = generateRealmId(),
         coordinates: CLLocationCoordinate2D,
         statusId: String? = nil,
+        categoryId: String? = nil,
         name: String? = nil,
         collaborationDescription: String? = nil,
         assigneeId: String? = nil,
@@ -59,6 +61,7 @@ struct CreateCollaborationCommand: Command, Codable, Equatable {
         self.collaborationId = collaborationId
         self.coordinates = .init(coordinates)
         self.statusId = statusId
+        self.categoryId = categoryId
         self.name = name
         self.collaborationDescription = collaborationDescription
         self.assigneeId = assigneeId
@@ -152,9 +155,13 @@ extension CreateCollaborationCommand: LocalCommand {
             collaboration.uploads.insert(upload)
         }
 
-        if let statusId = statusId {
+        if let statusId {
             collaboration.status = try realm.object(ofType: Status.self, forPrimaryKey: statusId)
                 .or(error: ModelError.statusNotFound)
+        }
+        if let categoryId {
+            collaboration.category = try realm.object(ofType: Category.self, forPrimaryKey: categoryId)
+                .or(error: ModelError.categoryNotFound)
         }
     }
 }
@@ -176,7 +183,7 @@ extension CreateCollaborationCommand: FirebaseFunctionCommand {
     var functionName: String { "createCollaboration" }
 
     var functionData: [String: Any?]? {
-        [
+        var data = [
             "canvasId": canvasId,
             "geometryId": geometryId,
             "featureId": featureId,
@@ -200,5 +207,9 @@ extension CreateCollaborationCommand: FirebaseFunctionCommand {
                 "annotations": $0.annotations?.persistableValue as Any,
             ] },
         ]
+        if let categoryId {
+            data["categoryId"] = categoryId
+        }
+        return data
     }
 }

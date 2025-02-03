@@ -633,7 +633,7 @@ class AddPhotoFlowController {
                 try await image._writeToSavedPhotosAlbum()
             }
         }
-        if let geometryId = geometryId {
+        if let geometryId {
             let commands = try photosToAddViewModel.photos.map { photoToAdd in
                 try self.model.addPhoto(
                     photoToAdd,
@@ -657,6 +657,7 @@ class AddPhotoFlowController {
                 isTask: isTask,
                 name: pinToCopy?.name,
                 collaborationDescription: pinToCopy?.collaborationDescription,
+                categoryId: pinToCopy?.category?.id,
                 assignee: pinToCopy?.assignee?.participation == .active ? pinToCopy?.assignee : nil,
                 dueDate: pinToCopy?.dueDateTimestamp,
                 tags: pinToCopy?.tags.map(TagViewModel.init(fromTag:)) ?? [],

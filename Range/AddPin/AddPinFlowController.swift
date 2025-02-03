@@ -249,6 +249,7 @@ class AddPinFlowController {
             } else if pinToCopy.status != nil {
                 collaboration.status = model.mainRealm.objects(Status.self).first(where: { $0.isInitial })
             }
+            collaboration.category = pinToCopy.category
         }
         let pinDisplayOptions = PinDisplayOptions.regularPinDisplayOptionsProvider(
             collaboration: collaboration,
@@ -312,7 +313,7 @@ class AddPinFlowController {
                 isDuplicate: false
             )
         case .copyPin:
-            guard let pinToCopy = pinToCopy else {
+            guard let pinToCopy else {
                 fatalError("pin to copy not selected")
             }
             command = try await model.createCollaboration(
@@ -323,6 +324,7 @@ class AddPinFlowController {
                 name: pinToCopy.name,
                 collaborationDescription: pinToCopy.collaborationDescription,
                 status: isDuplicatingPin ? pinToCopy.status : nil,
+                categoryId: pinToCopy.category?.id,
                 assignee: pinToCopy.assignee?.participation == .active ? pinToCopy.assignee : nil,
                 dueDate: pinToCopy.dueDateTimestamp,
                 tags: pinToCopy.tags.map(TagViewModel.init(fromTag:)),
