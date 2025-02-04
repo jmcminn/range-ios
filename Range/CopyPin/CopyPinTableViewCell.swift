@@ -8,8 +8,8 @@ import UIKit
 
 /// Table cell for displaying collaboration data
 class CopyPinTableViewCell: UITableViewCell {
-    private let taskBadgeView = UIView()
-    private let photoBadgeView = UIView()
+    private let badgeView = UIView()
+    private let badgeImageView = UIImageView()
     private let numberOfUploadsLabel = UILabel()
     private let idLabel = UILabel()
     private let nameLabel = UILabel()
@@ -34,8 +34,7 @@ class CopyPinTableViewCell: UITableViewCell {
         setupViews()
 
         [
-            taskBadgeView,
-            photoBadgeView,
+            badgeView,
             idLabel,
             nameLabel,
             descriptionLabel,
@@ -45,15 +44,10 @@ class CopyPinTableViewCell: UITableViewCell {
         ]
         .forEach(contentView.addSubview)
 
-        taskBadgeView.snp.makeConstraints { make in
-            make.width.height.equalTo(20)
-            make.leading.equalToSuperview().inset(14)
+        badgeView.snp.makeConstraints { make in
+            make.width.height.equalTo(32)
+            make.leading.equalToSuperview().inset(8)
             make.centerY.equalTo(nameLabel.snp.centerY)
-        }
-
-        photoBadgeView.snp.makeConstraints { make in
-            make.width.height.equalTo(22)
-            make.center.equalTo(taskBadgeView)
         }
 
         idLabel.snp.makeConstraints { make in
@@ -76,7 +70,7 @@ class CopyPinTableViewCell: UITableViewCell {
 
         detailsScrollView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualTo(descriptionLabel.snp.bottom).offset(4)
-            make.top.greaterThanOrEqualTo(taskBadgeView.snp.bottom).offset(4)
+            make.top.greaterThanOrEqualTo(badgeView.snp.bottom).offset(4)
             make.leading.trailing.equalToSuperview()
         }
 
@@ -98,21 +92,18 @@ class CopyPinTableViewCell: UITableViewCell {
     }
 
     private func setupViews() {
-        taskBadgeView.layer.cornerRadius = 10
-        let tickView = UIImageView(image: UIImage(named: "tick.smaller"))
-        taskBadgeView.addSubview(tickView)
-        tickView.snp.makeConstraints { make in
+        badgeView.layer.cornerRadius = 16
+        badgeImageView.tintColor = .Neutral_01
+        badgeView.addSubview(badgeImageView)
+        badgeImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-
-        photoBadgeView.layer.cornerRadius = 11
-        photoBadgeView.backgroundColor = .Pink_03
-        photoBadgeView.addSubview(numberOfUploadsLabel)
+        badgeView.addSubview(numberOfUploadsLabel)
         numberOfUploadsLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         numberOfUploadsLabel.textColor = .white
-        numberOfUploadsLabel.font = .systemFont(ofSize: 13.5, weight: .bold)
+        numberOfUploadsLabel.font = .systemFont(ofSize: 17, weight: .bold)
 
         idLabel.font = ._preferredFont(forTextStyle: .caption1, symbolicTraits: .traitBold)
         idLabel.textColor = .dynamic(.Neutral_05)
@@ -163,6 +154,11 @@ class CopyPinTableViewCell: UITableViewCell {
         bottomStroke.backgroundColor = .dynamic(.Neutral_07)
     }
 
+    private func setCheckmarkIcon() {
+        let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
+        badgeImageView.image = UIImage(systemName: "checkmark", withConfiguration: imageConfig)
+    }
+
     func setCollaboration(_ collaboration: Collaboration, projectModel: ProjectModel) {
         collaborationId = collaboration.id
 
@@ -197,14 +193,32 @@ class CopyPinTableViewCell: UITableViewCell {
             descriptionLabel.textInsets = .zero
         }
 
-        let detailsBgColor = UIColor.dynamic(.Neutral_09)
         if collaboration.status != nil {
             // task
             let initialStatusColor = projectModel.mainRealm.objects(Status.self).first(where: { $0.isInitial })?
                 .color ?? .Primary_Blue_04
-            taskBadgeView.backgroundColor = initialStatusColor
-            photoBadgeView.isHidden = true
+            badgeView.backgroundColor = initialStatusColor
+        } else {
+            // photo
+            badgeView.backgroundColor = .Pink_03
+        }
 
+        if let category = collaboration.category, !category.isDefault,
+           let icon = category.icon?.imageResized(toFill: 28).withRenderingMode(.alwaysTemplate)
+        {
+            badgeImageView.image = icon
+            numberOfUploadsLabel.isHidden = true
+        } else if collaboration.status != nil {
+            numberOfUploadsLabel.isHidden = true
+            setCheckmarkIcon()
+        } else {
+            badgeImageView.isHidden = true
+            let uploadsCount = collaboration.uploads.count
+            numberOfUploadsLabel.text = uploadsCount < 9 ? String(uploadsCount) : "9⁺"
+        }
+
+        let detailsBgColor = UIColor.dynamic(.Neutral_09)
+        if collaboration.status != nil {
             if let assignee = collaboration.assignee, assignee.participation == .active {
                 detailsStackView.addArrangedSubview(PillView(
                     iconName: "person", text: assignee.displayName,
@@ -217,6 +231,13 @@ class CopyPinTableViewCell: UITableViewCell {
                     style: .disabled
                 ))
             }
+        }
+        if let category = collaboration.category, !category.isDefault {
+            detailsStackView.addArrangedSubview(PillView(
+                iconName: nil, iconImage: category.icon?.imageResized(toFill: 20), text: category.name
+            ))
+        }
+        if collaboration.status != nil {
             if let dueDateTimestamp = collaboration.dueDateTimestamp {
                 detailsStackView.addArrangedSubview(PillView(
                     iconName: "calendar",
@@ -231,11 +252,6 @@ class CopyPinTableViewCell: UITableViewCell {
                     style: .disabled
                 ))
             }
-        } else {
-            // photo
-            photoBadgeView.isHidden = false
-            let uploadsCount = collaboration.uploads.count
-            numberOfUploadsLabel.text = uploadsCount < 9 ? String(uploadsCount) : "9⁺"
         }
 
         let tagsBgColor = UIColor.Primary_Blue_01
@@ -247,6 +263,8 @@ class CopyPinTableViewCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        badgeImageView.isHidden = false
+        numberOfUploadsLabel.isHidden = false
         nameLabel.text = nil
         descriptionLabel.text = nil
         detailsStackView.arrangedSubviews.forEach {

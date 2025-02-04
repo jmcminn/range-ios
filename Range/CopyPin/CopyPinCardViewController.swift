@@ -47,7 +47,7 @@ class CopyPinCardViewController: SheetCardViewController {
         self.projectModel = projectModel
         self.userPreferences = userPreferences
         collaborations = projectModel.mainRealm.objects(Collaboration.self)
-            .sorted(by: \Collaboration.createdAt, ascending: false)
+            .sorted(by: \Collaboration.lastUpdatedAt, ascending: false)
 
         super.init(
             icon: UIImage(systemName: "mappin.and.ellipse"),
@@ -100,7 +100,8 @@ class CopyPinCardViewController: SheetCardViewController {
         }
     }
 
-    /// Define String value based on Collaboration name, description, dueDate, assignee, tags and whether it's a task or photo pin.
+    /// Define String value based on Collaboration name, description, dueDate, assignee, tags, category and whether it's a task or photo pin.
+    /// The uniqueness is based on the values of all the fields combined to a one long string (to use the built-in uniqued function)
     /// The Copy pin card only display collaborations that are unique with respect to this value.
     private func uniqueProjection(_ collaboration: Collaboration) -> String {
         var values = [String]()
@@ -115,6 +116,9 @@ class CopyPinCardViewController: SheetCardViewController {
         if let assignee = collaboration.assignee, assignee.participation == .active {
             values.append(assignee.id)
         }
+        if let category = collaboration.category {
+            values.append(category.id)
+        }
         for tag in collaboration.tags {
             values.append(tag.id)
         }
@@ -122,8 +126,7 @@ class CopyPinCardViewController: SheetCardViewController {
         return String(values.joined(by: "_"))
     }
 
-    /// Out of all collaborations select the ones that are unique with respect to name, description, dueDate, assignee and tags.
-    /// The uniqueness is based on the values of all the fields combined to a one long string (to use the built-in uniqued function)
+    /// Out of all collaborations select the ones that are unique with respect to given projection.
     /// Then filter the collaboration by searchTerms
     private func updateData() {
         uniqueCollaborations = collaborations.uniqued(on: uniqueProjection)
