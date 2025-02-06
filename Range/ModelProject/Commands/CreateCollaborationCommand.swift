@@ -162,6 +162,8 @@ extension CreateCollaborationCommand: LocalCommand {
         if let categoryId {
             collaboration.category = try realm.object(ofType: Category.self, forPrimaryKey: categoryId)
                 .or(error: ModelError.categoryNotFound)
+        } else {
+            collaboration.category = realm.objects(Category.self).first(where: { $0.isDefault == true })
         }
     }
 }
