@@ -229,6 +229,18 @@ extension ProjectModel {
             }
         }
         tags.forEach(trackTagAdded)
+        if let categoryId, let category = mainRealm.object(ofType: Category.self, forPrimaryKey: categoryId),
+           !category.isDefault
+        {
+            analytics?._trackProjectEvent(name: "category added", self, [
+                "collaborationType": status != nil ? "task" : "photo",
+                "collaborationTitle": name ?? "",
+                "taskStatus": status?.name ?? "",
+                "tagCount": tags.count,
+                "mediaCount": photosToAdd.count,
+                "categoryName": category.name
+            ])
+        }
 
         var collaborationStatus: Status? = status
         if collaborationStatus == nil, isTask {
@@ -415,13 +427,27 @@ extension ProjectModel {
     func update(archived: Bool, forCollaboration collaborationId: String) -> Command {
         UpdateGeometryArchivedCommand(collaborationId: collaborationId, archivedTimestamp: archived ? Date() : nil)
     }
-    
+
     func update(category categoryId: String, forCollaboration collaboration: Collaboration) -> Command {
-        UpdateCollaborationCategoryCommand(collaborationId: collaboration.id, categoryId: categoryId)
+        if let category = mainRealm.object(ofType: Category.self, forPrimaryKey: categoryId),
+           !category.isDefault
+        {
+            analytics?._trackProjectEvent(name: "category added", self, [
+                "collaborationType": collaboration.status != nil ? "task" : "photo",
+                "collaborationTitle": collaboration.name,
+                "taskStatus": collaboration.status?.name ?? "",
+                "tagCount": collaboration.tags.count,
+                "mediaCount": collaboration.uploads.count,
+                "categoryName": category.name
+            ])
+        }
+        return UpdateCollaborationCategoryCommand(collaborationId: collaboration.id, categoryId: categoryId)
     }
-    
-    func update(category categoryId: String, forCollaboration collaborationId: String) -> Command {
-        UpdateCollaborationCategoryCommand(collaborationId: collaborationId, categoryId: categoryId)
+
+    func update(category categoryId: String, forCollaboration collaborationId: String) -> Command? {
+        guard let collaboration = mainRealm.object(ofType: Collaboration.self, forPrimaryKey: collaborationId)
+        else { return nil }
+        return update(category: categoryId, forCollaboration: collaboration)
     }
 
     /// Updates the status for collaboration if it's different than the current one.
