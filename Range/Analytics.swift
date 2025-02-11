@@ -61,13 +61,14 @@ extension Analytics {
     }
 
     func _trackProjectEvent(name: String, _ model: ProjectModel, _ props: [String: Codable]? = nil) {
+        guard let canvas = model.currentCanvas, let canvasSource = canvas.currentCanvasSource else { return }
         var properties: [String: Codable] = [
             "userId": model.userId,
             "groupId": model.projectSummary.organizationId,
             "organizationRole": model.currentUser.organizationRole.rawValue,
             "platform": UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone",
             "projectName": model.projectSummary.name,
-            "canvasType": model.currentCanvas.currentCanvasSource.type.rawValue,
+            "canvasType": canvasSource.type.rawValue,
         ]
         if let props {
             properties = properties.merging(props) { _, new in new }

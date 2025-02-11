@@ -205,15 +205,19 @@ extension ProjectModel {
         uploadDescription: String? = nil,
         isDuplicate: Bool
     ) async throws -> CreateCollaborationCommand {
-        if let canvasSource = canvas.currentCanvasSource {
-            // The canvas source is set if it's used in UI and can theoretically be null here
-            // (although it shouldn't happen if user is adding a pin)
-            let eventName = isDuplicate ? "collaboration duplicated" : "collaboration created"
-            analytics?._trackProjectEvent(name: eventName, self, [
-                "collaborationType": isTask ? "task" : "photo",
-                "collaborationTitle": name ?? "",
-            ])
-        }
+        let collaborationEventName = isDuplicate ? "collaboration duplicated" : "collaboration created"
+        let categoryName: String? = if let categoryId {
+            mainRealm.object(ofType: Category.self, forPrimaryKey: categoryId)?.name
+        } else { nil }
+
+        analytics?._trackProjectEvent(name: collaborationEventName, self, [
+            "collaborationType": isTask ? "task" : "photo",
+            "collaborationTitle": name ?? "",
+            "taskStatus": status?.name ?? "",
+            "tagCount": tags.count,
+            "mediaCount": photosToAdd.count,
+            "categoryName": categoryName ?? "",
+        ])
 
         for photoToAdd in photosToAdd {
             analytics?._trackProjectEvent(name: "media uploaded", self, [
@@ -229,18 +233,6 @@ extension ProjectModel {
             }
         }
         tags.forEach(trackTagAdded)
-        if let categoryId, let category = mainRealm.object(ofType: Category.self, forPrimaryKey: categoryId),
-           !category.isDefault
-        {
-            analytics?._trackProjectEvent(name: "category added", self, [
-                "collaborationType": status != nil ? "task" : "photo",
-                "collaborationTitle": name ?? "",
-                "taskStatus": status?.name ?? "",
-                "tagCount": tags.count,
-                "mediaCount": photosToAdd.count,
-                "categoryName": category.name
-            ])
-        }
 
         var collaborationStatus: Status? = status
         if collaborationStatus == nil, isTask {
@@ -438,7 +430,7 @@ extension ProjectModel {
                 "taskStatus": collaboration.status?.name ?? "",
                 "tagCount": collaboration.tags.count,
                 "mediaCount": collaboration.uploads.count,
-                "categoryName": category.name
+                "categoryName": category.name,
             ])
         }
         return UpdateCollaborationCategoryCommand(collaborationId: collaboration.id, categoryId: categoryId)

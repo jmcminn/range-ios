@@ -211,7 +211,7 @@ class CollaborationFlowController: UIViewController, CollaborationFlowActions {
             "collaborationType": collaboration.status != nil ? "task" : "photo",
             "collaborationTitle": collaboration.name,
             "taskStatus": collaboration.status?.name ?? "",
-            "category": collaboration.category?.name ?? "",
+            "categoryName": collaboration.category?.name ?? "",
             "tagCount": collaboration.tags.count,
             "mediaCount": collaboration.uploads.count,
         ])
