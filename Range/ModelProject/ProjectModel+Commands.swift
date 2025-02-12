@@ -205,19 +205,25 @@ extension ProjectModel {
         uploadDescription: String? = nil,
         isDuplicate: Bool
     ) async throws -> CreateCollaborationCommand {
-        let collaborationEventName = isDuplicate ? "collaboration duplicated" : "collaboration created"
-        let categoryName: String? = if let categoryId {
-            mainRealm.object(ofType: Category.self, forPrimaryKey: categoryId)?.name
-        } else { nil }
+        let category: Category? = categoryId.flatMap { mainRealm.object(ofType: Category.self, forPrimaryKey: $0) }
 
-        analytics?._trackProjectEvent(name: collaborationEventName, self, [
+        let collaborationEventProps: [String: Codable] = [
             "collaborationType": isTask ? "task" : "photo",
             "collaborationTitle": name ?? "",
             "taskStatus": status?.name ?? "",
             "tagCount": tags.count,
             "mediaCount": photosToAdd.count,
-            "categoryName": categoryName ?? "",
-        ])
+            "categoryName": category?.name ?? "",
+        ]
+        let collaborationEventName = isDuplicate ? "collaboration duplicated" : "collaboration created"
+        analytics?._trackProjectEvent(
+            name: collaborationEventName, self, collaborationEventProps
+        )
+        if let category, !category.isDefault {
+            analytics?._trackProjectEvent(
+                name: "category added", self, collaborationEventProps
+            )
+        }
 
         for photoToAdd in photosToAdd {
             analytics?._trackProjectEvent(name: "media uploaded", self, [
