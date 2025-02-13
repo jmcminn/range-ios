@@ -54,7 +54,8 @@ class UserPreferences {
         /// using for recent annotations texts, but then we could end up with lower number of items than 10.
         static let recentAnnotationTexts = "recentAnnotationTexts"
         /// Recently inserted/updated annotations. 10 recent items. Stores an array of [TextAnnotation]
-        static let recentAnnotations = "recentAnnotationTexts"
+        static let recentAnnotations = "recentAnnotations"
+        
     }
 
     /// Ids of the organizations (array of strings) shown to the user when the organization selector was presented for the last time
