@@ -9,7 +9,7 @@ struct ProjectsEmptyStateView: View {
     var stateDescription: String {
         switch state {
         case .noOrganization:
-            return "You do not belong to an Organization. Organizations are first created in the desktop web app, where you will also create your first project.\n\nLog in at app.range.io/login on a dekstop computer to get started."
+            return "You do not belong to an Organization. Organizations are first created in the desktop web app, where you will also create your first project.\n\nLog in at app.range.io/login on a desktop computer to get started."
         case .noProjectsAdmin:
             return "Your Organization has no projects. Create a new project to get started."
         case .noProjectsCollaborator:
