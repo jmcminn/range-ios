@@ -279,6 +279,7 @@ class ProjectsFlowController: UINavigationController {
         guard let projectsNavigationController, let feedNavigationController else { return }
         organizationSubscriptions.removeAll()
         if let organizationModel = userModel.currentOrganizationModel {
+            tabBarVC?.tabBar.isHidden = false
             let projectsVC = ProjectsViewController(
                 model: organizationModel,
                 userPreferences: userPreferences,
@@ -290,11 +291,7 @@ class ProjectsFlowController: UINavigationController {
                 self?.selectOrganizationAction()
             }
             projectsVC.onSettingsButtonTap = { [weak self] in
-                guard let self else { return }
-                let settingsVC = setupSettingsViewController()
-                let settingsNavC = UINavigationController(rootViewController: settingsVC)
-                settingsVC.title = String(localized: "Settings")
-                self.present(settingsNavC, animated: true)
+                self?.showSettings()
             }
             projectsVC.onProjectSelected = { [weak self] project in
                 self?.loadAndPushProjectFlowController(projectId: project.id, initialRoute: nil, animated: true)
@@ -322,15 +319,42 @@ class ProjectsFlowController: UINavigationController {
                 .store(in: &organizationSubscriptions)
 
         } else {
+            tabBarVC?.tabBar.isHidden = true
             let emptyStateView = ProjectsEmptyStateView(state: .noOrganization, createProjectAction: { [weak self] in
                 self?.createProjectAction()
             })
-            projectsNavigationController.setViewControllers(
-                [UIHostingController(rootView: emptyStateView)],
-                animated: false
-            )
+            let emptyVC = UIHostingController(rootView: emptyStateView)
+            setupRightBarButtonItems(in: emptyVC)
+            projectsNavigationController.setViewControllers([emptyVC], animated: false)
+
             feedNavigationController.setViewControllers([LaunchScreenViewController()], animated: false)
         }
+    }
+
+    private func showSettings() {
+        let settingsVC = setupSettingsViewController()
+        let settingsNavC = UINavigationController(rootViewController: settingsVC)
+        settingsVC.title = String(localized: "Settings")
+        present(settingsNavC, animated: true)
+    }
+
+    private func setupRightBarButtonItems(in vc: UIViewController) {
+        var config = UIButton.Configuration.plain()
+        config.baseForegroundColor = .dynamic(.Neutral_04)
+        let button = RangeButton(
+            configuration: config,
+            primaryAction: UIAction(image: UIImage(
+                systemName: "gearshape",
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
+            )) { [weak self] _ in
+                self?.showSettings()
+            }
+        )
+        button.snp.makeConstraints { make in
+            make.width.height.equalTo(40)
+        }
+
+        vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
 
     /// Loads and shows the project or displays the alert view if loading project failed

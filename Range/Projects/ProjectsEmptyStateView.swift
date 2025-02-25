@@ -37,14 +37,14 @@ struct ProjectsEmptyStateView: View {
             }
 
             VStack(alignment: .center, spacing: 16) {
-                Text("Learn about Range")
+                Text("Learn Range Fast")
                     .font(.title2.bold())
                     .kerning(0.38)
                     .multilineTextAlignment(.center)
                     .foregroundColor(.dynamic(.Neutral_04))
 
                 Text(
-                    "Through our short snippet video tutorials, you’ll master everything you need to know about the Range."
+                    "Watch our quick, easy-to-follow video tutorials and learn how to get the most out of Range — no complicated training."
                 )
                 .multilineTextAlignment(.center)
                 .foregroundColor(.dynamic(.Neutral_05))
@@ -56,7 +56,7 @@ struct ProjectsEmptyStateView: View {
                 }) {
                     HStack(alignment: .center, spacing: 10) {
                         Image("learn_about_range")
-                        Text("Learn about Range")
+                        Text("Watch Tutorials")
                             .font(.body.bold())
                             .multilineTextAlignment(.center)
                             .foregroundColor(.white)
