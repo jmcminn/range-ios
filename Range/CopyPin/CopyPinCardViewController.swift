@@ -14,7 +14,8 @@ class CopyPinCardViewController: SheetCardViewController {
 
     private var mostRecentUsedToggle: SegmentedControl!
 
-    private let collaborations: Results<Collaboration>
+    // all collaborations are read on write queue and Realm-frozen
+    private var collaborations: [Collaboration] = []
     private var uniqueCollaborations = [Collaboration]()
     /// collaborations after making them unique and applying searchTerms
     private var searchedCollaborations: [Collaboration] = []
@@ -46,8 +47,6 @@ class CopyPinCardViewController: SheetCardViewController {
     init(projectModel: ProjectModel, userPreferences: UserPreferences) {
         self.projectModel = projectModel
         self.userPreferences = userPreferences
-        collaborations = projectModel.mainRealm.objects(Collaboration.self)
-            .sorted(by: \Collaboration.lastUpdatedAt, ascending: false)
 
         super.init(
             icon: UIImage(systemName: "mappin.and.ellipse"),
@@ -87,13 +86,14 @@ class CopyPinCardViewController: SheetCardViewController {
     }
 
     private func observeCollaborations() {
-        notificationToken = collaborations.observe { [weak self] (changes: RealmCollectionChange) in
+        notificationToken = projectModel.mainRealm.objects(Collaboration.self).observe {
+            [weak self] (changes: RealmCollectionChange) in
             guard let self = self else { return }
             switch changes {
             case .initial:
-                self.updateData()
+                self.updateCollaborations()
             case .update:
-                self.updateData()
+                self.updateCollaborations()
             case let .error(error):
                 Logger.model.error("observing collaborations failed: \(error.localizedDescription, privacy: .public)")
             }
@@ -125,26 +125,50 @@ class CopyPinCardViewController: SheetCardViewController {
         values.append(collaboration.status != nil ? "task" : "photo")
         return String(values.joined(by: "_"))
     }
+    
+    private func updateCollaborations() {
+        projectModel.writeQueue.async {
+            self.collaborations = Array(self.projectModel.writeRealm.objects(Collaboration.self)
+                .sorted(by: \Collaboration.lastUpdatedAt, ascending: false))
+            self.filterData()
+        }
+        
+    }
 
     /// Out of all collaborations select the ones that are unique with respect to given projection.
     /// Then filter the collaboration by searchTerms
-    private func updateData() {
-        uniqueCollaborations = collaborations.uniqued(on: uniqueProjection)
-        searchedCollaborations = uniqueCollaborations.filter(matchSearchTerms)
+    private func filterData() {
+        // Perform filtering on the background queue and realm. When it was run on the main thread
+        // it was causing the UI freezes.
+        projectModel.writeQueue.async { [weak self] in
+            guard let self else { return }
+            // ACHTUNG: the uniqueCollaborations, searchedCollaborations and lastCopiedPins are "frozen" in Realm
+            // terms: https://www.mongodb.com/docs/atlas/device-sdks/sdk/swift/crud/threading/#frozen-objects
+            // When frozen the objects can be shared across threads, so we don't have to create a
+            // copy of the result in the main thread Realm.
+            // Frozen objects cannot be updated or observed, but it's fine, we only observe
+            // the "self.collaborations" on the Main thread
+            uniqueCollaborations = self.collaborations.uniqued(on: uniqueProjection)
+                .map { c in c.freeze() }
+            searchedCollaborations = uniqueCollaborations.filter(matchSearchTerms)
 
-        // last copied pins need to filter by UserDefaults.lastCopiedTasks first and then apply
-        // .uniqued, otherwise .uniqued may filter out the pin ids from lastCopiedTasks and prefer
-        // the pin with same data but different id...
-        lastCopiedPins =
-            userPreferences.lastCopiedPins(forProjectId: projectModel.projectId).compactMap { pinId in
-                collaborations.first { $0.id == pinId }
+            // last copied pins need to filter by UserDefaults.lastCopiedTasks first and then apply
+            // .uniqued, otherwise .uniqued may filter out the pin ids from lastCopiedTasks and prefer
+            // the pin with same data but different id...
+            lastCopiedPins =
+                userPreferences.lastCopiedPins(forProjectId: projectModel.projectId).compactMap {
+                    pinId in
+                    self.collaborations.first { $0.id == pinId }
+                }
+                .uniqued(on: uniqueProjection)
+                .map { c in c.freeze() }
+                .filter(matchSearchTerms)
+
+            DispatchQueue.main.async {
+                self.updateNoPinsViewVisibility()
+                self.tableView.reloadData()
             }
-            .uniqued(on: uniqueProjection)
-            .filter(matchSearchTerms)
-
-        updateNoPinsViewVisibility()
-
-        tableView.reloadData()
+        }
     }
 
     override func height(forContainer cardContainerView: UIView, cardPosition: CardPosition) -> CGFloat {
@@ -348,7 +372,7 @@ extension CopyPinCardViewController: SearchViewDelegate {
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
         // split by whitespace to multiple terms
         searchTerms = searchTerm.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
-        updateData()
+        filterData()
     }
 
     /// Collaboration matches if its name contains all the searchTerms
